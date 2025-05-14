@@ -275,13 +275,17 @@ impl ExecState {
                     .mod_loader
                     .import_stack
                     .iter()
-                    .map(|p| p.as_path().to_string_lossy())
+                    .map(|p| p.to_string_lossy())
                     .collect::<Vec<_>>()
                     .join(" -> "),
                 path,
             ),
             source_ranges: vec![source_range],
         })
+    }
+
+    pub(crate) fn pipe_value(&self) -> Option<&KclValue> {
+        self.mod_local.pipe_value.as_ref()
     }
 }
 

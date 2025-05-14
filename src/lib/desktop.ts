@@ -21,7 +21,7 @@ import {
   TELEMETRY_RAW_FILE_NAME,
   TOKEN_FILE_NAME,
 } from '@src/lib/constants'
-import type { FileEntry, Project } from '@src/lib/project'
+import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
@@ -139,7 +139,15 @@ export async function createNewProjectDirectory(
   )
   if (err(codeToWrite)) return Promise.reject(codeToWrite)
   await window.electron.writeFile(projectFile, codeToWrite)
-  const metadata = await window.electron.stat(projectFile)
+  let metadata: FileMetadata | null = null
+  try {
+    metadata = await window.electron.stat(projectFile)
+  } catch (e) {
+    if (e === 'ENOENT') {
+      console.error('File does not exist')
+      return Promise.reject(new Error(`File ${projectFile} does not exist`))
+    }
+  }
 
   return {
     path: projectDir,
@@ -376,8 +384,9 @@ const directoryCount = (file: FileEntry) => {
 
 export async function getProjectInfo(projectPath: string): Promise<Project> {
   // Check the directory.
+  let metadata
   try {
-    await window.electron.stat(projectPath)
+    metadata = await window.electron.stat(projectPath)
   } catch (e) {
     if (e === 'ENOENT') {
       return Promise.reject(
@@ -398,7 +407,6 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   // Detect the projectPath has read write permission
   const { value: canReadWriteProjectPath } =
     await window.electron.canReadWriteDirectory(projectPath)
-  const metadata = await window.electron.stat(projectPath)
 
   // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(
@@ -462,7 +470,7 @@ const getAppFolderName = () => {
     return APP_ID
   }
   // TODO: we need to make linux use the same convention this is weird
-  // This variable below gets the -nightly suffix on nighly too thru scripts/flip-files-to-nightly.sh
+  // This variable below gets the -nightly suffix on nightly too thru scripts/flip-files-to-nightly.sh
   // But it should be consistent with the reserve domain app id we use on Windows and Linux
   return window.electron.packageJson.name
 }

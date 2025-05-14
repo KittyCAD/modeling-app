@@ -152,8 +152,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     args = {
         sketches = { docs = "Which sketch or sketches should be extruded"},
         length = { docs = "How far to extrude the given sketches"},
-        symmetric = { docs = "If true, the extrusion will happen symmetrically around the sketch. Otherwise, the
-            extrusion will happen on only one side of the sketch." },
+        symmetric = { docs = "If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch." },
         bidirectional_length = { docs = "If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored."},
         tag_start = { docs = "A named tag for the face at the start of the extrusion, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch" },
@@ -292,85 +291,21 @@ pub(crate) async fn do_post_extrude<'a>(
         vec![]
     };
 
-    // Face filtering attempt in order to resolve https://github.com/KittyCAD/modeling-app/issues/5328
-    // In case of a sectional sweep, empirically it looks that the first n faces that are yielded from the sweep
-    // are the ones that work with GetOppositeEdge and GetNextAdjacentEdge, aka the n sides in the sweep.
-    // So here we're figuring out that n number as yielded_sides_count here,
-    // making sure that circle() calls count but close() don't (no length)
-    #[cfg(feature = "artifact-graph")]
-    let count_of_first_set_of_faces_if_sectional = if sectional {
-        sketch
-            .paths
-            .iter()
-            .filter(|p| {
-                let is_circle = matches!(p, Path::Circle { .. });
-                let has_length = p.get_base().from != p.get_base().to;
-                is_circle || has_length
-            })
-            .count()
-    } else {
-        usize::MAX
-    };
-
     // Only do this if we need the artifact graph.
     #[cfg(feature = "artifact-graph")]
-    for (curve_id, face_id) in face_infos
-        .iter()
-        .filter(|face_info| face_info.cap == ExtrusionFaceCapType::None)
-        .filter_map(|face_info| {
-            if let (Some(curve_id), Some(face_id)) = (face_info.curve_id, face_info.face_id) {
-                Some((curve_id, face_id))
-            } else {
-                None
-            }
-        })
-        .take(count_of_first_set_of_faces_if_sectional)
     {
-        // Batch these commands, because the Rust code doesn't actually care about the outcome.
-        // So, there's no need to await them.
-        // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
-        // uses this to build the artifact graph, which the UI needs.
-        //
-        // Spawn this in the background, because we don't care about the result.
-        // Only the artifact graph needs at the end.
-        let args_cloned = args.clone();
-        let opposite_edge_uuid = exec_state.next_uuid();
-        let next_adjacent_edge_uuid = exec_state.next_uuid();
-        let get_all_edge_faces_opposite_uuid = exec_state.next_uuid();
-        let get_all_edge_faces_next_uuid = exec_state.next_uuid();
-
-        // Get faces for original edge
-        // Since this one is batched we can just run it.
-        args.batch_modeling_cmd(
-            exec_state.next_uuid(),
-            ModelingCmd::from(mcmd::Solid3dGetAllEdgeFaces {
-                edge_id: curve_id,
-                object_id: sketch.id,
-            }),
-        )
-        .await?;
-
-        get_bg_edge_info_opposite(
-            args_cloned.clone(),
-            curve_id,
-            sketch.id,
-            face_id,
-            opposite_edge_uuid,
-            get_all_edge_faces_opposite_uuid,
-            true,
-        )
-        .await?;
-
-        get_bg_edge_info_next(
-            args_cloned,
-            curve_id,
-            sketch.id,
-            face_id,
-            next_adjacent_edge_uuid,
-            get_all_edge_faces_next_uuid,
-            true,
-        )
-        .await?;
+        // Getting the ids of a sectional sweep does not work well and we cannot guarantee that
+        // any of these call will not just fail.
+        if !sectional {
+            args.batch_modeling_cmd(
+                exec_state.next_uuid(),
+                ModelingCmd::from(mcmd::Solid3dGetAdjacencyInfo {
+                    object_id: sketch.id,
+                    edge_id: any_edge_id,
+                }),
+            )
+            .await?;
+        }
     }
 
     let Faces {
@@ -541,102 +476,4 @@ async fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<
         }
     }
     faces
-}
-
-#[cfg(feature = "artifact-graph")]
-async fn send_fn(args: &Args, id: uuid::Uuid, cmd: ModelingCmd, single_threaded: bool) -> Result<(), KclError> {
-    if single_threaded {
-        // In single threaded mode, we can safely batch the command.
-        args.batch_modeling_cmd(id, cmd).await
-    } else {
-        // We cannot batch this call, because otherwise it might batch after say
-        // a shell that makes this edge no longer relevant.
-        args.send_modeling_cmd(id, cmd).await.map(|_| ())
-    }
-}
-
-#[cfg(feature = "artifact-graph")]
-#[allow(clippy::too_many_arguments)]
-async fn get_bg_edge_info_next(
-    args: Args,
-    curve_id: uuid::Uuid,
-    sketch_id: uuid::Uuid,
-    face_id: uuid::Uuid,
-    edge_uuid: uuid::Uuid,
-    get_all_edge_faces_uuid: uuid::Uuid,
-    single_threaded: bool,
-) -> Result<(), KclError> {
-    let next_adjacent_edge_id = args
-        .send_modeling_cmd(
-            edge_uuid,
-            ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
-                edge_id: curve_id,
-                object_id: sketch_id,
-                face_id,
-            }),
-        )
-        .await?;
-
-    // Get faces for next adjacent edge
-    if let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(next_adjacent_edge),
-    } = next_adjacent_edge_id
-    {
-        if let Some(edge_id) = next_adjacent_edge.edge {
-            send_fn(
-                &args,
-                get_all_edge_faces_uuid,
-                ModelingCmd::from(mcmd::Solid3dGetAllEdgeFaces {
-                    edge_id,
-                    object_id: sketch_id,
-                }),
-                single_threaded,
-            )
-            .await?;
-        }
-    }
-
-    Ok(())
-}
-
-#[cfg(feature = "artifact-graph")]
-#[allow(clippy::too_many_arguments)]
-async fn get_bg_edge_info_opposite(
-    args: Args,
-    curve_id: uuid::Uuid,
-    sketch_id: uuid::Uuid,
-    face_id: uuid::Uuid,
-    edge_uuid: uuid::Uuid,
-    get_all_edge_faces_uuid: uuid::Uuid,
-    single_threaded: bool,
-) -> Result<(), KclError> {
-    let opposite_edge_id = args
-        .send_modeling_cmd(
-            edge_uuid,
-            ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
-                edge_id: curve_id,
-                object_id: sketch_id,
-                face_id,
-            }),
-        )
-        .await?;
-
-    // Get faces for opposite edge
-    if let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::Solid3dGetOppositeEdge(opposite_edge),
-    } = opposite_edge_id
-    {
-        send_fn(
-            &args,
-            get_all_edge_faces_uuid,
-            ModelingCmd::from(mcmd::Solid3dGetAllEdgeFaces {
-                edge_id: opposite_edge.edge,
-                object_id: sketch_id,
-            }),
-            single_threaded,
-        )
-        .await?;
-    }
-
-    Ok(())
 }

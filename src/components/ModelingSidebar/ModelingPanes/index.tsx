@@ -1,5 +1,4 @@
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { faBugSlash } from '@fortawesome/free-solid-svg-icons'
 import type { MouseEventHandler, ReactNode } from 'react'
 import type { ContextFrom } from 'xstate'
 
@@ -184,7 +183,7 @@ export const sidebarPanes: SidebarPane[] = [
         // editorManager.scrollToFirstErrorDiagnosticIfExists()
       },
       className:
-        'absolute m-0 p-0 bottom-4 left-4 w-3 h-3 flex items-center justify-center text-[9px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200',
+        'absolute m-0 p-0 bottom-4 left-4 min-w-3 h-3 flex items-center justify-center text-[9px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200',
       title: 'Project files have runtime errors',
     },
   },
@@ -230,14 +229,14 @@ export const sidebarPanes: SidebarPane[] = [
   },
   {
     id: 'debug',
-    icon: faBugSlash,
+    icon: 'bug',
     sidebarName: 'Debug',
     Content: (props: { id: SidebarType; onClose: () => void }) => {
       return (
         <>
           <ModelingPaneHeader
             id={props.id}
-            icon={faBugSlash}
+            icon="bug"
             title="Debug"
             Menu={null}
             onClose={props.onClose}

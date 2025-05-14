@@ -50,3 +50,8 @@ test-group = "after-engine"
 filter = "test(docs::gen_std_tests)"
 test-group = "after-engine"
 
+[profile.default.junit]
+path = "../../../../test-results/junit.xml"
+
+[profile.ci.junit]
+path = "../../../../test-results/junit.xml"

@@ -61,6 +61,7 @@
             nodejs_22
             electron
             playwright-driver.browsers
+            chromedriver
             wasm-pack
             python3Full
           ])
@@ -71,12 +72,16 @@
 
         TARGET_CC = "${pkgs.stdenv.cc}/bin/${pkgs.stdenv.cc.targetPrefix}cc";
         LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
-        ELECTRON_OVERRIDE_DIST_PATH = if pkgs.stdenv.isDarwin then "${pkgs.electron}/Applications" else "${pkgs.electron}/bin";
+        ELECTRON_OVERRIDE_DIST_PATH =
+          if pkgs.stdenv.isDarwin
+          then "${pkgs.electron}/Applications/Electron.app/Contents/MacOS/"
+          else "${pkgs.electron}/bin";
         PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = true;
         PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH = "${pkgs.playwright-driver.browsers}/chromium-1091/chrome-linux/chrome";
         PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
         NODE_ENV = "development";
         RUSTFMT = "${pkgs.nightlyRustfmt}/bin/rustfmt";
+        CHROMEDRIVER = "${pkgs.chromedriver}/bin/chromedriver";
       };
     });
 

@@ -1,8 +1,8 @@
 import type {
-  TextToCadIteration_type,
   TextToCad_type,
+  TextToCadMultiFileIteration_type,
 } from '@kittycad/lib/dist/types/src/models'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import type { Mesh } from 'three'
 import {
@@ -29,9 +29,17 @@ import { PATHS } from '@src/lib/paths'
 import { codeManager, kclManager, systemIOActor } from '@src/lib/singletons'
 import { sendTelemetry } from '@src/lib/textToCadTelemetry'
 import { reportRejection } from '@src/lib/trap'
+import {
+  SystemIOMachineEvents,
+  waitForIdleState,
+} from '@src/machines/systemIO/utils'
+import {
+  useProjectDirectoryPath,
+  useRequestedProjectName,
+} from '@src/machines/systemIO/hooks'
 import { commandBarActor } from '@src/lib/singletons'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
+import type { FileMeta } from '@src/lib/types'
+import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -165,8 +173,6 @@ export function ToastTextToCadSuccess({
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const animationRequestRef = useRef<number>()
-  const [hasCopied, setHasCopied] = useState(false)
-  const [showCopiedUi, setShowCopiedUi] = useState(false)
   const modelId = data.id
   const projectDirectoryPath = useProjectDirectoryPath()
 
@@ -326,14 +332,16 @@ export function ToastTextToCadSuccess({
       </div>
       <div className="flex flex-col justify-between gap-6">
         <section>
-          <h2>Text-to-CAD successful</h2>
-          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-            Prompt: "
+          <h2 className="font-sans font-bold">Text-to-CAD successful</h2>
+          <p className="text-sm my-3">
+            File "{fileName}" was successfully added to project "{projectName}"
+            from prompt:
+          </p>
+          <blockquote className="my-3 border-solid border-l-2 pl-4 text-sm text-chalkboard-70 dark:text-chalkboard-30">
             {data.prompt.length > PROMPT_TRUNCATE_LENGTH
               ? data.prompt.slice(0, PROMPT_TRUNCATE_LENGTH) + '...'
               : data.prompt}
-            "
-          </p>
+          </blockquote>
           <TextToCadImprovementMessage
             className="text-sm mt-2"
             label="Not what you expected?"
@@ -345,12 +353,10 @@ export function ToastTextToCadSuccess({
             iconStart={{
               icon: 'close',
             }}
-            data-negative-button={hasCopied ? 'close' : 'reject'}
-            name={hasCopied ? 'Close' : 'Reject'}
+            data-negative-button="reject"
+            name="Reject"
             onClick={() => {
-              if (!hasCopied) {
-                sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
-              }
+              sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
               if (isDesktop()) {
                 // Delete the file from the project
 
@@ -380,7 +386,7 @@ export function ToastTextToCadSuccess({
               toast.dismiss(toastId)
             }}
           >
-            {hasCopied ? 'Close' : 'Reject'}
+            Reject
           </ActionButton>
           {isDesktop() ? (
             <ActionButton
@@ -404,24 +410,27 @@ export function ToastTextToCadSuccess({
             <ActionButton
               Element="button"
               iconStart={{
-                icon: showCopiedUi ? 'clipboardCheckmark' : 'clipboardPlus',
+                icon: 'checkmark',
               }}
-              name="Copy to clipboard"
+              name="Replace current file"
               onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 sendTelemetry(modelId, 'accepted', token)
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                navigator.clipboard.writeText(data.code || '// no code found')
-                setShowCopiedUi(true)
-                setHasCopied(true)
+                const code = data.code || '// no code found'
 
-                // Reset the button text after 5 seconds
-                setTimeout(() => {
-                  setShowCopiedUi(false)
-                }, 5000)
+                systemIOActor.send({
+                  type: SystemIOMachineEvents.createKCLFile,
+                  data: {
+                    requestedProjectName: projectName,
+                    requestedCode: code,
+                    requestedFileNameWithExtension: fileName,
+                  },
+                })
+
+                toast.dismiss(toastId)
               }}
             >
-              {showCopiedUi ? 'Copied' : 'Copy to clipboard'}
+              Replace current file
             </ActionButton>
           )}
         </div>
@@ -479,14 +488,17 @@ export function ToastPromptToEditCadSuccess({
   toastId,
   token,
   data,
-  oldCode,
+  oldCodeWebAppOnly: oldCode,
+  oldFiles,
 }: {
   toastId: string
-  oldCode: string
-  data: TextToCadIteration_type
+  oldCodeWebAppOnly: string
+  oldFiles: FileMeta[]
+  data: TextToCadMultiFileIteration_type
   token?: string
 }) {
   const modelId = data.id
+  const requestedProjectName = useRequestedProjectName()
 
   return (
     <div className="flex gap-4 min-w-80">
@@ -515,13 +527,37 @@ export function ToastPromptToEditCadSuccess({
             data-negative-button={'reject'}
             name={'Reject'}
             onClick={() => {
-              sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
-              codeManager.updateCodeEditor(oldCode)
-              kclManager.executeCode().catch(reportRejection)
-              toast.dismiss(toastId)
+              void (async () => {
+                sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
+                // revert to before the prompt-to-edit
+                if (isDesktop()) {
+                  const requestedFiles: RequestedKCLFile[] = []
+                  for (const file of oldFiles) {
+                    if (file.type !== 'kcl') {
+                      // only need to write the kcl files
+                      // as the endpoint would have never overwritten other file types
+                      continue
+                    }
+                    requestedFiles.push({
+                      requestedCode: file.fileContents,
+                      requestedFileName: file.relPath,
+                      requestedProjectName: requestedProjectName.name,
+                    })
+                  }
+                  toast.dismiss(toastId)
+                  await writeOverFilesAndExecute({
+                    requestedFiles: requestedFiles,
+                    projectName: requestedProjectName.name,
+                  })
+                } else {
+                  codeManager.updateCodeEditor(oldCode)
+                  kclManager.executeCode().catch(reportRejection)
+                  toast.dismiss(toastId)
+                }
+              })()
             }}
           >
-            {'Reject'}
+            {'Revert'}
           </ActionButton>
 
           <ActionButton
@@ -533,23 +569,38 @@ export function ToastPromptToEditCadSuccess({
             onClick={() => {
               sendTelemetry(modelId, 'accepted', token).catch(reportRejection)
               toast.dismiss(toastId)
-
-              // Write new content to disk since they have accepted.
-              codeManager
-                .writeToFile()
-                .then(() => {
-                  // no-op
-                })
-                .catch((e) => {
-                  console.error('Failed to save prompt-to-edit to disk')
-                  console.error(e)
-                })
+              /**
+               * NO OP. Do not rewrite code to disk, we already do this ahead of time. This will dismiss the toast.
+               * All of the files were already written! Don't rewrite the current code editor.
+               * If this prompt to edit makes 5 new files, the code manager is only watching 1 of these files, why
+               * would it rewrite the current file selected when this is completed?
+               */
             }}
           >
-            Accept
+            Continue
           </ActionButton>
         </div>
       </div>
     </div>
   )
+}
+
+export const writeOverFilesAndExecute = async ({
+  requestedFiles,
+  projectName,
+}: {
+  requestedFiles: RequestedKCLFile[]
+  projectName: string
+}) => {
+  systemIOActor.send({
+    type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
+    data: {
+      files: requestedFiles,
+      requestedProjectName: projectName,
+      override: true,
+    },
+  })
+
+  // to await the result of the send event above
+  await waitForIdleState({ systemIOActor })
 }

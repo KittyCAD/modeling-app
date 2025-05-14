@@ -25,8 +25,8 @@ import type {
   ToolbarModeName,
 } from '@src/lib/toolbar'
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
-import { isArray } from '@src/lib/utils'
 import { commandBarActor } from '@src/lib/singletons'
+import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 
 export function Toolbar({
   className = '',
@@ -142,9 +142,7 @@ export function Toolbar({
       } else if (isToolbarDropdown(maybeIconConfig)) {
         return {
           id: maybeIconConfig.id,
-          array: maybeIconConfig.array.map((item) =>
-            resolveItemConfig(item, maybeIconConfig.id)
-          ),
+          array: maybeIconConfig.array.map((item) => resolveItemConfig(item)),
         }
       } else {
         return resolveItemConfig(maybeIconConfig)
@@ -152,8 +150,7 @@ export function Toolbar({
     })
 
     function resolveItemConfig(
-      maybeIconConfig: ToolbarItem,
-      dropdownId?: string
+      maybeIconConfig: ToolbarItem
     ): ToolbarItemResolved {
       const isConfiguredAvailable = ['available', 'experimental'].includes(
         maybeIconConfig.status
@@ -198,6 +195,7 @@ export function Toolbar({
   return (
     <menu
       data-current-mode={currentMode}
+      data-onboarding-id="toolbar"
       className="max-w-full whitespace-nowrap rounded-b px-2 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
     >
       <ul
@@ -234,6 +232,7 @@ export function Toolbar({
                 Element="button"
                 key={selectedIcon.id}
                 data-testid={selectedIcon.id + '-dropdown'}
+                data-onboarding-id={selectedIcon.id + '-dropdown'}
                 id={selectedIcon.id + '-dropdown'}
                 name={maybeIconConfig.id}
                 className={
@@ -254,7 +253,8 @@ export function Toolbar({
                     !['available', 'experimental'].includes(
                       itemConfig.status
                     ) ||
-                    itemConfig.disabled === true,
+                    itemConfig.disabled === true ||
+                    itemConfig.disableHotkey === true,
                   status: itemConfig.status,
                 }))}
               >
@@ -268,6 +268,7 @@ export function Toolbar({
                     Element="button"
                     id={selectedIcon.id}
                     data-testid={selectedIcon.id}
+                    data-onboarding-id={selectedIcon.id}
                     iconStart={{
                       icon: selectedIcon.icon,
                       iconColor: selectedIcon.iconColor,
@@ -334,6 +335,7 @@ export function Toolbar({
                 key={itemConfig.id}
                 id={itemConfig.id}
                 data-testid={itemConfig.id}
+                data-onboarding-id={itemConfig.id}
                 iconStart={{
                   icon: itemConfig.icon,
                   iconColor: itemConfig.iconColor,
@@ -409,6 +411,10 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
   contentClassName = '',
   children,
 }: ToolbarItemContentsProps) {
+  /**
+   * GOTCHA: `useHotkeys` can only register one hotkey listener per component.
+   * TODO: make a global hotkey registration system. make them editable.
+   */
   useHotkeys(
     itemConfig.hotkey || '',
     () => {
@@ -468,7 +474,7 @@ const ToolbarItemTooltipShortContent = ({
       {title}
       {hotkey && (
         <kbd className="inline-block ml-2 flex-none hotkey">
-          {displayHotkeys(hotkey)}
+          {filterEscHotkey(hotkey)}
         </kbd>
       )}
     </div>
@@ -509,7 +515,7 @@ const ToolbarItemTooltipRichContent = ({
         </div>
         {shouldBeEnabled && itemConfig.hotkey ? (
           <kbd className="flex-none hotkey">
-            {displayHotkeys(itemConfig.hotkey)}
+            {filterEscHotkey(itemConfig.hotkey)}
           </kbd>
         ) : itemConfig.status === 'kcl-only' ? (
           <>
@@ -570,11 +576,6 @@ const ToolbarItemTooltipRichContent = ({
       )}
     </>
   )
-}
-
-// We don't want to display Esc hotkeys to avoid confusion in the Toolbar UI (eg. "EscR")
-function displayHotkeys(hotkey: string | string[]) {
-  return (isArray(hotkey) ? hotkey : [hotkey]).filter((h) => h !== 'Esc')
 }
 
 function isToolbarDropdown(

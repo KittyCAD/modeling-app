@@ -28,6 +28,7 @@ export type ToolTip =
   | 'circleThreePoint'
   | 'arcTo'
   | 'arc'
+  | 'startProfile'
 
 export const toolTips: Array<ToolTip> = [
   'line',
@@ -46,6 +47,7 @@ export const toolTips: Array<ToolTip> = [
   'circleThreePoint',
   'arc',
   'arcTo',
+  'startProfile',
 ]
 
 interface ExecutionResult {

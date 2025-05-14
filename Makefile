@@ -1,5 +1,5 @@
 .PHONY: all
-all: install build check
+all: install check build
 
 ###############################################################################
 # INSTALL
@@ -23,6 +23,7 @@ endif
 install: node_modules/.package-lock.json $(CARGO) $(WASM_PACK) ## Install dependencies
 
 node_modules/.package-lock.json: package.json package-lock.json
+	npm prune
 	npm install
 
 $(CARGO):
@@ -43,15 +44,15 @@ endif
 # BUILD
 
 CARGO_SOURCES := rust/.cargo/config.toml $(wildcard rust/Cargo.*) $(wildcard rust/**/Cargo.*)
+KCL_SOURCES := $(wildcard public/kcl-samples/**/*.kcl)
 RUST_SOURCES := $(wildcard rust/**/*.rs)
 
 REACT_SOURCES := $(wildcard src/*.tsx) $(wildcard src/**/*.tsx)
 TYPESCRIPT_SOURCES := tsconfig.* $(wildcard src/*.ts) $(wildcard src/**/*.ts)
 VITE_SOURCES := $(wildcard vite.*) $(wildcard vite/**/*.tsx)
 
-
 .PHONY: build
-build: install public/kcl_wasm_lib_bg.wasm .vite/build/main.js
+build: install public/kcl_wasm_lib_bg.wasm public/kcl-samples/manifest.json .vite/build/main.js
 
 public/kcl_wasm_lib_bg.wasm: $(CARGO_SOURCES) $(RUST_SOURCES)
 ifdef WINDOWS
@@ -59,6 +60,9 @@ ifdef WINDOWS
 else
 	npm run build:wasm:dev
 endif
+
+public/kcl-samples/manifest.json: $(KCL_SOURCES)
+	cd rust/kcl-lib && EXPECTORATE=overwrite cargo test generate_manifest
 
 .vite/build/main.js: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
 	npm run tronb:vite:dev
@@ -106,8 +110,11 @@ test: test-unit test-e2e
 
 .PHONY: test-unit
 test-unit: install ## Run the unit tests
+	npm run test:rust
+	npm run test:unit:components
 	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
 	npm run test:unit
+	npm run test:unit:kcl-samples
 
 .PHONY: test-e2e
 test-e2e: test-e2e-$(TARGET)

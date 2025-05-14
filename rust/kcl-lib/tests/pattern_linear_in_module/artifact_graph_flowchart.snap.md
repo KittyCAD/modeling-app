@@ -2,30 +2,50 @@
 flowchart LR
   subgraph path3 [Path]
     3["Path<br>[54, 89, 1]"]
+      %% Missing NodePath
     5["Segment<br>[54, 89, 1]"]
+      %% Missing NodePath
     7[Solid2d]
   end
   subgraph path4 [Path]
     4["Path<br>[54, 89, 1]"]
+      %% Missing NodePath
     6["Segment<br>[54, 89, 1]"]
+      %% Missing NodePath
     8[Solid2d]
   end
   1["Plane<br>[29, 46, 1]"]
+    %% Missing NodePath
   2["Plane<br>[29, 46, 1]"]
+    %% Missing NodePath
   9["Sweep Extrusion<br>[200, 219, 1]"]
+    %% Missing NodePath
   10["Sweep Extrusion<br>[200, 219, 1]"]
+    %% Missing NodePath
   11["Sweep Extrusion<br>[200, 219, 1]"]
+    %% Missing NodePath
   12["Sweep Extrusion<br>[200, 219, 1]"]
+    %% Missing NodePath
   13["Sweep Extrusion<br>[200, 219, 1]"]
+    %% Missing NodePath
   14["Sweep Extrusion<br>[200, 219, 1]"]
+    %% Missing NodePath
   15["Sweep Extrusion<br>[200, 219, 1]"]
+    %% Missing NodePath
   16["Sweep Extrusion<br>[200, 219, 1]"]
+    %% Missing NodePath
   17["Sweep Extrusion<br>[200, 219, 1]"]
+    %% Missing NodePath
   18["Sweep Extrusion<br>[200, 219, 1]"]
+    %% Missing NodePath
   19["Sweep Extrusion<br>[200, 219, 1]"]
+    %% Missing NodePath
   20["Sweep Extrusion<br>[200, 219, 1]"]
+    %% Missing NodePath
   21["Sweep Extrusion<br>[200, 219, 1]"]
+    %% Missing NodePath
   22["Sweep Extrusion<br>[200, 219, 1]"]
+    %% Missing NodePath
   23[Wall]
   24[Wall]
   25["Cap Start"]
@@ -43,7 +63,7 @@ flowchart LR
   3 ---- 10
   4 --- 6
   4 --- 8
-  4 ---- 15
+  4 ---- 18
   5 --- 23
   5 x--> 25
   5 --- 29
@@ -57,15 +77,15 @@ flowchart LR
   10 --- 27
   10 --- 29
   10 --- 31
-  15 --- 24
-  15 --- 26
-  15 --- 28
-  15 --- 30
-  15 --- 32
-  29 <--x 23
-  31 <--x 23
-  30 <--x 24
-  32 <--x 24
+  18 --- 24
+  18 --- 26
+  18 --- 28
+  18 --- 30
+  18 --- 32
+  23 --- 29
+  23 --- 31
+  24 --- 30
+  24 --- 32
   29 <--x 27
   30 <--x 28
 ```

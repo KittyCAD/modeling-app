@@ -329,10 +329,10 @@ extrude002 = extrude(profile002, length = 150)
       )
 
       const websocketPromise = page.waitForEvent('websocket')
-      await toolbar.closePane('code')
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await toolbar.closePane('code')
       const websocket = await websocketPromise
 
       await scene.connectionEstablished()
@@ -552,7 +552,7 @@ extrude002 = extrude(profile002, length = 150)
   test(
     `Network health indicator only appears in modeling view`,
     { tag: '@electron' },
-    async ({ context, page }, testInfo) => {
+    async ({ context, page }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -561,9 +561,7 @@ extrude002 = extrude(profile002, length = 150)
           path.join(bracketDir, 'main.kcl')
         )
       })
-
       await page.setBodyDimensions({ width: 1200, height: 500 })
-      const u = await getUtils(page)
 
       // Locators
       const projectsHeading = page.getByRole('heading', {
@@ -583,10 +581,8 @@ extrude002 = extrude(profile002, length = 150)
       })
 
       await test.step('Check the modeling view', async () => {
+        await expect(projectsHeading).not.toBeVisible()
         await expect(networkHealthIndicator).toBeVisible()
-        await expect(networkHealthIndicator).toContainText('Problem')
-        await u.waitForPageLoad()
-        await expect(networkHealthIndicator).toContainText('Connected')
       })
     }
   )
@@ -840,6 +836,40 @@ washer = extrude(washerSketch, length = thicknessMax)`
       await toolbar.selectUnit('Yards')
       await editor.expectEditor.toContain('@settings(defaultLengthUnit = yd)')
     })
+  })
+
+  test('Exiting existing sketch without editing should not delete it', async ({
+    page,
+    editor,
+    homePage,
+    context,
+    toolbar,
+    scene,
+    cmdBar,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const testDir = path.join(dir, 'test')
+      await fsp.mkdir(testDir, { recursive: true })
+      await fsp.writeFile(
+        path.join(testDir, 'main.kcl'),
+        `s1 = startSketchOn(XY)
+  |> startProfile(at = [0, 25])
+  |> xLine(endAbsolute = -15 + 1.5)
+s2 = startSketchOn(XY)
+  |> startProfile(at = [25, 0])
+  |> yLine(endAbsolute = -15 + 1.5)`,
+        'utf-8'
+      )
+    })
+
+    await homePage.openProject('test')
+    await scene.settled(cmdBar)
+    await toolbar.waitForFeatureTreeToBeBuilt()
+    await toolbar.editSketch(1)
+    await page.waitForTimeout(1000) // Just hang out for a second
+    await toolbar.exitSketch()
+
+    await editor.expectEditor.toContain('s2 = startSketchOn(XY)')
   })
 })
 

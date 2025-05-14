@@ -1,5 +1,10 @@
 ---
 title: "{{name}}"
+{{#if module}}
+subtitle: "Module in {{module}}"
+{{else}}
+subtitle: "Module"
+{{/if}}
 excerpt: "{{safe_yaml summary}}"
 layout: manual
 ---

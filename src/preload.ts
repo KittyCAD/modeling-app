@@ -114,8 +114,19 @@ const stat = (path: string) => {
 
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.
-const statIsDirectory = (path: string) =>
-  stat(path).then((res) => res.isDirectory())
+async function statIsDirectory(path: string): Promise<boolean> {
+  try {
+    const res = await stat(path)
+    return res.isDirectory()
+  } catch (e) {
+    if (e === 'ENOENT') {
+      console.error('File does not exist', e)
+      return false
+    }
+    return false // either way we don't know if it is a directory
+  }
+}
+
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
 
 const canReadWriteDirectory = async (

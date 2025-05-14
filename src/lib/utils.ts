@@ -1,7 +1,6 @@
 import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
-
 import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { AsyncFn } from '@src/lib/types'
@@ -42,7 +41,9 @@ export async function refreshPage(method = 'UI button') {
  * Get all labels for a keyword call expression.
  */
 export function allLabels(callExpression: CallExpressionKw): string[] {
-  return callExpression.arguments.map((a) => a.label.name)
+  return callExpression.arguments
+    .map((a) => a.label?.name)
+    .filter((a) => a !== undefined)
 }
 
 /**

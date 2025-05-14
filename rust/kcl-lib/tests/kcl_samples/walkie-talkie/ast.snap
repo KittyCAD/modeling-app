@@ -276,12 +276,12 @@ description: Result of parsing walkie-talkie.kcl
                     "right": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": ".45",
+                      "raw": ".60",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 0.45,
+                        "value": 0.6,
                         "suffix": "None"
                       }
                     },
@@ -303,12 +303,12 @@ description: Result of parsing walkie-talkie.kcl
                     "argument": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "0.10",
+                      "raw": "0.20",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 0.1,
+                        "value": 0.2,
                         "suffix": "None"
                       }
                     },

@@ -18,21 +18,30 @@ import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
+import { BillingDialog } from '@src/components/BillingDialog'
 import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
-import { codeManager, kclManager } from '@src/lib/singletons'
 import {
   getNextSearchParams,
   getSortFunction,
   getSortIcon,
 } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
-import { authActor, systemIOActor, useSettings } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
+import {
+  useToken,
+  commandBarActor,
+  codeManager,
+  kclManager,
+  authActor,
+  billingActor,
+  systemIOActor,
+  useSettings,
+} from '@src/lib/singletons'
+import { BillingTransition } from '@src/machines/billingMachine'
 import {
   useCanReadWriteProjectDirectory,
   useFolders,
@@ -62,12 +71,14 @@ type ReadWriteProjectState = {
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
+  const apiToken = useToken()
 
   // Only create the native file menus on desktop
   useEffect(() => {
     if (isDesktop()) {
       window.electron.createHomePageMenu().catch(reportRejection)
     }
+    billingActor.send({ type: BillingTransition.Update, apiToken })
   }, [])
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
@@ -320,12 +331,9 @@ const Home = () => {
                     type: 'Find and select command',
                     data: {
                       groupId: 'application',
-                      name: 'add-kcl-file-to-project',
+                      name: 'create-a-sample',
                       argDefaultValues: {
                         source: 'kcl-samples',
-                        method: 'newProject',
-                        newProjectName:
-                          settings.projects.defaultProjectName.current,
                       },
                     },
                   })
@@ -342,6 +350,11 @@ const Home = () => {
             </li>
           </ul>
           <ul className="flex flex-col">
+            <li className="contents">
+              <div className="my-2">
+                <BillingDialog billingActor={billingActor} />
+              </div>
+            </li>
             <li className="contents">
               <ActionButton
                 Element="externalLink"

@@ -1,10 +1,11 @@
 ---
-title: "std::types::Face"
-excerpt: "A face."
+title: "Face"
+subtitle: "Type in std::types"
+excerpt: "A face of a solid."
 layout: manual
 ---
 
-A face.
+A face of a solid.
 
 
 

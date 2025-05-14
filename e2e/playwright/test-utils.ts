@@ -13,11 +13,15 @@ import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
 import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
+import dotenv from 'dotenv'
+
+const NODE_ENV = process.env.NODE_ENV || 'development'
+dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
+export const token = process.env.token || ''
 
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
-import { secrets } from '@e2e/playwright/secrets'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
 
@@ -31,8 +35,9 @@ export const headerMasks = (page: Page) => [
   page.locator('#sidebar-bottom-ribbon'),
 ]
 
-export const networkingMasks = (page: Page) => [
+export const lowerRightMasks = (page: Page) => [
   page.getByTestId('network-toggle'),
+  page.getByTestId('billing-remaining-bar'),
 ]
 
 export type TestColor = [number, number, number]
@@ -804,8 +809,6 @@ export const doExport = async (
 
   await page.getByRole('button', { name: 'Submit command' }).click()
 
-  // This usually happens immediately after. If we're too slow we don't
-  // catch it.
   await expect(page.getByText('Exported successfully')).toBeVisible()
 
   if (exportFrom === 'sidebarButton' || exportFrom === 'commandBar') {
@@ -890,7 +893,7 @@ export async function setup(
       localStorage.setItem('PLAYWRIGHT_TEST_DIR', PLAYWRIGHT_TEST_DIR)
     },
     {
-      token: secrets.token,
+      token,
       settingsKey: TEST_SETTINGS_KEY,
       settings: settingsToToml({
         settings: {
@@ -918,7 +921,7 @@ export async function setup(
   await context.addCookies([
     {
       name: COOKIE_NAME,
-      value: secrets.token,
+      value: token,
       path: '/',
       domain: 'localhost',
       secure: true,

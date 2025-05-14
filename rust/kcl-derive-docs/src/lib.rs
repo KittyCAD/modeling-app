@@ -100,18 +100,21 @@ fn do_for_each_std_mod(item: proc_macro2::TokenStream) -> proc_macro2::TokenStre
         let filename = e.file_name();
         filename.to_str().unwrap().strip_suffix(".kcl").map(str::to_owned)
     }) {
-        let mut item = item.clone();
-        item.sig.ident = syn::Ident::new(&format!("{}_{}", item.sig.ident, name), Span::call_site());
-        let stmts = &item.block.stmts;
-        //let name = format!("\"{name}\"");
-        let block = quote! {
-            {
-                const STD_MOD_NAME: &str = #name;
-                #(#stmts)*
-            }
-        };
-        item.block = Box::new(syn::parse2(block).unwrap());
-        result.extend(Some(item.into_token_stream()));
+        for i in 0..10_usize {
+            let mut item = item.clone();
+            item.sig.ident = syn::Ident::new(&format!("{}_{}_shard_{i}", item.sig.ident, name), Span::call_site());
+            let stmts = &item.block.stmts;
+            let block = quote! {
+                {
+                    const STD_MOD_NAME: &str = #name;
+                    const SHARD: usize = #i;
+                    const SHARD_COUNT: usize = 10;
+                    #(#stmts)*
+                }
+            };
+            item.block = Box::new(syn::parse2(block).unwrap());
+            result.extend(Some(item.into_token_stream()));
+        }
     }
 
     result

@@ -10,21 +10,6 @@ import {
 import { isDesktop } from '@src/lib/isDesktop'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
-
-const prependRoutes =
-  (routesObject: Record<string, string>) => (prepend: string) => {
-    return Object.fromEntries(
-      Object.entries(routesObject).map(([constName, path]) => [
-        constName,
-        prepend + path,
-      ])
-    )
-  }
-
-type OnboardingPaths = {
-  [K in keyof typeof ONBOARDING_SUBPATHS]: `/onboarding${(typeof ONBOARDING_SUBPATHS)[K]}`
-}
 
 const SETTINGS = '/settings'
 
@@ -44,9 +29,7 @@ export const PATHS = {
   SETTINGS_PROJECT: `${SETTINGS}?tab=project` as const,
   SETTINGS_KEYBINDINGS: `${SETTINGS}?tab=keybindings` as const,
   SIGN_IN: '/signin',
-  ONBOARDING: prependRoutes(ONBOARDING_SUBPATHS)(
-    '/onboarding'
-  ) as OnboardingPaths,
+  ONBOARDING: '/onboarding',
   TELEMETRY: '/telemetry',
 } as const
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
@@ -190,6 +173,27 @@ export function getStringAfterLastSeparator(path: string): string {
 }
 
 /**
+ * When you have '/home/kevin-nadro/Documents/zoo-modeling-app-projects/bracket-1/bracket.kcl'
+ * and you need to get the projectDirectory from this string above.
+ *
+ * We replace the leading prefix which is the application project directory with
+ * the empty string. Then it becomes //bracket-1/bracket.kcl
+ * The first part of the path after the blank / will be the root project directory
+ *
+ */
+export function getProjectDirectoryFromKCLFilePath(
+  path: string,
+  applicationProjectDirectory: string
+): string {
+  const replacedPath = path.replace(applicationProjectDirectory, '')
+  const [iAmABlankString, projectDirectory] = desktopSafePathSplit(replacedPath)
+  if (iAmABlankString === '') {
+    return projectDirectory
+  }
+  return ''
+}
+
+/**
  * Use this for only web related paths not paths in OS or on disk
  * e.g. document.location.pathname
  */
@@ -214,9 +218,4 @@ export function desktopSafePathSplit(path: string): string[] {
 
 export function desktopSafePathJoin(paths: string[]): string {
   return isDesktop() ? paths.join(window?.electron?.sep) : webSafeJoin(paths)
-}
-
-export function localModuleSafePathSplit(path: string) {
-  const modulePathSafeSep = '/'
-  return path.split(modulePathSafeSep)
 }

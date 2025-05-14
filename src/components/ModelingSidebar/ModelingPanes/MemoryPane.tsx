@@ -22,7 +22,7 @@ export const MemoryPaneMenu = () => {
       navigator.clipboard
         .writeText(JSON.stringify(variables))
         .then(() => toast.success('Program memory copied to clipboard'))
-        .catch((e) =>
+        .catch((_e) =>
           trap(new Error('Failed to copy program memory to clipboard'))
         )
     }

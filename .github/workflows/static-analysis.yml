@@ -171,13 +171,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-      - name: Install codespell
-        run: |
-            python -m pip install codespell
       - name: Run codespell
-        run: codespell --config .codespellrc # Edit this file to tweak the typo list and other configuration.
+        uses: crate-ci/typos@v1.32.0
 
   npm-unit-test-kcl-samples:
     runs-on: ubuntu-latest
@@ -218,7 +213,13 @@ jobs:
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: npm run playwright install chromium --with-deps
 
-      - name: run unit tests for kcl samples
+      - name: Download internal KCL samples
+        run: git clone --depth=1 https://x-access-token:${{ secrets.GH_PAT_KCL_SAMPLES_INTERNAL }}@github.com/KittyCAD/kcl-samples-internal public/kcl-samples/internal
+
+      - name: Regenerate KCL samples manifest
+        run: cd rust/kcl-lib && EXPECTORATE=overwrite cargo test generate_manifest
+
+      - name: Check public and internal KCL samples
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: npm run test:unit:kcl-samples
         env:

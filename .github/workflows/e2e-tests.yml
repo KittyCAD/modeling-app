@@ -18,73 +18,13 @@ permissions:
 
 jobs:
 
-  conditions:
-    runs-on: ubuntu-latest
-    outputs:
-      significant: ${{ steps.path-changes.outputs.significant }}
-      should-run: ${{ steps.should-run.outputs.should-run }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Fetch the base branch
-        if: ${{ github.event_name == 'pull_request' }}
-        run: git fetch origin ${{ github.base_ref }} --depth=1
-
-      - name: Check for path changes
-        id: path-changes
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          # Manual runs or push should run all tests.
-          if [[ ${{ github.event_name }} != 'pull_request' ]]; then
-            echo "significant=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          changed_files=$(git diff --name-only origin/${{ github.base_ref }})
-          echo "$changed_files"
-          if grep -Evq '^README.md|^public/kcl-samples/|^rust/kcl-lib/tests/kcl_samples/' <<< "$changed_files" ; then
-            echo "significant=true" >> $GITHUB_OUTPUT
-          else
-            echo "significant=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Should run
-        id: should-run
-        shell: bash
-        run: |
-          set -euo pipefail
-          # We should run when this is a scheduled run or if there are
-          # significant changes in the diff.
-          if [[ ${{ github.event_name }} == 'schedule' || ${{ steps.path-changes.outputs.significant }} == 'true' ]]; then
-            echo "should-run=true" >> $GITHUB_OUTPUT
-          else
-            echo "should-run=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Display conditions
-        shell: bash
-        run: |
-          # For debugging purposes
-          set -euo pipefail
-          echo "GITHUB_REF: $GITHUB_REF"
-          echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
-          echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
-          echo "significant: ${{ steps.path-changes.outputs.significant }}"
-          echo "should-run: ${{ steps.should-run.outputs.should-run }}"
-
   prepare-wasm:
     # separate job on Ubuntu to build or fetch the wasm blob once on the fastest runner
     runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
-    needs: conditions
     steps:
       - uses: actions/checkout@v4
-        if: needs.conditions.outputs.should-run == 'true'
 
       - id: filter
-        if: needs.conditions.outputs.should-run == 'true'
         name: Check for Rust changes
         uses: dorny/paths-filter@v3
         with:
@@ -93,18 +33,16 @@ jobs:
               - 'rust/**'
 
       - uses: actions/setup-node@v4
-        if: needs.conditions.outputs.should-run == 'true'
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install dependencies
-        if: needs.conditions.outputs.should-run == 'true'
         run: npm install
 
       - name: Download Wasm Cache
         id: download-wasm
-        if: ${{ needs.conditions.outputs.should-run == 'true' && github.event_name != 'schedule' && steps.filter.outputs.rust == 'false' }}
+        if: ${{ github.event_name != 'schedule' && steps.filter.outputs.rust == 'false' }}
         uses: dawidd6/action-download-artifact@v7
         continue-on-error: true
         with:
@@ -116,7 +54,6 @@ jobs:
 
       - name: Build WASM condition
         id: wasm
-        if: needs.conditions.outputs.should-run == 'true'
         run: |
           set -euox pipefail
           # Build wasm if this is a scheduled run, there are Rust changes, or
@@ -128,35 +65,34 @@ jobs:
           fi
 
       - name: Use correct Rust toolchain
-        if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         shell: bash
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
 
       - name: Install rust
-        if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
 
       - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
-        if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
 
       - name: Rust Cache
-        if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: './rust'
 
       - name: Build Wasm
-        if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         shell: bash
         run: npm run build:wasm
 
       - uses: actions/upload-artifact@v4
-        if: needs.conditions.outputs.should-run == 'true'
         with:
           name: prepared-wasm
           path: |
@@ -165,10 +101,9 @@ jobs:
   snapshots:
     name: playwright:snapshots:ubuntu
     runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
-    needs: [conditions, prepare-wasm]
+    needs: [prepare-wasm]
     steps:
       - uses: actions/create-github-app-token@v1
-        if: needs.conditions.outputs.should-run == 'true'
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -176,16 +111,13 @@ jobs:
           owner: ${{ github.repository_owner }}
 
       - uses: actions/checkout@v4
-        if: needs.conditions.outputs.should-run == 'true'
         with:
           token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/download-artifact@v4
-        if: needs.conditions.outputs.should-run == 'true'
         name: prepared-wasm
 
       - name: Copy prepared wasm
-        if: needs.conditions.outputs.should-run == 'true'
         run: |
           ls -R prepared-wasm
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public
@@ -193,18 +125,15 @@ jobs:
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
       - uses: actions/setup-node@v4
-        if: needs.conditions.outputs.should-run == 'true'
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install dependencies
         id: deps-install
-        if: needs.conditions.outputs.should-run == 'true'
         run: npm install
 
       - name: Cache Playwright Browsers
-        if: needs.conditions.outputs.should-run == 'true'
         uses: actions/cache@v4
         with:
           path: |
@@ -212,15 +141,12 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright Browsers
-        if: needs.conditions.outputs.should-run == 'true'
         run: npm run playwright install --with-deps
 
       - name: build web
-        if: needs.conditions.outputs.should-run == 'true'
         run: npm run tronb:vite:dev
 
       - name: Run ubuntu/chrome snapshots
-        if: needs.conditions.outputs.should-run == 'true'
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
@@ -229,7 +155,6 @@ jobs:
           max_attempts: 5
         env:
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-          snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
           TAB_API_URL: ${{ secrets.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
@@ -237,7 +162,7 @@ jobs:
           TARGET: web
 
       - uses: actions/upload-artifact@v4
-        if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
+        if: ${{ !cancelled() && (success() || failure()) }}
         with:
           name: playwright-report-ubuntu-snapshot-${{ github.sha }}
           path: playwright-report/
@@ -246,7 +171,7 @@ jobs:
           overwrite: true
 
       - name: Check for changes
-        if: ${{ needs.conditions.outputs.should-run == 'true' && github.ref != 'refs/heads/main' }}
+        if: ${{ github.ref != 'refs/heads/main' }}
         shell: bash
         id: git-check
         run: |
@@ -258,7 +183,7 @@ jobs:
 
       - name: Commit changes, if any
         # TODO: find a more reliable way to detect visual changes
-        if: ${{ false && needs.conditions.outputs.should-run == 'true' && steps.git-check.outputs.modified == 'true' }}
+        if: ${{ false && steps.git-check.outputs.modified == 'true' }}
         shell: bash
         run: |
           git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
@@ -273,7 +198,7 @@ jobs:
           git push origin ${{ github.head_ref }}
 
   electron:
-    needs: [conditions, prepare-wasm]
+    needs: [prepare-wasm]
     timeout-minutes: 60
     env:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
@@ -316,14 +241,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-        if: needs.conditions.outputs.should-run == 'true'
 
       - uses: actions/download-artifact@v4
-        if: needs.conditions.outputs.should-run == 'true'
         name: prepared-wasm
 
       - name: Copy prepared wasm
-        if: needs.conditions.outputs.should-run == 'true'
         run: |
           ls -R prepared-wasm
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public
@@ -331,18 +253,15 @@ jobs:
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
       - uses: actions/setup-node@v4
-        if: needs.conditions.outputs.should-run == 'true'
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install dependencies
         id: deps-install
-        if: needs.conditions.outputs.should-run == 'true'
         run: npm install
 
       - name: Cache Playwright Browsers
-        if: needs.conditions.outputs.should-run == 'true'
         uses: actions/cache@v4
         with:
           path: |
@@ -350,22 +269,20 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright Browsers
-        if: needs.conditions.outputs.should-run == 'true'
         run: npm run playwright install --with-deps
 
       - name: Build web
-        if: needs.conditions.outputs.should-run == 'true'
         run: npm run tronb:vite:dev
 
       - name: Start Vector
-        if: ${{ needs.conditions.outputs.should-run == 'true' && !contains(matrix.os, 'windows') }}
+        if: ${{ !contains(matrix.os, 'windows') }}
         run: .github/ci-cd-scripts/start-vector-${{ env.OS_NAME }}.sh
         env:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
 
       - uses: actions/download-artifact@v4
-        if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
+        if: ${{ !cancelled() && (success() || failure()) }}
         continue-on-error: true
         with:
           name: test-results-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
@@ -373,7 +290,7 @@ jobs:
 
       - name: Run playwright/electron flow (with retries)
         id: retry
-        if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && steps.deps-install.outcome == 'success' }}
+        if:  ${{ !cancelled() && steps.deps-install.outcome == 'success' }}
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
@@ -390,7 +307,7 @@ jobs:
           TARGET: desktop
 
       - uses: actions/upload-artifact@v4
-        if: ${{ needs.conditions.outputs.should-run == 'true' && always() }}
+        if: always()
         with:
           name: test-results-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
@@ -399,7 +316,7 @@ jobs:
           overwrite: true
 
       - uses: actions/upload-artifact@v4
-        if: ${{ needs.conditions.outputs.should-run == 'true' && always() }}
+        if: always()
         with:
           name: playwright-report-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: playwright-report/

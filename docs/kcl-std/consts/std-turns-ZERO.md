@@ -1,15 +1,16 @@
 ---
-title: "std::turns::ZERO"
-excerpt: ""
+title: "turns::ZERO"
+subtitle: "Constant in std::turns"
+excerpt: "No turn, zero degrees/radians."
 layout: manual
 ---
 
-
-
-
+No turn, zero degrees/radians.
 
 ```kcl
-std::turns::ZERO: number = 0
+turns::ZERO: number = 0
 ```
+
+
 
 

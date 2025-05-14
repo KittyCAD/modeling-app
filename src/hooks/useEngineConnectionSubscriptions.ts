@@ -34,7 +34,8 @@ import type {
   ExtrudeFacePlane,
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
-import { localModuleSafePathSplit } from '@src/lib/paths'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
+import { findAllChildrenAndOrderByPlaceInCode } from '@src/lang/modifyAst/boolean'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
@@ -148,7 +149,7 @@ export function useEngineConnectionSubscriptions() {
                 }
 
                 sceneInfra.modelingSend({
-                  type: 'Select default plane',
+                  type: 'Select sketch plane',
                   data: {
                     type: 'defaultPlane',
                     planeId: planeId,
@@ -165,7 +166,7 @@ export function useEngineConnectionSubscriptions() {
                 const planeInfo =
                   await sceneEntitiesManager.getFaceDetails(planeOrFaceId)
                 sceneInfra.modelingSend({
-                  type: 'Select default plane',
+                  type: 'Select sketch plane',
                   data: {
                     type: 'offsetPlane',
                     zAxis: [
@@ -194,7 +195,7 @@ export function useEngineConnectionSubscriptions() {
                 return
               }
 
-              // Artifact is likely an extrusion face
+              // Artifact is likely an sweep face
               const faceId = planeOrFaceId
               const extrusion = getSweepFromSuspectedSweepSurface(
                 faceId,
@@ -209,9 +210,11 @@ export function useEngineConnectionSubscriptions() {
                     return
                   }
                   if (importDetails?.type === 'Local') {
-                    const paths = localModuleSafePathSplit(importDetails.value)
-                    const fileName = paths[paths.length - 1]
-                    showSketchOnImportToast(fileName)
+                    // importDetails has OS specific separators from the rust side!
+                    const fileNameWithExtension = getStringAfterLastSeparator(
+                      importDetails.value
+                    )
+                    showSketchOnImportToast(fileNameWithExtension)
                   } else if (
                     importDetails?.type === 'Main' ||
                     importDetails?.type === 'Std'
@@ -318,15 +321,31 @@ export function useEngineConnectionSubscriptions() {
                     }
                   : { type: 'wall' }
 
+              if (err(extrusion)) {
+                return Promise.reject(
+                  new Error(`Extrusion is not a valid artifact: ${extrusion}`)
+                )
+              }
+
+              const lastChild =
+                findAllChildrenAndOrderByPlaceInCode(
+                  { type: 'sweep', ...extrusion },
+                  kclManager.artifactGraph
+                )[0] || null
+              const lastChildCodeRef =
+                lastChild?.type === 'compositeSolid'
+                  ? lastChild.codeRef.range
+                  : null
+
               const extrudePathToNode = !err(extrusion)
                 ? getNodePathFromSourceRange(
                     kclManager.ast,
-                    extrusion.codeRef.range
+                    lastChildCodeRef || extrusion.codeRef.range
                   )
                 : []
 
               sceneInfra.modelingSend({
-                type: 'Select default plane',
+                type: 'Select sketch plane',
                 data: {
                   type: 'extrudeFace',
                   zAxis: [z_axis.x, z_axis.y, z_axis.z],

@@ -1,5 +1,6 @@
-use std::{collections::HashMap, fmt, str::FromStr};
+use std::{fmt, str::FromStr};
 
+use indexmap::IndexMap;
 use regex::Regex;
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
@@ -117,8 +118,10 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                 }
                 let qual = format!("{}::", &result.qual_name);
                 let mut dd = match var.kind {
-                    VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual, preferred_prefix, name)),
-                    VariableKind::Const => DocData::Const(ConstData::from_ast(var, qual, preferred_prefix, name)),
+                    VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual, preferred_prefix, &result.name)),
+                    VariableKind::Const => {
+                        DocData::Const(ConstData::from_ast(var, qual, preferred_prefix, &result.name))
+                    }
                 };
                 let key = format!("I:{}", dd.qual_name());
                 if result.children.contains_key(&key) {
@@ -138,7 +141,7 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                     continue;
                 }
                 let qual = format!("{}::", &result.qual_name);
-                let mut dd = DocData::Ty(TyData::from_ast(ty, qual, preferred_prefix, name));
+                let mut dd = DocData::Ty(TyData::from_ast(ty, qual, preferred_prefix, &result.name));
                 let key = format!("T:{}", dd.qual_name());
                 if result.children.contains_key(&key) {
                     continue;
@@ -447,15 +450,15 @@ pub struct ModData {
     pub description: Option<String>,
     pub module_name: String,
 
-    pub children: HashMap<String, DocData>,
+    pub children: IndexMap<String, DocData>,
 }
 
 impl ModData {
     fn new(name: &str, preferred_prefix: &str) -> Self {
-        let (qual_name, module_name) = if name == "prelude" {
-            ("std".to_owned(), String::new())
+        let (name, qual_name, module_name) = if name == "prelude" {
+            ("std", "std".to_owned(), String::new())
         } else {
-            (format!("std::{}", name), "std".to_owned())
+            (name, format!("std::{}", name), "std".to_owned())
         };
         Self {
             preferred_name: format!("{preferred_prefix}{name}"),
@@ -463,7 +466,7 @@ impl ModData {
             qual_name,
             summary: None,
             description: None,
-            children: HashMap::new(),
+            children: IndexMap::new(),
             module_name,
         }
     }
@@ -624,6 +627,8 @@ impl FnData {
     pub(super) fn to_autocomplete_snippet(&self) -> String {
         if self.name == "loft" {
             return "loft([${0:sketch000}, ${1:sketch001}])".to_owned();
+        } else if self.name == "clone" {
+            return "clone(${0:part001})".to_owned();
         } else if self.name == "hole" {
             return "hole(${0:holeSketch}, ${1:%})".to_owned();
         }
@@ -1232,23 +1237,21 @@ mod test {
                 .expect_mod()
         };
 
-        #[allow(clippy::iter_over_hash_type)]
+        let mut count = 0;
         for d in data.children.values() {
             if let DocData::Mod(_) = d {
                 continue;
             }
 
             for (i, eg) in d.examples().enumerate() {
+                count += 1;
+                if count % SHARD_COUNT != SHARD {
+                    continue;
+                }
+
                 let result = match crate::test_server::execute_and_snapshot(eg, None).await {
                     Err(crate::errors::ExecError::Kcl(e)) => {
-                        errs.push(
-                            miette::Report::new(crate::errors::Report {
-                                error: e.error,
-                                filename: format!("{}{i}", d.name()),
-                                kcl_source: eg.to_string(),
-                            })
-                            .to_string(),
-                        );
+                        errs.push(format!("Error testing example {}{i}: {}", d.name(), e.error.message()));
                         continue;
                     }
                     Err(other_err) => panic!("{}", other_err),

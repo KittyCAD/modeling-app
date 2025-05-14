@@ -257,6 +257,7 @@ impl EngineConnection {
 
                 this_response = OkModelingCmdResponse::EntityCircularPattern(kcmc::output::EntityCircularPattern {
                     entity_ids: entity_ids.clone(),
+                    entity_face_edge_ids: vec![],
                 });
 
                 let mut base_code: String = format!(
@@ -401,6 +402,14 @@ impl kcl_lib::EngineManager for EngineConnection {
         _source_range: kcl_lib::SourceRange,
     ) -> Result<(), KclError> {
         Ok(())
+    }
+
+    async fn get_debug(&self) -> Option<OkWebSocketResponseData> {
+        None
+    }
+
+    async fn fetch_debug(&self) -> Result<(), KclError> {
+        unimplemented!();
     }
 
     async fn inner_fire_modeling_cmd(

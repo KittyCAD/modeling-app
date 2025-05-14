@@ -136,7 +136,7 @@ export function findKwArg(
   call: CallExpressionKw
 ): Expr | undefined {
   return call?.arguments?.find((arg) => {
-    return arg.label.name === label
+    return arg.label?.name === label
   })?.arg
 }
 
@@ -149,7 +149,7 @@ export function findKwArgWithIndex(
   call: CallExpressionKw
 ): { expr: Expr; argIndex: number } | undefined {
   const index = call.arguments.findIndex((arg) => {
-    return arg.label.name === label
+    return arg.label?.name === label
   })
   return index >= 0
     ? { expr: call.arguments[index].arg, argIndex: index }
@@ -164,7 +164,7 @@ export function findKwArgAny(
   call: CallExpressionKw
 ): Expr | undefined {
   return call.arguments.find((arg) => {
-    return labels.includes(arg.label.name)
+    return labels.includes(arg.label?.name || '')
   })?.arg
 }
 
@@ -176,7 +176,7 @@ export function findKwArgAnyIndex(
   call: CallExpressionKw
 ): number | undefined {
   const index = call.arguments.findIndex((arg) => {
-    return labels.includes(arg.label.name)
+    return labels.includes(arg.label?.name || '')
   })
   if (index == -1) {
     return undefined

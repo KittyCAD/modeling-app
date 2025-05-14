@@ -11,7 +11,7 @@ import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { getSettingsFolderPaths } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
+import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { PATHS } from '@src/lib/paths'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type {
@@ -69,7 +69,7 @@ export const AllSettingsFields = forwardRef(
 
     async function restartOnboarding() {
       const props = {
-        onboardingStatus: ONBOARDING_SUBPATHS.INDEX,
+        onboardingStatus: onboardingStartPath,
         navigate,
         codeManager,
         kclManager,

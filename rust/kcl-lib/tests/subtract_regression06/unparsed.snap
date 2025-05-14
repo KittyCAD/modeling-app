@@ -1,0 +1,43 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing subtract_regression06.kcl
+---
+@settings(defaultLengthUnit = in)
+
+sketch002 = startSketchOn(XY)
+
+sketch002Profile000 = startProfile(sketch002, at = [-0.48125, 3.125])
+  |> xLine(length = 0.9625)
+  |> arc(angleStart = 90, angleEnd = 11.87373, radius = 0.25)
+  |> line(end = [0.558516, -2.656385])
+  |> arc(angleStart = 11.87373, angleEnd = -192.443844, radius = 1.3125)
+  |> line(end = [0.556289, 2.52095])
+  |> arc(angleStart = 167.556156, angleEnd = 90, radius = 0.25)
+  |> xLine(length = 0.9625)
+  |> yLine(length = -0.125)
+  |> xLine(length = -0.9625)
+  |> arc(angleStart = 90, angleEnd = 167.556156, radius = 0.125)
+  |> line(end = [-0.556289, -2.52095])
+  |> arc(angleStart = -192.443844, angleEnd = 11.87373, radius = 1.1875)
+  |> line(end = [-0.558516, 2.656385])
+  |> arc(angleStart = 11.87373, angleEnd = 90, radius = 0.125)
+  |> xLine(length = -0.9625)
+  |> yLine(length = 0.125)
+  |> close()
+
+extrude000 = extrude(sketch002Profile000, length = 0.5, bidirectionalLength = 0.5)
+
+plane009 = {
+  origin = [0, 0, 0],
+  xAxis = [1, 0, 0],
+  yAxis = [0, 0, -1],
+  zAxis = [-0, 1, 0]
+}
+
+sketch003 = startSketchOn(plane009)
+
+sketch003Profile000 = circle(sketch003, center = [0, 0], radius = 0.21875)
+
+cut000Extrude = extrude([sketch003Profile000], length = 4)
+
+cut000 = subtract(extrude000, tools = cut000Extrude)

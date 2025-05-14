@@ -38,7 +38,7 @@ import { reportRejection } from '@src/lib/trap'
 import { useToken } from '@src/lib/singletons'
 import RootLayout from '@src/Root'
 import Home from '@src/routes/Home'
-import Onboarding, { onboardingRoutes } from '@src/routes/Onboarding'
+import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
 import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
@@ -102,8 +102,8 @@ const router = createRouter([
                 element: <Settings />,
               },
               {
-                path: makeUrlPathRelative(PATHS.ONBOARDING.INDEX),
-                element: <Onboarding />,
+                path: makeUrlPathRelative(PATHS.ONBOARDING),
+                element: <OnboardingRootRoute />,
                 children: onboardingRoutes,
               },
             ],

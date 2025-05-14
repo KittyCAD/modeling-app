@@ -1,0 +1,176 @@
+// Prosthetic Hip
+// A prosthetic hip is a surgically implanted ball-and-socket intended to replace a damaged or worn hip joint
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Create the femur using a series of lofts. Draw the profile for the first loft on the XY plane.
+l1 = 1
+r1 = 3
+stemLoftProfile1 = startSketchOn(XY)
+  |> startProfile(at = [-3, -l1 / 2])
+  |> yLine(length = l1, tag = $seg01)
+  |> tangentialArc(angle = -120, radius = r1)
+  |> angledLine(angle = -30, length = segLen(seg01))
+  |> tangentialArc(angle = -120, radius = r1)
+  |> angledLine(angle = 30, length = -segLen(seg01))
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Draw the second profile for the lofted femur
+l2 = 19
+r2 = 3
+stemLoftProfile2 = startSketchOn(offsetPlane(XY, offset = 75))
+  |> startProfile(at = [-8, -l2 / 2])
+  |> yLine(length = l2, tag = $seg02)
+  |> tangentialArc(angle = -120, radius = r2)
+  |> angledLine(angle = -30, length = segLen(seg02))
+  |> tangentialArc(angle = -120, radius = r2)
+  |> angledLine(angle = 30, length = -segLen(seg02))
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Draw the third profile for the lofted femur
+p3Z = 110
+p3A = 25
+plane003 = {
+  origin = [0, 0.0, p3Z],
+  xAxis = [cos(p3A), 0, sin(p3A)],
+  yAxis = [0.0, 1.0, 0.0]
+}
+l3 = 32
+r3 = 4
+stemLoftProfile3 = startSketchOn(plane003)
+  |> startProfile(at = [-15.5, -l3 / 2])
+  |> yLine(length = l3, tag = $seg03)
+  |> tangentialArc(angle = -120, radius = r3)
+  |> angledLine(angle = -30, length = segLen(seg03))
+  |> tangentialArc(angle = -120, radius = r3)
+  |> angledLine(angle = 30, length = -segLen(seg03))
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Draw the fourth profile for the lofted femur
+p4Z = 130
+p4A = 36.5
+plane004 = {
+  origin = [0, 0.0, p4Z],
+  xAxis = [cos(p4A), 0, sin(p4A)],
+  yAxis = [0.0, 1.0, 0.0]
+}
+l4 = 16
+r4 = 5
+stemLoftProfile4 = startSketchOn(plane004)
+  |> startProfile(at = [-23, -l4 / 2])
+  |> yLine(length = l4, tag = $seg04)
+  |> tangentialArc(angle = -120, radius = r4)
+  |> angledLine(angle = -30, length = segLen(seg04))
+  |> tangentialArc(angle = -120, radius = r4)
+  |> angledLine(angle = 30, length = -segLen(seg04))
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Draw the first profile for the femoral stem
+p5Z = 140
+p5A = 36.5
+plane005 = {
+  origin = [0, 0.0, p5Z],
+  xAxis = [cos(p5A), 0, sin(p5A)],
+  yAxis = [0.0, 1.0, 0.0]
+}
+l5 = 1.6
+r5 = 1.6
+stemLoftProfile5 = startSketchOn(plane005)
+  |> startProfile(at = [-19.5, -l5 / 2])
+  |> yLine(length = l5, tag = $seg05)
+  |> tangentialArc(angle = -120, radius = r5)
+  |> angledLine(angle = -30, length = segLen(seg05))
+  |> tangentialArc(angle = -120, radius = r5)
+  |> angledLine(angle = 30, length = -segLen(seg05))
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Draw the second profile for the femoral stem
+p6Z = 145
+p6A = 36.5
+plane006 = {
+  origin = [0, 0.0, p6Z],
+  xAxis = [cos(p6A), 0, sin(p6A)],
+  yAxis = [0.0, 1.0, 0.0]
+}
+l6 = 1
+r6 = 3
+stemLoftProfile6 = startSketchOn(plane006)
+  |> startProfile(at = [-23.4, -l6 / 2])
+  |> yLine(length = l6, tag = $seg06)
+  |> tangentialArc(angle = -120, radius = r6)
+  |> angledLine(angle = -30, length = segLen(seg06))
+  |> tangentialArc(angle = -120, radius = r6)
+  |> angledLine(angle = 30, length = -segLen(seg06))
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Draw the third profile for the femoral stem
+stemTab = clone(stemLoftProfile6)
+  |> extrude(%, length = 6)
+
+// Loft the femur using all profiles in sequence
+
+femur = loft([
+  stemLoftProfile1,
+  stemLoftProfile2,
+  stemLoftProfile3,
+  stemLoftProfile4
+])
+
+// Loft the femoral stem
+femoralStem = loft([
+  clone(stemLoftProfile4),
+  stemLoftProfile5,
+  stemLoftProfile6
+])
+
+// Revolve a hollow socket to represent the femoral head
+femoralHead = startSketchOn(XZ)
+  |> startProfile(at = [4, 0])
+  |> xLine(length = 1.1)
+  |> tangentialArc(angle = 90, radius = 3)
+  |> tangentialArc(angle = 90, radius = 8)
+  |> yLine(length = -1)
+  |> tangentialArc(angle = 90, radius = .1)
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(angle = 360, axis = Y)
+  |> translate(x = -16.1, z = 133)
+  |> rotate(pitch = -36.5)
+  |> appearance(color = "#d64398")
+
+// Place a polyethylene cap over the femoral head
+polyethyleneInsert = startSketchOn(XZ)
+  |> startProfile(at = [8.36, 3])
+  |> xLine(length = 0.5)
+  |> yLine(length = .1)
+  |> tangentialArc(endAbsolute = [0.1, 12.55])
+  |> yLine(length = -0.85)
+  |> xLine(length = 0.58)
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(angle = 360, axis = Y)
+  |> translate(x = -16.1, z = 133)
+  |> rotate(pitch = -36.5)
+  |> appearance(color = "#3cadd3")
+
+// Place a ceramic or metal shell over the cap
+acetabularShell = startSketchOn(XZ)
+  |> startProfile(at = [8.84, 4.7])
+  |> xLine(length = 1)
+  |> yLine(length = .5)
+  |> tangentialArc(endAbsolute = [0.1, 14])
+  |> yLine(endAbsolute = 12.56)
+  |> xLine(length = 0.1)
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(angle = 360, axis = Y)
+  |> translate(x = -16.1, z = 133)
+  |> rotate(pitch = -36.5)
+  |> appearance(color = "#a55e2c")
