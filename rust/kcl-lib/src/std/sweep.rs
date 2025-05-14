@@ -3,7 +3,7 @@
 use anyhow::Result;
 use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
-use kittycad_modeling_cmds::{self as kcmc};
+use kittycad_modeling_cmds::{self as kcmc, shared::RelativeTo};
 use schemars::JsonSchema;
 use serde::Serialize;
 
@@ -37,11 +37,20 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     )?;
     let sectional = args.get_kw_arg_opt("sectional")?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
+    let relative_to: Option<String> = args.get_kw_arg_opt_typed("relativeTo", &RuntimeType::string(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
     let value = inner_sweep(
-        sketches, path, sectional, tolerance, tag_start, tag_end, exec_state, args,
+        sketches,
+        path,
+        sectional,
+        tolerance,
+        relative_to,
+        tag_start,
+        tag_end,
+        exec_state,
+        args,
     )
     .await?;
     Ok(value.into())
@@ -158,6 +167,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         path = { docs = "The path to sweep the sketch along" },
         sectional = { docs = "If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components." },
         tolerance = { docs = "Tolerance for this operation" },
+        relative_to = { docs = "What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. Defaults to sketchPlane."},
         tag_start = { docs = "A named tag for the face at the start of the sweep, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the sweep" },
     },
@@ -169,6 +179,7 @@ async fn inner_sweep(
     path: SweepPath,
     sectional: Option<bool>,
     tolerance: Option<TyF64>,
+    relative_to: Option<String>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -177,6 +188,17 @@ async fn inner_sweep(
     let trajectory = match path {
         SweepPath::Sketch(sketch) => sketch.id.into(),
         SweepPath::Helix(helix) => helix.value.into(),
+    };
+    let relative_to = match relative_to.as_deref() {
+        Some("sketchPlane") => RelativeTo::SketchPlane,
+        Some("trajectoryCurve") => RelativeTo::TrajectoryCurve,
+        Some(_) => {
+            return Err(KclError::Syntax(crate::errors::KclErrorDetails {
+                source_ranges: vec![args.source_range],
+                message: format!("If you provide relativeTo, it must either be 'sketchPlane' or 'trajectoryCurve'"),
+            }))
+        }
+        None => RelativeTo::default(),
     };
 
     let mut solids = Vec::new();
@@ -189,6 +211,7 @@ async fn inner_sweep(
                 trajectory,
                 sectional: sectional.unwrap_or(false),
                 tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
+                relative_to,
             }),
         )
         .await?;
