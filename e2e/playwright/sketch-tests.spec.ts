@@ -1365,18 +1365,18 @@ solid001 = subtract([extrude001], tools = [extrude002])
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `fn in2mm = (inches) => {
+        `fn in2mm(@inches) {
     return inches * 25.4
   }
 
-  const railTop = in2mm(.748)
-  const railSide = in2mm(.024)
-  const railBaseWidth = in2mm(.612)
-  const railWideWidth = in2mm(.835)
-  const railBaseLength = in2mm(.200)
-  const railClampable = in2mm(.200)
+  railTop = in2mm(.748)
+  railSide = in2mm(.024)
+  railBaseWidth = in2mm(.612)
+  railWideWidth = in2mm(.835)
+  railBaseLength = in2mm(.200)
+  railClampable = in2mm(.200)
 
-  const rail = startSketchOn(XZ)
+  rail = startSketchOn(XZ)
     |> startProfile(at = [-railTop / 2, railClampable + railBaseLength])
     |> line(endAbsolute = [
      railTop / 2,
