@@ -4,9 +4,8 @@ description: Error from executing execute_engine_error_return.kcl
 ---
 KCL Engine error
 
-  × engine: Modeling command failed: [ApiError { error_code: BadRequest,
-  │ message: "The path is not closed.  Solid2D construction requires a closed
-  │ path!" }]
+  × engine: The path is not closed.  Solid2D construction requires a closed
+  │ path!
    ╭─[7:6]
  6 │   |> line(end = [-11.53311, 2.81559])
  7 │   |> extrude(length = 4)

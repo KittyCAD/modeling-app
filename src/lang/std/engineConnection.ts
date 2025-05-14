@@ -23,7 +23,7 @@ import {
   getThemeColorForEngine,
 } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { binaryToUuid, uuidv4 } from '@src/lib/utils'
+import { binaryToUuid, isArray, uuidv4 } from '@src/lib/utils'
 
 const pingIntervalMs = 1_000
 
@@ -2010,12 +2010,20 @@ export class EngineCommandManager extends EventTarget {
       return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
 
-    const resp = await this.sendCommand(id, {
-      command,
-      range,
-      idToRangeMap,
-    })
-    return BSON.serialize(resp[0])
+    try {
+      const resp = await this.sendCommand(id, {
+        command,
+        range,
+        idToRangeMap,
+      })
+      return BSON.serialize(resp[0])
+    } catch (e) {
+      if (isArray(e) && e.length > 0) {
+        return Promise.reject(JSON.stringify(e[0]))
+      }
+
+      return Promise.reject(JSON.stringify(e))
+    }
   }
   /**
    * Common send command function used for both modeling and scene commands

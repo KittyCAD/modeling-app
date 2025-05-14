@@ -223,6 +223,26 @@ impl EngineConnection {
                     message: errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
                     source_ranges: vec![source_range],
                 })
+            } else if let Ok(data) =
+                serde_json::from_str::<Vec<kittycad_modeling_cmds::websocket::FailureWebSocketResponse>>(&err_str)
+            {
+                if let Some(data) = data.first() {
+                    // It could also be an array of responses.
+                    KclError::Engine(KclErrorDetails {
+                        message: data
+                            .errors
+                            .iter()
+                            .map(|e| e.message.clone())
+                            .collect::<Vec<_>>()
+                            .join("\n"),
+                        source_ranges: vec![source_range],
+                    })
+                } else {
+                    KclError::Engine(KclErrorDetails {
+                        message: "Received empty response from engine".into(),
+                        source_ranges: vec![source_range],
+                    })
+                }
             } else {
                 KclError::Engine(KclErrorDetails {
                     message: format!("Failed to wait for promise from send modeling command: {:?}", e),

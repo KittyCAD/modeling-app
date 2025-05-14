@@ -2,18 +2,9 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing import_mesh_clone.kcl
 ---
-KCL Internal error
+KCL Engine error
 
-  × internal: failed to fix tags and references: engine: KclErrorDetails
-  │ { source_ranges: [SourceRange([60, 72, 0])], message: "Modeling command
-  │ failed: [ApiError { error_code: BadRequest, message: \"Entity type does
-  │ not currently support transform patterns.\" }, ApiError { error_code:
-  │ InternalEngine, message: \"Failed to clone entity.\" }, ApiError
-  │ { error_code: InternalEngine, message: \"Failed to clone entity\" }]" }
-   ╭─[5:10]
- 4 │ 
- 5 │ model2 = clone(model)
-   ·          ──────┬─────
-   ·                ╰── tests/import_mesh_clone/input.kcl
- 6 │     |> translate(
-   ╰────
+  × engine: Modeling command failed: websocket closed early
+    ╭────
+ 13 │     )
+    ╰────
