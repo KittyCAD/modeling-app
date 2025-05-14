@@ -100,9 +100,9 @@ test.describe('Testing loading external models', () => {
 
       // Locators and constants
       const sampleOne = {
-        file: 'pillow-block-bearing' + FILE_EXT,
-        title: 'Pillow Block Bearing',
-        file1: 'pillow-block-bearing-1' + FILE_EXT,
+        file: 'ball-bearing' + FILE_EXT,
+        title: 'Ball Bearing',
+        file1: 'ball-bearing-1' + FILE_EXT,
       }
       const projectCard = page.getByRole('link', { name: 'bracket' })
       const overwriteWarning = page.getByText(
