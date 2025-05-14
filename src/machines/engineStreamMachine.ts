@@ -1,4 +1,3 @@
-import { engineCommandManager } from '@src/lib/singletons'
 import type { MutableRefObject } from 'react'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
@@ -246,7 +245,7 @@ export const engineStreamMachine = setup({
                 context.videoRef.current.srcObject = null
               }
 
-              engineCommandManager.tearDown({ idleMode: true })
+              rootContext.engineCommandManager.tearDown({ idleMode: true })
             })()
         )
       }
