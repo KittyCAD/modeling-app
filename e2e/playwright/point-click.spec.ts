@@ -4943,4 +4943,41 @@ path001 = startProfile(sketch001, at = [0, 0])
       )
     })
   })
+
+  test(`Point and click codemods can't run on KCL errors`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const badCode = `sketch001 = startSketchOn(XZ)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001 length = 1)`
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, badCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await expect(toolbar.startSketchBtn).toBeEnabled()
+
+    await test.step(`Clicking on Start Sketch doesn't clear the bad code and we see an error`, async () => {
+      await toolbar.startSketchBtn.click()
+      await page.mouse.click(700, 200) // default plane
+      await expect(page.getByText('KCL errors detected')).toBeVisible()
+      await editor.expectEditor.toContain(badCode, { shouldNormalise: true })
+    })
+
+    await test.step(`Running the Helix command doesn't clear the bad code and we see an error`, async () => {
+      await toolbar.helixButton.click()
+      for (const _ of Array(7)) {
+        await cmdBar.progressCmdBar()
+      }
+      await expect(page.getByText('KCL errors detected')).toBeVisible()
+      await editor.expectEditor.toContain(badCode, { shouldNormalise: true })
+    })
+  })
 })
