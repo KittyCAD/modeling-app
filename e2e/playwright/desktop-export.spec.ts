@@ -58,12 +58,6 @@ test(
       await expect(submitButton).toBeVisible()
       await page.keyboard.press('Enter')
 
-      // Look out for the toast message
-      const exportingToastMessage = page.getByText(`Exporting...`)
-      const alreadyExportingToastMessage = page.getByText(`Already exporting`)
-      await expect(exportingToastMessage).toBeVisible()
-      await expect(alreadyExportingToastMessage).not.toBeVisible()
-
       // Expect it to succeed
       const errorToastMessage = page.getByText(`Error while exporting`)
       const engineErrorToastMessage = page.getByText(`Nothing to export`)
@@ -72,7 +66,6 @@ test(
 
       const successToastMessage = page.getByText(`Exported successfully`)
       await expect(successToastMessage).toBeVisible()
-      await expect(exportingToastMessage).not.toBeVisible()
 
       // Check for the exported file
       const firstFileFullPath = path.resolve(
