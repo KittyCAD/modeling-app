@@ -3092,3 +3092,24 @@ mod error_revolve_on_edge_get_edge {
         super::execute(TEST_NAME, true).await
     }
 }
+mod mirror_sketch_extrude_2_artifacts {
+    const TEST_NAME: &str = "mirror_sketch_extrude_2_artifacts";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
