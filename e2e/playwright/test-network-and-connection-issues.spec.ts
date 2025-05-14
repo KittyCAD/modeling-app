@@ -269,17 +269,19 @@ profile001 = startProfile(sketch001, at = [12.34, -12.34])
 
     test(
       'Paused stream freezes view frame, unpause reconnect is seamless to user',
-      { tag: '@skipLocalEngine' },
+      { tag: ['@electron','@skipLocalEngine'] },
       async ({ page, homePage, scene, cmdBar, toolbar, tronApp }) => {
         const networkToggle = page.getByTestId('network-toggle')
         const networkToggleConnectedText = page.getByText('Connected')
         const networkToggleWeakText = page.getByText('Network health (Weak)')
 
+        if (!tronApp) {
+          fail()
+        }
+
         await tronApp.cleanProjectDir({
           app: {
-            appearance: {
-              streamIdleMode: 5000,
-            },
+            streamIdleMode: 5000,
           },
         })
 
