@@ -158,10 +158,14 @@ extrude001 = extrude(sketch001, length = 5)`
     await expect(
       page
         .getByText(
-          'Modeling command failed: [ApiError { error_code: InternalEngine, message: "Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis" }]'
+          'Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis'
         )
         .first()
     ).toBeVisible()
+
+    // Make sure ApiError is not on the page.
+    // This ensures we didn't nest the json
+    await expect(page.getByText('ApiError')).not.toBeVisible()
   })
 
   test('When error is not in view WITH LINTS you can click the badge to scroll to it', async ({

@@ -177,25 +177,6 @@ async fn get_old_new_child_map(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<HashMap<uuid::Uuid, uuid::Uuid>> {
-    // Get the new geometries entity ids.
-    let response = args
-        .send_modeling_cmd(
-            exec_state.next_uuid(),
-            ModelingCmd::from(mcmd::EntityGetAllChildUuids {
-                entity_id: new_geometry_id,
-            }),
-        )
-        .await?;
-    let OkWebSocketResponseData::Modeling {
-        modeling_response:
-            OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
-                entity_ids: new_entity_ids,
-            }),
-    } = response
-    else {
-        anyhow::bail!("Expected EntityGetAllChildUuids response, got: {:?}", response);
-    };
-
     // Get the old geometries entity ids.
     let response = args
         .send_modeling_cmd(
@@ -209,6 +190,25 @@ async fn get_old_new_child_map(
         modeling_response:
             OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
                 entity_ids: old_entity_ids,
+            }),
+    } = response
+    else {
+        anyhow::bail!("Expected EntityGetAllChildUuids response, got: {:?}", response);
+    };
+
+    // Get the new geometries entity ids.
+    let response = args
+        .send_modeling_cmd(
+            exec_state.next_uuid(),
+            ModelingCmd::from(mcmd::EntityGetAllChildUuids {
+                entity_id: new_geometry_id,
+            }),
+        )
+        .await?;
+    let OkWebSocketResponseData::Modeling {
+        modeling_response:
+            OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
+                entity_ids: new_entity_ids,
             }),
     } = response
     else {

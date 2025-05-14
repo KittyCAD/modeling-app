@@ -1669,7 +1669,6 @@ mod mike_stress_test {
 
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
-    #[ignore = "when kurt made the artifact graph lots of commands, this became super slow and sometimes the engine will just die, turn this back on when we can parallelize the simulation tests with snapshots deterministically"]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }
@@ -2772,6 +2771,7 @@ mod clone_w_fillets {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     #[ignore] // turn on when https://github.com/KittyCAD/engine/pull/3380 is merged
+              // Theres also a test in clone.rs you need to turn too
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }
@@ -3052,6 +3052,27 @@ mod basic_revolve_circle {
 }
 mod error_inside_fn_also_has_source_range_of_call_site_recursive {
     const TEST_NAME: &str = "error_inside_fn_also_has_source_range_of_call_site_recursive";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod error_revolve_on_edge_get_edge {
+    const TEST_NAME: &str = "error_revolve_on_edge_get_edge";
 
     /// Test parsing KCL.
     #[test]

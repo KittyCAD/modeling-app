@@ -954,36 +954,6 @@ sketch001 = startSketchOn(box, face = END)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_revolve_on_edge_get_edge() {
-    let code = r#"box = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [0, 10])
-  |> line(end = [10, 0])
-  |> line(end = [0, -10], tag = $revolveAxis)
-  |> close()
-  |> extrude(length = 10)
-
-sketch001 = startSketchOn(box, face = revolveAxis)
-  |> startProfile(at = [5, 10])
-  |> line(end = [0, -10])
-  |> line(end = [2, 0])
-  |> line(end = [0, 10])
-  |> close()
-  |> revolve(axis = revolveAxis, angle = 90)
-
-"#;
-
-    let result = execute_and_snapshot(code, None).await;
-
-    result.unwrap_err();
-    //this fails right now, but slightly differently, lets just say its enough for it to fail - mike
-    //assert_eq!(
-    //    result.err().unwrap().to_string(),
-    //    r#"engine: KclErrorDetails { source_ranges: [SourceRange([346, 390, 0])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis\" }]" }"#
-    //);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_on_face_circle_edge() {
     let code = r#"box = startSketchOn(XY)
   |> startProfile(at = [0, 0])
