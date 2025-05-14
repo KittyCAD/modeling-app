@@ -157,12 +157,12 @@ description: Variables in memory after executing countersunk-plate.kcl
               -0.0
             ],
             "from": [
-              2.7737,
+              2.7738,
               0.6983
             ],
             "tag": null,
             "to": [
-              2.7738,
+              2.7737,
               -0.6983
             ],
             "type": "TangentialArc",
