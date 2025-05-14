@@ -29,15 +29,9 @@ import { useSelector } from '@xstate/react'
 import type { MouseEventHandler } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useRouteLoaderData } from 'react-router-dom'
-import { isPlaywright } from '@src/lib/isPlaywright'
-import {
-  engineStreamZoomToFit,
-  engineViewIsometricWithGeometryPresent,
-  engineViewIsometricWithoutGeometryPresent,
-} from '@src/lib/utils'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 export const EngineStream = (props: {
   pool: string | null
@@ -104,31 +98,7 @@ export const EngineStream = (props: {
 
     kmp
       .then(async () => {
-        // Gotcha: Playwright E2E tests will be zoom_to_fit, when you try to recreate the e2e test manually
-        // your localhost will do view_isometric. Turn this boolean on to have the same experience when manually
-        // debugging e2e tests
-
-        // We need a padding of 0.1 for zoom_to_fit for all E2E tests since they were originally
-        // written with zoom_to_fit with padding 0.1
-        const padding = 0.1
-        if (isPlaywright()) {
-          await engineStreamZoomToFit({ engineCommandManager, padding })
-        } else {
-          // If the scene is empty you cannot use view_isometric, it will not move the camera
-          if (kclManager.isAstBodyEmpty(kclManager.ast)) {
-            await engineViewIsometricWithoutGeometryPresent({
-              engineCommandManager,
-              unit:
-                kclManager.fileSettings.defaultLengthUnit ||
-                DEFAULT_DEFAULT_LENGTH_UNIT,
-            })
-          } else {
-            await engineViewIsometricWithGeometryPresent({
-              engineCommandManager,
-              padding,
-            })
-          }
-        }
+        await resetCameraPosition()
 
         if (project && project.path) {
           createThumbnailPNGOnDesktop({
