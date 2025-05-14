@@ -1362,6 +1362,8 @@ export const modelingMachine = setup({
   },
   // end actions
   actors: {
+    /* Below are all the do-constrain sketch actors,
+     * which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
     'do-constrain-remove-constraint': fromPromise(
       async ({
         input: { selectionRanges, sketchDetails, data },
@@ -1699,6 +1701,9 @@ export const modelingMachine = setup({
         }
       }
     ),
+
+    /* Below are actors being defined in src/components/ModelingMachineProvider.tsx
+     * which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
     'Get vertical info': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
@@ -1780,6 +1785,82 @@ export const modelingMachine = setup({
         return {} as SetSelections
       }
     ),
+    'set-up-draft-circle': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: [x: number, y: number]
+        }
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'set-up-draft-circle-three-point': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: { p1: [x: number, y: number]; p2: [x: number, y: number] }
+        }
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'set-up-draft-rectangle': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: [x: number, y: number]
+        }
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'set-up-draft-center-rectangle': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: [x: number, y: number]
+        }
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'set-up-draft-arc': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: [x: number, y: number]
+        }
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'set-up-draft-arc-three-point': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: [x: number, y: number]
+        }
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'setup-client-side-sketch-segments': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails' | 'selectionRanges'>
+      }) => {
+        return undefined
+      }
+    ),
+    'split-sketch-pipe-if-needed': fromPromise(
+      async (_: { input: Pick<ModelingMachineContext, 'sketchDetails'> }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'submit-prompt-edit': fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Prompt-to-edit']
+      }) => {}
+    ),
+
+    /* Below are recent modeling codemods that are using updateModelinState,
+     * trigger toastError on Error, and have the 'no kcl errors' guard yet */
     extrudeAstMod: fromPromise(
       async ({
         input,
@@ -2589,79 +2670,6 @@ export const modelingMachine = setup({
         })
       }
     ),
-    'set-up-draft-circle': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: [x: number, y: number]
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'set-up-draft-circle-three-point': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: { p1: [x: number, y: number]; p2: [x: number, y: number] }
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'set-up-draft-rectangle': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: [x: number, y: number]
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'set-up-draft-center-rectangle': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: [x: number, y: number]
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'set-up-draft-arc': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: [x: number, y: number]
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'set-up-draft-arc-three-point': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: [x: number, y: number]
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'setup-client-side-sketch-segments': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails' | 'selectionRanges'>
-      }) => {
-        return undefined
-      }
-    ),
-    'split-sketch-pipe-if-needed': fromPromise(
-      async (_: { input: Pick<ModelingMachineContext, 'sketchDetails'> }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'submit-prompt-edit': fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['Prompt-to-edit']
-      }) => {}
-    ),
     deleteSelectionAstMod: fromPromise(
       ({
         input: { selectionRanges },
@@ -3062,6 +3070,8 @@ export const modelingMachine = setup({
         })
       }
     ),
+
+    /* Pierre: looks like somewhat of a one-off */
     'reeval-node-paths': fromPromise(
       async ({
         input: { sketchDetails },
