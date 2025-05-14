@@ -251,12 +251,10 @@ extrude001 = extrude(sketch001, length = 50)
     shell(exampleSketch, faces = ['end'], thickness = 0.25)`
       )
     })
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
 
     await expect(async () => {
-      await homePage.goToModelingScene()
-      // await u.waitForPageLoad()
-      await scene.connectionEstablished()
-
       // error in guter
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
         timeout: 1_000,

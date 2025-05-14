@@ -580,8 +580,7 @@ export const modelingMachine = setup({
     'has valid selection for deletion': () => false,
     'is-error-free': () => false,
     'no kcl errors': () => {
-      const hasErrors = kclManager.hasErrors()
-      return !hasErrors
+      return !kclManager.hasErrors()
     },
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
       isEditingExistingSketch({ sketchDetails }),

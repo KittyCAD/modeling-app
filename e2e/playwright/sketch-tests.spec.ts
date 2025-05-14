@@ -3554,9 +3554,6 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
 
     await toolbar.openFile('error.kcl')
 
-    // Ensure filetree is populated
-    // await scene.settled(cmdBar)
-
     await expect(
       toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
     ).toHaveCount(0)
