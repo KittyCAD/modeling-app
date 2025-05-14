@@ -165,7 +165,7 @@ extrude001 = extrude(sketch001, length = 5)`
 
     // Make sure ApiError is not on the page.
     // This ensures we didn't nest the json
-    expect(page.getByText('ApiError')).not.toBeVisible()
+    await expect(page.getByText('ApiError')).not.toBeVisible()
   })
 
   test('When error is not in view WITH LINTS you can click the badge to scroll to it', async ({

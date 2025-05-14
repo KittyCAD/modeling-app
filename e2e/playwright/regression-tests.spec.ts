@@ -55,7 +55,7 @@ test.describe('Regression tests', () => {
 Internal engine error on request`
     await expect(page.getByText(crypticErrorText).first()).toBeVisible()
     // Ensure we didn't nest the json.
-    expect(page.getByText('ApiError')).not.toBeVisible()
+    await expect(page.getByText('ApiError')).not.toBeVisible()
   })
   test('user should not have to press down twice in cmdbar', async ({
     page,
