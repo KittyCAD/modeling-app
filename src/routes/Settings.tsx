@@ -17,7 +17,13 @@ import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 export const Settings = () => {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const close = () => navigate(location.pathname.replace(PATHS.SETTINGS, ''))
+  const close = () => {
+    // This makes sure input texts are saved before closing the dialog (eg. default project name).
+    if (document.activeElement instanceof HTMLInputElement) {
+      document.activeElement.blur()
+    }
+    navigate(location.pathname.replace(PATHS.SETTINGS, ''))
+  }
   const location = useLocation()
   const isFileSettings = location.pathname.includes(PATHS.FILE)
   const searchParamTab =
@@ -26,6 +32,8 @@ export const Settings = () => {
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const dotDotSlash = useDotDotSlash()
+
+  // Does this ever run?
   useHotkeys('esc', () => navigate(dotDotSlash()))
 
   // Scroll to the hash on load if it exists
