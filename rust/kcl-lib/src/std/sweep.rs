@@ -167,7 +167,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         path = { docs = "The path to sweep the sketch along" },
         sectional = { docs = "If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components." },
         tolerance = { docs = "Tolerance for this operation" },
-        relative_to = { docs = "What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. Defaults to sketchPlane."},
+        relative_to = { docs = "What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. Defaults to trajectoryCurve."},
         tag_start = { docs = "A named tag for the face at the start of the sweep, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the sweep" },
     },
