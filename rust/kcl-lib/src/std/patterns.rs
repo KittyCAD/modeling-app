@@ -598,7 +598,7 @@ fn array_to_point2d(
         .map(|val| val.as_point2d().unwrap())
 }
 
-trait GeometryTrait: Clone {
+pub trait GeometryTrait: Clone {
     type Set: Into<Vec<Self>> + Clone;
     fn id(&self) -> Uuid;
     fn original_id(&self) -> Uuid;
@@ -641,6 +641,8 @@ impl GeometryTrait for Solid {
     type Set = Vec<Solid>;
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
+        // We need this for in extrude.rs when you sketch on face.
+        self.sketch.id = id;
     }
 
     fn id(&self) -> Uuid {
