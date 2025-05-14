@@ -567,7 +567,6 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
 }
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
-const KCL_ERRORS_MESSAGE = 'KCL errors detected, please fix them first'
 
 export const modelingMachine = setup({
   types: {
