@@ -87,11 +87,6 @@ async fn inner_clone(
     args.batch_modeling_cmd(new_id, ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }))
         .await?;
 
-    if let GeometryWithImportedGeometry::ImportedGeometry(..) = &geometry {
-        // Return early we don't need to fix references.
-        return Ok(new_geometry);
-    }
-
     fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
         .await
         .map_err(|e| {
