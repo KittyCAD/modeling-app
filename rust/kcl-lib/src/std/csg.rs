@@ -14,7 +14,7 @@ use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{types::RuntimeType, ExecState, KclValue, Solid},
-    std::Args,
+    std::{patterns::GeometryTrait, Args},
 };
 
 /// Union two or more solids into a single solid.
@@ -123,7 +123,7 @@ pub(crate) async fn inner_union(
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
-    solid.id = solid_out_id;
+    solid.set_id(solid_out_id);
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
@@ -155,7 +155,7 @@ pub(crate) async fn inner_union(
 
     // If we have more solids, set those as well.
     if !extra_solid_ids.is_empty() {
-        solid.id = extra_solid_ids[0];
+        solid.set_id(extra_solid_ids[0]);
         new_solids.push(solid.clone());
     }
 
@@ -249,7 +249,7 @@ pub(crate) async fn inner_intersect(
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
-    solid.id = solid_out_id;
+    solid.set_id(solid_out_id);
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
@@ -281,7 +281,7 @@ pub(crate) async fn inner_intersect(
 
     // If we have more solids, set those as well.
     if !extra_solid_ids.is_empty() {
-        solid.id = extra_solid_ids[0];
+        solid.set_id(extra_solid_ids[0]);
         new_solids.push(solid.clone());
     }
 
@@ -385,7 +385,7 @@ pub(crate) async fn inner_subtract(
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
-    solid.id = solid_out_id;
+    solid.set_id(solid_out_id);
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
@@ -419,7 +419,7 @@ pub(crate) async fn inner_subtract(
 
     // If we have more solids, set those as well.
     if !extra_solid_ids.is_empty() {
-        solid.id = extra_solid_ids[0];
+        solid.set_id(extra_solid_ids[0]);
         new_solids.push(solid.clone());
     }
 
