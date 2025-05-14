@@ -1,0 +1,50 @@
+// Plate with countersunk holes
+// A small mounting plate with a countersunk hole at each end
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+boltSpacing = 5
+boltDiameter = 1 / 4
+centerHoleDiameter = 1 + 3 / 4
+plateThickness = 0.375
+
+// Check that the plate is thick enough to countersink a hole
+// assertGreaterThan(plateThickness, boltDiameter, "This plate is not thick enough for the necessary countersink dimensions")
+
+// A bit of math to calculate the tangent line between the two diameters
+r1 = centerHoleDiameter / 2 * 1.5 + .35
+r2 = boltDiameter * 2 + .25
+d = boltSpacing / 2
+tangentAngle = asin((r1 - r2) / d)
+tangentLength = (r1 - r2) / tan(tangentAngle)
+
+plateBody = startSketchOn(XY)
+  // Use polar coordinates to start the sketch at the tangent point of the larger radius
+  |> startProfile(at = polar(angle = 90 - tangentAngle, length = r1))
+  |> angledLine(angle = -tangentAngle, length = tangentLength)
+  |> tangentialArc(radius = r2, angle = (tangentAngle - 90) * 2)
+  |> angledLine(angle = tangentAngle, length = -tangentLength)
+  |> tangentialArc(radius = r1, angle = -tangentAngle * 2)
+  |> angledLine(angle = -tangentAngle, length = -tangentLength)
+  |> tangentialArc(radius = r2, angle = (tangentAngle - 90) * 2)
+  |> angledLine(angle = tangentAngle, length = tangentLength)
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> subtract2d(tool = circle(center = [0, 0], radius = centerHoleDiameter / 2 * 1.5))
+  |> extrude(%, length = plateThickness)
+
+// Function to create a countersunk hole
+fn countersink(@holePosition) {
+  startSketchOn(plateBody, face = END)
+    |> circle(center = [holePosition, 0], radius = boltDiameter / 2, tag = $hole01)
+    |> extrude(length = -plateThickness)
+    // Use a chamfer to create a 90-degree countersink
+    |> chamfer(length = boltDiameter, tags = [hole01])
+  return {  }
+}
+
+// Place a countersunk hole at each bolt hole position
+countersink(-boltSpacing / 2)
+countersink(boltSpacing / 2)

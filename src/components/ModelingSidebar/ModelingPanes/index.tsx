@@ -1,5 +1,4 @@
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { faBugSlash } from '@fortawesome/free-solid-svg-icons'
 import type { MouseEventHandler, ReactNode } from 'react'
 import type { ContextFrom } from 'xstate'
 
@@ -230,14 +229,14 @@ export const sidebarPanes: SidebarPane[] = [
   },
   {
     id: 'debug',
-    icon: faBugSlash,
+    icon: 'bug',
     sidebarName: 'Debug',
     Content: (props: { id: SidebarType; onClose: () => void }) => {
       return (
         <>
           <ModelingPaneHeader
             id={props.id}
-            icon={faBugSlash}
+            icon="bug"
             title="Debug"
             Menu={null}
             onClose={props.onClose}

@@ -1,0 +1,9 @@
+fn someFunction(@something) {
+    fn someNestedFunction(@something2) {
+        startSketchOn(something2)
+    }
+
+    someNestedFunction(something)
+}
+
+someFunction('INVALID')

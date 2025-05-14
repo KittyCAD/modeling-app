@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
@@ -42,6 +42,7 @@ import {
   ONBOARDING_TOAST_ID,
   TutorialRequestToast,
 } from '@src/routes/Onboarding/utils'
+import { reportRejection } from '@src/lib/trap'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -52,6 +53,7 @@ maybeWriteToDisk()
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
+  const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
   useCreateFileLinkQuery((argDefaultValues) => {
@@ -145,12 +147,25 @@ export function App() {
     }
   }, [location, settings.app.onboardingStatus, navigate])
 
+  // Only create the native file menus on desktop
+  useEffect(() => {
+    if (isDesktop()) {
+      window.electron
+        .createModelingPageMenu()
+        .then(() => {
+          setNativeFileMenuCreated(true)
+        })
+        .catch(reportRejection)
+    }
+  }, [])
+
   return (
     <div className="relative h-full flex flex-col" ref={ref}>
       <AppHeader
         className="transition-opacity transition-duration-75"
         project={{ project, file }}
         enableMenu={true}
+        nativeFileMenuCreated={nativeFileMenuCreated}
       >
         <CommandBarOpenButton />
         <ShareButton />

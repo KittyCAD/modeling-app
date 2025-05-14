@@ -1,114 +1,103 @@
+@settings(defaultLengthUnit = mm)
+
 @(lengthUnit = m)
 import "../../e2e/executor/inputs/2-5-long-m8-chc-screw.stl" as screw
 
-// Set units
-@settings(defaultLengthUnit = mm)
-
 myScrew = screw
 
+// Define a function to create a helical gear
+fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
+  // Calculate gear parameters
+  pitchDiameter = module * nTeeth
+  addendum = module
+  deddendum = 1.25 * module
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  tipDiameter = pitchDiameter + 2 * module
 
-surface001 = startSketchOn(XY)
+  // Define the constants of the keyway and the bore hole
+  keywayWidth = 2
+  keywayDepth = keywayWidth / 2
+  holeDiam = 7
+  holeRadius = holeDiam / 2
+  startAngle = asin(keywayWidth / 2 / holeRadius)
 
-// Define parameters
-nTeeth = 21
-module = 0.5
-pitchDiameter = module * nTeeth
-pressureAngle = 20
-addendum = module
-deddendum = 1.25 * module
-baseDiameter = pitchDiameter * cos(pressureAngle)
-tipDiameter = pitchDiameter + 2 * module
-gearHeight = 3
+  // Sketch the keyway and center hole
+  holeWithKeyway = startSketchOn(XY)
+    |> startProfile(at = [
+         holeRadius * cos(startAngle),
+         holeRadius * sin(startAngle)
+       ])
+    |> xLine(length = keywayDepth)
+    |> yLine(length = -keywayWidth)
+    |> xLine(length = -keywayDepth)
+    |> arc(angleStart = -1 * startAngle + 360, angleEnd = 180, radius = holeRadius)
+    |> arc(angleStart = 180, angleEnd = startAngle, radius = holeRadius)
+    |> close()
 
-// Interpolate points along the involute curve
-cmo = 101
-rs = map([0..cmo], f = fn(@i) {
-  return baseDiameter / 2 + i / cmo * (tipDiameter - baseDiameter) / 2
-})
+  // Define a function to create a rotated gear sketch on an offset plane
+  fn helicalGearSketch(offsetHeight) {
+    // Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height
+    helixCalc = acos(offsetHeight * tan(helixAngle) / (tipDiameter / 2))
 
-// Calculate operating pressure angle
-angles = map(rs, f = fn(@r) {
-  return units::toDegrees(  acos(baseDiameter / 2 / r))
-})
+    // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
+    helicalGearSketch = startSketchOn(offsetPlane(XY, offset = offsetHeight))
+      |> startProfile(at = polar(angle = helixCalc, length = baseDiameter / 2))
+      |> involuteCircular(
+           startRadius = baseDiameter / 2,
+           endRadius = tipDiameter / 2,
+           angle = helixCalc,
+           tag = $seg01,
+         )
+      |> line(endAbsolute = polar(angle = 160 / nTeeth + helixCalc, length = tipDiameter / 2))
+      |> involuteCircular(
+           startRadius = baseDiameter / 2,
+           endRadius = tipDiameter / 2,
+           angle = -(4 * atan(segEndY(seg01) / segEndX(seg01)) - (3 * helixCalc)),
+           reverse = true,
+         )
 
-// Calculate the involute function
-invas = map(angles, f = fn(@a) {
-  return tan(units::toRadians(a)) - units::toRadians(a)
-})
+      // Position the end line of the sketch at the start of the next tooth
+      |> line(endAbsolute = polar(angle = 360 / nTeeth + helixCalc, length = baseDiameter / 2))
 
-// Map the involute curve
-xs = map([0..cmo], f = fn(@i) {
-  return rs[i] * cos(invas[i]: number(rad))
-})
+      // Pattern the sketch about the center by the specified number of teeth, then close the sketch
+      |> patternCircular2d(
+           %,
+           instances = nTeeth,
+           center = [0, 0],
+           arcDegrees = 360,
+           rotateDuplicates = true,
+         )
+      |> close()
+      |> subtract2d(tool = holeWithKeyway)
+    return helicalGearSketch
+  }
 
-ys = map([0..cmo], f = fn(@i) {
-  return rs[i] * sin(invas[i]: number(rad))
-})
+  // Draw a gear sketch on the base plane
+  gearSketch001 = helicalGearSketch(offsetHeight = 0)
 
-// Extrude the gear body
-body = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = baseDiameter / 2)
-  |> extrude(length = gearHeight)
+  // Draw a rotated gear sketch on a middle interstitial plane
+  gearSketch002 = helicalGearSketch(offsetHeight = gearHeight / 2)
 
-toothAngle = 360 / nTeeth / 1.5
+  // Draw a rotated gear sketch at the gear height offset plane
+  gearSketch003 = helicalGearSketch(offsetHeight = gearHeight)
 
-// Plot the involute curve
-fn leftInvolute(@i, accum) {
-  j = 100 - i // iterate backwards
-  return line(accum, endAbsolute = [xs[j], ys[j]])
+  // Loft each rotated gear sketch together to form a helical gear
+  helicalGear = loft([
+    gearSketch001,
+    gearSketch002,
+    gearSketch003
+  ])
+
+  return helicalGear
 }
 
-fn rightInvolute(@i, accum) {
-  x = rs[i] * cos(-toothAngle + units::toDegrees(atan(ys[i] / xs[i])))
-  y = -rs[i] * sin(-toothAngle + units::toDegrees(atan(ys[i] / xs[i])))
-  return line(accum, endAbsolute = [x, y])
-}
-
-// Draw gear teeth
-start = startSketchOn(XY)
-  |> startProfile(at = [xs[101], ys[101]])
-teeth = reduce([0..100], initial = start, f = leftInvolute)
-  |> arc(
-       angleStart = 0,
-       angleEnd = toothAngle,
-       radius = baseDiameter / 2,
-     )
-  |> reduce([1..101], initial = %, f = rightInvolute)
-  |> close()
-  |> extrude(length = gearHeight)
-  |> patternCircular3d(
-       axis = [0, 0, 1],
-       center = [0, 0, 0],
-       instances = nTeeth,
-       arcDegrees = 360,
-       rotateDuplicates = true,
-     )
-
-// Define the constants of the keyway and the bore hole
-keywayWidth = 0.250
-keywayDepth = keywayWidth / 2
-holeDiam = 2
-holeRadius = 1
-startAngle = asin(keywayWidth / 2 / holeRadius)
-
-// Sketch the keyway and center hole and extrude
-keyWay = startSketchOn(body, face = END)
-  |> startProfile(at = [holeRadius * cos(startAngle), holeRadius * sin(startAngle)])
-  |> xLine(length = keywayDepth)
-  |> yLine(length = -keywayWidth)
-  |> xLine(length = -keywayDepth)
-  |> arc(
-       angleStart = -1 * units::toDegrees(startAngle) + 360,
-       angleEnd = 180,
-       radius = holeRadius,
-     )
-  |> arc(
-       angleStart = 180,
-       angleEnd = units::toDegrees(startAngle),
-       radius = holeRadius,
-     )
-  |> close()
-  |> extrude(length = -gearHeight)
+helicalGear(
+  nTeeth = 21,
+  module = 2,
+  pressureAngle = 20,
+  helixAngle = 35,
+  gearHeight = 7,
+)
 
 myScrew
   |> translate(y=10)

@@ -191,7 +191,7 @@ export const systemIOMachine = setup({
           ('error' in event &&
             event.error instanceof Error &&
             event.error.message) ||
-          ''
+          'Unknown error in SystemIOMachine'
       )
     },
     [SystemIOMachineActions.setReadWriteProjectDirectory]: assign({

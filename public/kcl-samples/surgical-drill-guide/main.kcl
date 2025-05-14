@@ -1,0 +1,116 @@
+// Surgical Drill Guide
+// A surgical drill guide is a tool used in medical procedures to assist in drilling holes to a desired depth, ensuring proper orientation and minimizing intraosseal pressure
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+handleLength = 150
+handleWidth = 30
+stockThickness = 6
+bendRadius = stockThickness * 1.25
+bitSize01 = 2
+bitSize02 = 3.2
+bitLength = 45
+
+// Model a small sheet metal bracket to represent the handle of the drill guide
+bracket = startSketchOn(YZ)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = handleLength, tag = $seg02)
+  |> yLine(length = stockThickness, tag = $seg06)
+  |> xLine(length = -segLen(seg02), tag = $seg04)
+  |> tangentialArc(angle = -60, radius = bendRadius, tag = $seg01)
+  |> angledLine(angle = tangentToEnd(seg01), length = handleLength / 3, tag = $seg03)
+  |> angledLine(angle = tangentToEnd(seg01) + 90, length = stockThickness, tag = $seg05)
+  |> angledLine(angle = segAng(seg03) + 180, length = segLen(seg03), tag = $seg07)
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(
+       length = handleWidth,
+       symmetric = true,
+       tagEnd = $capEnd001,
+       tagStart = $capStart001,
+     )
+
+// Create a cut in the bracket to mount the first bit
+bitCut01 = startSketchOn(XZ)
+  |> circle(center = [0, segEndY(seg03) + .1], radius = handleWidth / 1.9)
+  |> extrude(length = 100)
+
+// Create a cut in the bracket to mount the second bit
+bitCut02 = startSketchOn(offsetPlane(XY, offset = 35))
+  |> circle(center = [0, segEndX(seg02)], radius = handleWidth / 1.9)
+  |> extrude(length = -100)
+
+// Cut the bracket
+handle = subtract([bracket], tools = union([bitCut01, bitCut02]))
+
+// Model the support for the first drill bit
+bitSupport01 = startSketchOn(offsetPlane(XZ, offset = -segEndX(seg03) - 3))
+  |> circle(center = [0, segEndY(seg03) + .1], radius = handleWidth / 1.9)
+  |> extrude(length = -15, symmetric = true)
+
+// Model the stem for the first drill bit
+stem01 = startSketchOn(bitSupport01, face = END)
+  |> circle(center = [0, segEndY(seg03) + .1], radius = bitSize01, tag = $seg10)
+  |> extrude(length = bitLength, tagEnd = $capEnd004)
+  |> chamfer(
+       length = bitSize01 / 3,
+       tags = [
+         getCommonEdge(faces = [seg10, capEnd004])
+       ],
+     )
+
+// Negative extrude the clearance hole for the first drill bit
+bitClearance01 = startSketchOn(stem01, face = END)
+  |> circle(center = [0, segEndY(seg03) + .1], radius = bitSize01 / 2)
+  |> extrude(length = -15 - bitLength)
+
+// Model a rotating grip for the first drill bit
+grip01 = startSketchOn(offsetPlane(XZ, offset = -segEndX(seg03) + 16))
+  |> circle(center = [0, segEndY(seg03) + .1], radius = handleWidth / 1.85, tag = $seg11)
+  |> subtract2d(tool = circle(center = [0, segEndY(seg03) + .1], radius = bitSize01))
+  |> extrude(length = -10, tagEnd = $capEnd005, tagStart = $capStart003)
+  |> fillet(
+       radius = 1,
+       tags = [
+         getCommonEdge(faces = [seg11, capEnd005]),
+         getCommonEdge(faces = [seg11, capStart003])
+       ],
+     )
+  |> appearance(color = "#af7b23")
+
+// Model the support for the second drill bit
+bitSupport02 = startSketchOn(offsetPlane(XY, offset = -2))
+  |> circle(center = [0, segEndX(seg02)], radius = handleWidth / 1.9)
+  |> extrude(length = 15)
+
+// Model the stem for the second drill bit
+stem02 = startSketchOn(bitSupport02, face = START)
+  |> circle(center = [0, segEndX(seg02)], radius = bitSize02, tag = $seg09)
+  |> extrude(length = bitLength, tagEnd = $capEnd003)
+  |> chamfer(
+       length = bitSize02 / 3,
+       tags = [
+         getCommonEdge(faces = [seg09, capEnd003])
+       ],
+     )
+
+// Negative extrude the clearance hole for the second drill bit
+bitClearance02 = startSketchOn(stem02, face = END)
+  |> circle(center = [0, segEndX(seg02)], radius = bitSize02 / 2)
+  |> extrude(length = -15 - bitLength)
+
+// Model a rotating grip for the second drill bit
+grip02 = startSketchOn(offsetPlane(XY, offset = -3))
+  |> circle(center = [0, segEndX(seg02)], radius = handleWidth / 1.85, tag = $seg08)
+  |> subtract2d(tool = circle(center = [0, segEndX(seg02)], radius = bitSize02))
+  |> extrude(length = -10, tagStart = $capStart002, tagEnd = $capEnd002)
+  |> fillet(
+       radius = 1,
+       tags = [
+         getCommonEdge(faces = [seg08, capStart002]),
+         getCommonEdge(faces = [seg08, capEnd002])
+       ],
+     )
+  |> appearance(color = "#23af93")

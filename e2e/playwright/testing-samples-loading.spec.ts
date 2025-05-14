@@ -33,8 +33,8 @@ test.describe('Testing loading external models', () => {
 
       // Locators and constants
       const newSample = {
-        file: 'parametric-bearing-pillow-block' + FILE_EXT,
-        title: 'Parametric Bearing Pillow Block',
+        file: 'pillow-block-bearing' + FILE_EXT,
+        title: 'Pillow Block Bearing',
       }
       const commandBarButton = page.getByRole('button', { name: 'Commands' })
       const samplesCommandOption = page.getByRole('option', {
@@ -100,9 +100,9 @@ test.describe('Testing loading external models', () => {
 
       // Locators and constants
       const sampleOne = {
-        file: 'parametric-bearing-pillow-block' + FILE_EXT,
-        title: 'Parametric Bearing Pillow Block',
-        file1: 'parametric-bearing-pillow-block-1' + FILE_EXT,
+        file: 'ball-bearing' + FILE_EXT,
+        title: 'Ball Bearing',
+        file1: 'ball-bearing-1' + FILE_EXT,
       }
       const projectCard = page.getByRole('link', { name: 'bracket' })
       const overwriteWarning = page.getByText(

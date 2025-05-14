@@ -147,6 +147,10 @@ export class KclManager {
 
   set switchedFiles(switchedFiles: boolean) {
     this._switchedFiles = switchedFiles
+
+    // These belonged to the previous file
+    this.lastSuccessfulOperations = []
+    this.lastSuccessfulVariables = {}
   }
 
   get variables() {
