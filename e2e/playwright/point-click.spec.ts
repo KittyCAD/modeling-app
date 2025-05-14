@@ -4962,21 +4962,14 @@ extrude001 = extrude(profile001 length = 1)`
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
-    await expect(toolbar.startSketchBtn).toBeEnabled()
 
-    await test.step(`Clicking on Start Sketch doesn't clear the bad code and we see an error`, async () => {
-      await toolbar.startSketchBtn.click()
-      await page.mouse.click(700, 200) // default plane
-      await expect(page.getByText('KCL errors detected')).toBeVisible()
+    await test.step(`Start Sketch is disabled`, async () => {
+      await expect(toolbar.startSketchBtn).not.toBeEnabled()
       await editor.expectEditor.toContain(badCode, { shouldNormalise: true })
     })
 
-    await test.step(`Running the Helix command doesn't clear the bad code and we see an error`, async () => {
-      await toolbar.helixButton.click()
-      for (const _ of Array(7)) {
-        await cmdBar.progressCmdBar()
-      }
-      await expect(page.getByText('KCL errors detected')).toBeVisible()
+    await test.step(`Helix is disabled`, async () => {
+      await expect(toolbar.helixButton).not.toBeEnabled()
       await editor.expectEditor.toContain(badCode, { shouldNormalise: true })
     })
   })

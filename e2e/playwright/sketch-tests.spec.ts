@@ -3540,7 +3540,6 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
 
     await homePage.openProject('multi-file-sketch-test')
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
 
     await u.closeDebugPanel()
 
@@ -3556,7 +3555,7 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
     await toolbar.openFile('error.kcl')
 
     // Ensure filetree is populated
-    await scene.settled(cmdBar)
+    // await scene.settled(cmdBar)
 
     await expect(
       toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
