@@ -168,7 +168,6 @@ export function createApplicationCommands({
       prompt: {
         inputType: 'text',
         required: true,
-        warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
     },
   }

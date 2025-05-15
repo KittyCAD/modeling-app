@@ -22,7 +22,6 @@ import {
   KCL_DEFAULT_DEGREE,
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
-  ML_EXPERIMENTAL_MESSAGE,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/lib/selections'
@@ -964,12 +963,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           allowCodeSelection: true,
         },
         skip: true,
-        warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
       prompt: {
         inputType: 'text',
         required: true,
-        warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
     },
   },

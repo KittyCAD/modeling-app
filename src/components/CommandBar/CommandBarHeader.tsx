@@ -83,7 +83,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
           <div className="flex flex-1 flex-wrap gap-2">
             <p
               data-command-name={selectedCommand?.name}
-              className="pr-4 flex gap-2 items-center"
+              className="pr-2 flex gap-2 items-center"
             >
               {selectedCommand &&
                 'icon' in selectedCommand &&
@@ -93,6 +93,13 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
               <span data-testid="command-name">
                 {selectedCommand.displayName || selectedCommand.name}
               </span>
+              {selectedCommand.status === 'experimental' ? (
+                <span className="text-ml-black text-xs bg-ml-green rounded-full ml-2 px-2 py-1">
+                  experimental
+                </span>
+              ) : (
+                <span className="pr-2" />
+              )}
             </p>
             {Object.entries(nonHiddenArgs || {})
               .filter(([_, argConfig]) =>
@@ -124,7 +131,9 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                     key={argName}
                     className={`relative w-fit px-2 py-1 rounded-sm flex gap-2 items-center border ${
                       argName === currentArgument?.name
-                        ? 'disabled:bg-primary/10 dark:disabled:bg-primary/20 disabled:border-primary dark:disabled:border-primary disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
+                        ? selectedCommand.status === 'experimental'
+                          ? 'disabled:bg-ml-green/10 dark:disabled:bg-ml-green/20 disabled:border-ml-green dark:disabled:border-ml-green disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
+                          : 'disabled:bg-primary/10 dark:disabled:bg-primary/20 disabled:border-primary dark:disabled:border-primary disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
                         : 'bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80'
                     }`}
                   >
@@ -196,7 +205,29 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                 )
               })}
           </div>
-          {isReviewing ? <ReviewingButton /> : <GatheringArgsButton />}
+          {isReviewing ? (
+            <ReviewingButton
+              bgClassName={
+                selectedCommand.status === 'experimental' ? '!bg-ml-green' : ''
+              }
+              iconClassName={
+                selectedCommand.status === 'experimental'
+                  ? '!text-ml-black'
+                  : ''
+              }
+            />
+          ) : (
+            <GatheringArgsButton
+              bgClassName={
+                selectedCommand.status === 'experimental' ? '!bg-ml-green' : ''
+              }
+              iconClassName={
+                selectedCommand.status === 'experimental'
+                  ? '!text-ml-black'
+                  : ''
+              }
+            />
+          )}
         </div>
         <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
         {children}
@@ -205,7 +236,8 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
   )
 }
 
-function ReviewingButton() {
+type ButtonProps = { bgClassName?: string; iconClassName?: string }
+function ReviewingButton({ bgClassName, iconClassName }: ButtonProps) {
   return (
     <ActionButton
       Element="button"
@@ -216,8 +248,8 @@ function ReviewingButton() {
       data-testid="command-bar-submit"
       iconStart={{
         icon: 'checkmark',
-        bgClassName: 'p-1 rounded-sm !bg-primary hover:brightness-110',
-        iconClassName: '!text-chalkboard-10',
+        bgClassName: `p-1 rounded-sm !bg-primary hover:brightness-110 ${bgClassName}`,
+        iconClassName: `!text-chalkboard-10 ${iconClassName}`,
       }}
     >
       <span className="sr-only">Submit command</span>
@@ -225,7 +257,7 @@ function ReviewingButton() {
   )
 }
 
-function GatheringArgsButton() {
+function GatheringArgsButton({ bgClassName, iconClassName }: ButtonProps) {
   return (
     <ActionButton
       Element="button"
@@ -235,8 +267,8 @@ function GatheringArgsButton() {
       data-testid="command-bar-continue"
       iconStart={{
         icon: 'arrowRight',
-        bgClassName: 'p-1 rounded-sm !bg-primary hover:brightness-110',
-        iconClassName: '!text-chalkboard-10',
+        bgClassName: `p-1 rounded-sm !bg-primary hover:brightness-110 ${bgClassName}`,
+        iconClassName: `!text-chalkboard-10 ${iconClassName}`,
       }}
     >
       <span className="sr-only">Continue</span>
