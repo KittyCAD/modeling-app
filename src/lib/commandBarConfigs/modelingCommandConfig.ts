@@ -425,10 +425,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       path: {
         inputType: 'selection',
-        selectionTypes: ['segment'],
+        selectionTypes: ['segment', 'helix'],
         required: true,
         multiple: false,
-        validation: sweepValidator,
+        // validation: sweepValidator,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       sectional: {
