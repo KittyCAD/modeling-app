@@ -1766,7 +1766,7 @@ loft001 = loft([sketch001, sketch002])
 sketch001 = startSketchOn(YZ)
 profile001 = circle(sketch001, center = [0, 0], radius = 500)
 sketch002 = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+profile002 = startProfile(sketch002, at = [0, 0])
   |> xLine(length = -500)
   |> tangentialArc(endAbsolute = [-2000, 500])`,
     },
@@ -1782,7 +1782,7 @@ profile001 = startProfile(sketch001, at = [-400, -400])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch002 = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+profile002 = startProfile(sketch002, at = [0, 0])
   |> xLine(length = -500)
   |> tangentialArc(endAbsolute = [-2000, 500])`,
     },
@@ -1810,9 +1810,9 @@ sketch002 = startSketchOn(XZ)
         testPoint.x - 50,
         testPoint.y
       )
-      const sweepDeclaration = 'sweep001 = sweep(profile001, path = sketch002)'
+      const sweepDeclaration = 'sweep001 = sweep(profile001, path = profile002)'
       const editedSweepDeclaration =
-        'sweep001 = sweep(profile001, path = sketch002, sectional = true)'
+        'sweep001 = sweep(profile001, path = profile002, sectional = true)'
 
       await test.step(`Look for sketch001`, async () => {
         await toolbar.closePane('code')
