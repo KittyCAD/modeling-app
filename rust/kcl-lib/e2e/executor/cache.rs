@@ -259,18 +259,23 @@ extrude(profile001, length = 100)"#
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_line_preserves_artifact_commands() {
     let code = r#"sketch001 = startSketchOn(XY)
-  |> startProfile(at = [5.5229, 5.25217])
-  |> line(end = [10.50433, -1.19122])
-  |> line(end = [8.01362, -5.48731])
-  |> line(end = [-1.02877, -6.76825])
-  |> line(end = [-11.53311, 2.81559])
+profile001 = startProfile(sketch001, at = [5.5, 5.25])
+  |> line(end = [10.5, -1.19])
+  |> line(end = [8, -5.5])
+  |> line(end = [-1.02, -6.76])
+  |> line(end = [-11.5, 2.8])
   |> close()
+plane001 = offsetPlane(XY, offset = 20)
 "#;
     // Use a new statement; don't extend the prior pipeline.  This allows us to
     // detect a prefix.
     let code_with_extrude = code.to_owned()
         + r#"
-extrude(sketch001, length = 4)
+profile002 = startProfile(plane001, at = [0, 0])
+  |> line(end = [0, 10])
+  |> line(end = [10, 0])
+  |> close()
+extrude001 = extrude(profile001, length = 4)
 "#;
 
     let result = cache_test(
@@ -305,6 +310,12 @@ extrude(sketch001, length = 4)
         first.artifact_graph.len(),
         second.artifact_graph.len()
     );
+    // Make sure we have NodePaths referring to the old code.
+    let graph = &second.artifact_graph;
+    assert!(!graph.is_empty());
+    for artifact in graph.values() {
+        assert!(!artifact.code_ref().map(|c| c.node_path.is_empty()).unwrap_or(false));
+    }
 }
 
 #[tokio::test(flavor = "multi_thread")]

@@ -396,7 +396,6 @@ pub enum Artifact {
     Cap(Cap),
     SweepEdge(SweepEdge),
     EdgeCut(EdgeCut),
-    #[expect(unused)]
     EdgeCutEdge(EdgeCutEdge),
     Helix(Helix),
 }
@@ -550,8 +549,9 @@ impl Artifact {
         }
     }
 
-    #[expect(dead_code)]
-    pub(crate) fn code_ref(&self) -> Option<&CodeRef> {
+    /// This does not return `face_code_ref` since that's a [`CodeRef`]
+    /// referring to another artifact, not itself.
+    pub fn code_ref(&self) -> Option<&CodeRef> {
         match self {
             Artifact::CompositeSolid(a) => Some(&a.code_ref),
             Artifact::Plane(a) => Some(&a.code_ref),
@@ -704,6 +704,19 @@ impl ArtifactGraph {
         self.map.len()
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.map.is_empty()
+    }
+
+    pub fn values(&self) -> impl Iterator<Item = &Artifact> {
+        self.map.values()
+    }
+
+    /// Consume the artifact graph and return the map of artifacts.
+    fn into_map(self) -> IndexMap<ArtifactId, Artifact> {
+        self.map
+    }
+
     /// Used to make the mermaid tests deterministic.
     #[cfg(test)]
     pub(crate) fn sort(&mut self) {
@@ -712,13 +725,16 @@ impl ArtifactGraph {
     }
 }
 
+/// Build the artifact graph from the artifact commands and the responses.  The
+/// initial graph is the graph cached from a previous execution.
 pub(super) fn build_artifact_graph(
     artifact_commands: &[ArtifactCommand],
     responses: &IndexMap<Uuid, WebSocketResponse>,
     ast: &Node<Program>,
     exec_artifacts: &IndexMap<ArtifactId, Artifact>,
+    initial_graph: ArtifactGraph,
 ) -> Result<ArtifactGraph, KclError> {
-    let mut map = IndexMap::new();
+    let mut map = initial_graph.into_map();
 
     let mut path_to_plane_id_map = FnvHashMap::default();
     let mut current_plane_id = None;
