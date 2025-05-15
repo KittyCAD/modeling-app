@@ -10,7 +10,11 @@ import {
   kclSamplesManifestWithNoMultipleFiles,
 } from '@src/lib/kclSamples'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { IS_ML_EXPERIMENTAL, ML_EXPERIMENTAL_MESSAGE, PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import {
+  IS_ML_EXPERIMENTAL,
+  ML_EXPERIMENTAL_MESSAGE,
+  PROJECT_ENTRYPOINT,
+} from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
@@ -22,7 +26,7 @@ function onSubmitKCLSampleCreation({
   kclSample,
   uniqueNameIfNeeded,
   systemIOActor,
-  isProjectNew
+  isProjectNew,
 }: {
   sample: any
   kclSample: ReturnType<typeof findKclSample>
@@ -75,7 +79,9 @@ function onSubmitKCLSampleCreation({
          */
         const folderNameBecomesKCLFileName = projectPathPart + FILE_EXT
         // If the project is new create the single file as main.kcl
-        const requestedFileNameWithExtension = isProjectNew ? PROJECT_ENTRYPOINT : folderNameBecomesKCLFileName
+        const requestedFileNameWithExtension = isProjectNew
+          ? PROJECT_ENTRYPOINT
+          : folderNameBecomesKCLFileName
         systemIOActor.send({
           type: SystemIOMachineEvents.importFileFromURL,
           data: {
@@ -211,7 +217,7 @@ export function createApplicationCommands({
             kclSample,
             uniqueNameIfNeeded,
             systemIOActor,
-            isProjectNew
+            isProjectNew,
           })
         } else if (data.source === 'local' && data.path) {
           const clonePath = data.path
@@ -402,7 +408,7 @@ export function createApplicationCommands({
           kclSample,
           uniqueNameIfNeeded,
           systemIOActor,
-          isProjectNew: true
+          isProjectNew: true,
         })
       }
     },
