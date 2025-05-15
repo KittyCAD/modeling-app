@@ -26043,10 +26043,8 @@ description: Variables in memory after executing mike_stress_test.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -26055,12 +26053,14 @@ description: Variables in memory after executing mike_stress_test.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -26068,7 +26068,7 @@ description: Variables in memory after executing mike_stress_test.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           }
         },

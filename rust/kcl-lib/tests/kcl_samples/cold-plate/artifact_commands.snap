@@ -905,7 +905,8 @@ description: Artifact commands cold-plate.kcl
       "target": "[uuid]",
       "trajectory": "[uuid]",
       "sectional": false,
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "relative_to": "trajectory_curve"
     }
   },
   {

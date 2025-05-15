@@ -13,6 +13,7 @@ import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { sceneInfra } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { useSettings } from '@src/lib/singletons'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
@@ -38,7 +39,7 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
-          sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+          resetCameraPosition().catch(reportRejection)
         }}
         disabled={shouldLockView}
       >

@@ -59,7 +59,9 @@ impl Arg {
 #[derive(Debug, Clone, Default)]
 pub struct KwArgs {
     /// Unlabeled keyword args. Currently only the first arg can be unlabeled.
-    pub unlabeled: Option<Arg>,
+    /// If the argument was a local variable, then the first element of the tuple is its name
+    /// which may be used to treat this arg as a labelled arg.
+    pub unlabeled: Option<(Option<String>, Arg)>,
     /// Labeled args.
     pub labeled: IndexMap<String, Arg>,
     pub errors: Vec<Arg>,
@@ -342,6 +344,7 @@ impl Args {
         self.kw_args
             .unlabeled
             .as_ref()
+            .map(|(_, a)| a)
             .or(self.args.first())
             .or(self.pipe_value.as_ref())
     }

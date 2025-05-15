@@ -424,7 +424,7 @@ async fn make_transform<T: GeometryTrait>(
         meta: vec![source_range.into()],
     };
     let kw_args = KwArgs {
-        unlabeled: Some(Arg::new(repetition_num, source_range)),
+        unlabeled: Some((None, Arg::new(repetition_num, source_range))),
         labeled: Default::default(),
         errors: Vec::new(),
     };
@@ -598,7 +598,7 @@ fn array_to_point2d(
         .map(|val| val.as_point2d().unwrap())
 }
 
-trait GeometryTrait: Clone {
+pub trait GeometryTrait: Clone {
     type Set: Into<Vec<Self>> + Clone;
     fn id(&self) -> Uuid;
     fn original_id(&self) -> Uuid;
@@ -608,6 +608,7 @@ trait GeometryTrait: Clone {
         source_ranges: Vec<SourceRange>,
         exec_state: &mut ExecState,
     ) -> Result<[TyF64; 3], KclError>;
+    #[allow(async_fn_in_trait)]
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: &Self::Set) -> Result<(), KclError>;
 }
 
@@ -641,6 +642,8 @@ impl GeometryTrait for Solid {
     type Set = Vec<Solid>;
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
+        // We need this for in extrude.rs when you sketch on face.
+        self.sketch.id = id;
     }
 
     fn id(&self) -> Uuid {

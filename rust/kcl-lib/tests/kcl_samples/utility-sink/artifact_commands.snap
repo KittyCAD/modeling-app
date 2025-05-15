@@ -4490,7 +4490,8 @@ description: Artifact commands utility-sink.kcl
       "target": "[uuid]",
       "trajectory": "[uuid]",
       "sectional": false,
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "relative_to": "trajectory_curve"
     }
   },
   {

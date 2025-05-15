@@ -186,7 +186,7 @@ impl<T> Node<T> {
         self.comment_start = start;
     }
 
-    pub fn map_ref<'a, U: 'a>(&'a self, f: fn(&'a T) -> U) -> Node<U> {
+    pub fn map_ref<'a, U: 'a>(&'a self, f: impl Fn(&'a T) -> U) -> Node<U> {
         Node {
             inner: f(&self.inner),
             start: self.start,
@@ -438,8 +438,15 @@ impl Node<Program> {
         let add_color = |literal: &Node<Literal>| {
             // Check if the string is a color.
             if let Some(c) = literal.value.is_color() {
+                let source_range = literal.as_source_range();
+                // We subtract 1 from either side because of the "'s in the literal.
+                let fixed_source_range = SourceRange::new(
+                    source_range.start() + 1,
+                    source_range.end() - 1,
+                    source_range.module_id(),
+                );
                 let color = ColorInformation {
-                    range: literal.as_source_range().to_lsp_range(code),
+                    range: fixed_source_range.to_lsp_range(code),
                     color: tower_lsp::lsp_types::Color {
                         red: c.r,
                         green: c.g,
@@ -498,7 +505,11 @@ impl Node<Program> {
         crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             match node {
                 crate::walk::Node::Literal(literal) => {
-                    if literal.start == pos_start && literal.end == pos_end && literal.value.is_color().is_some() {
+                    // Account for the quotes in the literal.
+                    if (literal.start + 1) == pos_start
+                        && (literal.end - 1) == pos_end
+                        && literal.value.is_color().is_some()
+                    {
                         found.replace(true);
                         return Ok(true);
                     }
@@ -1187,7 +1198,7 @@ impl Expr {
 
     pub fn ident_name(&self) -> Option<&str> {
         match self {
-            Expr::Name(ident) => Some(&ident.name.name),
+            Expr::Name(name) => name.local_ident().map(|n| n.inner),
             _ => None,
         }
     }
@@ -2371,7 +2382,7 @@ impl Name {
 
     pub fn local_ident(&self) -> Option<Node<&str>> {
         if self.path.is_empty() && !self.abs_path {
-            Some(self.name.map_ref(|n| &n.name))
+            Some(self.name.map_ref(|n| &*n.name))
         } else {
             None
         }
