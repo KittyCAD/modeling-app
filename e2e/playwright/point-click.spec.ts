@@ -1931,6 +1931,100 @@ sketch002 = startSketchOn(XZ)
     })
   })
 
+  test(`Sweep point-and-click helix`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const circleCode = `circle(sketch001, center = [0, -1], radius = .1)`
+    const initialCode = `helix001 = helix(
+  axis = X,
+  radius = 1,
+  length = 10,
+  revolutions = 10,
+  angleStart = 0,
+  ccw = false,
+)
+sketch001 = startSketchOn(XZ)
+profile001 = ${circleCode}`
+    const sweepDeclaration = 'sweep001 = sweep(profile001, path = helix001)'
+
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await test.step(`Add sweep through the command bar flow`, async () => {
+      await toolbar.openPane('feature-tree')
+      await toolbar.sweepButton.click()
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        currentArgKey: 'sketches',
+        currentArgValue: '',
+        headerArguments: {
+          Sectional: '',
+          Sketches: '',
+          Path: '',
+        },
+        highlightedHeaderArg: 'sketches',
+        stage: 'arguments',
+      })
+      await editor.scrollToText(circleCode)
+      await page.getByText(circleCode).click()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        currentArgKey: 'path',
+        currentArgValue: '',
+        headerArguments: {
+          Sectional: '',
+          Sketches: '1 face',
+          Path: '',
+        },
+        highlightedHeaderArg: 'path',
+        stage: 'arguments',
+      })
+      const helix = await toolbar.getFeatureTreeOperation('Helix', 0)
+      await helix.click()
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        currentArgKey: 'path',
+        currentArgValue: '',
+        headerArguments: {
+          Sectional: '',
+          Sketches: '1 face',
+          Path: '',
+        },
+        highlightedHeaderArg: 'path',
+        stage: 'arguments',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        headerArguments: {
+          Sketches: '1 face',
+          Path: '1 helix',
+          Sectional: '',
+        },
+        stage: 'review',
+      })
+      await cmdBar.progressCmdBar()
+      await editor.expectEditor.toContain(sweepDeclaration)
+    })
+
+    await test.step('Delete sweep via feature tree selection', async () => {
+      const sweep = await toolbar.getFeatureTreeOperation('Sweep', 0)
+      await sweep.click()
+      await page.keyboard.press('Delete')
+      await editor.expectEditor.not.toContain(sweepDeclaration)
+    })
+  })
+
   test(`Fillet point-and-click`, async ({
     context,
     page,
