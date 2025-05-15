@@ -1,4 +1,4 @@
-import { TEST } from '@src/env'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -60,7 +60,10 @@ export const EngineStream = (props: {
   const [firstPlay, setFirstPlay] = useState(true)
   const [isRestartRequestStarting, setIsRestartRequestStarting] =
     useState(false)
-  const [attemptTimes, setAttemptTimes] = useState<[number, number]>([0, TIME_1_SECOND])
+  const [attemptTimes, setAttemptTimes] = useState<[number, number]>([
+    0,
+    TIME_1_SECOND,
+  ])
 
   // These will be passed to the engineStreamActor to handle.
   const videoRef = useRef<HTMLVideoElement>(null)
