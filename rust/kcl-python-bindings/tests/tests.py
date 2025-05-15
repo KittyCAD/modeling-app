@@ -40,6 +40,33 @@ async def test_kcl_execute():
 
 
 @pytest.mark.asyncio
+async def test_kcl_parse_with_exception():
+    # Read from a file.
+    try:
+        await kcl.parse(os.path.join(files_dir, "parse_file_error"))
+    except Exception as e:
+        assert e is not None
+        assert len(str(e)) > 0
+        assert "lksjndflsskjfnak;jfna##" in str(e)
+
+
+@pytest.mark.asyncio
+async def test_kcl_parse():
+    # Read from a file.
+    await kcl.parse(lego_file)
+
+
+@pytest.mark.asyncio
+async def test_kcl_parse_code():
+    # Read from a file.
+    with open(lego_file, "r") as f:
+        code = str(f.read())
+        assert code is not None
+        assert len(code) > 0
+        await kcl.parse_code(code)
+
+
+@pytest.mark.asyncio
 async def test_kcl_execute_code():
     # Read from a file.
     with open(lego_file, "r") as f:
@@ -97,9 +124,7 @@ async def test_kcl_execute_and_snapshot():
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot_dir():
     # Read from a file.
-    image_bytes = await kcl.execute_and_snapshot(
-        car_wheel_dir, kcl.ImageFormat.Jpeg
-    )
+    image_bytes = await kcl.execute_and_snapshot(car_wheel_dir, kcl.ImageFormat.Jpeg)
     assert image_bytes is not None
     assert len(image_bytes) > 0
 
@@ -129,9 +154,11 @@ def test_kcl_format():
         assert formatted_code is not None
         assert len(formatted_code) > 0
 
+
 @pytest.mark.asyncio
 async def test_kcl_format_dir():
     await kcl.format_dir(car_wheel_dir)
+
 
 def test_kcl_lint():
     # Read from a file.
