@@ -160,7 +160,7 @@ export const FeatureTreePane = () => {
             {!modelingState.matches('Sketch') && <DefaultPlanes />}
             {parseErrors.length > 0 && (
               <div
-                className={`absolute inset-0 rounded-lg p-2 ${
+                className={`absolute inset-0 p-2 ${
                   operationList.length &&
                   `bg-destroy-10/40 dark:bg-destroy-80/40`
                 }`}
