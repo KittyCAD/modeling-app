@@ -13,7 +13,7 @@ flowchart LR
   3["Plane<br>[110, 138, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   4["StartSketchOnPlane<br>[152, 181, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 <--x 4
   1 --- 5
   5 --- 6

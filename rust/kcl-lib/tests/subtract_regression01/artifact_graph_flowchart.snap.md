@@ -31,7 +31,7 @@ flowchart LR
   2["Plane<br>[567, 597, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
   3["StartSketchOnPlane<br>[553, 598, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   16["Sweep Extrusion<br>[468, 539, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   17["Sweep Extrusion<br>[704, 748, 0]"]

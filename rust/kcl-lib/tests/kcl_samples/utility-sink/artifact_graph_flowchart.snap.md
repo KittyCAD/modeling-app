@@ -239,29 +239,29 @@ flowchart LR
   12["Plane<br>[8574, 8591, 0]"]
     %% [ProgramBodyItem { index: 67 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   13["StartSketchOnPlane<br>[6761, 6825, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 52 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   14["StartSketchOnPlane<br>[2317, 2383, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 22 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   15["StartSketchOnPlane<br>[5919, 5975, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 44 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   16["StartSketchOnPlane<br>[6184, 6240, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 45 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   17["StartSketchOnPlane<br>[2956, 3008, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 25 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   18["StartSketchOnPlane<br>[3841, 3893, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   19["StartSketchOnPlane<br>[5674, 5726, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 43 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   20["StartSketchOnPlane<br>[8078, 8144, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 65 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   21["StartSketchOnPlane<br>[1237, 1306, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   22["StartSketchOnPlane<br>[5429, 5481, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 42 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   23["StartSketchOnFace<br>[4405, 4446, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 38 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   24["StartSketchOnFace<br>[4845, 4884, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 40 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   123["Sweep Extrusion<br>[1092, 1119, 0]"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 8 }]
   124["Sweep Extrusion<br>[1092, 1119, 0]"]

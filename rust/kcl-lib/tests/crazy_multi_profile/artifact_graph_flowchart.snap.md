@@ -130,7 +130,7 @@ flowchart LR
   2["Plane<br>[1424, 1442, 0]"]
     %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   3["StartSketchOnFace<br>[309, 348, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   60["Sweep Extrusion<br>[264, 296, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   61["Sweep RevolveAboutEdge<br>[1300, 1366, 0]"]
