@@ -463,7 +463,6 @@ extrude002 = extrude(profile002, length = 150)
       // Click the checkbox
       await expect(submitButton).toBeVisible()
       await page.keyboard.press('Enter')
-      await page.waitForTimeout(1_000)
 
       // Find the toast.
       // Look out for the toast message
@@ -474,6 +473,7 @@ extrude002 = extrude(profile002, length = 150)
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       const successToastMessage = page.getByText(`Exported successfully`)
+      await page.waitForTimeout(1_000)
       const count = await successToastMessage.count()
       await expect(count).toBeGreaterThanOrEqual(1)
     }
