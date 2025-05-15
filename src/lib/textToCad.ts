@@ -6,7 +6,7 @@ import {
   ToastTextToCadError,
   ToastTextToCadSuccess,
 } from '@src/components/ToastTextToCad'
-import { FILE_EXT } from '@src/lib/constants'
+import { FILE_EXT, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import { getNextFileName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -196,11 +196,17 @@ export async function submitAndAwaitTextToKclSystemIO({
       }
 
       const TRUNCATED_PROMPT_LENGTH = 24
+      // Only add the prompt name if it is a prexisting project
       newFileName = `${value.prompt
         .slice(0, TRUNCATED_PROMPT_LENGTH)
         .replace(/\s/gi, '-')
         .replace(/\W/gi, '-')
         .toLowerCase()}${FILE_EXT}`
+
+      // If the project is new generate a main.kcl
+      if (isProjectNew) {
+        newFileName = PROJECT_ENTRYPOINT
+      }
 
       if (isDesktop()) {
         // We have to preemptively run our unique file name logic,
