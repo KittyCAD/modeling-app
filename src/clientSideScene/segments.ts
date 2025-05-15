@@ -256,9 +256,7 @@ class StraightSegment implements SegmentUtils {
     const { from, to } = input
     group.userData.from = from
     group.userData.to = to
-    const shape = new Shape()
-    shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
-    shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
+    const shape = createLineShape(scale)
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
     const labelGroup = group.getObjectByName(SEGMENT_LENGTH_LABEL) as Group
 
@@ -732,15 +730,15 @@ class CircleSegment implements SegmentUtils {
           new Vector3(center[0], center[1], 0),
           new Vector3(arrowPoint.x, arrowPoint.y, 0)
         )
-        const shape = new Shape()
-        shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
-        shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
         straightSegmentBody.geometry?.dispose()
-        straightSegmentBody.geometry = new ExtrudeGeometry(shape, {
-          steps: 2,
-          bevelEnabled: false,
-          extrudePath: line,
-        })
+        straightSegmentBody.geometry = new ExtrudeGeometry(
+          createLineShape(scale),
+          {
+            steps: 2,
+            bevelEnabled: false,
+            extrudePath: line,
+          }
+        )
       }
     }
 
@@ -1880,10 +1878,8 @@ export function createArcGeometry({
     ccw,
     0
   )
-  const shape = new Shape()
-  shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale)
-  shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale) // The width of the line
 
+  const shape = createLineShape(scale)
   if (!isDashed) {
     const points = arcStart.getPoints(50)
     const path = new CurvePath<Vector3>()
@@ -2150,6 +2146,14 @@ function updateAngleIndicator(
   )
   const points = curve.getPoints(50)
   angleIndicator.geometry.setFromPoints(points)
+}
+
+// Used to create a line with thickness
+export function createLineShape(scale: number) {
+  const shape = new Shape()
+  shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
+  shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
+  return shape
 }
 
 export const segmentUtils = {
