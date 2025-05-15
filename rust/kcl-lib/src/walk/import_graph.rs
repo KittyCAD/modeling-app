@@ -267,7 +267,7 @@ import \"a.kcl\"
         );
         modules.insert("b.kcl".to_owned(), into_module_info(b));
 
-        let ctx = ExecutorContext::new_mock().await;
+        let ctx = ExecutorContext::new_mock(None).await;
         let order = import_graph(&modules, &ctx).unwrap();
         assert_eq!(vec![vec!["a.kcl".to_owned()], vec!["b.kcl".to_owned()]], order);
     }
@@ -290,7 +290,7 @@ x = 1
         );
         modules.insert("b.kcl".to_owned(), into_module_info(b));
 
-        let ctx = ExecutorContext::new_mock().await;
+        let ctx = ExecutorContext::new_mock(None).await;
         let order = import_graph(&modules, &ctx).unwrap();
         assert_eq!(vec![vec!["a.kcl".to_owned(), "b.kcl".to_owned()]], order);
     }
@@ -316,7 +316,7 @@ import \"a.kcl\"
         );
         modules.insert("c.kcl".to_owned(), into_module_info(c));
 
-        let ctx = ExecutorContext::new_mock().await;
+        let ctx = ExecutorContext::new_mock(None).await;
         let order = import_graph(&modules, &ctx).unwrap();
         assert_eq!(
             vec![vec!["a.kcl".to_owned()], vec!["b.kcl".to_owned(), "c.kcl".to_owned()]],
@@ -342,7 +342,7 @@ import \"a.kcl\"
         );
         modules.insert("b.kcl".to_owned(), into_module_info(b));
 
-        let ctx = ExecutorContext::new_mock().await;
+        let ctx = ExecutorContext::new_mock(None).await;
         import_graph(&modules, &ctx).unwrap_err();
     }
 }

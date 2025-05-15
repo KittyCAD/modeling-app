@@ -69,6 +69,35 @@ async def test_kcl_parse_code():
 
 
 @pytest.mark.asyncio
+async def test_kcl_mock_execute_with_exception():
+    # Read from a file.
+    try:
+        await kcl.mock_execute(os.path.join(files_dir, "parse_file_error"))
+    except Exception as e:
+        assert e is not None
+        assert len(str(e)) > 0
+        assert "lksjndflsskjfnak;jfna##" in str(e)
+
+
+@pytest.mark.asyncio
+async def test_kcl_mock_execute():
+    # Read from a file.
+    result = await kcl.mock_execute(lego_file)
+    assert result is True
+
+
+@pytest.mark.asyncio
+async def test_kcl_mock_execute_code():
+    # Read from a file.
+    with open(lego_file, "r") as f:
+        code = str(f.read())
+        assert code is not None
+        assert len(code) > 0
+        result = await kcl.mock_execute_code(code)
+        assert result is True
+
+
+@pytest.mark.asyncio
 async def test_kcl_execute_code():
     # Read from a file.
     with open(lego_file, "r") as f:
