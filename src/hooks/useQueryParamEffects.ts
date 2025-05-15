@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 
 import { base64ToString } from '@src/lib/base64'
@@ -31,31 +31,9 @@ export type CreateFileSchemaMethodOptional = Omit<
  * "?cmd"
  * "?pool"
  */
-export function useCreateFileLinkQuery() {
+export function useQueryParamEffects() {
   const { pathname } = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [onCommandBarIdle, setOnCommandBarIdle] = useState<
-    (() => void) | undefined
-  >()
-
-  /** Subscribe to the command bar being closed once */
-  useEffect(() => {
-    let subscription: ReturnType<typeof commandBarActor.subscribe> | undefined
-    if (onCommandBarIdle) {
-      subscription = commandBarActor.subscribe((snapshot) => {
-        if (snapshot.value === 'Closed') {
-          onCommandBarIdle()
-          setOnCommandBarIdle(undefined)
-        }
-      })
-    }
-
-    return () => {
-      if (subscription) {
-        subscription.unsubscribe()
-      }
-    }
-  }, [onCommandBarIdle])
 
   useEffect(() => {
     const shouldInvokeCreateFile = searchParams.has(CREATE_FILE_URL_PARAM)
@@ -63,11 +41,6 @@ export function useCreateFileLinkQuery() {
       searchParams.has(CMD_NAME_QUERY_PARAM) &&
       searchParams.has(CMD_GROUP_QUERY_PARAM)
 
-    console.log('FRANK search params', {
-      params: searchParams.entries().toArray(),
-      shouldInvokeCreateFile,
-      shouldInvokeGenericCmd,
-    })
     if (shouldInvokeCreateFile) {
       const argDefaultValues = buildCreateFileCommandArgs(searchParams)
       commandBarActor.send({
@@ -78,13 +51,12 @@ export function useCreateFileLinkQuery() {
           argDefaultValues,
         },
       })
-      setOnCommandBarIdle(() => {
-        searchParams.delete(CREATE_FILE_URL_PARAM)
-        setSearchParams(searchParams)
-      })
+
+      // Delete the query param after the command has been invoked.
+      searchParams.delete(CREATE_FILE_URL_PARAM)
+      setSearchParams(searchParams)
     } else if (shouldInvokeGenericCmd) {
       const commandData = buildGenericCommandArgs(searchParams)
-      console.log('FRANK command data', commandData)
       if (!commandData) {
         return
       }
@@ -93,26 +65,29 @@ export function useCreateFileLinkQuery() {
         data: commandData,
       })
 
-      setOnCommandBarIdle(() => {
-        searchParams.delete(CMD_NAME_QUERY_PARAM)
-        searchParams.delete(CMD_GROUP_QUERY_PARAM)
-        searchParams
-          .entries()
-          // Filter out known keys
-          .filter(
-            ([key]) =>
-              [
-                CMD_NAME_QUERY_PARAM,
-                CMD_GROUP_QUERY_PARAM,
-                CREATE_FILE_URL_PARAM,
-                POOL_QUERY_PARAM,
-              ].indexOf(key) === -1
-          )
-          .forEach(([key]) => {
-            searchParams.delete(key)
-          })
-        setSearchParams(searchParams)
-      })
+      // Delete all the query parameters that aren't reserved
+      searchParams.delete(CMD_NAME_QUERY_PARAM)
+      searchParams.delete(CMD_GROUP_QUERY_PARAM)
+      const keysToDelete = searchParams
+        .entries()
+        .toArray()
+        // Filter out known keys
+        .filter(([key]) => {
+          const reservedKeys = [
+            CMD_NAME_QUERY_PARAM,
+            CMD_GROUP_QUERY_PARAM,
+            CREATE_FILE_URL_PARAM,
+            POOL_QUERY_PARAM,
+          ]
+
+          const indexOfKey = reservedKeys.indexOf(key)
+          return indexOfKey === -1
+        })
+
+      for (const [key] of keysToDelete) {
+        searchParams.delete(key)
+      }
+      setSearchParams(searchParams)
     }
   }, [pathname])
 }

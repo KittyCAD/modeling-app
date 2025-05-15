@@ -32,13 +32,9 @@ export const CommandBar = () => {
     : Dialog
 
   // Close the command bar when navigating
+  // but importantly not when the query parameters change
   useEffect(() => {
     if (commandBarState.matches('Closed')) return
-    console.log(
-      'FRANK are we about to close? because the pathname changed?',
-      pathname
-    )
-    console.trace('pathname', pathname)
     commandBarActor.send({ type: 'Close' })
   }, [pathname])
 
@@ -56,9 +52,6 @@ export const CommandBar = () => {
       (immediateState.type === EngineConnectionStateType.Disconnecting ||
         immediateState.type === EngineConnectionStateType.Disconnected)
     ) {
-      console.log(
-        'FRANK are we about to close because something about the engine connection?'
-      )
       commandBarActor.send({ type: 'Close' })
       toast.error('Exiting command flow because engine disconnected')
     }

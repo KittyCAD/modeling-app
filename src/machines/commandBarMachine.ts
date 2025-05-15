@@ -229,13 +229,6 @@ export const commandBarMachine = setup({
             cmd.name === event.data.name && cmd.groupId === event.data.groupId
         )
 
-        console.log('FRANK finding command', {
-          context,
-          frozen: Object.freeze(context),
-          event,
-          found,
-        })
-
         return found || context.selectedCommand
       },
     }),
