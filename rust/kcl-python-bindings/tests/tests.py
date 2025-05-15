@@ -63,7 +63,7 @@ async def test_kcl_parse_code():
         code = str(f.read())
         assert code is not None
         assert len(code) > 0
-        await kcl.parse_code(code)
+        kcl.parse_code(code)
 
 
 @pytest.mark.asyncio
