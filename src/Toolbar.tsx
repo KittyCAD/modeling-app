@@ -158,7 +158,8 @@ export function Toolbar({
       const isDisabled =
         disableAllButtons ||
         !isConfiguredAvailable ||
-        maybeIconConfig.disabled?.(state) === true
+        maybeIconConfig.disabled?.(state) === true ||
+        kclManager.hasErrors()
 
       return {
         ...maybeIconConfig,
@@ -444,6 +445,15 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
       contentClassName={contentClassName}
     >
       {children}
+      {kclManager.hasErrors() && (
+        <p className="text-xs p-1 text-chalkboard-70 dark:text-chalkboard-40">
+          <CustomIcon
+            name="exclamationMark"
+            className="w-4 h-4 inline-block mr-1 text-destroy-80 bg-destroy-10"
+          />
+          Fix KCL errors to enable tools
+        </p>
+      )}
     </Tooltip>
   )
 })

@@ -134,8 +134,6 @@ extrude001 = extrude(sketch001, length = 5)`
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 
-    await page.waitForTimeout(1000)
-
     // Ensure badge is present
     const codePaneButtonHolder = page.locator('#code-button-holder')
     await expect(codePaneButtonHolder).toContainText('notification', {
@@ -183,7 +181,7 @@ extrude001 = extrude(sketch001, length = 5)`
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 
-    await scene.settled(cmdBar)
+    // await scene.settled(cmdBar)
 
     // Ensure badge is present
     const codePaneButtonHolder = page.locator('#code-button-holder')
