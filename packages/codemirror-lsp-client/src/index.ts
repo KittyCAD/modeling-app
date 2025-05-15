@@ -21,6 +21,7 @@ export {
   lspRenameEvent,
   lspSemanticTokensEvent,
   lspCodeActionEvent,
+  lspColorUpdateEvent,
 } from './plugin/annotation'
 export {
   LanguageServerPlugin,
