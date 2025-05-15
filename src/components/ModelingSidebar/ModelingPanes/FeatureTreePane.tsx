@@ -109,6 +109,7 @@ export const FeatureTreePane = () => {
       // devTools: true,
     }
   )
+
   // If there are parse errors we show the last successful operations
   // and overlay a message on top of the pane
   const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine')
@@ -161,7 +162,7 @@ export const FeatureTreePane = () => {
             {parseErrors.length > 0 && (
               <div
                 className={`absolute inset-0 p-2 ${
-                  operationList.length &&
+                  operationList.length || parseErrors.length > 0 &&
                   `bg-destroy-10/40 dark:bg-destroy-80/40`
                 }`}
               >
