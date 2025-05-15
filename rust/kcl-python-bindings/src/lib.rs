@@ -217,12 +217,19 @@ async fn get_code_and_file_path(path: &str) -> Result<(String, std::path::PathBu
     Ok((code, path))
 }
 
-async fn new_context_state(current_file: Option<std::path::PathBuf>) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
+async fn new_context_state(
+    current_file: Option<std::path::PathBuf>,
+    mock: bool,
+) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
     let mut settings: kcl_lib::ExecutorSettings = Default::default();
     if let Some(current_file) = current_file {
         settings.with_current_file(kcl_lib::TypedPath(current_file));
     }
-    let ctx = ExecutorContext::new_with_client(settings, None, None).await?;
+    let ctx = if mock {
+        ExecutorContext::new_with_client(settings, None, None).await?
+    } else {
+        ExecutorContext::new_mock(Some(settings)).await
+    };
     let state = kcl_lib::ExecState::new(&ctx);
     Ok((ctx, state))
 }
@@ -263,7 +270,7 @@ async fn execute(path: String) -> PyResult<()> {
             let program = kcl_lib::Program::parse_no_errs(&code)
                 .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
 
-            let (ctx, mut state) = new_context_state(Some(path))
+            let (ctx, mut state) = new_context_state(Some(path), false)
                 .await
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             // Execute the program.
@@ -285,7 +292,7 @@ async fn execute_code(code: String) -> PyResult<()> {
             let program =
                 kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
 
-            let (ctx, mut state) = new_context_state(None)
+            let (ctx, mut state) = new_context_state(None, false)
                 .await
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             // Execute the program.
@@ -294,6 +301,53 @@ async fn execute_code(code: String) -> PyResult<()> {
                 .map_err(|err| into_miette(err, &code))?;
 
             Ok(())
+        })
+        .await
+        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+}
+
+/// Mock execute the kcl code.
+#[pyfunction]
+async fn mock_execute_code(code: String) -> PyResult<bool> {
+    tokio()
+        .spawn(async move {
+            let program =
+                kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+
+            let (ctx, mut state) = new_context_state(None, true)
+                .await
+                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+            // Execute the program.
+            ctx.run(&program, &mut state)
+                .await
+                .map_err(|err| into_miette(err, &code))?;
+
+            Ok(true)
+        })
+        .await
+        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+}
+
+/// Mock execute the kcl code from a file path.
+#[pyfunction]
+async fn mock_execute(path: String) -> PyResult<bool> {
+    tokio()
+        .spawn(async move {
+            let (code, path) = get_code_and_file_path(&path)
+                .await
+                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+            let program = kcl_lib::Program::parse_no_errs(&code)
+                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+
+            let (ctx, mut state) = new_context_state(Some(path), true)
+                .await
+                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+            // Execute the program.
+            ctx.run(&program, &mut state)
+                .await
+                .map_err(|err| into_miette(err, &code))?;
+
+            Ok(true)
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -310,7 +364,7 @@ async fn execute_and_snapshot(path: String, image_format: ImageFormat) -> PyResu
             let program = kcl_lib::Program::parse_no_errs(&code)
                 .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
 
-            let (ctx, mut state) = new_context_state(Some(path))
+            let (ctx, mut state) = new_context_state(Some(path), false)
                 .await
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             // Execute the program.
@@ -367,7 +421,7 @@ async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> P
             let program =
                 kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
 
-            let (ctx, mut state) = new_context_state(None)
+            let (ctx, mut state) = new_context_state(None, false)
                 .await
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             // Execute the program.
@@ -427,7 +481,7 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
             let program = kcl_lib::Program::parse_no_errs(&code)
                 .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
 
-            let (ctx, mut state) = new_context_state(Some(path.clone()))
+            let (ctx, mut state) = new_context_state(Some(path.clone()), false)
                 .await
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             // Execute the program.
@@ -475,7 +529,7 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
             let program =
                 kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
 
-            let (ctx, mut state) = new_context_state(None)
+            let (ctx, mut state) = new_context_state(None, false)
                 .await
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             // Execute the program.
@@ -563,6 +617,8 @@ fn kcl(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(parse_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code, m)?)?;
+    m.add_function(wrap_pyfunction!(mock_execute, m)?)?;
+    m.add_function(wrap_pyfunction!(mock_execute_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_export, m)?)?;

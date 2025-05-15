@@ -426,14 +426,14 @@ impl ExecutorContext {
     }
 
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_mock() -> Self {
+    pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
             engine: Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
             )),
             fs: Arc::new(FileManager::new()),
             stdlib: Arc::new(StdLib::new()),
-            settings: Default::default(),
+            settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
         }
     }
@@ -2232,7 +2232,7 @@ w = f() + f()
         let result = ctx.run_with_caching(program).await.unwrap();
         assert_eq!(result.variables.get("x").unwrap().as_f64().unwrap(), 2.0);
 
-        let ctx2 = ExecutorContext::new_mock().await;
+        let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
         let result = ctx2.run_mock(program2, true).await.unwrap();
         assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
