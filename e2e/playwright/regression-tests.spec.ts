@@ -458,20 +458,19 @@ extrude002 = extrude(profile002, length = 150)
 
       // Click the stl.
       await expect(stlOption).toBeVisible()
-
       await page.keyboard.press('Enter')
 
       // Click the checkbox
       await expect(submitButton).toBeVisible()
-
       await page.keyboard.press('Enter')
+      await page.waitForTimeout(1_000)
 
       // Find the toast.
       // Look out for the toast message
       await expect(exportingToastMessage).toBeVisible()
 
       // Expect it to succeed.
-      await expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 })
+      await expect(exportingToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       const successToastMessage = page.getByText(`Exported successfully`)

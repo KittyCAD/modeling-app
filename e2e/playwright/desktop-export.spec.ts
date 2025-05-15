@@ -57,6 +57,7 @@ test(
       const submitButton = page.getByText('Confirm Export')
       await expect(submitButton).toBeVisible()
       await page.keyboard.press('Enter')
+      await page.waitForTimeout(1_000)
 
       // Expect it to succeed
       const errorToastMessage = page.getByText(`Error while exporting`)
@@ -121,6 +122,7 @@ test(
       const submitButton = page.getByText('Confirm Export')
       await expect(submitButton).toBeVisible()
       await page.keyboard.press('Enter')
+      await page.waitForTimeout(1_000)
 
       // Look out for the toast message
       const exportingToastMessage = page.getByText(`Exporting...`)
