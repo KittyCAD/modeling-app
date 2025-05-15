@@ -418,7 +418,7 @@ description: Artifact commands subtract_regression03.kcl
       "trajectory": "[uuid]",
       "sectional": false,
       "tolerance": 0.0000001,
-      "relative_to": "sketch_plane"
+      "relative_to": "trajectory_curve"
     }
   },
   {
