@@ -226,9 +226,9 @@ async fn new_context_state(
         settings.with_current_file(kcl_lib::TypedPath(current_file));
     }
     let ctx = if mock {
-        ExecutorContext::new_with_client(settings, None, None).await?
-    } else {
         ExecutorContext::new_mock(Some(settings)).await
+    } else {
+        ExecutorContext::new_with_client(settings, None, None).await?
     };
     let state = kcl_lib::ExecState::new(&ctx);
     Ok((ctx, state))
