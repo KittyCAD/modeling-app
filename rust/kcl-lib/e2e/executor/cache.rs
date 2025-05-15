@@ -315,6 +315,10 @@ extrude001 = extrude(profile001, length = 4)
     assert!(!graph.is_empty());
     for artifact in graph.values() {
         assert!(!artifact.code_ref().map(|c| c.node_path.is_empty()).unwrap_or(false));
+        assert!(!artifact
+            .face_code_ref()
+            .map(|c| c.node_path.is_empty())
+            .unwrap_or(false));
     }
 }
 

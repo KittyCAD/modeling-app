@@ -549,8 +549,8 @@ impl Artifact {
         }
     }
 
-    /// This does not return `face_code_ref` since that's a [`CodeRef`]
-    /// referring to another artifact, not itself.
+    /// The [`CodeRef`] for the artifact itself. See also
+    /// [`Self::face_code_ref`].
     pub fn code_ref(&self) -> Option<&CodeRef> {
         match self {
             Artifact::CompositeSolid(a) => Some(&a.code_ref),
@@ -567,6 +567,24 @@ impl Artifact {
             Artifact::EdgeCut(a) => Some(&a.code_ref),
             Artifact::EdgeCutEdge(_) => None,
             Artifact::Helix(a) => Some(&a.code_ref),
+        }
+    }
+
+    /// The [`CodeRef`] referring to the face artifact that it's on, not the
+    /// artifact itself.
+    pub fn face_code_ref(&self) -> Option<&CodeRef> {
+        match self {
+            Artifact::CompositeSolid(_)
+            | Artifact::Plane(_)
+            | Artifact::Path(_)
+            | Artifact::Segment(_)
+            | Artifact::Solid2d(_)
+            | Artifact::StartSketchOnFace(_)
+            | Artifact::StartSketchOnPlane(_)
+            | Artifact::Sweep(_) => None,
+            Artifact::Wall(a) => Some(&a.face_code_ref),
+            Artifact::Cap(a) => Some(&a.face_code_ref),
+            Artifact::SweepEdge(_) | Artifact::EdgeCut(_) | Artifact::EdgeCutEdge(_) | Artifact::Helix(_) => None,
         }
     }
 
