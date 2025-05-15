@@ -49,16 +49,16 @@ const hasIssueToIconColors: Record<string | number | symbol, IconColorConfig> =
 const overallConnectionStateColor: Record<NetworkHealthState, IconColorConfig> =
   {
     [NetworkHealthState.Ok]: {
-      icon: 'text-succeed-80 dark:text-succeed-10',
-      bg: 'bg-succeed-10/30 dark:bg-succeed-80/50',
+      icon: 'text-destroy-80 dark:text-destroy-10',
+      bg: 'bg-destroy-10 dark:bg-destroy-80',
     },
     [NetworkHealthState.Weak]: {
-      icon: 'text-warn-80 dark:text-warn-10',
-      bg: 'bg-warn-10 dark:bg-warn-80/80',
+      icon: 'text-destroy-80 dark:text-destroy-10',
+      bg: 'bg-destroy-10 dark:bg-destroy-80',
     },
     [NetworkHealthState.Issue]: {
       icon: 'text-destroy-80 dark:text-destroy-10',
-      bg: 'bg-destroy-10 dark:bg-destroy-80/80',
+      bg: 'bg-destroy-10 dark:bg-destroy-80',
     },
     [NetworkHealthState.Disconnected]: {
       icon: 'text-destroy-80 dark:text-destroy-10',
