@@ -83,7 +83,7 @@ export END = 'end'
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn(YZ)
 ///     |> circle( center = [0, 0], radius = 0.5)
-///     |> sweep(path = helixPath)
+///     |> sweep(path = helixPath, relativeTo = "sketchPlane")
 /// ```
 ///
 /// ```
@@ -104,7 +104,7 @@ export END = 'end'
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn(XY)
 ///     |> circle( center = [0, 0], radius = 0.5 )
-///     |> sweep(path = helixPath)
+///     |> sweep(path = helixPath, relativeTo = "sketchPlane")
 /// ```
 ///
 /// ```
@@ -124,7 +124,7 @@ export END = 'end'
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn(XY)
 ///     |> circle( center = [0, 0], radius = 1 )
-///     |> sweep(path = helixPath)
+///     |> sweep(path = helixPath, relativeTo = "sketchPlane")
 /// ```
 ///
 /// ```
@@ -413,7 +413,7 @@ export fn offsetPlane(
 /// // Create a spring by sweeping around the helix path.
 /// sweepedSpring = clone(springSketch)
 ///     |> translate(x=100)
-///     |> sweep(path = helixPath)
+///     |> sweep(path = helixPath, relativeTo = "sketchPlane")
 /// ```
 ///
 /// ```kcl
