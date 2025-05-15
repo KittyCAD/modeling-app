@@ -74,6 +74,7 @@ editorManager.kclManager = kclManager
 // TODO: proper dependency injection.
 engineCommandManager.kclManager = kclManager
 engineCommandManager.codeManager = codeManager
+engineCommandManager.sceneInfra = sceneInfra
 engineCommandManager.rustContext = rustContext
 
 kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
