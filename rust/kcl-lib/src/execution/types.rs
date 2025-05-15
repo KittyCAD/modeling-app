@@ -664,6 +664,17 @@ impl NumericType {
         )
     }
 
+    pub fn is_fully_specified(&self) -> bool {
+        !matches!(
+            self,
+            NumericType::Unknown
+                | NumericType::Known(UnitType::Angle(UnitAngle::Unknown))
+                | NumericType::Known(UnitType::Length(UnitLen::Unknown))
+                | NumericType::Any
+                | NumericType::Default { .. }
+        )
+    }
+
     fn example_ty(&self) -> Option<String> {
         match self {
             Self::Known(t) if !self.is_unknown() => Some(t.to_string()),
