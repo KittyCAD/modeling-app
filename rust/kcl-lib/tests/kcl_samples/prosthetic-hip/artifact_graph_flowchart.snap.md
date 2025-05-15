@@ -178,7 +178,7 @@ flowchart LR
   9["Plane<br>[4976, 4993, 0]"]
     %% [ProgramBodyItem { index: 35 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   10["StartSketchOnPlane<br>[767, 810, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   86["Sweep Extrusion<br>[3616, 3638, 0]"]
     %% [ProgramBodyItem { index: 30 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
   87["Sweep Loft<br>[3698, 3786, 0]"]

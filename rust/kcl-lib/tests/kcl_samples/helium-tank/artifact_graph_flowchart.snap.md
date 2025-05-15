@@ -154,17 +154,17 @@ flowchart LR
   8["Plane<br>[4685, 4728, 0]"]
     %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }, CallKwUnlabeledArg]
   9["StartSketchOnPlane<br>[2447, 2505, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   10["StartSketchOnPlane<br>[3145, 3203, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   11["StartSketchOnPlane<br>[1713, 1770, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   12["StartSketchOnPlane<br>[4169, 4229, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   13["StartSketchOnPlane<br>[3781, 3839, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   14["StartSketchOnPlane<br>[4671, 4729, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   78["Sweep Revolve<br>[1608, 1650, 0]"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   79["Sweep Extrusion<br>[1848, 1890, 0]"]
