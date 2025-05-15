@@ -167,7 +167,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         path = { docs = "The path to sweep the sketch along" },
         sectional = { docs = "If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components." },
         tolerance = { docs = "Tolerance for this operation" },
-        relative_to = { docs = "What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. Defaults to sketchPlane."},
+        relative_to = { docs = "What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. Defaults to trajectoryCurve."},
         tag_start = { docs = "A named tag for the face at the start of the sweep, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the sweep" },
     },
@@ -191,14 +191,13 @@ async fn inner_sweep(
     };
     let relative_to = match relative_to.as_deref() {
         Some("sketchPlane") => RelativeTo::SketchPlane,
-        Some("trajectoryCurve") => RelativeTo::TrajectoryCurve,
+        Some("trajectoryCurve") | None => RelativeTo::TrajectoryCurve,
         Some(_) => {
             return Err(KclError::Syntax(crate::errors::KclErrorDetails {
                 source_ranges: vec![args.source_range],
                 message: "If you provide relativeTo, it must either be 'sketchPlane' or 'trajectoryCurve'".to_owned(),
             }))
         }
-        None => RelativeTo::default(),
     };
 
     let mut solids = Vec::new();
