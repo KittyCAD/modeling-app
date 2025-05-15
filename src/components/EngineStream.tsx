@@ -249,7 +249,7 @@ export const EngineStream = (props: {
     const connectionCheckIntervalId = setInterval(() => {
       // SKIP DURING TESTS BECAUSE IT WILL MESS WITH REUSING THE
       // ELECTRON INSTANCE.
-      if (TEST) {
+      if (isPlaywright()) {
         return
       }
 
