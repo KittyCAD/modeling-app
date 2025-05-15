@@ -109,7 +109,6 @@ impl TyF64 {
 
     pub fn to_degrees(&self) -> f64 {
         let angle = match self.ty {
-            NumericType::Default { angle, .. } => angle,
             NumericType::Known(UnitType::Angle(angle)) => angle,
             _ => unreachable!(),
         };
@@ -121,7 +120,6 @@ impl TyF64 {
 
     pub fn to_radians(&self) -> f64 {
         let angle = match self.ty {
-            NumericType::Default { angle, .. } => angle,
             NumericType::Known(UnitType::Angle(angle)) => angle,
             _ => unreachable!(),
         };

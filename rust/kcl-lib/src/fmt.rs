@@ -7,7 +7,7 @@ use crate::{execution::types::NumericType, pretty::NumericSuffix};
 pub fn human_display_number(value: f64, ty: NumericType) -> String {
     match ty {
         NumericType::Known(unit_type) => format!("{value}: number({unit_type})"),
-        NumericType::Default { len, angle } => format!("{value} (no units, defaulting to {len} or {angle})"),
+        NumericType::Default { len } => format!("{value} (no units, defaulting to {len})"),
         NumericType::Unknown => format!("{value} (number with unknown units)"),
         NumericType::Any => format!("{value} (number with any units)"),
     }
@@ -87,20 +87,18 @@ mod tests {
                 1.0,
                 NumericType::Default {
                     len: UnitLen::Mm,
-                    angle: UnitAngle::Degrees,
                 }
             ),
-            "1 (no units, defaulting to mm or deg)"
+            "1 (no units, defaulting to mm)"
         );
         assert_eq!(
             human_display_number(
                 1.0,
                 NumericType::Default {
                     len: UnitLen::Feet,
-                    angle: UnitAngle::Radians,
                 }
             ),
-            "1 (no units, defaulting to ft or rad)"
+            "1 (no units, defaulting to ft)"
         );
         assert_eq!(
             human_display_number(1.0, NumericType::Unknown),

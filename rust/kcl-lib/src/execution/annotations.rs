@@ -6,7 +6,7 @@ use kittycad_modeling_cmds::coord::{System, KITTYCAD, OPENGL, VULKAN};
 
 use crate::{
     errors::KclErrorDetails,
-    execution::types::{UnitAngle, UnitLen},
+    execution::types::UnitLen,
     parsing::ast::types::{Annotation, Expr, LiteralValue, Node, ObjectProperty},
     KclError, SourceRange,
 };
@@ -16,7 +16,6 @@ pub(super) const SIGNIFICANT_ATTRS: [&str; 2] = [SETTINGS, NO_PRELUDE];
 
 pub(crate) const SETTINGS: &str = "settings";
 pub(crate) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
-pub(crate) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
 pub(crate) const SETTINGS_VERSION: &str = "kclVersion";
 pub(super) const NO_PRELUDE: &str = "no_std";
 
@@ -54,7 +53,7 @@ impl FromStr for Impl {
 }
 
 pub(crate) fn settings_completion_text() -> String {
-    format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = mm, {SETTINGS_UNIT_ANGLE} = deg, {SETTINGS_VERSION} = 1.0)")
+    format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = mm, {SETTINGS_VERSION} = 1.0)")
 }
 
 pub(super) fn is_significant(attr: &&Node<Annotation>) -> bool {
@@ -143,19 +142,6 @@ impl UnitLen {
                 message: format!(
                     "Unexpected value for length units: `{value}`; expected one of `mm`, `cm`, `m`, `in`, `ft`, `yd`"
                 ),
-                source_ranges: vec![source_range],
-            })),
-        }
-    }
-}
-
-impl UnitAngle {
-    pub(super) fn from_str(s: &str, source_range: SourceRange) -> Result<Self, KclError> {
-        match s {
-            "deg" => Ok(UnitAngle::Degrees),
-            "rad" => Ok(UnitAngle::Radians),
-            value => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Unexpected value for angle units: `{value}`; expected one of `deg`, `rad`"),
                 source_ranges: vec![source_range],
             })),
         }

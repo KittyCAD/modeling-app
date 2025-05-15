@@ -18,7 +18,7 @@ use crate::{
         memory::{ProgramMemory, Stack},
         types,
         types::NumericType,
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, UnitAngle, UnitLen,
+        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, UnitLen,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::Annotation,
@@ -255,16 +255,11 @@ impl ExecState {
     pub fn current_default_units(&self) -> NumericType {
         NumericType::Default {
             len: self.length_unit(),
-            angle: self.angle_unit(),
         }
     }
 
     pub fn length_unit(&self) -> UnitLen {
         self.mod_local.settings.default_length_units
-    }
-
-    pub fn angle_unit(&self) -> UnitAngle {
-        self.mod_local.settings.default_angle_units
     }
 
     pub(super) fn circular_import_error(&self, path: &ModulePath, source_range: SourceRange) -> KclError {
@@ -339,7 +334,6 @@ impl ModuleState {
             std_path,
             settings: MetaSettings {
                 default_length_units: Default::default(),
-                default_angle_units: Default::default(),
                 kcl_version: "0.1".to_owned(),
             },
         }
@@ -351,7 +345,6 @@ impl ModuleState {
 #[serde(rename_all = "camelCase")]
 pub struct MetaSettings {
     pub default_length_units: types::UnitLen,
-    pub default_angle_units: types::UnitAngle,
     pub kcl_version: String,
 }
 
@@ -371,11 +364,6 @@ impl MetaSettings {
                     self.default_length_units = value;
                     updated_len = true;
                 }
-                annotations::SETTINGS_UNIT_ANGLE => {
-                    let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = types::UnitAngle::from_str(value, annotation.as_source_range())?;
-                    self.default_angle_units = value;
-                }
                 annotations::SETTINGS_VERSION => {
                     let value = annotations::expect_number(&p.inner.value)?;
                     self.kcl_version = value;
@@ -385,7 +373,7 @@ impl MetaSettings {
                         message: format!(
                             "Unexpected settings key: `{name}`; expected one of `{}`, `{}`",
                             annotations::SETTINGS_UNIT_LENGTH,
-                            annotations::SETTINGS_UNIT_ANGLE
+                            annotations::SETTINGS_VERSION
                         ),
                         source_ranges: vec![annotation.as_source_range()],
                     }))

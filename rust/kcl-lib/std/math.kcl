@@ -31,7 +31,7 @@ export PI = 3.14159265358979323846264338327950288_?
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 30,
+///     angle = 30deg,
 ///     length = 2 * E ^ 2,
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -47,7 +47,7 @@ export E = 2.71828182845904523536028747135266250_
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 50,
+///     angle = 50deg,
 ///     length = 10 * TAU,
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -63,7 +63,7 @@ export TAU = 6.28318530717958647692528676655900577_
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 30,
+///     angle = 30deg,
 ///     length = 3 / cos(30deg),
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -80,7 +80,7 @@ export fn cos(@num: number(Angle)): number(Count) {}
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 50,
+///     angle = 50deg,
 ///     length = 15 / sin(135deg),
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -97,7 +97,7 @@ export fn sin(@num: number(Angle)): number(Count) {}
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 50,
+///     angle = 50deg,
 ///     length = 50 * tan((1/2): number(rad)),
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -185,7 +185,7 @@ export fn atan2(y: number(Length), x: number(Length)): number(rad) {}
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
-///   |> line(end = polar(angle = 30, length = 5), tag = $thing)
+///   |> line(end = polar(angle = 30deg, length = 5), tag = $thing)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [segEndX(thing), 0])
 ///   |> line(end = [-20, 10])
@@ -226,7 +226,7 @@ export fn rem(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 50,
+///     angle = 50deg,
 ///     length = sqrt(2500),
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -312,7 +312,7 @@ export fn ceil(@input: number): number {}
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 70,
+///     angle = 70deg,
 ///     length = min([15, 31, 4, 13, 22])
 ///   )
 ///   |> line(end = [20, 0])
@@ -332,7 +332,7 @@ export fn min(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 70,
+///     angle = 70deg,
 ///     length = max([15, 31, 4, 13, 22])
 ///   )
 ///   |> line(end = [20, 0])
@@ -352,7 +352,7 @@ export fn max(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 50,
+///     angle = 50deg,
 ///     length = pow(5, exp = 2),
 ///   )
 ///   |> yLine(endAbsolute = 0)

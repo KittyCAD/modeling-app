@@ -29,7 +29,7 @@ use crate::{
     errors::KclError,
     execution::{
         annotations,
-        types::{ArrayLen, UnitAngle, UnitLen},
+        types::{ArrayLen, UnitLen},
         KclValue, Metadata, TagIdentifier,
     },
     parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
@@ -361,7 +361,6 @@ impl Node<Program> {
     pub fn change_default_units(
         &self,
         length_units: Option<UnitLen>,
-        angle_units: Option<UnitAngle>,
     ) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         let mut found = false;
@@ -371,12 +370,6 @@ impl Node<Program> {
                     node.inner.add_or_update(
                         annotations::SETTINGS_UNIT_LENGTH,
                         Expr::Name(Box::new(Name::new(&len.to_string()))),
-                    );
-                }
-                if let Some(angle) = angle_units {
-                    node.inner.add_or_update(
-                        annotations::SETTINGS_UNIT_ANGLE,
-                        Expr::Name(Box::new(Name::new(&angle.to_string()))),
                     );
                 }
 
@@ -394,12 +387,6 @@ impl Node<Program> {
                 settings.inner.add_or_update(
                     annotations::SETTINGS_UNIT_LENGTH,
                     Expr::Name(Box::new(Name::new(&len.to_string()))),
-                );
-            }
-            if let Some(angle) = angle_units {
-                settings.inner.add_or_update(
-                    annotations::SETTINGS_UNIT_ANGLE,
-                    Expr::Name(Box::new(Name::new(&angle.to_string()))),
                 );
             }
 
@@ -4247,7 +4234,7 @@ startSketchOn(XY)"#;
 
         // Edit the ast.
         let new_program = program
-            .change_default_units(Some(crate::execution::types::UnitLen::Mm), None)
+            .change_default_units(Some(crate::execution::types::UnitLen::Mm))
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();
@@ -4276,7 +4263,7 @@ startSketchOn(XY)
 
         // Edit the ast.
         let new_program = program
-            .change_default_units(Some(crate::execution::types::UnitLen::Mm), None)
+            .change_default_units(Some(crate::execution::types::UnitLen::Mm))
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();
@@ -4311,7 +4298,7 @@ startSketchOn(XY)
         let program = crate::parsing::top_level_parse(code).unwrap();
 
         let new_program = program
-            .change_default_units(Some(crate::execution::types::UnitLen::Cm), None)
+            .change_default_units(Some(crate::execution::types::UnitLen::Cm))
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();

@@ -434,7 +434,7 @@ pub enum NumericType {
     // Specified by the user (directly or indirectly)
     Known(UnitType),
     // Unspecified, using defaults
-    Default { len: UnitLen, angle: UnitAngle },
+    Default { len: UnitLen },
     // Exceeded the ability of the type system to track.
     Unknown,
     // Type info has been explicitly cast away.
@@ -445,7 +445,6 @@ impl Default for NumericType {
     fn default() -> Self {
         NumericType::Default {
             len: UnitLen::default(),
-            angle: UnitAngle::default(),
         }
     }
 }
@@ -474,13 +473,6 @@ impl NumericType {
         }
     }
 
-    pub fn expect_default_angle(&self) -> Self {
-        match self {
-            NumericType::Default { angle, .. } => NumericType::Known(UnitType::Angle(*angle)),
-            _ => unreachable!(),
-        }
-    }
-
     /// Combine two types when we expect them to be equal, erring on the side of less coercion. To be
     /// precise, only adjusting one number or the other when they are of known types.
     ///
@@ -501,8 +493,6 @@ impl NumericType {
             }
             (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) if l1 == l2 => (a.n, b.n, t),
             (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) if l1 == l2 => (a.n, b.n, t),
-            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 => (a.n, b.n, t),
-            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) if a1 == a2 => (a.n, b.n, t),
 
             _ => (a.n, b.n, Unknown),
         }
@@ -522,6 +512,8 @@ impl NumericType {
             (at, Any) => (a.n, b.n, at),
             (Any, bt) => (a.n, b.n, bt),
 
+            (Default { .. }, Known(UnitType::Angle(_))) |
+            (Known(UnitType::Angle(_)), Default { .. }) |
             (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => (a.n, b.n, Unknown),
 
             // Known types and compatible, but needs adjustment.
@@ -538,9 +530,6 @@ impl NumericType {
 
             (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) => (a.n, l2.adjust_to(b.n, l1).0, t),
             (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) => (l1.adjust_to(a.n, l2).0, b.n, t),
-
-            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) => (a.n, a2.adjust_to(b.n, a1).0, t),
-            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) => (a1.adjust_to(a.n, a2).0, b.n, t),
         }
     }
 
@@ -567,13 +556,9 @@ impl NumericType {
                 }
 
                 (Known(UnitType::Length(l1)), Default { len: l2, .. }) if l1 == l2 || i.n == 0.0 => {}
-                (Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 || i.n == 0.0 => {}
 
                 (Default { len: l1, .. }, Known(UnitType::Length(l2))) if l1 == l2 => {
                     ty = Known(UnitType::Length(*l2));
-                }
-                (Default { angle: a1, .. }, Known(UnitType::Angle(a2))) if a1 == a2 => {
-                    ty = Known(UnitType::Angle(*a2));
                 }
 
                 _ => return (result, Unknown),
@@ -619,7 +604,6 @@ impl NumericType {
         match suffix {
             NumericSuffix::None => NumericType::Default {
                 len: settings.default_length_units,
-                angle: settings.default_angle_units,
             },
             NumericSuffix::Count => NumericType::Known(UnitType::Count),
             NumericSuffix::Length => NumericType::Known(UnitType::Length(UnitLen::Unknown)),
@@ -647,7 +631,7 @@ impl NumericType {
                 NumericType::Known(UnitType::Length(UnitLen::Unknown)),
             )
             | (
-                NumericType::Known(UnitType::Angle(_)) | NumericType::Default { .. },
+                NumericType::Known(UnitType::Angle(_)),
                 NumericType::Known(UnitType::Angle(UnitAngle::Unknown)),
             ) => true,
             (Unknown, _) | (_, Unknown) => false,
@@ -743,14 +727,7 @@ impl NumericType {
                 })
             }
 
-            (Default { angle: a1, .. }, Known(UnitType::Angle(a2))) => {
-                let (value, ty) = a1.adjust_to(*value, *a2);
-                Ok(KclValue::Number {
-                    value,
-                    ty: Known(UnitType::Angle(ty)),
-                    meta: meta.clone(),
-                })
-            }
+            (Default { .. }, Known(UnitType::Angle(_))) => Err(val.into()),
 
             (_, _) => unreachable!(),
         }
@@ -2063,8 +2040,7 @@ mod test {
             default
                 .coerce(
                     &NumericType::Default {
-                        len: UnitLen::Yards,
-                        angle: UnitAngle::default()
+                        len: UnitLen::Yards
                     }
                     .into(),
                     &mut exec_state

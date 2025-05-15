@@ -36,7 +36,7 @@ use crate::{
     execution::{
         cache::{CacheInformation, CacheResult},
         typed_path::TypedPath,
-        types::{UnitAngle, UnitLen},
+        types::UnitLen,
     },
     fs::FileManager,
     modules::{ModuleId, ModulePath, ModuleRepr},
