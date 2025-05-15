@@ -1,13 +1,8 @@
 import { AxisNames } from '@src/lib/constants'
-import { copyFileShareLink } from '@src/lib/links'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import {
-  codeManager,
-  engineCommandManager,
-  sceneInfra,
-} from '@src/lib/singletons'
+import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { authActor, settingsActor } from '@src/lib/singletons'

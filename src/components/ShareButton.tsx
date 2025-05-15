@@ -9,7 +9,8 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { Popover } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
 import { useKclContext } from '@src/lang/KclProvider'
-import { Tier, SubscriptionsOrError } from '@src/machines/billingMachine'
+import { Tier } from '@src/machines/billingMachine'
+import type { SubscriptionsOrError } from '@src/machines/billingMachine'
 
 const shareHotkey = 'mod+alt+s'
 
