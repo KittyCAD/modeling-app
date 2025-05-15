@@ -1164,6 +1164,24 @@ description: Result of parsing subtract_with_pattern.kcl
           ],
           "commentStart": 0,
           "end": 0,
+          "nonCodeMeta": {
+            "nonCodeNodes": {
+              "1": [
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "start": 0,
+                  "type": "NonCodeNode",
+                  "value": {
+                    "type": "inlineComment",
+                    "value": "we do this to ensure the id is okay after the subtract",
+                    "style": "line"
+                  }
+                }
+              ]
+            },
+            "startNodes": []
+          },
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
