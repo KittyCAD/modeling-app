@@ -566,6 +566,8 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
   planesInitialized: false,
 }
 
+const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
+
 export const modelingMachine = setup({
   types: {
     context: {} as ModelingMachineContext,
@@ -1357,6 +1359,8 @@ export const modelingMachine = setup({
   },
   // end actions
   actors: {
+    /* Below are all the do-constrain sketch actors,
+     * which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
     'do-constrain-remove-constraint': fromPromise(
       async ({
         input: { selectionRanges, sketchDetails, data },
@@ -1694,6 +1698,9 @@ export const modelingMachine = setup({
         }
       }
     ),
+
+    /* Below are actors being defined in src/components/ModelingMachineProvider.tsx
+     * which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
     'Get vertical info': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
@@ -1775,76 +1782,167 @@ export const modelingMachine = setup({
         return {} as SetSelections
       }
     ),
-    extrudeAstMod: fromPromise<
-      unknown,
-      ModelingCommandSchema['Extrude'] | undefined
-    >(async ({ input }) => {
-      if (!input) return Promise.reject(new Error('No input provided'))
-      const { nodeToEdit, sketches, length } = input
-      const { ast } = kclManager
-      const astResult = addExtrude({
-        ast,
-        sketches,
-        length,
-        nodeToEdit,
-      })
-      if (err(astResult)) {
-        return Promise.reject(new Error("Couldn't add extrude statement"))
-      }
-
-      const { modifiedAst, pathToNode } = astResult
-      await updateModelingState(
-        modifiedAst,
-        EXECUTION_TYPE_REAL,
-        {
-          kclManager,
-          editorManager,
-          codeManager,
-        },
-        {
-          focusPath: [pathToNode],
+    'set-up-draft-circle': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: [x: number, y: number]
         }
-      )
-    }),
-    sweepAstMod: fromPromise<
-      unknown,
-      ModelingCommandSchema['Sweep'] | undefined
-    >(async ({ input }) => {
-      if (!input) return Promise.reject(new Error('No input provided'))
-      const { nodeToEdit, sketches, path, sectional } = input
-      const { ast } = kclManager
-      const astResult = addSweep({
-        ast,
-        sketches,
-        path,
-        sectional,
-        nodeToEdit,
-      })
-      if (err(astResult)) {
-        return Promise.reject(astResult)
+      }) => {
+        return {} as SketchDetailsUpdate
       }
-
-      const { modifiedAst, pathToNode } = astResult
-      await updateModelingState(
-        modifiedAst,
-        EXECUTION_TYPE_REAL,
-        {
-          kclManager,
-          editorManager,
-          codeManager,
-        },
-        {
-          focusPath: [pathToNode],
+    ),
+    'set-up-draft-circle-three-point': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: { p1: [x: number, y: number]; p2: [x: number, y: number] }
         }
-      )
-    }),
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'set-up-draft-rectangle': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: [x: number, y: number]
+        }
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'set-up-draft-center-rectangle': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: [x: number, y: number]
+        }
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'set-up-draft-arc': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: [x: number, y: number]
+        }
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'set-up-draft-arc-three-point': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: [x: number, y: number]
+        }
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'setup-client-side-sketch-segments': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails' | 'selectionRanges'>
+      }) => {
+        return undefined
+      }
+    ),
+    'split-sketch-pipe-if-needed': fromPromise(
+      async (_: { input: Pick<ModelingMachineContext, 'sketchDetails'> }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'submit-prompt-edit': fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Prompt-to-edit']
+      }) => {}
+    ),
+
+    /* Below are recent modeling codemods that are using updateModelinState,
+     * trigger toastError on Error, and have the 'no kcl errors' guard yet */
+    extrudeAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Extrude'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const { nodeToEdit, sketches, length } = input
+        const { ast } = kclManager
+        const astResult = addExtrude({
+          ast,
+          sketches,
+          length,
+          nodeToEdit,
+        })
+        if (err(astResult)) {
+          return Promise.reject(new Error("Couldn't add extrude statement"))
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    sweepAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Sweep'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const { nodeToEdit, sketches, path, sectional } = input
+        const { ast } = kclManager
+        const astResult = addSweep({
+          ast,
+          sketches,
+          path,
+          sectional,
+          nodeToEdit,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
     loftAstMod: fromPromise(
       async ({
         input,
       }: {
         input: ModelingCommandSchema['Loft'] | undefined
       }) => {
-        if (!input) return Promise.reject(new Error('No input provided'))
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
         const { sketches } = input
         const { ast } = kclManager
         const astResult = addLoft({ ast, sketches })
@@ -1867,47 +1965,56 @@ export const modelingMachine = setup({
         )
       }
     ),
-    revolveAstMod: fromPromise<
-      unknown,
-      ModelingCommandSchema['Revolve'] | undefined
-    >(async ({ input }) => {
-      if (!input) return Promise.reject(new Error('No input provided'))
-      const { nodeToEdit, sketches, angle, axis, edge, axisOrEdge } = input
-      const { ast } = kclManager
-      const astResult = addRevolve({
-        ast,
-        sketches,
-        angle,
-        axisOrEdge,
-        axis,
-        edge,
-        nodeToEdit,
-      })
-      if (err(astResult)) {
-        return Promise.reject(astResult)
-      }
-
-      const { modifiedAst, pathToNode } = astResult
-      await updateModelingState(
-        modifiedAst,
-        EXECUTION_TYPE_REAL,
-        {
-          kclManager,
-          editorManager,
-          codeManager,
-        },
-        {
-          focusPath: [pathToNode],
+    revolveAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Revolve'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-      )
-    }),
+
+        const { nodeToEdit, sketches, angle, axis, edge, axisOrEdge } = input
+        const { ast } = kclManager
+        const astResult = addRevolve({
+          ast,
+          sketches,
+          angle,
+          axisOrEdge,
+          axis,
+          edge,
+          nodeToEdit,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
     offsetPlaneAstMod: fromPromise(
       async ({
         input,
       }: {
         input: ModelingCommandSchema['Offset plane'] | undefined
       }) => {
-        if (!input) return new Error('No input provided')
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
         // Extract inputs
         const ast = kclManager.ast
         const { plane: selection, distance, nodeToEdit } = input
@@ -1989,9 +2096,10 @@ export const modelingMachine = setup({
       }: {
         input: ModelingCommandSchema['Helix'] | undefined
       }) => {
-        if (!input) return new Error('No input provided')
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
         // Extract inputs
-        console.log('input', input)
         const ast = kclManager.ast
         const {
           mode,
@@ -2043,7 +2151,7 @@ export const modelingMachine = setup({
               cylinder.graphSelections[0].artifact?.type === 'wall'
             )
           ) {
-            return new Error('Cylinder argument not valid')
+            return Promise.reject(new Error('Cylinder argument not valid'))
           }
           const clonedAstForGetExtrude = structuredClone(ast)
           const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
@@ -2052,7 +2160,7 @@ export const modelingMachine = setup({
             kclManager.artifactGraph
           )
           if (err(extrudeLookupResult)) {
-            return extrudeLookupResult
+            return Promise.reject(extrudeLookupResult)
           }
           const extrudeNode = getNodeFromPath<VariableDeclaration>(
             ast,
@@ -2060,18 +2168,20 @@ export const modelingMachine = setup({
             'VariableDeclaration'
           )
           if (err(extrudeNode)) {
-            return extrudeNode
+            return Promise.reject(extrudeNode)
           }
           cylinderDeclarator = extrudeNode.node.declaration
         } else if (mode === 'Axis' || mode === 'Edge') {
           const getAxisResult = getAxisExpressionAndIndex(mode, axis, edge, ast)
           if (err(getAxisResult)) {
-            return getAxisResult
+            return Promise.reject(getAxisResult)
           }
           axisExpression = getAxisResult.generatedAxis
         } else {
-          return new Error(
-            'Generated axis or cylinder declarator selection is missing.'
+          return Promise.reject(
+            new Error(
+              'Generated axis or cylinder declarator selection is missing.'
+            )
           )
         }
 
@@ -2132,7 +2242,7 @@ export const modelingMachine = setup({
         input: ModelingCommandSchema['Shell'] | undefined
       }) => {
         if (!input) {
-          return new Error('No input provided')
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         // Extract inputs
@@ -2173,9 +2283,11 @@ export const modelingMachine = setup({
             kclManager.artifactGraph
           )
           if (err(extrudeLookupResult)) {
-            return new Error(
-              "Couldn't find extrude paths from getPathToExtrudeForSegmentSelection",
-              { cause: extrudeLookupResult }
+            return Promise.reject(
+              new Error(
+                "Couldn't find extrude paths from getPathToExtrudeForSegmentSelection",
+                { cause: extrudeLookupResult }
+              )
             )
           }
 
@@ -2196,9 +2308,11 @@ export const modelingMachine = setup({
             'VariableDeclaration'
           )
           if (err(segmentNode)) {
-            return new Error("Couldn't find segment node from selection", {
-              cause: segmentNode,
-            })
+            return Promise.reject(
+              new Error("Couldn't find segment node from selection", {
+                cause: segmentNode,
+              })
+            )
           }
 
           if (extrudeNode.node.declaration.init.type === 'CallExpressionKw') {
@@ -2208,15 +2322,17 @@ export const modelingMachine = setup({
           ) {
             pathToExtrudeNode = extrudeLookupResult.pathToSegmentNode
           } else {
-            return new Error(
-              "Couldn't find extrude node that was either a call expression or a pipe",
-              { cause: segmentNode }
+            return Promise.reject(
+              new Error(
+                "Couldn't find extrude node that was either a call expression or a pipe",
+                { cause: segmentNode }
+              )
             )
           }
 
           const selectedArtifact = graphSelection.artifact
           if (!selectedArtifact) {
-            return new Error('Bad artifact from selection')
+            return Promise.reject(new Error('Bad artifact from selection'))
           }
 
           // Check on the selection, and handle the wall vs cap cases
@@ -2229,20 +2345,22 @@ export const modelingMachine = setup({
               extrudeLookupResult.pathToSegmentNode
             )
             if (err(tagResult)) {
-              return tagResult
+              return Promise.reject(tagResult)
             }
 
             const { tag } = tagResult
             expr = createLocalName(tag)
           } else {
-            return new Error('Artifact is neither a cap nor a wall')
+            return Promise.reject(
+              new Error('Artifact is neither a cap nor a wall')
+            )
           }
 
           faces.push(expr)
         }
 
         if (!pathToExtrudeNode) {
-          return new Error('No path to extrude node found')
+          return Promise.reject(new Error('No path to extrude node found'))
         }
 
         const extrudeNode = getNodeFromPath<VariableDeclarator>(
@@ -2251,9 +2369,11 @@ export const modelingMachine = setup({
           'VariableDeclarator'
         )
         if (err(extrudeNode)) {
-          return new Error("Couldn't find extrude node", {
-            cause: extrudeNode,
-          })
+          return Promise.reject(
+            new Error("Couldn't find extrude node", {
+              cause: extrudeNode,
+            })
+          )
         }
 
         // Perform the shell op
@@ -2308,7 +2428,7 @@ export const modelingMachine = setup({
         input: ModelingCommandSchema['Fillet'] | undefined
       }) => {
         if (!input) {
-          return new Error('No input provided')
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         // Extract inputs
@@ -2401,7 +2521,7 @@ export const modelingMachine = setup({
         input: ModelingCommandSchema['Chamfer'] | undefined
       }) => {
         if (!input) {
-          return Promise.reject(new Error('No input provided'))
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         // Extract inputs
@@ -2492,10 +2612,13 @@ export const modelingMachine = setup({
       }: {
         input: ModelingCommandSchema['event.parameter.create'] | undefined
       }) => {
-        if (!input) return new Error('No input provided')
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
         const { value } = input
         if (!('variableName' in value)) {
-          return new Error('variable name is required')
+          return Promise.reject(new Error('variable name is required'))
         }
         const newAst = insertNamedConstant({
           node: kclManager.ast,
@@ -2514,7 +2637,10 @@ export const modelingMachine = setup({
       }: {
         input: ModelingCommandSchema['event.parameter.edit'] | undefined
       }) => {
-        if (!input) return new Error('No input provided')
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
         // Get the variable AST node to edit
         const { nodeToEdit, value } = input
         const newAst = structuredClone(kclManager.ast)
@@ -2528,7 +2654,7 @@ export const modelingMachine = setup({
           variableNode.node.type !== 'VariableDeclarator' ||
           !variableNode.node
         ) {
-          return new Error('No variable found, this is a bug')
+          return Promise.reject(new Error('No variable found, this is a bug'))
         }
 
         // Mutate the variable's value
@@ -2540,79 +2666,6 @@ export const modelingMachine = setup({
           kclManager,
         })
       }
-    ),
-    'set-up-draft-circle': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: [x: number, y: number]
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'set-up-draft-circle-three-point': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: { p1: [x: number, y: number]; p2: [x: number, y: number] }
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'set-up-draft-rectangle': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: [x: number, y: number]
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'set-up-draft-center-rectangle': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: [x: number, y: number]
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'set-up-draft-arc': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: [x: number, y: number]
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'set-up-draft-arc-three-point': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: [x: number, y: number]
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'setup-client-side-sketch-segments': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails' | 'selectionRanges'>
-      }) => {
-        return undefined
-      }
-    ),
-    'split-sketch-pipe-if-needed': fromPromise(
-      async (_: { input: Pick<ModelingMachineContext, 'sketchDetails'> }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'submit-prompt-edit': fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['Prompt-to-edit']
-      }) => {}
     ),
     deleteSelectionAstMod: fromPromise(
       ({
@@ -2648,12 +2701,15 @@ export const modelingMachine = setup({
       }: {
         input: ModelingCommandSchema['Appearance'] | undefined
       }) => {
-        if (!input) return new Error('No input provided')
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
         // Extract inputs
         const ast = kclManager.ast
         const { color, nodeToEdit } = input
         if (!(nodeToEdit && typeof nodeToEdit[1][0] === 'number')) {
-          return new Error('Appearance is only an edit flow')
+          return Promise.reject(new Error('Appearance is only an edit flow'))
         }
 
         const result = setAppearance({
@@ -2663,7 +2719,7 @@ export const modelingMachine = setup({
         })
 
         if (err(result)) {
-          return err(result)
+          return Promise.reject(err(result))
         }
 
         await updateModelingState(
@@ -2686,7 +2742,10 @@ export const modelingMachine = setup({
       }: {
         input: ModelingCommandSchema['Translate'] | undefined
       }) => {
-        if (!input) return Promise.reject(new Error('No input provided'))
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
         const ast = kclManager.ast
         const modifiedAst = structuredClone(ast)
         const { x, y, z, nodeToEdit, selection } = input
@@ -2764,7 +2823,10 @@ export const modelingMachine = setup({
       }: {
         input: ModelingCommandSchema['Rotate'] | undefined
       }) => {
-        if (!input) return Promise.reject(new Error('No input provided'))
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
         const ast = kclManager.ast
         const modifiedAst = structuredClone(ast)
         const { roll, pitch, yaw, nodeToEdit, selection } = input
@@ -2842,7 +2904,10 @@ export const modelingMachine = setup({
       }: {
         input: ModelingCommandSchema['Clone'] | undefined
       }) => {
-        if (!input) return Promise.reject(new Error('No input provided'))
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
         const ast = kclManager.ast
         const { nodeToEdit, selection, variableName } = input
         let pathToNode = nodeToEdit
@@ -2933,15 +2998,17 @@ export const modelingMachine = setup({
         input: ModelingCommandSchema['Boolean Subtract'] | undefined
       }) => {
         if (!input) {
-          return new Error('No input provided')
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+
         const { target, tool } = input
         if (
           !target.graphSelections[0].artifact ||
           !tool.graphSelections[0].artifact
         ) {
-          return new Error('No artifact in selections found')
+          return Promise.reject(new Error('No artifact in selections found'))
         }
+
         await applySubtractFromTargetOperatorSelections(
           target.graphSelections[0],
           tool.graphSelections[0],
@@ -2961,12 +3028,14 @@ export const modelingMachine = setup({
         input: ModelingCommandSchema['Boolean Union'] | undefined
       }) => {
         if (!input) {
-          return new Error('No input provided')
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+
         const { solids } = input
         if (!solids.graphSelections[0].artifact) {
-          return new Error('No artifact in selections found')
+          return Promise.reject(new Error('No artifact in selections found'))
         }
+
         await applyUnionFromTargetOperatorSelections(solids, {
           kclManager,
           codeManager,
@@ -2982,12 +3051,14 @@ export const modelingMachine = setup({
         input: ModelingCommandSchema['Boolean Union'] | undefined
       }) => {
         if (!input) {
-          return new Error('No input provided')
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+
         const { solids } = input
         if (!solids.graphSelections[0].artifact) {
-          return new Error('No artifact in selections found')
+          return Promise.reject(new Error('No artifact in selections found'))
         }
+
         await applyIntersectFromTargetOperatorSelections(solids, {
           kclManager,
           codeManager,
@@ -2996,6 +3067,8 @@ export const modelingMachine = setup({
         })
       }
     ),
+
+    /* Pierre: looks like somewhat of a one-off */
     'reeval-node-paths': fromPromise(
       async ({
         input: { sketchDetails },
@@ -3096,50 +3169,74 @@ export const modelingMachine = setup({
             target: 'animating to existing sketch',
             guard: 'Selection is on face',
           },
-          'Sketch no face',
+          {
+            target: 'Sketch no face',
+            guard: 'no kcl errors',
+          },
         ],
 
         Extrude: {
           target: 'Applying extrude',
           reenter: true,
-        },
-
-        Revolve: {
-          target: 'Applying revolve',
-          reenter: true,
+          guard: 'no kcl errors',
         },
 
         Sweep: {
           target: 'Applying sweep',
           reenter: true,
+          guard: 'no kcl errors',
         },
 
         Loft: {
           target: 'Applying loft',
           reenter: true,
+          guard: 'no kcl errors',
+        },
+
+        Revolve: {
+          target: 'Applying revolve',
+          reenter: true,
+          guard: 'no kcl errors',
+        },
+
+        'Offset plane': {
+          target: 'Applying offset plane',
+          reenter: true,
+          guard: 'no kcl errors',
+        },
+
+        Helix: {
+          target: 'Applying helix',
+          reenter: true,
+          guard: 'no kcl errors',
         },
 
         Shell: {
           target: 'Applying shell',
           reenter: true,
+          guard: 'no kcl errors',
         },
 
         Fillet: {
           target: 'Applying fillet',
           reenter: true,
+          guard: 'no kcl errors',
         },
 
         Chamfer: {
           target: 'Applying chamfer',
           reenter: true,
+          guard: 'no kcl errors',
         },
 
         'event.parameter.create': {
           target: '#Modeling.parameter.creating',
+          guard: 'no kcl errors',
         },
 
         'event.parameter.edit': {
           target: '#Modeling.parameter.editing',
+          guard: 'no kcl errors',
         },
 
         Export: {
@@ -3164,41 +3261,44 @@ export const modelingMachine = setup({
           actions: ['Submit to Text-to-CAD API'],
         },
 
-        'Offset plane': {
-          target: 'Applying offset plane',
-          reenter: true,
-        },
-
-        Helix: {
-          target: 'Applying helix',
-          reenter: true,
-        },
-
         'Prompt-to-edit': 'Applying Prompt-to-edit',
 
         Appearance: {
           target: 'Applying appearance',
           reenter: true,
+          guard: 'no kcl errors',
         },
 
         Translate: {
           target: 'Applying translate',
           reenter: true,
+          guard: 'no kcl errors',
         },
 
         Rotate: {
           target: 'Applying rotate',
           reenter: true,
+          guard: 'no kcl errors',
         },
 
         Clone: {
           target: 'Applying clone',
           reenter: true,
+          guard: 'no kcl errors',
         },
 
-        'Boolean Subtract': 'Boolean subtracting',
-        'Boolean Union': 'Boolean uniting',
-        'Boolean Intersect': 'Boolean intersecting',
+        'Boolean Subtract': {
+          target: 'Boolean subtracting',
+          guard: 'no kcl errors',
+        },
+        'Boolean Union': {
+          target: 'Boolean uniting',
+          guard: 'no kcl errors',
+        },
+        'Boolean Intersect': {
+          target: 'Boolean intersecting',
+          guard: 'no kcl errors',
+        },
       },
 
       entry: 'reset client scene mouse handlers',
@@ -4415,6 +4515,38 @@ export const modelingMachine = setup({
       },
     },
 
+    'Applying sweep': {
+      invoke: {
+        src: 'sweepAstMod',
+        id: 'sweepAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Sweep') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying loft': {
+      invoke: {
+        src: 'loftAstMod',
+        id: 'loftAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Loft') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
     'Applying revolve': {
       invoke: {
         src: 'revolveAstMod',
@@ -4440,7 +4572,10 @@ export const modelingMachine = setup({
           return event.data
         },
         onDone: ['idle'],
-        onError: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
       },
     },
 
@@ -4453,33 +4588,10 @@ export const modelingMachine = setup({
           return event.data
         },
         onDone: ['idle'],
-        onError: ['idle'],
-      },
-    },
-
-    'Applying sweep': {
-      invoke: {
-        src: 'sweepAstMod',
-        id: 'sweepAstMod',
-        input: ({ event }) => {
-          if (event.type !== 'Sweep') return undefined
-          return event.data
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
         },
-        onDone: ['idle'],
-        onError: ['idle'],
-      },
-    },
-
-    'Applying loft': {
-      invoke: {
-        src: 'loftAstMod',
-        id: 'loftAstMod',
-        input: ({ event }) => {
-          if (event.type !== 'Loft') return undefined
-          return event.data
-        },
-        onDone: ['idle'],
-        onError: ['idle'],
       },
     },
 
@@ -4492,7 +4604,10 @@ export const modelingMachine = setup({
           return event.data
         },
         onDone: ['idle'],
-        onError: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
       },
     },
 
@@ -4505,7 +4620,10 @@ export const modelingMachine = setup({
           return event.data
         },
         onDone: ['idle'],
-        onError: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
       },
     },
 
@@ -4518,7 +4636,10 @@ export const modelingMachine = setup({
           return event.data
         },
         onDone: ['idle'],
-        onError: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
       },
     },
 
@@ -4535,7 +4656,10 @@ export const modelingMachine = setup({
               return event.data
             },
             onDone: ['#Modeling.idle'],
-            onError: ['#Modeling.idle'],
+            onError: {
+              target: '#Modeling.idle',
+              actions: 'toastError',
+            },
           },
         },
         editing: {
@@ -4547,7 +4671,10 @@ export const modelingMachine = setup({
               return event.data
             },
             onDone: ['#Modeling.idle'],
-            onError: ['#Modeling.idle'],
+            onError: {
+              target: '#Modeling.idle',
+              actions: 'toastError',
+            },
           },
         },
       },
@@ -4604,7 +4731,10 @@ export const modelingMachine = setup({
           return event.data
         },
         onDone: ['idle'],
-        onError: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
       },
     },
 
@@ -4617,7 +4747,10 @@ export const modelingMachine = setup({
           return event.data
         },
         onDone: ['idle'],
-        onError: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
       },
     },
 
@@ -4630,7 +4763,10 @@ export const modelingMachine = setup({
           return event.data
         },
         onDone: ['idle'],
-        onError: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
       },
     },
 
@@ -4686,7 +4822,10 @@ export const modelingMachine = setup({
         input: ({ event }) =>
           event.type !== 'Boolean Subtract' ? undefined : event.data,
         onDone: 'idle',
-        onError: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
       },
     },
 
@@ -4697,7 +4836,10 @@ export const modelingMachine = setup({
         input: ({ event }) =>
           event.type !== 'Boolean Union' ? undefined : event.data,
         onDone: 'idle',
-        onError: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
       },
     },
 
@@ -4708,7 +4850,10 @@ export const modelingMachine = setup({
         input: ({ event }) =>
           event.type !== 'Boolean Intersect' ? undefined : event.data,
         onDone: 'idle',
-        onError: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
       },
     },
   },
