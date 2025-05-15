@@ -881,6 +881,12 @@ fn artifacts_to_update(
     ast: &Node<Program>,
     exec_artifacts: &IndexMap<ArtifactId, Artifact>,
 ) -> Result<Vec<Artifact>, KclError> {
+    let uuid = artifact_command.cmd_id;
+    let Some(response) = responses.get(&uuid) else {
+        // Response not found or not successful.
+        return Ok(Vec::new());
+    };
+
     // TODO: Build path-to-node from artifact_command source range.  Right now,
     // we're serializing an empty array, and the TS wrapper fills it in with the
     // correct value based on NodePath.
@@ -893,14 +899,7 @@ fn artifacts_to_update(
         path_to_node,
     };
 
-    let uuid = artifact_command.cmd_id;
     let id = ArtifactId::new(uuid);
-
-    let Some(response) = responses.get(&uuid) else {
-        // Response not found or not successful.
-        return Ok(Vec::new());
-    };
-
     let cmd = &artifact_command.command;
 
     match cmd {
