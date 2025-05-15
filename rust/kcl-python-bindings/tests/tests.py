@@ -11,6 +11,10 @@ kcl_dir = os.path.join(
 )
 tests_dir = os.path.join(kcl_dir, "tests")
 lego_file = os.path.join(kcl_dir, "e2e", "executor", "inputs", "lego.kcl")
+
+engine_error_file = os.path.join(
+    tests_dir, "error_revolve_on_edge_get_edge", "input.kcl"
+)
 car_wheel_dir = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     "..",
@@ -77,6 +81,24 @@ async def test_kcl_mock_execute_with_exception():
         assert e is not None
         assert len(str(e)) > 0
         assert "lksjndflsskjfnak;jfna##" in str(e)
+
+
+@pytest.mark.asyncio
+async def test_kcl_mock_execute_with_engine_exception_should_pass():
+    # Read from a file.
+    result = await kcl.mock_execute(engine_error_file)
+    assert result is True
+
+
+@pytest.mark.asyncio
+async def test_kcl_execute_with_engine_exception_should_fail():
+    # Read from a file.
+    try:
+        await kcl.execute(engine_error_file)
+    except Exception as e:
+        assert e is not None
+        assert len(str(e)) > 0
+        assert "engine" in str(e)
 
 
 @pytest.mark.asyncio

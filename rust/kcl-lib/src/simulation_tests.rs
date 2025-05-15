@@ -314,7 +314,7 @@ fn assert_common_snapshots(
             // Change the snapshot suffix so that it is rendered as a Markdown file
             // in GitHub.
             // Ignore the cpu cooler for now because its being a little bitch.
-            if test.name == "cpu_cooler" {
+            if test.name != "cpu-cooler" {
                 insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
             }
         })
