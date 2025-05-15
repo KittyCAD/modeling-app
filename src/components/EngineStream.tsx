@@ -43,6 +43,8 @@ import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 
+const TIME_1_SECOND = 1000
+
 export const EngineStream = (props: {
   pool: string | null
   authToken: string | undefined
@@ -58,7 +60,7 @@ export const EngineStream = (props: {
   const [firstPlay, setFirstPlay] = useState(true)
   const [isRestartRequestStarting, setIsRestartRequestStarting] =
     useState(false)
-  const [attemptTimes, setAttemptTimes] = useState<[number, number]>([0, 1000])
+  const [attemptTimes, setAttemptTimes] = useState<[number, number]>([0, TIME_1_SECOND])
 
   // These will be passed to the engineStreamActor to handle.
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -170,7 +172,7 @@ export const EngineStream = (props: {
 
     setFirstPlay(false)
     // Reset the restart timeouts
-    setAttemptTimes([0, 1000])
+    setAttemptTimes([0, TIME_1_SECOND])
 
     console.log('firstPlay true, zoom to fit')
     kmp
@@ -257,7 +259,7 @@ export const EngineStream = (props: {
       if ((hasEngineConnectionInst && !isDisconnected) || inIdleMode) return
 
       attemptRestartIfNecessary()
-    }, 1000)
+    }, TIME_1_SECOND)
 
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.EngineRestartRequest,
