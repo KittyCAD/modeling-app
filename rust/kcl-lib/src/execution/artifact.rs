@@ -115,7 +115,7 @@ where
     seq.end()
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Default, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct CodeRef {
@@ -744,18 +744,27 @@ impl ArtifactGraph {
 }
 
 /// Build the artifact graph from the artifact commands and the responses.  The
-/// initial graph is the graph cached from a previous execution.
+/// initial graph is the graph cached from a previous execution.  NodePaths of
+/// `exec_artifacts` are filled in from the AST.
 pub(super) fn build_artifact_graph(
     artifact_commands: &[ArtifactCommand],
     responses: &IndexMap<Uuid, WebSocketResponse>,
     ast: &Node<Program>,
-    exec_artifacts: &IndexMap<ArtifactId, Artifact>,
+    exec_artifacts: &mut IndexMap<ArtifactId, Artifact>,
     initial_graph: ArtifactGraph,
 ) -> Result<ArtifactGraph, KclError> {
     let mut map = initial_graph.into_map();
 
     let mut path_to_plane_id_map = FnvHashMap::default();
     let mut current_plane_id = None;
+
+    // Fill in NodePaths for artifacts that were added directly to the map
+    // during execution.
+    for exec_artifact in exec_artifacts.values_mut() {
+        // Note: We only have access to the new AST. So if these artifacts
+        // somehow came from cached AST, this won't fill in anything.
+        fill_in_node_paths(exec_artifact, ast);
+    }
 
     for artifact_command in artifact_commands {
         if let ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) = artifact_command.command {
@@ -790,12 +799,7 @@ pub(super) fn build_artifact_graph(
     }
 
     for exec_artifact in exec_artifacts.values() {
-        let mut new_artifact = exec_artifact.clone();
-        // Fill in NodePaths for artifacts that were added directly to the map
-        // during execution.
-        fill_in_node_paths(&mut new_artifact, ast);
-
-        merge_artifact_into_map(&mut map, new_artifact);
+        merge_artifact_into_map(&mut map, exec_artifact.clone());
     }
 
     Ok(ArtifactGraph { map })
@@ -806,10 +810,14 @@ pub(super) fn build_artifact_graph(
 fn fill_in_node_paths(artifact: &mut Artifact, program: &Node<Program>) {
     match artifact {
         Artifact::StartSketchOnFace(face) => {
-            face.code_ref.node_path = NodePath::from_range(program, face.code_ref.range).unwrap_or_default();
+            if face.code_ref.node_path.is_empty() {
+                face.code_ref.node_path = NodePath::from_range(program, face.code_ref.range).unwrap_or_default();
+            }
         }
         Artifact::StartSketchOnPlane(plane) => {
-            plane.code_ref.node_path = NodePath::from_range(program, plane.code_ref.range).unwrap_or_default();
+            if plane.code_ref.node_path.is_empty() {
+                plane.code_ref.node_path = NodePath::from_range(program, plane.code_ref.range).unwrap_or_default();
+            }
         }
         _ => {}
     }
@@ -1152,16 +1160,19 @@ fn artifacts_to_update(
                 let extra_artifact = exec_artifacts.values().find(|a| {
                     if let Artifact::StartSketchOnFace(s) = a {
                         s.face_id == face_id
+                    } else if let Artifact::StartSketchOnPlane(s) = a {
+                        s.plane_id == face_id
                     } else {
                         false
                     }
                 });
-                let sketch_on_face_source_range = extra_artifact
+                let sketch_on_face_code_ref = extra_artifact
                     .and_then(|a| match a {
-                        Artifact::StartSketchOnFace(s) => Some(s.code_ref.range),
-                        // TODO: If we didn't find it, it's probably a bug.
+                        Artifact::StartSketchOnFace(s) => Some(s.code_ref.clone()),
+                        Artifact::StartSketchOnPlane(s) => Some(s.code_ref.clone()),
                         _ => None,
                     })
+                    // TODO: If we didn't find it, it's probably a bug.
                     .unwrap_or_default();
 
                 return_arr.push(Artifact::Wall(Wall {
@@ -1170,11 +1181,7 @@ fn artifacts_to_update(
                     edge_cut_edge_ids: Vec::new(),
                     sweep_id: path_sweep_id,
                     path_ids: Vec::new(),
-                    face_code_ref: CodeRef {
-                        range: sketch_on_face_source_range,
-                        node_path: NodePath::from_range(ast, sketch_on_face_source_range).unwrap_or_default(),
-                        path_to_node: Vec::new(),
-                    },
+                    face_code_ref: sketch_on_face_code_ref,
                     cmd_id: artifact_command.cmd_id,
                 }));
                 let mut new_seg = seg.clone();
@@ -1207,15 +1214,19 @@ fn artifacts_to_update(
                     let extra_artifact = exec_artifacts.values().find(|a| {
                         if let Artifact::StartSketchOnFace(s) = a {
                             s.face_id == face_id
+                        } else if let Artifact::StartSketchOnPlane(s) = a {
+                            s.plane_id == face_id
                         } else {
                             false
                         }
                     });
-                    let sketch_on_face_source_range = extra_artifact
+                    let sketch_on_face_code_ref = extra_artifact
                         .and_then(|a| match a {
-                            Artifact::StartSketchOnFace(s) => Some(s.code_ref.range),
+                            Artifact::StartSketchOnFace(s) => Some(s.code_ref.clone()),
+                            Artifact::StartSketchOnPlane(s) => Some(s.code_ref.clone()),
                             _ => None,
                         })
+                        // TODO: If we didn't find it, it's probably a bug.
                         .unwrap_or_default();
                     return_arr.push(Artifact::Cap(Cap {
                         id: face_id,
@@ -1223,11 +1234,7 @@ fn artifacts_to_update(
                         edge_cut_edge_ids: Vec::new(),
                         sweep_id: path_sweep_id,
                         path_ids: Vec::new(),
-                        face_code_ref: CodeRef {
-                            range: sketch_on_face_source_range,
-                            node_path: NodePath::from_range(ast, sketch_on_face_source_range).unwrap_or_default(),
-                            path_to_node: Vec::new(),
-                        },
+                        face_code_ref: sketch_on_face_code_ref,
                         cmd_id: artifact_command.cmd_id,
                     }));
                     let Some(Artifact::Sweep(sweep)) = artifacts.get(&path_sweep_id) else {

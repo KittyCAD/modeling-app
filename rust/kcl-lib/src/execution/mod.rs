@@ -1164,7 +1164,7 @@ impl ExecutorContext {
                 &new_commands,
                 &new_responses,
                 program,
-                &exec_state.global.artifacts,
+                &mut exec_state.global.artifacts,
                 initial_graph,
             );
             // Move the artifact commands and responses into ExecState to
