@@ -43,19 +43,33 @@ flowchart LR
   20["Sweep Revolve<br>[1594, 1676, 0]"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   21[Wall]
+    %% face_code_ref=Missing NodePath
   22[Wall]
+    %% face_code_ref=Missing NodePath
   23[Wall]
+    %% face_code_ref=Missing NodePath
   24[Wall]
+    %% face_code_ref=Missing NodePath
   25[Wall]
+    %% face_code_ref=Missing NodePath
   26[Wall]
+    %% face_code_ref=Missing NodePath
   27[Wall]
+    %% face_code_ref=Missing NodePath
   28[Wall]
+    %% face_code_ref=Missing NodePath
   29[Wall]
+    %% face_code_ref=Missing NodePath
   30[Wall]
+    %% face_code_ref=Missing NodePath
   31["Cap Start"]
+    %% face_code_ref=Missing NodePath
   32["Cap Start"]
+    %% face_code_ref=Missing NodePath
   33["Cap End"]
+    %% face_code_ref=Missing NodePath
   34["Cap End"]
+    %% face_code_ref=Missing NodePath
   35["SweepEdge Opposite"]
   36["SweepEdge Opposite"]
   37["SweepEdge Opposite"]
