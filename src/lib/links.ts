@@ -11,6 +11,8 @@ import { err } from '@src/lib/trap'
 export interface FileLinkParams {
   code: string
   name: string
+  isRestrictedToOrg: boolean
+  password?: string
 }
 
 export async function copyFileShareLink(
@@ -24,7 +26,7 @@ export async function copyFileShareLink(
     return
   }
   const shareUrl = createCreateFileUrl(args)
-  const shortlink = await createShortlink(token, shareUrl.toString())
+  const shortlink = await createShortlink(token, shareUrl.toString(), args.isRestrictedToOrg, args.password)
 
   if (err(shortlink)) {
     toast.error(shortlink.message, {
@@ -70,23 +72,32 @@ export function createCreateFileUrl({ code, name }: FileLinkParams) {
  */
 export async function createShortlink(
   token: string,
-  url: string
+  url: string,
+  isRestrictedToOrg: boolean,
+  password?: string,
 ): Promise<Error | { key: string; url: string }> {
   /**
    * We don't use our `withBaseURL` function here because
    * there is no URL shortener service in the dev API.
    */
+  const body: {
+    url: string,
+    restrict_to_org: boolean,
+    password?: string,
+  } = {
+    url,
+    restrict_to_org: isRestrictedToOrg,
+  }
+  if (password) {
+    body.password = password
+  }
   const response = await fetch(`${VITE_KC_API_BASE_URL}/user/shortlinks`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({
-      url,
-      // In future we can support org-scoped and password-protected shortlinks here
-      // https://zoo.dev/docs/api/shortlinks/create-a-shortlink-for-a-user?lang=typescript
-    }),
+    body: JSON.stringify(body),
   })
   if (!response.ok) {
     const error = await response.json()

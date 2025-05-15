@@ -66,6 +66,10 @@ export type CommandBarMachineEvent =
         name: string
         groupId: string
         argDefaultValues?: { [x: string]: unknown }
+
+        // I'm sorry but the way we did share URL called for this.
+        isRestrictedToOrg?: boolean
+        password?: string
       }
     }
   | {
@@ -115,7 +119,7 @@ export const commandBarMachine = setup({
         }
         selectedCommand?.onSubmit(resolvedArgs)
       } else {
-        selectedCommand?.onSubmit()
+        selectedCommand?.onSubmit({ context, event })
       }
     },
     'Clear selected command': assign({

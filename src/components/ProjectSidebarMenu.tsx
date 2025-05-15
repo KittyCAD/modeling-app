@@ -227,6 +227,7 @@ function ProjectMenuPopover({
               token: token ?? '',
               code: codeManager.code,
               name: project?.name || '',
+              isRestrictedToOrg: false,
             })
           },
         },

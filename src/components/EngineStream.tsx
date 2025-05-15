@@ -1,4 +1,3 @@
-import { isPlaywright } from '@src/lib/isPlaywright'
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'

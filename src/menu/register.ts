@@ -84,12 +84,6 @@ export function modelingMenuCallbackMostActions(
       })
     } else if (data.menuLabel === 'File.Preferences.Theme color') {
       navigate(filePath + PATHS.SETTINGS_USER + '#themeColor')
-    } else if (data.menuLabel === 'File.Share part via Zoo link') {
-      copyFileShareLink({
-        token: token ?? '',
-        code: codeManager.code,
-        name: project?.name || '',
-      }).catch(reportRejection)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
     } else if (data.menuLabel === 'File.Add file to project') {
