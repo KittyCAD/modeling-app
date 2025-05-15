@@ -26,6 +26,32 @@ description: Operations executed import_mesh_clone.kcl
     "sourceRange": []
   },
   {
+    "type": "KclStdLibCall",
+    "name": "clone",
+    "unlabeledArg": {
+      "value": {
+        "type": "ImportedGeometry",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
+    "name": "clone",
+    "unlabeledArg": {
+      "value": {
+        "type": "ImportedGeometry",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
     "type": "GroupEnd"
   }
 ]

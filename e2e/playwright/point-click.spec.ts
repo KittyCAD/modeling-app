@@ -4898,4 +4898,34 @@ path001 = startProfile(sketch001, at = [0, 0])
       )
     })
   })
+
+  test(`Point and click codemods can't run on KCL errors`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const badCode = `sketch001 = startSketchOn(XZ)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001 length = 1)`
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, badCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+
+    await test.step(`Start Sketch is disabled`, async () => {
+      await expect(toolbar.startSketchBtn).not.toBeEnabled()
+      await editor.expectEditor.toContain(badCode, { shouldNormalise: true })
+    })
+
+    await test.step(`Helix is disabled`, async () => {
+      await expect(toolbar.helixButton).not.toBeEnabled()
+      await editor.expectEditor.toContain(badCode, { shouldNormalise: true })
+    })
+  })
 })

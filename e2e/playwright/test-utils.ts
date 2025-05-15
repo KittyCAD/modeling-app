@@ -44,6 +44,8 @@ export const lowerRightMasks = (page: Page) => [
 export type TestColor = [number, number, number]
 export const TEST_COLORS: { [key: string]: TestColor } = {
   WHITE: [249, 249, 249],
+  OFFWHITE: [237, 237, 237],
+  GREY: [142, 142, 142],
   YELLOW: [255, 255, 0],
   BLUE: [0, 0, 255],
   DARK_MODE_BKGD: [27, 27, 27],

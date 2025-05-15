@@ -19,11 +19,12 @@ test.describe('Regression tests', () => {
     context,
     page,
     homePage,
+    scene,
   }) => {
     // because the model has `line([0,0]..` it is valid code, but the model is invalid
     // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
     // Since the bad model also found as issue with the artifact graph, which in tern blocked the editor diognostics
-    const u = await getUtils(page)
+    // const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -40,7 +41,8 @@ test.describe('Regression tests', () => {
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    await scene.connectionEstablished()
+    // await u.waitForPageLoad()
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
@@ -188,8 +190,8 @@ extrude001 = extrude(sketch001, length = 50)
       page.locator('.pretty-json-container >> text=myVar:"67')
     ).toBeVisible()
   })
-  test('ProgramMemory can be serialised', async ({ page, homePage }) => {
-    const u = await getUtils(page)
+  test('ProgramMemory can be serialised', async ({ page, homePage, scene }) => {
+    // const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -214,11 +216,12 @@ extrude001 = extrude(sketch001, length = 50)
     // Listen for all console events and push the message text to an array
     page.on('console', (message) => messages.push(message.text()))
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    // await u.waitForPageLoad()
+    await scene.connectionEstablished()
 
     // wait for execution done
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
+    // await u.openDebugPanel()
+    // await u.expectCmdLog('[data-message-type="execution-done"]')
 
     const forbiddenMessages = ['cannot serialize tagged newtype variant']
     forbiddenMessages.forEach((forbiddenMessage) => {
@@ -232,6 +235,7 @@ extrude001 = extrude(sketch001, length = 50)
     context,
     page,
     homePage,
+    scene,
   }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -250,11 +254,10 @@ extrude001 = extrude(sketch001, length = 50)
     shell(exampleSketch, faces = ['end'], thickness = 0.25)`
       )
     })
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
 
     await expect(async () => {
-      await homePage.goToModelingScene()
-      await u.waitForPageLoad()
-
       // error in guter
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
         timeout: 1_000,

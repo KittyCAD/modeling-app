@@ -204,12 +204,13 @@ export const ModelingMachineProvider = ({
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
+            // TODO: Re-evaluate if this pause/play logic is needed.
             store.videoElement?.pause()
 
             return kclManager
               .executeCode()
               .then(() => {
-                if (engineCommandManager.engineConnection?.idleMode) return
+                if (engineCommandManager.idleMode) return
 
                 store.videoElement?.play().catch((e) => {
                   console.warn('Video playing was prevented', e)
@@ -579,24 +580,23 @@ export const ModelingMachineProvider = ({
             selectionRanges
           )
         },
-        'Has exportable geometry': () => {
-          if (!kclManager.hasErrors() && kclManager.ast.body.length > 0)
-            return true
-          else {
-            let errorMessage = 'Unable to Export '
-            if (kclManager.hasErrors()) errorMessage += 'due to KCL Errors'
-            else if (kclManager.ast.body.length === 0)
-              errorMessage += 'due to Empty Scene'
-            console.error(errorMessage)
-            toast.error(errorMessage)
-            return false
-          }
-        },
+        'Has exportable geometry': () =>
+          !kclManager.hasErrors() && kclManager.ast.body.length > 0,
       },
       actors: {
         exportFromEngine: fromPromise(
           async ({ input }: { input?: ModelingCommandSchema['Export'] }) => {
-            if (!input) {
+            if (kclManager.hasErrors() || kclManager.ast.body.length === 0) {
+              let errorMessage = 'Unable to Export '
+              if (kclManager.hasErrors()) {
+                errorMessage += 'due to KCL Errors'
+              } else if (kclManager.ast.body.length === 0) {
+                errorMessage += 'due to Empty Scene'
+              }
+              console.error(errorMessage)
+              toast.error(errorMessage)
+              return new Error(errorMessage)
+            } else if (!input) {
               return new Error('No input provided')
             }
 
