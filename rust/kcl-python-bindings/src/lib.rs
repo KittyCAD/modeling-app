@@ -227,6 +227,31 @@ async fn new_context_state(current_file: Option<std::path::PathBuf>) -> Result<(
     Ok((ctx, state))
 }
 
+/// Parse the kcl code from a file path.
+#[pyfunction]
+async fn parse(path: String) -> PyResult<()> {
+    tokio()
+        .spawn(async move {
+            let (code, path) = get_code_and_file_path(&path)
+                .await
+                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+            let _program = kcl_lib::Program::parse_no_errs(&code)
+                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
+
+            Ok(())
+        })
+        .await
+        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+}
+
+/// Parse the kcl code.
+#[pyfunction]
+fn parse_code(code: String) -> PyResult<()> {
+    let _program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+
+    Ok(())
+}
+
 /// Execute the kcl code from a file path.
 #[pyfunction]
 async fn execute(path: String) -> PyResult<()> {
@@ -534,6 +559,8 @@ fn kcl(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Discovered>()?;
 
     // Add our functions to the module.
+    m.add_function(wrap_pyfunction!(parse, m)?)?;
+    m.add_function(wrap_pyfunction!(parse_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot, m)?)?;
