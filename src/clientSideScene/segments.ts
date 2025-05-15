@@ -64,6 +64,7 @@ import {
   THREE_POINT_ARC_SEGMENT_BODY,
   THREE_POINT_ARC_SEGMENT_DASH,
   getParentGroup,
+  CIRCLE_SEGMENT_RADIUS_BODY,
 } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
@@ -255,9 +256,7 @@ class StraightSegment implements SegmentUtils {
     const { from, to } = input
     group.userData.from = from
     group.userData.to = to
-    const shape = new Shape()
-    shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
-    shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
+    const shape = createLineShape(scale)
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
     const labelGroup = group.getObjectByName(SEGMENT_LENGTH_LABEL) as Group
 
@@ -350,6 +349,7 @@ class StraightSegment implements SegmentUtils {
         new Vector3(from[0], from[1], 0),
         new Vector3(to[0], to[1], 0)
       )
+      straightSegmentBody.geometry?.dispose()
       straightSegmentBody.geometry = new ExtrudeGeometry(shape, {
         steps: 2,
         bevelEnabled: false,
@@ -607,6 +607,21 @@ class CircleSegment implements SegmentUtils {
     const arcMesh = new Mesh(geometry, mat)
     const meshType = isDraftSegment ? CIRCLE_SEGMENT_DASH : CIRCLE_SEGMENT_BODY
     const arrowGroup = createArrowhead(scale, theme, color)
+
+    const shape = new Shape()
+    const line = new LineCurve3(
+      new Vector3(from[0], from[1], 0),
+      new Vector3(center[0], center[1], 0)
+    )
+    const arrowGeometry = new ExtrudeGeometry(shape, {
+      steps: 2,
+      bevelEnabled: false,
+      extrudePath: line,
+    })
+    const body = new MeshBasicMaterial({ color })
+    const arrowBody = new Mesh(arrowGeometry, body)
+    arrowBody.name = CIRCLE_SEGMENT_RADIUS_BODY
+
     const circleCenterGroup = createCircleCenterHandle(scale, theme, color)
     // A radius indicator that appears from the center to the perimeter
     const radiusIndicatorGroup = createLengthIndicator({
@@ -633,7 +648,13 @@ class CircleSegment implements SegmentUtils {
     }
     group.name = CIRCLE_SEGMENT
 
-    group.add(arcMesh, arrowGroup, circleCenterGroup, radiusIndicatorGroup)
+    group.add(
+      arcMesh,
+      arrowGroup,
+      arrowBody,
+      circleCenterGroup,
+      radiusIndicatorGroup
+    )
     const updateOverlaysCallback = this.update({
       prevSegment,
       input,
@@ -700,6 +721,25 @@ class CircleSegment implements SegmentUtils {
       )
       arrowGroup.scale.set(scale, scale, scale)
       arrowGroup.visible = isHandlesVisible
+
+      const straightSegmentBody = group.getObjectByName(
+        CIRCLE_SEGMENT_RADIUS_BODY
+      ) as Mesh
+      if (straightSegmentBody) {
+        const line = new LineCurve3(
+          new Vector3(center[0], center[1], 0),
+          new Vector3(arrowPoint.x, arrowPoint.y, 0)
+        )
+        straightSegmentBody.geometry?.dispose()
+        straightSegmentBody.geometry = new ExtrudeGeometry(
+          createLineShape(scale),
+          {
+            steps: 2,
+            bevelEnabled: false,
+            extrudePath: line,
+          }
+        )
+      }
     }
 
     if (radiusLengthIndicator) {
@@ -1838,10 +1878,8 @@ export function createArcGeometry({
     ccw,
     0
   )
-  const shape = new Shape()
-  shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale)
-  shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale) // The width of the line
 
+  const shape = createLineShape(scale)
   if (!isDashed) {
     const points = arcStart.getPoints(50)
     const path = new CurvePath<Vector3>()
@@ -2108,6 +2146,14 @@ function updateAngleIndicator(
   )
   const points = curve.getPoints(50)
   angleIndicator.geometry.setFromPoints(points)
+}
+
+// Used to create a line with thickness
+export function createLineShape(scale: number) {
+  const shape = new Shape()
+  shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
+  shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
+  return shape
 }
 
 export const segmentUtils = {

@@ -123,18 +123,6 @@ jobs:
       - id: export_notes
         run: echo "notes=`cat release-notes.md`" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare electron-builder.yml file for updater test
-        if: ${{ env.IS_RELEASE == 'true' }}
-        run: |
-          yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/updater-test"' electron-builder.yml
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ env.IS_RELEASE == 'true' }}
-        with:
-          name: prepared-files-updater-test
-          path: |
-            electron-builder.yml
-
 
   build-apps:
     needs: [prepare-files]
@@ -258,49 +246,6 @@ jobs:
             out/latest*.yml
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
-
-      # The steps below are for updater-test builds, only on release
-
-      - uses: actions/download-artifact@v4
-        if: ${{ env.IS_RELEASE == 'true' }}
-        name: prepared-files-updater-test
-
-      - name: Copy updated electron-builder.yml file for updater test
-        if: ${{ env.IS_RELEASE == 'true' }}
-        run: |
-          ls -R prepared-files-updater-test
-          cp prepared-files-updater-test/electron-builder.yml electron-builder.yml
-
-      - name: Build the app (updater-test)
-        if: ${{ env.IS_RELEASE == 'true' }}
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
-          CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
-        run: npm run tronb:package:prod
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ env.IS_RELEASE == 'true' }}
-        with:
-          name: updater-test-arm64-${{ matrix.platform }}
-          path: |
-            out/*-arm64-win.exe
-            out/*-arm64-mac.dmg
-            out/*-arm64-linux.AppImage
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ env.IS_RELEASE == 'true' }}
-        with:
-          name: updater-test-x64-${{ matrix.platform }}
-          path: |
-            out/*-x64-win.exe
-            out/*-x64-mac.dmg
-            out/*-x86_64-linux.AppImage
 
 
   upload-apps-release:
