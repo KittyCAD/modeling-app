@@ -26,7 +26,12 @@ export async function copyFileShareLink(
     return
   }
   const shareUrl = createCreateFileUrl(args)
-  const shortlink = await createShortlink(token, shareUrl.toString(), args.isRestrictedToOrg, args.password)
+  const shortlink = await createShortlink(
+    token,
+    shareUrl.toString(),
+    args.isRestrictedToOrg,
+    args.password
+  )
 
   if (err(shortlink)) {
     toast.error(shortlink.message, {
@@ -74,16 +79,16 @@ export async function createShortlink(
   token: string,
   url: string,
   isRestrictedToOrg: boolean,
-  password?: string,
+  password?: string
 ): Promise<Error | { key: string; url: string }> {
   /**
    * We don't use our `withBaseURL` function here because
    * there is no URL shortener service in the dev API.
    */
   const body: {
-    url: string,
-    restrict_to_org: boolean,
-    password?: string,
+    url: string
+    restrict_to_org: boolean
+    password?: string
   } = {
     url,
     restrict_to_org: isRestrictedToOrg,

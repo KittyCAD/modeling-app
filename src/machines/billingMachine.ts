@@ -26,10 +26,13 @@ export enum Tier {
 }
 
 export type OrgOrError = Models['Org_type'] | number | Error
-export type SubscriptionsOrError = Models['ZooProductSubscriptions_type'] | number | Error
+export type SubscriptionsOrError =
+  | Models['ZooProductSubscriptions_type']
+  | number
+  | Error
 export type TierBasedOn = {
-  orgOrError: OrgOrError,
-  subscriptionsOrError: SubscriptionsOrError,
+  orgOrError: OrgOrError
+  subscriptionsOrError: SubscriptionsOrError
 }
 
 export interface BillingContext {
@@ -37,8 +40,8 @@ export interface BillingContext {
   allowance: undefined | number
   error: undefined | Error
   urlUserService: string
-  tier: undefined | Tier,
-  subscriptionsOrError: undefined | SubscriptionsOrError,
+  tier: undefined | Tier
+  subscriptionsOrError: undefined | SubscriptionsOrError
 }
 
 export interface BillingUpdateEvent {
@@ -56,22 +59,22 @@ export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
 })
 
 const toTierFrom = (args: TierBasedOn): Tier => {
-    if (typeof args.orgOrError !== 'number' && !err(args.orgOrError)) {
-      return Tier.Organization
-    } else if (
-      typeof args.subscriptionsOrError !== 'number' &&
-      !err(args.subscriptionsOrError)
-    ) {
-      const subscriptions: Models['ZooProductSubscriptions_type'] =
-        args.subscriptionsOrError
-      if (subscriptions.modeling_app.name === 'pro') {
-        return Tier.Pro
-      } else {
-        return Tier.Free
-      }
+  if (typeof args.orgOrError !== 'number' && !err(args.orgOrError)) {
+    return Tier.Organization
+  } else if (
+    typeof args.subscriptionsOrError !== 'number' &&
+    !err(args.subscriptionsOrError)
+  ) {
+    const subscriptions: Models['ZooProductSubscriptions_type'] =
+      args.subscriptionsOrError
+    if (subscriptions.modeling_app.name === 'pro') {
+      return Tier.Pro
+    } else {
+      return Tier.Free
     }
+  }
 
-    return Tier.Unknown
+  return Tier.Unknown
 }
 
 export const billingMachine = setup({
@@ -130,9 +133,13 @@ export const billingMachine = setup({
             break
           case Tier.Free:
             // TS too dumb Tier.Free has the same logic
-            if (typeof subscriptionsOrError !== "number" && !err(subscriptionsOrError)) {
+            if (
+              typeof subscriptionsOrError !== 'number' &&
+              !err(subscriptionsOrError)
+            ) {
               allowance = Number(
-                subscriptionsOrError.modeling_app.monthly_pay_as_you_go_api_credits
+                subscriptionsOrError.modeling_app
+                  .monthly_pay_as_you_go_api_credits
               )
             }
             break
