@@ -12,12 +12,6 @@ import type {
   VariableDeclarator,
 } from '@src/lang/wasm'
 import { isPathToNode } from '@src/lang/wasm'
-import {
-  loftValidator,
-  revolveAxisValidator,
-  shellValidator,
-  sweepValidator,
-} from '@src/lib/commandBarConfigs/validators'
 import type {
   KclCommandValue,
   StateMachineCommandSetConfig,
@@ -428,7 +422,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['segment'],
         required: true,
         multiple: false,
-        validation: sweepValidator,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       sectional: {
@@ -455,7 +448,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
-        validation: loftValidator,
       },
     },
   },
@@ -508,7 +500,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: false,
-        validation: revolveAxisValidator,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       angle: {
@@ -535,7 +526,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall'],
         multiple: true,
         required: true,
-        validation: shellValidator,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       thickness: {
