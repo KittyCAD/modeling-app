@@ -213,6 +213,7 @@ code {
 }
 
 .cm-rename-popup input {
+  /* use black text on white background in both light and dark mode */
   color: black !important;
   background: white !important;
 }
