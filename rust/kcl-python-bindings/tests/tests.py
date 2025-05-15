@@ -94,7 +94,7 @@ async def test_kcl_mock_execute_with_engine_exception_should_pass():
 async def test_kcl_execute_with_engine_exception_should_fail():
     # Read from a file.
     try:
-        await kcl.mock_execute(engine_error_file)
+        await kcl.execute(engine_error_file)
     except Exception as e:
         assert e is not None
         assert len(str(e)) > 0
