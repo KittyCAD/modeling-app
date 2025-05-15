@@ -212,6 +212,12 @@ code {
   z-index: 99999999999 !important;
 }
 
+.cm-rename-popup input {
+  /* use black text on white background in both light and dark mode */
+  color: black !important;
+  background: white !important;
+}
+
 @keyframes blink {
   0%,
   100% {
