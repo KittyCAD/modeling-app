@@ -238,7 +238,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 ///         radius = 2,
 ///         )              
 ///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)
+///     |> sweep(path = sweepPath, relativeTo = "trajectoryCurve")
 ///     |> appearance(
 ///         color = "#ff0000",
 ///         metalness = 50,

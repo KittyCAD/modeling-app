@@ -95,7 +95,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         radius = 2,
 ///         )              
 ///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
+///     |> sweep(path = sweepPath, relativeTo = "trajectoryCurve")   
 ///     |> scale(
 ///     z = 2.5,
 ///     )
@@ -262,7 +262,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///         radius = 2,
 ///         )              
 ///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
+///     |> sweep(path = sweepPath, relativeTo = "trajectoryCurve")   
 ///     |> translate(
 ///         x = 1.0,
 ///         y = 1.0,
@@ -602,7 +602,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///         radius = 2,
 ///         )              
 ///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
+///     |> sweep(path = sweepPath, relativeTo = "trajectoryCurve")   
 ///     |> rotate(
 ///         roll = 10,
 ///         pitch =  10,
@@ -635,7 +635,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///         radius = 2,
 ///         )              
 ///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
+///     |> sweep(path = sweepPath, relativeTo = "trajectoryCurve")   
 ///     |> rotate(
 ///         roll = 10,
 ///     )
@@ -666,7 +666,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///         radius = 2,
 ///         )              
 ///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
+///     |> sweep(path = sweepPath, relativeTo = "trajectoryCurve")   
 ///     |> rotate(
 ///     axis =  [0, 0, 1.0],
 ///     angle = 90,

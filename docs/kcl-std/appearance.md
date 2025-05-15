@@ -199,7 +199,7 @@ pipeHole = startSketchOn(XY)
 sweepSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 2)
   |> subtract2d(tool = pipeHole)
-  |> sweep(path = sweepPath)
+  |> sweep(path = sweepPath, relativeTo = "trajectoryCurve")
   |> appearance(color = "#ff0000", metalness = 50, roughness = 50)
 ```
 
