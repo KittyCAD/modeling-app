@@ -237,7 +237,7 @@ test.describe('Testing segment overlays', () => {
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
       await page.waitForTimeout(500)
 
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(14)
 
       const clickUnconstrained = _clickUnconstrained(page, editor)
       const clickConstrained = _clickConstrained(page, editor)
@@ -402,7 +402,7 @@ test.describe('Testing segment overlays', () => {
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
       await page.waitForTimeout(500)
 
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(8)
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(9)
 
       const clickUnconstrained = _clickUnconstrained(page, editor)
 
@@ -482,7 +482,7 @@ test.describe('Testing segment overlays', () => {
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
       await page.waitForTimeout(500)
 
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(14)
 
       const clickUnconstrained = _clickUnconstrained(page, editor)
       const clickConstrained = _clickConstrained(page, editor)
@@ -602,7 +602,7 @@ test.describe('Testing segment overlays', () => {
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
       await page.waitForTimeout(500)
 
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(14)
 
       const clickUnconstrained = _clickUnconstrained(page, editor)
       const clickConstrained = _clickConstrained(page, editor)
@@ -808,7 +808,7 @@ profile001 = startProfile(sketch001, at = [56.37, 120.33])
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
       await page.waitForTimeout(500)
 
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(6)
 
       const clickUnconstrained = _clickUnconstrained(page, editor)
       const clickConstrained = _clickConstrained(page, editor)
@@ -1307,7 +1307,7 @@ part001 = startSketchOn(XZ)
             .toBe(true)
           await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
-          await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
+          await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
           const segmentToDelete = await u.getBoundingBox(
             `[data-overlay-index="0"]`
           )
