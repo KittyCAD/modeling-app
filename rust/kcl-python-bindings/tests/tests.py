@@ -53,7 +53,8 @@ async def test_kcl_parse_with_exception():
 @pytest.mark.asyncio
 async def test_kcl_parse():
     # Read from a file.
-    await kcl.parse(lego_file)
+    result = await kcl.parse(lego_file)
+    assert result is True
 
 
 @pytest.mark.asyncio
@@ -63,7 +64,8 @@ async def test_kcl_parse_code():
         code = str(f.read())
         assert code is not None
         assert len(code) > 0
-        kcl.parse_code(code)
+        result = kcl.parse_code(code)
+        assert result is True
 
 
 @pytest.mark.asyncio
