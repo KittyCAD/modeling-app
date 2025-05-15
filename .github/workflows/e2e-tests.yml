@@ -40,7 +40,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Download Wasm Cache
+      - name: Download Wasm cache
         id: download-wasm
         if: ${{ github.event_name != 'schedule' && steps.filter.outputs.rust == 'false' }}
         uses: dawidd6/action-download-artifact@v7
@@ -52,7 +52,7 @@ jobs:
           branch: main
           path: rust/kcl-wasm-lib/pkg
 
-      - name: Build WASM condition
+      - name: Build Wasm condition
         id: wasm
         run: |
           set -euox pipefail
@@ -70,7 +70,7 @@ jobs:
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
 
-      - name: Install rust
+      - name: Install Rust
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
@@ -81,7 +81,7 @@ jobs:
         with:
           tool: wasm-pack
 
-      - name: Rust Cache
+      - name: Use Rust cache
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: Swatinem/rust-cache@v2
         with:
@@ -117,7 +117,7 @@ jobs:
       - uses: actions/download-artifact@v4
         name: prepared-wasm
 
-      - name: Copy prepared wasm
+      - name: Copy prepared Wasm
         run: |
           ls -R prepared-wasm
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public
@@ -133,20 +133,17 @@ jobs:
         id: deps-install
         run: npm install
 
-      - name: Cache Playwright Browsers
+      - name: Cache browsers
         uses: actions/cache@v4
         with:
           path: |
             ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
-      - name: Install Playwright Browsers
+      - name: Install browsers
         run: npm run playwright install --with-deps
 
-      - name: build web
-        run: npm run tronb:vite:dev
-
-      - name: Run ubuntu/chrome snapshots
+      - name: Capture snapshots
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
@@ -170,7 +167,7 @@ jobs:
           retention-days: 30
           overwrite: true
 
-      - name: Check for changes
+      - name: Check diff
         if: ${{ github.ref != 'refs/heads/main' }}
         shell: bash
         id: git-check
@@ -181,9 +178,8 @@ jobs:
             else echo "modified=false" >> $GITHUB_OUTPUT
             fi
 
-      - name: Commit changes, if any
-        # TODO: find a more reliable way to detect visual changes
-        if: ${{ false && steps.git-check.outputs.modified == 'true' }}
+      - name: Commit changes
+        if: ${{ steps.git-check.outputs.modified == 'true' }}
         shell: bash
         run: |
           git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
@@ -193,7 +189,7 @@ jobs:
           git fetch origin
           echo ${{ github.head_ref }}
           git checkout ${{ github.head_ref }}
-          git commit -m "A snapshot a day keeps the bugs away! 📷🐛" || true
+          git commit --message "Update snapshots" || true
           git push
           git push origin ${{ github.head_ref }}
 
