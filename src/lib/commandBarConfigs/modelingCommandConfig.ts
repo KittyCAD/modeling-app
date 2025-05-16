@@ -969,7 +969,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       prompt: {
         inputType: 'text',
         required: true,
-        warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
     },
   },
