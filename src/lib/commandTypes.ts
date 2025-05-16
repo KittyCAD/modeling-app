@@ -13,6 +13,7 @@ import type {
   CommandBarContext,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
+import type { fileMachine } from '@src/machines/fileMachine'
 
 type Icon = CustomIconName
 const _PLATFORMS = ['both', 'web', 'desktop'] as const
@@ -144,7 +145,8 @@ export type CommandArgumentConfig<
     | boolean
     | ((
         commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
-        machineContext?: C
+        machineContext?: C,
+        fileMachineContext?: ContextFrom<typeof fileMachine>
       ) => boolean)
   skip?: boolean
   /** For showing a summary display of the current value, such as in
@@ -168,7 +170,8 @@ export type CommandArgumentConfig<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            fileMachineContext?: ContextFrom<typeof fileMachine>
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
     }
@@ -276,7 +279,8 @@ export type CommandArgument<
     | boolean
     | ((
         commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
-        machineContext?: ContextFrom<T>
+        machineContext?: ContextFrom<T>,
+        fileMachineContext?: ContextFrom<typeof fileMachine>
       ) => boolean)
   skip?: boolean
   machineActor?: Actor<T>

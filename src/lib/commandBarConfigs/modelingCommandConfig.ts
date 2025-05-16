@@ -150,6 +150,7 @@ export type ModelingCommandSchema = {
     namedValue: KclCommandValue
   }
   'Prompt-to-edit': {
+    projectEntrypoint: string
     prompt: string
     selection: Selections
   }
@@ -946,6 +947,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'chat',
     status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
     args: {
+      projectEntrypoint: {
+        defaultValue: (argsToSubmit, modelingMachine, fileMachineContext) =>
+          false, //fileMachineContext.currentProject,
+        hidden: () => false, //!contains"main.kcl",
+        required: true,
+      },
       selection: {
         inputType: 'selectionMixed',
         selectionTypes: [
