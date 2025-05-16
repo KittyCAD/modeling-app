@@ -88,7 +88,7 @@ export default function CommandBarSelectionMixedInput({
      */
     const resolvedSelection: Selections | undefined = isArgRequired
       ? selection
-      : {
+      : selection || {
           graphSelections: [],
           otherSelections: [],
         }
