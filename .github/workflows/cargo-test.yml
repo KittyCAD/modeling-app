@@ -171,6 +171,8 @@ jobs:
           name: nextest-archive
       - name: Download internal KCL samples
         run: git clone --depth=1 https://x-access-token:${{ secrets.GH_PAT_KCL_SAMPLES_INTERNAL }}@github.com/KittyCAD/kcl-samples-internal public/kcl-samples/internal
+      - name: Regenerate KCL samples manifest
+        run: cd rust/kcl-lib && EXPECTORATE=overwrite cargo test generate_manifest
       - name: Run tests
         shell: bash
         run: |-
