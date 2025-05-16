@@ -18,13 +18,6 @@ on:
     tags:
       - 'kcl-*'
   pull_request:
-    paths:
-      - '**/Cargo.toml'
-      - '**/Cargo.lock'
-      - '**/rust-toolchain.toml'
-      - 'rust/kcl-python-bindings/**'
-      - '**.rs'
-      - .github/workflows/kcl-python-bindings.yml
   workflow_dispatch:
 permissions:
   contents: read
