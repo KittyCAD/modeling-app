@@ -24,6 +24,7 @@ export class KCLError extends Error {
   kind: ExtractKind<RustKclError> | 'name'
   sourceRange: SourceRange
   msg: string
+  nonFatal: CompilationError[]
   operations: Operation[]
   artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
@@ -34,6 +35,7 @@ export class KCLError extends Error {
     kind: ExtractKind<RustKclError> | 'name',
     msg: string,
     sourceRange: SourceRange,
+    nonFatal: CompilationError[] = [],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
@@ -44,6 +46,7 @@ export class KCLError extends Error {
     this.kind = kind
     this.msg = msg
     this.sourceRange = sourceRange
+    this.nonFatal = nonFatal
     this.operations = operations
     this.artifactCommands = artifactCommands
     this.artifactGraph = artifactGraph
@@ -57,6 +60,7 @@ export class KCLLexicalError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
+    nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
@@ -67,6 +71,7 @@ export class KCLLexicalError extends KCLError {
       'lexical',
       msg,
       sourceRange,
+      nonFatal,
       operations,
       artifactCommands,
       artifactGraph,
@@ -81,6 +86,7 @@ export class KCLInternalError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
+    nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
@@ -91,6 +97,7 @@ export class KCLInternalError extends KCLError {
       'internal',
       msg,
       sourceRange,
+      nonFatal,
       operations,
       artifactCommands,
       artifactGraph,
@@ -105,6 +112,7 @@ export class KCLSyntaxError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
+    nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
@@ -115,6 +123,7 @@ export class KCLSyntaxError extends KCLError {
       'syntax',
       msg,
       sourceRange,
+      nonFatal,
       operations,
       artifactCommands,
       artifactGraph,
@@ -129,6 +138,7 @@ export class KCLSemanticError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
+    nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
@@ -139,6 +149,7 @@ export class KCLSemanticError extends KCLError {
       'semantic',
       msg,
       sourceRange,
+      nonFatal,
       operations,
       artifactCommands,
       artifactGraph,
@@ -153,6 +164,7 @@ export class KCLTypeError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
+    nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
@@ -163,6 +175,7 @@ export class KCLTypeError extends KCLError {
       'type',
       msg,
       sourceRange,
+      nonFatal,
       operations,
       artifactCommands,
       artifactGraph,
@@ -177,6 +190,7 @@ export class KCLIoError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
+    nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
@@ -187,6 +201,7 @@ export class KCLIoError extends KCLError {
       'io',
       msg,
       sourceRange,
+      nonFatal,
       operations,
       artifactCommands,
       artifactGraph,
@@ -201,6 +216,7 @@ export class KCLUnexpectedError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
+    nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
@@ -211,6 +227,7 @@ export class KCLUnexpectedError extends KCLError {
       'unexpected',
       msg,
       sourceRange,
+      nonFatal,
       operations,
       artifactCommands,
       artifactGraph,
@@ -225,6 +242,7 @@ export class KCLValueAlreadyDefined extends KCLError {
   constructor(
     key: string,
     sourceRange: SourceRange,
+    nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
@@ -235,6 +253,7 @@ export class KCLValueAlreadyDefined extends KCLError {
       'name',
       `Key ${key} was already defined elsewhere`,
       sourceRange,
+      nonFatal,
       operations,
       artifactCommands,
       artifactGraph,
@@ -249,6 +268,7 @@ export class KCLUndefinedValueError extends KCLError {
   constructor(
     key: string,
     sourceRange: SourceRange,
+    nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
@@ -259,6 +279,7 @@ export class KCLUndefinedValueError extends KCLError {
       'name',
       `Key ${key} has not been defined`,
       sourceRange,
+      nonFatal,
       operations,
       artifactCommands,
       artifactGraph,
@@ -286,6 +307,7 @@ export function lspDiagnosticsToKclErrors(
           [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, 0],
           [],
           [],
+          [],
           defaultArtifactGraph(),
           {},
           null
@@ -311,9 +333,13 @@ export function lspDiagnosticsToKclErrors(
 export function kclErrorsToDiagnostics(
   errors: KCLError[]
 ): CodeMirrorDiagnostic[] {
-  return errors
+  let nonFatal: CodeMirrorDiagnostic[] = []
+  const errs = errors
     ?.filter((err) => isTopLevelModule(err.sourceRange))
-    .map((err) => {
+    .map((err): CodeMirrorDiagnostic => {
+      if (err.nonFatal.length > 0) {
+        nonFatal = nonFatal.concat(compilationErrorsToDiagnostics(err.nonFatal))
+      }
       return {
         from: err.sourceRange[0],
         to: err.sourceRange[1],
@@ -321,6 +347,7 @@ export function kclErrorsToDiagnostics(
         severity: 'error',
       }
     })
+  return errs.concat(nonFatal)
 }
 
 export function compilationErrorsToDiagnostics(
