@@ -289,62 +289,119 @@ flowchart LR
   132["Sweep Loft<br>[2472, 2491, 4]"]
     %% Missing NodePath
   133[Wall]
+    %% face_code_ref=Missing NodePath
   134[Wall]
+    %% face_code_ref=Missing NodePath
   135[Wall]
+    %% face_code_ref=Missing NodePath
   136[Wall]
+    %% face_code_ref=Missing NodePath
   137[Wall]
+    %% face_code_ref=Missing NodePath
   138[Wall]
+    %% face_code_ref=Missing NodePath
   139[Wall]
+    %% face_code_ref=Missing NodePath
   140[Wall]
+    %% face_code_ref=Missing NodePath
   141[Wall]
+    %% face_code_ref=Missing NodePath
   142[Wall]
+    %% face_code_ref=Missing NodePath
   143[Wall]
+    %% face_code_ref=Missing NodePath
   144[Wall]
+    %% face_code_ref=Missing NodePath
   145[Wall]
+    %% face_code_ref=Missing NodePath
   146[Wall]
+    %% face_code_ref=Missing NodePath
   147[Wall]
+    %% face_code_ref=Missing NodePath
   148[Wall]
+    %% face_code_ref=Missing NodePath
   149[Wall]
+    %% face_code_ref=Missing NodePath
   150[Wall]
+    %% face_code_ref=Missing NodePath
   151[Wall]
+    %% face_code_ref=Missing NodePath
   152[Wall]
+    %% face_code_ref=Missing NodePath
   153[Wall]
+    %% face_code_ref=Missing NodePath
   154[Wall]
+    %% face_code_ref=Missing NodePath
   155[Wall]
+    %% face_code_ref=Missing NodePath
   156[Wall]
+    %% face_code_ref=Missing NodePath
   157[Wall]
+    %% face_code_ref=Missing NodePath
   158[Wall]
+    %% face_code_ref=Missing NodePath
   159[Wall]
+    %% face_code_ref=Missing NodePath
   160[Wall]
+    %% face_code_ref=Missing NodePath
   161[Wall]
+    %% face_code_ref=Missing NodePath
   162[Wall]
+    %% face_code_ref=Missing NodePath
   163[Wall]
+    %% face_code_ref=Missing NodePath
   164[Wall]
+    %% face_code_ref=Missing NodePath
   165[Wall]
+    %% face_code_ref=Missing NodePath
   166[Wall]
+    %% face_code_ref=Missing NodePath
   167[Wall]
+    %% face_code_ref=Missing NodePath
   168[Wall]
+    %% face_code_ref=Missing NodePath
   169[Wall]
+    %% face_code_ref=Missing NodePath
   170[Wall]
+    %% face_code_ref=Missing NodePath
   171[Wall]
+    %% face_code_ref=Missing NodePath
   172[Wall]
+    %% face_code_ref=Missing NodePath
   173[Wall]
+    %% face_code_ref=Missing NodePath
   174[Wall]
+    %% face_code_ref=Missing NodePath
   175[Wall]
+    %% face_code_ref=Missing NodePath
   176[Wall]
+    %% face_code_ref=Missing NodePath
   177[Wall]
+    %% face_code_ref=Missing NodePath
   178["Cap Start"]
+    %% face_code_ref=Missing NodePath
   179["Cap Start"]
+    %% face_code_ref=Missing NodePath
   180["Cap Start"]
+    %% face_code_ref=Missing NodePath
   181["Cap Start"]
+    %% face_code_ref=Missing NodePath
   182["Cap End"]
+    %% face_code_ref=Missing NodePath
   183["Cap End"]
+    %% face_code_ref=Missing NodePath
   184["Cap End"]
+    %% face_code_ref=Missing NodePath
   185["Cap End"]
+    %% face_code_ref=Missing NodePath
   186["Cap End"]
+    %% face_code_ref=Missing NodePath
   187["Cap End"]
+    %% face_code_ref=Missing NodePath
   188["Cap End"]
+    %% face_code_ref=Missing NodePath
   189["Cap End"]
+    %% face_code_ref=Missing NodePath
   190["SweepEdge Opposite"]
   191["SweepEdge Opposite"]
   192["SweepEdge Opposite"]
@@ -724,19 +781,19 @@ flowchart LR
   84 --- 144
   84 --- 237
   86 --- 168
-  86 x--> 189
+  86 x--> 188
   86 --- 212
   86 --- 256
   88 --- 169
-  88 x--> 189
+  88 x--> 188
   88 --- 213
   88 --- 257
   90 --- 167
-  90 x--> 189
+  90 x--> 188
   90 --- 214
   90 --- 258
   92 --- 170
-  92 x--> 189
+  92 x--> 188
   92 --- 215
   92 --- 259
   119 --- 133
@@ -1018,10 +1075,10 @@ flowchart LR
   218 <--x 186
   219 <--x 186
   194 <--x 187
-  212 <--x 188
-  213 <--x 188
-  214 <--x 188
-  215 <--x 188
+  212 <--x 189
+  213 <--x 189
+  214 <--x 189
+  215 <--x 189
   220 <--x 275
   223 <--x 270
   224 <--x 274

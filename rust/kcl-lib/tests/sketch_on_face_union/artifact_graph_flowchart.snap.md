@@ -85,9 +85,9 @@ flowchart LR
   2["Plane<br>[1041, 1069, 0]"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
   3["StartSketchOnPlane<br>[1027, 1070, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   4["StartSketchOnFace<br>[1639, 1682, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   42["Sweep Extrusion<br>[982, 1013, 0]"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   43["Sweep Extrusion<br>[1297, 1321, 0]"]
@@ -101,30 +101,55 @@ flowchart LR
   47["CompositeSolid Union<br>[1589, 1622, 0]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   48[Wall]
+    %% face_code_ref=Missing NodePath
   49[Wall]
+    %% face_code_ref=Missing NodePath
   50[Wall]
+    %% face_code_ref=Missing NodePath
   51[Wall]
+    %% face_code_ref=Missing NodePath
   52[Wall]
+    %% face_code_ref=Missing NodePath
   53[Wall]
+    %% face_code_ref=Missing NodePath
   54[Wall]
+    %% face_code_ref=Missing NodePath
   55[Wall]
+    %% face_code_ref=Missing NodePath
   56[Wall]
+    %% face_code_ref=[ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   57[Wall]
+    %% face_code_ref=Missing NodePath
   58[Wall]
+    %% face_code_ref=Missing NodePath
   59[Wall]
+    %% face_code_ref=Missing NodePath
   60[Wall]
+    %% face_code_ref=Missing NodePath
   61[Wall]
+    %% face_code_ref=Missing NodePath
   62[Wall]
+    %% face_code_ref=Missing NodePath
   63[Wall]
+    %% face_code_ref=Missing NodePath
   64[Wall]
+    %% face_code_ref=Missing NodePath
   65["Cap Start"]
+    %% face_code_ref=Missing NodePath
   66["Cap Start"]
+    %% face_code_ref=Missing NodePath
   67["Cap Start"]
+    %% face_code_ref=Missing NodePath
   68["Cap Start"]
+    %% face_code_ref=Missing NodePath
   69["Cap End"]
+    %% face_code_ref=Missing NodePath
   70["Cap End"]
+    %% face_code_ref=Missing NodePath
   71["Cap End"]
+    %% face_code_ref=Missing NodePath
   72["Cap End"]
+    %% face_code_ref=Missing NodePath
   73["SweepEdge Opposite"]
   74["SweepEdge Opposite"]
   75["SweepEdge Opposite"]

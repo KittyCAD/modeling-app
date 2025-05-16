@@ -664,6 +664,17 @@ impl NumericType {
         )
     }
 
+    pub fn is_fully_specified(&self) -> bool {
+        !matches!(
+            self,
+            NumericType::Unknown
+                | NumericType::Known(UnitType::Angle(UnitAngle::Unknown))
+                | NumericType::Known(UnitType::Length(UnitLen::Unknown))
+                | NumericType::Any
+                | NumericType::Default { .. }
+        )
+    }
+
     fn example_ty(&self) -> Option<String> {
         match self {
             Self::Known(t) if !self.is_unknown() => Some(t.to_string()),
@@ -1266,7 +1277,15 @@ impl KclValue {
                     .satisfied(values.len(), allow_shrink)
                     .ok_or(CoercionError::from(self))?;
 
-                assert!(len <= values.len());
+                if len > values.len() {
+                    let message = format!(
+                        "Internal: Expected coerced array length {len} to be less than or equal to original length {}",
+                        values.len()
+                    );
+                    exec_state.err(CompilationError::err(self.into(), message.clone()));
+                    #[cfg(debug_assertions)]
+                    panic!("{message}");
+                }
                 values.truncate(len);
 
                 Ok(KclValue::HomArray {

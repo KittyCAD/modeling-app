@@ -24,11 +24,17 @@ flowchart LR
   10["Sweep Extrusion<br>[276, 295, 0]"]
     %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 3 }]
   11[Wall]
+    %% face_code_ref=Missing NodePath
   12[Wall]
+    %% face_code_ref=Missing NodePath
   13[Wall]
+    %% face_code_ref=Missing NodePath
   14[Wall]
+    %% face_code_ref=Missing NodePath
   15["Cap Start"]
+    %% face_code_ref=Missing NodePath
   16["Cap End"]
+    %% face_code_ref=Missing NodePath
   17["SweepEdge Opposite"]
   18["SweepEdge Opposite"]
   19["SweepEdge Opposite"]

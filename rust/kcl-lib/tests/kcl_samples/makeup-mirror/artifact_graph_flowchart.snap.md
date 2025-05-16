@@ -106,21 +106,21 @@ flowchart LR
   10["Plane<br>[1768, 1818, 0]"]
     %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
   11["StartSketchOnPlane<br>[551, 593, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   12["StartSketchOnPlane<br>[1754, 1819, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   13["StartSketchOnPlane<br>[551, 593, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   14["StartSketchOnPlane<br>[551, 593, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   15["StartSketchOnPlane<br>[551, 593, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   16["StartSketchOnPlane<br>[551, 593, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   17["StartSketchOnPlane<br>[551, 593, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   18["StartSketchOnPlane<br>[551, 593, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   56["Sweep Extrusion<br>[654, 683, 0]"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   57["Sweep Extrusion<br>[654, 683, 0]"]
@@ -144,41 +144,77 @@ flowchart LR
   66["Sweep Extrusion<br>[2381, 2404, 0]"]
     %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
   67[Wall]
+    %% face_code_ref=Missing NodePath
   68[Wall]
+    %% face_code_ref=Missing NodePath
   69[Wall]
+    %% face_code_ref=Missing NodePath
   70[Wall]
+    %% face_code_ref=Missing NodePath
   71[Wall]
+    %% face_code_ref=Missing NodePath
   72[Wall]
+    %% face_code_ref=Missing NodePath
   73[Wall]
+    %% face_code_ref=Missing NodePath
   74[Wall]
+    %% face_code_ref=Missing NodePath
   75[Wall]
+    %% face_code_ref=Missing NodePath
   76[Wall]
+    %% face_code_ref=Missing NodePath
   77[Wall]
+    %% face_code_ref=Missing NodePath
   78[Wall]
+    %% face_code_ref=Missing NodePath
   79[Wall]
+    %% face_code_ref=Missing NodePath
   80[Wall]
+    %% face_code_ref=Missing NodePath
   81["Cap Start"]
+    %% face_code_ref=Missing NodePath
   82["Cap Start"]
+    %% face_code_ref=Missing NodePath
   83["Cap Start"]
+    %% face_code_ref=Missing NodePath
   84["Cap Start"]
+    %% face_code_ref=Missing NodePath
   85["Cap Start"]
+    %% face_code_ref=Missing NodePath
   86["Cap Start"]
+    %% face_code_ref=Missing NodePath
   87["Cap Start"]
+    %% face_code_ref=Missing NodePath
   88["Cap Start"]
+    %% face_code_ref=Missing NodePath
   89["Cap Start"]
+    %% face_code_ref=Missing NodePath
   90["Cap Start"]
+    %% face_code_ref=Missing NodePath
   91["Cap Start"]
+    %% face_code_ref=Missing NodePath
   92["Cap End"]
+    %% face_code_ref=Missing NodePath
   93["Cap End"]
+    %% face_code_ref=Missing NodePath
   94["Cap End"]
+    %% face_code_ref=Missing NodePath
   95["Cap End"]
+    %% face_code_ref=Missing NodePath
   96["Cap End"]
+    %% face_code_ref=Missing NodePath
   97["Cap End"]
+    %% face_code_ref=Missing NodePath
   98["Cap End"]
+    %% face_code_ref=Missing NodePath
   99["Cap End"]
+    %% face_code_ref=Missing NodePath
   100["Cap End"]
+    %% face_code_ref=Missing NodePath
   101["Cap End"]
+    %% face_code_ref=Missing NodePath
   102["Cap End"]
+    %% face_code_ref=Missing NodePath
   103["SweepEdge Opposite"]
   104["SweepEdge Opposite"]
   105["SweepEdge Opposite"]

@@ -350,88 +350,171 @@ flowchart LR
   162["Sweep Extrusion<br>[4495, 4528, 5]"]
     %% Missing NodePath
   163[Wall]
+    %% face_code_ref=Missing NodePath
   164[Wall]
+    %% face_code_ref=Missing NodePath
   165[Wall]
+    %% face_code_ref=Missing NodePath
   166[Wall]
+    %% face_code_ref=Missing NodePath
   167[Wall]
+    %% face_code_ref=Missing NodePath
   168[Wall]
+    %% face_code_ref=Missing NodePath
   169[Wall]
+    %% face_code_ref=Missing NodePath
   170[Wall]
+    %% face_code_ref=Missing NodePath
   171[Wall]
+    %% face_code_ref=Missing NodePath
   172[Wall]
+    %% face_code_ref=Missing NodePath
   173[Wall]
+    %% face_code_ref=Missing NodePath
   174[Wall]
+    %% face_code_ref=Missing NodePath
   175[Wall]
+    %% face_code_ref=Missing NodePath
   176[Wall]
+    %% face_code_ref=Missing NodePath
   177[Wall]
+    %% face_code_ref=Missing NodePath
   178[Wall]
+    %% face_code_ref=Missing NodePath
   179[Wall]
+    %% face_code_ref=Missing NodePath
   180[Wall]
+    %% face_code_ref=Missing NodePath
   181[Wall]
+    %% face_code_ref=Missing NodePath
   182[Wall]
+    %% face_code_ref=Missing NodePath
   183[Wall]
+    %% face_code_ref=Missing NodePath
   184[Wall]
+    %% face_code_ref=Missing NodePath
   185[Wall]
+    %% face_code_ref=Missing NodePath
   186[Wall]
+    %% face_code_ref=Missing NodePath
   187[Wall]
+    %% face_code_ref=Missing NodePath
   188[Wall]
+    %% face_code_ref=Missing NodePath
   189[Wall]
+    %% face_code_ref=Missing NodePath
   190[Wall]
+    %% face_code_ref=Missing NodePath
   191[Wall]
+    %% face_code_ref=Missing NodePath
   192[Wall]
+    %% face_code_ref=Missing NodePath
   193[Wall]
+    %% face_code_ref=Missing NodePath
   194[Wall]
+    %% face_code_ref=Missing NodePath
   195[Wall]
+    %% face_code_ref=Missing NodePath
   196[Wall]
+    %% face_code_ref=Missing NodePath
   197[Wall]
+    %% face_code_ref=Missing NodePath
   198[Wall]
+    %% face_code_ref=Missing NodePath
   199[Wall]
+    %% face_code_ref=Missing NodePath
   200[Wall]
+    %% face_code_ref=Missing NodePath
   201[Wall]
+    %% face_code_ref=Missing NodePath
   202[Wall]
+    %% face_code_ref=Missing NodePath
   203[Wall]
+    %% face_code_ref=Missing NodePath
   204[Wall]
+    %% face_code_ref=Missing NodePath
   205[Wall]
+    %% face_code_ref=Missing NodePath
   206[Wall]
+    %% face_code_ref=Missing NodePath
   207[Wall]
+    %% face_code_ref=Missing NodePath
   208[Wall]
+    %% face_code_ref=Missing NodePath
   209[Wall]
+    %% face_code_ref=Missing NodePath
   210[Wall]
+    %% face_code_ref=Missing NodePath
   211[Wall]
+    %% face_code_ref=Missing NodePath
   212["Cap Start"]
+    %% face_code_ref=Missing NodePath
   213["Cap Start"]
+    %% face_code_ref=Missing NodePath
   214["Cap Start"]
+    %% face_code_ref=Missing NodePath
   215["Cap Start"]
+    %% face_code_ref=Missing NodePath
   216["Cap Start"]
+    %% face_code_ref=Missing NodePath
   217["Cap Start"]
+    %% face_code_ref=Missing NodePath
   218["Cap Start"]
+    %% face_code_ref=Missing NodePath
   219["Cap Start"]
+    %% face_code_ref=Missing NodePath
   220["Cap Start"]
+    %% face_code_ref=Missing NodePath
   221["Cap Start"]
+    %% face_code_ref=Missing NodePath
   222["Cap Start"]
+    %% face_code_ref=Missing NodePath
   223["Cap End"]
+    %% face_code_ref=Missing NodePath
   224["Cap End"]
+    %% face_code_ref=Missing NodePath
   225["Cap End"]
+    %% face_code_ref=Missing NodePath
   226["Cap End"]
+    %% face_code_ref=Missing NodePath
   227["Cap End"]
+    %% face_code_ref=Missing NodePath
   228["Cap End"]
+    %% face_code_ref=Missing NodePath
   229["Cap End"]
+    %% face_code_ref=Missing NodePath
   230["Cap End"]
+    %% face_code_ref=Missing NodePath
   231["Cap End"]
+    %% face_code_ref=Missing NodePath
   232["Cap End"]
+    %% face_code_ref=Missing NodePath
   233["Cap End"]
+    %% face_code_ref=Missing NodePath
   234["Cap End"]
+    %% face_code_ref=Missing NodePath
   235["Cap End"]
+    %% face_code_ref=Missing NodePath
   236["Cap End"]
+    %% face_code_ref=Missing NodePath
   237["Cap End"]
+    %% face_code_ref=Missing NodePath
   238["Cap End"]
+    %% face_code_ref=Missing NodePath
   239["Cap End"]
+    %% face_code_ref=Missing NodePath
   240["Cap End"]
+    %% face_code_ref=Missing NodePath
   241["Cap End"]
+    %% face_code_ref=Missing NodePath
   242["Cap End"]
+    %% face_code_ref=Missing NodePath
   243["Cap End"]
+    %% face_code_ref=Missing NodePath
   244["Cap End"]
+    %% face_code_ref=Missing NodePath
   245["Cap End"]
+    %% face_code_ref=Missing NodePath
   246["SweepEdge Opposite"]
   247["SweepEdge Opposite"]
   248["SweepEdge Opposite"]

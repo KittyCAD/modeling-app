@@ -52,12 +52,19 @@ flowchart LR
   23["CompositeSolid Subtract<br>[842, 897, 0]"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   24[Wall]
+    %% face_code_ref=Missing NodePath
   25[Wall]
+    %% face_code_ref=Missing NodePath
   26[Wall]
+    %% face_code_ref=Missing NodePath
   27[Wall]
+    %% face_code_ref=Missing NodePath
   28[Wall]
+    %% face_code_ref=Missing NodePath
   29["Cap Start"]
+    %% face_code_ref=Missing NodePath
   30["Cap End"]
+    %% face_code_ref=Missing NodePath
   31["SweepEdge Opposite"]
   32["SweepEdge Adjacent"]
   33["SweepEdge Adjacent"]

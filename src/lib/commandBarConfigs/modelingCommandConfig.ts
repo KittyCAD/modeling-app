@@ -22,7 +22,6 @@ import {
   KCL_DEFAULT_DEGREE,
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
-  ML_EXPERIMENTAL_MESSAGE,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/lib/selections'
@@ -763,8 +762,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
-        warningMessage:
-          'Chamfers cannot touch other chamfers yet. This is under development.',
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       length: {
@@ -958,18 +955,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'edgeCutEdge',
         ],
         multiple: true,
-        required: true,
+        required: false,
         selectionSource: {
           allowSceneSelection: true,
           allowCodeSelection: true,
         },
-        skip: true,
-        warningMessage: ML_EXPERIMENTAL_MESSAGE,
+        skip: false,
       },
       prompt: {
         inputType: 'text',
         required: true,
-        warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
     },
   },

@@ -65,7 +65,9 @@ test(
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       const successToastMessage = page.getByText(`Exported successfully`)
-      await expect(successToastMessage).toBeVisible()
+      await page.waitForTimeout(1_000)
+      const count = await successToastMessage.count()
+      await expect(count).toBeGreaterThanOrEqual(1)
 
       // Check for the exported file
       const firstFileFullPath = path.resolve(
@@ -134,7 +136,9 @@ test(
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       const successToastMessage = page.getByText(`Exported successfully`)
-      await expect(successToastMessage).toBeVisible()
+      await page.waitForTimeout(1_000)
+      const count = await successToastMessage.count()
+      await expect(count).toBeGreaterThanOrEqual(1)
       await expect(exportingToastMessage).not.toBeVisible()
 
       // Check for the exported file=

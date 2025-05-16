@@ -102,7 +102,7 @@ export function HelpMenu({
             </HelpMenuItem>
             <HelpMenuItem
               as="a"
-              href="https://zoo.dev/docs/kcl"
+              href="https://zoo.dev/docs/kcl-lang"
               target="_blank"
               rel="noopener noreferrer"
             >
