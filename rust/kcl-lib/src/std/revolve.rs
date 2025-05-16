@@ -20,6 +20,8 @@ use crate::{
     std::{axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude, Args},
 };
 
+extern crate nalgebra_glm as glm;
+
 /// Revolve a sketch or set of sketches around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
@@ -53,14 +55,6 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     )
     .await?;
     Ok(value.into())
-}
-
-// Simple colinear check, assumes lines are normalised
-fn are_colinear(
-    a: Point3d<f64>,
-    b: Point3d<f64>,
-) -> bool {
-    a == b || a == (Point3d{x: -b.x, y: -b.y, z: -b.z})
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -142,18 +136,16 @@ async fn inner_revolve(
 
         let direction = match &axis {
             Axis2dOrEdgeReference::Axis { direction, origin } => {
-                let axis = Point3d {
-                            x: direction[0].to_mm(),
-                            y: direction[1].to_mm(),
-                            z: 0.0,
-                        };
-
                 args.batch_modeling_cmd(
                     id,
                     ModelingCmd::from(mcmd::Revolve {
                         angle,
                         target: sketch.id.into(),
-                        axis,
+                        axis: Point3d {
+                            x: direction[0].to_mm(),
+                            y: direction[1].to_mm(),
+                            z: 0.0,
+                        },
                         origin: Point3d {
                             x: LengthUnit(origin[0].to_mm()),
                             y: LengthUnit(origin[1].to_mm()),
@@ -165,7 +157,7 @@ async fn inner_revolve(
                     }),
                 )
                 .await?;
-                axis
+                glm::DVec2::new(direction[0].to_mm(), direction[1].to_mm())
             }
             Axis2dOrEdgeReference::Edge(edge) => {
                 let edge_id = edge.get_engine_id(exec_state, &args)?;
@@ -180,8 +172,8 @@ async fn inner_revolve(
                     }),
                 )
                 .await?;
-                //TODO: fix me
-                Point3d{ x: 0.0, y: 1.0, z: 0.0}
+                //TODO: fix me! Need to be able to calculate this to ensure the path isn't colinear
+                glm::DVec2::new(0.0, 1.0)
             }
         };
 
@@ -189,19 +181,20 @@ async fn inner_revolve(
         // If an edge lies on the axis of revolution it will not exist after the revolve, so
         // it cannot be used to retrieve data about the solid
         for path in sketch.paths.clone() {
+            let from = path.get_from();
+            let to = path.get_to();
 
-        let from = path.get_from();
-        let to = path.get_to();
-
-        let mut dir = Point3d { x: to[0].n - from[0].n, y: to[1].n - from[1].n, z: 0.0};
-        let dir_mag = ((dir.x.powf(2.0) + dir.y.powf(2.0) + dir.z.powf(2.0))).sqrt();
-        dir = dir.map(|x| x / dir_mag);
-         if are_colinear(dir, direction) {
-             continue
+            let dir = glm::DVec2::new(to[0].n - from[0].n, to[1].n - from[1].n);
+            if glm::are_collinear2d(
+                &dir,
+                &direction,
+                tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE),
+            ) {
+                continue;
+            }
+            edge_id = Some(path.get_id());
+            break;
         }
-         edge_id = Some(path.get_id());
-         break;
-        };
 
         solids.push(
             do_post_extrude(
