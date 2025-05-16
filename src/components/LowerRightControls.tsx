@@ -18,6 +18,8 @@ import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import { billingActor } from '@src/lib/singletons'
 import { ActionButton } from '@src/components/ActionButton'
 import { isDesktop } from '@src/lib/isDesktop'
+import { VITE_KC_SITE_BASE_URL } from '@src/env'
+import { APP_DOWNLOAD_PATH } from '@src/lib/constants'
 
 export function LowerRightControls({
   children,
@@ -67,7 +69,7 @@ export function LowerRightControls({
         ) : (
           <ActionButton
             Element="externalLink"
-            to="https://zoo.dev/modeling-app/download"
+            to={`${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`}
             className={
               '!no-underline !border-none !bg-transparent font-mono text-xs' +
               linkOverrideClassName

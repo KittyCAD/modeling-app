@@ -46,11 +46,13 @@ import { reportRejection } from '@src/lib/trap'
 import { DownloadAppToast } from '@src/components/DownloadAppBanner'
 import openWindow from '@src/lib/openWindow'
 import {
+  APP_DOWNLOAD_PATH,
   CREATE_FILE_URL_PARAM,
   DOWNLOAD_APP_TOAST_ID,
   ONBOARDING_TOAST_ID,
 } from '@src/lib/constants'
 import { isPlaywright } from '@src/lib/isPlaywright'
+import { VITE_KC_SITE_BASE_URL } from '@src/env'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -168,7 +170,7 @@ export function App() {
         () =>
           DownloadAppToast({
             onAccept: () => {
-              openWindow('https://zoo.dev/modeling-app/download')
+              openWindow(`${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`)
                 .then(() => {
                   toast.dismiss(DOWNLOAD_APP_TOAST_ID)
                 })
