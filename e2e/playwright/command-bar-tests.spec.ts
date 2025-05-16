@@ -510,7 +510,7 @@ test.describe('Command bar tests', () => {
     await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
       await editor.expectEditor.toContain('extrusionDistance = 12')
       await toolbar.openPane('files')
-      await toolbar.expectFileTreeState(['main.kcl', 'test.kcl'])
+      await toolbar.expectFileTreeState(['main-1.kcl', 'main.kcl'])
     })
   })
 
