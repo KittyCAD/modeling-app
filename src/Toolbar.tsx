@@ -179,7 +179,6 @@ export function Toolbar({
           typeof maybeIconConfig.disabledReason === 'function'
             ? maybeIconConfig.disabledReason(state)
             : maybeIconConfig.disabledReason,
-        warningReason: maybeIconConfig.warningReason,
         disableHotkey: maybeIconConfig.disableHotkey?.(state),
         status: maybeIconConfig.status,
       }
@@ -455,15 +454,6 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
           Fix KCL errors to enable tools
         </p>
       )}
-      {itemConfig.warningReason && (
-        <p className="text-xs p-1 text-chalkboard-70 dark:text-chalkboard-40">
-          <CustomIcon
-            name="bug"
-            className="w-4 h-4 inline-block mr-1 text-warn-80 bg-warn-10"
-          />
-          {itemConfig.warningReason}
-        </p>
-      )}
     </Tooltip>
   )
 })
@@ -562,6 +552,12 @@ const ToolbarItemTooltipRichContent = ({
         )}
       </div>
       <p className="px-2 my-2 text-ch font-sans">{itemConfig.description}</p>
+      {itemConfig.extraNote && (
+        <p className="px-2 my-2 text-ch font-sans">
+          <span className="font-semibold">Note: </span>
+          {itemConfig.extraNote}
+        </p>
+      )}
       {/* Add disabled reason if item is disabled */}
       {itemConfig.disabled && itemConfig.disabledReason && (
         <>

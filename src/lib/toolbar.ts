@@ -46,12 +46,12 @@ export type ToolbarItem = {
     | string
     | ((state: StateFrom<typeof modelingMachine>) => string | string[])
   description: string
+  extraNote?: string
   links: { label: string; url: string }[]
   isActive?: (state: StateFrom<typeof modelingMachine>) => boolean
   disabledReason?:
     | string
     | ((state: StateFrom<typeof modelingMachine>) => string | undefined)
-  warningReason?: string
 }
 
 export type ToolbarItemResolved = Omit<
@@ -209,9 +209,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: 'Chamfer',
         hotkey: 'C',
         description: 'Bevel the edges of a 3D solid.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/chamfer' }],
-        warningReason:
-          'Chamfers cannot touch other chamfers yet. This is under development.',
+        extraNote:
+          'Chamfers cannot touch other chamfers yet. This is under development, see issue tracker.',
+        links: [
+          {
+            label: 'issue tracker',
+            url: 'https://github.com/KittyCAD/modeling-app/issues/6617',
+          },
+          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/chamfer' },
+        ],
       },
       {
         id: 'shell',
