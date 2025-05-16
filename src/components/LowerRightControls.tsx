@@ -72,7 +72,10 @@ export function LowerRightControls({
               '!no-underline !border-none !bg-transparent font-mono text-xs' +
               linkOverrideClassName
             }
-            iconEnd={{ icon: 'arrowDown', className: `w-5 h-5 bg-transparent` }}
+            iconStart={{
+              icon: 'arrowDown',
+              className: `w-5 h-5 bg-transparent`,
+            }}
           >
             Download the app
           </ActionButton>

@@ -11,10 +11,7 @@ export function DownloadAppToast({
   onDismiss,
 }: DownloadAppToastProps) {
   return (
-    <div
-      data-testid="onboarding-toast"
-      className="flex items-center gap-6 min-w-80"
-    >
+    <div data-testid="download-app-toast" className="flex items-center gap-6">
       <Logo className="w-auto h-8 flex-none" />
       <div className="flex flex-col justify-between gap-6">
         <section>
@@ -41,21 +38,24 @@ export function DownloadAppToast({
         <div className="flex justify-between gap-8">
           <ActionButton
             Element="button"
-            onClick={onAccept}
-            iconEnd={{
-              icon: 'arrowDown',
+            iconStart={{
+              icon: 'close',
             }}
+            data-negative-button="dismiss"
+            name="dismiss"
+            onClick={onDismiss}
           >
-            Download Desktop App
+            Not right now
           </ActionButton>
           <ActionButton
             Element="button"
-            onClick={onDismiss}
             iconStart={{
-              icon: 'checkmark',
+              icon: 'arrowDown',
             }}
+            name="accept"
+            onClick={onAccept}
           >
-            Got it
+            Download the app
           </ActionButton>
         </div>
       </div>

@@ -136,7 +136,8 @@ export function App() {
     const needsOnboarded = needsToOnboard(location, onboardingStatus)
     const needsDownloadAppToast =
       searchParams.has(CREATE_FILE_URL_PARAM) ||
-      settings.app.dismissWebBanner.current
+      settings.app.dismissWebBanner.current ||
+      true // TODO: fix
 
     if (!isDesktop() && needsDownloadAppToast) {
       toast.success(
