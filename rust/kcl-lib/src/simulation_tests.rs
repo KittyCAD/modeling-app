@@ -3151,7 +3151,7 @@ mod sketch_on_face_union {
 }
 mod multi_target_csg {
     const TEST_NAME: &str = "multi_target_csg";
-  
+
     /// Test parsing KCL.
     #[test]
     fn parse() {
