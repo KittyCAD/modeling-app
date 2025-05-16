@@ -133,6 +133,7 @@ async fn inner_revolve(
     let mut solids = Vec::new();
     for sketch in &sketches {
         let id = exec_state.next_uuid();
+        let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE);
 
         let direction = match &axis {
             Axis2dOrEdgeReference::Axis { direction, origin } => {
@@ -151,7 +152,7 @@ async fn inner_revolve(
                             y: LengthUnit(origin[1].to_mm()),
                             z: LengthUnit(0.0),
                         },
-                        tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
+                        tolerance: LengthUnit(tolerance),
                         axis_is_2d: true,
                         opposite: opposite.clone(),
                     }),
@@ -167,7 +168,7 @@ async fn inner_revolve(
                         angle,
                         target: sketch.id.into(),
                         edge_id,
-                        tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
+                        tolerance: LengthUnit(tolerance),
                         opposite: opposite.clone(),
                     }),
                 )
@@ -185,11 +186,7 @@ async fn inner_revolve(
             let to = path.get_to();
 
             let dir = glm::DVec2::new(to[0].n - from[0].n, to[1].n - from[1].n);
-            if glm::are_collinear2d(
-                &dir,
-                &direction,
-                tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE),
-            ) {
+            if glm::are_collinear2d(&dir, &direction, tolerance) {
                 continue;
             }
             edge_id = Some(path.get_id());
