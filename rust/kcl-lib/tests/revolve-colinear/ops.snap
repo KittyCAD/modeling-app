@@ -100,7 +100,6 @@ description: Operations executed revolve-colinear.kcl
         "sourceRange": []
       }
     },
-    "sourceRange": [],
-    "isError": true
+    "sourceRange": []
   }
 ]
