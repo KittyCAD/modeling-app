@@ -823,6 +823,7 @@ impl ExecutorContext {
 
                 KclErrorWithOutputs::new(
                     err,
+                    exec_state.errors().to_vec(),
                     #[cfg(feature = "artifact-graph")]
                     exec_state.global.operations.clone(),
                     #[cfg(feature = "artifact-graph")]
@@ -999,6 +1000,7 @@ impl ExecutorContext {
 
                         return Err(KclErrorWithOutputs::new(
                             e,
+                            exec_state.errors().to_vec(),
                             #[cfg(feature = "artifact-graph")]
                             exec_state.global.operations.clone(),
                             #[cfg(feature = "artifact-graph")]
@@ -1048,6 +1050,7 @@ impl ExecutorContext {
 
             KclErrorWithOutputs::new(
                 err,
+                exec_state.errors().to_vec(),
                 #[cfg(feature = "artifact-graph")]
                 exec_state.global.operations.clone(),
                 #[cfg(feature = "artifact-graph")]
@@ -1100,6 +1103,7 @@ impl ExecutorContext {
 
             KclErrorWithOutputs::new(
                 e,
+                exec_state.errors().to_vec(),
                 #[cfg(feature = "artifact-graph")]
                 exec_state.global.operations.clone(),
                 #[cfg(feature = "artifact-graph")]
