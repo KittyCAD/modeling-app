@@ -117,7 +117,7 @@ function CommandBarSelectionInput({
 
     /**
      * Now that arguments like this can be optional, we need to
-     * construction an empty selection if it's not required to get it past our validation.
+     * construct an empty selection if it's not required to get it past our validation.
      */
     const resolvedSelection: Selections | undefined = isArgRequired
       ? selection
