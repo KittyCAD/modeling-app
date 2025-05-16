@@ -50,7 +50,7 @@ export function DownloadAppToast({
           <ActionButton
             Element="button"
             iconStart={{
-              icon: 'arrowDown',
+              icon: 'download',
             }}
             name="accept"
             onClick={onAccept}

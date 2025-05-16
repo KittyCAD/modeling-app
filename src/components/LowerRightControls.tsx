@@ -73,7 +73,7 @@ export function LowerRightControls({
               linkOverrideClassName
             }
             iconStart={{
-              icon: 'arrowDown',
+              icon: 'download',
               className: `w-5 h-5 bg-transparent`,
             }}
           >
