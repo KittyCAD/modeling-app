@@ -70,18 +70,31 @@ flowchart LR
   32["CompositeSolid Subtract<br>[1375, 1423, 0]"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   33[Wall]
+    %% face_code_ref=Missing NodePath
   34[Wall]
+    %% face_code_ref=Missing NodePath
   35[Wall]
+    %% face_code_ref=Missing NodePath
   36[Wall]
+    %% face_code_ref=Missing NodePath
   37[Wall]
+    %% face_code_ref=Missing NodePath
   38[Wall]
+    %% face_code_ref=Missing NodePath
   39[Wall]
+    %% face_code_ref=Missing NodePath
   40["Cap Start"]
+    %% face_code_ref=Missing NodePath
   41["Cap Start"]
+    %% face_code_ref=Missing NodePath
   42["Cap Start"]
+    %% face_code_ref=Missing NodePath
   43["Cap End"]
+    %% face_code_ref=Missing NodePath
   44["Cap End"]
+    %% face_code_ref=Missing NodePath
   45["Cap End"]
+    %% face_code_ref=Missing NodePath
   46["SweepEdge Opposite"]
   47["SweepEdge Opposite"]
   48["SweepEdge Opposite"]

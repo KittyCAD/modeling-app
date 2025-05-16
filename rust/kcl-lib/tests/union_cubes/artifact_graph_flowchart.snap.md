@@ -37,17 +37,29 @@ flowchart LR
   17["CompositeSolid Union<br>[459, 484, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   18[Wall]
+    %% face_code_ref=Missing NodePath
   19[Wall]
+    %% face_code_ref=Missing NodePath
   20[Wall]
+    %% face_code_ref=Missing NodePath
   21[Wall]
+    %% face_code_ref=Missing NodePath
   22[Wall]
+    %% face_code_ref=Missing NodePath
   23[Wall]
+    %% face_code_ref=Missing NodePath
   24[Wall]
+    %% face_code_ref=Missing NodePath
   25[Wall]
+    %% face_code_ref=Missing NodePath
   26["Cap Start"]
+    %% face_code_ref=Missing NodePath
   27["Cap Start"]
+    %% face_code_ref=Missing NodePath
   28["Cap End"]
+    %% face_code_ref=Missing NodePath
   29["Cap End"]
+    %% face_code_ref=Missing NodePath
   30["SweepEdge Opposite"]
   31["SweepEdge Opposite"]
   32["SweepEdge Opposite"]

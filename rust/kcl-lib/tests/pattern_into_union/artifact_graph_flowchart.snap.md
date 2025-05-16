@@ -60,27 +60,49 @@ flowchart LR
   28["Sweep Extrusion<br>[1647, 1685, 0]"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
   29[Wall]
+    %% face_code_ref=Missing NodePath
   30[Wall]
+    %% face_code_ref=Missing NodePath
   31[Wall]
+    %% face_code_ref=Missing NodePath
   32[Wall]
+    %% face_code_ref=Missing NodePath
   33[Wall]
+    %% face_code_ref=Missing NodePath
   34[Wall]
+    %% face_code_ref=Missing NodePath
   35[Wall]
+    %% face_code_ref=Missing NodePath
   36[Wall]
+    %% face_code_ref=Missing NodePath
   37[Wall]
+    %% face_code_ref=Missing NodePath
   38[Wall]
+    %% face_code_ref=Missing NodePath
   39[Wall]
+    %% face_code_ref=Missing NodePath
   40[Wall]
+    %% face_code_ref=Missing NodePath
   41[Wall]
+    %% face_code_ref=Missing NodePath
   42[Wall]
+    %% face_code_ref=Missing NodePath
   43[Wall]
+    %% face_code_ref=Missing NodePath
   44[Wall]
+    %% face_code_ref=Missing NodePath
   45["Cap Start"]
+    %% face_code_ref=Missing NodePath
   46["Cap Start"]
+    %% face_code_ref=Missing NodePath
   47["Cap Start"]
+    %% face_code_ref=Missing NodePath
   48["Cap End"]
+    %% face_code_ref=Missing NodePath
   49["Cap End"]
+    %% face_code_ref=Missing NodePath
   50["Cap End"]
+    %% face_code_ref=Missing NodePath
   51["SweepEdge Opposite"]
   52["SweepEdge Opposite"]
   53["SweepEdge Opposite"]

@@ -47,11 +47,17 @@ flowchart LR
   22["Sweep Extrusion<br>[200, 219, 1]"]
     %% Missing NodePath
   23[Wall]
+    %% face_code_ref=Missing NodePath
   24[Wall]
+    %% face_code_ref=Missing NodePath
   25["Cap Start"]
+    %% face_code_ref=Missing NodePath
   26["Cap Start"]
+    %% face_code_ref=Missing NodePath
   27["Cap End"]
+    %% face_code_ref=Missing NodePath
   28["Cap End"]
+    %% face_code_ref=Missing NodePath
   29["SweepEdge Opposite"]
   30["SweepEdge Opposite"]
   31["SweepEdge Adjacent"]

@@ -280,75 +280,145 @@ flowchart LR
   133["Sweep Extrusion<br>[5840, 5885, 0]"]
     %% [ProgramBodyItem { index: 22 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   134[Wall]
+    %% face_code_ref=Missing NodePath
   135[Wall]
+    %% face_code_ref=Missing NodePath
   136[Wall]
+    %% face_code_ref=Missing NodePath
   137[Wall]
+    %% face_code_ref=Missing NodePath
   138[Wall]
+    %% face_code_ref=Missing NodePath
   139[Wall]
+    %% face_code_ref=Missing NodePath
   140[Wall]
+    %% face_code_ref=Missing NodePath
   141[Wall]
+    %% face_code_ref=Missing NodePath
   142[Wall]
+    %% face_code_ref=Missing NodePath
   143[Wall]
+    %% face_code_ref=Missing NodePath
   144[Wall]
+    %% face_code_ref=Missing NodePath
   145[Wall]
+    %% face_code_ref=Missing NodePath
   146[Wall]
+    %% face_code_ref=Missing NodePath
   147[Wall]
+    %% face_code_ref=Missing NodePath
   148[Wall]
+    %% face_code_ref=Missing NodePath
   149[Wall]
+    %% face_code_ref=Missing NodePath
   150[Wall]
+    %% face_code_ref=Missing NodePath
   151[Wall]
+    %% face_code_ref=Missing NodePath
   152[Wall]
+    %% face_code_ref=Missing NodePath
   153[Wall]
+    %% face_code_ref=Missing NodePath
   154[Wall]
+    %% face_code_ref=Missing NodePath
   155[Wall]
+    %% face_code_ref=Missing NodePath
   156[Wall]
+    %% face_code_ref=Missing NodePath
   157[Wall]
+    %% face_code_ref=Missing NodePath
   158[Wall]
+    %% face_code_ref=Missing NodePath
   159[Wall]
+    %% face_code_ref=Missing NodePath
   160[Wall]
+    %% face_code_ref=Missing NodePath
   161[Wall]
+    %% face_code_ref=Missing NodePath
   162[Wall]
+    %% face_code_ref=Missing NodePath
   163[Wall]
+    %% face_code_ref=Missing NodePath
   164[Wall]
+    %% face_code_ref=Missing NodePath
   165[Wall]
+    %% face_code_ref=Missing NodePath
   166[Wall]
+    %% face_code_ref=Missing NodePath
   167[Wall]
+    %% face_code_ref=Missing NodePath
   168[Wall]
+    %% face_code_ref=Missing NodePath
   169[Wall]
+    %% face_code_ref=Missing NodePath
   170[Wall]
+    %% face_code_ref=Missing NodePath
   171[Wall]
+    %% face_code_ref=Missing NodePath
   172[Wall]
+    %% face_code_ref=Missing NodePath
   173[Wall]
+    %% face_code_ref=Missing NodePath
   174[Wall]
+    %% face_code_ref=Missing NodePath
   175[Wall]
+    %% face_code_ref=Missing NodePath
   176[Wall]
+    %% face_code_ref=Missing NodePath
   177[Wall]
+    %% face_code_ref=Missing NodePath
   178[Wall]
+    %% face_code_ref=Missing NodePath
   179[Wall]
+    %% face_code_ref=Missing NodePath
   180[Wall]
+    %% face_code_ref=Missing NodePath
   181[Wall]
+    %% face_code_ref=Missing NodePath
   182[Wall]
+    %% face_code_ref=Missing NodePath
   183[Wall]
+    %% face_code_ref=Missing NodePath
   184[Wall]
+    %% face_code_ref=Missing NodePath
   185[Wall]
+    %% face_code_ref=Missing NodePath
   186[Wall]
+    %% face_code_ref=Missing NodePath
   187[Wall]
+    %% face_code_ref=Missing NodePath
   188[Wall]
+    %% face_code_ref=Missing NodePath
   189[Wall]
+    %% face_code_ref=Missing NodePath
   190[Wall]
+    %% face_code_ref=Missing NodePath
   191[Wall]
+    %% face_code_ref=Missing NodePath
   192[Wall]
+    %% face_code_ref=Missing NodePath
   193[Wall]
+    %% face_code_ref=Missing NodePath
   194["Cap Start"]
+    %% face_code_ref=Missing NodePath
   195["Cap Start"]
+    %% face_code_ref=Missing NodePath
   196["Cap Start"]
+    %% face_code_ref=Missing NodePath
   197["Cap Start"]
+    %% face_code_ref=Missing NodePath
   198["Cap Start"]
+    %% face_code_ref=Missing NodePath
   199["Cap End"]
+    %% face_code_ref=[ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   200["Cap End"]
+    %% face_code_ref=Missing NodePath
   201["Cap End"]
+    %% face_code_ref=Missing NodePath
   202["Cap End"]
+    %% face_code_ref=Missing NodePath
   203["Cap End"]
+    %% face_code_ref=[ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   204["SweepEdge Opposite"]
   205["SweepEdge Opposite"]
   206["SweepEdge Opposite"]

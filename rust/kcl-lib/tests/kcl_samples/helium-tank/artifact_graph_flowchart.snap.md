@@ -188,40 +188,75 @@ flowchart LR
   88["CompositeSolid Union<br>[2305, 2334, 0]"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   89[Wall]
+    %% face_code_ref=Missing NodePath
   90[Wall]
+    %% face_code_ref=Missing NodePath
   91[Wall]
+    %% face_code_ref=Missing NodePath
   92[Wall]
+    %% face_code_ref=Missing NodePath
   93[Wall]
+    %% face_code_ref=Missing NodePath
   94[Wall]
+    %% face_code_ref=Missing NodePath
   95[Wall]
+    %% face_code_ref=Missing NodePath
   96[Wall]
+    %% face_code_ref=Missing NodePath
   97[Wall]
+    %% face_code_ref=Missing NodePath
   98[Wall]
+    %% face_code_ref=Missing NodePath
   99[Wall]
+    %% face_code_ref=Missing NodePath
   100[Wall]
+    %% face_code_ref=Missing NodePath
   101[Wall]
+    %% face_code_ref=Missing NodePath
   102[Wall]
+    %% face_code_ref=Missing NodePath
   103[Wall]
+    %% face_code_ref=Missing NodePath
   104[Wall]
+    %% face_code_ref=Missing NodePath
   105[Wall]
+    %% face_code_ref=Missing NodePath
   106[Wall]
+    %% face_code_ref=Missing NodePath
   107[Wall]
+    %% face_code_ref=Missing NodePath
   108[Wall]
+    %% face_code_ref=Missing NodePath
   109[Wall]
+    %% face_code_ref=Missing NodePath
   110[Wall]
+    %% face_code_ref=Missing NodePath
   111[Wall]
+    %% face_code_ref=Missing NodePath
   112["Cap Start"]
+    %% face_code_ref=Missing NodePath
   113["Cap Start"]
+    %% face_code_ref=Missing NodePath
   114["Cap Start"]
+    %% face_code_ref=Missing NodePath
   115["Cap Start"]
+    %% face_code_ref=Missing NodePath
   116["Cap Start"]
+    %% face_code_ref=Missing NodePath
   117["Cap Start"]
+    %% face_code_ref=Missing NodePath
   118["Cap End"]
+    %% face_code_ref=Missing NodePath
   119["Cap End"]
+    %% face_code_ref=Missing NodePath
   120["Cap End"]
+    %% face_code_ref=Missing NodePath
   121["Cap End"]
+    %% face_code_ref=Missing NodePath
   122["Cap End"]
+    %% face_code_ref=Missing NodePath
   123["Cap End"]
+    %% face_code_ref=Missing NodePath
   124["SweepEdge Opposite"]
   125["SweepEdge Opposite"]
   126["SweepEdge Opposite"]

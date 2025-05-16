@@ -71,11 +71,17 @@ flowchart LR
   33["Sweep Loft<br>[3337, 3404, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   34[Wall]
+    %% face_code_ref=Missing NodePath
   35[Wall]
+    %% face_code_ref=Missing NodePath
   36[Wall]
+    %% face_code_ref=Missing NodePath
   37[Wall]
+    %% face_code_ref=Missing NodePath
   38["Cap Start"]
+    %% face_code_ref=Missing NodePath
   39["Cap End"]
+    %% face_code_ref=Missing NodePath
   40["SweepEdge Opposite"]
   41["SweepEdge Opposite"]
   42["SweepEdge Opposite"]
