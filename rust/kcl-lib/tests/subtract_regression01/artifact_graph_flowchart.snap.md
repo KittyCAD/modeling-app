@@ -31,7 +31,7 @@ flowchart LR
   2["Plane<br>[567, 597, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
   3["StartSketchOnPlane<br>[553, 598, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   16["Sweep Extrusion<br>[468, 539, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   17["Sweep Extrusion<br>[704, 748, 0]"]
@@ -39,17 +39,29 @@ flowchart LR
   18["CompositeSolid Subtract<br>[759, 802, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   19[Wall]
+    %% face_code_ref=Missing NodePath
   20[Wall]
+    %% face_code_ref=Missing NodePath
   21[Wall]
+    %% face_code_ref=Missing NodePath
   22[Wall]
+    %% face_code_ref=Missing NodePath
   23[Wall]
+    %% face_code_ref=Missing NodePath
   24[Wall]
+    %% face_code_ref=Missing NodePath
   25[Wall]
+    %% face_code_ref=Missing NodePath
   26[Wall]
+    %% face_code_ref=Missing NodePath
   27["Cap Start"]
+    %% face_code_ref=Missing NodePath
   28["Cap Start"]
+    %% face_code_ref=Missing NodePath
   29["Cap End"]
+    %% face_code_ref=Missing NodePath
   30["Cap End"]
+    %% face_code_ref=Missing NodePath
   31["SweepEdge Opposite"]
   32["SweepEdge Opposite"]
   33["SweepEdge Opposite"]

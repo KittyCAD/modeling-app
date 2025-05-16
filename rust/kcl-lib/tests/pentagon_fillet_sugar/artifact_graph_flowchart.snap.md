@@ -31,9 +31,9 @@ flowchart LR
   1["Plane<br>[73, 90, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   2["StartSketchOnFace<br>[372, 401, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
   3["StartSketchOnFace<br>[372, 401, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
   16["Sweep Extrusion<br>[309, 341, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
   17["Sweep Extrusion<br>[651, 679, 0]"]
@@ -41,14 +41,23 @@ flowchart LR
   18["Sweep Extrusion<br>[862, 890, 0]"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
   19[Wall]
+    %% face_code_ref=Missing NodePath
   20[Wall]
+    %% face_code_ref=Missing NodePath
   21[Wall]
+    %% face_code_ref=Missing NodePath
   22[Wall]
+    %% face_code_ref=[ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
   23[Wall]
+    %% face_code_ref=[ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
   24["Cap Start"]
+    %% face_code_ref=Missing NodePath
   25["Cap End"]
+    %% face_code_ref=Missing NodePath
   26["Cap End"]
+    %% face_code_ref=Missing NodePath
   27["Cap End"]
+    %% face_code_ref=Missing NodePath
   28["SweepEdge Opposite"]
   29["SweepEdge Opposite"]
   30["SweepEdge Opposite"]

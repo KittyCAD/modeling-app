@@ -102,7 +102,7 @@ impl TyF64 {
             t => unreachable!("expected length, found {t:?}"),
         };
 
-        assert_ne!(len, UnitLen::Unknown);
+        debug_assert_ne!(len, UnitLen::Unknown);
 
         len.adjust_to(self.n, units).0
     }
@@ -114,7 +114,7 @@ impl TyF64 {
             _ => unreachable!(),
         };
 
-        assert_ne!(angle, UnitAngle::Unknown);
+        debug_assert_ne!(angle, UnitAngle::Unknown);
 
         angle.adjust_to(self.n, UnitAngle::Degrees).0
     }
@@ -126,7 +126,7 @@ impl TyF64 {
             _ => unreachable!(),
         };
 
-        assert_ne!(angle, UnitAngle::Unknown);
+        debug_assert_ne!(angle, UnitAngle::Unknown);
 
         angle.adjust_to(self.n, UnitAngle::Radians).0
     }

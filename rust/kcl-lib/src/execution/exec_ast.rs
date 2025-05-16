@@ -736,21 +736,35 @@ fn apply_ascription(
     let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
         .map_err(|e| KclError::Semantic(e.into()))?;
 
-    if let KclValue::Number { value, meta, .. } = value {
-        // If the number has unknown units but the user is explicitly specifying them, treat the value as having had it's units erased,
-        // rather than forcing the user to explicitly erase them.
-        KclValue::Number {
-            ty: NumericType::Any,
-            value: *value,
-            meta: meta.clone(),
+    let mut value = value.clone();
+
+    // If the number has unknown units but the user is explicitly specifying them, treat the value as having had it's units erased,
+    // rather than forcing the user to explicitly erase them.
+    if let KclValue::Number { value: n, meta, .. } = &value {
+        if let RuntimeType::Primitive(PrimitiveType::Number(num)) = &ty {
+            if num.is_fully_specified() {
+                value = KclValue::Number {
+                    ty: NumericType::Any,
+                    value: *n,
+                    meta: meta.clone(),
+                };
+            }
         }
-        .coerce(&ty, exec_state)
-    } else {
-        value.coerce(&ty, exec_state)
     }
-    .map_err(|_| {
+
+    value.coerce(&ty, exec_state).map_err(|_| {
+        let suggestion = if ty == RuntimeType::length() {
+            ", you might try coercing to a fully specified numeric type such as `number(mm)`"
+        } else if ty == RuntimeType::angle() {
+            ", you might try coercing to a fully specified numeric type such as `number(deg)`"
+        } else {
+            ""
+        };
         KclError::Semantic(KclErrorDetails {
-            message: format!("could not coerce {} value to type {}", value.human_friendly_type(), ty),
+            message: format!(
+                "could not coerce {} value to type {ty}{suggestion}",
+                value.human_friendly_type()
+            ),
             source_ranges: vec![source_range],
         })
     })
@@ -2766,5 +2780,30 @@ startSketchOn(XY)
         let e = parse_execute(ast).await.unwrap_err();
         // Make sure we get a useful error message and not an engine error.
         assert!(e.message().contains("sqrt"), "Error message: '{}'", e.message());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn coerce_unknown_to_length() {
+        let ast = r#"x = 2mm * 2mm
+y = x: number(Length)"#;
+        let e = parse_execute(ast).await.unwrap_err();
+        assert!(
+            e.message().contains("could not coerce"),
+            "Error message: '{}'",
+            e.message()
+        );
+
+        let ast = r#"x = 2mm
+y = x: number(Length)"#;
+        let result = parse_execute(ast).await.unwrap();
+        let mem = result.exec_state.stack();
+        let num = mem
+            .memory
+            .get_from("y", result.mem_env, SourceRange::default(), 0)
+            .unwrap()
+            .as_ty_f64()
+            .unwrap();
+        assert_eq!(num.n, 2.0);
+        assert_eq!(num.ty, NumericType::mm());
     }
 }
