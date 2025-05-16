@@ -1,0 +1,9 @@
+# primitive
+
+true: bool
+
+==>
+Program(ExpressionStatement(VariableDefinition,
+                            Equals,
+                            ArrayExpression(IntegerRange(Number,
+                                                         Number))))

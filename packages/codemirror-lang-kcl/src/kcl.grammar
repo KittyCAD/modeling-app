@@ -57,7 +57,8 @@ expression[@isGroup=Expression] {
   ObjectExpression { "{" commaSep<ObjectProperty> "}" } |
   MemberExpression { expression !member "." PropertyName } |
   SubscriptExpression { expression !member "[" expression "]" } |
-  PipeExpression { expression (!pipe PipeOperator expression)+ }
+  PipeExpression { expression (!pipe PipeOperator expression)+ } |
+  AscribedExpression { expression ":" type }
 }
 
 UnaryOp { AddOp | BangOp }
