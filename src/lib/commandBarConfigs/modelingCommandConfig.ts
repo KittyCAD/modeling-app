@@ -763,8 +763,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
-        warningMessage:
-          'Chamfers cannot touch other chamfers yet. This is under development.',
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       length: {

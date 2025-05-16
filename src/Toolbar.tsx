@@ -179,6 +179,7 @@ export function Toolbar({
           typeof maybeIconConfig.disabledReason === 'function'
             ? maybeIconConfig.disabledReason(state)
             : maybeIconConfig.disabledReason,
+        warningReason: maybeIconConfig.warningReason,
         disableHotkey: maybeIconConfig.disableHotkey?.(state),
         status: maybeIconConfig.status,
       }
@@ -452,6 +453,15 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
             className="w-4 h-4 inline-block mr-1 text-destroy-80 bg-destroy-10"
           />
           Fix KCL errors to enable tools
+        </p>
+      )}
+      {itemConfig.warningReason && (
+        <p className="text-xs p-1 text-chalkboard-70 dark:text-chalkboard-40">
+          <CustomIcon
+            name="bug"
+            className="w-4 h-4 inline-block mr-1 text-warn-80 bg-warn-10"
+          />
+          {itemConfig.warningReason}
         </p>
       )}
     </Tooltip>

@@ -51,6 +51,7 @@ export type ToolbarItem = {
   disabledReason?:
     | string
     | ((state: StateFrom<typeof modelingMachine>) => string | undefined)
+  warningReason?: string
 }
 
 export type ToolbarItemResolved = Omit<
@@ -209,6 +210,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         hotkey: 'C',
         description: 'Bevel the edges of a 3D solid.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/chamfer' }],
+        warningReason:
+          'Chamfers cannot touch other chamfers yet. This is under development.',
       },
       {
         id: 'shell',
