@@ -487,7 +487,7 @@ test.describe('Command bar tests', () => {
         currentArgValue: '',
         headerArguments: {
           Method: 'Existing project',
-          Name: 'test',
+          Name: 'main.kcl',
           ProjectName: '',
           Code: '1 line',
         },

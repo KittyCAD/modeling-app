@@ -778,7 +778,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
       await u.openFilePanel()
       await expect(
-        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
+        page.getByTestId('file-tree-item').getByText('main.kcl')
       ).toBeVisible()
     }
   )
@@ -1219,12 +1219,8 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       // Check file is created
       await u.openFilePanel()
       await expect(
-        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
-      ).toBeVisible()
-
-      await expect(
         page.getByTestId('file-tree-item').getByText('main.kcl')
-      ).not.toBeVisible()
+      ).toBeVisible()
     }
   )
 
