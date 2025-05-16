@@ -99,6 +99,8 @@ test.describe('edit with AI example snapshots', () => {
       await test.step('fire off edit prompt', async () => {
         await cmdBar.captureTextToCadRequestSnapshot(test.info())
         await cmdBar.openCmdBar('promptToEdit')
+        await page.waitForTimeout(100)
+        await cmdBar.progressCmdBar()
         // being specific about the color with a hex means asserting pixel color is more stable
         await page
           .getByTestId('cmd-bar-arg-value')
