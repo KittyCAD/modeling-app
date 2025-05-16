@@ -61,7 +61,7 @@ pipeHole = startSketchOn(XY)
 sweepSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 2)
   |> subtract2d(tool = pipeHole)
-  |> sweep(path = sweepPath, relativeTo = "trajectoryCurve")
+  |> sweep(path = sweepPath)
   |> scale(z = 2.5)
 ```
 

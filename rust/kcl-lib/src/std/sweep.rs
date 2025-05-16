@@ -92,7 +92,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         radius = 2,
 ///         )              
 ///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath, relativeTo = "trajectoryCurve")   
+///     |> sweep(path = sweepPath)   
 /// ```
 ///
 /// ```no_run
@@ -112,7 +112,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn(XZ)
 ///     |> circle( center = [5, 0], radius = 1)
-///     |> sweep(path = helixPath, relativeTo = "trajectoryCurve")
+///     |> sweep(path = helixPath)
 /// ```
 ///
 /// ```no_run
