@@ -47,6 +47,7 @@ import { reportRejection } from '@src/lib/trap'
 import { DownloadAppToast } from '@src/components/DownloadAppBanner'
 import openWindow from '@src/lib/openWindow'
 import { CREATE_FILE_URL_PARAM } from '@src/lib/constants'
+import { isPlaywright } from './lib/isPlaywright'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -135,11 +136,11 @@ export function App() {
       settings.app.onboardingStatus.default
     const needsOnboarded = needsToOnboard(location, onboardingStatus)
     const needsDownloadAppToast =
-      searchParams.has(CREATE_FILE_URL_PARAM) ||
-      settings.app.dismissWebBanner.current ||
-      true // TODO: fix
-
-    if (!isDesktop() && needsDownloadAppToast) {
+      !isDesktop() &&
+      !isPlaywright() &&
+      !searchParams.has(CREATE_FILE_URL_PARAM) &&
+      !settings.app.dismissWebBanner.current
+    if (needsDownloadAppToast) {
       toast.success(
         () =>
           DownloadAppToast({

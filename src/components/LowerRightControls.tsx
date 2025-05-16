@@ -74,7 +74,7 @@ export function LowerRightControls({
             }
             iconStart={{
               icon: 'download',
-              className: `w-5 h-5 bg-transparent`,
+              className: `w-5 h-5 !bg-transparent`,
             }}
           >
             Download the app
