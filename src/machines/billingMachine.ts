@@ -14,7 +14,7 @@ export enum BillingTransition {
   Wait = 'wait',
 }
 
-// It's nice to be explict if we are an Organization, Pro, Free.
+// It's nice to be explicit if we are an Organization, Pro, Free.
 // @kittycad/lib offers some types around this, but they aren't as...
 // homogeneous: Models['ZooProductSubscriptions_type'], and
 // Models['Org_type'].
