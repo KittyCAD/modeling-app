@@ -3470,9 +3470,6 @@ description: Variables in memory after executing ball-bearing.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -3483,9 +3480,6 @@ description: Variables in memory after executing ball-bearing.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -3691,9 +3685,6 @@ description: Variables in memory after executing ball-bearing.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -4876,9 +4867,6 @@ description: Variables in memory after executing ball-bearing.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -4889,9 +4877,6 @@ description: Variables in memory after executing ball-bearing.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -5097,9 +5082,6 @@ description: Variables in memory after executing ball-bearing.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -5110,9 +5092,6 @@ description: Variables in memory after executing ball-bearing.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -5123,9 +5102,6 @@ description: Variables in memory after executing ball-bearing.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -5136,9 +5112,6 @@ description: Variables in memory after executing ball-bearing.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -5149,9 +5122,6 @@ description: Variables in memory after executing ball-bearing.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

@@ -20,9 +20,6 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -132,9 +129,6 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -145,9 +139,6 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },

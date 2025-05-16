@@ -1,6 +1,5 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 187
 description: Variables in memory after executing involute_circular_units.kcl
 ---
 {
@@ -11,9 +10,6 @@ description: Variables in memory after executing involute_circular_units.kcl
       "type": "Default",
       "len": {
         "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -21,13 +17,9 @@ description: Variables in memory after executing involute_circular_units.kcl
     "type": "Number",
     "value": 6.0,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     }
   },
   "baseDiameter": {
@@ -37,9 +29,6 @@ description: Variables in memory after executing involute_circular_units.kcl
       "type": "Default",
       "len": {
         "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -50,9 +39,6 @@ description: Variables in memory after executing involute_circular_units.kcl
       "type": "Default",
       "len": {
         "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -63,9 +49,6 @@ description: Variables in memory after executing involute_circular_units.kcl
       "type": "Default",
       "len": {
         "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -76,9 +59,6 @@ description: Variables in memory after executing involute_circular_units.kcl
       "type": "Default",
       "len": {
         "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -89,9 +69,6 @@ description: Variables in memory after executing involute_circular_units.kcl
       "type": "Default",
       "len": {
         "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -102,9 +79,6 @@ description: Variables in memory after executing involute_circular_units.kcl
       "type": "Default",
       "len": {
         "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -139,9 +113,9 @@ description: Variables in memory after executing involute_circular_units.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 505,
-            "end": 511,
-            "start": 505,
+            "commentStart": 511,
+            "end": 517,
+            "start": 511,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -159,9 +133,9 @@ description: Variables in memory after executing involute_circular_units.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 708,
-            "end": 714,
-            "start": 708,
+            "commentStart": 717,
+            "end": 723,
+            "start": 717,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -203,9 +177,9 @@ description: Variables in memory after executing involute_circular_units.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 505,
-              "end": 511,
-              "start": 505,
+              "commentStart": 511,
+              "end": 517,
+              "start": 511,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -253,9 +227,9 @@ description: Variables in memory after executing involute_circular_units.kcl
             ],
             "radius": 5.75,
             "tag": {
-              "commentStart": 708,
-              "end": 714,
-              "start": 708,
+              "commentStart": 717,
+              "end": 723,
+              "start": 717,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -425,9 +399,6 @@ description: Variables in memory after executing involute_circular_units.kcl
       "type": "Default",
       "len": {
         "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

@@ -43,7 +43,7 @@ helix(
 ```kcl
 // Create a helix around the Z axis.
 helixPath = helix(
-    angleStart = 0,
+    angleStart = 0deg,
     ccw = true,
     revolutions = 5,
     length = 10,
@@ -66,7 +66,7 @@ helper001 = startSketchOn(XZ)
  |> line(end = [0, 10], tag = $edge001)
 
 helixPath = helix(
-    angleStart = 0,
+    angleStart = 0deg,
     ccw = true,
     revolutions = 5,
     length = 10,
@@ -85,7 +85,7 @@ springSketch = startSketchOn(XY)
 ```kcl
 // Create a helix around a custom axis.
 helixPath = helix(
-    angleStart = 0,
+    angleStart = 0deg,
     ccw = true,
     revolutions = 5,
     length = 10,
@@ -112,7 +112,7 @@ part001 = startSketchOn(XY)
   |> extrude(length = 10)
 
 helix(
-    angleStart = 0,
+    angleStart = 0deg,
     ccw = true,
     revolutions = 16,
     cylinder = part001,

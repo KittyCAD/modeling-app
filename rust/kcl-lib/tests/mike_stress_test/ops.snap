@@ -26,9 +26,6 @@ description: Operations executed mike_stress_test.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

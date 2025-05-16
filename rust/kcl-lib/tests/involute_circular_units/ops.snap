@@ -29,13 +29,9 @@ description: Operations executed involute_circular_units.kcl
             "type": "Number",
             "value": 17.1429,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -48,9 +44,6 @@ description: Operations executed involute_circular_units.kcl
               "type": "Default",
               "len": {
                 "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -95,9 +88,6 @@ description: Operations executed involute_circular_units.kcl
             "type": "Default",
             "len": {
               "type": "Cm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

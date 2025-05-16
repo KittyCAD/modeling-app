@@ -24,7 +24,7 @@ assert(nHoles, isGreaterThan = 1, error = "nHoles must be greater than 1")
 circles = startSketchOn(XY)
   |> circle(center = [mountingHolePlacementDiameter / 2, 0], radius = mountingHoleDia / 2)
   |> patternCircular2d(
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        center = [0, 0],
        instances = nHoles,
        rotateDuplicates = true,

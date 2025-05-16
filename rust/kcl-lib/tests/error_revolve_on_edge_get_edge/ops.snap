@@ -26,9 +26,6 @@ description: Operations executed error_revolve_on_edge_get_edge.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -90,13 +87,9 @@ description: Operations executed error_revolve_on_edge_get_edge.kcl
           "type": "Number",
           "value": 90.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []

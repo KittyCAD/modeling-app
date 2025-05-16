@@ -12,7 +12,7 @@ export fn thing() {
     |> patternCircular2d(
          center = [0, 0],
          instances = 4,
-         arcDegrees = 360,
+         arcDegrees = 360deg,
          rotateDuplicates = true,
        )
 

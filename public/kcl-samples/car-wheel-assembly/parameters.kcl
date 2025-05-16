@@ -12,7 +12,7 @@ export wheelWidth = 9.5
 export wheelDiameter = 19
 export spokeCount = 6
 export spokeGap = 0.2
-export spokeAngle = 0.02
+export spokeAngle = 0.02deg
 export spokeThickness = 0.95
 
 // Lug Nut

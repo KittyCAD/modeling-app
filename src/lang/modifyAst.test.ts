@@ -319,7 +319,7 @@ yo = 5 + 6
 part001 = startSketchOn(XY)
 |> startProfile(at = [-1.2, 4.83])
 |> line(end = [2.8, 0])
-|> angledLine(angle = 100 + 100, length = 3.09)
+|> angledLine(angle = 100deg + 100, length = 3.09)
 |> angledLine(angle = abc, length = 3.09)
 |> angledLine(angle = def(yo), length = 3.09)
 |> angledLine(angle = ghi(%), length = 3.09)
@@ -613,32 +613,32 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       ['xLineTo', 'xLine(endAbsolute = 198.85, tag = $a)', ['162.14', '180']],
       [
         'angledLine',
-        'angledLine(angle = 45.5, length = 198.85, tag = $a)',
+        'angledLine(angle = 45.5deg, length = 198.85, tag = $a)',
         ['198.85', '46'],
       ],
       [
         'angledLine',
-        'angledLine(angle = 45.5, lengthX = 198.85, tag = $a)',
+        'angledLine(angle = 45.5deg, lengthX = 198.85, tag = $a)',
         ['283.7', '46'],
       ],
       [
         'angledLine',
-        'angledLine(angle = 45.5, lengthY = 198.85, tag = $a)',
+        'angledLine(angle = 45.5deg, lengthY = 198.85, tag = $a)',
         ['278.79', '46'],
       ],
       [
         'angledLine',
-        'angledLine(angle = 45.5, endAbsoluteX = 198.85, tag = $a)',
+        'angledLine(angle = 45.5deg, endAbsoluteX = 198.85, tag = $a)',
         ['231.33', '-134'],
       ],
       [
         'angledLine',
-        'angledLine(angle = 45.5, endAbsoluteY = 198.85, tag = $a)',
+        'angledLine(angle = 45.5deg, endAbsoluteY = 198.85, tag = $a)',
         ['134.51', '46'],
       ],
       [
         'angledLineThatIntersects',
-        `angledLineThatIntersects(angle = 45.5, intersectTag = b, offset = 198.85, tag = $a)`,
+        `angledLineThatIntersects(angle = 45.5deg, intersectTag = b, offset = 198.85, tag = $a)`,
         ['918.4', '46'],
       ],
     ])(`%s`, async (_, line, [replace1, replace2]) => {
@@ -671,22 +671,22 @@ describe('Testing removeSingleConstraintInfo', () => {
     const code = `part001 = startSketchOn(-XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [3 + 0, 4 + 0])
-  |> /*0*/ angledLine(angle = 3 + 0, length = 3.14 + 0)
+  |> /*0*/ angledLine(angle = 3deg + 0, length = 3.14 + 0)
   |> line(endAbsolute = [6.14 + 0, 3.14 + 0])
   |> xLine(/*xAbs*/ endAbsolute = 8 + 0)
   |> yLine(/*yAbs*/ endAbsolute = 5 + 0)
   |> yLine(/*yRel*/ length = 3.14 + 0, tag = $a)
   |> xLine(/*xRel*/ length = 3.14 + 0)
-  |> /*1*/ angledLine(angle = 3 + 0, lengthX = 3.14 + 0)
-  |> /*2*/ angledLine(angle = 30 + 0, lengthY = 3 + 0)
-  |> /*3*/ angledLine(angle = 12.14 + 0, endAbsoluteX =  12 + 0)
-  |> /*4*/ angledLine(angle = 30 + 0, endAbsoluteY =  10.14 + 0)
-  |> angledLineThatIntersects(angle = 3.14 + 0, intersectTag = a, offset = 0 + 0)
+  |> /*1*/ angledLine(angle = 3deg + 0, lengthX = 3.14 + 0)
+  |> /*2*/ angledLine(angle = 30deg + 0, lengthY = 3 + 0)
+  |> /*3*/ angledLine(angle = 12.14deg + 0, endAbsoluteX =  12 + 0)
+  |> /*4*/ angledLine(angle = 30deg + 0, endAbsoluteY =  10.14 + 0)
+  |> angledLineThatIntersects(angle = 3.14deg + 0, intersectTag = a, offset = 0 + 0)
   |> tangentialArc(endAbsolute = [3.14 + 0, 13.14 + 0])`
     const cases: [string, InputArg['type'], number | string, string][] = [
       [' line(end = [3 + 0, 4])', 'arrayItem', 1, ''],
       [
-        '/*0*/ angledLine(angle = 3, length = 3.14 + 0)',
+        '/*0*/ angledLine(angle = 3deg, length = 3.14 + 0)',
         'labeledArg',
         'angle',
         '',
@@ -697,31 +697,31 @@ describe('Testing removeSingleConstraintInfo', () => {
       ['yLine(length = 3.14, tag = $a)', 'singleValue', '', '/*yRel*/'],
       ['xLine(length = 3.14)', 'singleValue', '', '/*xRel*/'],
       [
-        '/*1*/ angledLine(angle = 3, lengthX = 3.14 + 0)',
+        '/*1*/ angledLine(angle = 3deg, lengthX = 3.14 + 0)',
         'labeledArg',
         'angle',
         '',
       ],
       [
-        '/*2*/ angledLine(angle = 30 + 0, lengthY = 3)',
+        '/*2*/ angledLine(angle = 30deg + 0, lengthY = 3)',
         'labeledArg',
         'length',
         '',
       ],
       [
-        '/*3*/ angledLine(angle = 12.14 + 0, endAbsoluteX = 12)',
+        '/*3*/ angledLine(angle = 12.14deg + 0, endAbsoluteX = 12)',
         'labeledArg',
         'endAbsoluteX',
         '',
       ],
       [
-        '/*4*/ angledLine(angle = 30, endAbsoluteY = 10.14 + 0)',
+        '/*4*/ angledLine(angle = 30deg, endAbsoluteY = 10.14 + 0)',
         'labeledArg',
         'angle',
         '',
       ],
       [
-        `angledLineThatIntersects(angle = 3.14 + 0, intersectTag = a, offset = 0)`,
+        `angledLineThatIntersects(angle = 3.14deg + 0, intersectTag = a, offset = 0)`,
         'labeledArg',
         'offset',
         '',
@@ -785,31 +785,31 @@ describe('Testing removeSingleConstraintInfo', () => {
   describe('with array notation', () => {
     const code = `part001 = startSketchOn(-XZ)
   |> startProfile(at = [0, 0])
-  |> /*0*/ angledLine(angle = 3.14 + 0, length = 3.14 + 0)
-  |> /*1*/ angledLine(angle = 3 + 0, lengthX = 3.14 + 0)
-  |> /*2*/ angledLine(angle = 30 + 0, lengthY = 3 + 0)
-  |> /*3*/ angledLine(angle = 12.14 + 0, endAbsoluteX = 12 + 0)
-  |> /*4*/ angledLine(angle = 30 + 0, endAbsoluteY = 10.14 + 0)`
+  |> /*0*/ angledLine(angle = 3.14deg + 0, length = 3.14 + 0)
+  |> /*1*/ angledLine(angle = 3deg + 0, lengthX = 3.14 + 0)
+  |> /*2*/ angledLine(angle = 30deg + 0, lengthY = 3 + 0)
+  |> /*3*/ angledLine(angle = 12.14deg + 0, endAbsoluteX = 12 + 0)
+  |> /*4*/ angledLine(angle = 30deg + 0, endAbsoluteY = 10.14 + 0)`
     const ang: InputArgKeys = 'angle'
     test.each([
-      ['/*0*/ angledLine(angle = 3, length = 3.14 + 0)', 'labeledArg', ang],
+      ['/*0*/ angledLine(angle = 3deg, length = 3.14 + 0)', 'labeledArg', ang],
       [
-        '/*1*/ angledLine(angle = 3, lengthX = 3.14 + 0)',
+        '/*1*/ angledLine(angle = 3deg, lengthX = 3.14 + 0)',
         'labeledArg',
         'angle',
       ],
       [
-        '/*2*/ angledLine(angle = 30 + 0, lengthY = 3)',
+        '/*2*/ angledLine(angle = 30deg + 0, lengthY = 3)',
         'labeledArg',
         'lengthY',
       ],
       [
-        '/*3*/ angledLine(angle = 12.14 + 0, endAbsoluteX = 12)',
+        '/*3*/ angledLine(angle = 12.14deg + 0, endAbsoluteX = 12)',
         'labeledArg',
         'endAbsoluteX',
       ],
       [
-        '/*4*/ angledLine(angle = 30, endAbsoluteY = 10.14 + 0)',
+        '/*4*/ angledLine(angle = 30deg, endAbsoluteY = 10.14 + 0)',
         'labeledArg',
         'angle',
       ],

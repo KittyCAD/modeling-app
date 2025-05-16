@@ -17,10 +17,10 @@ customPlane = {
 fn lug(plane, length, diameter) {
   lugSketch = startSketchOn(customPlane)
     |> startProfile(at = [0 + diameter / 2, 0])
-    |> angledLine(angle = 70, lengthY = lugHeadLength)
+    |> angledLine(angle = 70deg, lengthY = lugHeadLength)
     |> xLine(endAbsolute = lugDiameter / 2)
     |> yLine(endAbsolute = lugLength)
-    |> tangentialArc(angle = 90, radius = 3mm)
+    |> tangentialArc(angle = 90deg, radius = 3mm)
     |> xLine(endAbsolute = 0 + .001, tag = $c1)
     |> yLine(endAbsolute = lugThreadDepth)
     |> xLine(endAbsolute = lugThreadDiameter)

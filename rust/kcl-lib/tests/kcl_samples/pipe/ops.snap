@@ -26,9 +26,6 @@ description: Operations executed pipe.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -81,9 +78,6 @@ description: Operations executed pipe.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

@@ -10,9 +10,6 @@ description: Variables in memory after executing cold-plate.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1015,9 +1012,9 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "tag": {
-              "commentStart": 856,
-              "end": 862,
-              "start": 856,
+              "commentStart": 859,
+              "end": 865,
+              "start": 859,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -1040,9 +1037,9 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "tag": {
-              "commentStart": 905,
-              "end": 911,
-              "start": 905,
+              "commentStart": 908,
+              "end": 914,
+              "start": 908,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -1089,9 +1086,9 @@ description: Variables in memory after executing cold-plate.kcl
               0.625
             ],
             "tag": {
-              "commentStart": 1012,
-              "end": 1018,
-              "start": 1012,
+              "commentStart": 1018,
+              "end": 1024,
+              "start": 1018,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -1157,9 +1154,9 @@ description: Variables in memory after executing cold-plate.kcl
               1.047
             ],
             "tag": {
-              "commentStart": 1189,
-              "end": 1195,
-              "start": 1189,
+              "commentStart": 1201,
+              "end": 1207,
+              "start": 1201,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -1346,9 +1343,9 @@ description: Variables in memory after executing cold-plate.kcl
             -3.0
           ],
           "tag": {
-            "commentStart": 1594,
-            "end": 1600,
-            "start": 1594,
+            "commentStart": 1606,
+            "end": 1612,
+            "start": 1606,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -1376,9 +1373,9 @@ description: Variables in memory after executing cold-plate.kcl
             -3.0
           ],
           "tag": {
-            "commentStart": 1661,
-            "end": 1667,
-            "start": 1661,
+            "commentStart": 1676,
+            "end": 1682,
+            "start": 1676,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1401,9 +1398,9 @@ description: Variables in memory after executing cold-plate.kcl
             -1.0
           ],
           "tag": {
-            "commentStart": 1736,
-            "end": 1742,
-            "start": 1736,
+            "commentStart": 1751,
+            "end": 1757,
+            "start": 1751,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -1431,9 +1428,9 @@ description: Variables in memory after executing cold-plate.kcl
             -1.0
           ],
           "tag": {
-            "commentStart": 1804,
-            "end": 1810,
-            "start": 1804,
+            "commentStart": 1822,
+            "end": 1828,
+            "start": 1822,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -1480,9 +1477,9 @@ description: Variables in memory after executing cold-plate.kcl
             1.0
           ],
           "tag": {
-            "commentStart": 1940,
-            "end": 1946,
-            "start": 1940,
+            "commentStart": 1961,
+            "end": 1967,
+            "start": 1961,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -1644,9 +1641,6 @@ description: Variables in memory after executing cold-plate.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1765,9 +1759,6 @@ description: Variables in memory after executing cold-plate.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

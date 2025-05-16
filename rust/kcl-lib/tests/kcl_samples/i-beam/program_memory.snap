@@ -10,9 +10,6 @@ description: Variables in memory after executing i-beam.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -32,9 +29,6 @@ description: Variables in memory after executing i-beam.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -45,9 +39,6 @@ description: Variables in memory after executing i-beam.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -233,9 +224,6 @@ description: Variables in memory after executing i-beam.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -246,9 +234,6 @@ description: Variables in memory after executing i-beam.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

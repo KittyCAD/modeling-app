@@ -89,7 +89,7 @@ sketch001 = startSketchOn(XY)
 
 sketch002 = clone(sketch001)
     |> translate(x = 0, y = 0, z = 20)
-    |> rotate(axis = [0, 0, 1.0], angle = 45)
+    |> rotate(axis = [0, 0, 1.0], angle = 45deg)
 
 loft([sketch001, sketch002])
 ```
@@ -180,7 +180,7 @@ clonedMountingPlate = clone(mountingPlate)
 
 // Create a helix around the Z axis.
 helixPath = helix(
-    angleStart = 0,
+    angleStart = 0deg,
     ccw = true,
     revolutions = 4,
     length = 10,
@@ -208,7 +208,7 @@ sketch001 = startSketchOn(XY)
 sketch002 = clone(sketch001)
    |> translate( z = 30)
     |> revolve(
-        angle = 360,
+        angle = 360deg,
         axis = Y,
     )
 ```
@@ -230,7 +230,7 @@ exampleSketch = startSketchOn(XY)
   |> line(end = [-2, 0])
   |> close()
 
-example001 = revolve(exampleSketch, axis = Y, angle = 180, tagEnd = $end01)
+example001 = revolve(exampleSketch, axis = Y, angle = 180deg, tagEnd = $end01)
 
 // example002 = clone(example001)
 // |> translate(x = 0, y = 20, z = 0)

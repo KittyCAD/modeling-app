@@ -86,13 +86,13 @@ description: Result of parsing tan_arc_x_line.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
-            "raw": "135",
+            "raw": "135deg",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
               "value": 135.0,
-              "suffix": "None"
+              "suffix": "Deg"
             }
           },
           "start": 0,
@@ -152,13 +152,13 @@ description: Result of parsing tan_arc_x_line.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
-            "raw": "110",
+            "raw": "110deg",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
               "value": 110.0,
-              "suffix": "None"
+              "suffix": "Deg"
             }
           },
           "start": 0,

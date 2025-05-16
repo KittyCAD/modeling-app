@@ -30,7 +30,7 @@ max(@input: [number; 1+]): number
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
-    angle = 70,
+    angle = 70deg,
     length = max([15, 31, 4, 13, 22])
   )
   |> line(end = [20, 0])

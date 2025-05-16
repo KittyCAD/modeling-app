@@ -607,9 +607,6 @@ description: Variables in memory after executing i_shape.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -623,9 +620,6 @@ description: Variables in memory after executing i_shape.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       },
@@ -636,9 +630,6 @@ description: Variables in memory after executing i_shape.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       },
@@ -649,9 +640,6 @@ description: Variables in memory after executing i_shape.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       },
@@ -662,9 +650,6 @@ description: Variables in memory after executing i_shape.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       }
@@ -1456,9 +1441,6 @@ description: Variables in memory after executing i_shape.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1722,9 +1704,6 @@ description: Variables in memory after executing i_shape.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1735,9 +1714,6 @@ description: Variables in memory after executing i_shape.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

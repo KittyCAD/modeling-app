@@ -17,23 +17,23 @@ export fn bolt() {
   hexPatternSketch = startSketchOn(boltHead, face = 'start')
     |> startProfile(at = [boltHexDrive / 2, boltHexFlatLength / 2])
     |> angledLine(
-         angle = 270,
+         angle = 270deg,
          length = boltHexFlatLength,
        )
     |> angledLine(
-         angle = 210,
+         angle = 210deg,
          length = boltHexFlatLength,
        )
     |> angledLine(
-         angle = 150,
+         angle = 150deg,
          length = boltHexFlatLength,
        )
     |> angledLine(
-         angle = 90,
+         angle = 90deg,
          length = boltHexFlatLength,
        )
     |> angledLine(
-         angle = 30,
+         angle = 30deg,
          length = boltHexFlatLength,
        )
     |> close()
@@ -49,6 +49,6 @@ export fn bolt() {
 }
 
 bolt()
-  |> rotate(roll = 3.14, pitch = 3.14, yaw = 3.14)
+  |> rotate(roll = 3.14deg, pitch = 3.14deg, yaw = 3.14deg)
 
 // https://www.mcmaster.com/91251a404/

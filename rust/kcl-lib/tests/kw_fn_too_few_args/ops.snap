@@ -19,9 +19,6 @@ description: Operations executed kw_fn_too_few_args.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },

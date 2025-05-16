@@ -240,7 +240,7 @@ export fn sqrt(@input: number): number {}
 /// Compute the absolute value of a number.
 ///
 /// ```
-/// myAngle = -120
+/// myAngle = -120deg
 ///
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])

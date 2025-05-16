@@ -19,9 +19,6 @@ description: Operations executed kw_fn_unlabeled_but_has_label.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },

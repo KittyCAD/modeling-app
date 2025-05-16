@@ -7,13 +7,9 @@ description: Variables in memory after executing pipe-with-bend.kcl
     "type": "Number",
     "value": 90.0,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     }
   },
   "bendRadius": {
@@ -23,9 +19,6 @@ description: Variables in memory after executing pipe-with-bend.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -36,9 +29,6 @@ description: Variables in memory after executing pipe-with-bend.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -136,9 +126,6 @@ description: Variables in memory after executing pipe-with-bend.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },

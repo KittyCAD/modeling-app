@@ -26,9 +26,6 @@ description: Operations executed artifact_graph_example_code1.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -69,9 +66,6 @@ description: Operations executed artifact_graph_example_code1.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -127,9 +121,6 @@ description: Operations executed artifact_graph_example_code1.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

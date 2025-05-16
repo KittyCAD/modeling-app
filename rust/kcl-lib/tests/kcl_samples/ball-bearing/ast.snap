@@ -1135,13 +1135,13 @@ description: Result of parsing ball-bearing.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "180",
+                      "raw": "180deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 180.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1157,13 +1157,13 @@ description: Result of parsing ball-bearing.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "0",
+                      "raw": "0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 0.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1392,13 +1392,13 @@ description: Result of parsing ball-bearing.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "360",
+                      "raw": "360deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 360.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1868,13 +1868,13 @@ description: Result of parsing ball-bearing.kcl
                             "unlabeled": {
                               "commentStart": 0,
                               "end": 0,
-                              "raw": "60",
+                              "raw": "60deg",
                               "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
                                 "value": 60.0,
-                                "suffix": "None"
+                                "suffix": "Deg"
                               }
                             }
                           },
@@ -1926,13 +1926,13 @@ description: Result of parsing ball-bearing.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "120",
+                      "raw": "120deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 120.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1948,13 +1948,13 @@ description: Result of parsing ball-bearing.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "60",
+                      "raw": "60deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 60.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2330,13 +2330,13 @@ description: Result of parsing ball-bearing.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "360",
+                      "raw": "360deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 360.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2901,13 +2901,13 @@ description: Result of parsing ball-bearing.kcl
                       "left": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "360",
+                        "raw": "360deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 360.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "operator": "/",
@@ -2984,13 +2984,13 @@ description: Result of parsing ball-bearing.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "360",
+                      "raw": "360deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 360.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },

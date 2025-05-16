@@ -16,21 +16,21 @@ Fy = 0.5
 sketch001 = startSketchOn(-YZ)
   |> startProfile(at = [back_walls_width / 2, 0])
   |> xLine(length = wall_thickness / 2)
-  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg01)
+  |> angledLine(angle = 45deg, endAbsoluteX = back_walls_width, tag = $seg01)
   |> yLine(endAbsolute = height)
   |> xLine(length = -wall_thickness)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)
+  |> angledLine(angle = 45deg, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)
   |> xLine(length = -wall_thickness)
-  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)
+  |> angledLine(angle = 180deg - 45deg, endAbsoluteX = wall_thickness)
   |> yLine(endAbsolute = height)
   |> xLine(endAbsolute = 0)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)
+  |> angledLine(angle = 180deg - 45deg, endAbsoluteY = 0)
   |> close(%)
 part001 = revolve(
   sketch001,
-  angle = 90,
+  angle = 90deg,
   axis = {
     direction = [1.0, 0.0],
     origin = [0.0, height + .0000001]
@@ -40,16 +40,16 @@ part001 = revolve(
 sketch002 = startSketchOn(-YZ)
   |> startProfile(at = [back_walls_width / 2, 0])
   |> xLine(length = wall_thickness / 2)
-  |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg02)
+  |> angledLine(angle = 45deg, endAbsoluteX = back_walls_width, tag = $seg02)
   |> yLine(endAbsolute = height)
   |> xLine(length = -wall_thickness)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)
+  |> angledLine(angle = 45deg, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)
   |> xLine(length = -wall_thickness)
-  |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)
+  |> angledLine(angle = 180deg - 45deg, endAbsoluteX = wall_thickness)
   |> yLine(endAbsolute = height)
   |> xLine(endAbsolute = 0)
   |> yLine(endAbsolute = segEndY(seg02))
-  |> angledLine(angle = 180 - 45, endAbsoluteY = 0)
+  |> angledLine(angle = 180deg - 45deg, endAbsoluteY = 0)
   |> close(%)
   |> extrude(length = back_length - height)

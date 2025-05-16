@@ -10,9 +10,6 @@ description: Variables in memory after executing poopy-shoe.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -29,9 +26,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -42,9 +36,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -55,9 +46,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -73,9 +61,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -86,9 +71,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -99,9 +81,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -117,9 +96,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -130,9 +106,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -143,9 +116,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -166,9 +136,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -179,9 +146,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -192,9 +156,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -210,9 +171,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -223,9 +181,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -236,9 +191,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -254,9 +206,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -267,9 +216,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -280,9 +226,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -303,9 +246,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -316,9 +256,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -329,9 +266,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -347,9 +281,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -360,9 +291,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -373,9 +301,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -391,9 +316,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -404,9 +326,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -417,9 +336,6 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -434,9 +350,6 @@ description: Variables in memory after executing poopy-shoe.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -447,9 +360,6 @@ description: Variables in memory after executing poopy-shoe.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -460,9 +370,6 @@ description: Variables in memory after executing poopy-shoe.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -473,9 +380,6 @@ description: Variables in memory after executing poopy-shoe.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -498,9 +402,9 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 519,
-            "end": 525,
-            "start": 519,
+            "commentStart": 522,
+            "end": 528,
+            "start": 522,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -617,9 +521,9 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 519,
-              "end": 525,
-              "start": 519,
+              "commentStart": 522,
+              "end": 528,
+              "start": 522,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -966,9 +870,9 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 519,
-            "end": 525,
-            "start": 519,
+            "commentStart": 522,
+            "end": 528,
+            "start": 522,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1271,9 +1175,9 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1286,
-            "end": 1292,
-            "start": 1286,
+            "commentStart": 1310,
+            "end": 1316,
+            "start": 1310,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1390,9 +1294,9 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1286,
-              "end": 1292,
-              "start": 1286,
+              "commentStart": 1310,
+              "end": 1316,
+              "start": 1310,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -1932,9 +1836,9 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2912,
-            "end": 2918,
-            "start": 2912,
+            "commentStart": 2966,
+            "end": 2972,
+            "start": 2966,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2174,9 +2078,9 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2912,
-              "end": 2918,
-              "start": 2912,
+              "commentStart": 2966,
+              "end": 2972,
+              "start": 2966,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -2228,9 +2132,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1286,
-                  "end": 1292,
-                  "start": 1286,
+                  "commentStart": 1310,
+                  "end": 1316,
+                  "start": 1310,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2347,9 +2251,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1286,
-                    "end": 1292,
-                    "start": 1286,
+                    "commentStart": 1310,
+                    "end": 1316,
+                    "start": 1310,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -2723,9 +2627,9 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3517,
-            "end": 3523,
-            "start": 3517,
+            "commentStart": 3571,
+            "end": 3577,
+            "start": 3571,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2839,9 +2743,9 @@ description: Variables in memory after executing poopy-shoe.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 3517,
-              "end": 3523,
-              "start": 3517,
+              "commentStart": 3571,
+              "end": 3577,
+              "start": 3571,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -3119,9 +3023,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3517,
-                  "end": 3523,
-                  "start": 3517,
+                  "commentStart": 3571,
+                  "end": 3577,
+                  "start": 3571,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -3235,9 +3139,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 3517,
-                    "end": 3523,
-                    "start": 3517,
+                    "commentStart": 3571,
+                    "end": 3577,
+                    "start": 3571,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
@@ -3600,9 +3504,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2912,
-                  "end": 2918,
-                  "start": 2912,
+                  "commentStart": 2966,
+                  "end": 2972,
+                  "start": 2966,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -3842,9 +3746,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2912,
-                    "end": 2918,
-                    "start": 2912,
+                    "commentStart": 2966,
+                    "end": 2972,
+                    "start": 2966,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -3896,9 +3800,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 1286,
-                        "end": 1292,
-                        "start": 1286,
+                        "commentStart": 1310,
+                        "end": 1316,
+                        "start": 1310,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -4015,9 +3919,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                           0.0
                         ],
                         "tag": {
-                          "commentStart": 1286,
-                          "end": 1292,
-                          "start": 1286,
+                          "commentStart": 1310,
+                          "end": 1316,
+                          "start": 1310,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -4574,9 +4478,6 @@ description: Variables in memory after executing poopy-shoe.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -4587,9 +4488,6 @@ description: Variables in memory after executing poopy-shoe.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

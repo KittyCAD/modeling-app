@@ -39,9 +39,6 @@ description: Operations executed intersect_cubes.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -71,9 +68,6 @@ description: Operations executed intersect_cubes.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -112,9 +106,6 @@ description: Operations executed intersect_cubes.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -125,9 +116,6 @@ description: Operations executed intersect_cubes.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -143,9 +131,6 @@ description: Operations executed intersect_cubes.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -174,9 +159,6 @@ description: Operations executed intersect_cubes.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -187,9 +169,6 @@ description: Operations executed intersect_cubes.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -205,9 +184,6 @@ description: Operations executed intersect_cubes.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },

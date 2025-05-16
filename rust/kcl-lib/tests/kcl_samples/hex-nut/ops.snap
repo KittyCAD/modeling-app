@@ -51,9 +51,6 @@ description: Operations executed hex-nut.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -89,9 +86,6 @@ description: Operations executed hex-nut.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -108,9 +102,6 @@ description: Operations executed hex-nut.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -121,9 +112,6 @@ description: Operations executed hex-nut.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -139,9 +127,6 @@ description: Operations executed hex-nut.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },

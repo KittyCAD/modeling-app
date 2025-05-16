@@ -77,9 +77,9 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -117,9 +117,9 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// sketch001 = startSketchOn(XY)
 /// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
-///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
+///     |> angledLine(angle = 0deg, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
-///         angle = segAng(rectangleSegmentA001) - 90,
+///         angle = segAng(rectangleSegmentA001) - 90deg,
 ///         length = 50.61,
 ///     )
 ///     |> angledLine(
@@ -134,7 +134,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc(radius = 80, angle = -90)
+///     |> tangentialArc(radius = 80, angle = -90deg)
 ///     |> xLine(length = 384.93)
 ///
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
@@ -244,9 +244,9 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -298,9 +298,9 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// sketch001 = startSketchOn(XY)
 /// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
-///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
+///     |> angledLine(angle = 0deg, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
-///         angle = segAng(rectangleSegmentA001) - 90,
+///         angle = segAng(rectangleSegmentA001) - 90deg,
 ///         length = 50.61,
 ///     )
 ///     |> angledLine(
@@ -315,7 +315,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc(radius = 80, angle = -90)
+///     |> tangentialArc(radius = 80, angle = -90deg)
 ///     |> xLine(length = 384.93)
 ///
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
@@ -369,7 +369,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// profile002 = square()
 ///     |> translate(z = 20)
-///     |> rotate(axis = [0, 0, 1.0], angle = 45)
+///     |> rotate(axis = [0, 0, 1.0], angle = 45deg)
 ///
 /// loft([profile001, profile002])
 /// ```
@@ -584,9 +584,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -604,9 +604,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
-///         roll = 10,
-///         pitch =  10,
-///         yaw = 90,
+///         roll = 10deg,
+///         pitch =  10deg,
+///         yaw = 90deg,
 ///     )
 /// ```
 ///
@@ -617,9 +617,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -637,7 +637,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
-///         roll = 10,
+///         roll = 10deg,
 ///     )
 /// ```
 ///
@@ -648,9 +648,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -669,7 +669,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
 ///     axis =  [0, 0, 1.0],
-///     angle = 90,
+///     angle = 90deg,
 ///     )
 /// ```
 ///
@@ -681,7 +681,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// cube
 ///     |> rotate(
 ///     axis =  [0, 0, 1.0],
-///     angle = 9,
+///     angle = 9deg,
 ///     )
 /// ```
 ///
@@ -690,9 +690,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// sketch001 = startSketchOn(XY)
 /// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
-///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
+///     |> angledLine(angle = 0deg, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
-///         angle = segAng(rectangleSegmentA001) - 90,
+///         angle = segAng(rectangleSegmentA001) - 90deg,
 ///         length = 50.61,
 ///     )
 ///     |> angledLine(
@@ -707,13 +707,13 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc(radius = 80, angle = -90)
+///     |> tangentialArc(radius = 80, angle = -90deg)
 ///     |> xLine(length = 384.93)
 ///
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
 ///
 /// // Rotate the sweeps.
-/// rotate(parts, axis =  [0, 0, 1.0], angle = 90)
+/// rotate(parts, axis = [0, 0, 1.0], angle = 90deg)
 /// ```
 ///
 /// ```no_run
@@ -733,7 +733,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// profile002 = square()
 ///     |> translate(x = 0, y = 0, z = 20)
-///     |> rotate(axis = [0, 0, 1.0], angle = 45)
+///     |> rotate(axis = [0, 0, 1.0], angle = 45deg)
 ///
 /// loft([profile001, profile002])
 /// ```
@@ -836,9 +836,9 @@ mod tests {
     const PIPE: &str = r#"sweepPath = startSketchOn(XZ)
     |> startProfile(at = [0.05, 0.05])
     |> line(end = [0, 7])
-    |> tangentialArc(angle = 90, radius = 5)
+    |> tangentialArc(angle = 90deg, radius = 5)
     |> line(end = [-3, 0])
-    |> tangentialArc(angle = -90, radius = 5)
+    |> tangentialArc(angle = -90deg, radius = 5)
     |> line(end = [0, 7])
 
 // Create a hole for the pipe.
@@ -892,7 +892,7 @@ sweepSketch = startSketchOn(XY)
         let ast = PIPE.to_string()
             + r#"
     |> rotate(
-    angle = 90,
+    angle = 90deg,
     )
 "#;
         let result = parse_execute(&ast).await;
@@ -909,7 +909,7 @@ sweepSketch = startSketchOn(XY)
             + r#"
     |> rotate(
     axis =  [0, 0, 1.0],
-    angle = 900,
+    angle = 900deg,
     )
 "#;
         let result = parse_execute(&ast).await;
@@ -926,8 +926,8 @@ sweepSketch = startSketchOn(XY)
             + r#"
     |> rotate(
     axis =  [0, 0, 1.0],
-    angle = 90,
-    yaw = 90,
+    angle = 90deg,
+    yaw = 90deg,
    ) 
 "#;
         let result = parse_execute(&ast).await;
@@ -944,7 +944,7 @@ sweepSketch = startSketchOn(XY)
         let ast = PIPE.to_string()
             + r#"
     |> rotate(
-    yaw = 90,
+    yaw = 90deg,
     )
 "#;
         parse_execute(&ast).await.unwrap();
@@ -955,7 +955,7 @@ sweepSketch = startSketchOn(XY)
         let ast = PIPE.to_string()
             + r#"
     |> rotate(
-    pitch = 90,
+    pitch = 90deg,
     )
 "#;
         parse_execute(&ast).await.unwrap();
@@ -966,7 +966,7 @@ sweepSketch = startSketchOn(XY)
         let ast = PIPE.to_string()
             + r#"
     |> rotate(
-    pitch = 90,
+    pitch = 90deg,
     )
 "#;
         parse_execute(&ast).await.unwrap();
@@ -977,9 +977,9 @@ sweepSketch = startSketchOn(XY)
         let ast = PIPE.to_string()
             + r#"
     |> rotate(
-    yaw = 900,
-    pitch = 90,
-    roll = 90,
+    yaw = 900deg,
+    pitch = 90deg,
+    roll = 90deg,
     )
 "#;
         let result = parse_execute(&ast).await;
@@ -995,9 +995,9 @@ sweepSketch = startSketchOn(XY)
         let ast = PIPE.to_string()
             + r#"
     |> rotate(
-    yaw = 90,
-    pitch = 90,
-    roll = 900,
+    yaw = 90deg,
+    pitch = 90deg,
+    roll = 900deg,
     )
 "#;
         let result = parse_execute(&ast).await;
@@ -1013,9 +1013,9 @@ sweepSketch = startSketchOn(XY)
         let ast = PIPE.to_string()
             + r#"
     |> rotate(
-    yaw = 90,
-    pitch = 900,
-    roll = 90,
+    yaw = 90deg,
+    pitch = 900deg,
+    roll = 90deg,
     )
 "#;
         let result = parse_execute(&ast).await;
@@ -1031,10 +1031,10 @@ sweepSketch = startSketchOn(XY)
         let ast = PIPE.to_string()
             + r#"
     |> rotate(
-    yaw = 90,
-    pitch = 90,
-    roll = 90,
-    angle = 90,
+    yaw = 90deg,
+    pitch = 90deg,
+    roll = 90deg,
+    angle = 90deg,
     )
 "#;
         let result = parse_execute(&ast).await;

@@ -73,7 +73,7 @@ export END = 'end'
 /// ```
 /// // Create a helix around the Z axis.
 /// helixPath = helix(
-///     angleStart = 0,
+///     angleStart = 0deg,
 ///     ccw = true,
 ///     revolutions = 5,
 ///     length = 10,
@@ -94,7 +94,7 @@ export END = 'end'
 ///  |> line(end = [0, 10], tag = $edge001)
 ///
 /// helixPath = helix(
-///     angleStart = 0,
+///     angleStart = 0deg,
 ///     ccw = true,
 ///     revolutions = 5,
 ///     length = 10,
@@ -111,7 +111,7 @@ export END = 'end'
 /// ```
 /// // Create a helix around a custom axis.
 /// helixPath = helix(
-///     angleStart = 0,
+///     angleStart = 0deg,
 ///     ccw = true,
 ///     revolutions = 5,
 ///     length = 10,
@@ -136,7 +136,7 @@ export END = 'end'
 ///   |> extrude(length = 10)
 ///
 /// helix(
-///     angleStart = 0,
+///     angleStart = 0deg,
 ///     ccw = true,
 ///     revolutions = 16,
 ///     cylinder = part001,
@@ -316,7 +316,7 @@ export fn offsetPlane(
 ///
 /// sketch002 = clone(sketch001)
 ///     |> translate(x = 0, y = 0, z = 20)
-///     |> rotate(axis = [0, 0, 1.0], angle = 45)
+///     |> rotate(axis = [0, 0, 1.0], angle = 45deg)
 ///
 /// loft([sketch001, sketch002])
 /// ```
@@ -399,7 +399,7 @@ export fn offsetPlane(
 ///
 /// // Create a helix around the Z axis.
 /// helixPath = helix(
-///     angleStart = 0,
+///     angleStart = 0deg,
 ///     ccw = true,
 ///     revolutions = 4,
 ///     length = 10,
@@ -425,7 +425,7 @@ export fn offsetPlane(
 /// sketch002 = clone(sketch001)
 ///    |> translate( z = 30)
 ///     |> revolve(
-///         angle = 360,
+///         angle = 360deg,
 ///         axis = Y,
 ///     )
 /// ```
@@ -445,7 +445,7 @@ export fn offsetPlane(
 ///   |> line(end = [-2, 0])
 ///   |> close()
 ///
-/// example001 = revolve(exampleSketch, axis = Y, angle = 180, tagEnd = $end01)
+/// example001 = revolve(exampleSketch, axis = Y, angle = 180deg, tagEnd = $end01)
 ///
 /// // example002 = clone(example001)
 /// // |> translate(x = 0, y = 20, z = 0)

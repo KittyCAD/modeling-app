@@ -4196,7 +4196,7 @@ async fn test_kcl_lsp_document_color() {
                 text: r#"// Add color to a revolved solid.
 sketch001 = startSketchOn(XY)
   |> circle(center = [15, 0], radius = 5)
-  |> revolve(angle = 360, axis = Y)
+  |> revolve(angle = 360deg, axis = Y)
   |> appearance(color = '#ff0000', metalness = 90, roughness = 90)"#
                     .to_string(),
             },
@@ -4240,7 +4240,7 @@ async fn test_kcl_lsp_color_presentation() {
     let text = r#"// Add color to a revolved solid.
 sketch001 = startSketchOn(XY)
   |> circle(center = [15, 0], radius = 5)
-  |> revolve(angle = 360, axis = Y)
+  |> revolve(angle = 360deg, axis = Y)
   |> appearance(color = '#ff0000', metalness = 90, roughness = 90)"#;
 
     // Send open file.

@@ -307,13 +307,13 @@ description: Result of parsing enclosure.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "0",
+                      "raw": "0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 0.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -440,13 +440,13 @@ description: Result of parsing enclosure.kcl
                       "right": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -3023,13 +3023,13 @@ description: Result of parsing enclosure.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "0",
+                      "raw": "0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 0.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -3156,13 +3156,13 @@ description: Result of parsing enclosure.kcl
                       "right": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -5236,13 +5236,13 @@ description: Result of parsing enclosure.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "0",
+                      "raw": "0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 0.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -5413,13 +5413,13 @@ description: Result of parsing enclosure.kcl
                       "right": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,

@@ -240,9 +240,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -622,9 +619,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -1202,9 +1196,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },

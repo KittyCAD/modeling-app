@@ -181,13 +181,13 @@ wallMountL = 8
 bracket = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [0, wallMountL])
-  |> tangentialArc(radius = filletR, angle = 90 )
+  |> tangentialArc(radius = filletR, angle = 90deg )
   |> line(end = [-shelfMountL, 0])
   |> line(end = [0, -thickness])
   |> line(end = [shelfMountL, 0])
   |> tangentialArc(
        radius = filletR - thickness,
-       angle = -90,
+       angle = -90deg,
      )
   |> line(end = [0, -wallMountL])
   |> close()
@@ -247,7 +247,7 @@ async fn optional_params() {
     fn other_circle(pos, radius, tag?) {
       sg = startSketchOn(XY)
         |> startProfile(at = pos)
-        |> arc(angleEnd = 360, angleStart = 0, radius = radius)
+        |> arc(angleEnd = 360deg, angleStart = 0deg, radius = radius)
         |> close()
         |> extrude(length = 2)
 
@@ -395,7 +395,7 @@ rectangle = startSketchOn(XY)
 async fn kcl_test_patterns_circular_basic_2d() {
     let code = r#"part = startSketchOn(XY)
     |> circle(center = [0,0], radius= 2)
-    |> patternCircular2d(center = [20, 20], instances = 13, arcDegrees = 210, rotateDuplicates = true)
+    |> patternCircular2d(center = [20, 20], instances = 13, arcDegrees = 210deg, rotateDuplicates = true)
     |> extrude(length = 1)
 "#;
 
@@ -412,7 +412,7 @@ async fn kcl_test_patterns_circular_basic_3d() {
     |> line(end = [0, -1])
     |> close()
     |> extrude(length = 1)
-    |> patternCircular3d(axis = [0,0, 1], center = [-20, -20, -20], instances = 41, arcDegrees = 360, rotateDuplicates = false)
+    |> patternCircular3d(axis = [0,0, 1], center = [-20, -20, -20], instances = 41, arcDegrees = 360deg, rotateDuplicates = false)
 "#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
@@ -428,7 +428,7 @@ async fn kcl_test_patterns_circular_3d_tilted_axis() {
     |> line(end = [0, -1])
     |> close()
     |> extrude(length = 1)
-    |> patternCircular3d(axis = [1,1,0], center = [10, 0, 10], instances = 11, arcDegrees = 360, rotateDuplicates = true)
+    |> patternCircular3d(axis = [1,1,0], center = [10, 0, 10], instances = 11, arcDegrees = 360deg, rotateDuplicates = true)
 "#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
@@ -829,7 +829,7 @@ async fn kcl_test_simple_revolve_negative() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve(axis = -Y, angle = 180)
+     |> revolve(axis = -Y, angle = 180deg)
 
 "#;
 
@@ -849,7 +849,7 @@ async fn kcl_test_revolve_bad_angle_low() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve(axis = Y, angle = -455)
+     |> revolve(axis = Y, angle = -455deg)
 
 "#;
 
@@ -875,7 +875,7 @@ async fn kcl_test_revolve_bad_angle_high() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve(axis = Y, angle = 455)
+     |> revolve(axis = Y, angle = 455deg)
 
 "#;
 
@@ -901,7 +901,7 @@ async fn kcl_test_simple_revolve_custom_angle() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve(axis = Y, angle = 180)
+     |> revolve(axis = Y, angle = 180deg)
 
 "#;
 
@@ -921,7 +921,7 @@ async fn kcl_test_simple_revolve_custom_axis() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve(axis = { direction = [0, -1], origin = [0,0] }, angle = 180)
+     |> revolve(axis = { direction = [0, -1], origin = [0,0] }, angle = 180deg)
 
 "#;
 
@@ -945,7 +945,7 @@ sketch001 = startSketchOn(box, face = END)
   |> line(end = [2, 0])
   |> line(end = [0, 10])
   |> close()
-  |> revolve(axis = getOppositeEdge(revolveAxis), angle = 90)
+  |> revolve(axis = getOppositeEdge(revolveAxis), angle = 90deg)
 
 "#;
 
@@ -966,7 +966,7 @@ async fn kcl_test_revolve_on_face_circle_edge() {
 sketch001 = startSketchOn(box, face = "END")
   |> circle(center = [10,10], radius= 4)
   |> revolve(
-    angle = 90,
+    angle = 90deg,
     axis = getOppositeEdge(revolveAxis)
     )
 "#;
@@ -988,7 +988,7 @@ async fn kcl_test_revolve_on_face_circle() {
 sketch001 = startSketchOn(box, face = "END")
   |> circle(center = [10,10], radius= 4 )
   |> revolve(
-    angle = -90, 
+    angle = -90deg, 
     axis = Y 
     )
 "#;
@@ -1015,7 +1015,7 @@ sketch001 = startSketchOn(box, face = END)
   |> close()
   |> revolve(
       axis = Y,
-      angle = -90,
+      angle = -90deg,
   )
 "#;
 
@@ -1035,7 +1035,7 @@ async fn kcl_test_simple_revolve_sketch_on_edge() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve(axis = Y, angle = 180)
+     |> revolve(axis = Y, angle = 180deg)
 
 part002 = startSketchOn(part001, face = END)
     |> startProfile(at = [4.5, -5])
@@ -1056,8 +1056,8 @@ async fn kcl_test_plumbus_fillets() {
   sg = startSketchOn(ext, face = face)
   |> startProfile(at = [pos[0] + radius, pos[1]])
   |> arc(
-       angleEnd = 360,
-       angleStart = 0,
+       angleEnd = 360deg,
+       angleStart = 0deg,
        radius = radius,
        tag = $arc1,
      )
@@ -1069,24 +1069,24 @@ async fn kcl_test_plumbus_fillets() {
 fn pentagon(@len) {
   sg = startSketchOn(XY)
   |> startProfile(at = [-len / 2, -len / 2])
-  |> angledLine(angle = 0, length = len, tag = $a)
+  |> angledLine(angle = 0deg, length = len, tag = $a)
   |> angledLine(
-       angle = segAng(a) + 180 - 108,
+       angle = segAng(a) + 180deg - 108deg,
        length = len,
        tag = $b,
      )
   |> angledLine(
-       angle = segAng(b) + 180 - 108,
+       angle = segAng(b) + 180deg - 108deg,
        length = len,
        tag = $c,
      )
   |> angledLine(
-       angle = segAng(c) + 180 - 108,
+       angle = segAng(c) + 180deg - 108deg,
        length = len,
        tag = $d,
      )
   |> angledLine(
-       angle = segAng(d) + 180 - 108,
+       angle = segAng(d) + 180deg - 108deg,
        length = len,
      )
 
@@ -1485,7 +1485,7 @@ part001  = cube(pos = [0,0], scale = 20)
     tags = [getOppositeEdge(line1)]
   )
 
-pattn2 = patternCircular3d(part001, axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360, rotateDuplicates = false) 
+pattn2 = patternCircular3d(part001, axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360deg, rotateDuplicates = false) 
 
 "#;
 
@@ -1512,7 +1512,7 @@ part001  = cube(pos = [0,0], scale = 20)
       tags = [getOppositeEdge(line1)],
     )
 
-pattn2 = patternCircular3d(part001, axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360, rotateDuplicates = false)
+pattn2 = patternCircular3d(part001, axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360deg, rotateDuplicates = false)
 "#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
@@ -1558,14 +1558,14 @@ async fn kcl_test_duplicate_tags_should_error() {
     let code = r#"fn triangle(@len) {
   return startSketchOn(XY)
   |> startProfile(at = [-len / 2, -len / 2])
-  |> angledLine(angle = 0, length = len , tag = $a)
+  |> angledLine(angle = 0deg, length = len , tag = $a)
   |> angledLine(
-       angle = segAng(a) + 120,
+       angle = segAng(a) + 120deg,
        length = len,
        tag = $b,
      )
   |> angledLine(
-       angle = segAng(b) + 120,
+       angle = segAng(b) + 120deg,
        length = len,
        tag = $a,
      )
@@ -1634,13 +1634,13 @@ async fn kcl_test_arc_error_same_start_end() {
     let code = r#"startSketchOn(XY)
   |> startProfile(at = [10, 0])
   |> arc(
-       angleStart = 180,
-       angleEnd = 180,
+       angleStart = 180deg,
+       angleEnd = 180deg,
        radius = 1.5
      )
   |> close()
   |> patternCircular2d(
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        center = [0, 0],
        instances = 6,
        rotateDuplicates = true
@@ -1657,7 +1657,7 @@ async fn kcl_test_arc_error_same_start_end() {
 async fn kcl_test_angled_line_to_x_90() {
     let code = r#"exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 90, endAbsoluteX = 10)
+  |> angledLine(angle = 90deg, endAbsoluteX = 10)
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
   |> close()
@@ -1669,7 +1669,7 @@ example = extrude(exampleSketch, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([70, 111, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([70, 114, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
@@ -1677,7 +1677,7 @@ example = extrude(exampleSketch, length = 10)
 async fn kcl_test_angled_line_to_x_270() {
     let code = r#"exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 270, endAbsoluteX = 10)
+  |> angledLine(angle = 270deg, endAbsoluteX = 10)
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
   |> close()
@@ -1689,7 +1689,7 @@ example = extrude(exampleSketch, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([70, 112, 0])], message: "Cannot have an x constrained angle of 270 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([70, 115, 0])], message: "Cannot have an x constrained angle of 270 degrees" }"#
     );
 }
 
@@ -1697,9 +1697,9 @@ example = extrude(exampleSketch, length = 10)
 async fn kcl_test_angled_line_to_y_0() {
     let code = r#"exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 0, endAbsoluteY = 20)
+  |> angledLine(angle = 0deg, endAbsoluteY = 20)
   |> line(end = [-20, 0])
-  |> angledLine(angle = 70, endAbsoluteY = 10)
+  |> angledLine(angle = 70deg, endAbsoluteY = 10)
   |> close()
 
 example = extrude(exampleSketch, length = 10)
@@ -1709,7 +1709,7 @@ example = extrude(exampleSketch, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([70, 110, 0])], message: "Cannot have a y constrained angle of 0 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([70, 113, 0])], message: "Cannot have a y constrained angle of 0 degrees" }"#
     );
 }
 
@@ -1717,9 +1717,9 @@ example = extrude(exampleSketch, length = 10)
 async fn kcl_test_angled_line_to_y_180() {
     let code = r#"exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 180, endAbsoluteY = 20)
+  |> angledLine(angle = 180deg, endAbsoluteY = 20)
   |> line(end = [-20, 0])
-  |> angledLine(angle = 70, endAbsoluteY = 10)
+  |> angledLine(angle = 70deg, endAbsoluteY = 10)
   |> close()
 
 example = extrude(exampleSketch, length = 10)
@@ -1729,7 +1729,7 @@ example = extrude(exampleSketch, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([70, 112, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([70, 115, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
@@ -1737,8 +1737,8 @@ example = extrude(exampleSketch, length = 10)
 async fn kcl_test_angled_line_of_x_length_90() {
     let code = r#"sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 90, lengthX = 90, tag = $edge1)
-  |> angledLine(angle = -15, lengthX = -15, tag = $edge2)
+  |> angledLine(angle = 90deg, lengthX = 90, tag = $edge1)
+  |> angledLine(angle = -15deg, lengthX = -15, tag = $edge2)
   |> line(end = [0, -5])
   |> close(tag = $edge3)
 
@@ -1749,7 +1749,7 @@ extrusion = extrude(sketch001, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([66, 116, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([66, 119, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
@@ -1757,8 +1757,8 @@ extrusion = extrude(sketch001, length = 10)
 async fn kcl_test_angled_line_of_x_length_270() {
     let code = r#"sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 90, lengthX = 90, tag = $edge1)
-  |> angledLine(angle = -15, lengthX = -15, tag = $edge2)
+  |> angledLine(angle = 90deg, lengthX = 90, tag = $edge1)
+  |> angledLine(angle = -15deg, lengthX = -15, tag = $edge2)
   |> line(end = [0, -5])
   |> close(tag = $edge3)
 
@@ -1769,7 +1769,7 @@ extrusion = extrude(sketch001, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([66, 116, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([66, 119, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
@@ -1778,9 +1778,9 @@ async fn kcl_test_angled_line_of_y_length_0() {
     let code = r#"exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
-  |> angledLine(angle = 0, lengthY = 10)
+  |> angledLine(angle = 0deg, lengthY = 10)
   |> line(end = [0, 10])
-  |> angledLine(angle = 135, lengthY = 10)
+  |> angledLine(angle = 135deg, lengthY = 10)
   |> line(end = [-10, 0])
   |> line(end = [0, -30])
 
@@ -1791,7 +1791,7 @@ example = extrude(exampleSketch, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([95, 130, 0])], message: "Cannot have a y constrained angle of 0 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([95, 133, 0])], message: "Cannot have a y constrained angle of 0 degrees" }"#
     );
 }
 
@@ -1800,9 +1800,9 @@ async fn kcl_test_angled_line_of_y_length_180() {
     let code = r#"exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
-  |> angledLine(angle = 180, lengthY = 10)
+  |> angledLine(angle = 180deg, lengthY = 10)
   |> line(end = [0, 10])
-  |> angledLine(angle = 135, lengthY = 10)
+  |> angledLine(angle = 135deg, lengthY = 10)
   |> line(end = [-10, 0])
   |> line(end = [0, -30])
 
@@ -1813,7 +1813,7 @@ example = extrude(exampleSketch, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([95, 132, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([95, 135, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
@@ -1822,9 +1822,9 @@ async fn kcl_test_angled_line_of_y_length_negative_180() {
     let code = r#"exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
-  |> angledLine(angle = -180, lengthY = 10)
+  |> angledLine(angle = -180deg, lengthY = 10)
   |> line(end = [0, 10])
-  |> angledLine(angle = 135, lengthY = 10)
+  |> angledLine(angle = 135deg, lengthY = 10)
   |> line(end = [-10, 0])
   |> line(end = [0, -30])
 
@@ -1835,7 +1835,7 @@ example = extrude(exampleSketch, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([95, 133, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([95, 136, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 

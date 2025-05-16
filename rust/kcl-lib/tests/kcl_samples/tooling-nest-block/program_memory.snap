@@ -15,9 +15,9 @@ description: Variables in memory after executing tooling-nest-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 677,
-            "end": 698,
-            "start": 677,
+            "commentStart": 680,
+            "end": 701,
+            "start": 680,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -28,9 +28,9 @@ description: Variables in memory after executing tooling-nest-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 786,
-            "end": 807,
-            "start": 786,
+            "commentStart": 792,
+            "end": 813,
+            "start": 792,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -41,9 +41,9 @@ description: Variables in memory after executing tooling-nest-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 909,
-            "end": 930,
-            "start": 909,
+            "commentStart": 915,
+            "end": 936,
+            "start": 915,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -54,9 +54,9 @@ description: Variables in memory after executing tooling-nest-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1000,
-            "end": 1021,
-            "start": 1000,
+            "commentStart": 1006,
+            "end": 1027,
+            "start": 1006,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },
@@ -77,9 +77,9 @@ description: Variables in memory after executing tooling-nest-block.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 677,
-              "end": 698,
-              "start": 677,
+              "commentStart": 680,
+              "end": 701,
+              "start": 680,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -102,9 +102,9 @@ description: Variables in memory after executing tooling-nest-block.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 786,
-              "end": 807,
-              "start": 786,
+              "commentStart": 792,
+              "end": 813,
+              "start": 792,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -127,9 +127,9 @@ description: Variables in memory after executing tooling-nest-block.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 909,
-              "end": 930,
-              "start": 909,
+              "commentStart": 915,
+              "end": 936,
+              "start": 915,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -152,9 +152,9 @@ description: Variables in memory after executing tooling-nest-block.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 1000,
-              "end": 1021,
-              "start": 1000,
+              "commentStart": 1006,
+              "end": 1027,
+              "start": 1006,
               "type": "TagDeclarator",
               "value": "rectangleSegmentD001"
             },
@@ -284,9 +284,9 @@ description: Variables in memory after executing tooling-nest-block.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 677,
-            "end": 698,
-            "start": 677,
+            "commentStart": 680,
+            "end": 701,
+            "start": 680,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -309,9 +309,9 @@ description: Variables in memory after executing tooling-nest-block.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 786,
-            "end": 807,
-            "start": 786,
+            "commentStart": 792,
+            "end": 813,
+            "start": 792,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -334,9 +334,9 @@ description: Variables in memory after executing tooling-nest-block.kcl
             50.0
           ],
           "tag": {
-            "commentStart": 909,
-            "end": 930,
-            "start": 909,
+            "commentStart": 915,
+            "end": 936,
+            "start": 915,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -359,9 +359,9 @@ description: Variables in memory after executing tooling-nest-block.kcl
             50.0
           ],
           "tag": {
-            "commentStart": 1000,
-            "end": 1021,
-            "start": 1000,
+            "commentStart": 1006,
+            "end": 1027,
+            "start": 1006,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },
@@ -498,9 +498,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -511,9 +508,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -524,9 +518,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -537,9 +528,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -586,9 +574,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -599,9 +584,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -612,9 +594,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -625,9 +604,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -638,9 +614,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -651,9 +624,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -664,9 +634,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -677,9 +644,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

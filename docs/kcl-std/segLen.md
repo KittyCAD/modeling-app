@@ -29,9 +29,9 @@ segLen(@tag: TagIdentifier): number
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 60, length = 10, tag = $thing)
-  |> tangentialArc(angle = -120, radius = 5)
-  |> angledLine(angle = -60, length = segLen(thing))
+  |> angledLine(angle = 60deg, length = 10, tag = $thing)
+  |> tangentialArc(angle = -120deg, radius = 5)
+  |> angledLine(angle = -60deg, length = segLen(thing))
   |> close()
 
 example = extrude(exampleSketch, length = 5)

@@ -22,9 +22,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -35,9 +32,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -48,9 +42,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -66,9 +57,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -79,9 +67,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -92,9 +77,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -110,9 +92,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -123,9 +102,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -136,9 +112,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -154,9 +127,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -167,9 +137,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -180,9 +147,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -209,9 +173,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -225,9 +186,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -241,9 +199,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -263,9 +218,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -306,9 +258,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -360,9 +309,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -373,9 +319,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -386,9 +329,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -404,9 +344,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -417,9 +354,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -430,9 +364,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -448,9 +379,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -461,9 +389,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -474,9 +399,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -492,9 +414,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -505,9 +424,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -518,9 +434,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -566,9 +479,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -609,9 +519,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -649,9 +556,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -662,9 +566,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -675,9 +576,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -693,9 +591,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -709,9 +604,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -750,9 +642,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -763,9 +652,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -776,9 +662,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -794,9 +677,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -807,9 +687,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -820,9 +697,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -838,9 +712,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -851,9 +722,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -864,9 +732,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -882,9 +747,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -895,9 +757,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -908,9 +767,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -956,9 +812,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -999,9 +852,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -1039,9 +889,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -1052,9 +899,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -1065,9 +909,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -1083,9 +924,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -1099,9 +937,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -1140,9 +975,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1153,9 +985,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1166,9 +995,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -1184,9 +1010,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1197,9 +1020,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1210,9 +1030,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -1228,9 +1045,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1241,9 +1055,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1254,9 +1065,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -1272,9 +1080,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1285,9 +1090,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1298,9 +1100,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -1321,9 +1120,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -1362,9 +1158,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1375,9 +1168,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1388,9 +1178,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -1406,9 +1193,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1419,9 +1203,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1432,9 +1213,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -1450,9 +1228,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1463,9 +1238,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1476,9 +1248,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -1494,9 +1263,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1507,9 +1273,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -1520,9 +1283,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -1543,9 +1303,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

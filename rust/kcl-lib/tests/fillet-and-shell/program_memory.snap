@@ -10,9 +10,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -266,9 +263,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -284,9 +278,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -302,9 +293,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -320,9 +308,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -343,9 +328,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -356,9 +338,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -369,9 +348,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -382,9 +358,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -395,9 +368,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -428,9 +398,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -445,9 +412,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -458,9 +422,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -471,9 +432,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -484,9 +442,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -635,9 +590,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -648,9 +600,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -661,9 +610,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -674,9 +620,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -687,9 +630,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

@@ -27,7 +27,7 @@ abs(@input: number): number
 ### Examples
 
 ```kcl
-myAngle = -120
+myAngle = -120deg
 
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])

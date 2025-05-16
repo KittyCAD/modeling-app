@@ -26,9 +26,6 @@ description: Operations executed circle_three_point.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

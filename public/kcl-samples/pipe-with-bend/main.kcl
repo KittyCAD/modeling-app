@@ -8,7 +8,7 @@
 innerDiameter = 10
 outerDiameter = 20
 bendRadius = 30
-bendAngle = 90
+bendAngle = 90deg
 
 // Create a sketch in the XZ plane
 sketch000 = startSketchOn(XZ)

@@ -128,8 +128,8 @@ fn involute_curve(radius: f64, angle: f64) -> (f64, f64) {
 /// b = 14
 /// startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
-///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60)
-///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60, reverse = true)
+///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60deg)
+///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60deg, reverse = true)
 /// ```
 #[stdlib {
     name = "involuteCircular",
@@ -411,13 +411,13 @@ pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   |> startProfile(at = [0, 0])
 ///   |> xLine(length = 15)
 ///   |> angledLine(
-///     angle = 80,
+///     angle = 80deg,
 ///     length = 15,
 ///   )
 ///   |> line(end = [8, -10])
 ///   |> xLine(length = 10)
 ///   |> angledLine(
-///     angle = 120,
+///     angle = 120deg,
 ///     length = 30,
 ///   )
 ///   |> xLine(length = -15)
@@ -482,7 +482,7 @@ pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   |> startProfile(at = [0, 0])
 ///   |> yLine(length = 15)
 ///   |> angledLine(
-///     angle = 30,
+///     angle = 30deg,
 ///     length = 15,
 ///   )
 ///   |> line(end = [8, -10])
@@ -565,7 +565,7 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> startProfile(at = [0, 0])
 ///   |> yLine(endAbsolute = 15)
 ///   |> angledLine(
-///     angle = 30,
+///     angle = 30deg,
 ///     length = 15,
 ///   )
 ///   |> line(end = [8, -10])
@@ -866,7 +866,7 @@ pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args)
 ///   |> line(endAbsolute = [-10, 10], tag = $lineToIntersect)
 ///   |> line(endAbsolute = [0, 20])
 ///   |> angledLineThatIntersects(
-///        angle = 80,
+///        angle = 80deg,
 ///        intersectTag = lineToIntersect,
 ///        offset = 10,
 ///      )
@@ -1098,7 +1098,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line(end = [-2, 0])
 ///   |> close()
 ///
-/// example = revolve(exampleSketch, axis = Y, angle = 180)
+/// example = revolve(exampleSketch, axis = Y, angle = 180deg)
 ///
 /// exampleSketch002 = startSketchOn(example, face = END)
 ///   |> startProfile(at = [4.5, -5])
@@ -1124,7 +1124,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line(end = [-2, 0])
 ///   |> close()
 ///
-/// example = revolve(exampleSketch, axis = Y, angle = 180, tagEnd = $end01)
+/// example = revolve(exampleSketch, axis = Y, angle = 180deg, tagEnd = $end01)
 ///
 /// exampleSketch002 = startSketchOn(example, face = end01)
 ///   |> startProfile(at = [4.5, -5])
@@ -1457,9 +1457,9 @@ pub async fn profile_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```no_run
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
-///  |> angledLine(angle = -26.6, length = 50)
-///  |> angledLine(angle = 90, length = 50)
-///  |> angledLine(angle = 30, endAbsoluteX = profileStartX(%))
+///  |> angledLine(angle = -26.6deg, length = 50)
+///  |> angledLine(angle = 90deg, length = 50)
+///  |> angledLine(angle = 30deg, endAbsoluteX = profileStartX(%))
 /// ```
 #[stdlib {
     name = "profileStartX",
@@ -1488,8 +1488,8 @@ pub async fn profile_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```no_run
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
-///  |> angledLine(angle = -60, length = 14 )
-///  |> angledLine(angle = 30, endAbsoluteY =  profileStartY(%))
+///  |> angledLine(angle = -60deg, length = 14 )
+///  |> angledLine(angle = 30deg, endAbsoluteY =  profileStartY(%))
 /// ```
 #[stdlib {
     name = "profileStartY",
@@ -1518,8 +1518,8 @@ pub async fn profile_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// ```no_run
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
-///  |> angledLine(angle = 120, length = 50 , tag = $seg01)
-///  |> angledLine(angle = segAng(seg01) + 120, length = 50 )
+///  |> angledLine(angle = 120deg, length = 50 , tag = $seg01)
+///  |> angledLine(angle = segAng(seg01) + 120deg, length = 50 )
 ///  |> line(end = profileStart(%))
 ///  |> close()
 ///  |> extrude(length = 20)
@@ -1662,8 +1662,8 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> arc(
-///        angleStart = 0,
-///        angleEnd = 280,
+///        angleStart = 0deg,
+///        angleEnd = 280deg,
 ///        radius = 16
 ///      )
 ///   |> close()
@@ -1884,7 +1884,7 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 45,
+///     angle = 45deg,
 ///     length = 10,
 ///   )
 ///   |> tangentialArc(end = [0, -10])
@@ -1898,7 +1898,7 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 60,
+///     angle = 60deg,
 ///     length = 10,
 ///   )
 ///   |> tangentialArc(endAbsolute = [15, 15])
@@ -1912,12 +1912,12 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 60,
+///     angle = 60deg,
 ///     length = 10,
 ///   )
-///   |> tangentialArc(radius = 10, angle = -120)
+///   |> tangentialArc(radius = 10, angle = -120deg)
 ///   |> angledLine(
-///     angle = -60,
+///     angle = -60deg,
 ///     length = 10,
 ///   )
 ///   |> close()

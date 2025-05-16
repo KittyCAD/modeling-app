@@ -911,13 +911,13 @@ description: Result of parsing food-service-spatula.kcl
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
-                                        "raw": "180",
+                                        "raw": "180deg",
                                         "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
                                           "value": 180.0,
-                                          "suffix": "None"
+                                          "suffix": "Deg"
                                         }
                                       },
                                       "start": 0,
@@ -1028,13 +1028,13 @@ description: Result of parsing food-service-spatula.kcl
                                     "expression": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "raw": "270",
+                                      "raw": "270deg",
                                       "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
                                         "value": 270.0,
-                                        "suffix": "None"
+                                        "suffix": "Deg"
                                       }
                                     },
                                     "start": 0,
@@ -1055,13 +1055,13 @@ description: Result of parsing food-service-spatula.kcl
                                     "expression": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "raw": "90",
+                                      "raw": "90deg",
                                       "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
                                         "value": 90.0,
-                                        "suffix": "None"
+                                        "suffix": "Deg"
                                       }
                                     },
                                     "start": 0,
@@ -1467,13 +1467,13 @@ description: Result of parsing food-service-spatula.kcl
                             "right": {
                               "commentStart": 0,
                               "end": 0,
-                              "raw": "90",
+                              "raw": "90deg",
                               "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
                                 "value": 90.0,
-                                "suffix": "None"
+                                "suffix": "Deg"
                               }
                             },
                             "start": 0,
@@ -1626,13 +1626,13 @@ description: Result of parsing food-service-spatula.kcl
                             "right": {
                               "commentStart": 0,
                               "end": 0,
-                              "raw": "90",
+                              "raw": "90deg",
                               "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
                                 "value": 90.0,
-                                "suffix": "None"
+                                "suffix": "Deg"
                               }
                             },
                             "start": 0,
@@ -1928,13 +1928,13 @@ description: Result of parsing food-service-spatula.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             }
@@ -2689,13 +2689,13 @@ description: Result of parsing food-service-spatula.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "163.087610",
+                      "raw": "163.087610deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 163.08761,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2711,13 +2711,13 @@ description: Result of parsing food-service-spatula.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "196.912390",
+                      "raw": "196.912390deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 196.91239,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -5538,13 +5538,13 @@ description: Result of parsing food-service-spatula.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "90.0",
+                        "raw": "90.0deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -5567,13 +5567,13 @@ description: Result of parsing food-service-spatula.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "0.0",
+                      "raw": "0.0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 0.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -5735,13 +5735,13 @@ description: Result of parsing food-service-spatula.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "0.0",
+                      "raw": "0.0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 0.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -5757,13 +5757,13 @@ description: Result of parsing food-service-spatula.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "90.0",
+                      "raw": "90.0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -5933,13 +5933,13 @@ description: Result of parsing food-service-spatula.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "90.0",
+                      "raw": "90.0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -5955,13 +5955,13 @@ description: Result of parsing food-service-spatula.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "180.0",
+                      "raw": "180.0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 180.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -6149,13 +6149,13 @@ description: Result of parsing food-service-spatula.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "180.0",
+                      "raw": "180.0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 180.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -6171,13 +6171,13 @@ description: Result of parsing food-service-spatula.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "270.0",
+                      "raw": "270.0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 270.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },

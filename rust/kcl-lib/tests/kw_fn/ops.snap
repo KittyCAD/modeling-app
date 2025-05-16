@@ -17,9 +17,6 @@ description: Operations executed kw_fn.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -43,9 +40,6 @@ description: Operations executed kw_fn.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -60,9 +54,6 @@ description: Operations executed kw_fn.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },

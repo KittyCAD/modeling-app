@@ -10,7 +10,7 @@ import * from "parameters.kcl"
 // Create the sketch of one of the balls. The ball diameter is sized as a fraction of the difference between inner and outer radius of the bearing
 ballsSketch = startSketchOn(offsetPlane(XY, offset = stockThickness / 2))
   |> startProfile(at = [bearingBoreDiameter / 2 + 0.1, 0.001])
-  |> arc(angleEnd = 0, angleStart = 180, radius = sphereDia / 2)
+  |> arc(angleEnd = 0deg, angleStart = 180deg, radius = sphereDia / 2)
   |> close()
 
 // Revolve the ball to make a sphere and pattern around the inside wall
@@ -29,7 +29,7 @@ chainSketch = startSketchOn(offsetPlane(XY, offset = stockThickness / 2))
        bearingBoreDiameter / 2 + 0.1 + sphereDia / 2 - (chainWidth / 2),
        0.125 * sin(60deg)
      ])
-  |> arc(angleEnd = 60, angleStart = 120, radius = sphereDia / 2)
+  |> arc(angleEnd = 60deg, angleStart = 120deg, radius = sphereDia / 2)
   |> line(end = [0, chainThickness])
   |> line(end = [-chainWidth, 0])
   |> close()
@@ -63,35 +63,35 @@ bearingUpper = startProfile(
          stockThickness
        ],
      )
-  |> angledLine(angle = -91, length = 0.05)
+  |> angledLine(angle = -91deg, length = 0.05)
   |> xLine(length = -(bearingOuterDiameter / 2 - (bearingBoreDiameter / 2)) + .145)
   |> yLine(endAbsolute = 0.105)
   |> xLine(length = -0.025)
-  |> angledLine(angle = 91, endAbsoluteY = profileStartY(%))
+  |> angledLine(angle = 91deg, endAbsoluteY = profileStartY(%))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> revolve(angle = 360, axis = Y)
+  |> revolve(angle = 360deg, axis = Y)
   |> appearance(%, color = "#121212")
 
 bearingLower = startProfile(bearingBody, at = [bearingBoreDiameter / 2, 0.025])
   |> xLine(length = 0.05)
-  |> angledLine(angle = 75, length = 0.04, tag = $seg01)
+  |> angledLine(angle = 75deg, length = 0.04, tag = $seg01)
   |> xLine(length = 0.05)
-  |> angledLine(angle = -75, length = segLen(seg01))
+  |> angledLine(angle = -75deg, length = segLen(seg01))
   |> xLine(endAbsolute = bearingOuterDiameter / 2)
   |> yLine(length = stockThickness)
   |> xLine(length = -0.07)
-  |> angledLine(angle = -91, endAbsoluteY = profileStartY(%) + .075)
+  |> angledLine(angle = -91deg, endAbsoluteY = profileStartY(%) + .075)
   |> xLine(endAbsolute = profileStartX(%) + .05)
-  |> angledLine(angle = 91, endAbsoluteY = stockThickness * 1.25)
+  |> angledLine(angle = 91deg, endAbsoluteY = stockThickness * 1.25)
   |> xLine(endAbsolute = profileStartX(%))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> revolve(angle = 360, axis = Y)
+  |> revolve(angle = 360deg, axis = Y)
   |> appearance(%, color = "#f0f0f0")
 
 // Revolve the link sketch
-revolve(linkSketch, axis = Y, angle = 360 / 16)
+revolve(linkSketch, axis = Y, angle = 360deg / 16)
   |> patternCircular3d(
        arcDegrees = 360,
        axis = [0, 0, 1],

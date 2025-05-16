@@ -10,9 +10,6 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -317,9 +314,6 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -330,9 +324,6 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -343,9 +334,6 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -356,9 +344,6 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -369,9 +354,6 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -382,9 +364,6 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -395,9 +374,6 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -408,9 +384,6 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

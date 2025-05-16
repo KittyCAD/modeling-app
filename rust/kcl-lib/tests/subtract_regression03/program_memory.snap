@@ -578,9 +578,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -591,9 +588,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -604,9 +598,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -622,9 +613,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -635,9 +623,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -648,9 +633,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -666,9 +648,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -679,9 +658,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -692,53 +668,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      },
-      "zAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": -0.1919,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.1726,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -759,9 +688,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -772,9 +698,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -785,9 +708,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -803,9 +723,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -816,9 +733,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -829,9 +743,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -847,9 +758,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -860,9 +768,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -873,53 +778,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      },
-      "zAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": -0.1919,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.1726,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -940,9 +798,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -953,9 +808,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -966,9 +818,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -984,9 +833,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -997,9 +843,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -1010,9 +853,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }
@@ -1028,9 +868,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -1041,9 +878,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -1054,53 +888,6 @@ description: Variables in memory after executing subtract_regression03.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      },
-      "zAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.2003,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.2653,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           }

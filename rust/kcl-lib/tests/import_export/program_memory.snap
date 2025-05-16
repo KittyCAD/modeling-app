@@ -10,9 +10,6 @@ description: Variables in memory after executing import_export.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

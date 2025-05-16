@@ -26,9 +26,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -103,9 +100,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -124,9 +118,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -167,9 +158,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -232,9 +220,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -253,9 +238,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -318,9 +300,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -339,9 +318,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -382,9 +358,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -447,9 +420,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -468,9 +438,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -523,9 +490,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -578,9 +542,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -632,9 +593,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -653,9 +611,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -707,9 +662,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -728,9 +680,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -782,9 +731,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -803,9 +749,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -857,9 +800,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -878,9 +818,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -932,9 +869,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -953,9 +887,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -999,9 +930,6 @@ description: Operations executed utility-sink.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -1012,9 +940,6 @@ description: Operations executed utility-sink.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -1025,9 +950,6 @@ description: Operations executed utility-sink.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -1043,9 +965,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -1059,9 +978,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -1102,9 +1018,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -1167,9 +1080,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -1229,9 +1139,6 @@ description: Operations executed utility-sink.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -1242,9 +1149,6 @@ description: Operations executed utility-sink.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -1255,9 +1159,6 @@ description: Operations executed utility-sink.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -1273,9 +1174,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -1289,9 +1187,6 @@ description: Operations executed utility-sink.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

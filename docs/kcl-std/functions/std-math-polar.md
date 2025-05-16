@@ -34,7 +34,7 @@ cartesian (x/y/z grid) coordinates.
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> line(end = polar(angle = 30, length = 5), tag = $thing)
+  |> line(end = polar(angle = 30deg, length = 5), tag = $thing)
   |> line(end = [0, 5])
   |> line(end = [segEndX(thing), 0])
   |> line(end = [-20, 10])

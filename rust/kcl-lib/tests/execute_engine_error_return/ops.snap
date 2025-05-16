@@ -27,9 +27,6 @@ description: Operations executed execute_engine_error_return.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

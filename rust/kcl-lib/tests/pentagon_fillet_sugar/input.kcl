@@ -5,17 +5,17 @@ radius = 80
 triangleLen = 500
 p = startSketchOn(XY)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 60, length = triangleLen, tag = $a)
-  |> angledLine(angle = 180, length = triangleLen, tag = $b)
-  |> angledLine(angle = 300, length = triangleLen, tag = $c)
+  |> angledLine(angle = 60deg, length = triangleLen, tag = $a)
+  |> angledLine(angle = 180deg, length = triangleLen, tag = $b)
+  |> angledLine(angle = 300deg, length = triangleLen, tag = $c)
   |> extrude(length = triangleHeight)
 
 fn circl(x, face) {
   return startSketchOn(p, face = face)
     |> startProfile(at = [x + radius, triangleHeight / 2])
     |> arc(
-         angleStart = 0,
-         angleEnd = 360,
+         angleStart = 0deg,
+         angleEnd = 360deg,
          radius = radius,
          tag = $arc_tag,
        )

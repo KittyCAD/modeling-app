@@ -1516,13 +1516,13 @@ description: Result of parsing walkie-talkie.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   }
                 },
@@ -1538,13 +1538,13 @@ description: Result of parsing walkie-talkie.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "180",
+                    "raw": "180deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 180.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   }
                 },
@@ -1560,13 +1560,13 @@ description: Result of parsing walkie-talkie.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   }
                 }
@@ -1846,13 +1846,13 @@ description: Result of parsing walkie-talkie.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   }
                 },
@@ -1868,13 +1868,13 @@ description: Result of parsing walkie-talkie.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "180",
+                    "raw": "180deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 180.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   }
                 },
@@ -1890,13 +1890,13 @@ description: Result of parsing walkie-talkie.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   }
                 }

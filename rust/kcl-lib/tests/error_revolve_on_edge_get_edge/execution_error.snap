@@ -8,10 +8,10 @@ KCL Engine error
   │ side of the revolution axis
     ╭─[15:6]
  14 │   |> close()
- 15 │   |> revolve(axis = revolveAxis, angle = 90)
-    ·      ───────────────────┬───────────────────┬
-    ·                         ╰── tests/error_revolve_on_edge_get_edge/input.kcl
-    ·                         ╰── tests/error_revolve_on_edge_get_edge/input.kcl
+ 15 │   |> revolve(axis = revolveAxis, angle = 90deg)
+    ·      ─────────────────────┬────────────────────┬
+    ·                           ╰── tests/error_revolve_on_edge_get_edge/input.kcl
+    ·                           ╰── tests/error_revolve_on_edge_get_edge/input.kcl
     ╰────
   ╰─▶ KCL Engine error
       
@@ -19,8 +19,8 @@ KCL Engine error
         │ one side of the revolution axis
           ╭─[15:6]
        14 │   |> close()
-       15 │   |> revolve(axis = revolveAxis, angle = 90)
-          ·      ───────────────────┬───────────────────
-          ·                         ╰── tests/error_revolve_on_edge_get_edge/
-      input.kcl
+       15 │   |> revolve(axis = revolveAxis, angle = 90deg)
+          ·      ─────────────────────┬────────────────────
+          ·                           ╰── tests/
+      error_revolve_on_edge_get_edge/input.kcl
           ╰────

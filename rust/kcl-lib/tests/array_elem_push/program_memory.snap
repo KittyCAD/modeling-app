@@ -13,9 +13,6 @@ description: Variables in memory after executing array_elem_push.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       },
@@ -26,9 +23,6 @@ description: Variables in memory after executing array_elem_push.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       },
@@ -39,9 +33,6 @@ description: Variables in memory after executing array_elem_push.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       }
@@ -57,9 +48,6 @@ description: Variables in memory after executing array_elem_push.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       },
@@ -70,9 +58,6 @@ description: Variables in memory after executing array_elem_push.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       },
@@ -83,9 +68,6 @@ description: Variables in memory after executing array_elem_push.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       },
@@ -96,9 +78,6 @@ description: Variables in memory after executing array_elem_push.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       }
@@ -114,9 +93,6 @@ description: Variables in memory after executing array_elem_push.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       },
@@ -127,9 +103,6 @@ description: Variables in memory after executing array_elem_push.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       },
@@ -140,9 +113,6 @@ description: Variables in memory after executing array_elem_push.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       },
@@ -153,9 +123,6 @@ description: Variables in memory after executing array_elem_push.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       },
@@ -166,9 +133,6 @@ description: Variables in memory after executing array_elem_push.kcl
           "type": "Default",
           "len": {
             "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
           }
         }
       }

@@ -397,13 +397,13 @@ description: Result of parsing sketch_on_face_union.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "25",
+                      "raw": "25deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 25.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -485,13 +485,13 @@ description: Result of parsing sketch_on_face_union.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "25",
+                        "raw": "25deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 25.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -933,13 +933,13 @@ description: Result of parsing sketch_on_face_union.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "25",
+                        "raw": "25deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 25.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -1398,13 +1398,13 @@ description: Result of parsing sketch_on_face_union.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "205",
+                      "raw": "205deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 205.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   }
@@ -1997,13 +1997,13 @@ description: Result of parsing sketch_on_face_union.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "30",
+                      "raw": "30deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 30.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2067,13 +2067,13 @@ description: Result of parsing sketch_on_face_union.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "25",
+                        "raw": "25deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 25.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -2143,13 +2143,13 @@ description: Result of parsing sketch_on_face_union.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "210",
+                      "raw": "210deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 210.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2476,13 +2476,13 @@ description: Result of parsing sketch_on_face_union.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "150",
+                      "raw": "150deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 150.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2545,13 +2545,13 @@ description: Result of parsing sketch_on_face_union.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "205",
+                      "raw": "205deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 205.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2615,13 +2615,13 @@ description: Result of parsing sketch_on_face_union.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "30",
+                        "raw": "30deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 30.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -3436,13 +3436,13 @@ description: Result of parsing sketch_on_face_union.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,

@@ -148,7 +148,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///     scale = [pow(1.1, exp = i), pow(1.1, exp = i), pow(0.9, exp = i)],
 ///     // Turn by 15 degrees each time.
 ///     rotation = {
-///       angle = 15 * i,
+///       angle = 15deg * i,
 ///       origin = "local",
 ///     }
 ///   }
@@ -184,7 +184,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   return {
 ///     translate = [0, 0, -i * width],
 ///     rotation = {
-///       angle = 90 * i,
+///       angle = 90deg * i,
 ///       // Rotate around the overall scene's origin.
 ///       origin = "global",
 ///     }
@@ -223,7 +223,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   // Transform functions can return multiple transforms. They'll be applied in order.
 ///   return [
 ///     { translate = [30 * i, 0, 0] },
-///     { rotation = { angle = 45 * i } },
+///     { rotation = { angle = 45deg * i } },
 ///   ]
 /// }
 /// startSketchOn(XY)
@@ -1100,7 +1100,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 ///   |> patternCircular2d(
 ///        center = [0, 0],
 ///        instances = 13,
-///        arcDegrees = 360,
+///        arcDegrees = 360deg,
 ///        rotateDuplicates = true
 ///      )
 ///
@@ -1216,7 +1216,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 ///        axis = [1, -1, 0],
 ///        center = [10, -20, 0],
 ///        instances = 11,
-///        arcDegrees = 360,
+///        arcDegrees = 360deg,
 ///        rotateDuplicates = true
 ///      )
 /// ```

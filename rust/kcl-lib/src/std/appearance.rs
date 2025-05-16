@@ -71,7 +71,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// // Add color to a revolved solid.
 /// sketch001 = startSketchOn(XY)
 ///     |> circle( center = [15, 0], radius = 5 )
-///     |> revolve( angle = 360, axis = Y)
+///     |> revolve( angle = 360deg, axis = Y)
 ///     |> appearance(
 ///         color = '#ff0000',
 ///         metalness = 90,
@@ -202,7 +202,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 ///   |> patternCircular2d(
 ///        center = [0, 0],
 ///        instances = 13,
-///        arcDegrees = 360,
+///        arcDegrees = 360deg,
 ///        rotateDuplicates = true
 ///      )
 ///
@@ -221,9 +221,9 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// pipeHole = startSketchOn(XY)

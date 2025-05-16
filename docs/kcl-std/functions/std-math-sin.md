@@ -30,7 +30,7 @@ sin(@num: number(Angle)): number(_)
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
-    angle = 50,
+    angle = 50deg,
     length = 15 / sin(135deg),
   )
   |> yLine(endAbsolute = 0)

@@ -72,22 +72,22 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
     `  |> startProfile(at = [0, 0])`,
     `  |> line(endAbsolute = [1, 1], tag = $abc1)`,
     `  |> line(end = [-2.04, -0.7], tag = $abc2)`,
-    `  |> angledLine(angle = 157, length = 1.69, tag = $abc3)`,
-    `  |> angledLine(angle = 217, lengthX = 0.86, tag = $abc4)`,
-    `  |> angledLine(angle = 104, lengthY = 1.58, tag = $abc5)`,
-    `  |> angledLine(angle = 55, endAbsoluteX = -2.89, tag = $abc6)`,
-    `  |> angledLine(angle = 330, endAbsoluteY = 2.53, tag = $abc7)`,
+    `  |> angledLine(angle = 157deg, length = 1.69, tag = $abc3)`,
+    `  |> angledLine(angle = 217deg, lengthX = 0.86, tag = $abc4)`,
+    `  |> angledLine(angle = 104deg, lengthY = 1.58, tag = $abc5)`,
+    `  |> angledLine(angle = 55deg, endAbsoluteX = -2.89, tag = $abc6)`,
+    `  |> angledLine(angle = 330deg, endAbsoluteY = 2.53, tag = $abc7)`,
     `  |> xLine(length = 1.47, tag = $abc8)`,
     `  |> yLine(length = 1.57, tag = $abc9)`,
     `  |> xLine(endAbsolute = 1.49, tag = $abc10)`,
     `  |> yLine(endAbsolute = 2.64, tag = $abc11)`,
     `  |> line(endAbsolute = [2.55, 3.58]) // lineTo`,
     `  |> line(end = [0.73, -0.75])`,
-    `  |> angledLine(angle = 63, length = 1.38) // angledLine`,
-    `  |> angledLine(angle = 319, lengthX = 1.15) // angledLineOfXLength`,
-    `  |> angledLine(angle = 50, lengthY = 1.35) // angledLineOfYLength`,
-    `  |> angledLine(angle = 291, endAbsoluteX = 6.66) // angledLineToX`,
-    `  |> angledLine(angle = 228, endAbsoluteY = 2.14) // angledLineToY`,
+    `  |> angledLine(angle = 63deg, length = 1.38) // angledLine`,
+    `  |> angledLine(angle = 319deg, lengthX = 1.15) // angledLineOfXLength`,
+    `  |> angledLine(angle = 50deg, lengthY = 1.35) // angledLineOfYLength`,
+    `  |> angledLine(angle = 291deg, endAbsoluteX = 6.66) // angledLineToX`,
+    `  |> angledLine(angle = 228deg, endAbsoluteY = 2.14) // angledLineToY`,
     `  |> xLine(length = -1.33)`,
     `  |> yLine(length = -1.07)`,
     `  |> xLine(endAbsolute = 3.27)`,
@@ -143,7 +143,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLine with tag converts to xLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLine(angle = 157, length = 1.69, tag = $abc3)',
+      callToSwap: 'angledLine(angle = 157deg, length = 1.69, tag = $abc3)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(length = -1.56, tag = $abc3)'
@@ -154,7 +154,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLine w/o tag converts to xLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLine(angle = 63, length = 1.38)',
+      callToSwap: 'angledLine(angle = 63deg, length = 1.38)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(length = 0.63) // angledLine'
@@ -165,7 +165,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineOfXLength with tag converts to xLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLine(angle = 217, lengthX = 0.86, tag = $abc4)',
+      callToSwap: 'angledLine(angle = 217deg, lengthX = 0.86, tag = $abc4)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(length = -0.86, tag = $abc4)'
@@ -177,7 +177,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineOfXLength w/o tag converts to xLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLine(angle = 319, lengthX = 1.15)',
+      callToSwap: 'angledLine(angle = 319deg, lengthX = 1.15)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(length = 1.15) // angledLineOfXLength'
@@ -188,7 +188,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineOfYLength with tag converts to yLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLine(angle = 104, lengthY = 1.58, tag = $abc5)',
+      callToSwap: 'angledLine(angle = 104deg, lengthY = 1.58, tag = $abc5)',
       constraintType: 'vertical',
     })
     const expectedLine = 'yLine(length = 1.58, tag = $abc5)'
@@ -199,7 +199,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineOfYLength w/o tag converts to yLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLine(angle = 50, lengthY = 1.35)',
+      callToSwap: 'angledLine(angle = 50deg, lengthY = 1.35)',
       constraintType: 'vertical',
     })
     const expectedLine = 'yLine(length = 1.35) // angledLineOfYLength'
@@ -210,7 +210,8 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineToX with tag converts to xLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLine(angle = 55, endAbsoluteX = -2.89, tag = $abc6)',
+      callToSwap:
+        'angledLine(angle = 55deg, endAbsoluteX = -2.89, tag = $abc6)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(endAbsolute = -2.89, tag = $abc6)'
@@ -221,7 +222,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineToX w/o tag converts to xLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLine(angle = 291, endAbsoluteX = 6.66)',
+      callToSwap: 'angledLine(angle = 291deg, endAbsoluteX = 6.66)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(endAbsolute = 6.66) // angledLineToX'
@@ -232,7 +233,8 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineToY with tag converts to yLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLine(angle = 330, endAbsoluteY = 2.53, tag = $abc7)',
+      callToSwap:
+        'angledLine(angle = 330deg, endAbsoluteY = 2.53, tag = $abc7)',
       constraintType: 'vertical',
     })
     const expectedLine = 'yLine(endAbsolute = 2.53, tag = $abc7)'
@@ -243,7 +245,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineToY w/o tag converts to yLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLine(angle = 228, endAbsoluteY = 2.14)',
+      callToSwap: 'angledLine(angle = 228deg, endAbsoluteY = 2.14)',
       constraintType: 'vertical',
     })
     const expectedLine = 'yLine(endAbsolute = 2.14) // angledLineToY'
@@ -270,10 +272,10 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
     `  |> line(end = [lineX, 2.13])`,
     `  |> line(endAbsolute = [lineToX, 2.85])`,
     `  |> angledLine(angle = angledLineAngle, length = 1.64)`,
-    `  |> angledLine(angle = 329, lengthX = angledLineOfXLengthX)`,
-    `  |> angledLine(angle = 222, lengthY = angledLineOfYLengthY)`,
-    `  |> angledLine(angle = 330, endAbsoluteX = angledLineToXx)`,
-    `  |> angledLine(angle = 217, endAbsoluteY = angledLineToYy)`,
+    `  |> angledLine(angle = 329deg, lengthX = angledLineOfXLengthX)`,
+    `  |> angledLine(angle = 222deg, lengthY = angledLineOfYLengthY)`,
+    `  |> angledLine(angle = 330deg, endAbsoluteX = angledLineToXx)`,
+    `  |> angledLine(angle = 217deg, endAbsoluteY = angledLineToYy)`,
     `  |> line(end = [0.89, -0.1])`,
   ]
   const varExample = variablesExampleArr.join('\n')
@@ -302,7 +304,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
   it('angledLineOfXLength keeps variable when converted to xLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: varExample,
-      callToSwap: 'angledLine(angle = 329, lengthX = angledLineOfXLengthX)',
+      callToSwap: 'angledLine(angle = 329deg, lengthX = angledLineOfXLengthX)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(length = angledLineOfXLengthX)'
@@ -313,7 +315,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
   it('angledLineOfYLength keeps variable when converted to yLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: varExample,
-      callToSwap: 'angledLine(angle = 222, lengthY = angledLineOfYLengthY)',
+      callToSwap: 'angledLine(angle = 222deg, lengthY = angledLineOfYLengthY)',
       constraintType: 'vertical',
     })
     const expectedLine = 'yLine(length = -angledLineOfYLengthY)'
@@ -324,7 +326,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
   it('angledLineToX keeps variable when converted to xLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: varExample,
-      callToSwap: 'angledLine(angle = 330, endAbsoluteX = angledLineToXx)',
+      callToSwap: 'angledLine(angle = 330deg, endAbsoluteX = angledLineToXx)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(endAbsolute = angledLineToXx)'
@@ -335,7 +337,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
   it('angledLineToY keeps variable when converted to yLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: varExample,
-      callToSwap: 'angledLine(angle = 217, endAbsoluteY = angledLineToYy)',
+      callToSwap: 'angledLine(angle = 217deg, endAbsoluteY = angledLineToYy)',
       constraintType: 'vertical',
     })
     const expectedLine = 'yLine(endAbsolute = angledLineToYy)'
@@ -348,7 +350,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
     const illegalConvert = () =>
       testingSwapSketchFnCall({
         inputCode: varExample,
-        callToSwap: 'angledLine(angle = 217, endAbsoluteY = angledLineToYy)',
+        callToSwap: 'angledLine(angle = 217deg, endAbsoluteY = angledLineToYy)',
         constraintType: 'horizontal',
       })
     await expect(illegalConvert).rejects.toThrowError('no callback helper')

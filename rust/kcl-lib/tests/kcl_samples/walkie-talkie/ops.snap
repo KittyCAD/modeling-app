@@ -172,9 +172,6 @@ description: Operations executed walkie-talkie.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -204,9 +201,6 @@ description: Operations executed walkie-talkie.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -236,9 +230,6 @@ description: Operations executed walkie-talkie.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -268,9 +259,6 @@ description: Operations executed walkie-talkie.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -311,9 +299,6 @@ description: Operations executed walkie-talkie.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -359,9 +344,6 @@ description: Operations executed walkie-talkie.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -407,9 +389,6 @@ description: Operations executed walkie-talkie.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -455,9 +434,6 @@ description: Operations executed walkie-talkie.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

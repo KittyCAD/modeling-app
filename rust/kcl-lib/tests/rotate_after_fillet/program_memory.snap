@@ -14,9 +14,6 @@ description: Variables in memory after executing rotate_after_fillet.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -27,9 +24,6 @@ description: Variables in memory after executing rotate_after_fillet.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -40,9 +34,6 @@ description: Variables in memory after executing rotate_after_fillet.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -53,9 +44,6 @@ description: Variables in memory after executing rotate_after_fillet.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -66,9 +54,6 @@ description: Variables in memory after executing rotate_after_fillet.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -79,9 +64,6 @@ description: Variables in memory after executing rotate_after_fillet.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -92,9 +74,6 @@ description: Variables in memory after executing rotate_after_fillet.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },

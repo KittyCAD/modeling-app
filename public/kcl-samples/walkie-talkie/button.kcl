@@ -14,9 +14,9 @@ export fn button() {
   // Sketch the button profile and extrude
   buttonSketch = startSketchOn(XZ)
     |> startProfile(at = [0, 0])
-    |> angledLine(angle = 180, length = buttonWidth, tag = $tag1)
-    |> angledLine(angle = 270, length = buttonHeight, tag = $tag2)
-    |> angledLine(angle = 0, length = buttonWidth)
+    |> angledLine(angle = 180deg, length = buttonWidth, tag = $tag1)
+    |> angledLine(angle = 270deg, length = buttonHeight, tag = $tag2)
+    |> angledLine(angle = 0deg, length = buttonWidth)
     |> close()
   button = extrude(buttonSketch, length = buttonThickness)
     |> chamfer(

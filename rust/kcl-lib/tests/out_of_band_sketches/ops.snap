@@ -39,9 +39,6 @@ description: Operations executed out_of_band_sketches.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

@@ -15,11 +15,11 @@ export fn hexNut() {
          hexNutFlatToFlat / 2,
          hexNutFlatLength / 2
        ])
-    |> angledLine(angle = 270, length = hexNutFlatLength)
-    |> angledLine(angle = 210, length = hexNutFlatLength)
-    |> angledLine(angle = 150, length = hexNutFlatLength)
-    |> angledLine(angle = 90, length = hexNutFlatLength)
-    |> angledLine(angle = 30, length = hexNutFlatLength)
+    |> angledLine(angle = 270deg, length = hexNutFlatLength)
+    |> angledLine(angle = 210deg, length = hexNutFlatLength)
+    |> angledLine(angle = 150deg, length = hexNutFlatLength)
+    |> angledLine(angle = 90deg, length = hexNutFlatLength)
+    |> angledLine(angle = 30deg, length = hexNutFlatLength)
     |> close()
     |> extrude(length = hexNutThickness)
 

@@ -82,7 +82,7 @@ describe('testing argIsNotIdentifier', () => {
   const code = `part001 = startSketchOn(XY)
 |> startProfile(at = [-1.2, 4.83])
 |> line(%, end = [2.8, 0])
-|> angledLine(angle = 100 + 100, length = 3.09)
+|> angledLine(angle = 100deg + 100, length = 3.09)
 |> angledLine(angle = abc, length = 3.09)
 |> angledLine(angle = def('yo'), length = 3.09)
 |> angledLine(angle = ghi(%), length = 3.09)
@@ -434,7 +434,7 @@ describe('Testing findUsesOfTagInPipe', () => {
 |> line(end = [306.21, 198.85], tag = $seg01)
 |> angledLine(angle = -65, length = segLen(seg01))
 |> line(end = [306.21, 198.87])
-|> angledLine(angle = 65, length = segLen(seg01))`
+|> angledLine(angle = 65deg, length = segLen(seg01))`
   it('finds the current segment', async () => {
     const ast = assertParse(exampleCode)
 

@@ -30,7 +30,7 @@ sqrt(@input: number): number
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
-    angle = 50,
+    angle = 50deg,
     length = sqrt(2500),
   )
   |> yLine(endAbsolute = 0)

@@ -35,9 +35,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -48,9 +45,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -61,9 +55,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -79,9 +70,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -92,9 +80,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -105,9 +90,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -123,9 +105,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -136,9 +115,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -149,53 +125,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          },
-          "zAxis": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": -0.191884,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.172584,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -250,9 +179,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -263,9 +189,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -276,9 +199,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -294,9 +214,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -307,9 +224,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -320,9 +234,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -338,9 +249,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -351,9 +259,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -364,53 +269,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          },
-          "zAxis": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": -0.191884,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.172584,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -431,9 +289,6 @@ description: Operations executed subtract_regression03.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -502,9 +357,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -515,9 +367,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -528,9 +377,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -546,9 +392,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -559,9 +402,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -572,9 +412,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -590,9 +427,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -603,9 +437,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -616,53 +447,6 @@ description: Operations executed subtract_regression03.kcl
                   "type": "Default",
                   "len": {
                     "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          },
-          "zAxis": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.200323,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.265308,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -683,9 +467,6 @@ description: Operations executed subtract_regression03.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

@@ -326,9 +326,6 @@ description: Variables in memory after executing pipe.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -339,9 +336,6 @@ description: Variables in memory after executing pipe.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -352,9 +346,6 @@ description: Variables in memory after executing pipe.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

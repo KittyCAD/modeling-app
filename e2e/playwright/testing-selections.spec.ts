@@ -307,15 +307,15 @@ part009 = startSketchOn(XY)
   |> startProfile(at = [pipeLargeDia - (thickness / 2), 38])
   |> line(end = [thickness, 0])
   |> line(end = [0, -1])
-  |> angledLine(angle = 60, endAbsoluteX = pipeSmallDia + thickness)
+  |> angledLine(angle = 60deg, endAbsoluteX = pipeSmallDia + thickness)
   |> line(end = [0, -pipeLength])
   |> angledLine(angle = -60, endAbsoluteX = pipeLargeDia + thickness)
   |> line(end = [0, -1])
   |> line(end = [-thickness, 0])
   |> line(end = [0, 1])
-  |> angledLine(angle = 120, endAbsoluteX =  pipeSmallDia)
+  |> angledLine(angle = 120deg, endAbsoluteX =  pipeSmallDia)
   |> line(end = [0, pipeLength])
-  |> angledLine(angle = 60, endAbsoluteX =  pipeLargeDia)
+  |> angledLine(angle = 60deg, endAbsoluteX =  pipeLargeDia)
   |> close()
 rev = revolve(part009, axis = Y)
 sketch006 = startSketchOn(XY)
@@ -325,7 +325,7 @@ profile001 = circle(
   radius = 17.96
 )
 profile002 = startProfile(sketch006, at = [86.92, -63.81])
-  |> angledLine(angle = 0, length = 63.81, tag = $rectangleSegmentA001)
+  |> angledLine(angle = 0deg, length = 63.81, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 17.05)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -464,7 +464,7 @@ profile002 = startProfile(sketch002, at = [-11.08, 2.39])
   |> close()
 extrude001 = extrude(profile002, length = 15)
 profile001 = startProfile(sketch001, at = [7.49, 9.96])
-  |> angledLine(angle = 0, length = 5.05, tag = $rectangleSegmentA001)
+  |> angledLine(angle = 0deg, length = 5.05, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 4.81)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -513,16 +513,16 @@ profile001 = startProfile(sketch001, at = [7.49, 9.96])
 part001 = startSketchOn(XZ)
   |> startProfile(at = [20, 0])
   |> line(end = [7.13, 4 + 0])
-  |> angledLine(angle = 3 + 0, length = 3.14 + 0 )
+  |> angledLine(angle = 3deg + 0, length = 3.14 + 0 )
   |> line(endAbsolute = [20.14 + 0, -0.14 + 0])
   |> xLine(endAbsolute = 29 + 0)
   |> yLine(length = -3.14 + 0, tag = $a)
   |> xLine(length = 1.63)
-  |> angledLine(angle = 3 + 0, lengthX = 3.14)
-  |> angledLine(angle = 30, lengthY = 3 + 0)
-  |> angledLine(angle = 22.14 + 0, endAbsoluteX =  12)
-  |> angledLine(angle = 30, endAbsoluteY =  11.14)
-  |> angledLineThatIntersects(angle = 3.14, intersectTag = a, offset = 0)
+  |> angledLine(angle = 3deg + 0, lengthX = 3.14)
+  |> angledLine(angle = 30deg, lengthY = 3 + 0)
+  |> angledLine(angle = 22.14deg + 0, endAbsoluteX =  12)
+  |> angledLine(angle = 30deg, endAbsoluteY =  11.14)
+  |> angledLineThatIntersects(angle = 3.14deg, intersectTag = a, offset = 0)
   |> tangentialArc(endAbsolute = [13.14 + 0, 13.14])
   |> close()
   |> extrude(length = 5 + 7)
@@ -655,7 +655,7 @@ part001 = startSketchOn(XZ)
       'flatExtrusionFace',
       flatExtrusionFace,
       `angledLineThatIntersects(angle=3.14,intersectTag=a,offset=0)extrude(length=5+7)`,
-      'angledLineThatIntersects(angle = 3.14, intersectTag = a, offset = 0)'
+      'angledLineThatIntersects(angle = 3.14deg, intersectTag = a, offset = 0)'
     )
 
     await checkCodeAtHoverPosition(
@@ -707,19 +707,19 @@ part001 = startSketchOn(XZ)
       'straightSegmentEdge',
       straightSegmentEdge,
       `angledLine(angle=30,endAbsoluteY=11.14)`,
-      'angledLine(angle = 30, endAbsoluteY =  11.14)'
+      'angledLine(angle = 30deg, endAbsoluteY =  11.14)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentOppositeEdge',
       straightSegmentOppositeEdge,
       `angledLine(angle=30,endAbsoluteY=11.14)`,
-      'angledLine(angle = 30, endAbsoluteY =  11.14)'
+      'angledLine(angle = 30deg, endAbsoluteY =  11.14)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentAdjacentEdge',
       straightSegmentAdjacentEdge,
       `angledLineThatIntersects(angle=3.14,intersectTag=a,offset=0)`,
-      'angledLineThatIntersects(angle = 3.14, intersectTag = a, offset = 0)'
+      'angledLineThatIntersects(angle = 3.14deg, intersectTag = a, offset = 0)'
     )
 
     await page.waitForTimeout(200)
@@ -728,7 +728,7 @@ part001 = startSketchOn(XZ)
     await u.codeLocator.fill(`@settings(defaultLengthUnit = in)
     sketch001 = startSketchOn(XZ)
     |> startProfile(at = [75.8, 317.2]) // [$startCapTag, $EndCapTag]
-    |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
+    |> angledLine(angle = 0deg, length = 268.43, tag = $rectangleSegmentA001)
     |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
     |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)

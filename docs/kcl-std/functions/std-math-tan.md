@@ -30,7 +30,7 @@ tan(@num: number(Angle)): number(_)
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
-    angle = 50,
+    angle = 50deg,
     length = 50 * tan((1/2): number(rad)),
   )
   |> yLine(endAbsolute = 0)

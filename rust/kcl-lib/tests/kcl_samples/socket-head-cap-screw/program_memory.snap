@@ -15,9 +15,9 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1519,
-            "end": 1530,
-            "start": 1519,
+            "commentStart": 1534,
+            "end": 1545,
+            "start": 1534,
             "type": "TagDeclarator",
             "value": "filletEdge"
           },
@@ -44,9 +44,9 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             ],
             "radius": 0.095,
             "tag": {
-              "commentStart": 1519,
-              "end": 1530,
-              "start": 1519,
+              "commentStart": 1534,
+              "end": 1545,
+              "start": 1534,
               "type": "TagDeclarator",
               "value": "filletEdge"
             },
@@ -209,9 +209,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     "type": "Default",
                     "len": {
                       "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -227,9 +224,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     "type": "Default",
                     "len": {
                       "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -289,9 +283,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -312,9 +303,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -448,9 +436,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -466,9 +451,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -489,9 +471,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -502,9 +481,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -515,9 +491,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -528,9 +501,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -541,9 +511,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -870,9 +837,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     "type": "Default",
                     "len": {
                       "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -888,9 +852,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     "type": "Default",
                     "len": {
                       "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },

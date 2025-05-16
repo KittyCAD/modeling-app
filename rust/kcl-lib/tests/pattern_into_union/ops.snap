@@ -26,9 +26,6 @@ description: Operations executed pattern_into_union.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -71,9 +68,6 @@ description: Operations executed pattern_into_union.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -114,9 +108,6 @@ description: Operations executed pattern_into_union.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -150,9 +141,6 @@ description: Operations executed pattern_into_union.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -163,9 +151,6 @@ description: Operations executed pattern_into_union.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -176,9 +161,6 @@ description: Operations executed pattern_into_union.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -194,9 +176,6 @@ description: Operations executed pattern_into_union.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -210,9 +189,6 @@ description: Operations executed pattern_into_union.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -255,9 +231,6 @@ description: Operations executed pattern_into_union.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -298,9 +271,6 @@ description: Operations executed pattern_into_union.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -334,9 +304,6 @@ description: Operations executed pattern_into_union.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -347,9 +314,6 @@ description: Operations executed pattern_into_union.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -360,9 +324,6 @@ description: Operations executed pattern_into_union.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -378,9 +339,6 @@ description: Operations executed pattern_into_union.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -394,9 +352,6 @@ description: Operations executed pattern_into_union.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

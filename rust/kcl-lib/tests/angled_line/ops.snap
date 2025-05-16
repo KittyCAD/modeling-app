@@ -26,9 +26,6 @@ description: Operations executed angled_line.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

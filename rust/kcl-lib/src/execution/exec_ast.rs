@@ -2755,7 +2755,7 @@ startSketchOn(XY)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn ascription_in_binop() {
-        let ast = r#"foo = tan(0): number(rad) - 4deg"#;
+        let ast = r#"foo = tan(0deg): number(rad) - 4deg"#;
         parse_execute(ast).await.unwrap();
     }
 

@@ -10,9 +10,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -23,9 +20,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -36,9 +30,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -328,9 +319,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -346,9 +334,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -369,9 +354,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -392,9 +374,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -410,9 +389,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -423,9 +399,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -870,9 +843,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -888,9 +858,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -947,9 +914,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -960,9 +924,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -973,9 +934,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

@@ -22,6 +22,6 @@ pattn2 = patternCircular3d(
   axis = [0, 0, 1],
   center = [-20, -20, -20],
   instances = 41,
-  arcDegrees = 360,
+  arcDegrees = 360deg,
   rotateDuplicates = false,
 )

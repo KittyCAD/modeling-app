@@ -404,13 +404,13 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 60,
+///     angle = 60deg,
 ///     length = 10,
 ///     tag = $thing,
 ///   )
-///   |> tangentialArc(angle = -120, radius = 5)
+///   |> tangentialArc(angle = -120deg, radius = 5)
 ///   |> angledLine(
-///     angle = -60,
+///     angle = -60deg,
 ///     length = segLen(thing),
 ///   )
 ///   |> close()

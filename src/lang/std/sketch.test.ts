@@ -203,7 +203,7 @@ describe('testing addTagForSketchOnFace', () => {
     it(`can break up chamfers in order to add tags - ${desc}`, async () => {
       const genCode = (insertCode: string) => `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [75.8, 317.2]) // [$startCapTag, $EndCapTag]
-  |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = 0deg, length = 268.43, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
@@ -249,18 +249,18 @@ describe('testing getConstraintInfo', () => {
     const code = `part001 = startSketchOn(-XZ)
   |> startProfile(at = [0,0])
   |> line(end = [3, 4])
-  |> angledLine(angle = 3.14, length = 3.14)
+  |> angledLine(angle = 3.14deg, length = 3.14)
   |> line(endAbsolute = [6.14, 3.14])
   |> xLine(endAbsolute = 8)
   |> yLine(endAbsolute = 5)
   |> yLine(length = 3.14, tag = $a)
   |> xLine(length = 3.14)
-  |> angledLine(angle = 3.14, lengthX = 3.14)
-  |> angledLine(angle = 30, lengthY = 3)
-  |> angledLine(angle = 12.14, endAbsoluteX = 12)
-  |> angledLine(angle = 30, endAbsoluteY = 10.14)
+  |> angledLine(angle = 3.14deg, lengthX = 3.14)
+  |> angledLine(angle = 30deg, lengthY = 3)
+  |> angledLine(angle = 12.14deg, endAbsoluteX = 12)
+  |> angledLine(angle = 30deg, endAbsoluteY = 10.14)
   |> angledLineThatIntersects(
-    angle = 3.14,
+    angle = 3.14deg,
     intersectTag = a,
     offset = 0,
   )
@@ -618,18 +618,18 @@ describe('testing getConstraintInfo', () => {
     const code = `part001 = startSketchOn(-XZ)
     |> startProfile(at = [0, 0])
     |> line(end = [3, 4])
-    |> angledLine(angle = 3.14, length = 3.14)
+    |> angledLine(angle = 3.14deg, length = 3.14)
     |> line(endAbsolute = [6.14, 3.14])
     |> xLine(endAbsolute = 8)
     |> yLine(endAbsolute = 5)
     |> yLine(length = 3.14, tag = $a)
     |> xLine(length = 3.14)
-    |> angledLine(angle = 3.14, lengthX = 3.14)
-    |> angledLine(angle = 30, lengthY = 3)
-    |> angledLine(angle = 12, endAbsoluteX = 12)
-    |> angledLine(angle = 30, endAbsoluteY = 10)
+    |> angledLine(angle = 3.14deg, lengthX = 3.14)
+    |> angledLine(angle = 30deg, lengthY = 3)
+    |> angledLine(angle = 12deg, endAbsoluteX = 12)
+    |> angledLine(angle = 30deg, endAbsoluteY = 10)
     |> angledLineThatIntersects(
-         angle = 3.14,
+         angle = 3.14deg,
          intersectTag = a,
          offset = 0,
        )
@@ -774,18 +774,18 @@ describe('testing getConstraintInfo', () => {
     const code = `part001 = startSketchOn(-XZ)
     |> startProfile(at = [0, 0])
     |> line(end = [3 + 0, 4 + 0])
-    |> angledLine(angle = 3.14 + 0, length = 3.14 + 0 )
+    |> angledLine(angle = 3.14deg + 0, length = 3.14 + 0 )
     |> line(endAbsolute = [6.14 + 0, 3.14 + 0])
     |> xLine(endAbsolute = 8 + 0)
     |> yLine(endAbsolute = 5 + 0)
     |> yLine(length = 3.14 + 0, tag = $a)
     |> xLine(length = 3.14 + 0)
-    |> angledLine(angle = 3.14 + 0, lengthX = 3.14 + 0)
-    |> angledLine(angle = 30 + 0, lengthY = 3 + 0)
-    |> angledLine(angle = 12.14 + 0, endAbsoluteX =  12 + 0)
-    |> angledLine(angle = 30 + 0, endAbsoluteY =  10.14 + 0)
+    |> angledLine(angle = 3.14deg + 0, lengthX = 3.14 + 0)
+    |> angledLine(angle = 30deg + 0, lengthY = 3 + 0)
+    |> angledLine(angle = 12.14deg + 0, endAbsoluteX =  12 + 0)
+    |> angledLine(angle = 30deg + 0, endAbsoluteY =  10.14 + 0)
     |> angledLineThatIntersects(
-         angle = 3.14 + 0,
+         angle = 3.14deg + 0,
          intersectTag = a,
          offset = 0 + 0,
        )

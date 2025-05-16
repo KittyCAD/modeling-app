@@ -1081,13 +1081,13 @@ description: Result of parsing helical-planetary-gearset.kcl
                                 "right": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "raw": "360",
+                                  "raw": "360deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 360.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "start": 0,
@@ -1107,13 +1107,13 @@ description: Result of parsing helical-planetary-gearset.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -1180,13 +1180,13 @@ description: Result of parsing helical-planetary-gearset.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -1920,13 +1920,13 @@ description: Result of parsing helical-planetary-gearset.kcl
                                                   "left": {
                                                     "commentStart": 0,
                                                     "end": 0,
-                                                    "raw": "160",
+                                                    "raw": "160deg",
                                                     "start": 0,
                                                     "type": "Literal",
                                                     "type": "Literal",
                                                     "value": {
                                                       "value": 160.0,
-                                                      "suffix": "None"
+                                                      "suffix": "Deg"
                                                     }
                                                   },
                                                   "operator": "/",
@@ -2420,13 +2420,13 @@ description: Result of parsing helical-planetary-gearset.kcl
                                                   "left": {
                                                     "commentStart": 0,
                                                     "end": 0,
-                                                    "raw": "360",
+                                                    "raw": "360deg",
                                                     "start": 0,
                                                     "type": "Literal",
                                                     "type": "Literal",
                                                     "value": {
                                                       "value": 360.0,
-                                                      "suffix": "None"
+                                                      "suffix": "Deg"
                                                     }
                                                   },
                                                   "operator": "/",
@@ -4283,13 +4283,13 @@ description: Result of parsing helical-planetary-gearset.kcl
                                                   "left": {
                                                     "commentStart": 0,
                                                     "end": 0,
-                                                    "raw": "200",
+                                                    "raw": "200deg",
                                                     "start": 0,
                                                     "type": "Literal",
                                                     "type": "Literal",
                                                     "value": {
                                                       "value": 200.0,
-                                                      "suffix": "None"
+                                                      "suffix": "Deg"
                                                     }
                                                   },
                                                   "operator": "/",
@@ -4783,13 +4783,13 @@ description: Result of parsing helical-planetary-gearset.kcl
                                                   "left": {
                                                     "commentStart": 0,
                                                     "end": 0,
-                                                    "raw": "360",
+                                                    "raw": "360deg",
                                                     "start": 0,
                                                     "type": "Literal",
                                                     "type": "Literal",
                                                     "value": {
                                                       "value": 360.0,
-                                                      "suffix": "None"
+                                                      "suffix": "Deg"
                                                     }
                                                   },
                                                   "operator": "/",
@@ -6029,13 +6029,13 @@ description: Result of parsing helical-planetary-gearset.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
-                "raw": "14",
+                "raw": "14deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 14.0,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               }
             },
@@ -6052,13 +6052,13 @@ description: Result of parsing helical-planetary-gearset.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
-                  "raw": "25",
+                  "raw": "25deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 25.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 },
                 "commentStart": 0,
@@ -6184,13 +6184,13 @@ description: Result of parsing helical-planetary-gearset.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
-                "raw": "14",
+                "raw": "14deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 14.0,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               }
             },
@@ -6206,13 +6206,13 @@ description: Result of parsing helical-planetary-gearset.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
-                "raw": "25",
+                "raw": "25deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 25.0,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               }
             },
@@ -6371,13 +6371,13 @@ description: Result of parsing helical-planetary-gearset.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "14",
+                    "raw": "14deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 14.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   }
                 },
@@ -6394,13 +6394,13 @@ description: Result of parsing helical-planetary-gearset.kcl
                     "argument": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "25",
+                      "raw": "25deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 25.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     },
                     "commentStart": 0,
@@ -6733,13 +6733,13 @@ description: Result of parsing helical-planetary-gearset.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "360",
+                    "raw": "360deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 360.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   }
                 },

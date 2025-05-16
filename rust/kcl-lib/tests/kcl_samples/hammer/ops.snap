@@ -26,9 +26,6 @@ description: Operations executed hammer.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -87,9 +84,6 @@ description: Operations executed hammer.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -108,9 +102,6 @@ description: Operations executed hammer.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -140,9 +131,6 @@ description: Operations executed hammer.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -172,9 +160,6 @@ description: Operations executed hammer.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -304,9 +289,6 @@ description: Operations executed hammer.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -358,9 +340,6 @@ description: Operations executed hammer.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -379,9 +358,6 @@ description: Operations executed hammer.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -429,9 +405,6 @@ description: Operations executed hammer.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -544,13 +517,9 @@ description: Operations executed hammer.kcl
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -569,9 +538,6 @@ description: Operations executed hammer.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -582,9 +548,6 @@ description: Operations executed hammer.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 }
@@ -600,9 +563,6 @@ description: Operations executed hammer.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -613,9 +573,6 @@ description: Operations executed hammer.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 }

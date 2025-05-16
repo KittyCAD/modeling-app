@@ -46,9 +46,6 @@ description: Operations executed pattern_circular_in_module.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

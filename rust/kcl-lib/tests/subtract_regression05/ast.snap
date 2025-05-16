@@ -222,13 +222,13 @@ description: Result of parsing subtract_regression05.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "270",
+                      "raw": "270deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 270.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -244,13 +244,13 @@ description: Result of parsing subtract_regression05.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "360",
+                      "raw": "360deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 360.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1227,13 +1227,13 @@ description: Result of parsing subtract_regression05.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
-                  "raw": "360",
+                  "raw": "360deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 360.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 }
               }

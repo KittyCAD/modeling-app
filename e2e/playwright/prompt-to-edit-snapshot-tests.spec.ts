@@ -47,7 +47,7 @@ b
 
 const importedFile = `sketch003 = startSketchOn(XY)
   |> startProfile(at = [52.92, 157.81])
-  |> angledLine(angle = 0, length = 176.4, tag = $rectangleSegmentA001)
+  |> angledLine(angle = 0deg, length = 176.4, tag = $rectangleSegmentA001)
   |> angledLine(
        angle = segAng(rectangleSegmentA001) - 90,
        length = 53.4,

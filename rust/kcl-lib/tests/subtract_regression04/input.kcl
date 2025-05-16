@@ -11,7 +11,7 @@ sketch001Profile000 = startProfile(sketch001, at = [0.46875, 1.5])
   |> line(end = [-0.03125, 0.018042])
   |> close()
 
-revolve000 = revolve(sketch001Profile000, axis = Y, angle = 360)
+revolve000 = revolve(sketch001Profile000, axis = Y, angle = 360deg)
 
 sketch003 = startSketchOn(XY)
 

@@ -46,7 +46,7 @@ angledLine(
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> yLine(endAbsolute = 15)
-  |> angledLine(angle = 30, length = 15)
+  |> angledLine(angle = 30deg, length = 15)
   |> line(end = [8, -10])
   |> yLine(endAbsolute = 0)
   |> close()

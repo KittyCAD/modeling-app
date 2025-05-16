@@ -15,9 +15,9 @@ way:
 ```js
 startSketchOn(XZ)
   |> startProfile(at = origin)
-  |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+  |> angledLine(angle = 0deg, length = 191.26, tag = $rectangleSegmentA001)
   |> angledLine(
-       angle = segAng(rectangleSegmentA001) - 90,
+       angle = segAng(rectangleSegmentA001) - 90deg,
        length = 196.99,
        tag = $rectangleSegmentB001,
      )
@@ -49,9 +49,9 @@ However if the code was written like this:
 fn rect(origin) {
   return startSketchOn(XZ)
     |> startProfile(at = origin)
-    |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+    |> angledLine(angle = 0deg, length = 191.26, tag = $rectangleSegmentA001)
     |> angledLine(
-         angle = segAng(rectangleSegmentA001) - 90,
+         angle = segAng(rectangleSegmentA001) - 90deg,
          length = 196.99,
          tag = $rectangleSegmentB001)
     |> angledLine(
@@ -78,9 +78,9 @@ For example the following code works.
 fn rect(origin) {
   return startSketchOn(XZ)
     |> startProfile(at = origin)
-    |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+    |> angledLine(angle = 0deg, length = 191.26, tag = $rectangleSegmentA001)
     |> angledLine(
-         angle = segAng(rectangleSegmentA001) - 90,
+         angle = segAng(rectangleSegmentA001) - 90deg,
          length = 196.99
          tag = $rectangleSegmentB001,
        )

@@ -14,9 +14,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -27,9 +24,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -40,9 +34,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -53,9 +44,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -66,9 +54,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -87,9 +72,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -100,9 +82,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -113,9 +92,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -130,9 +106,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -143,9 +116,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -156,9 +126,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -178,9 +145,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -191,9 +155,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -204,9 +165,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -217,9 +175,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -230,9 +185,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -243,9 +195,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -256,9 +205,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -269,9 +215,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -282,9 +225,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -295,9 +235,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -308,9 +245,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -345,9 +279,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -358,9 +289,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -371,9 +299,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -384,9 +309,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -397,9 +319,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

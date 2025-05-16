@@ -864,13 +864,13 @@ description: Result of parsing error_revolve_on_edge_get_edge.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   }

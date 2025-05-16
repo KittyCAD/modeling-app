@@ -101,9 +101,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -114,9 +111,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -142,9 +136,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -155,9 +146,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -173,9 +161,6 @@ description: Operations executed food-service-spatula.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -204,9 +189,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -217,9 +199,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -245,9 +224,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -258,9 +234,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -276,9 +249,6 @@ description: Operations executed food-service-spatula.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -307,9 +277,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -320,9 +287,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -348,9 +312,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -361,9 +322,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -379,9 +337,6 @@ description: Operations executed food-service-spatula.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -476,9 +431,6 @@ description: Operations executed food-service-spatula.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -519,9 +471,6 @@ description: Operations executed food-service-spatula.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -578,9 +527,6 @@ description: Operations executed food-service-spatula.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -599,9 +545,6 @@ description: Operations executed food-service-spatula.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -642,9 +585,6 @@ description: Operations executed food-service-spatula.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -688,9 +628,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -701,9 +638,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -714,9 +648,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -732,9 +663,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -745,9 +673,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -758,9 +683,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -776,9 +698,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -789,9 +708,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -802,9 +718,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -820,9 +733,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -833,9 +743,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -846,9 +753,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -869,9 +773,6 @@ description: Operations executed food-service-spatula.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -934,9 +835,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -947,9 +845,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -975,9 +870,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -988,9 +880,6 @@ description: Operations executed food-service-spatula.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -1006,9 +895,6 @@ description: Operations executed food-service-spatula.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -1028,9 +914,6 @@ description: Operations executed food-service-spatula.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

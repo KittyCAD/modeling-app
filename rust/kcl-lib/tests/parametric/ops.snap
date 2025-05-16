@@ -26,9 +26,6 @@ description: Operations executed parametric.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

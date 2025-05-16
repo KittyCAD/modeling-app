@@ -153,13 +153,13 @@ description: Result of parsing multi_transform.kcl
                                     "left": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "raw": "45",
+                                      "raw": "45deg",
                                       "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
                                         "value": 45.0,
-                                        "suffix": "None"
+                                        "suffix": "Deg"
                                       }
                                     },
                                     "operator": "*",

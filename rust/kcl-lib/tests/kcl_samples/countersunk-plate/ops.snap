@@ -27,11 +27,11 @@ description: Operations executed countersunk-plate.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.1972,
+            "value": 68.5924,
             "ty": {
               "type": "Known",
               "type": "Angle",
-              "type": "Radians"
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -44,9 +44,6 @@ description: Operations executed countersunk-plate.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -91,9 +88,6 @@ description: Operations executed countersunk-plate.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -169,9 +163,6 @@ description: Operations executed countersunk-plate.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -201,9 +192,6 @@ description: Operations executed countersunk-plate.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -244,9 +232,6 @@ description: Operations executed countersunk-plate.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -289,9 +274,6 @@ description: Operations executed countersunk-plate.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -327,9 +309,6 @@ description: Operations executed countersunk-plate.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -353,9 +332,6 @@ description: Operations executed countersunk-plate.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

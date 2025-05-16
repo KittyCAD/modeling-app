@@ -25,8 +25,8 @@ size15 = 1
 // Sketch and extrude the base cube
 cubeSketch = startSketchOn(XY)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 0, length = sideLength, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = sideLength, tag = $rectangleSegmentB001)
+  |> angledLine(angle = 0deg, length = sideLength, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = sideLength, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
   |> close()

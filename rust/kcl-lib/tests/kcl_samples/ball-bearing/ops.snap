@@ -35,9 +35,6 @@ description: Operations executed ball-bearing.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -81,9 +78,6 @@ description: Operations executed ball-bearing.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -148,9 +142,6 @@ description: Operations executed ball-bearing.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -161,9 +152,6 @@ description: Operations executed ball-bearing.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 }
@@ -179,9 +167,6 @@ description: Operations executed ball-bearing.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -192,9 +177,6 @@ description: Operations executed ball-bearing.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 }
@@ -214,13 +196,9 @@ description: Operations executed ball-bearing.kcl
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -236,9 +214,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -249,9 +224,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -262,9 +234,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -283,9 +252,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -296,9 +262,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -309,9 +272,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -327,9 +287,6 @@ description: Operations executed ball-bearing.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -401,9 +358,6 @@ description: Operations executed ball-bearing.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -414,9 +368,6 @@ description: Operations executed ball-bearing.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 }
@@ -432,9 +383,6 @@ description: Operations executed ball-bearing.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -445,9 +393,6 @@ description: Operations executed ball-bearing.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 }
@@ -467,13 +412,9 @@ description: Operations executed ball-bearing.kcl
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -489,9 +430,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -502,9 +440,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -515,9 +450,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -536,9 +468,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -549,9 +478,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -562,9 +488,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -580,9 +503,6 @@ description: Operations executed ball-bearing.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -645,13 +565,9 @@ description: Operations executed ball-bearing.kcl
           "type": "Number",
           "value": 36.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -670,9 +586,6 @@ description: Operations executed ball-bearing.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -683,9 +596,6 @@ description: Operations executed ball-bearing.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 }
@@ -701,9 +611,6 @@ description: Operations executed ball-bearing.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -714,9 +621,6 @@ description: Operations executed ball-bearing.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 }
@@ -736,13 +640,9 @@ description: Operations executed ball-bearing.kcl
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -758,9 +658,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -771,9 +668,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -784,9 +678,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -805,9 +696,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -818,9 +706,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -831,9 +716,6 @@ description: Operations executed ball-bearing.kcl
                 "type": "Default",
                 "len": {
                   "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -849,9 +731,6 @@ description: Operations executed ball-bearing.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -910,9 +789,6 @@ description: Operations executed ball-bearing.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -956,9 +832,6 @@ description: Operations executed ball-bearing.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

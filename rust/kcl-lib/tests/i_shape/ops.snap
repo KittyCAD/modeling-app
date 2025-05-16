@@ -64,9 +64,6 @@ description: Operations executed i_shape.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

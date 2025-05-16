@@ -20,13 +20,13 @@ description: Result of parsing dodecahedron.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
-            "raw": "116.565",
+            "raw": "116.565deg",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
               "value": 116.565,
-              "suffix": "None"
+              "suffix": "Deg"
             }
           },
           "start": 0,
@@ -984,37 +984,37 @@ description: Result of parsing dodecahedron.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
@@ -1057,25 +1057,25 @@ description: Result of parsing dodecahedron.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
@@ -1118,25 +1118,25 @@ description: Result of parsing dodecahedron.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "72",
+                    "raw": "72deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 72.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
@@ -1179,25 +1179,25 @@ description: Result of parsing dodecahedron.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "144",
+                    "raw": "144deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 144.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
@@ -1240,25 +1240,25 @@ description: Result of parsing dodecahedron.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "216",
+                    "raw": "216deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 216.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
@@ -1301,25 +1301,25 @@ description: Result of parsing dodecahedron.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "288",
+                    "raw": "288deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 288.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
@@ -1346,37 +1346,37 @@ description: Result of parsing dodecahedron.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "180",
+                    "raw": "180deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 180.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
@@ -1406,13 +1406,13 @@ description: Result of parsing dodecahedron.kcl
                     "left": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "180",
+                      "raw": "180deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 180.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     },
                     "operator": "-",
@@ -1439,25 +1439,25 @@ description: Result of parsing dodecahedron.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "36",
+                    "raw": "36deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 36.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
@@ -1487,13 +1487,13 @@ description: Result of parsing dodecahedron.kcl
                     "left": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "180",
+                      "raw": "180deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 180.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     },
                     "operator": "-",
@@ -1520,25 +1520,25 @@ description: Result of parsing dodecahedron.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "108",
+                    "raw": "108deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 108.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
@@ -1568,13 +1568,13 @@ description: Result of parsing dodecahedron.kcl
                     "left": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "180",
+                      "raw": "180deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 180.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     },
                     "operator": "-",
@@ -1601,25 +1601,25 @@ description: Result of parsing dodecahedron.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "180",
+                    "raw": "180deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 180.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
@@ -1649,13 +1649,13 @@ description: Result of parsing dodecahedron.kcl
                     "left": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "180",
+                      "raw": "180deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 180.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     },
                     "operator": "-",
@@ -1682,25 +1682,25 @@ description: Result of parsing dodecahedron.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "252",
+                    "raw": "252deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 252.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
@@ -1730,13 +1730,13 @@ description: Result of parsing dodecahedron.kcl
                     "left": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "180",
+                      "raw": "180deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 180.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     },
                     "operator": "-",
@@ -1763,25 +1763,25 @@ description: Result of parsing dodecahedron.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
+                    "raw": "0deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 0.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "324",
+                    "raw": "324deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 324.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   },
                   {

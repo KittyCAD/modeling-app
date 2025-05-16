@@ -72,7 +72,7 @@ export fn circle(
 /// sketch001 = startSketchOn(XY)
 ///     |> circle( center = [15, 0], radius = 5 )
 ///     |> revolve(
-///         angle = 360,
+///         angle = 360deg,
 ///         axis = Y,
 ///     )
 /// ```
@@ -88,7 +88,7 @@ export fn circle(
 ///     |> line(end = [0, -5.5])
 ///     |> line(end = [-2, 0])
 ///     |> close()
-///     |> revolve(axis = Y, angle = 180)
+///     |> revolve(axis = Y, angle = 180deg)
 /// ```
 ///
 /// ```
@@ -102,7 +102,7 @@ export fn circle(
 ///     |> line(end = [0, -5.5])
 ///     |> line(end = [-2, 0])
 ///     |> close()
-///     |> revolve(axis = Y, angle = 180)
+///     |> revolve(axis = Y, angle = 180deg)
 ///
 /// part002 = startSketchOn(part001, face = END)
 ///     |> startProfile(at = [4.5, -5])
@@ -125,7 +125,7 @@ export fn circle(
 /// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
-///         angle = -90,
+///         angle = -90degdeg,
 ///         axis = Y
 ///     )
 /// ```
@@ -142,7 +142,7 @@ export fn circle(
 /// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
-///         angle = 90,
+///         angle = 90deg,
 ///         axis = getOppositeEdge(revolveAxis)
 ///     )
 /// ```
@@ -159,7 +159,7 @@ export fn circle(
 /// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
-///         angle = 90,
+///         angle = 90deg,
 ///         axis = getOppositeEdge(revolveAxis),
 ///         tolerance = 0.0001
 ///     )
@@ -218,7 +218,7 @@ export fn circle(
 ///
 /// sketch001 = startSketchOn(XY)
 ///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis)
+///     |> revolve(angle = 90deg, axis = revolveAxis)
 /// ```
 ///
 /// ```
@@ -231,7 +231,7 @@ export fn circle(
 ///
 /// sketch001 = startSketchOn(XY)
 ///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis)
+///     |> revolve(angle = 90deg, axis = revolveAxis)
 /// ```
 ///
 /// ```
@@ -244,7 +244,7 @@ export fn circle(
 ///
 /// sketch001 = startSketchOn(XY)
 ///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis, symmetric = true)
+///     |> revolve(angle = 90deg, axis = revolveAxis, symmetric = true)
 /// ```
 ///
 /// ```
@@ -257,7 +257,7 @@ export fn circle(
 ///
 /// sketch001 = startSketchOn(XY)
 ///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis, bidirectionalAngle = 50)
+///     |> revolve(angle = 90deg, axis = revolveAxis, bidirectionalAngle = 50deg)
 /// ```
 @(impl = std_rust)
 export fn revolve(

@@ -11,35 +11,35 @@ baseDiameter = pitchDiameter * cos(pressureAngle)
 tipDiameter = pitchDiameter + 2 * module
 gearHeight = .3
 
-angle001 = 6
+angle001 = 6deg
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [baseDiameter / 2, 0])
   |> involuteCircular(
        startRadius = baseDiameter / 2,
        endRadius = tipDiameter / 2,
-       angle = 0,
+       angle = 0deg,
        tag = $seg01,
      )
   |> line(endAbsolute = [lastSegX(%), lastSegY(%)])
   |> arc(
        angleStart = asin(segEndY(seg01) / segEndX(seg01)),
-       angleEnd = 9,
+       angleEnd = 9deg,
        radius = tipDiameter / 2,
        tag = $seg02,
      )
   |> involuteCircular(
        startRadius = baseDiameter / 2,
        endRadius = tipDiameter / 2,
-       angle = -12,
+       angle = -12deg,
        reverse = true,
      )
   |> line(endAbsolute = [lastSegX(%), lastSegY(%)])
-  |> line(endAbsolute = polar(angle = 360 / nTeeth, length = baseDiameter / 2))
+  |> line(endAbsolute = polar(angle = 360deg / nTeeth, length = baseDiameter / 2))
   |> patternCircular2d(
        %,
        instances = nTeeth,
        center = [0, 0],
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
   |> close()

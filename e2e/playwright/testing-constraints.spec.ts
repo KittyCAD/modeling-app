@@ -57,7 +57,7 @@ test.describe('Testing constraints', () => {
       .click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfile(at = [-10, -10])  |> line(end = [20, 0])  |> angledLine(angle = 90, length = length001)  |> xLine(length = -20)`
+      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfile(at = [-10, -10])  |> line(end = [20, 0])  |> angledLine(angle = 90deg, length = length001)  |> xLine(length = -20)`
     )
 
     // Make sure we didn't pop out of sketch mode.
@@ -852,7 +852,7 @@ part002 = startSketchOn(XZ)
   test.describe('Two segment - no modal constraints', () => {
     const cases = [
       {
-        codeAfter: `|> angledLine(angle = 83, length = segLen(seg01))`,
+        codeAfter: `|> angledLine(angle = 83deg, length = segLen(seg01))`,
         constraintName: 'Equal Length',
       },
       {
@@ -1174,7 +1174,7 @@ test.describe('Electron constraint tests', () => {
         await cmdBar.progressCmdBar()
         await editor.expectEditor.toContain('length001 = 15.3')
         await editor.expectEditor.toContain(
-          '|> angledLine(angle = 9, length = length001)'
+          '|> angledLine(angle = 9deg, length = length001)'
         )
       })
 

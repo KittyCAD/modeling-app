@@ -76,9 +76,6 @@ description: Operations executed sketch_on_face_union.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -130,9 +127,6 @@ description: Operations executed sketch_on_face_union.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -151,9 +145,6 @@ description: Operations executed sketch_on_face_union.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -183,9 +174,6 @@ description: Operations executed sketch_on_face_union.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -239,9 +227,6 @@ description: Operations executed sketch_on_face_union.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

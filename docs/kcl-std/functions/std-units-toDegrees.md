@@ -30,7 +30,7 @@ units::toDegrees(@num: number(Angle)): number(deg)
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
-    angle = 50,
+    angle = 50deg,
     length = 70 * cos(units::toDegrees((PI/4): number(rad))),
   )
   |> yLine(endAbsolute = 0)

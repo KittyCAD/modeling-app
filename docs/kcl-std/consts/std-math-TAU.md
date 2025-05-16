@@ -19,7 +19,7 @@ TAU: number = 6.28318530717958647692528676655900577_
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
-    angle = 50,
+    angle = 50deg,
     length = 10 * TAU,
   )
   |> yLine(endAbsolute = 0)

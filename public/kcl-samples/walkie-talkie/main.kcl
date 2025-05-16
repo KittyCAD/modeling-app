@@ -42,9 +42,9 @@ button()
 button()
   |> rotate(
        %,
-       roll = 0,
-       pitch = 180,
-       yaw = 0,
+       roll = 0deg,
+       pitch = 180deg,
+       yaw = 0deg,
      )
   |> translate(
        x = screenWidth / 2 + tolerance,
@@ -55,9 +55,9 @@ button()
 button()
   |> rotate(
        %,
-       roll = 0,
-       pitch = 180,
-       yaw = 0,
+       roll = 0deg,
+       pitch = 180deg,
+       yaw = 0deg,
      )
   |> translate(
        x = screenWidth / 2 + tolerance,

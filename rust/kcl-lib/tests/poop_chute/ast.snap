@@ -572,13 +572,13 @@ description: Result of parsing poop_chute.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "45",
+                      "raw": "45deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 45.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -846,13 +846,13 @@ description: Result of parsing poop_chute.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "45",
+                      "raw": "45deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 45.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1045,26 +1045,26 @@ description: Result of parsing poop_chute.kcl
                       "left": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "180",
+                        "raw": "180deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 180.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "operator": "-",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "45",
+                        "raw": "45deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 45.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -1309,26 +1309,26 @@ description: Result of parsing poop_chute.kcl
                       "left": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "180",
+                        "raw": "180deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 180.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "operator": "-",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "45",
+                        "raw": "45deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 45.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -1452,13 +1452,13 @@ description: Result of parsing poop_chute.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
-                  "raw": "90",
+                  "raw": "90deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 90.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 }
               },
@@ -1881,13 +1881,13 @@ description: Result of parsing poop_chute.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "45",
+                      "raw": "45deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 45.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2155,13 +2155,13 @@ description: Result of parsing poop_chute.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "45",
+                      "raw": "45deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 45.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2354,26 +2354,26 @@ description: Result of parsing poop_chute.kcl
                       "left": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "180",
+                        "raw": "180deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 180.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "operator": "-",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "45",
+                        "raw": "45deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 45.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -2618,26 +2618,26 @@ description: Result of parsing poop_chute.kcl
                       "left": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "180",
+                        "raw": "180deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 180.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "operator": "-",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "45",
+                        "raw": "45deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 45.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,

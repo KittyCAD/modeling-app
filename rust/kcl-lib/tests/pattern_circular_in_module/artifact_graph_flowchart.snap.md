@@ -30,21 +30,21 @@ flowchart LR
     %% Missing NodePath
   2["Plane<br>[38, 55, 1]"]
     %% Missing NodePath
-  15["Sweep Extrusion<br>[342, 376, 1]"]
+  15["Sweep Extrusion<br>[345, 379, 1]"]
     %% Missing NodePath
-  16["Sweep Extrusion<br>[342, 376, 1]"]
+  16["Sweep Extrusion<br>[345, 379, 1]"]
     %% Missing NodePath
-  17["Sweep Extrusion<br>[342, 376, 1]"]
+  17["Sweep Extrusion<br>[345, 379, 1]"]
     %% Missing NodePath
-  18["Sweep Extrusion<br>[342, 376, 1]"]
+  18["Sweep Extrusion<br>[345, 379, 1]"]
     %% Missing NodePath
-  19["Sweep Extrusion<br>[342, 376, 1]"]
+  19["Sweep Extrusion<br>[345, 379, 1]"]
     %% Missing NodePath
-  20["Sweep Extrusion<br>[342, 376, 1]"]
+  20["Sweep Extrusion<br>[345, 379, 1]"]
     %% Missing NodePath
-  21["Sweep Extrusion<br>[342, 376, 1]"]
+  21["Sweep Extrusion<br>[345, 379, 1]"]
     %% Missing NodePath
-  22["Sweep Extrusion<br>[342, 376, 1]"]
+  22["Sweep Extrusion<br>[345, 379, 1]"]
     %% Missing NodePath
   23[Wall]
   24[Wall]

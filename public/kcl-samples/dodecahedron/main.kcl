@@ -5,7 +5,7 @@
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Define the dihedral angle for a regular dodecahedron
-dihedral = 116.565
+dihedral = 116.565deg
 
 // Create a face template function that makes a large thin cube
 fn createFaceTemplate(@dither) {
@@ -22,29 +22,29 @@ fn createFaceTemplate(@dither) {
 
 // Define the rotations array with [pitch, roll, yaw, dither] for each face
 faceRotations = [
-  [0, 0, 0, 0],
+  [0deg, 0deg, 0deg, 0],
   // face1 - reference face
-  [dihedral, 0, 0, 0.1],
+  [dihedral, 0deg, 0deg, 0.1],
   // face2
-  [dihedral, 0, 72, 0.2],
+  [dihedral, 0deg, 72deg, 0.2],
   // face3
-  [dihedral, 0, 144, 0.3],
+  [dihedral, 0deg, 144deg, 0.3],
   // face4
-  [dihedral, 0, 216, 0.4],
+  [dihedral, 0deg, 216deg, 0.4],
   // face5
-  [dihedral, 0, 288, 0.5],
+  [dihedral, 0deg, 288deg, 0.5],
   // face6
-  [180, 0, 0, 0.6],
+  [180deg, 0deg, 0deg, 0.6],
   // face7
-  [180 - dihedral, 0, 36, 0.7],
+  [180deg - dihedral, 0deg, 36deg, 0.7],
   // face8
-  [180 - dihedral, 0, 108, 0.8],
+  [180deg - dihedral, 0deg, 108deg, 0.8],
   // face9
-  [180 - dihedral, 0, 180, 0.9],
+  [180deg - dihedral, 0deg, 180deg, 0.9],
   // face10
-  [180 - dihedral, 0, 252, 0.11],
+  [180deg - dihedral, 0deg, 252deg, 0.11],
   // face11
-  [180 - dihedral, 0, 324, 0.12],
+  [180deg - dihedral, 0deg, 324deg, 0.12],
   // face12
 ]
 

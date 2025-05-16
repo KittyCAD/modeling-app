@@ -34,7 +34,7 @@ pow(
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
-    angle = 50,
+    angle = 50deg,
     length = pow(5, exp = 2),
   )
   |> yLine(endAbsolute = 0)

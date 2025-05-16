@@ -27,7 +27,7 @@ endTabs = startSketchOn(XZ)
   |> startProfile(at = [endWidth, baseHeight])
   |> xLine(endAbsolute = endWidth + endTabWidth)
   |> angledLine(
-       angle = 135,
+       angle = 135deg,
        endAbsoluteY = baseHeight + endTabHeight
      ,tag=$toFillet)
   |> xLine(endAbsolute = endWidth)
@@ -47,7 +47,7 @@ endTabs2 = startSketchOn(XZ)
   |> startProfile(at = [width - endWidth, baseHeight])
   |> xLine(endAbsolute = width - endTabWidth)
   |> angledLine(
-       angle = 45,
+       angle = 45deg,
        endAbsoluteY = baseHeight + endTabHeight
      ,tag=$toFillet2)
   |> xLine(endAbsolute = width - endWidth)

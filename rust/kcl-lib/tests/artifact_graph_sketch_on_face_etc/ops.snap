@@ -26,9 +26,6 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -82,9 +79,6 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -137,9 +131,6 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -193,9 +184,6 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

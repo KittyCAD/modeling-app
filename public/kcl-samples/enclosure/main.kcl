@@ -14,8 +14,8 @@ holeDia = 4
 // Model a box with base enclosure dimensions
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 0, length = width, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length, tag = $rectangleSegmentB001)
+  |> angledLine(angle = 0deg, length = width, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
   |> close()
@@ -73,8 +73,8 @@ function001([
 // Define lid position and outer surface
 sketch003 = startSketchOn(XY)
   |> startProfile(at = [width * 1.2, 0])
-  |> angledLine(angle = 0, length = width, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length, tag = $rectangleSegmentB002)
+  |> angledLine(angle = 0deg, length = width, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length, tag = $rectangleSegmentB002)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC002)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD002)
   |> close()
@@ -123,8 +123,8 @@ sketch004 = startSketchOn(extrude003, face = END)
        width * 1.2 + wallThickness,
        wallThickness
      ])
-  |> angledLine(angle = 0, length = width - (2 * wallThickness), tag = $rectangleSegmentA003)
-  |> angledLine(angle = segAng(rectangleSegmentA003) + 90, length = length - (2 * wallThickness), tag = $rectangleSegmentB003)
+  |> angledLine(angle = 0deg, length = width - (2 * wallThickness), tag = $rectangleSegmentA003)
+  |> angledLine(angle = segAng(rectangleSegmentA003) + 90deg, length = length - (2 * wallThickness), tag = $rectangleSegmentB003)
   |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003), tag = $rectangleSegmentC003)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD003)
   |> close()

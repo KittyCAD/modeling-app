@@ -35,9 +35,6 @@ description: Operations executed wing-spar.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -181,9 +178,6 @@ description: Operations executed wing-spar.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -216,9 +210,6 @@ description: Operations executed wing-spar.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -229,9 +220,6 @@ description: Operations executed wing-spar.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -242,9 +230,6 @@ description: Operations executed wing-spar.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -260,9 +245,6 @@ description: Operations executed wing-spar.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -276,9 +258,6 @@ description: Operations executed wing-spar.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -321,9 +300,6 @@ description: Operations executed wing-spar.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -353,9 +329,6 @@ description: Operations executed wing-spar.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -409,9 +382,6 @@ description: Operations executed wing-spar.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -488,9 +458,6 @@ description: Operations executed wing-spar.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

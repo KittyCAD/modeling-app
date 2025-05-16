@@ -419,13 +419,13 @@ description: Result of parsing spur-reduction-gearset.kcl
                                     "arg": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "raw": "0",
+                                      "raw": "0deg",
                                       "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
                                         "value": 0.0,
-                                        "suffix": "None"
+                                        "suffix": "Deg"
                                       }
                                     }
                                   },
@@ -628,13 +628,13 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "raw": "0",
+                                "raw": "0deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 0.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -707,13 +707,13 @@ description: Result of parsing spur-reduction-gearset.kcl
                                       "left": {
                                         "commentStart": 0,
                                         "end": 0,
-                                        "raw": "160",
+                                        "raw": "160deg",
                                         "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
                                           "value": 160.0,
-                                          "suffix": "None"
+                                          "suffix": "Deg"
                                         }
                                       },
                                       "operator": "/",
@@ -1058,13 +1058,13 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   "left": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "raw": "180",
+                                    "raw": "180deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 180.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "operator": "/",
@@ -1163,13 +1163,13 @@ description: Result of parsing spur-reduction-gearset.kcl
                                       "left": {
                                         "commentStart": 0,
                                         "end": 0,
-                                        "raw": "360",
+                                        "raw": "360deg",
                                         "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
                                           "value": 360.0,
-                                          "suffix": "None"
+                                          "suffix": "Deg"
                                         }
                                       },
                                       "operator": "/",
@@ -1870,13 +1870,13 @@ description: Result of parsing spur-reduction-gearset.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
-                "raw": "14",
+                "raw": "14deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 14.0,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               }
             },
@@ -1997,13 +1997,13 @@ description: Result of parsing spur-reduction-gearset.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "14",
+                    "raw": "14deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 14.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   }
                 },

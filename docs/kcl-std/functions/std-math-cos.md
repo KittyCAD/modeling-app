@@ -30,7 +30,7 @@ cos(@num: number(Angle)): number(_)
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
-    angle = 30,
+    angle = 30deg,
     length = 3 / cos(30deg),
   )
   |> yLine(endAbsolute = 0)

@@ -18,7 +18,7 @@ import pipe from "1120t74-pipe.kcl"
 // Place flanges
 flange()
 flange()
-  |> rotate(axis = [0, 1, 0], angle = 180)
+  |> rotate(axis = [0, 1, 0], angle = 180deg)
   |> translate(x = 0, y = 0, z = flangeBackHeight * 2 + gasketThickness)
 
 // Place gasket between the flanges

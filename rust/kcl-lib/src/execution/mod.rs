@@ -1400,18 +1400,18 @@ fn hmm(@x) {
   return x
 }
 
-yo = 5 + 6
+yo = 5deg + 6deg
 
-abc = 3
+abc = 3deg
 identifierGuy = 5
 part001 = startSketchOn(XY)
 |> startProfile(at = [-1.2, 4.83])
 |> line(end = [2.8, 0])
-|> angledLine(angle = 100 + 100, length = 3.01)
+|> angledLine(angle = 100deg + 100deg, length = 3.01)
 |> angledLine(angle = abc, length = 3.02)
 |> angledLine(angle = def(yo), length = 3.03)
-|> angledLine(angle = ghi(2), length = 3.04)
-|> angledLine(angle = jkl(yo) + 2, length = 3.05)
+|> angledLine(angle = ghi(2deg), length = 3.04)
+|> angledLine(angle = jkl(yo) + 2deg, length = 3.05)
 |> close()
 yo2 = hmm([identifierGuy + 5])"#;
 
@@ -2247,7 +2247,7 @@ w = f() + f()
   return startSketchOn(XY)
     |> startProfile(at = [0,0])
     |> angledLine(
-        angle = -60,
+        angle = -60deg,
         length = segLen(t),
     )
     |> line(end = [0, 0])

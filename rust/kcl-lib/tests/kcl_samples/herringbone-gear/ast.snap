@@ -935,13 +935,13 @@ description: Result of parsing herringbone-gear.kcl
                                                   "left": {
                                                     "commentStart": 0,
                                                     "end": 0,
-                                                    "raw": "160",
+                                                    "raw": "160deg",
                                                     "start": 0,
                                                     "type": "Literal",
                                                     "type": "Literal",
                                                     "value": {
                                                       "value": 160.0,
-                                                      "suffix": "None"
+                                                      "suffix": "Deg"
                                                     }
                                                   },
                                                   "operator": "/",
@@ -1435,13 +1435,13 @@ description: Result of parsing herringbone-gear.kcl
                                                   "left": {
                                                     "commentStart": 0,
                                                     "end": 0,
-                                                    "raw": "360",
+                                                    "raw": "360deg",
                                                     "start": 0,
                                                     "type": "Literal",
                                                     "type": "Literal",
                                                     "value": {
                                                       "value": 360.0,
-                                                      "suffix": "None"
+                                                      "suffix": "Deg"
                                                     }
                                                   },
                                                   "operator": "/",

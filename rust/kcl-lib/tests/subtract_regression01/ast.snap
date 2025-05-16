@@ -239,13 +239,13 @@ description: Result of parsing subtract_regression01.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -268,13 +268,13 @@ description: Result of parsing subtract_regression01.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "227.157002",
+                      "raw": "227.157002deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 227.157002,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -405,13 +405,13 @@ description: Result of parsing subtract_regression01.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "227.157002",
+                      "raw": "227.157002deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 227.157002,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -428,13 +428,13 @@ description: Result of parsing subtract_regression01.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,

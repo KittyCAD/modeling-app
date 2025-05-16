@@ -8,7 +8,7 @@ flowchart LR
   end
   1["Plane<br>[46, 63, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  4["Helix<br>[149, 255, 0]"]
+  4["Helix<br>[149, 258, 0]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3

@@ -7,26 +7,18 @@ description: Variables in memory after executing tan_arc_x_line.kcl
     "type": "Number",
     "value": 135.0,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     }
   },
   "angleStart": {
     "type": "Number",
     "value": 110.0,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     }
   },
   "arc1": {
@@ -51,9 +43,6 @@ description: Variables in memory after executing tan_arc_x_line.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -64,9 +53,6 @@ description: Variables in memory after executing tan_arc_x_line.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -77,9 +63,6 @@ description: Variables in memory after executing tan_arc_x_line.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

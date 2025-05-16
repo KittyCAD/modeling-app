@@ -350,73 +350,73 @@ flowchart LR
   subgraph path35 [Path]
     35["Path<br>[2719, 2748, 1]"]
       %% Missing NodePath
-    187["Segment<br>[2756, 2791, 1]"]
+    187["Segment<br>[2756, 2794, 1]"]
       %% Missing NodePath
-    188["Segment<br>[2799, 2824, 1]"]
+    188["Segment<br>[2802, 2827, 1]"]
       %% Missing NodePath
-    189["Segment<br>[2832, 2868, 1]"]
+    189["Segment<br>[2835, 2874, 1]"]
       %% Missing NodePath
-    190["Segment<br>[2876, 2900, 1]"]
+    190["Segment<br>[2882, 2906, 1]"]
       %% Missing NodePath
-    191["Segment<br>[2908, 2942, 1]"]
+    191["Segment<br>[2914, 2951, 1]"]
       %% Missing NodePath
-    192["Segment<br>[2950, 2985, 1]"]
+    192["Segment<br>[2959, 2994, 1]"]
       %% Missing NodePath
-    193["Segment<br>[2993, 3000, 1]"]
+    193["Segment<br>[3002, 3009, 1]"]
       %% Missing NodePath
     219[Solid2d]
   end
   subgraph path36 [Path]
-    36["Path<br>[3268, 3295, 1]"]
+    36["Path<br>[3277, 3304, 1]"]
       %% Missing NodePath
-    195["Segment<br>[3303, 3322, 1]"]
+    195["Segment<br>[3312, 3331, 1]"]
       %% Missing NodePath
-    197["Segment<br>[3330, 3379, 1]"]
+    197["Segment<br>[3339, 3394, 1]"]
       %% Missing NodePath
   end
   subgraph path37 [Path]
-    37["Path<br>[3268, 3295, 1]"]
+    37["Path<br>[3277, 3304, 1]"]
       %% Missing NodePath
-    194["Segment<br>[3303, 3322, 1]"]
+    194["Segment<br>[3312, 3331, 1]"]
       %% Missing NodePath
-    196["Segment<br>[3330, 3379, 1]"]
+    196["Segment<br>[3339, 3394, 1]"]
       %% Missing NodePath
   end
   subgraph path38 [Path]
-    38["Path<br>[3480, 3513, 1]"]
+    38["Path<br>[3495, 3528, 1]"]
       %% Missing NodePath
-    198["Segment<br>[3521, 3540, 1]"]
+    198["Segment<br>[3536, 3555, 1]"]
       %% Missing NodePath
-    201["Segment<br>[3548, 3570, 1]"]
+    201["Segment<br>[3563, 3585, 1]"]
       %% Missing NodePath
-    202["Segment<br>[3578, 3601, 1]"]
+    202["Segment<br>[3593, 3616, 1]"]
       %% Missing NodePath
-    204["Segment<br>[3609, 3629, 1]"]
+    204["Segment<br>[3624, 3644, 1]"]
       %% Missing NodePath
-    206["Segment<br>[3637, 3661, 1]"]
+    206["Segment<br>[3652, 3676, 1]"]
       %% Missing NodePath
-    208["Segment<br>[3669, 3692, 1]"]
+    208["Segment<br>[3684, 3707, 1]"]
       %% Missing NodePath
-    211["Segment<br>[3700, 3707, 1]"]
+    211["Segment<br>[3715, 3722, 1]"]
       %% Missing NodePath
     217[Solid2d]
   end
   subgraph path39 [Path]
-    39["Path<br>[3480, 3513, 1]"]
+    39["Path<br>[3495, 3528, 1]"]
       %% Missing NodePath
-    199["Segment<br>[3521, 3540, 1]"]
+    199["Segment<br>[3536, 3555, 1]"]
       %% Missing NodePath
-    200["Segment<br>[3548, 3570, 1]"]
+    200["Segment<br>[3563, 3585, 1]"]
       %% Missing NodePath
-    203["Segment<br>[3578, 3601, 1]"]
+    203["Segment<br>[3593, 3616, 1]"]
       %% Missing NodePath
-    205["Segment<br>[3609, 3629, 1]"]
+    205["Segment<br>[3624, 3644, 1]"]
       %% Missing NodePath
-    207["Segment<br>[3637, 3661, 1]"]
+    207["Segment<br>[3652, 3676, 1]"]
       %% Missing NodePath
-    209["Segment<br>[3669, 3692, 1]"]
+    209["Segment<br>[3684, 3707, 1]"]
       %% Missing NodePath
-    210["Segment<br>[3700, 3707, 1]"]
+    210["Segment<br>[3715, 3722, 1]"]
       %% Missing NodePath
     222[Solid2d]
   end
@@ -434,23 +434,23 @@ flowchart LR
     %% Missing NodePath
   7["Plane<br>[352, 372, 1]"]
     %% Missing NodePath
-  8["Plane<br>[3787, 3822, 1]"]
+  8["Plane<br>[3802, 3837, 1]"]
     %% Missing NodePath
-  9["Plane<br>[3787, 3822, 1]"]
+  9["Plane<br>[3802, 3837, 1]"]
     %% Missing NodePath
-  10["Plane<br>[3851, 3880, 1]"]
+  10["Plane<br>[3866, 3895, 1]"]
     %% Missing NodePath
-  11["Plane<br>[3851, 3880, 1]"]
+  11["Plane<br>[3866, 3895, 1]"]
     %% Missing NodePath
   12["StartSketchOnPlane<br>[352, 372, 1]"]
     %% Missing NodePath
-  13["StartSketchOnPlane<br>[3240, 3260, 1]"]
+  13["StartSketchOnPlane<br>[3249, 3269, 1]"]
     %% Missing NodePath
-  14["StartSketchOnPlane<br>[3452, 3472, 1]"]
+  14["StartSketchOnPlane<br>[3467, 3487, 1]"]
     %% Missing NodePath
   15["StartSketchOnPlane<br>[2691, 2711, 1]"]
     %% Missing NodePath
-  16["StartSketchOnPlane<br>[3452, 3472, 1]"]
+  16["StartSketchOnPlane<br>[3467, 3487, 1]"]
     %% Missing NodePath
   17["StartSketchOnPlane<br>[2189, 2209, 1]"]
     %% Missing NodePath
@@ -460,7 +460,7 @@ flowchart LR
     %% Missing NodePath
   20["StartSketchOnPlane<br>[1755, 1775, 1]"]
     %% Missing NodePath
-  21["StartSketchOnPlane<br>[3240, 3260, 1]"]
+  21["StartSketchOnPlane<br>[3249, 3269, 1]"]
     %% Missing NodePath
   22["StartSketchOnPlane<br>[352, 372, 1]"]
     %% Missing NodePath
@@ -488,13 +488,13 @@ flowchart LR
     %% Missing NodePath
   234["Sweep Extrusion<br>[2618, 2633, 1]"]
     %% Missing NodePath
-  235["Sweep Extrusion<br>[3171, 3186, 1]"]
+  235["Sweep Extrusion<br>[3180, 3195, 1]"]
     %% Missing NodePath
-  236["Sweep Extrusion<br>[3171, 3186, 1]"]
+  236["Sweep Extrusion<br>[3180, 3195, 1]"]
     %% Missing NodePath
-  237["Sweep Sweep<br>[3902, 3929, 1]"]
+  237["Sweep Sweep<br>[3917, 3944, 1]"]
     %% Missing NodePath
-  238["Sweep Sweep<br>[3902, 3929, 1]"]
+  238["Sweep Sweep<br>[3917, 3944, 1]"]
     %% Missing NodePath
   239[Wall]
   240[Wall]

@@ -269,7 +269,7 @@ axis001 = {
 lipSingleLengthCorner = revolve(lipFace(plane000), angle = -90, axis = axis001)
 
 // Create a single corner of the bin
-lipSingleWidthCorner = revolve(lipFace(plane002), angle = 90, axis = axis001)
+lipSingleWidthCorner = revolve(lipFace(plane002), angle = 90deg, axis = axis001)
 
 // Create the corners of the bin
 lipCorners000 = patternCircular3d(

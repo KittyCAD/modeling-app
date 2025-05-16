@@ -230,13 +230,13 @@ description: Result of parsing helix_ccw.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "0",
+                      "raw": "0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 0.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },

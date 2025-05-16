@@ -491,13 +491,13 @@ description: Result of parsing helium-tank.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "110",
+                        "raw": "110deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 110.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -567,13 +567,13 @@ description: Result of parsing helium-tank.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "40",
+                      "raw": "40deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 40.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -637,13 +637,13 @@ description: Result of parsing helium-tank.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "110",
+                        "raw": "110deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 110.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -713,13 +713,13 @@ description: Result of parsing helium-tank.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "180",
+                      "raw": "180deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 180.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -783,13 +783,13 @@ description: Result of parsing helium-tank.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -1052,13 +1052,13 @@ description: Result of parsing helium-tank.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -1383,13 +1383,13 @@ description: Result of parsing helium-tank.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1549,13 +1549,13 @@ description: Result of parsing helium-tank.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2010,13 +2010,13 @@ description: Result of parsing helium-tank.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
-                  "raw": "220",
+                  "raw": "220deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 220.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 }
               },
@@ -3481,13 +3481,13 @@ description: Result of parsing helium-tank.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "35",
+                      "raw": "35deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 35.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -3599,13 +3599,13 @@ description: Result of parsing helium-tank.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "135",
+                        "raw": "135deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 135.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -3837,13 +3837,13 @@ description: Result of parsing helium-tank.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "80",
+                        "raw": "80deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 80.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -4427,13 +4427,13 @@ description: Result of parsing helium-tank.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "35",
+                      "raw": "35deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 35.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -4521,13 +4521,13 @@ description: Result of parsing helium-tank.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "135",
+                        "raw": "135deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 135.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -4735,13 +4735,13 @@ description: Result of parsing helium-tank.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "80",
+                        "raw": "80deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 80.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,

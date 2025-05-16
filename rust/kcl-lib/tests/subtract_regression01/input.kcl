@@ -5,14 +5,14 @@ sketch000 = startSketchOn(XY)
 sketch000Profile000 = startProfile(sketch000, at = [-0.913, -0.587])
   |> xLine(length = 0.913)
   |> arc(
-       angleStart = -90,
-       angleEnd = 227.157002,
+       angleStart = -90deg,
+       angleEnd = 227.157002deg,
        radius = 0.587
      )
   |> line(end = [0.059159, 0.06379])
   |> arc(
-       angleStart = 227.157002,
-       angleEnd = -90,
+       angleStart = 227.157002deg,
+       angleEnd = -90deg,
        radius = 0.5
      )
   |> xLine(length = -0.913)

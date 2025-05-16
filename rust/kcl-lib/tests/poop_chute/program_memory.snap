@@ -10,9 +10,6 @@ description: Variables in memory after executing poop_chute.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -23,9 +20,6 @@ description: Variables in memory after executing poop_chute.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -36,9 +30,6 @@ description: Variables in memory after executing poop_chute.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -49,9 +40,6 @@ description: Variables in memory after executing poop_chute.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -62,9 +50,6 @@ description: Variables in memory after executing poop_chute.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -75,9 +60,6 @@ description: Variables in memory after executing poop_chute.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -88,9 +70,6 @@ description: Variables in memory after executing poop_chute.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -101,9 +80,6 @@ description: Variables in memory after executing poop_chute.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -114,9 +90,6 @@ description: Variables in memory after executing poop_chute.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -139,9 +112,9 @@ description: Variables in memory after executing poop_chute.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 358,
-            "end": 364,
-            "start": 358,
+            "commentStart": 361,
+            "end": 367,
+            "start": 361,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -258,9 +231,9 @@ description: Variables in memory after executing poop_chute.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 358,
-              "end": 364,
-              "start": 358,
+              "commentStart": 361,
+              "end": 367,
+              "start": 361,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -597,9 +570,9 @@ description: Variables in memory after executing poop_chute.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 358,
-            "end": 364,
-            "start": 358,
+            "commentStart": 361,
+            "end": 367,
+            "start": 361,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -902,9 +875,9 @@ description: Variables in memory after executing poop_chute.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1152,
-            "end": 1158,
-            "start": 1152,
+            "commentStart": 1176,
+            "end": 1182,
+            "start": 1176,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1021,9 +994,9 @@ description: Variables in memory after executing poop_chute.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1152,
-              "end": 1158,
-              "start": 1152,
+              "commentStart": 1176,
+              "end": 1182,
+              "start": 1176,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -1322,9 +1295,6 @@ description: Variables in memory after executing poop_chute.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

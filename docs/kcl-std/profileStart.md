@@ -29,8 +29,8 @@ profileStart(@profile: Sketch): [number]
 ```kcl
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [5, 2])
-  |> angledLine(angle = 120, length = 50, tag = $seg01)
-  |> angledLine(angle = segAng(seg01) + 120, length = 50)
+  |> angledLine(angle = 120deg, length = 50, tag = $seg01)
+  |> angledLine(angle = segAng(seg01) + 120deg, length = 50)
   |> line(end = profileStart(%))
   |> close()
   |> extrude(length = 20)

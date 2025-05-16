@@ -265,13 +265,13 @@ description: Result of parsing french-press.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "0",
+                      "raw": "0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 0.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -765,13 +765,13 @@ description: Result of parsing french-press.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "360",
+                      "raw": "360deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 360.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1696,13 +1696,13 @@ description: Result of parsing french-press.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "150",
+                      "raw": "150deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 150.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2196,13 +2196,13 @@ description: Result of parsing french-press.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "150",
+                      "raw": "150deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 150.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -4284,13 +4284,13 @@ description: Result of parsing french-press.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "30",
+                      "raw": "30deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 30.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -4492,13 +4492,13 @@ description: Result of parsing french-press.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "30",
+                      "raw": "30deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 30.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -5045,13 +5045,13 @@ description: Result of parsing french-press.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "10",
+                      "raw": "10deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 10.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },

@@ -42,7 +42,7 @@ exampleSketch = startSketchOn(XZ)
   |> line(endAbsolute = [5, 10])
   |> line(endAbsolute = [-10, 10], tag = $lineToIntersect)
   |> line(endAbsolute = [0, 20])
-  |> angledLineThatIntersects(angle = 80, intersectTag = lineToIntersect, offset = 10)
+  |> angledLineThatIntersects(angle = 80deg, intersectTag = lineToIntersect, offset = 10)
   |> close()
 
 example = extrude(exampleSketch, length = 10)

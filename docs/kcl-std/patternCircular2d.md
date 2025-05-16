@@ -48,7 +48,7 @@ exampleSketch = startSketchOn(XZ)
   |> patternCircular2d(
        center = [0, 0],
        instances = 13,
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
 

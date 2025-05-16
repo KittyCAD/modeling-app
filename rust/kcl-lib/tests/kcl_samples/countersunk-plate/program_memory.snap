@@ -10,9 +10,6 @@ description: Variables in memory after executing countersunk-plate.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -23,9 +20,6 @@ description: Variables in memory after executing countersunk-plate.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -36,9 +30,6 @@ description: Variables in memory after executing countersunk-plate.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -53,9 +44,6 @@ description: Variables in memory after executing countersunk-plate.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -162,7 +150,7 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "tag": null,
             "to": [
-              2.7737,
+              2.7738,
               -0.6983
             ],
             "type": "TangentialArc",
@@ -176,7 +164,7 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              2.7737,
+              2.7738,
               -0.6983
             ],
             "tag": null,
@@ -196,7 +184,7 @@ description: Variables in memory after executing countersunk-plate.kcl
             },
             "ccw": false,
             "center": [
-              -0.0,
+              0.0,
               -0.0
             ],
             "from": [
@@ -389,9 +377,6 @@ description: Variables in memory after executing countersunk-plate.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -402,9 +387,6 @@ description: Variables in memory after executing countersunk-plate.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -415,9 +397,6 @@ description: Variables in memory after executing countersunk-plate.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -437,9 +416,6 @@ description: Variables in memory after executing countersunk-plate.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

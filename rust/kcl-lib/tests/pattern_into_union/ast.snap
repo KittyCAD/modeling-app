@@ -1493,13 +1493,13 @@ description: Result of parsing pattern_into_union.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "135",
+                      "raw": "135deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 135.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2308,13 +2308,13 @@ description: Result of parsing pattern_into_union.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "45",
+                      "raw": "45deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 45.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },

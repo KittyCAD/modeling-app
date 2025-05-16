@@ -14,9 +14,6 @@ description: Variables in memory after executing import_glob.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

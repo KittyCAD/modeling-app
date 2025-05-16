@@ -11,11 +11,11 @@ import * from "parameters.kcl"
 fanCenter = startSketchOn(XZ)
   |> startProfile(at = [-0.0001, fanHeight])
   |> xLine(endAbsolute = -15 + 1.5)
-  |> tangentialArc(radius = 1.5, angle = 90)
+  |> tangentialArc(radius = 1.5, angle = 90deg)
   |> yLine(endAbsolute = 4.5)
   |> xLine(endAbsolute = -13)
   |> yLine(endAbsolute = profileStartY(%) - 5)
-  |> tangentialArc(radius = 1, angle = -90)
+  |> tangentialArc(radius = 1, angle = -90deg)
   |> xLine(endAbsolute = -1)
   |> yLine(length = 2)
   |> xLine(length = -0.15)
@@ -39,32 +39,32 @@ fn fanBlade(offsetHeight, startAngle: number(deg)) {
          15 * cos(startAngle),
          15 * sin(startAngle)
        ])
-    |> arc(angleStart = startAngle, angleEnd = startAngle + 14, radius = 15)
+    |> arc(angleStart = startAngle, angleEnd = startAngle + 1deg, radius = 15)
     |> arc(
          endAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 20),
-           fanSize * 22 / 50 * sin(startAngle - 20)
+           fanSize * 22 / 50 * cos(startAngle - 20deg),
+           fanSize * 22 / 50 * sin(startAngle - 20deg)
          ],
          interiorAbsolute = [
-           fanSize * 11 / 50 * cos(startAngle + 3),
-           fanSize * 11 / 50 * sin(startAngle + 3)
+           fanSize * 11 / 50 * cos(startAngle + 3deg),
+           fanSize * 11 / 50 * sin(startAngle + 3deg)
          ],
        )
     |> arc(
          endAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 24),
-           fanSize * 22 / 50 * sin(startAngle - 24)
+           fanSize * 22 / 50 * cos(startAngle - 24deg),
+           fanSize * 22 / 50 * sin(startAngle - 24deg)
          ],
          interiorAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 22),
-           fanSize * 22 / 50 * sin(startAngle - 22)
+           fanSize * 22 / 50 * cos(startAngle - 22deg),
+           fanSize * 22 / 50 * sin(startAngle - 22deg)
          ],
        )
     |> arc(
          endAbsolute = [profileStartX(%), profileStartY(%)],
          interiorAbsolute = [
-           fanSize * 11 / 50 * cos(startAngle - 5),
-           fanSize * 11 / 50 * sin(startAngle - 5)
+           fanSize * 11 / 50 * cos(startAngle - 5deg),
+           fanSize * 11 / 50 * sin(startAngle - 5deg)
          ],
        )
     |> close()
@@ -73,9 +73,9 @@ fn fanBlade(offsetHeight, startAngle: number(deg)) {
 
 // Loft the fan blade cross sections into a single blade, then pattern them about the fan center
 crossSections = [
-  fanBlade(offsetHeight = 4.5, startAngle = 50),
-  fanBlade(offsetHeight = (fanHeight - 2 - 4) / 2, startAngle = 30),
-  fanBlade(offsetHeight = fanHeight - 2, startAngle = 0)
+  fanBlade(offsetHeight = 4.5, startAngle = 50deg),
+  fanBlade(offsetHeight = (fanHeight - 2 - 4) / 2, startAngle = 30deg),
+  fanBlade(offsetHeight = fanHeight - 2, startAngle = 0deg)
 ]
 loft(crossSections)
   |> appearance(color = "#f3e2d8")
@@ -83,6 +83,6 @@ loft(crossSections)
        instances = 9,
        axis = [0, 0, 1],
        center = [0, 0, 0],
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )

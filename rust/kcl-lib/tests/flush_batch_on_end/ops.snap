@@ -51,9 +51,6 @@ description: Operations executed flush_batch_on_end.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

@@ -221,9 +221,6 @@ description: Variables in memory after executing basic_fillet_cube_end.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -239,9 +236,6 @@ description: Variables in memory after executing basic_fillet_cube_end.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },

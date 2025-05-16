@@ -10,9 +10,6 @@ description: Variables in memory after executing riddle_small.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -23,9 +20,6 @@ description: Variables in memory after executing riddle_small.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -36,9 +30,6 @@ description: Variables in memory after executing riddle_small.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -233,9 +224,6 @@ description: Variables in memory after executing riddle_small.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -246,9 +234,6 @@ description: Variables in memory after executing riddle_small.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

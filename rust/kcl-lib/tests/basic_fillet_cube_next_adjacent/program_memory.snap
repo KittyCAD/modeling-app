@@ -253,9 +253,6 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },

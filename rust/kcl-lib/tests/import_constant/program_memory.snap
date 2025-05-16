@@ -10,9 +10,6 @@ description: Variables in memory after executing import_constant.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

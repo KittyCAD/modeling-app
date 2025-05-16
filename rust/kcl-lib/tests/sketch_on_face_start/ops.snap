@@ -35,9 +35,6 @@ description: Operations executed sketch_on_face_start.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               },
@@ -48,9 +45,6 @@ description: Operations executed sketch_on_face_start.kcl
                   "type": "Default",
                   "len": {
                     "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
                   }
                 }
               }
@@ -66,9 +60,6 @@ description: Operations executed sketch_on_face_start.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -88,9 +79,6 @@ description: Operations executed sketch_on_face_start.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -143,9 +131,6 @@ description: Operations executed sketch_on_face_start.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

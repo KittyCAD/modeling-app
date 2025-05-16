@@ -23,8 +23,8 @@ tealPlane = offsetPlane(YZ, offset = -halfSize)
 fn sketchRectangle(profile, color) {
   return profile
     |> startProfile(at = [-halfSize, halfSize])
-    |> angledLine(angle = 0, length = size, tag = $rectangleSegmentA001)
-    |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = size, tag = $rectangleSegmentB001)
+    |> angledLine(angle = 0deg, length = size, tag = $rectangleSegmentA001)
+    |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = size, tag = $rectangleSegmentB001)
     |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()

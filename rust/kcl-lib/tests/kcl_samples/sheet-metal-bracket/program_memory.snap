@@ -7,13 +7,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Number",
     "value": 75.0,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     }
   },
   "bracketProfile": {
@@ -42,9 +38,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1508,
-            "end": 1514,
-            "start": 1508,
+            "commentStart": 1511,
+            "end": 1517,
+            "start": 1511,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -62,9 +58,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1618,
-            "end": 1624,
-            "start": 1618,
+            "commentStart": 1621,
+            "end": 1627,
+            "start": 1621,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -103,9 +99,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1927,
-            "end": 1933,
-            "start": 1927,
+            "commentStart": 1930,
+            "end": 1936,
+            "start": 1930,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -116,9 +112,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1976,
-            "end": 1982,
-            "start": 1976,
+            "commentStart": 1979,
+            "end": 1985,
+            "start": 1979,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -150,9 +146,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2218,
-            "end": 2224,
-            "start": 2218,
+            "commentStart": 2224,
+            "end": 2230,
+            "start": 2224,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -184,9 +180,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2503,
-            "end": 2509,
-            "start": 2503,
+            "commentStart": 2512,
+            "end": 2518,
+            "start": 2512,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -197,9 +193,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2579,
-            "end": 2585,
-            "start": 2579,
+            "commentStart": 2588,
+            "end": 2594,
+            "start": 2588,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -263,9 +259,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.1853
             ],
             "tag": {
-              "commentStart": 1508,
-              "end": 1514,
-              "start": 1508,
+              "commentStart": 1511,
+              "end": 1517,
+              "start": 1511,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -312,9 +308,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.4676
             ],
             "tag": {
-              "commentStart": 1618,
-              "end": 1624,
-              "start": 1618,
+              "commentStart": 1621,
+              "end": 1627,
+              "start": 1621,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -442,9 +438,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               -0.0
             ],
             "tag": {
-              "commentStart": 1927,
-              "end": 1933,
-              "start": 1927,
+              "commentStart": 1930,
+              "end": 1936,
+              "start": 1930,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -467,9 +463,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.125
             ],
             "tag": {
-              "commentStart": 1976,
-              "end": 1982,
-              "start": 1976,
+              "commentStart": 1979,
+              "end": 1985,
+              "start": 1979,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -559,9 +555,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.5926
             ],
             "tag": {
-              "commentStart": 2218,
-              "end": 2224,
-              "start": 2218,
+              "commentStart": 2224,
+              "end": 2230,
+              "start": 2224,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -670,9 +666,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.125
             ],
             "tag": {
-              "commentStart": 2503,
-              "end": 2509,
-              "start": 2503,
+              "commentStart": 2512,
+              "end": 2518,
+              "start": 2512,
               "type": "TagDeclarator",
               "value": "seg06"
             },
@@ -695,9 +691,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.125
             ],
             "tag": {
-              "commentStart": 2579,
-              "end": 2585,
-              "start": 2579,
+              "commentStart": 2588,
+              "end": 2594,
+              "start": 2588,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -827,9 +823,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -845,9 +838,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -863,9 +853,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -881,9 +868,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -987,9 +971,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1508,
-                  "end": 1514,
-                  "start": 1508,
+                  "commentStart": 1511,
+                  "end": 1517,
+                  "start": 1511,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1007,9 +991,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1618,
-                  "end": 1624,
-                  "start": 1618,
+                  "commentStart": 1621,
+                  "end": 1627,
+                  "start": 1621,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1048,9 +1032,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1927,
-                  "end": 1933,
-                  "start": 1927,
+                  "commentStart": 1930,
+                  "end": 1936,
+                  "start": 1930,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -1061,9 +1045,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1976,
-                  "end": 1982,
-                  "start": 1976,
+                  "commentStart": 1979,
+                  "end": 1985,
+                  "start": 1979,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -1095,9 +1079,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2218,
-                  "end": 2224,
-                  "start": 2218,
+                  "commentStart": 2224,
+                  "end": 2230,
+                  "start": 2224,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -1129,9 +1113,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2503,
-                  "end": 2509,
-                  "start": 2503,
+                  "commentStart": 2512,
+                  "end": 2518,
+                  "start": 2512,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -1142,9 +1126,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2579,
-                  "end": 2585,
-                  "start": 2579,
+                  "commentStart": 2588,
+                  "end": 2594,
+                  "start": 2588,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -1208,9 +1192,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.1853
                   ],
                   "tag": {
-                    "commentStart": 1508,
-                    "end": 1514,
-                    "start": 1508,
+                    "commentStart": 1511,
+                    "end": 1517,
+                    "start": 1511,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -1257,9 +1241,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     2.4676
                   ],
                   "tag": {
-                    "commentStart": 1618,
-                    "end": 1624,
-                    "start": 1618,
+                    "commentStart": 1621,
+                    "end": 1627,
+                    "start": 1621,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -1387,9 +1371,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     -0.0
                   ],
                   "tag": {
-                    "commentStart": 1927,
-                    "end": 1933,
-                    "start": 1927,
+                    "commentStart": 1930,
+                    "end": 1936,
+                    "start": 1930,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
@@ -1412,9 +1396,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.125
                   ],
                   "tag": {
-                    "commentStart": 1976,
-                    "end": 1982,
-                    "start": 1976,
+                    "commentStart": 1979,
+                    "end": 1985,
+                    "start": 1979,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -1504,9 +1488,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     2.5926
                   ],
                   "tag": {
-                    "commentStart": 2218,
-                    "end": 2224,
-                    "start": 2218,
+                    "commentStart": 2224,
+                    "end": 2230,
+                    "start": 2224,
                     "type": "TagDeclarator",
                     "value": "seg05"
                   },
@@ -1615,9 +1599,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.125
                   ],
                   "tag": {
-                    "commentStart": 2503,
-                    "end": 2509,
-                    "start": 2503,
+                    "commentStart": 2512,
+                    "end": 2518,
+                    "start": 2512,
                     "type": "TagDeclarator",
                     "value": "seg06"
                   },
@@ -1640,9 +1624,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.125
                   ],
                   "tag": {
-                    "commentStart": 2579,
-                    "end": 2585,
-                    "start": 2579,
+                    "commentStart": 2588,
+                    "end": 2594,
+                    "start": 2588,
                     "type": "TagDeclarator",
                     "value": "seg07"
                   },
@@ -1772,9 +1756,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "type": "Default",
                     "len": {
                       "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -1790,9 +1771,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "type": "Default",
                     "len": {
                       "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -1808,9 +1786,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "type": "Default",
                     "len": {
                       "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -1826,9 +1801,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "type": "Default",
                     "len": {
                       "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -1885,9 +1857,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1898,9 +1867,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1911,9 +1877,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1924,9 +1887,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1937,9 +1897,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1950,9 +1907,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1963,9 +1917,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1976,9 +1927,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -2075,9 +2023,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1508,
-                      "end": 1514,
-                      "start": 1508,
+                      "commentStart": 1511,
+                      "end": 1517,
+                      "start": 1511,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2095,9 +2043,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1618,
-                      "end": 1624,
-                      "start": 1618,
+                      "commentStart": 1621,
+                      "end": 1627,
+                      "start": 1621,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -2136,9 +2084,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1927,
-                      "end": 1933,
-                      "start": 1927,
+                      "commentStart": 1930,
+                      "end": 1936,
+                      "start": 1930,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -2149,9 +2097,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1976,
-                      "end": 1982,
-                      "start": 1976,
+                      "commentStart": 1979,
+                      "end": 1985,
+                      "start": 1979,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -2183,9 +2131,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2218,
-                      "end": 2224,
-                      "start": 2218,
+                      "commentStart": 2224,
+                      "end": 2230,
+                      "start": 2224,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -2217,9 +2165,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2503,
-                      "end": 2509,
-                      "start": 2503,
+                      "commentStart": 2512,
+                      "end": 2518,
+                      "start": 2512,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -2230,9 +2178,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2579,
-                      "end": 2585,
-                      "start": 2579,
+                      "commentStart": 2588,
+                      "end": 2594,
+                      "start": 2588,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -2296,9 +2244,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1853
                       ],
                       "tag": {
-                        "commentStart": 1508,
-                        "end": 1514,
-                        "start": 1508,
+                        "commentStart": 1511,
+                        "end": 1517,
+                        "start": 1511,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2345,9 +2293,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.4676
                       ],
                       "tag": {
-                        "commentStart": 1618,
-                        "end": 1624,
-                        "start": 1618,
+                        "commentStart": 1621,
+                        "end": 1627,
+                        "start": 1621,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -2475,9 +2423,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.0
                       ],
                       "tag": {
-                        "commentStart": 1927,
-                        "end": 1933,
-                        "start": 1927,
+                        "commentStart": 1930,
+                        "end": 1936,
+                        "start": 1930,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -2500,9 +2448,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 1976,
-                        "end": 1982,
-                        "start": 1976,
+                        "commentStart": 1979,
+                        "end": 1985,
+                        "start": 1979,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -2592,9 +2540,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926
                       ],
                       "tag": {
-                        "commentStart": 2218,
-                        "end": 2224,
-                        "start": 2218,
+                        "commentStart": 2224,
+                        "end": 2230,
+                        "start": 2224,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -2703,9 +2651,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2503,
-                        "end": 2509,
-                        "start": 2503,
+                        "commentStart": 2512,
+                        "end": 2518,
+                        "start": 2512,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -2728,9 +2676,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2579,
-                        "end": 2585,
-                        "start": 2579,
+                        "commentStart": 2588,
+                        "end": 2594,
+                        "start": 2588,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -2860,9 +2808,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -2878,9 +2823,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -2896,9 +2838,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -2914,9 +2853,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -3056,9 +2992,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1508,
-                      "end": 1514,
-                      "start": 1508,
+                      "commentStart": 1511,
+                      "end": 1517,
+                      "start": 1511,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -3076,9 +3012,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1618,
-                      "end": 1624,
-                      "start": 1618,
+                      "commentStart": 1621,
+                      "end": 1627,
+                      "start": 1621,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -3117,9 +3053,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1927,
-                      "end": 1933,
-                      "start": 1927,
+                      "commentStart": 1930,
+                      "end": 1936,
+                      "start": 1930,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -3130,9 +3066,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1976,
-                      "end": 1982,
-                      "start": 1976,
+                      "commentStart": 1979,
+                      "end": 1985,
+                      "start": 1979,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -3164,9 +3100,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2218,
-                      "end": 2224,
-                      "start": 2218,
+                      "commentStart": 2224,
+                      "end": 2230,
+                      "start": 2224,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -3198,9 +3134,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2503,
-                      "end": 2509,
-                      "start": 2503,
+                      "commentStart": 2512,
+                      "end": 2518,
+                      "start": 2512,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -3211,9 +3147,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2579,
-                      "end": 2585,
-                      "start": 2579,
+                      "commentStart": 2588,
+                      "end": 2594,
+                      "start": 2588,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -3277,9 +3213,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1853
                       ],
                       "tag": {
-                        "commentStart": 1508,
-                        "end": 1514,
-                        "start": 1508,
+                        "commentStart": 1511,
+                        "end": 1517,
+                        "start": 1511,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -3326,9 +3262,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.4676
                       ],
                       "tag": {
-                        "commentStart": 1618,
-                        "end": 1624,
-                        "start": 1618,
+                        "commentStart": 1621,
+                        "end": 1627,
+                        "start": 1621,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -3456,9 +3392,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.0
                       ],
                       "tag": {
-                        "commentStart": 1927,
-                        "end": 1933,
-                        "start": 1927,
+                        "commentStart": 1930,
+                        "end": 1936,
+                        "start": 1930,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -3481,9 +3417,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 1976,
-                        "end": 1982,
-                        "start": 1976,
+                        "commentStart": 1979,
+                        "end": 1985,
+                        "start": 1979,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -3573,9 +3509,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926
                       ],
                       "tag": {
-                        "commentStart": 2218,
-                        "end": 2224,
-                        "start": 2218,
+                        "commentStart": 2224,
+                        "end": 2230,
+                        "start": 2224,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -3684,9 +3620,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2503,
-                        "end": 2509,
-                        "start": 2503,
+                        "commentStart": 2512,
+                        "end": 2518,
+                        "start": 2512,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -3709,9 +3645,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2579,
-                        "end": 2585,
-                        "start": 2579,
+                        "commentStart": 2588,
+                        "end": 2594,
+                        "start": 2588,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -3841,9 +3777,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -3859,9 +3792,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -3877,9 +3807,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -3895,9 +3822,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -3956,9 +3880,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -3969,9 +3890,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -3982,9 +3900,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -3995,9 +3910,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -4094,9 +4006,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1508,
-                      "end": 1514,
-                      "start": 1508,
+                      "commentStart": 1511,
+                      "end": 1517,
+                      "start": 1511,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -4114,9 +4026,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1618,
-                      "end": 1624,
-                      "start": 1618,
+                      "commentStart": 1621,
+                      "end": 1627,
+                      "start": 1621,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -4155,9 +4067,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1927,
-                      "end": 1933,
-                      "start": 1927,
+                      "commentStart": 1930,
+                      "end": 1936,
+                      "start": 1930,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -4168,9 +4080,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1976,
-                      "end": 1982,
-                      "start": 1976,
+                      "commentStart": 1979,
+                      "end": 1985,
+                      "start": 1979,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -4202,9 +4114,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2218,
-                      "end": 2224,
-                      "start": 2218,
+                      "commentStart": 2224,
+                      "end": 2230,
+                      "start": 2224,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -4236,9 +4148,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2503,
-                      "end": 2509,
-                      "start": 2503,
+                      "commentStart": 2512,
+                      "end": 2518,
+                      "start": 2512,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -4249,9 +4161,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2579,
-                      "end": 2585,
-                      "start": 2579,
+                      "commentStart": 2588,
+                      "end": 2594,
+                      "start": 2588,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -4315,9 +4227,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1853
                       ],
                       "tag": {
-                        "commentStart": 1508,
-                        "end": 1514,
-                        "start": 1508,
+                        "commentStart": 1511,
+                        "end": 1517,
+                        "start": 1511,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -4364,9 +4276,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.4676
                       ],
                       "tag": {
-                        "commentStart": 1618,
-                        "end": 1624,
-                        "start": 1618,
+                        "commentStart": 1621,
+                        "end": 1627,
+                        "start": 1621,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -4494,9 +4406,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.0
                       ],
                       "tag": {
-                        "commentStart": 1927,
-                        "end": 1933,
-                        "start": 1927,
+                        "commentStart": 1930,
+                        "end": 1936,
+                        "start": 1930,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -4519,9 +4431,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 1976,
-                        "end": 1982,
-                        "start": 1976,
+                        "commentStart": 1979,
+                        "end": 1985,
+                        "start": 1979,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -4611,9 +4523,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926
                       ],
                       "tag": {
-                        "commentStart": 2218,
-                        "end": 2224,
-                        "start": 2218,
+                        "commentStart": 2224,
+                        "end": 2230,
+                        "start": 2224,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -4722,9 +4634,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2503,
-                        "end": 2509,
-                        "start": 2503,
+                        "commentStart": 2512,
+                        "end": 2518,
+                        "start": 2512,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -4747,9 +4659,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2579,
-                        "end": 2585,
-                        "start": 2579,
+                        "commentStart": 2588,
+                        "end": 2594,
+                        "start": 2588,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -4879,9 +4791,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -4897,9 +4806,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -4915,9 +4821,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -4933,9 +4836,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -5075,9 +4975,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1508,
-                      "end": 1514,
-                      "start": 1508,
+                      "commentStart": 1511,
+                      "end": 1517,
+                      "start": 1511,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -5095,9 +4995,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1618,
-                      "end": 1624,
-                      "start": 1618,
+                      "commentStart": 1621,
+                      "end": 1627,
+                      "start": 1621,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -5136,9 +5036,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1927,
-                      "end": 1933,
-                      "start": 1927,
+                      "commentStart": 1930,
+                      "end": 1936,
+                      "start": 1930,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -5149,9 +5049,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1976,
-                      "end": 1982,
-                      "start": 1976,
+                      "commentStart": 1979,
+                      "end": 1985,
+                      "start": 1979,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -5183,9 +5083,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2218,
-                      "end": 2224,
-                      "start": 2218,
+                      "commentStart": 2224,
+                      "end": 2230,
+                      "start": 2224,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -5217,9 +5117,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2503,
-                      "end": 2509,
-                      "start": 2503,
+                      "commentStart": 2512,
+                      "end": 2518,
+                      "start": 2512,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -5230,9 +5130,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2579,
-                      "end": 2585,
-                      "start": 2579,
+                      "commentStart": 2588,
+                      "end": 2594,
+                      "start": 2588,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -5296,9 +5196,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1853
                       ],
                       "tag": {
-                        "commentStart": 1508,
-                        "end": 1514,
-                        "start": 1508,
+                        "commentStart": 1511,
+                        "end": 1517,
+                        "start": 1511,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -5345,9 +5245,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.4676
                       ],
                       "tag": {
-                        "commentStart": 1618,
-                        "end": 1624,
-                        "start": 1618,
+                        "commentStart": 1621,
+                        "end": 1627,
+                        "start": 1621,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -5475,9 +5375,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.0
                       ],
                       "tag": {
-                        "commentStart": 1927,
-                        "end": 1933,
-                        "start": 1927,
+                        "commentStart": 1930,
+                        "end": 1936,
+                        "start": 1930,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -5500,9 +5400,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 1976,
-                        "end": 1982,
-                        "start": 1976,
+                        "commentStart": 1979,
+                        "end": 1985,
+                        "start": 1979,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -5592,9 +5492,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926
                       ],
                       "tag": {
-                        "commentStart": 2218,
-                        "end": 2224,
-                        "start": 2218,
+                        "commentStart": 2224,
+                        "end": 2230,
+                        "start": 2224,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -5703,9 +5603,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2503,
-                        "end": 2509,
-                        "start": 2503,
+                        "commentStart": 2512,
+                        "end": 2518,
+                        "start": 2512,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -5728,9 +5628,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2579,
-                        "end": 2585,
-                        "start": 2579,
+                        "commentStart": 2588,
+                        "end": 2594,
+                        "start": 2588,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -5860,9 +5760,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -5878,9 +5775,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -5896,9 +5790,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -5914,9 +5805,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -6010,9 +5898,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -6109,9 +5994,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1508,
-                      "end": 1514,
-                      "start": 1508,
+                      "commentStart": 1511,
+                      "end": 1517,
+                      "start": 1511,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -6129,9 +6014,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1618,
-                      "end": 1624,
-                      "start": 1618,
+                      "commentStart": 1621,
+                      "end": 1627,
+                      "start": 1621,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -6170,9 +6055,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1927,
-                      "end": 1933,
-                      "start": 1927,
+                      "commentStart": 1930,
+                      "end": 1936,
+                      "start": 1930,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -6183,9 +6068,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1976,
-                      "end": 1982,
-                      "start": 1976,
+                      "commentStart": 1979,
+                      "end": 1985,
+                      "start": 1979,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -6217,9 +6102,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2218,
-                      "end": 2224,
-                      "start": 2218,
+                      "commentStart": 2224,
+                      "end": 2230,
+                      "start": 2224,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -6251,9 +6136,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2503,
-                      "end": 2509,
-                      "start": 2503,
+                      "commentStart": 2512,
+                      "end": 2518,
+                      "start": 2512,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -6264,9 +6149,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2579,
-                      "end": 2585,
-                      "start": 2579,
+                      "commentStart": 2588,
+                      "end": 2594,
+                      "start": 2588,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -6330,9 +6215,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1853
                       ],
                       "tag": {
-                        "commentStart": 1508,
-                        "end": 1514,
-                        "start": 1508,
+                        "commentStart": 1511,
+                        "end": 1517,
+                        "start": 1511,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -6379,9 +6264,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.4676
                       ],
                       "tag": {
-                        "commentStart": 1618,
-                        "end": 1624,
-                        "start": 1618,
+                        "commentStart": 1621,
+                        "end": 1627,
+                        "start": 1621,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -6509,9 +6394,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.0
                       ],
                       "tag": {
-                        "commentStart": 1927,
-                        "end": 1933,
-                        "start": 1927,
+                        "commentStart": 1930,
+                        "end": 1936,
+                        "start": 1930,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -6534,9 +6419,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 1976,
-                        "end": 1982,
-                        "start": 1976,
+                        "commentStart": 1979,
+                        "end": 1985,
+                        "start": 1979,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -6626,9 +6511,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926
                       ],
                       "tag": {
-                        "commentStart": 2218,
-                        "end": 2224,
-                        "start": 2218,
+                        "commentStart": 2224,
+                        "end": 2230,
+                        "start": 2224,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -6737,9 +6622,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2503,
-                        "end": 2509,
-                        "start": 2503,
+                        "commentStart": 2512,
+                        "end": 2518,
+                        "start": 2512,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -6762,9 +6647,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2579,
-                        "end": 2585,
-                        "start": 2579,
+                        "commentStart": 2588,
+                        "end": 2594,
+                        "start": 2588,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -6894,9 +6779,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -6912,9 +6794,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -6930,9 +6809,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -6948,9 +6824,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -7090,9 +6963,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1508,
-                      "end": 1514,
-                      "start": 1508,
+                      "commentStart": 1511,
+                      "end": 1517,
+                      "start": 1511,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -7110,9 +6983,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1618,
-                      "end": 1624,
-                      "start": 1618,
+                      "commentStart": 1621,
+                      "end": 1627,
+                      "start": 1621,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -7151,9 +7024,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1927,
-                      "end": 1933,
-                      "start": 1927,
+                      "commentStart": 1930,
+                      "end": 1936,
+                      "start": 1930,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -7164,9 +7037,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1976,
-                      "end": 1982,
-                      "start": 1976,
+                      "commentStart": 1979,
+                      "end": 1985,
+                      "start": 1979,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -7198,9 +7071,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2218,
-                      "end": 2224,
-                      "start": 2218,
+                      "commentStart": 2224,
+                      "end": 2230,
+                      "start": 2224,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -7232,9 +7105,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2503,
-                      "end": 2509,
-                      "start": 2503,
+                      "commentStart": 2512,
+                      "end": 2518,
+                      "start": 2512,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -7245,9 +7118,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2579,
-                      "end": 2585,
-                      "start": 2579,
+                      "commentStart": 2588,
+                      "end": 2594,
+                      "start": 2588,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -7311,9 +7184,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1853
                       ],
                       "tag": {
-                        "commentStart": 1508,
-                        "end": 1514,
-                        "start": 1508,
+                        "commentStart": 1511,
+                        "end": 1517,
+                        "start": 1511,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -7360,9 +7233,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.4676
                       ],
                       "tag": {
-                        "commentStart": 1618,
-                        "end": 1624,
-                        "start": 1618,
+                        "commentStart": 1621,
+                        "end": 1627,
+                        "start": 1621,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -7490,9 +7363,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.0
                       ],
                       "tag": {
-                        "commentStart": 1927,
-                        "end": 1933,
-                        "start": 1927,
+                        "commentStart": 1930,
+                        "end": 1936,
+                        "start": 1930,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -7515,9 +7388,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 1976,
-                        "end": 1982,
-                        "start": 1976,
+                        "commentStart": 1979,
+                        "end": 1985,
+                        "start": 1979,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -7607,9 +7480,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926
                       ],
                       "tag": {
-                        "commentStart": 2218,
-                        "end": 2224,
-                        "start": 2218,
+                        "commentStart": 2224,
+                        "end": 2230,
+                        "start": 2224,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -7718,9 +7591,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2503,
-                        "end": 2509,
-                        "start": 2503,
+                        "commentStart": 2512,
+                        "end": 2518,
+                        "start": 2512,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -7743,9 +7616,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2579,
-                        "end": 2585,
-                        "start": 2579,
+                        "commentStart": 2588,
+                        "end": 2594,
+                        "start": 2588,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -7875,9 +7748,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -7893,9 +7763,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -7911,9 +7778,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -7929,9 +7793,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -8071,9 +7932,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1508,
-                      "end": 1514,
-                      "start": 1508,
+                      "commentStart": 1511,
+                      "end": 1517,
+                      "start": 1511,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -8091,9 +7952,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1618,
-                      "end": 1624,
-                      "start": 1618,
+                      "commentStart": 1621,
+                      "end": 1627,
+                      "start": 1621,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -8132,9 +7993,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1927,
-                      "end": 1933,
-                      "start": 1927,
+                      "commentStart": 1930,
+                      "end": 1936,
+                      "start": 1930,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -8145,9 +8006,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1976,
-                      "end": 1982,
-                      "start": 1976,
+                      "commentStart": 1979,
+                      "end": 1985,
+                      "start": 1979,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -8179,9 +8040,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2218,
-                      "end": 2224,
-                      "start": 2218,
+                      "commentStart": 2224,
+                      "end": 2230,
+                      "start": 2224,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -8213,9 +8074,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2503,
-                      "end": 2509,
-                      "start": 2503,
+                      "commentStart": 2512,
+                      "end": 2518,
+                      "start": 2512,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -8226,9 +8087,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2579,
-                      "end": 2585,
-                      "start": 2579,
+                      "commentStart": 2588,
+                      "end": 2594,
+                      "start": 2588,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -8292,9 +8153,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1853
                       ],
                       "tag": {
-                        "commentStart": 1508,
-                        "end": 1514,
-                        "start": 1508,
+                        "commentStart": 1511,
+                        "end": 1517,
+                        "start": 1511,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -8341,9 +8202,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.4676
                       ],
                       "tag": {
-                        "commentStart": 1618,
-                        "end": 1624,
-                        "start": 1618,
+                        "commentStart": 1621,
+                        "end": 1627,
+                        "start": 1621,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -8471,9 +8332,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.0
                       ],
                       "tag": {
-                        "commentStart": 1927,
-                        "end": 1933,
-                        "start": 1927,
+                        "commentStart": 1930,
+                        "end": 1936,
+                        "start": 1930,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -8496,9 +8357,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 1976,
-                        "end": 1982,
-                        "start": 1976,
+                        "commentStart": 1979,
+                        "end": 1985,
+                        "start": 1979,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -8588,9 +8449,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926
                       ],
                       "tag": {
-                        "commentStart": 2218,
-                        "end": 2224,
-                        "start": 2218,
+                        "commentStart": 2224,
+                        "end": 2230,
+                        "start": 2224,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -8699,9 +8560,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2503,
-                        "end": 2509,
-                        "start": 2503,
+                        "commentStart": 2512,
+                        "end": 2518,
+                        "start": 2512,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -8724,9 +8585,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2579,
-                        "end": 2585,
-                        "start": 2579,
+                        "commentStart": 2588,
+                        "end": 2594,
+                        "start": 2588,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -8856,9 +8717,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -8874,9 +8732,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -8892,9 +8747,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -8910,9 +8762,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -9052,9 +8901,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1508,
-                      "end": 1514,
-                      "start": 1508,
+                      "commentStart": 1511,
+                      "end": 1517,
+                      "start": 1511,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -9072,9 +8921,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1618,
-                      "end": 1624,
-                      "start": 1618,
+                      "commentStart": 1621,
+                      "end": 1627,
+                      "start": 1621,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -9113,9 +8962,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1927,
-                      "end": 1933,
-                      "start": 1927,
+                      "commentStart": 1930,
+                      "end": 1936,
+                      "start": 1930,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -9126,9 +8975,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1976,
-                      "end": 1982,
-                      "start": 1976,
+                      "commentStart": 1979,
+                      "end": 1985,
+                      "start": 1979,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -9160,9 +9009,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2218,
-                      "end": 2224,
-                      "start": 2218,
+                      "commentStart": 2224,
+                      "end": 2230,
+                      "start": 2224,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -9194,9 +9043,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2503,
-                      "end": 2509,
-                      "start": 2503,
+                      "commentStart": 2512,
+                      "end": 2518,
+                      "start": 2512,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -9207,9 +9056,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2579,
-                      "end": 2585,
-                      "start": 2579,
+                      "commentStart": 2588,
+                      "end": 2594,
+                      "start": 2588,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -9273,9 +9122,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1853
                       ],
                       "tag": {
-                        "commentStart": 1508,
-                        "end": 1514,
-                        "start": 1508,
+                        "commentStart": 1511,
+                        "end": 1517,
+                        "start": 1511,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -9322,9 +9171,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.4676
                       ],
                       "tag": {
-                        "commentStart": 1618,
-                        "end": 1624,
-                        "start": 1618,
+                        "commentStart": 1621,
+                        "end": 1627,
+                        "start": 1621,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -9452,9 +9301,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.0
                       ],
                       "tag": {
-                        "commentStart": 1927,
-                        "end": 1933,
-                        "start": 1927,
+                        "commentStart": 1930,
+                        "end": 1936,
+                        "start": 1930,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -9477,9 +9326,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 1976,
-                        "end": 1982,
-                        "start": 1976,
+                        "commentStart": 1979,
+                        "end": 1985,
+                        "start": 1979,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -9569,9 +9418,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926
                       ],
                       "tag": {
-                        "commentStart": 2218,
-                        "end": 2224,
-                        "start": 2218,
+                        "commentStart": 2224,
+                        "end": 2230,
+                        "start": 2224,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -9680,9 +9529,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2503,
-                        "end": 2509,
-                        "start": 2503,
+                        "commentStart": 2512,
+                        "end": 2518,
+                        "start": 2512,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -9705,9 +9554,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.125
                       ],
                       "tag": {
-                        "commentStart": 2579,
-                        "end": 2585,
-                        "start": 2579,
+                        "commentStart": 2588,
+                        "end": 2594,
+                        "start": 2588,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -9837,9 +9686,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -9855,9 +9701,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -9873,9 +9716,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },
@@ -9891,9 +9731,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         "type": "Default",
                         "len": {
                           "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
                         }
                       }
                     },

@@ -10,9 +10,6 @@ description: Variables in memory after executing helium-tank.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -85,9 +82,9 @@ description: Variables in memory after executing helium-tank.kcl
               3.6862
             ],
             "tag": {
-              "commentStart": 3388,
-              "end": 3394,
-              "start": 3388,
+              "commentStart": 3430,
+              "end": 3436,
+              "start": 3430,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -134,9 +131,9 @@ description: Variables in memory after executing helium-tank.kcl
               5.2006
             ],
             "tag": {
-              "commentStart": 3521,
-              "end": 3527,
-              "start": 3521,
+              "commentStart": 3566,
+              "end": 3572,
+              "start": 3566,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -325,9 +322,9 @@ description: Variables in memory after executing helium-tank.kcl
             3.7886
           ],
           "tag": {
-            "commentStart": 2738,
-            "end": 2744,
-            "start": 2738,
+            "commentStart": 2771,
+            "end": 2777,
+            "start": 2771,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -374,9 +371,9 @@ description: Variables in memory after executing helium-tank.kcl
             5.1789
           ],
           "tag": {
-            "commentStart": 2887,
-            "end": 2893,
-            "start": 2887,
+            "commentStart": 2923,
+            "end": 2929,
+            "start": 2923,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -562,9 +559,9 @@ description: Variables in memory after executing helium-tank.kcl
               3.6862
             ],
             "tag": {
-              "commentStart": 3388,
-              "end": 3394,
-              "start": 3388,
+              "commentStart": 3430,
+              "end": 3436,
+              "start": 3430,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -611,9 +608,9 @@ description: Variables in memory after executing helium-tank.kcl
               5.2006
             ],
             "tag": {
-              "commentStart": 3521,
-              "end": 3527,
-              "start": 3521,
+              "commentStart": 3566,
+              "end": 3572,
+              "start": 3566,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -807,9 +804,9 @@ description: Variables in memory after executing helium-tank.kcl
               3.6862
             ],
             "tag": {
-              "commentStart": 3388,
-              "end": 3394,
-              "start": 3388,
+              "commentStart": 3430,
+              "end": 3436,
+              "start": 3430,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -856,9 +853,9 @@ description: Variables in memory after executing helium-tank.kcl
               5.2006
             ],
             "tag": {
-              "commentStart": 3521,
-              "end": 3527,
-              "start": 3521,
+              "commentStart": 3566,
+              "end": 3572,
+              "start": 3566,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -990,9 +987,6 @@ description: Variables in memory after executing helium-tank.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1224,9 +1218,6 @@ description: Variables in memory after executing helium-tank.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1390,9 +1381,6 @@ description: Variables in memory after executing helium-tank.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1459,9 +1447,9 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 843,
-            "end": 849,
-            "start": 843,
+            "commentStart": 858,
+            "end": 864,
+            "start": 858,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1472,9 +1460,9 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 922,
-            "end": 928,
-            "start": 922,
+            "commentStart": 937,
+            "end": 943,
+            "start": 937,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -1485,9 +1473,9 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 980,
-            "end": 986,
-            "start": 980,
+            "commentStart": 998,
+            "end": 1004,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1498,9 +1486,9 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1061,
-            "end": 1067,
-            "start": 1061,
+            "commentStart": 1079,
+            "end": 1085,
+            "start": 1079,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -1716,9 +1704,9 @@ description: Variables in memory after executing helium-tank.kcl
               2.3768
             ],
             "tag": {
-              "commentStart": 843,
-              "end": 849,
-              "start": 843,
+              "commentStart": 858,
+              "end": 864,
+              "start": 858,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -1741,9 +1729,9 @@ description: Variables in memory after executing helium-tank.kcl
               2.0622
             ],
             "tag": {
-              "commentStart": 922,
-              "end": 928,
-              "start": 922,
+              "commentStart": 937,
+              "end": 943,
+              "start": 937,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -1771,9 +1759,9 @@ description: Variables in memory after executing helium-tank.kcl
               0.125
             ],
             "tag": {
-              "commentStart": 980,
-              "end": 986,
-              "start": 980,
+              "commentStart": 998,
+              "end": 1004,
+              "start": 998,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -1796,9 +1784,9 @@ description: Variables in memory after executing helium-tank.kcl
               -0.0417
             ],
             "tag": {
-              "commentStart": 1061,
-              "end": 1067,
-              "start": 1061,
+              "commentStart": 1079,
+              "end": 1085,
+              "start": 1079,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -2229,9 +2217,9 @@ description: Variables in memory after executing helium-tank.kcl
             2.3768
           ],
           "tag": {
-            "commentStart": 843,
-            "end": 849,
-            "start": 843,
+            "commentStart": 858,
+            "end": 864,
+            "start": 858,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -2254,9 +2242,9 @@ description: Variables in memory after executing helium-tank.kcl
             2.0622
           ],
           "tag": {
-            "commentStart": 922,
-            "end": 928,
-            "start": 922,
+            "commentStart": 937,
+            "end": 943,
+            "start": 937,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -2284,9 +2272,9 @@ description: Variables in memory after executing helium-tank.kcl
             0.125
           ],
           "tag": {
-            "commentStart": 980,
-            "end": 986,
-            "start": 980,
+            "commentStart": 998,
+            "end": 1004,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -2309,9 +2297,9 @@ description: Variables in memory after executing helium-tank.kcl
             -0.0417
           ],
           "tag": {
-            "commentStart": 1061,
-            "end": 1067,
-            "start": 1061,
+            "commentStart": 1079,
+            "end": 1085,
+            "start": 1079,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -2591,9 +2579,9 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1835,
-            "end": 1841,
-            "start": 1835,
+            "commentStart": 1862,
+            "end": 1868,
+            "start": 1862,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2604,9 +2592,9 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1879,
-            "end": 1889,
-            "start": 1879,
+            "commentStart": 1906,
+            "end": 1916,
+            "start": 1906,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -2633,9 +2621,9 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 0.6578947368421053,
             "tag": {
-              "commentStart": 1835,
-              "end": 1841,
-              "start": 1835,
+              "commentStart": 1862,
+              "end": 1868,
+              "start": 1862,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -2726,9 +2714,6 @@ description: Variables in memory after executing helium-tank.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -2754,9 +2739,9 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1835,
-            "end": 1841,
-            "start": 1835,
+            "commentStart": 1862,
+            "end": 1868,
+            "start": 1862,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2767,9 +2752,9 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1879,
-            "end": 1889,
-            "start": 1879,
+            "commentStart": 1906,
+            "end": 1916,
+            "start": 1906,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -2796,9 +2781,9 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 0.6578947368421053,
             "tag": {
-              "commentStart": 1835,
-              "end": 1841,
-              "start": 1835,
+              "commentStart": 1862,
+              "end": 1868,
+              "start": 1862,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -2889,9 +2874,6 @@ description: Variables in memory after executing helium-tank.kcl
               "type": "Default",
               "len": {
                 "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -3020,9 +3002,6 @@ description: Variables in memory after executing helium-tank.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

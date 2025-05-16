@@ -13,14 +13,14 @@ bracket = startSketchOn(XY)
   |> line(end = [0, wallMountL])
   |> tangentialArc(
     radius = filletR,
-    angle = 90,
+    angle = 90deg,
   )
   |> line(end = [-shelfMountL, 0])
   |> line(end = [0, -thickness])
   |> line(end = [shelfMountL, 0])
   |> tangentialArc(
     radius = filletR - thickness,
-    angle = -90,
+    angle = -90deg,
   )
   |> line(end = [0, -wallMountL])
   |> close()

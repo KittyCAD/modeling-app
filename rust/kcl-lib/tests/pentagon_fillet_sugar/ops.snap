@@ -26,9 +26,6 @@ description: Operations executed pentagon_fillet_sugar.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -120,9 +117,6 @@ description: Operations executed pentagon_fillet_sugar.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -142,9 +136,6 @@ description: Operations executed pentagon_fillet_sugar.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -185,9 +176,6 @@ description: Operations executed pentagon_fillet_sugar.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -237,9 +225,6 @@ description: Operations executed pentagon_fillet_sugar.kcl
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -259,9 +244,6 @@ description: Operations executed pentagon_fillet_sugar.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -302,9 +284,6 @@ description: Operations executed pentagon_fillet_sugar.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

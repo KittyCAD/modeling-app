@@ -26,9 +26,6 @@ description: Operations executed linear_pattern3d_a_pattern.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -61,9 +58,6 @@ description: Operations executed linear_pattern3d_a_pattern.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -74,9 +68,6 @@ description: Operations executed linear_pattern3d_a_pattern.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -87,9 +78,6 @@ description: Operations executed linear_pattern3d_a_pattern.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -105,9 +93,6 @@ description: Operations executed linear_pattern3d_a_pattern.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -121,9 +106,6 @@ description: Operations executed linear_pattern3d_a_pattern.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -156,9 +138,6 @@ description: Operations executed linear_pattern3d_a_pattern.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -169,9 +148,6 @@ description: Operations executed linear_pattern3d_a_pattern.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             },
@@ -182,9 +158,6 @@ description: Operations executed linear_pattern3d_a_pattern.kcl
                 "type": "Default",
                 "len": {
                   "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
                 }
               }
             }
@@ -200,9 +173,6 @@ description: Operations executed linear_pattern3d_a_pattern.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -216,9 +186,6 @@ description: Operations executed linear_pattern3d_a_pattern.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

@@ -50,9 +50,6 @@ description: Operations executed sketch_in_object.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -93,9 +90,6 @@ description: Operations executed sketch_in_object.kcl
             "type": "Default",
             "len": {
               "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

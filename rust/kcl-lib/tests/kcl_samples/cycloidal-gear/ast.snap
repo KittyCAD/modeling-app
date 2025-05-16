@@ -50,26 +50,50 @@ description: Result of parsing cycloidal-gear.kcl
                               "init": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "left": {
+                                "expr": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "left": {
-                                    "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": {
+                                    "left": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "helixAngle",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "helixAngle",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
-                                    "path": [],
+                                    "operator": "*",
+                                    "right": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "gHeight",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
                                     "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
                                   },
-                                  "operator": "*",
+                                  "operator": "/",
                                   "right": {
                                     "abs_path": false,
                                     "commentStart": 0,
@@ -77,7 +101,7 @@ description: Result of parsing cycloidal-gear.kcl
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "gHeight",
+                                      "name": "gearHeight",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -90,26 +114,17 @@ description: Result of parsing cycloidal-gear.kcl
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
-                                "operator": "/",
-                                "right": {
-                                  "abs_path": false,
+                                "start": 0,
+                                "ty": {
+                                  "Deg": null,
                                   "commentStart": 0,
                                   "end": 0,
-                                  "name": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "gearHeight",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
+                                  "p_type": "Number",
                                   "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
+                                  "type": "Primitive"
                                 },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
+                                "type": "AscribedExpression",
+                                "type": "AscribedExpression"
                               },
                               "start": 0,
                               "type": "VariableDeclarator"
@@ -603,13 +618,13 @@ description: Result of parsing cycloidal-gear.kcl
                                           "left": {
                                             "commentStart": 0,
                                             "end": 0,
-                                            "raw": "90",
+                                            "raw": "90deg",
                                             "start": 0,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": {
                                               "value": 90.0,
-                                              "suffix": "None"
+                                              "suffix": "Deg"
                                             }
                                           },
                                           "operator": "+",
@@ -650,13 +665,13 @@ description: Result of parsing cycloidal-gear.kcl
                                             "argument": {
                                               "commentStart": 0,
                                               "end": 0,
-                                              "raw": "90",
+                                              "raw": "90deg",
                                               "start": 0,
                                               "type": "Literal",
                                               "type": "Literal",
                                               "value": {
                                                 "value": 90.0,
-                                                "suffix": "None"
+                                                "suffix": "Deg"
                                               }
                                             },
                                             "commentStart": 0,
@@ -797,13 +812,13 @@ description: Result of parsing cycloidal-gear.kcl
                                         "arg": {
                                           "commentStart": 0,
                                           "end": 0,
-                                          "raw": "60",
+                                          "raw": "60deg",
                                           "start": 0,
                                           "type": "Literal",
                                           "type": "Literal",
                                           "value": {
                                             "value": 60.0,
-                                            "suffix": "None"
+                                            "suffix": "Deg"
                                           }
                                         }
                                       }
@@ -871,13 +886,13 @@ description: Result of parsing cycloidal-gear.kcl
                                           "argument": {
                                             "commentStart": 0,
                                             "end": 0,
-                                            "raw": "180",
+                                            "raw": "180deg",
                                             "start": 0,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": {
                                               "value": 180.0,
-                                              "suffix": "None"
+                                              "suffix": "Deg"
                                             }
                                           },
                                           "commentStart": 0,
@@ -971,13 +986,13 @@ description: Result of parsing cycloidal-gear.kcl
                                         "arg": {
                                           "commentStart": 0,
                                           "end": 0,
-                                          "raw": "60",
+                                          "raw": "60deg",
                                           "start": 0,
                                           "type": "Literal",
                                           "type": "Literal",
                                           "value": {
                                             "value": 60.0,
-                                            "suffix": "None"
+                                            "suffix": "Deg"
                                           }
                                         }
                                       }
@@ -1045,13 +1060,13 @@ description: Result of parsing cycloidal-gear.kcl
                                           "argument": {
                                             "commentStart": 0,
                                             "end": 0,
-                                            "raw": "180",
+                                            "raw": "180deg",
                                             "start": 0,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": {
                                               "value": 180.0,
-                                              "suffix": "None"
+                                              "suffix": "Deg"
                                             }
                                           },
                                           "commentStart": 0,
@@ -1815,13 +1830,13 @@ description: Result of parsing cycloidal-gear.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
-                  "raw": "80",
+                  "raw": "80deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 80.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 },
                 "commentStart": 0,

@@ -49,7 +49,7 @@ example = extrude(exampleSketch, length = -5)
        axis = [1, -1, 0],
        center = [10, -20, 0],
        instances = 11,
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
 ```

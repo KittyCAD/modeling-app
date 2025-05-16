@@ -26,9 +26,6 @@ description: Operations executed sheet-metal-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -69,9 +66,6 @@ description: Operations executed sheet-metal-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -140,9 +134,6 @@ description: Operations executed sheet-metal-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -207,9 +198,6 @@ description: Operations executed sheet-metal-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -274,9 +262,6 @@ description: Operations executed sheet-metal-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },
@@ -353,9 +338,6 @@ description: Operations executed sheet-metal-bracket.kcl
             "type": "Default",
             "len": {
               "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
             }
           }
         },

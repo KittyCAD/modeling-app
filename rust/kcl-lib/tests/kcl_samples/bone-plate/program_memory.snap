@@ -10,9 +10,6 @@ description: Variables in memory after executing bone-plate.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -980,9 +977,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1064,
-            "end": 1070,
-            "start": 1064,
+            "commentStart": 1106,
+            "end": 1112,
+            "start": 1106,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1000,9 +997,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1189,
-            "end": 1195,
-            "start": 1189,
+            "commentStart": 1231,
+            "end": 1237,
+            "start": 1231,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1027,9 +1024,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1361,
-            "end": 1367,
-            "start": 1361,
+            "commentStart": 1403,
+            "end": 1409,
+            "start": 1403,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -1268,9 +1265,9 @@ description: Variables in memory after executing bone-plate.kcl
               91.88
             ],
             "tag": {
-              "commentStart": 1064,
-              "end": 1070,
-              "start": 1064,
+              "commentStart": 1106,
+              "end": 1112,
+              "start": 1106,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -1317,9 +1314,9 @@ description: Variables in memory after executing bone-plate.kcl
               140.2364
             ],
             "tag": {
-              "commentStart": 1189,
-              "end": 1195,
-              "start": 1189,
+              "commentStart": 1231,
+              "end": 1237,
+              "start": 1231,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -1390,9 +1387,9 @@ description: Variables in memory after executing bone-plate.kcl
               85.53
             ],
             "tag": {
-              "commentStart": 1361,
-              "end": 1367,
-              "start": 1361,
+              "commentStart": 1403,
+              "end": 1409,
+              "start": 1403,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -1623,9 +1620,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1064,
-            "end": 1070,
-            "start": 1064,
+            "commentStart": 1106,
+            "end": 1112,
+            "start": 1106,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1643,9 +1640,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1189,
-            "end": 1195,
-            "start": 1189,
+            "commentStart": 1231,
+            "end": 1237,
+            "start": 1231,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1670,9 +1667,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1361,
-            "end": 1367,
-            "start": 1361,
+            "commentStart": 1403,
+            "end": 1409,
+            "start": 1403,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -1911,9 +1908,9 @@ description: Variables in memory after executing bone-plate.kcl
               91.88
             ],
             "tag": {
-              "commentStart": 1064,
-              "end": 1070,
-              "start": 1064,
+              "commentStart": 1106,
+              "end": 1112,
+              "start": 1106,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -1960,9 +1957,9 @@ description: Variables in memory after executing bone-plate.kcl
               140.2364
             ],
             "tag": {
-              "commentStart": 1189,
-              "end": 1195,
-              "start": 1189,
+              "commentStart": 1231,
+              "end": 1237,
+              "start": 1231,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -2033,9 +2030,9 @@ description: Variables in memory after executing bone-plate.kcl
               85.53
             ],
             "tag": {
-              "commentStart": 1361,
-              "end": 1367,
-              "start": 1361,
+              "commentStart": 1403,
+              "end": 1409,
+              "start": 1403,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -2251,9 +2248,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1064,
-            "end": 1070,
-            "start": 1064,
+            "commentStart": 1106,
+            "end": 1112,
+            "start": 1106,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -2271,9 +2268,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1189,
-            "end": 1195,
-            "start": 1189,
+            "commentStart": 1231,
+            "end": 1237,
+            "start": 1231,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -2298,9 +2295,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1361,
-            "end": 1367,
-            "start": 1361,
+            "commentStart": 1403,
+            "end": 1409,
+            "start": 1403,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2539,9 +2536,9 @@ description: Variables in memory after executing bone-plate.kcl
               91.88
             ],
             "tag": {
-              "commentStart": 1064,
-              "end": 1070,
-              "start": 1064,
+              "commentStart": 1106,
+              "end": 1112,
+              "start": 1106,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -2588,9 +2585,9 @@ description: Variables in memory after executing bone-plate.kcl
               140.2364
             ],
             "tag": {
-              "commentStart": 1189,
-              "end": 1195,
-              "start": 1189,
+              "commentStart": 1231,
+              "end": 1237,
+              "start": 1231,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -2661,9 +2658,9 @@ description: Variables in memory after executing bone-plate.kcl
               85.53
             ],
             "tag": {
-              "commentStart": 1361,
-              "end": 1367,
-              "start": 1361,
+              "commentStart": 1403,
+              "end": 1409,
+              "start": 1403,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -2879,9 +2876,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1064,
-            "end": 1070,
-            "start": 1064,
+            "commentStart": 1106,
+            "end": 1112,
+            "start": 1106,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -2899,9 +2896,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1189,
-            "end": 1195,
-            "start": 1189,
+            "commentStart": 1231,
+            "end": 1237,
+            "start": 1231,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -2926,9 +2923,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1361,
-            "end": 1367,
-            "start": 1361,
+            "commentStart": 1403,
+            "end": 1409,
+            "start": 1403,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -3167,9 +3164,9 @@ description: Variables in memory after executing bone-plate.kcl
               91.88
             ],
             "tag": {
-              "commentStart": 1064,
-              "end": 1070,
-              "start": 1064,
+              "commentStart": 1106,
+              "end": 1112,
+              "start": 1106,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -3216,9 +3213,9 @@ description: Variables in memory after executing bone-plate.kcl
               140.2364
             ],
             "tag": {
-              "commentStart": 1189,
-              "end": 1195,
-              "start": 1189,
+              "commentStart": 1231,
+              "end": 1237,
+              "start": 1231,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -3289,9 +3286,9 @@ description: Variables in memory after executing bone-plate.kcl
               85.53
             ],
             "tag": {
-              "commentStart": 1361,
-              "end": 1367,
-              "start": 1361,
+              "commentStart": 1403,
+              "end": 1409,
+              "start": 1403,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -3507,9 +3504,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1064,
-            "end": 1070,
-            "start": 1064,
+            "commentStart": 1106,
+            "end": 1112,
+            "start": 1106,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -3527,9 +3524,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1189,
-            "end": 1195,
-            "start": 1189,
+            "commentStart": 1231,
+            "end": 1237,
+            "start": 1231,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -3554,9 +3551,9 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1361,
-            "end": 1367,
-            "start": 1361,
+            "commentStart": 1403,
+            "end": 1409,
+            "start": 1403,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -3795,9 +3792,9 @@ description: Variables in memory after executing bone-plate.kcl
               91.88
             ],
             "tag": {
-              "commentStart": 1064,
-              "end": 1070,
-              "start": 1064,
+              "commentStart": 1106,
+              "end": 1112,
+              "start": 1106,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -3844,9 +3841,9 @@ description: Variables in memory after executing bone-plate.kcl
               140.2364
             ],
             "tag": {
-              "commentStart": 1189,
-              "end": 1195,
-              "start": 1189,
+              "commentStart": 1231,
+              "end": 1237,
+              "start": 1231,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -3917,9 +3914,9 @@ description: Variables in memory after executing bone-plate.kcl
               85.53
             ],
             "tag": {
-              "commentStart": 1361,
-              "end": 1367,
-              "start": 1361,
+              "commentStart": 1403,
+              "end": 1409,
+              "start": 1403,
               "type": "TagDeclarator",
               "value": "seg03"
             },

@@ -30,16 +30,16 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
-///        angle = 60,
+///        angle = 60deg,
 ///        length = 10,
 ///      )
 ///   |> angledLine(
-///        angle = 120,
+///        angle = 120deg,
 ///        length = 10,
 ///      )
 ///   |> line(end = [-10, 0])
 ///   |> angledLine(
-///        angle = 240,
+///        angle = 240deg,
 ///        length = 10,
 ///        tag = $referenceEdge,
 ///      )
@@ -114,16 +114,16 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
-///        angle = 60,
+///        angle = 60deg,
 ///        length = 10,
 ///      )
 ///   |> angledLine(
-///        angle = 120,
+///        angle = 120deg,
 ///        length = 10,
 ///      )
 ///   |> line(end = [-10, 0])
 ///   |> angledLine(
-///        angle = 240,
+///        angle = 240deg,
 ///        length = 10,
 ///        tag = $referenceEdge,
 ///      )
@@ -207,16 +207,16 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
-///        angle = 60,
+///        angle = 60deg,
 ///        length = 10,
 ///      )
 ///   |> angledLine(
-///        angle = 120,
+///        angle = 120deg,
 ///        length = 10,
 ///      )
 ///   |> line(end = [-10, 0])
 ///   |> angledLine(
-///        angle = 240,
+///        angle = 240deg,
 ///        length = 10,
 ///        tag = $referenceEdge,
 ///      )

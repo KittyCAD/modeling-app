@@ -161,13 +161,13 @@ description: Result of parsing basic_revolve_circle.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "360",
+                      "raw": "360deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 360.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },

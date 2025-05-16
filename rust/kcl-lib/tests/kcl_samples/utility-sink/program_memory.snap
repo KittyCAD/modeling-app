@@ -10,9 +10,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -23,9 +20,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -36,9 +30,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -49,9 +40,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -62,9 +50,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -75,9 +60,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -831,9 +813,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -844,9 +823,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -857,9 +833,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -870,9 +843,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -915,9 +885,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -928,9 +895,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1194,9 +1158,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1207,9 +1168,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1220,9 +1178,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1233,9 +1188,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1246,9 +1198,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1259,9 +1208,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -1590,9 +1536,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -2317,9 +2260,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -2330,9 +2270,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -3091,9 +3028,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -3104,9 +3038,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -3117,9 +3048,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -3162,9 +3090,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -3549,9 +3474,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -3562,9 +3484,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -3575,9 +3494,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -3962,9 +3878,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -4007,9 +3920,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -4020,9 +3930,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -4813,9 +4720,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -4826,9 +4730,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -4839,9 +4740,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -4852,9 +4750,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -4865,9 +4760,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -5324,9 +5216,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -5337,9 +5226,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -5350,9 +5236,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -5363,9 +5246,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -5607,9 +5487,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -6800,9 +6677,6 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Default",
       "len": {
         "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },

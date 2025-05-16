@@ -64,13 +64,9 @@ description: Operations executed pipe-with-bend.kcl
           "type": "Number",
           "value": 90.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -89,9 +85,6 @@ description: Operations executed pipe-with-bend.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -102,9 +95,6 @@ description: Operations executed pipe-with-bend.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 }
@@ -120,9 +110,6 @@ description: Operations executed pipe-with-bend.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 },
@@ -133,9 +120,6 @@ description: Operations executed pipe-with-bend.kcl
                     "type": "Default",
                     "len": {
                       "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
                     }
                   }
                 }

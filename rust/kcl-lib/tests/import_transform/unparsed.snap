@@ -8,9 +8,9 @@ import "2-5-long-m8-chc-screw.stl" as screw
 screw
   |> rotate(
        %,
-       roll = 3.14,
-       pitch = 3.14,
-       yaw = 3.14,
+       roll = 3.14deg,
+       pitch = 3.14deg,
+       yaw = 3.14deg,
      )
   |> translate(
        %,

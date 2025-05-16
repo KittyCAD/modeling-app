@@ -237,9 +237,6 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },
@@ -255,9 +252,6 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               "type": "Default",
               "len": {
                 "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
               }
             }
           },

@@ -8,19 +8,18 @@ sketch002 = startSketchOn(XY)
 
 sketch002Profile001 = startProfile(sketch002, at = [-0.503704, -0.264924])
   |> line(end = [-0.191884, 0.172584])
-  |> arc(angleStart = 228.031232, angleEnd = 105, radius = 0.16425)
+  |> arc(angleStart = 228.031232deg, angleEnd = 105deg, radius = 0.16425)
   |> line(end = [0.464817, 0.124547])
-  |> arc(angleStart = 105, angleEnd = 75, radius = 0.6315)
+  |> arc(angleStart = 105deg, angleEnd = 75deg, radius = 0.6315)
   |> line(end = [0.464817, -0.124547])
-  |> arc(angleStart = 75, angleEnd = -37.055012, radius = 0.16425)
+  |> arc(angleStart = 75deg, angleEnd = -37.055012deg, radius = 0.16425)
   |> line(end = [-0.200323, -0.265308])
   |> scale(x = 0.958, y = 0.958)
 
 plane000 = {
   origin = [-0.503704, -0.264924, 0],
   xAxis = [0.191884, 0.172584, 0],
-  yAxis = [0, 0, 1],
-  zAxis = [-0.191884, 0.172584, 0]
+  yAxis = [0, 0, 1]
 }
 
 sketch001 = startSketchOn(plane000)
@@ -32,8 +31,7 @@ sweepExtrude000 = sweep(sketch001Profile000, path = sketch002Profile001)
 plane001 = {
   origin = [-0.503704, -0.28, 0],
   xAxis = [-0.191884, 0.172584, 0],
-  yAxis = [0, 0, -1],
-  zAxis = [-0.191884, 0.172584, 0]
+  yAxis = [0, 0, -1]
 }
 
 sketch003 = startSketchOn(plane001)
@@ -51,8 +49,7 @@ cut000 = subtract(sweepExtrude000, tools = cut000Extrude)
 plane002 = {
   origin = [0.42, -0.28, 0],
   xAxis = [-0.200323, -0.265308, 0],
-  yAxis = [0, 0, 1],
-  zAxis = [0.200323, 0.265308, 0]
+  yAxis = [0, 0, 1]
 }
 
 sketch004 = startSketchOn(plane002)

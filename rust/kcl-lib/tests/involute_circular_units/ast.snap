@@ -1,6 +1,5 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 87
 description: Result of parsing involute_circular_units.kcl
 ---
 {
@@ -475,13 +474,13 @@ description: Result of parsing involute_circular_units.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
-            "raw": "6",
+            "raw": "6deg",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
               "value": 6.0,
-              "suffix": "None"
+              "suffix": "Deg"
             }
           },
           "start": 0,
@@ -743,13 +742,13 @@ description: Result of parsing involute_circular_units.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "0",
+                      "raw": "0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 0.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1026,13 +1025,13 @@ description: Result of parsing involute_circular_units.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "9",
+                      "raw": "9deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 9.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1230,13 +1229,13 @@ description: Result of parsing involute_circular_units.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "12",
+                        "raw": "12deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 12.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -1419,13 +1418,13 @@ description: Result of parsing involute_circular_units.kcl
                             "left": {
                               "commentStart": 0,
                               "end": 0,
-                              "raw": "360",
+                              "raw": "360deg",
                               "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
                                 "value": 360.0,
-                                "suffix": "None"
+                                "suffix": "Deg"
                               }
                             },
                             "operator": "/",
@@ -1626,13 +1625,13 @@ description: Result of parsing involute_circular_units.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "360",
+                      "raw": "360deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 360.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },

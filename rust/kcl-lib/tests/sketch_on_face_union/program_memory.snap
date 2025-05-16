@@ -35,9 +35,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 309,
-            "end": 316,
-            "start": 309,
+            "commentStart": 312,
+            "end": 319,
+            "start": 312,
             "type": "TagDeclarator",
             "value": "tag001"
           },
@@ -116,9 +116,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               12.0
             ],
             "tag": {
-              "commentStart": 309,
-              "end": 316,
-              "start": 309,
+              "commentStart": 312,
+              "end": 319,
+              "start": 312,
               "type": "TagDeclarator",
               "value": "tag001"
             },
@@ -255,9 +255,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -429,9 +426,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 309,
-                  "end": 316,
-                  "start": 309,
+                  "commentStart": 312,
+                  "end": 319,
+                  "start": 312,
                   "type": "TagDeclarator",
                   "value": "tag001"
                 },
@@ -510,9 +507,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                     12.0
                   ],
                   "tag": {
-                    "commentStart": 309,
-                    "end": 316,
-                    "start": 309,
+                    "commentStart": 312,
+                    "end": 319,
+                    "start": 312,
                     "type": "TagDeclarator",
                     "value": "tag001"
                   },
@@ -725,9 +722,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 309,
-              "end": 316,
-              "start": 309,
+              "commentStart": 312,
+              "end": 319,
+              "start": 312,
               "type": "TagDeclarator",
               "value": "tag001"
             },
@@ -806,9 +803,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 12.0
               ],
               "tag": {
-                "commentStart": 309,
-                "end": 316,
-                "start": 309,
+                "commentStart": 312,
+                "end": 319,
+                "start": 312,
                 "type": "TagDeclarator",
                 "value": "tag001"
               },
@@ -1071,9 +1068,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 309,
-                "end": 316,
-                "start": 309,
+                "commentStart": 312,
+                "end": 319,
+                "start": 312,
                 "type": "TagDeclarator",
                 "value": "tag001"
               },
@@ -1152,9 +1149,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 309,
-                  "end": 316,
-                  "start": 309,
+                  "commentStart": 312,
+                  "end": 319,
+                  "start": 312,
                   "type": "TagDeclarator",
                   "value": "tag001"
                 },
@@ -1339,9 +1336,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 309,
-            "end": 316,
-            "start": 309,
+            "commentStart": 312,
+            "end": 319,
+            "start": 312,
             "type": "TagDeclarator",
             "value": "tag001"
           },
@@ -1420,9 +1417,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               12.0
             ],
             "tag": {
-              "commentStart": 309,
-              "end": 316,
-              "start": 309,
+              "commentStart": 312,
+              "end": 319,
+              "start": 312,
               "type": "TagDeclarator",
               "value": "tag001"
             },
@@ -1607,9 +1604,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             12.0
           ],
           "tag": {
-            "commentStart": 309,
-            "end": 316,
-            "start": 309,
+            "commentStart": 312,
+            "end": 319,
+            "start": 312,
             "type": "TagDeclarator",
             "value": "tag001"
           },
@@ -2062,9 +2059,9 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             12.0
           ],
           "tag": {
-            "commentStart": 309,
-            "end": 316,
-            "start": 309,
+            "commentStart": 312,
+            "end": 319,
+            "start": 312,
             "type": "TagDeclarator",
             "value": "tag001"
           },
@@ -2617,9 +2614,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   },
@@ -2630,9 +2624,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       "type": "Default",
       "len": {
         "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
       }
     }
   }

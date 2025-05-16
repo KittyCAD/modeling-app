@@ -230,13 +230,13 @@ description: Result of parsing subtract_regression06.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -252,13 +252,13 @@ description: Result of parsing subtract_regression06.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "11.87373",
+                      "raw": "11.87373deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 11.87373,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -397,13 +397,13 @@ description: Result of parsing subtract_regression06.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "11.87373",
+                      "raw": "11.87373deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 11.87373,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -420,13 +420,13 @@ description: Result of parsing subtract_regression06.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "192.443844",
+                        "raw": "192.443844deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 192.443844,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -564,13 +564,13 @@ description: Result of parsing subtract_regression06.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "167.556156",
+                      "raw": "167.556156deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 167.556156,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -586,13 +586,13 @@ description: Result of parsing subtract_regression06.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -812,13 +812,13 @@ description: Result of parsing subtract_regression06.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -834,13 +834,13 @@ description: Result of parsing subtract_regression06.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "167.556156",
+                      "raw": "167.556156deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 167.556156,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -988,13 +988,13 @@ description: Result of parsing subtract_regression06.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "192.443844",
+                        "raw": "192.443844deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 192.443844,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -1017,13 +1017,13 @@ description: Result of parsing subtract_regression06.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "11.87373",
+                      "raw": "11.87373deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 11.87373,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1162,13 +1162,13 @@ description: Result of parsing subtract_regression06.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "11.87373",
+                      "raw": "11.87373deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 11.87373,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1184,13 +1184,13 @@ description: Result of parsing subtract_regression06.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1675,72 +1675,6 @@ description: Result of parsing subtract_regression06.kcl
                       "start": 0,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
-                    }
-                  ],
-                  "end": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "zAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "argument": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "operator": "-",
-                      "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "1",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 1.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
                     }
                   ],
                   "end": 0,

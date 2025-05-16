@@ -1,7 +1,7 @@
 fn transform(@i) {
   return [
     { translate = [30 * i, 0, 0] },
-    { rotation = { angle = 45 * i } }
+    { rotation = { angle = 45deg * i } }
   ]
 }
 startSketchOn(XY)

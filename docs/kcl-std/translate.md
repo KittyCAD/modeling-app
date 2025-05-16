@@ -45,9 +45,9 @@ Translate is really useful for sketches if you want to move a sketch and then ro
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 // Create a hole for the pipe.
@@ -86,8 +86,8 @@ cube
 
 sketch001 = startSketchOn(XY)
 rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
-  |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 50.61)
+  |> angledLine(angle = 0deg, length = 73.47, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 50.61)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -97,7 +97,7 @@ circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 sketch002 = startSketchOn(YZ)
 sweepPath = startProfile(sketch002, at = [0, 0])
   |> yLine(length = 231.81)
-  |> tangentialArc(radius = 80, angle = -90)
+  |> tangentialArc(radius = 80, angle = -90deg)
   |> xLine(length = 384.93)
 
 parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
@@ -156,7 +156,7 @@ profile001 = square()
 
 profile002 = square()
   |> translate(z = 20)
-  |> rotate(axis = [0, 0, 1.0], angle = 45)
+  |> rotate(axis = [0, 0, 1.0], angle = 45deg)
 
 loft([profile001, profile002])
 ```
