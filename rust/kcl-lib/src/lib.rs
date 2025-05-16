@@ -86,7 +86,8 @@ mod wasm;
 pub use coredump::CoreDump;
 pub use engine::{AsyncTasks, EngineManager, EngineStats};
 pub use errors::{
-    CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report, ReportWithOutputs,
+    BacktraceItem, CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report,
+    ReportWithOutputs,
 };
 pub use execution::{
     bust_cache, clear_mem_cache,

@@ -49,10 +49,11 @@ pub(super) fn validate_unique<T: Eq + std::hash::Hash>(tags: &[(T, SourceRange)]
         }
     }
     if !duplicate_tags_source.is_empty() {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "The same edge ID is being referenced multiple times, which is not allowed. Please select a different edge".to_string(),
-            source_ranges: duplicate_tags_source,
-        }));
+        return Err(KclError::Type(KclErrorDetails::new(
+            "The same edge ID is being referenced multiple times, which is not allowed. Please select a different edge"
+                .to_string(),
+            duplicate_tags_source,
+        )));
     }
     Ok(())
 }

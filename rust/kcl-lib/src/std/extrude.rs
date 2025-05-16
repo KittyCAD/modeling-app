@@ -175,11 +175,11 @@ async fn inner_extrude(
     let mut solids = Vec::new();
 
     if symmetric.unwrap_or(false) && bidirectional_length.is_some() {
-        return Err(KclError::Semantic(KclErrorDetails {
-            source_ranges: vec![args.source_range],
-            message: "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
                 .to_owned(),
-        }));
+            vec![args.source_range],
+        )));
     }
 
     let bidirection = bidirectional_length.map(|l| LengthUnit(l.to_mm()));
@@ -262,10 +262,10 @@ pub(crate) async fn do_post_extrude<'a>(
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
         // So, let's just use the first one.
         let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: "Expected a non-empty sketch".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
+            return Err(KclError::Type(KclErrorDetails::new(
+                "Expected a non-empty sketch".to_owned(),
+                vec![args.source_range],
+            )));
         };
         any_edge_id
     };
@@ -387,13 +387,13 @@ pub(crate) async fn do_post_extrude<'a>(
     // Add the tags for the start or end caps.
     if let Some(tag_start) = named_cap_tags.start {
         let Some(start_cap_id) = start_cap_id else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
+            return Err(KclError::Type(KclErrorDetails::new(
+                format!(
                     "Expected a start cap ID for tag `{}` for extrusion of sketch {:?}",
                     tag_start.name, sketch.id
                 ),
-                source_ranges: vec![args.source_range],
-            }));
+                vec![args.source_range],
+            )));
         };
 
         new_value.push(ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
@@ -407,13 +407,13 @@ pub(crate) async fn do_post_extrude<'a>(
     }
     if let Some(tag_end) = named_cap_tags.end {
         let Some(end_cap_id) = end_cap_id else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
+            return Err(KclError::Type(KclErrorDetails::new(
+                format!(
                     "Expected an end cap ID for tag `{}` for extrusion of sketch {:?}",
                     tag_end.name, sketch.id
                 ),
-                source_ranges: vec![args.source_range],
-            }));
+                vec![args.source_range],
+            )));
         };
 
         new_value.push(ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
