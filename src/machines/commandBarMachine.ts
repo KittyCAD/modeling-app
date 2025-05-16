@@ -146,8 +146,15 @@ export const commandBarMachine = setup({
             typeof argConfig.required === 'function'
               ? argConfig.required(context)
               : argConfig.required
+          /**
+           * TODO: we need to think harder about the relationship between
+           * `required`, `skip`, and `hidden`.
+           * This bit of logic essentially makes "skip false" arguments required.
+           * We may need a bit of state to mark an argument as "visited" for "skip false" args
+           * to truly not require any value to continue.
+           */
           const mustNotSkipArg =
-            argIsRequired &&
+            (argIsRequired || argConfig.skip === false) &&
             (!context.argumentsToSubmit.hasOwnProperty(argName) ||
               context.argumentsToSubmit[argName] === undefined ||
               (rejectedArg &&
