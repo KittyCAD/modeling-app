@@ -95,10 +95,12 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
               </span>
             </p>
             {Object.entries(nonHiddenArgs || {})
-              .filter(([_, argConfig]) =>
-                typeof argConfig.required === 'function'
-                  ? argConfig.required(commandBarState.context)
-                  : argConfig.required
+              .filter(
+                ([_, argConfig]) =>
+                  argConfig.skip === false ||
+                  (typeof argConfig.required === 'function'
+                    ? argConfig.required(commandBarState.context)
+                    : argConfig.required)
               )
               .map(([argName, arg], i) => {
                 const argValue =
