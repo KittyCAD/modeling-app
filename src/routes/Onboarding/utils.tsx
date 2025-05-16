@@ -369,7 +369,7 @@ export function TutorialRequestToast(props: OnboardingUtilDeps) {
   return (
     <div
       data-testid="onboarding-toast"
-      className="flex items-center gap-6 min-w-28"
+      className="flex items-center gap-6 min-w-md"
     >
       <Logo className="w-auto h-8 flex-none" />
       <div className="flex flex-col justify-between gap-6">
