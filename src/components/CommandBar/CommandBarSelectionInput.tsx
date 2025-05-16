@@ -8,6 +8,7 @@ import {
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
+  type Selections,
 } from '@src/lib/selections'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -56,9 +57,13 @@ function CommandBarSelectionInput({
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(selection)
   }, [selection])
+  const isArgRequired =
+    arg.required instanceof Function
+      ? arg.required(commandBarState.context)
+      : arg.required
   const canSubmitSelection = useMemo<boolean>(
-    () => canSubmitSelectionArg(selectionsByType, arg),
-    [selectionsByType]
+    () => !isArgRequired || canSubmitSelectionArg(selectionsByType, arg),
+    [selectionsByType, arg, isArgRequired]
   )
 
   useEffect(() => {
@@ -110,7 +115,18 @@ function CommandBarSelectionInput({
       return
     }
 
-    onSubmit(selection)
+    /**
+     * Now that arguments like this can be optional, we need to
+     * construction an empty selection if it's not required to get it past our validation.
+     */
+    const resolvedSelection: Selections | undefined = isArgRequired
+      ? selection
+      : {
+          graphSelections: [],
+          otherSelections: [],
+        }
+
+    onSubmit(resolvedSelection)
   }
 
   // Clear selection if needed

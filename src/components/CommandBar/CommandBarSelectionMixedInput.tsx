@@ -30,8 +30,14 @@ export default function CommandBarSelectionMixedInput({
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(selection)
   }, [selection])
+  const isArgRequired =
+    arg.required instanceof Function
+      ? arg.required(commandBarState.context)
+      : arg.required
 
   const canSubmitSelection = useMemo<boolean>(() => {
+    // Don't do additional checks if this argument is not required
+    if (!isArgRequired) return true
     if (!selection) return false
     const isNonZeroRange = selection.graphSelections.some((sel) => {
       const range = sel.codeRef.range
@@ -39,7 +45,7 @@ export default function CommandBarSelectionMixedInput({
     })
     if (isNonZeroRange) return true
     return canSubmitSelectionArg(selectionsByType, arg)
-  }, [selectionsByType, selection])
+  }, [selectionsByType, selection, arg, isArgRequired])
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -76,7 +82,18 @@ export default function CommandBarSelectionMixedInput({
       return
     }
 
-    onSubmit(selection)
+    /**
+     * Now that arguments like this can be optional, we need to
+     * construction an empty selection if it's not required to get it past our validation.
+     */
+    const resolvedSelection: Selections | undefined = isArgRequired
+      ? selection
+      : {
+          graphSelections: [],
+          otherSelections: [],
+        }
+
+    onSubmit(resolvedSelection)
   }
 
   const isMixedSelection = arg.inputType === 'selectionMixed'
