@@ -1,5 +1,6 @@
 use std::fs;
 
+use convert_case::Casing;
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 use syn::{parse_macro_input, LitStr};
@@ -47,7 +48,11 @@ pub fn test_all_dirs(attr: TokenStream, item: TokenStream) -> TokenStream {
 
     // Generate a test function for each directory
     let test_fns = dirs.iter().map(|(dir_name, dir_path)| {
-        let test_fn_name = format_ident!("{}_{}", fn_name, sanitize_dir_name(dir_name));
+        let relative_path = dir_path
+            .strip_prefix(&path.to_string_lossy().to_string())
+            .unwrap()
+            .trim();
+        let test_fn_name = format_ident!("{}_{}", fn_name, sanitize_dir_name(relative_path));
         let dir_name_str = dir_name.clone();
         let dir_path_str = dir_path.clone();
 
@@ -77,24 +82,26 @@ fn get_all_directories(path: &std::path::Path) -> Result<Vec<(String, String)>, 
 
     for entry in fs::read_dir(path)? {
         let entry = entry?;
-        let path = entry.path();
+        let new_path = entry.path();
 
-        if path.is_dir() && !IGNORE_DIRS.contains(&path.file_name().and_then(|name| name.to_str()).unwrap_or("")) {
+        if new_path.is_dir()
+            && !IGNORE_DIRS.contains(&new_path.file_name().and_then(|name| name.to_str()).unwrap_or(""))
+        {
             // Check if the directory contains a main.kcl file.
-            let main_kcl_path = path.join("main.kcl");
+            let main_kcl_path = new_path.join("main.kcl");
             if !main_kcl_path.exists() {
                 // Recurse into the directory.
-                let sub_dirs = get_all_directories(&path)?;
+                let sub_dirs = get_all_directories(&new_path)?;
                 dirs.extend(sub_dirs);
                 continue;
             }
-            let dir_name = path
+            let dir_name = new_path
                 .file_name()
                 .and_then(|name| name.to_str())
                 .unwrap_or("unknown")
                 .to_string();
 
-            let dir_path = path.to_str().unwrap_or("unknown").to_string();
+            let dir_path = new_path.to_str().unwrap_or("unknown").to_string();
 
             dirs.push((dir_name, dir_path));
         }
@@ -105,10 +112,9 @@ fn get_all_directories(path: &std::path::Path) -> Result<Vec<(String, String)>, 
 
 /// Sanitize directory name to create a valid Rust identifier
 fn sanitize_dir_name(name: &str) -> String {
-    let name = name.replace(|c: char| !c.is_ascii_alphanumeric() && c != '_', "_");
-    if name.chars().next().is_some_and(|c| c.is_numeric()) {
-        format!("d_{}", name)
-    } else {
-        name
-    }
+    let binding = name
+        .replace(|c: char| !c.is_ascii_alphanumeric() && c != '_', "_")
+        .replace("/", "_");
+    let name = binding.trim_start_matches('_').to_string();
+    name.to_case(convert_case::Case::Snake)
 }

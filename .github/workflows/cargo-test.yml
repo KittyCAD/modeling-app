@@ -231,12 +231,12 @@ jobs:
           cd rust
           cargo nextest run -p kcl-lib \
            --retries=10 --no-fail-fast --profile=ci \
-           kcl_samples \
+           internal \
            2>&1 | tee /tmp/github-actions.log
         env:
-          TWENTY_TWENTY=overwrite
-          INSTA_UPDATE=always
-          EXPECTORATE=overwrite
+          TWENTY_TWENTY: overwrite
+          INSTA_UPDATE: always
+          EXPECTORATE: overwrite
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
           ZOO_HOST: https://api.dev.zoo.dev
   run-wasm-tests:

@@ -1847,6 +1847,7 @@ dependencies = [
 name = "kcl-directory-test-macro"
 version = "0.1.73"
 dependencies = [
+ "convert_case",
  "proc-macro2",
  "quote",
  "syn 2.0.100",
