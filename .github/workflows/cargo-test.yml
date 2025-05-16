@@ -155,7 +155,7 @@ jobs:
         shell: bash
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
-      - name: Install rust
+      - name: Install Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
@@ -169,6 +169,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: nextest-archive
+      - name: Download internal KCL samples
+        run: git clone --depth=1 https://x-access-token:${{ secrets.GH_PAT_KCL_SAMPLES_INTERNAL }}@github.com/KittyCAD/kcl-samples-internal public/kcl-samples/internal
       - name: Run tests
         shell: bash
         run: |-
