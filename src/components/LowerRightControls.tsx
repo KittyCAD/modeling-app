@@ -57,7 +57,6 @@ export function LowerRightControls({
           <ActionButton
             Element="externalLink"
             to={getReleaseUrl()}
-            data-testid="app-version"
             className={
               '!no-underline !border-none !bg-transparent font-mono text-xs' +
               linkOverrideClassName
@@ -69,7 +68,6 @@ export function LowerRightControls({
           <ActionButton
             Element="externalLink"
             to="https://zoo.dev/modeling-app/download"
-            data-testid="app-version"
             className={
               '!no-underline !border-none !bg-transparent font-mono text-xs' +
               linkOverrideClassName

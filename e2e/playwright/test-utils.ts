@@ -39,7 +39,6 @@ export const headerMasks = (page: Page) => [
 export const lowerRightMasks = (page: Page) => [
   page.getByTestId('network-toggle'),
   page.getByTestId('billing-remaining-bar'),
-  page.getByTestId('app-version'),
 ]
 
 export type TestColor = [number, number, number]
