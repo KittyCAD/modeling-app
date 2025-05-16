@@ -91,11 +91,6 @@ function CommandBarTextareaInput({
           autoFocus
         />
       </label>
-      {arg.warningMessage && (
-        <p className="text-warn-80 bg-warn-10 px-2 py-1 rounded-sm mt-3 mr-2 -mb-2 w-full text-sm cursor-default">
-          {arg.warningMessage}
-        </p>
-      )}
     </form>
   )
 }
