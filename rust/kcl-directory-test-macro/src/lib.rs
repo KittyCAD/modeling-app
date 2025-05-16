@@ -114,7 +114,7 @@ fn get_all_directories(path: &std::path::Path) -> Result<Vec<(String, String)>, 
 fn sanitize_dir_name(name: &str) -> String {
     let binding = name
         .replace(|c: char| !c.is_ascii_alphanumeric() && c != '_', "_")
-        .replace_all("/", "_");
+        .replace("/", "_");
     let name = binding.trim_start_matches('_').to_string();
     name.to_case(convert_case::Case::Snake)
 }
