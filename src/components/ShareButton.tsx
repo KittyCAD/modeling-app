@@ -83,7 +83,7 @@ export const ShareButton = () => {
     billingContext.tier === undefined
 
   return (
-    <Popover className="relative">
+    <Popover className="relative flex">
       <Popover.Button className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-appForeground">
         <button
           type="button"
