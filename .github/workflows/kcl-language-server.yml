@@ -13,6 +13,13 @@ on:
     tags:
       - 'kcl-*'
   pull_request:
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - 'rust/kcl-language-server/**'
+      - '**.rs'
+      - .github/workflows/kcl-language-server.yml
   workflow_dispatch:
 permissions:
   contents: read
