@@ -169,10 +169,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: nextest-archive
-      - name: Download internal KCL samples
-        run: git clone --depth=1 https://x-access-token:${{ secrets.GH_PAT_KCL_SAMPLES_INTERNAL }}@github.com/KittyCAD/kcl-samples-internal public/kcl-samples/internal
-      - name: Regenerate KCL samples manifest
-        run: cd rust/kcl-lib && EXPECTORATE=overwrite cargo test generate_manifest
       - name: Run tests
         shell: bash
         run: |-
@@ -194,6 +190,61 @@ jobs:
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+  run-internal-kcl-samples:
+    name: cargo test (internal-kcl-samples)
+    runs-on:
+      - runs-on=${{ github.run_id }}
+      - runner=32cpu-linux-x64
+      - extras=s3-cache
+    needs: build-test-artifacts
+    strategy:
+      fail-fast: false
+      matrix:
+        partitionIndex: [1, 2, 3, 4, 5, 6]
+        partitionTotal: [6]
+    steps:
+      - uses: runs-on/action@v1
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false # Configured below.
+      - name: Start Vector
+        run: .github/ci-cd-scripts/start-vector-ubuntu.sh
+        env:
+          GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
+          OS_NAME: ${{ env.OS_NAME }}
+      - uses: taiki-e/install-action@nextest
+      - name: Download internal KCL samples
+        run: git clone --depth=1 https://x-access-token:${{ secrets.GH_PAT_KCL_SAMPLES_INTERNAL }}@github.com/KittyCAD/kcl-samples-internal public/kcl-samples/internal
+      - name: Run tests
+        shell: bash
+        run: |-
+          cp nextest-archive.tar.zst rust/nextest-archive.tar.zst
+          ls -lah
+          cd rust
+          cargo nextest run -p kcl-lib \
+           --retries=10 --no-fail-fast --profile=ci \
+           kcl_samples \
+           2>&1 | tee /tmp/github-actions.log
+        env:
+          TWENTY_TWENTY=overwrite
+          INSTA_UPDATE=always
+          EXPECTORATE=overwrite
+          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
+          ZOO_HOST: https://api.dev.zoo.dev
   run-wasm-tests:
     name: Run wasm tests
     strategy:

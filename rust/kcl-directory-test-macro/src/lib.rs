@@ -5,6 +5,8 @@ use quote::{format_ident, quote};
 use syn::{parse_macro_input, LitStr};
 
 /// A macro that generates test functions for each directory within a given path.
+/// To be included the test directory must have a main.kcl file.
+/// This will also recursively search for directories within the given path.
 ///
 /// # Example
 ///
@@ -78,6 +80,14 @@ fn get_all_directories(path: &std::path::Path) -> Result<Vec<(String, String)>, 
         let path = entry.path();
 
         if path.is_dir() && !IGNORE_DIRS.contains(&path.file_name().and_then(|name| name.to_str()).unwrap_or("")) {
+            // Check if the directory contains a main.kcl file.
+            let main_kcl_path = path.join("main.kcl");
+            if !main_kcl_path.exists() {
+                // Recurse into the directory.
+                let sub_dirs = get_all_directories(&path)?;
+                dirs.extend(sub_dirs);
+                continue;
+            }
             let dir_name = path
                 .file_name()
                 .and_then(|name| name.to_str())
