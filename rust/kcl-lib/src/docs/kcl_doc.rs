@@ -1,5 +1,6 @@
-use std::{collections::HashMap, fmt, str::FromStr};
+use std::{fmt, str::FromStr};
 
+use indexmap::IndexMap;
 use regex::Regex;
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
@@ -449,7 +450,7 @@ pub struct ModData {
     pub description: Option<String>,
     pub module_name: String,
 
-    pub children: HashMap<String, DocData>,
+    pub children: IndexMap<String, DocData>,
 }
 
 impl ModData {
@@ -465,7 +466,7 @@ impl ModData {
             qual_name,
             summary: None,
             description: None,
-            children: HashMap::new(),
+            children: IndexMap::new(),
             module_name,
         }
     }
@@ -626,6 +627,8 @@ impl FnData {
     pub(super) fn to_autocomplete_snippet(&self) -> String {
         if self.name == "loft" {
             return "loft([${0:sketch000}, ${1:sketch001}])".to_owned();
+        } else if self.name == "clone" {
+            return "clone(${0:part001})".to_owned();
         } else if self.name == "hole" {
             return "hole(${0:holeSketch}, ${1:%})".to_owned();
         }
@@ -785,6 +788,7 @@ impl ArgData {
             Some("Axis2d | Edge") | Some("Axis3d | Edge") => Some((index, format!(r#"{label}${{{index}:X}}"#))),
             Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
+            Some("Plane") => Some((index, format!(r#"{label}${{{}:XY}}"#, index))),
 
             Some("string") => Some((index, format!(r#"{label}${{{}:"string"}}"#, index))),
             Some("bool") => Some((index, format!(r#"{label}${{{}:false}}"#, index))),
@@ -1234,23 +1238,21 @@ mod test {
                 .expect_mod()
         };
 
-        #[allow(clippy::iter_over_hash_type)]
+        let mut count = 0;
         for d in data.children.values() {
             if let DocData::Mod(_) = d {
                 continue;
             }
 
             for (i, eg) in d.examples().enumerate() {
+                count += 1;
+                if count % SHARD_COUNT != SHARD {
+                    continue;
+                }
+
                 let result = match crate::test_server::execute_and_snapshot(eg, None).await {
                     Err(crate::errors::ExecError::Kcl(e)) => {
-                        errs.push(
-                            miette::Report::new(crate::errors::Report {
-                                error: e.error,
-                                filename: format!("{}{i}", d.name()),
-                                kcl_source: eg.to_string(),
-                            })
-                            .to_string(),
-                        );
+                        errs.push(format!("Error testing example {}{i}: {}", d.name(), e.error.message()));
                         continue;
                     }
                     Err(other_err) => panic!("{}", other_err),

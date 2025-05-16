@@ -436,3 +436,42 @@ export fn log10(@input: number): number {}
 /// ```
 @(impl = std_rust)
 export fn ln(@input: number): number {}
+
+/// Compute the length of the given leg.
+///
+/// ```kcl,no_run
+/// legLen(hypotenuse = 5, leg = 3)
+/// ```
+@(impl = std_rust)
+export fn legLen(
+  /// The length of the triangle's hypotenuse.
+  hypotenuse: number(Length),
+  /// The length of one of the triangle's legs (i.e. non-hypotenuse side).
+  leg: number(Length),
+): number(deg) {}
+
+/// Compute the angle of the given leg for x.
+///
+/// ```kcl,no_run
+/// legAngX(hypotenuse = 5, leg = 3)
+/// ```
+@(impl = std_rust)
+export fn legAngX(
+  /// The length of the triangle's hypotenuse.
+  hypotenuse: number(Length),
+  /// The length of one of the triangle's legs (i.e. non-hypotenuse side).
+  leg: number(Length),
+): number(deg) {}
+
+/// Compute the angle of the given leg for y.
+///
+/// ```kcl,no_run
+/// legAngY(hypotenuse = 5, leg = 3)
+/// ```
+@(impl = std_rust)
+export fn legAngY(
+  /// The length of the triangle's hypotenuse.
+  hypotenuse: number(Length),
+  /// The length of one of the triangle's legs (i.e. non-hypotenuse side).
+  leg: number(Length),
+): number(deg) {}

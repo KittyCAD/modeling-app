@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { ActionButton } from '@src/components/ActionButton'
 import { SafeRenderer } from '@src/lib/markdown'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { getReleaseUrl } from '@src/routes/utils'
+import { getReleaseUrl, IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 export function ToastUpdate({
   version,
@@ -41,16 +41,20 @@ export function ToastUpdate({
             v{version}
           </span>
           <p className="ml-4 text-md text-bold">
-            A new update has downloaded and will be available next time you
-            start the app. You can view the release notes{' '}
-            <a
-              onClick={openExternalBrowserIfDesktop(getReleaseUrl(version))}
-              href={getReleaseUrl(version)}
-              target="_blank"
-              rel="noreferrer"
-            >
-              here on GitHub.
-            </a>
+            A new update is available.
+            {!IS_NIGHTLY_OR_DEBUG && (
+              <span>
+                You can view the release notes{' '}
+                <a
+                  onClick={openExternalBrowserIfDesktop(getReleaseUrl(version))}
+                  href={getReleaseUrl(version)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  here on GitHub.
+                </a>
+              </span>
+            )}
           </p>
         </div>
         {releaseNotes && (

@@ -1,0 +1,47 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing fillet_duplicate_tags.kcl
+---
+KCL Type error
+
+  × type: The same edge ID is being referenced multiple times, which is not
+  │ allowed. Please select a different edge
+    ╭─[7:6]
+  6 │       |> extrude(length = 10)
+  7 │ ╭─▶   |> fillet(
+  8 │ │          radius = 1,
+  9 │ │          tags = [
+ 10 │ │            line003,
+ 11 │ │            getNextAdjacentEdge(line000),
+    · │            ──────────────┬─────────────
+    · │                          ╰── tests/fillet_duplicate_tags/input.kcl
+ 12 │ │            getPreviousAdjacentEdge(line001)
+    · │            ────────────────┬───────────────
+    · │                            ╰── tests/fillet_duplicate_tags/input.kcl
+ 13 │ │          ],
+ 14 │ ├─▶      )
+    · ╰──── tests/fillet_duplicate_tags/input.kcl
+ 15 │     
+    ╰────
+  ├─▶ KCL Type error
+  │   
+  │     × type: The same edge ID is being referenced multiple times, which is
+  │     │ not allowed. Please select a different edge
+  │       ╭─[11:10]
+  │    10 │          line003,
+  │    11 │          getNextAdjacentEdge(line000),
+  │       ·          ──────────────┬─────────────
+  │       ·                        ╰── tests/fillet_duplicate_tags/input.kcl
+  │    12 │          getPreviousAdjacentEdge(line001)
+  │       ╰────
+  ╰─▶ KCL Type error
+      
+        × type: The same edge ID is being referenced multiple times, which is
+        │ not allowed. Please select a different edge
+          ╭─[12:10]
+       11 │          getNextAdjacentEdge(line000),
+       12 │          getPreviousAdjacentEdge(line001)
+          ·          ────────────────┬───────────────
+          ·                          ╰── tests/fillet_duplicate_tags/input.kcl
+       13 │        ],
+          ╰────

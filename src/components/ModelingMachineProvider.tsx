@@ -34,7 +34,7 @@ import {
   useMenuListener,
   useSketchModeMenuEnableDisable,
 } from '@src/hooks/useMenu'
-import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
+import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
 import { useKclContext } from '@src/lang/KclProvider'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
@@ -204,12 +204,13 @@ export const ModelingMachineProvider = ({
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
+            // TODO: Re-evaluate if this pause/play logic is needed.
             store.videoElement?.pause()
 
             return kclManager
               .executeCode()
               .then(() => {
-                if (engineCommandManager.engineConnection?.idleMode) return
+                if (engineCommandManager.idleMode) return
 
                 store.videoElement?.play().catch((e) => {
                   console.warn('Video playing was prevented', e)
@@ -579,24 +580,23 @@ export const ModelingMachineProvider = ({
             selectionRanges
           )
         },
-        'Has exportable geometry': () => {
-          if (!kclManager.hasErrors() && kclManager.ast.body.length > 0)
-            return true
-          else {
-            let errorMessage = 'Unable to Export '
-            if (kclManager.hasErrors()) errorMessage += 'due to KCL Errors'
-            else if (kclManager.ast.body.length === 0)
-              errorMessage += 'due to Empty Scene'
-            console.error(errorMessage)
-            toast.error(errorMessage)
-            return false
-          }
-        },
+        'Has exportable geometry': () =>
+          !kclManager.hasErrors() && kclManager.ast.body.length > 0,
       },
       actors: {
         exportFromEngine: fromPromise(
           async ({ input }: { input?: ModelingCommandSchema['Export'] }) => {
-            if (!input) {
+            if (kclManager.hasErrors() || kclManager.ast.body.length === 0) {
+              let errorMessage = 'Unable to Export '
+              if (kclManager.hasErrors()) {
+                errorMessage += 'due to KCL Errors'
+              } else if (kclManager.ast.body.length === 0) {
+                errorMessage += 'due to Empty Scene'
+              }
+              console.error(errorMessage)
+              toast.error(errorMessage)
+              return new Error(errorMessage)
+            } else if (!input) {
               return new Error('No input provided')
             }
 
@@ -2091,13 +2091,12 @@ export const ModelingMachineProvider = ({
     modelingSend({ type: 'Center camera on selection' })
   })
 
-  useStateMachineCommands({
+  useModelingMachineCommands({
     machineId: 'modeling',
     state: modelingState,
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig: modelingMachineCommandConfig,
-    allCommandsRequireNetwork: true,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
     // but we need to support "SketchCancel" and basically
     // make this function take the actor or state so it

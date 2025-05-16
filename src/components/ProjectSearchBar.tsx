@@ -52,7 +52,7 @@ export function ProjectSearchBar({
           ref={inputRef}
           onChange={(event) => setQuery(event.target.value)}
           className="w-full text-sm bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
-          placeholder="Search projects (^.)"
+          placeholder="Search projects (Ctrl+.)"
           autoCapitalize="off"
           autoComplete="off"
           autoCorrect="off"

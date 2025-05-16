@@ -456,13 +456,7 @@ description: Result of parsing enclosure.kcl
                   },
                   {
                     "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "length",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
+                    "label": null,
                     "arg": {
                       "abs_path": false,
                       "commentStart": 0,
@@ -3178,13 +3172,7 @@ description: Result of parsing enclosure.kcl
                   },
                   {
                     "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "length",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
+                    "label": null,
                     "arg": {
                       "abs_path": false,
                       "commentStart": 0,

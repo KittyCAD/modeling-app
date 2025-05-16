@@ -24,6 +24,7 @@ export class HomePageFixture {
   projectTextName!: Locator
   sortByDateBtn!: Locator
   sortByNameBtn!: Locator
+  appHeader!: Locator
   tutorialBtn!: Locator
 
   constructor(page: Page) {
@@ -44,6 +45,7 @@ export class HomePageFixture {
 
     this.sortByDateBtn = this.page.getByTestId('home-sort-by-modified')
     this.sortByNameBtn = this.page.getByTestId('home-sort-by-name')
+    this.appHeader = this.page.getByTestId('app-header')
     this.tutorialBtn = this.page.getByTestId('home-tutorial-button')
   }
 
@@ -124,5 +126,12 @@ export class HomePageFixture {
     if (process.env.PLATFORM === 'web') return
 
     await this.createAndGoToProject(name)
+  }
+
+  isNativeFileMenuCreated = async () => {
+    await expect(this.appHeader).toHaveAttribute(
+      'data-native-file-menu',
+      'true'
+    )
   }
 }

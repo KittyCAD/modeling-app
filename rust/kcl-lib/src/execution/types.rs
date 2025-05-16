@@ -182,6 +182,8 @@ impl RuntimeType {
             }
             AstPrimitiveType::Named(name) => Self::from_alias(&name.name, exec_state, source_range)?,
             AstPrimitiveType::Tag => RuntimeType::Primitive(PrimitiveType::Tag),
+            AstPrimitiveType::ImportedGeometry => RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+            AstPrimitiveType::Function(_) => RuntimeType::Primitive(PrimitiveType::Function),
         })
     }
 
@@ -363,6 +365,7 @@ pub enum PrimitiveType {
     Axis2d,
     Axis3d,
     ImportedGeometry,
+    Function,
 }
 
 impl PrimitiveType {
@@ -382,6 +385,7 @@ impl PrimitiveType {
             PrimitiveType::Axis2d => "2d axes".to_owned(),
             PrimitiveType::Axis3d => "3d axes".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
+            PrimitiveType::Function => "functions".to_owned(),
             PrimitiveType::Tag => "tags".to_owned(),
             PrimitiveType::TagId => "tag identifiers".to_owned(),
         }
@@ -418,6 +422,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Axis3d => write!(f, "Axis3d"),
             PrimitiveType::Helix => write!(f, "Helix"),
             PrimitiveType::ImportedGeometry => write!(f, "imported geometry"),
+            PrimitiveType::Function => write!(f, "function"),
         }
     }
 }
@@ -656,6 +661,17 @@ impl NumericType {
             NumericType::Unknown
                 | NumericType::Known(UnitType::Angle(UnitAngle::Unknown))
                 | NumericType::Known(UnitType::Length(UnitLen::Unknown))
+        )
+    }
+
+    pub fn is_fully_specified(&self) -> bool {
+        !matches!(
+            self,
+            NumericType::Unknown
+                | NumericType::Known(UnitType::Angle(UnitAngle::Unknown))
+                | NumericType::Known(UnitType::Length(UnitLen::Unknown))
+                | NumericType::Any
+                | NumericType::Default { .. }
         )
     }
 
@@ -1184,6 +1200,10 @@ impl KclValue {
                 KclValue::ImportedGeometry { .. } => Ok(value.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::Function => match value {
+                KclValue::Function { .. } => Ok(value.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::TagId => match value {
                 KclValue::TagIdentifier { .. } => Ok(value.clone()),
                 _ => Err(self.into()),
@@ -1257,7 +1277,15 @@ impl KclValue {
                     .satisfied(values.len(), allow_shrink)
                     .ok_or(CoercionError::from(self))?;
 
-                assert!(len <= values.len());
+                if len > values.len() {
+                    let message = format!(
+                        "Internal: Expected coerced array length {len} to be less than or equal to original length {}",
+                        values.len()
+                    );
+                    exec_state.err(CompilationError::err(self.into(), message.clone()));
+                    #[cfg(debug_assertions)]
+                    panic!("{message}");
+                }
                 values.truncate(len);
 
                 Ok(KclValue::HomArray {
@@ -1372,12 +1400,10 @@ impl KclValue {
             KclValue::HomArray { ty, value, .. } => {
                 Some(RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(value.len())))
             }
-            KclValue::TagIdentifier(_) | KclValue::TagDeclarator(_) | KclValue::Uuid { .. } => {
-                Some(RuntimeType::Primitive(PrimitiveType::Tag))
-            }
-            KclValue::Function { .. } | KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => {
-                None
-            }
+            KclValue::TagIdentifier(_) => Some(RuntimeType::Primitive(PrimitiveType::TagId)),
+            KclValue::TagDeclarator(_) | KclValue::Uuid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Tag)),
+            KclValue::Function { .. } => Some(RuntimeType::Primitive(PrimitiveType::Function)),
+            KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => None,
         }
     }
 }
@@ -1453,7 +1479,7 @@ mod test {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_idempotent() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
         let values = values(&mut exec_state);
         for v in &values {
             // Identity subtype
@@ -1543,7 +1569,7 @@ mod test {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_none() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
         let none = KclValue::KclNone {
             value: crate::parsing::ast::types::KclNone::new(),
             meta: Vec::new(),
@@ -1601,7 +1627,7 @@ mod test {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_record() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
 
         let obj0 = KclValue::Object {
             value: HashMap::new(),
@@ -1683,7 +1709,7 @@ mod test {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_array() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
 
         let hom_arr = KclValue::HomArray {
             value: vec![
@@ -1836,7 +1862,7 @@ mod test {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_union() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
 
         // Subtyping smaller unions
         assert!(RuntimeType::Union(vec![]).subtype(&RuntimeType::Union(vec![
@@ -1887,7 +1913,7 @@ mod test {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_axes() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
 
         // Subtyping
         assert!(RuntimeType::Primitive(PrimitiveType::Axis2d).subtype(&RuntimeType::Primitive(PrimitiveType::Axis2d)));
@@ -2002,7 +2028,7 @@ mod test {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_numeric() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
 
         let count = KclValue::Number {
             value: 1.0,
@@ -2230,7 +2256,7 @@ d = cos(30)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_nested_array() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
 
         let mixed1 = KclValue::HomArray {
             value: vec![

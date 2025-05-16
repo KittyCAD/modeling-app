@@ -73,7 +73,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// loft([squareSketch, triangleSketch])
+/// loft([triangleSketch, squareSketch])
 /// ```
 ///
 /// ```no_run

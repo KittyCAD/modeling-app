@@ -60,7 +60,6 @@ import {
   PROFILE_START,
   SEGMENT_BODIES,
   SEGMENT_BODIES_PLUS_PROFILE_START,
-  SEGMENT_WIDTH_PX,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_DASH,
   TANGENTIAL_ARC_TO_SEGMENT,
@@ -90,6 +89,7 @@ import {
   getSceneScale,
 } from '@src/clientSideScene/sceneUtils'
 import type { SegmentUtils } from '@src/clientSideScene/segments'
+import { createLineShape } from '@src/clientSideScene/segments'
 import {
   createProfileStartHandle,
   dashedStraight,
@@ -3653,10 +3653,6 @@ export class SceneEntities {
           this.sceneInfra._baseUnitMultiplier
         const from = group.userData.from
 
-        const shape = new Shape()
-        shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
-        shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
-
         const straightSegmentBodyDashed = group.children.find(
           (child) => child.userData.type === STRAIGHT_SEGMENT_DASH
         ) as Mesh
@@ -3664,7 +3660,7 @@ export class SceneEntities {
           straightSegmentBodyDashed.geometry = dashedStraight(
             from,
             to,
-            shape,
+            createLineShape(scale),
             scale
           )
         }

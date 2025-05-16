@@ -2,21 +2,35 @@
 flowchart LR
   subgraph path2 [Path]
     2["Path<br>[80, 105, 1]"]
+      %% Missing NodePath
     3["Segment<br>[111, 128, 1]"]
+      %% Missing NodePath
     4["Segment<br>[134, 151, 1]"]
+      %% Missing NodePath
     5["Segment<br>[157, 175, 1]"]
+      %% Missing NodePath
     6["Segment<br>[181, 199, 1]"]
+      %% Missing NodePath
     7["Segment<br>[205, 213, 1]"]
+      %% Missing NodePath
     8[Solid2d]
   end
   1["Plane<br>[57, 74, 1]"]
+    %% Missing NodePath
   9["Sweep Extrusion<br>[219, 238, 1]"]
+    %% Missing NodePath
   10[Wall]
+    %% face_code_ref=Missing NodePath
   11[Wall]
+    %% face_code_ref=Missing NodePath
   12[Wall]
+    %% face_code_ref=Missing NodePath
   13[Wall]
+    %% face_code_ref=Missing NodePath
   14["Cap Start"]
+    %% face_code_ref=Missing NodePath
   15["Cap End"]
+    %% face_code_ref=Missing NodePath
   16["SweepEdge Opposite"]
   17["SweepEdge Opposite"]
   18["SweepEdge Opposite"]
@@ -35,11 +49,11 @@ flowchart LR
   2 ---- 9
   3 --- 12
   3 x--> 14
-  3 --- 19
-  3 --- 23
+  3 --- 16
+  3 --- 20
   4 --- 11
   4 x--> 14
-  4 --- 16
+  4 --- 17
   4 --- 21
   5 --- 10
   5 x--> 14
@@ -47,8 +61,8 @@ flowchart LR
   5 --- 22
   6 --- 13
   6 x--> 14
-  6 --- 17
-  6 --- 20
+  6 --- 19
+  6 --- 23
   9 --- 10
   9 --- 11
   9 --- 12
@@ -63,18 +77,18 @@ flowchart LR
   9 --- 21
   9 --- 22
   9 --- 23
-  18 <--x 10
+  10 --- 18
   21 <--x 10
-  22 <--x 10
-  16 <--x 11
-  21 <--x 11
-  23 <--x 11
-  19 <--x 12
-  20 <--x 12
+  10 --- 22
+  11 --- 17
+  20 <--x 11
+  11 --- 21
+  12 --- 16
+  12 --- 20
   23 <--x 12
-  17 <--x 13
-  20 <--x 13
+  13 --- 19
   22 <--x 13
+  13 --- 23
   16 <--x 15
   17 <--x 15
   18 <--x 15

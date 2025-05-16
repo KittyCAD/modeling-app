@@ -184,15 +184,6 @@ export const modelingFileRole = (
           })
         },
       },
-      {
-        label: 'Share part via Zoo link',
-        id: 'File.Share part via Zoo link',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Share part via Zoo link',
-          })
-        },
-      },
       { type: 'separator' },
       {
         label: 'Preferences',

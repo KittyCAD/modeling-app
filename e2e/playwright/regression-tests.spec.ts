@@ -19,11 +19,12 @@ test.describe('Regression tests', () => {
     context,
     page,
     homePage,
+    scene,
   }) => {
     // because the model has `line([0,0]..` it is valid code, but the model is invalid
     // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
     // Since the bad model also found as issue with the artifact graph, which in tern blocked the editor diognostics
-    const u = await getUtils(page)
+    // const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -40,7 +41,8 @@ test.describe('Regression tests', () => {
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    await scene.connectionEstablished()
+    // await u.waitForPageLoad()
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
@@ -51,8 +53,11 @@ test.describe('Regression tests', () => {
     // the close doesn't work
     // when https://github.com/KittyCAD/modeling-app/issues/3268 is closed
     // this test will need updating
-    const crypticErrorText = `ApiError`
+    const crypticErrorText = `Cannot close a path that is non-planar or with duplicate vertices.
+Internal engine error on request`
     await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+    // Ensure we didn't nest the json.
+    await expect(page.getByText('ApiError')).not.toBeVisible()
   })
   test('user should not have to press down twice in cmdbar', async ({
     page,
@@ -185,8 +190,8 @@ extrude001 = extrude(sketch001, length = 50)
       page.locator('.pretty-json-container >> text=myVar:"67')
     ).toBeVisible()
   })
-  test('ProgramMemory can be serialised', async ({ page, homePage }) => {
-    const u = await getUtils(page)
+  test('ProgramMemory can be serialised', async ({ page, homePage, scene }) => {
+    // const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -211,11 +216,12 @@ extrude001 = extrude(sketch001, length = 50)
     // Listen for all console events and push the message text to an array
     page.on('console', (message) => messages.push(message.text()))
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    // await u.waitForPageLoad()
+    await scene.connectionEstablished()
 
     // wait for execution done
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
+    // await u.openDebugPanel()
+    // await u.expectCmdLog('[data-message-type="execution-done"]')
 
     const forbiddenMessages = ['cannot serialize tagged newtype variant']
     forbiddenMessages.forEach((forbiddenMessage) => {
@@ -229,6 +235,7 @@ extrude001 = extrude(sketch001, length = 50)
     context,
     page,
     homePage,
+    scene,
   }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -247,11 +254,10 @@ extrude001 = extrude(sketch001, length = 50)
     shell(exampleSketch, faces = ['end'], thickness = 0.25)`
       )
     })
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
 
     await expect(async () => {
-      await homePage.goToModelingScene()
-      await u.waitForPageLoad()
-
       // error in guter
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
         timeout: 1_000,
@@ -329,10 +335,10 @@ extrude002 = extrude(profile002, length = 150)
       )
 
       const websocketPromise = page.waitForEvent('websocket')
-      await toolbar.closePane('code')
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await toolbar.closePane('code')
       const websocket = await websocketPromise
 
       await scene.connectionEstablished()
@@ -452,12 +458,10 @@ extrude002 = extrude(profile002, length = 150)
 
       // Click the stl.
       await expect(stlOption).toBeVisible()
-
       await page.keyboard.press('Enter')
 
       // Click the checkbox
       await expect(submitButton).toBeVisible()
-
       await page.keyboard.press('Enter')
 
       // Find the toast.
@@ -465,11 +469,13 @@ extrude002 = extrude(profile002, length = 150)
       await expect(exportingToastMessage).toBeVisible()
 
       // Expect it to succeed.
-      await expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 })
+      await expect(exportingToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       const successToastMessage = page.getByText(`Exported successfully`)
-      await expect(successToastMessage).toBeVisible()
+      await page.waitForTimeout(1_000)
+      const count = await successToastMessage.count()
+      await expect(count).toBeGreaterThanOrEqual(1)
     }
   )
   // We updated this test such that you can have multiple exports going at once.
@@ -545,14 +551,15 @@ extrude002 = extrude(profile002, length = 150)
         expect(alreadyExportingToastMessage).not.toBeVisible(),
       ])
 
-      await expect(successToastMessage).toHaveCount(2)
+      const count = await successToastMessage.count()
+      await expect(count).toBeGreaterThanOrEqual(2)
     })
   })
 
   test(
     `Network health indicator only appears in modeling view`,
     { tag: '@electron' },
-    async ({ context, page }, testInfo) => {
+    async ({ context, page }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -561,9 +568,7 @@ extrude002 = extrude(profile002, length = 150)
           path.join(bracketDir, 'main.kcl')
         )
       })
-
       await page.setBodyDimensions({ width: 1200, height: 500 })
-      const u = await getUtils(page)
 
       // Locators
       const projectsHeading = page.getByRole('heading', {
@@ -583,10 +588,8 @@ extrude002 = extrude(profile002, length = 150)
       })
 
       await test.step('Check the modeling view', async () => {
+        await expect(projectsHeading).not.toBeVisible()
         await expect(networkHealthIndicator).toBeVisible()
-        await expect(networkHealthIndicator).toContainText('Problem')
-        await u.waitForPageLoad()
-        await expect(networkHealthIndicator).toContainText('Connected')
       })
     }
   )

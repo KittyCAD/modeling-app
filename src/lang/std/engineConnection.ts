@@ -1,3 +1,4 @@
+import { TEST } from '@src/env'
 import type { Models } from '@kittycad/lib'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from '@src/env'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -7,6 +8,7 @@ import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
 import type { CommandLog } from '@src/lang/std/commandLog'
 import { CommandLogType } from '@src/lang/std/commandLog'
@@ -23,7 +25,7 @@ import {
   getThemeColorForEngine,
 } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { binaryToUuid, uuidv4 } from '@src/lib/utils'
+import { binaryToUuid, isArray, uuidv4 } from '@src/lib/utils'
 
 const pingIntervalMs = 1_000
 
@@ -107,6 +109,13 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
     'We seem to be experiencing an outage. Please visit [status.zoo.dev](https://status.zoo.dev) for updates.',
   [ConnectionError.Unknown]:
     'An unexpected error occurred. Please report this to us.',
+}
+
+export const WEBSOCKET_READYSTATE_TEXT: Record<number, string> = {
+  [WebSocket.CONNECTING]: 'WebSocket.CONNECTING',
+  [WebSocket.OPEN]: 'WebSocket.OPEN',
+  [WebSocket.CLOSING]: 'WebSocket.CLOSING',
+  [WebSocket.CLOSED]: 'WebSocket.CLOSED',
 }
 
 export interface ErrorType {
@@ -208,6 +217,9 @@ export enum EngineConnectionEvents {
   // We can eventually use it for more, but one step at a time.
   ConnectionStateChanged = 'connection-state-changed', // (state: EngineConnectionState) => void
 
+  // There are various failure scenarios where we want to try a restart.
+  RestartRequest = 'restart-request',
+
   // These are used for the EngineCommandManager and were created
   // before onConnectionStateChange existed.
   ConnectionStarted = 'connection-started', // (engineConnection: EngineConnection) => void
@@ -238,11 +250,23 @@ class EngineConnection extends EventTarget {
   pc?: RTCPeerConnection
   unreliableDataChannel?: RTCDataChannel
   mediaStream?: MediaStream
-  idleMode: boolean = false
   promise?: Promise<void>
   sdpAnswer?: RTCSessionDescriptionInit
   triggeredStart = false
 
+  onWebSocketOpen = function (event: Event) {}
+  onWebSocketClose = function (event: Event) {}
+  onWebSocketError = function (event: Event) {}
+  onWebSocketMessage = function (event: MessageEvent) {}
+  onIceGatheringStateChange = function (
+    this: RTCPeerConnection,
+    event: Event
+  ) {}
+  onIceConnectionStateChange = function (
+    this: RTCPeerConnection,
+    event: Event
+  ) {}
+  onNegotiationNeeded = function (this: RTCPeerConnection, event: Event) {}
   onIceCandidate = function (
     this: RTCPeerConnection,
     event: RTCPeerConnectionIceEvent
@@ -252,6 +276,9 @@ class EngineConnection extends EventTarget {
     event: RTCPeerConnectionIceErrorEvent
   ) {}
   onConnectionStateChange = function (this: RTCPeerConnection, event: Event) {}
+  onSignalingStateChange = function (this: RTCDataChannel, event: Event) {}
+
+  onTrack = function (this: RTCPeerConnection, event: RTCTrackEvent) {}
   onDataChannelOpen = function (this: RTCDataChannel, event: Event) {}
   onDataChannelClose = function (this: RTCDataChannel, event: Event) {}
   onDataChannelError = function (this: RTCDataChannel, event: Event) {}
@@ -260,11 +287,7 @@ class EngineConnection extends EventTarget {
     this: RTCPeerConnection,
     event: RTCDataChannelEvent
   ) {}
-  onTrack = function (this: RTCPeerConnection, event: RTCTrackEvent) {}
-  onWebSocketOpen = function (event: Event) {}
-  onWebSocketClose = function (event: Event) {}
-  onWebSocketError = function (event: Event) {}
-  onWebSocketMessage = function (event: MessageEvent) {}
+
   onNetworkStatusReady = () => {}
 
   private _state: EngineConnectionState = {
@@ -309,10 +332,10 @@ class EngineConnection extends EventTarget {
   private engineCommandManager: EngineCommandManager
 
   private pingPongSpan: { ping?: number; pong?: number }
-  private pingIntervalId: ReturnType<typeof setInterval> | null = null
+  private pingIntervalId: ReturnType<typeof setInterval> | undefined = undefined
   isUsingConnectionLite: boolean = false
 
-  timeoutToForceConnectId: ReturnType<typeof setTimeout> | null = null
+  timeoutToForceConnectId: ReturnType<typeof setTimeout> | undefined = undefined
 
   constructor({
     engineCommandManager,
@@ -416,18 +439,18 @@ class EngineConnection extends EventTarget {
     return this.state.type === EngineConnectionStateType.ConnectionEstablished
   }
 
-  tearDown(opts?: { idleMode: boolean }) {
-    this.idleMode = opts?.idleMode ?? false
-    if (this.pingIntervalId) {
-      clearInterval(this.pingIntervalId)
-    }
-    if (this.timeoutToForceConnectId) {
-      clearTimeout(this.timeoutToForceConnectId)
-    }
+  tearDown() {
+    clearInterval(this.pingIntervalId)
+    clearTimeout(this.timeoutToForceConnectId)
+
+    // As each network connection (websocket, webrtc, peer connection) is
+    // closed, they will handle removing their own event listeners.
+    // If they didn't then it'd be possible we stop listened to close events
+    // which is what we want to do in the first place :)
 
     this.disconnectAll()
 
-    if (this.idleMode) {
+    if (this.engineCommandManager.idleMode) {
       this.state = {
         type: EngineConnectionStateType.Disconnecting,
         value: {
@@ -435,6 +458,7 @@ class EngineConnection extends EventTarget {
         },
       }
     }
+
     // Pass the state along
     if (this.state.type === EngineConnectionStateType.Disconnecting) return
     if (this.state.type === EngineConnectionStateType.Disconnected) return
@@ -568,30 +592,41 @@ class EngineConnection extends EventTarget {
           }, 3000)
         }
         this.pc?.addEventListener?.('icecandidate', this.onIceCandidate)
+
+        // Watch out human! The names of the next couple events are really similar!
+        this.onIceGatheringStateChange = (event) => {
+          console.log('icegatheringstatechange', event)
+
+          that.initiateConnectionExclusive()
+        }
         this.pc?.addEventListener?.(
           'icegatheringstatechange',
-          function (_event) {
-            console.log('icegatheringstatechange', this.iceGatheringState)
-
-            if (this.iceGatheringState !== 'complete') return
-            that.initiateConnectionExclusive()
-          }
+          this.onIceGatheringStateChange
         )
 
+        this.onIceConnectionStateChange = (event: Event) => {
+          console.log('iceconnectionstatechange', event)
+        }
         this.pc?.addEventListener?.(
           'iceconnectionstatechange',
-          function (_event) {
-            console.log('iceconnectionstatechange', this.iceConnectionState)
-            console.log('iceconnectionstatechange', this.iceGatheringState)
-          }
+          this.onIceConnectionStateChange
         )
-        this.pc?.addEventListener?.('negotiationneeded', function (_event) {
-          console.log('negotiationneeded', this.iceConnectionState)
-          console.log('negotiationneeded', this.iceGatheringState)
-        })
-        this.pc?.addEventListener?.('signalingstatechange', function (event) {
-          console.log('signalingstatechange', this.signalingState)
-        })
+
+        this.onNegotiationNeeded = (event: Event) => {
+          console.log('negotiationneeded', event)
+        }
+        this.pc?.addEventListener?.(
+          'negotiationneeded',
+          this.onNegotiationNeeded
+        )
+
+        this.onSignalingStateChange = (event) => {
+          console.log('signalingstatechange', event)
+        }
+        this.pc?.addEventListener?.(
+          'signalingstatechange',
+          this.onSignalingStateChange
+        )
 
         this.onIceCandidateError = (_event: Event) => {
           const event = _event as RTCPeerConnectionIceErrorEvent
@@ -618,38 +653,12 @@ class EngineConnection extends EventTarget {
                   detail: { conn: this, mediaStream: this.mediaStream! },
                 })
               )
-
-              setTimeout(() => {
-                // Everything is now connected.
-                this.state = {
-                  type: EngineConnectionStateType.ConnectionEstablished,
-                }
-
-                this.engineCommandManager.inSequence = 1
-
-                this.dispatchEvent(
-                  new CustomEvent(EngineConnectionEvents.Opened, {
-                    detail: this,
-                  })
-                )
-                markOnce('code/endInitialEngineConnect')
-              }, 2000)
               break
+
             case 'connecting':
               break
-            case 'disconnected':
-            case 'failed':
-              this.pc?.removeEventListener('icecandidate', this.onIceCandidate)
-              this.pc?.removeEventListener(
-                'icecandidateerror',
-                this.onIceCandidateError
-              )
-              this.pc?.removeEventListener(
-                'connectionstatechange',
-                this.onConnectionStateChange
-              )
-              this.pc?.removeEventListener('track', this.onTrack)
 
+            case 'failed':
               this.state = {
                 type: EngineConnectionStateType.Disconnecting,
                 value: {
@@ -662,6 +671,43 @@ class EngineConnection extends EventTarget {
               }
               this.disconnectAll()
               break
+
+            // The remote end broke up with us! :(
+            case 'disconnected':
+              this.dispatchEvent(
+                new CustomEvent(EngineConnectionEvents.RestartRequest, {})
+              )
+              break
+            case 'closed':
+              this.pc?.removeEventListener('icecandidate', this.onIceCandidate)
+              this.pc?.removeEventListener(
+                'icegatheringstatechange',
+                this.onIceGatheringStateChange
+              )
+              this.pc?.removeEventListener(
+                'iceconnectionstatechange',
+                this.onIceConnectionStateChange
+              )
+              this.pc?.removeEventListener(
+                'negotiationneeded',
+                this.onNegotiationNeeded
+              )
+              this.pc?.removeEventListener(
+                'signalingstatechange',
+                this.onSignalingStateChange
+              )
+              this.pc?.removeEventListener(
+                'icecandidateerror',
+                this.onIceCandidateError
+              )
+              this.pc?.removeEventListener(
+                'connectionstatechange',
+                this.onConnectionStateChange
+              )
+              this.pc?.removeEventListener('track', this.onTrack)
+              this.pc?.removeEventListener('datachannel', this.onDataChannel)
+              break
+
             default:
               break
           }
@@ -735,9 +781,7 @@ class EngineConnection extends EventTarget {
           // The app is eager to use the MediaStream; as soon as onNewTrack is
           // called, the following sequence happens:
           // EngineConnection.onNewTrack -> StoreState.setMediaStream ->
-          // Stream.tsx reacts to mediaStream change, setting a video element.
-          // We wait until connectionstatechange changes to "connected"
-          // to pass it to the rest of the application.
+          // EngineStream.tsx reacts to mediaStream change, setting a video element.
 
           this.mediaStream = mediaStream
         }
@@ -761,6 +805,25 @@ class EngineConnection extends EventTarget {
                 type: ConnectingType.DataChannelEstablished,
               },
             }
+
+            // Start firing off engine commands at this point.
+            // They could be fired at an earlier time, onWebSocketOpen,
+            // but DataChannel can offer some benefits like speed,
+            // and it's nice to say everything's connected before interacting
+            // with the server.
+
+            this.state = {
+              type: EngineConnectionStateType.ConnectionEstablished,
+            }
+
+            this.engineCommandManager.inSequence = 1
+
+            this.dispatchEvent(
+              new CustomEvent(EngineConnectionEvents.Opened, {
+                detail: this,
+              })
+            )
+            markOnce('code/endInitialEngineConnect')
           }
           this.unreliableDataChannel?.addEventListener(
             'open',
@@ -784,7 +847,6 @@ class EngineConnection extends EventTarget {
               'message',
               this.onDataChannelMessage
             )
-            this.pc?.removeEventListener('datachannel', this.onDataChannel)
             this.disconnectAll()
           }
 
@@ -898,16 +960,19 @@ class EngineConnection extends EventTarget {
         }
         this.websocket.addEventListener('close', this.onWebSocketClose)
 
-        this.onWebSocketError = (event) => {
-          this.state = {
-            type: EngineConnectionStateType.Disconnecting,
-            value: {
-              type: DisconnectingType.Error,
+        this.onWebSocketError = (event: Event) => {
+          if (event.target instanceof WebSocket) {
+            this.state = {
+              type: EngineConnectionStateType.Disconnecting,
               value: {
-                error: ConnectionError.WebSocketError,
-                context: event,
+                type: DisconnectingType.Error,
+                value: {
+                  error: ConnectionError.WebSocketError,
+                  context:
+                    WEBSOCKET_READYSTATE_TEXT[event.target.readyState] ?? event,
+                },
               },
-            },
+            }
           }
 
           this.disconnectAll()
@@ -1213,20 +1278,27 @@ class EngineConnection extends EventTarget {
       !this.websocket ||
       this.websocket?.readyState === 3
 
-    if (closedPc && closedUDC && closedWS) {
-      if (!this.idleMode) {
-        // Do not notify the rest of the program that we have cut off anything.
-        this.state = { type: EngineConnectionStateType.Disconnected }
-      } else {
-        this.state = {
-          type: EngineConnectionStateType.Disconnecting,
-          value: {
-            type: DisconnectingType.Pause,
-          },
-        }
-      }
-      this.triggeredStart = false
+    if (!(closedPc && closedUDC && closedWS)) {
+      return
     }
+
+    // Clean up all the event listeners.
+
+    if (!this.engineCommandManager.idleMode) {
+      // Do not notify the rest of the program that we have cut off anything.
+      this.state = { type: EngineConnectionStateType.Disconnected }
+      this.dispatchEvent(
+        new CustomEvent(EngineConnectionEvents.RestartRequest, {})
+      )
+    } else {
+      this.state = {
+        type: EngineConnectionStateType.Disconnecting,
+        value: {
+          type: DisconnectingType.Pause,
+        },
+      }
+    }
+    this.triggeredStart = false
   }
 }
 
@@ -1253,6 +1325,9 @@ export interface Subscription<T extends ModelTypes> {
 export enum EngineCommandManagerEvents {
   // engineConnection is available but scene setup may not have run
   EngineAvailable = 'engine-available',
+
+  // request a restart of engineConnection
+  EngineRestartRequest = 'engine-restart-request',
 
   // the whole scene is ready (settings loaded)
   SceneReady = 'scene-ready',
@@ -1366,9 +1441,28 @@ export class EngineCommandManager extends EventTarget {
   kclManager: null | KclManager = null
   codeManager?: CodeManager
   rustContext?: RustContext
+  sceneInfra?: SceneInfra
 
   // The current "manufacturing machine" aka 3D printer, CNC, etc.
   public machineManager: MachineManager | null = null
+
+  // Dispatch to the application the engine needs a restart.
+  private onEngineConnectionRestartRequest = () => {
+    this.dispatchEvent(
+      new CustomEvent(EngineCommandManagerEvents.EngineRestartRequest, {})
+    )
+  }
+
+  private onOffline = () => {
+    console.log('Browser reported network is offline')
+    if (TEST) {
+      console.warn('DURING TESTS ENGINECONNECTION.ONOFFLINE WILL DO NOTHING.')
+      return
+    }
+    this.onEngineConnectionRestartRequest()
+  }
+
+  idleMode: boolean = false
 
   start({
     setMediaStream,
@@ -1415,6 +1509,8 @@ export class EngineCommandManager extends EventTarget {
       return
     }
 
+    window.addEventListener('offline', this.onOffline)
+
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
@@ -1436,29 +1532,51 @@ export class EngineCommandManager extends EventTarget {
       })
     )
 
+    this.engineConnection.addEventListener(
+      EngineConnectionEvents.RestartRequest,
+      this.onEngineConnectionRestartRequest as EventListener
+    )
+
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
-      await this.rustContext?.clearSceneAndBustCache(
-        await jsAppSettings(),
-        this.codeManager?.currentFilePath || undefined
-      )
+      console.log('onEngineConnectionOpened')
+
+      try {
+        console.log('clearing scene and busting cache')
+        await this.rustContext?.clearSceneAndBustCache(
+          await jsAppSettings(),
+          this.codeManager?.currentFilePath || undefined
+        )
+      } catch (e) {
+        // If this happens shit's actually gone south aka the websocket closed.
+        // Let's restart.
+        console.warn("shit's gone south")
+        console.warn(e)
+        this.engineConnection?.dispatchEvent(
+          new CustomEvent(EngineConnectionEvents.RestartRequest, {})
+        )
+        return
+      }
 
       // Set the stream's camera projection type
       // We don't send a command to the engine if in perspective mode because
       // for now it's the engine's default.
       if (settings.cameraProjection === 'orthographic') {
-        this.sendSceneCommand({
+        console.log('Setting camera to orthographic')
+        await this.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'default_camera_set_orthographic',
           },
-        }).catch(reportRejection)
+        })
       }
 
       // Set the theme
-      this.setTheme(this.settings.theme).catch(reportRejection)
+      console.log('Setting theme', this.settings.theme)
+      await this.setTheme(this.settings.theme)
       // Set up a listener for the dark theme media query
+      console.log('Setup theme media query change')
       darkModeMatcher?.addEventListener(
         'change',
         this.onDarkThemeMediaQueryChange
@@ -1466,7 +1584,8 @@ export class EngineCommandManager extends EventTarget {
 
       // Set the edge lines visibility
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.sendSceneCommand({
+      console.log('setting edge_lines_visible')
+      await this.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
         cmd: {
@@ -1475,21 +1594,30 @@ export class EngineCommandManager extends EventTarget {
         },
       })
 
+      console.log('camControlsCameraChange')
       this._camControlsCameraChange()
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.sendSceneCommand({
-        // CameraControls subscribes to default_camera_get_settings response events
-        // firing this at connection ensure the camera's are synced initially
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_get_settings',
-        },
-      })
+      // We should eventually only have 1 restoral call.
+      if (this.idleMode) {
+        await this.sceneInfra?.camControls.restoreRemoteCameraStateAndTriggerSync()
+      } else {
+        // NOTE: This code is old. It uses the old hack to restore camera.
+        console.log('call default_camera_get_settings')
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        await this.sendSceneCommand({
+          // CameraControls subscribes to default_camera_get_settings response events
+          // firing this at connection ensure the camera's are synced initially
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_get_settings',
+          },
+        })
+      }
 
       setIsStreamReady(true)
 
+      console.log('Dispatching SceneReady')
       // Other parts of the application should use this to react on scene ready.
       this.dispatchEvent(
         new CustomEvent(EngineCommandManagerEvents.SceneReady, {
@@ -1555,7 +1683,7 @@ export class EngineCommandManager extends EventTarget {
       }) as EventListener)
 
       this.onVideoTrackMute = () => {
-        console.error('video track mute: check webrtc internals -> inbound rtp')
+        console.warn('video track mute - potentially lost stream for a moment')
       }
 
       this.onEngineConnectionNewTrack = ({
@@ -1746,9 +1874,11 @@ export class EngineCommandManager extends EventTarget {
     this.engineConnection?.send(resizeCmd)
   }
 
-  tearDown(opts?: {
-    idleMode: boolean
-  }) {
+  tearDown(opts?: { idleMode: boolean }) {
+    this.idleMode = opts?.idleMode ?? false
+
+    window.removeEventListener('offline', this.onOffline)
+
     if (this.engineConnection) {
       for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
         pending.reject([
@@ -1786,14 +1916,14 @@ export class EngineCommandManager extends EventTarget {
         this.onDarkThemeMediaQueryChange
       )
 
-      this.engineConnection?.tearDown(opts)
+      this.engineConnection?.tearDown()
 
       // Our window.engineCommandManager.tearDown assignment causes this case to happen which is
       // only really for tests.
       // @ts-ignore
     } else if (this.engineCommandManager?.engineConnection) {
       // @ts-ignore
-      this.engineCommandManager?.engineConnection?.tearDown(opts)
+      this.engineCommandManager?.engineConnection?.tearDown()
       // @ts-ignore
       this.engineCommandManager.engineConnection = null
     }
@@ -2010,12 +2140,20 @@ export class EngineCommandManager extends EventTarget {
       return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
 
-    const resp = await this.sendCommand(id, {
-      command,
-      range,
-      idToRangeMap,
-    })
-    return BSON.serialize(resp[0])
+    try {
+      const resp = await this.sendCommand(id, {
+        command,
+        range,
+        idToRangeMap,
+      })
+      return BSON.serialize(resp[0])
+    } catch (e) {
+      if (isArray(e) && e.length > 0) {
+        return Promise.reject(JSON.stringify(e[0]))
+      }
+
+      return Promise.reject(JSON.stringify(e))
+    }
   }
   /**
    * Common send command function used for both modeling and scene commands
@@ -2104,25 +2242,25 @@ export class EngineCommandManager extends EventTarget {
     // Set the stream background color
     // This takes RGBA values from 0-1
     // So we convert from the conventional 0-255 found in Figma
-    this.sendSceneCommand({
+    await this.sendSceneCommand({
       cmd_id: uuidv4(),
       type: 'modeling_cmd_req',
       cmd: {
         type: 'set_background_color',
         color: getThemeColorForEngine(theme),
       },
-    }).catch(reportRejection)
+    })
 
     // Sets the default line colors
     const opposingTheme = getOppositeTheme(theme)
-    this.sendSceneCommand({
+    await this.sendSceneCommand({
       cmd_id: uuidv4(),
       type: 'modeling_cmd_req',
       cmd: {
         type: 'set_default_system_properties',
         color: getThemeColorForEngine(opposingTheme),
       },
-    }).catch(reportRejection)
+    })
   }
 }
 

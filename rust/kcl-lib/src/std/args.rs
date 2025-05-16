@@ -59,7 +59,9 @@ impl Arg {
 #[derive(Debug, Clone, Default)]
 pub struct KwArgs {
     /// Unlabeled keyword args. Currently only the first arg can be unlabeled.
-    pub unlabeled: Option<Arg>,
+    /// If the argument was a local variable, then the first element of the tuple is its name
+    /// which may be used to treat this arg as a labelled arg.
+    pub unlabeled: Option<(Option<String>, Arg)>,
     /// Labeled args.
     pub labeled: IndexMap<String, Arg>,
     pub errors: Vec<Arg>,
@@ -100,7 +102,7 @@ impl TyF64 {
             t => unreachable!("expected length, found {t:?}"),
         };
 
-        assert_ne!(len, UnitLen::Unknown);
+        debug_assert_ne!(len, UnitLen::Unknown);
 
         len.adjust_to(self.n, units).0
     }
@@ -112,7 +114,7 @@ impl TyF64 {
             _ => unreachable!(),
         };
 
-        assert_ne!(angle, UnitAngle::Unknown);
+        debug_assert_ne!(angle, UnitAngle::Unknown);
 
         angle.adjust_to(self.n, UnitAngle::Degrees).0
     }
@@ -124,7 +126,7 @@ impl TyF64 {
             _ => unreachable!(),
         };
 
-        assert_ne!(angle, UnitAngle::Unknown);
+        debug_assert_ne!(angle, UnitAngle::Unknown);
 
         angle.adjust_to(self.n, UnitAngle::Radians).0
     }
@@ -257,14 +259,22 @@ impl Args {
         };
 
         let arg = arg.value.coerce(ty, exec_state).map_err(|_| {
-            let actual_type_name = arg.value.human_friendly_type();
+            let actual_type = arg.value.principal_type();
+            let actual_type_name = actual_type
+                .as_ref()
+                .map(|t| t.to_string())
+                .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
             let msg_base = format!(
                 "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
                 ty.human_friendly_type(),
             );
-            let suggestion = match (ty, actual_type_name) {
-                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER),
-                (RuntimeType::Array(t, _), "Sketch") if **t == RuntimeType::Primitive(PrimitiveType::Solid) => {
+            let suggestion = match (ty, actual_type) {
+                (RuntimeType::Primitive(PrimitiveType::Solid), Some(RuntimeType::Primitive(PrimitiveType::Sketch))) => {
+                    Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
+                }
+                (RuntimeType::Array(t, _), Some(RuntimeType::Primitive(PrimitiveType::Sketch)))
+                    if **t == RuntimeType::Primitive(PrimitiveType::Solid) =>
+                {
                     Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
                 }
                 _ => None,
@@ -334,6 +344,7 @@ impl Args {
         self.kw_args
             .unlabeled
             .as_ref()
+            .map(|(_, a)| a)
             .or(self.args.first())
             .or(self.pipe_value.as_ref())
     }
@@ -381,14 +392,22 @@ impl Args {
             }))?;
 
         let arg = arg.value.coerce(ty, exec_state).map_err(|_| {
-            let actual_type_name = arg.value.human_friendly_type();
+            let actual_type = arg.value.principal_type();
+            let actual_type_name = actual_type
+                .as_ref()
+                .map(|t| t.to_string())
+                .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
             let msg_base = format!(
                 "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
                 ty.human_friendly_type(),
             );
-            let suggestion = match (ty, actual_type_name) {
-                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER),
-                (RuntimeType::Array(ty, _), "Sketch") if **ty == RuntimeType::Primitive(PrimitiveType::Solid) => {
+            let suggestion = match (ty, actual_type) {
+                (RuntimeType::Primitive(PrimitiveType::Solid), Some(RuntimeType::Primitive(PrimitiveType::Sketch))) => {
+                    Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
+                }
+                (RuntimeType::Array(ty, _), Some(RuntimeType::Primitive(PrimitiveType::Sketch)))
+                    if **ty == RuntimeType::Primitive(PrimitiveType::Solid) =>
+                {
                     Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
                 }
                 _ => None,

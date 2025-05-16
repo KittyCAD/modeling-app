@@ -11,8 +11,7 @@ use tower_lsp::lsp_types::{
     TextDocumentItem, WorkspaceFolder,
 };
 
-use crate::execution::typed_path::TypedPath;
-use crate::fs::FileSystem;
+use crate::{execution::typed_path::TypedPath, fs::FileSystem};
 
 /// A trait for the backend of the language server.
 #[async_trait::async_trait]

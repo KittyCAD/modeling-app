@@ -21,6 +21,7 @@ export const token = process.env.token || ''
 
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
+import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
@@ -43,6 +44,8 @@ export const lowerRightMasks = (page: Page) => [
 export type TestColor = [number, number, number]
 export const TEST_COLORS: { [key: string]: TestColor } = {
   WHITE: [249, 249, 249],
+  OFFWHITE: [237, 237, 237],
+  GREY: [142, 142, 142],
   YELLOW: [255, 255, 0],
   BLUE: [0, 0, 255],
   DARK_MODE_BKGD: [27, 27, 27],
@@ -809,8 +812,6 @@ export const doExport = async (
 
   await page.getByRole('button', { name: 'Submit command' }).click()
 
-  // This usually happens immediately after. If we're too slow we don't
-  // catch it.
   await expect(page.getByText('Exported successfully')).toBeVisible()
 
   if (exportFrom === 'sidebarButton' || exportFrom === 'commandBar') {
@@ -1150,4 +1151,78 @@ export function perProjectSettingsToToml(
 ) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
+}
+
+export async function clickElectronNativeMenuById(
+  tronApp: ElectronZoo,
+  menuId: string
+) {
+  const clickWasTriggered = await tronApp.electron.evaluate(
+    async ({ app }, menuId) => {
+      if (!app || !app.applicationMenu) {
+        return false
+      }
+      const menu = app.applicationMenu.getMenuItemById(menuId)
+      if (!menu) return false
+      menu.click()
+      return true
+    },
+    menuId
+  )
+  expect(clickWasTriggered).toBe(true)
+}
+
+export async function findElectronNativeMenuById(
+  tronApp: ElectronZoo,
+  menuId: string
+) {
+  const found = await tronApp.electron.evaluate(async ({ app }, menuId) => {
+    if (!app || !app.applicationMenu) {
+      return false
+    }
+    const menu = app.applicationMenu.getMenuItemById(menuId)
+    if (!menu) return false
+    return true
+  }, menuId)
+  expect(found).toBe(true)
+}
+
+export async function openSettingsExpectText(page: Page, text: string) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  // You are viewing the user tab
+  const actualText = settings.getByText(text)
+  await expect(actualText).toBeVisible()
+}
+
+export async function openSettingsExpectLocator(page: Page, selector: string) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  // You are viewing the keybindings tab
+  const settingsLocator = settings.locator(selector)
+  await expect(settingsLocator).toBeVisible()
+}
+
+/**
+ * A developer helper function to make playwright send all the console logs to stdout
+ * Call this within your E2E test and pass in the page or the tronApp to get as many
+ * logs piped to stdout for debugging
+ */
+export async function enableConsoleLogEverything({
+  page,
+  tronApp,
+}: { page?: Page; tronApp?: ElectronZoo }) {
+  page?.on('console', (msg) => {
+    console.log(`[Page-log]: ${msg.text()}`)
+  })
+
+  tronApp?.electron.on('window', async (electronPage) => {
+    electronPage.on('console', (msg) => {
+      console.log(`[Renderer] ${msg.type()}: ${msg.text()}`)
+    })
+  })
+
+  tronApp?.electron.on('console', (msg) => {
+    console.log(`[Main] ${msg.type()}: ${msg.text()}`)
+  })
 }

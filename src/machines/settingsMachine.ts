@@ -139,18 +139,20 @@ export const settingsMachine = setup({
       return () => darkModeMatcher?.removeEventListener('change', listener)
     }),
     registerCommands: fromCallback<
-      { type: 'update' },
+      { type: 'update'; settings: SettingsType },
       { settings: SettingsType; actor: AnyActorRef }
     >(({ input, receive, system }) => {
       // This assumes this actor is running in a system with a command palette
       const commandBarActor = system.get(ACTOR_IDS.COMMAND_BAR)
       // If the user wants to hide the settings commands
       //from the command bar don't add them.
-      if (settings.commandBar.includeSettings.current === false) return
+      if (settings.commandBar.includeSettings.current === false) {
+        return
+      }
       let commands: Command[] = []
 
-      const updateCommands = () =>
-        settingsWithCommandConfigs(input.settings)
+      const updateCommands = (newSettings: SettingsType) =>
+        settingsWithCommandConfigs(newSettings)
           .map((type) =>
             createSettingsCommand({
               type,
@@ -175,14 +177,19 @@ export const settingsMachine = setup({
           data: { commands: commands },
         })
 
-      receive((event) => {
-        if (event.type !== 'update') return
+      receive(({ type, settings: newSettings }) => {
+        if (type !== 'update') {
+          return
+        }
         removeCommands()
-        commands = updateCommands()
+        commands =
+          newSettings.commandBar.includeSettings.current === false
+            ? []
+            : updateCommands(newSettings)
         addCommands()
       })
 
-      commands = updateCommands()
+      commands = updateCommands(settings)
       addCommands()
 
       return () => {
@@ -205,7 +212,9 @@ export const settingsMachine = setup({
       const sceneInfra = rootContext.sceneInfra
       const sceneEntitiesManager = rootContext.sceneEntitiesManager
 
-      if (!sceneInfra || !sceneEntitiesManager) return
+      if (!sceneInfra || !sceneEntitiesManager) {
+        return
+      }
       const opposingTheme = getOppositeTheme(context.app.theme.current)
       sceneInfra.theme = opposingTheme
       sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
@@ -213,13 +222,17 @@ export const settingsMachine = setup({
     setAllowOrbitInSketchMode: ({ context, self }) => {
       const rootContext = self.system.get('root').getSnapshot().context
       const sceneInfra = rootContext.sceneInfra
-      if (!sceneInfra.camControls) return
+      if (!sceneInfra.camControls) {
+        return
+      }
       sceneInfra.camControls._setting_allowOrbitInSketchMode =
         context.app.allowOrbitInSketchMode.current
       // ModelingMachineProvider will do a use effect to trigger the camera engine sync
     },
     toastSuccess: ({ event }) => {
-      if (!('data' in event)) return
+      if (!('data' in event)) {
+        return
+      }
       const eventParts = event.type.replace(/^set./, '').split('.') as [
         keyof typeof settings,
         string,
@@ -435,6 +448,22 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel', 'setThemeColor'],
         },
 
+        'set.commandBar.includeSettings': {
+          target: 'persisting settings',
+
+          actions: [
+            'setSettingAtLevel',
+            'toastSuccess',
+            sendTo(
+              'registerCommands',
+              ({ context: { currentProject: _, ...settings } }) => ({
+                type: 'update',
+                settings,
+              })
+            ),
+          ],
+        },
+
         'set.modeling.defaultUnit': {
           target: 'persisting settings',
 
@@ -497,6 +526,13 @@ export const settingsMachine = setup({
             'setClientTheme',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
+            sendTo(
+              'registerCommands',
+              ({ context: { currentProject: _, ...settings } }) => ({
+                type: 'update',
+                settings,
+              })
+            ),
           ],
         },
 
@@ -510,6 +546,13 @@ export const settingsMachine = setup({
             'setClientTheme',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
+            sendTo(
+              'registerCommands',
+              ({ context: { currentProject: _, ...settings } }) => ({
+                type: 'update',
+                settings,
+              })
+            ),
           ],
         },
 
@@ -529,7 +572,13 @@ export const settingsMachine = setup({
             'clearProjectSettings',
             'clearCurrentProject',
             'setThemeColor',
-            sendTo('registerCommands', { type: 'update' }),
+            sendTo(
+              'registerCommands',
+              ({ context: { currentProject: _, ...settings } }) => ({
+                type: 'update',
+                settings,
+              })
+            ),
           ],
         },
       },
@@ -582,6 +631,13 @@ export const settingsMachine = setup({
             'setClientTheme',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
+            sendTo(
+              'registerCommands',
+              ({ context: { currentProject: _, ...settings } }) => ({
+                type: 'update',
+                settings,
+              })
+            ),
           ],
         },
         onError: {
@@ -612,7 +668,13 @@ export const settingsMachine = setup({
             'setClientTheme',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
-            sendTo('registerCommands', { type: 'update' }),
+            sendTo(
+              'registerCommands',
+              ({ context: { currentProject: _, ...settings } }) => ({
+                type: 'update',
+                settings,
+              })
+            ),
           ],
         },
         onError: 'idle',

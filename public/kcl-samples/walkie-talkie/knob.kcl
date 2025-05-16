@@ -5,15 +5,11 @@
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
-import width, thickness, height, knobDiameter, knobHeight, knobRadius from "parameters.kcl"
+import width, thickness, height, knobDiameter, knobHeight, knobFilletRadius from "parameters.kcl"
 
 // Create the knob sketch and revolve
-startSketchOn(XZ)
-  |> startProfile(at = [0.0001, 0])
-  |> xLine(length = knobDiameter / 2)
-  |> yLine(length = knobHeight - 0.05)
-  |> arc(angleStart = 0, angleEnd = 90, radius = .05)
-  |> xLine(endAbsolute = 0.0001)
-  |> close()
-  |> revolve(axis = Y)
-  |> appearance(color = '#D0FF01', metalness = 90, roughness = 50)
+startSketchOn(XY)
+  |> circle(center = [0, 0], radius = knobDiameter / 2, tag = $knobBend)
+  |> extrude(%, length = knobHeight)
+  |> fillet(radius = knobFilletRadius, tags = [getOppositeEdge(knobBend)])
+  |> appearance(%, color = "#afbf36")

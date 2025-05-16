@@ -69,6 +69,7 @@ import {
   UNLABELED_ARG,
 } from '@src/lang/queryAstConstants'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
+import { isTopLevelModule } from '@src/lang/util'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -157,10 +158,23 @@ export function defaultSourceRange(): SourceRange {
   return [0, 0, 0]
 }
 
-function firstSourceRange(error: RustKclError): SourceRange {
-  return error.sourceRanges.length > 0
-    ? sourceRangeFromRust(error.sourceRanges[0])
-    : defaultSourceRange()
+function bestSourceRange(error: RustKclError): SourceRange {
+  if (error.sourceRanges.length === 0) {
+    return defaultSourceRange()
+  }
+
+  // When there's an error, the call stack is unwound, and the locations are
+  // built up from deepest location to shallowest. So the shallowest call is
+  // last. That's the most useful to the user.
+  for (let i = error.sourceRanges.length - 1; i >= 0; i--) {
+    const range = error.sourceRanges[i]
+    // Skip ranges pointing into files that aren't the top-level module.
+    if (isTopLevelModule(range)) {
+      return sourceRangeFromRust(range)
+    }
+  }
+  // We didn't find a top-level module range, so just use the last one.
+  return sourceRangeFromRust(error.sourceRanges[error.sourceRanges.length - 1])
 }
 
 const splitErrors = (
@@ -230,7 +244,8 @@ export const parse = (code: string | Error): ParseResult | Error => {
     return new KCLError(
       parsed.kind,
       parsed.msg,
-      firstSourceRange(parsed),
+      bestSourceRange(parsed),
+      [],
       [],
       [],
       defaultArtifactGraph(),
@@ -386,7 +401,8 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
   return new KCLError(
     parsed.error.kind,
     parsed.error.msg,
-    firstSourceRange(parsed.error),
+    bestSourceRange(parsed.error),
+    parsed.nonFatal,
     parsed.operations,
     parsed.artifactCommands,
     rustArtifactGraphToMap(parsed.artifactGraph),

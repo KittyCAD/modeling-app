@@ -2,17 +2,28 @@
 flowchart LR
   subgraph path2 [Path]
     2["Path<br>[35, 60, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     3["Segment<br>[66, 85, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
     4["Segment<br>[91, 128, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
     5["Segment<br>[134, 154, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
   end
   1["Plane<br>[12, 29, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   6["Sweep Extrusion<br>[160, 180, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
   7[Wall]
+    %% face_code_ref=Missing NodePath
   8[Wall]
+    %% face_code_ref=Missing NodePath
   9[Wall]
+    %% face_code_ref=Missing NodePath
   10["Cap Start"]
+    %% face_code_ref=Missing NodePath
   11["Cap End"]
+    %% face_code_ref=Missing NodePath
   12["SweepEdge Opposite"]
   13["SweepEdge Opposite"]
   14["SweepEdge Opposite"]
@@ -26,15 +37,15 @@ flowchart LR
   2 ---- 6
   3 --- 9
   3 x--> 10
-  3 --- 14
-  3 --- 16
+  3 --- 12
+  3 --- 15
   4 --- 8
   4 x--> 10
   4 --- 13
-  4 --- 15
+  4 --- 16
   5 --- 7
   5 x--> 10
-  5 --- 12
+  5 --- 14
   5 --- 17
   6 --- 7
   6 --- 8
@@ -47,14 +58,14 @@ flowchart LR
   6 --- 15
   6 --- 16
   6 --- 17
-  12 <--x 7
-  15 <--x 7
-  17 <--x 7
-  13 <--x 8
+  7 --- 14
+  16 <--x 7
+  7 --- 17
+  8 --- 13
   15 <--x 8
-  16 <--x 8
-  14 <--x 9
-  16 <--x 9
+  8 --- 16
+  9 --- 12
+  9 --- 15
   17 <--x 9
   12 <--x 11
   13 <--x 11

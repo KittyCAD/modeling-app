@@ -2,42 +2,74 @@
 flowchart LR
   subgraph path3 [Path]
     3["Path<br>[63, 90, 1]"]
+      %% Missing NodePath
     5["Segment<br>[98, 116, 1]"]
+      %% Missing NodePath
     7["Segment<br>[124, 143, 1]"]
+      %% Missing NodePath
     9["Segment<br>[151, 170, 1]"]
+      %% Missing NodePath
     12["Segment<br>[178, 185, 1]"]
+      %% Missing NodePath
     13[Solid2d]
   end
   subgraph path4 [Path]
     4["Path<br>[63, 90, 1]"]
+      %% Missing NodePath
     6["Segment<br>[98, 116, 1]"]
+      %% Missing NodePath
     8["Segment<br>[124, 143, 1]"]
+      %% Missing NodePath
     10["Segment<br>[151, 170, 1]"]
+      %% Missing NodePath
     11["Segment<br>[178, 185, 1]"]
+      %% Missing NodePath
     14[Solid2d]
   end
   1["Plane<br>[38, 55, 1]"]
+    %% Missing NodePath
   2["Plane<br>[38, 55, 1]"]
+    %% Missing NodePath
   15["Sweep Extrusion<br>[342, 376, 1]"]
+    %% Missing NodePath
   16["Sweep Extrusion<br>[342, 376, 1]"]
+    %% Missing NodePath
   17["Sweep Extrusion<br>[342, 376, 1]"]
+    %% Missing NodePath
   18["Sweep Extrusion<br>[342, 376, 1]"]
+    %% Missing NodePath
   19["Sweep Extrusion<br>[342, 376, 1]"]
+    %% Missing NodePath
   20["Sweep Extrusion<br>[342, 376, 1]"]
+    %% Missing NodePath
   21["Sweep Extrusion<br>[342, 376, 1]"]
+    %% Missing NodePath
   22["Sweep Extrusion<br>[342, 376, 1]"]
+    %% Missing NodePath
   23[Wall]
+    %% face_code_ref=Missing NodePath
   24[Wall]
+    %% face_code_ref=Missing NodePath
   25[Wall]
+    %% face_code_ref=Missing NodePath
   26[Wall]
+    %% face_code_ref=Missing NodePath
   27[Wall]
+    %% face_code_ref=Missing NodePath
   28[Wall]
+    %% face_code_ref=Missing NodePath
   29[Wall]
+    %% face_code_ref=Missing NodePath
   30[Wall]
+    %% face_code_ref=Missing NodePath
   31["Cap Start"]
+    %% face_code_ref=Missing NodePath
   32["Cap Start"]
+    %% face_code_ref=Missing NodePath
   33["Cap End"]
+    %% face_code_ref=Missing NodePath
   34["Cap End"]
+    %% face_code_ref=Missing NodePath
   35["SweepEdge Opposite"]
   36["SweepEdge Opposite"]
   37["SweepEdge Opposite"]
@@ -61,28 +93,28 @@ flowchart LR
   3 --- 9
   3 --- 12
   3 --- 13
-  3 ---- 22
+  3 ---- 20
   4 --- 6
   4 --- 8
   4 --- 10
   4 --- 11
   4 --- 14
-  4 ---- 16
+  4 ---- 15
   5 --- 29
   5 x--> 32
-  5 --- 42
-  5 --- 50
+  5 --- 39
+  5 --- 47
   6 --- 26
   6 x--> 31
   6 --- 35
-  6 --- 46
+  6 --- 43
   7 --- 28
   7 x--> 32
-  7 --- 39
+  7 --- 40
   7 --- 48
   8 --- 24
   8 x--> 31
-  8 --- 38
+  8 --- 36
   8 --- 44
   9 --- 27
   9 x--> 32
@@ -94,64 +126,64 @@ flowchart LR
   10 --- 45
   11 --- 25
   11 x--> 31
-  11 --- 36
-  11 --- 43
+  11 --- 38
+  11 --- 46
   12 --- 30
   12 x--> 32
-  12 --- 40
-  12 --- 47
-  16 --- 23
-  16 --- 24
-  16 --- 25
-  16 --- 26
-  16 --- 31
-  16 --- 33
-  16 --- 35
-  16 --- 36
-  16 --- 37
-  16 --- 38
-  16 --- 43
-  16 --- 44
-  16 --- 45
-  16 --- 46
-  22 --- 27
-  22 --- 28
-  22 --- 29
-  22 --- 30
-  22 --- 32
-  22 --- 34
-  22 --- 39
-  22 --- 40
-  22 --- 41
-  22 --- 42
-  22 --- 47
-  22 --- 48
-  22 --- 49
-  22 --- 50
-  37 <--x 23
+  12 --- 42
+  12 --- 50
+  15 --- 23
+  15 --- 24
+  15 --- 25
+  15 --- 26
+  15 --- 31
+  15 --- 33
+  15 --- 35
+  15 --- 36
+  15 --- 37
+  15 --- 38
+  15 --- 43
+  15 --- 44
+  15 --- 45
+  15 --- 46
+  20 --- 27
+  20 --- 28
+  20 --- 29
+  20 --- 30
+  20 --- 32
+  20 --- 34
+  20 --- 39
+  20 --- 40
+  20 --- 41
+  20 --- 42
+  20 --- 47
+  20 --- 48
+  20 --- 49
+  20 --- 50
+  23 --- 37
   44 <--x 23
-  45 <--x 23
-  38 <--x 24
-  44 <--x 24
-  46 <--x 24
-  36 <--x 25
-  43 <--x 25
+  23 --- 45
+  24 --- 36
+  43 <--x 24
+  24 --- 44
+  25 --- 38
   45 <--x 25
-  35 <--x 26
-  43 <--x 26
+  25 --- 46
+  26 --- 35
+  26 --- 43
   46 <--x 26
-  41 <--x 27
+  27 --- 41
   48 <--x 27
-  49 <--x 27
-  39 <--x 28
-  48 <--x 28
-  50 <--x 28
-  42 <--x 29
-  47 <--x 29
+  27 --- 49
+  28 --- 40
+  47 <--x 28
+  28 --- 48
+  29 --- 39
+  29 --- 47
   50 <--x 29
-  40 <--x 30
-  47 <--x 30
+  30 --- 42
   49 <--x 30
+  30 --- 50
   35 <--x 33
   36 <--x 33
   37 <--x 33

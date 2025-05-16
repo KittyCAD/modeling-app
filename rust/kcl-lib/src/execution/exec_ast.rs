@@ -736,21 +736,35 @@ fn apply_ascription(
     let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
         .map_err(|e| KclError::Semantic(e.into()))?;
 
-    if let KclValue::Number { value, meta, .. } = value {
-        // If the number has unknown units but the user is explicitly specifying them, treat the value as having had it's units erased,
-        // rather than forcing the user to explicitly erase them.
-        KclValue::Number {
-            ty: NumericType::Any,
-            value: *value,
-            meta: meta.clone(),
+    let mut value = value.clone();
+
+    // If the number has unknown units but the user is explicitly specifying them, treat the value as having had it's units erased,
+    // rather than forcing the user to explicitly erase them.
+    if let KclValue::Number { value: n, meta, .. } = &value {
+        if let RuntimeType::Primitive(PrimitiveType::Number(num)) = &ty {
+            if num.is_fully_specified() {
+                value = KclValue::Number {
+                    ty: NumericType::Any,
+                    value: *n,
+                    meta: meta.clone(),
+                };
+            }
         }
-        .coerce(&ty, exec_state)
-    } else {
-        value.coerce(&ty, exec_state)
     }
-    .map_err(|_| {
+
+    value.coerce(&ty, exec_state).map_err(|_| {
+        let suggestion = if ty == RuntimeType::length() {
+            ", you might try coercing to a fully specified numeric type such as `number(mm)`"
+        } else if ty == RuntimeType::angle() {
+            ", you might try coercing to a fully specified numeric type such as `number(deg)`"
+        } else {
+            ""
+        };
         KclError::Semantic(KclErrorDetails {
-            message: format!("could not coerce {} value to type {}", value.human_friendly_type(), ty),
+            message: format!(
+                "could not coerce {} value to type {ty}{suggestion}",
+                value.human_friendly_type()
+            ),
             source_ranges: vec![source_range],
         })
     })
@@ -913,11 +927,9 @@ impl Node<MemberExpression> {
             }),
             (being_indexed, _, _) => {
                 let t = being_indexed.human_friendly_type();
-                let article = article_for(t);
+                let article = article_for(&t);
                 Err(KclError::Semantic(KclErrorDetails {
-                    message: format!(
-                        "Only arrays and objects can be indexed, but you're trying to index {article} {t}"
-                    ),
+                    message: format!("Only arrays can be indexed, but you're trying to index {article} {t}"),
                     source_ranges: vec![self.clone().into()],
                 }))
             }
@@ -1313,10 +1325,15 @@ impl Node<CallExpressionKw> {
                 Some(l) => {
                     fn_args.insert(l.name.clone(), arg);
                 }
-                None => errors.push(arg),
+                None => {
+                    if let Some(id) = arg_expr.arg.ident_name() {
+                        fn_args.insert(id.to_owned(), arg);
+                    } else {
+                        errors.push(arg);
+                    }
+                }
             }
         }
-        let fn_args = fn_args; // remove mutability
 
         // Evaluate the unlabeled first param, if any exists.
         let unlabeled = if let Some(ref arg_expr) = self.unlabeled {
@@ -1325,12 +1342,15 @@ impl Node<CallExpressionKw> {
             let value = ctx
                 .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
-            Some(Arg::new(value, source_range))
+
+            let label = arg_expr.ident_name().map(str::to_owned);
+
+            Some((label, Arg::new(value, source_range)))
         } else {
             None
         };
 
-        let args = Args::new_kw(
+        let mut args = Args::new_kw(
             KwArgs {
                 unlabeled,
                 labeled: fn_args,
@@ -1347,6 +1367,20 @@ impl Node<CallExpressionKw> {
                         self.callee.as_source_range(),
                         format!("`{fn_name}` is deprecated, see the docs for a recommended replacement"),
                     ));
+                }
+
+                let formals = func.args(false);
+
+                // If it's possible the input arg was meant to be labelled and we probably don't want to use
+                // it as the input arg, then treat it as labelled.
+                if let Some((Some(label), _)) = &args.kw_args.unlabeled {
+                    if (formals.iter().all(|a| a.label_required) || exec_state.pipe_value().is_some())
+                        && formals.iter().any(|a| &a.name == label && a.label_required)
+                        && !args.kw_args.labeled.contains_key(label)
+                    {
+                        let (label, arg) = args.kw_args.unlabeled.take().unwrap();
+                        args.kw_args.labeled.insert(label.unwrap(), arg);
+                    }
                 }
 
                 #[cfg(feature = "artifact-graph")]
@@ -1370,7 +1404,6 @@ impl Node<CallExpressionKw> {
                     None
                 };
 
-                let formals = func.args(false);
                 for (label, arg) in &args.kw_args.labeled {
                     match formals.iter().find(|p| &p.name == label) {
                         Some(p) => {
@@ -1434,7 +1467,6 @@ impl Node<CallExpressionKw> {
                     .await
                     .map_err(|e| {
                         // Add the call expression to the source ranges.
-                        // TODO currently ignored by the frontend
                         e.add_source_ranges(vec![callsite])
                     })?;
 
@@ -1698,8 +1730,9 @@ impl Node<ObjectExpression> {
     }
 }
 
-fn article_for(s: &str) -> &'static str {
-    if s.starts_with(['a', 'e', 'i', 'o', 'u']) {
+fn article_for<S: AsRef<str>>(s: S) -> &'static str {
+    // '[' is included since it's an array.
+    if s.as_ref().starts_with(['a', 'e', 'i', 'o', 'u', '[']) {
         "an"
     } else {
         "a"
@@ -1709,10 +1742,9 @@ fn article_for(s: &str) -> &'static str {
 fn number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<TyF64, KclError> {
     v.as_ty_f64().ok_or_else(|| {
         let actual_type = v.human_friendly_type();
-        let article = article_for(actual_type);
         KclError::Semantic(KclErrorDetails {
             source_ranges: vec![source_range],
-            message: format!("Expected a number, but found {article} {actual_type}",),
+            message: format!("Expected a number, but found {actual_type}",),
         })
     })
 }
@@ -1867,6 +1899,21 @@ fn type_check_params_kw(
     args: &mut KwArgs,
     exec_state: &mut ExecState,
 ) -> Result<(), KclError> {
+    // If it's possible the input arg was meant to be labelled and we probably don't want to use
+    // it as the input arg, then treat it as labelled.
+    if let Some((Some(label), _)) = &args.unlabeled {
+        if (function_expression.params.iter().all(|p| p.labeled) || exec_state.pipe_value().is_some())
+            && function_expression
+                .params
+                .iter()
+                .any(|p| &p.identifier.name == label && p.labeled)
+            && !args.labeled.contains_key(label)
+        {
+            let (label, arg) = args.unlabeled.take().unwrap();
+            args.labeled.insert(label.unwrap(), arg);
+        }
+    }
+
     for (label, arg) in &mut args.labeled {
         match function_expression.params.iter().find(|p| &p.identifier.name == label) {
             Some(p) => {
@@ -1961,10 +2008,11 @@ fn type_check_params_kw(
     if let Some(arg) = &mut args.unlabeled {
         if let Some(p) = function_expression.params.iter().find(|p| !p.labeled) {
             if let Some(ty) = &p.type_ {
-                arg.value = arg
+                arg.1.value = arg
+                    .1
                     .value
                     .coerce(
-                        &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range)
+                        &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.1.source_range)
                             .map_err(|e| KclError::Semantic(e.into()))?,
                         exec_state,
                     )
@@ -1976,9 +2024,9 @@ fn type_check_params_kw(
                                     .map(|n| format!("`{}`", n))
                                     .unwrap_or_else(|| "this function".to_owned()),
                                 ty.inner,
-                                arg.value.human_friendly_type()
+                                arg.1.value.human_friendly_type()
                             ),
-                            source_ranges: vec![arg.source_range],
+                            source_ranges: vec![arg.1.source_range],
                         })
                     })?;
             }
@@ -2141,10 +2189,11 @@ impl FunctionSource {
                 if let Some(arg) = &mut args.kw_args.unlabeled {
                     if let Some(p) = ast.params.iter().find(|p| !p.labeled) {
                         if let Some(ty) = &p.type_ {
-                            arg.value = arg
+                            arg.1.value = arg
+                                .1
                                 .value
                                 .coerce(
-                                    &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range)
+                                    &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.1.source_range)
                                         .map_err(|e| KclError::Semantic(e.into()))?,
                                     exec_state,
                                 )
@@ -2154,7 +2203,7 @@ impl FunctionSource {
                                             "The input argument of {} requires a value with type `{}`, but found {}",
                                             props.name,
                                             ty.inner,
-                                            arg.value.human_friendly_type(),
+                                            arg.1.value.human_friendly_type(),
                                         ),
                                         source_ranges: vec![callsite],
                                     })
@@ -2226,7 +2275,7 @@ impl FunctionSource {
                                 .kw_args
                                 .unlabeled
                                 .as_ref()
-                                .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                                .map(|arg| OpArg::new(OpKclValue::from(&arg.1.value), arg.1.source_range)),
                             labeled_args: op_labeled_args,
                         },
                         source_range: callsite,
@@ -2446,19 +2495,23 @@ arr1 = [42]: [number(cm)]
 a = 42: string
 "#;
         let result = parse_execute(program).await;
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("could not coerce number value to type string"));
+        let err = result.unwrap_err();
+        assert!(
+            err.to_string()
+                .contains("could not coerce number(default units) value to type string"),
+            "Expected error but found {err:?}"
+        );
 
         let program = r#"
 a = 42: Plane
 "#;
         let result = parse_execute(program).await;
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("could not coerce number value to type Plane"));
+        let err = result.unwrap_err();
+        assert!(
+            err.to_string()
+                .contains("could not coerce number(default units) value to type Plane"),
+            "Expected error but found {err:?}"
+        );
 
         let program = r#"
 arr = [0]: [string]
@@ -2467,7 +2520,7 @@ arr = [0]: [string]
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce array (list) value to type [string]"),
+                .contains("could not coerce [any; 1] value to type [string]"),
             "Expected error but found {err:?}"
         );
 
@@ -2478,7 +2531,7 @@ mixedArr = [0, "a"]: [number(mm)]
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce array (list) value to type [number(mm)]"),
+                .contains("could not coerce [any; 2] value to type [number(mm)]"),
             "Expected error but found {err:?}"
         );
     }
@@ -2663,13 +2716,12 @@ a = foo()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_sensible_error_when_missing_equals_in_kwarg() {
-        for (i, call) in ["f(x=1,y)", "f(x=1,3,z)", "f(x=1,y,z=1)", "f(x=1, 3 + 4, z=1)"]
+        for (i, call) in ["f(x=1,3,0)", "f(x=1,3,z)", "f(x=1,0,z=1)", "f(x=1, 3 + 4, z)"]
             .into_iter()
             .enumerate()
         {
             let program = format!(
                 "fn foo() {{ return 0 }}
-y = 42
 z = 0
 fn f(x, y, z) {{ return 0 }}
 {call}"
@@ -2689,13 +2741,26 @@ fn f(x, y, z) {{ return 0 }}
 
     #[tokio::test(flavor = "multi_thread")]
     async fn default_param_for_unlabeled() {
-        // Tests that the input param for myExtrude is taken from the pipeline value.
+        // Tests that the input param for myExtrude is taken from the pipeline value and same-name
+        // keyword args.
         let ast = r#"fn myExtrude(@sk, length) {
-  return extrude(sk, length = length)
+  return extrude(sk, length)
 }
 sketch001 = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 93.75)
   |> myExtrude(length = 40)
+"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn dont_use_unlabelled_as_input() {
+        // `length` should be used as the `length` argument to extrude, not the unlabelled input
+        let ast = r#"length = 10
+startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 93.75)
+  |> extrude(length)
 "#;
 
         parse_execute(ast).await.unwrap();
@@ -2714,5 +2779,30 @@ sketch001 = startSketchOn(XY)
         let e = parse_execute(ast).await.unwrap_err();
         // Make sure we get a useful error message and not an engine error.
         assert!(e.message().contains("sqrt"), "Error message: '{}'", e.message());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn coerce_unknown_to_length() {
+        let ast = r#"x = 2mm * 2mm
+y = x: number(Length)"#;
+        let e = parse_execute(ast).await.unwrap_err();
+        assert!(
+            e.message().contains("could not coerce"),
+            "Error message: '{}'",
+            e.message()
+        );
+
+        let ast = r#"x = 2mm
+y = x: number(Length)"#;
+        let result = parse_execute(ast).await.unwrap();
+        let mem = result.exec_state.stack();
+        let num = mem
+            .memory
+            .get_from("y", result.mem_env, SourceRange::default(), 0)
+            .unwrap()
+            .as_ty_f64()
+            .unwrap();
+        assert_eq!(num.n, 2.0);
+        assert_eq!(num.ty, NumericType::mm());
     }
 }

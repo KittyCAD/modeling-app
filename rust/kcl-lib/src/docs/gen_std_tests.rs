@@ -16,7 +16,7 @@ use crate::{
 };
 
 // Types with special handling.
-const SPECIAL_TYPES: [&str; 5] = ["TagDeclarator", "TagIdentifier", "Start", "End", "ImportedGeometry"];
+const SPECIAL_TYPES: [&str; 4] = ["TagDeclarator", "TagIdentifier", "Start", "End"];
 
 const TYPE_REWRITES: [(&str, &str); 11] = [
     ("TagNode", "TagDeclarator"),
@@ -674,6 +674,8 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool) -> String {
 
             if fmt_for_text && ty.starts_with("number") {
                 format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-number)")
+            } else if fmt_for_text && ty.starts_with("fn") {
+                format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-fn)")
             } else if fmt_for_text && SPECIAL_TYPES.contains(&ty) {
                 format!("[{prefix}{ty}{suffix}](/docs/kcl-lang/types#{ty})")
             } else if fmt_for_text && DECLARED_TYPES.contains(&ty) {

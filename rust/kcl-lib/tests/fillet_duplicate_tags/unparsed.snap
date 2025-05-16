@@ -1,0 +1,18 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing fillet_duplicate_tags.kcl
+---
+startProfile(startSketchOn(XY), at = [0, 0])
+  |> xLine(length = 10, tag = $line000)
+  |> yLine(length = 10, tag = $line001)
+  |> xLine(endAbsolute = profileStartX(%), tag = $line002)
+  |> close(tag = $line003)
+  |> extrude(length = 10)
+  |> fillet(
+       radius = 1,
+       tags = [
+         line003,
+         getNextAdjacentEdge(line000),
+         getPreviousAdjacentEdge(line001)
+       ],
+     )

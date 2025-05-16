@@ -147,6 +147,14 @@ export class KclManager {
 
   set switchedFiles(switchedFiles: boolean) {
     this._switchedFiles = switchedFiles
+
+    // These belonged to the previous file
+    this.lastSuccessfulOperations = []
+    this.lastSuccessfulVariables = {}
+
+    // Without this, when leaving a project which has errors and opening another project which doesn't,
+    // you'd see the errors from the previous project for a short time until the new code is executed.
+    this._errors = []
   }
 
   get variables() {
