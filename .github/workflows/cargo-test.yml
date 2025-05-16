@@ -196,12 +196,6 @@ jobs:
       - runs-on=${{ github.run_id }}
       - runner=32cpu-linux-x64
       - extras=s3-cache
-    needs: build-test-artifacts
-    strategy:
-      fail-fast: false
-      matrix:
-        partitionIndex: [1, 2, 3, 4, 5, 6]
-        partitionTotal: [6]
     steps:
       - uses: runs-on/action@v1
       - uses: actions/create-github-app-token@v1
