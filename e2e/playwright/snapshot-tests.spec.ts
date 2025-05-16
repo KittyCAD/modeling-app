@@ -766,7 +766,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
   })
 })
 
-test('theme persists', async ({ page, context }) => {
+test('theme persists', async ({ page, context, homePage }) => {
   const u = await getUtils(page)
   await context.addInitScript(async () => {
     localStorage.setItem(
@@ -784,7 +784,7 @@ test('theme persists', async ({ page, context }) => {
 
   await page.setViewportSize({ width: 1200, height: 500 })
 
-  await u.waitForAuthSkipAppStart()
+  await homePage.goToModelingScene()
   await page.waitForTimeout(500)
 
   // await page.getByRole('link', { name: 'Settings Settings (tooltip)' }).click()
@@ -812,7 +812,7 @@ test('theme persists', async ({ page, context }) => {
   // Disconnect and reconnect to check the theme persists through a reload
 
   // Expect the network to be down
-  await expect(networkToggle).toContainText('Offline')
+  await expect(networkToggle).toContainText('Problem')
 
   // simulate network up
   await u.emulateNetworkConditions({

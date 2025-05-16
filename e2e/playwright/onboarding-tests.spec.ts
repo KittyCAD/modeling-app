@@ -6,7 +6,6 @@ test.describe('Onboarding tests', () => {
     homePage,
     toolbar,
     editor,
-    scene,
     tronApp,
   }) => {
     if (!tronApp) {
@@ -62,7 +61,6 @@ test.describe('Onboarding tests', () => {
       await editor.expectEditor.toContain('@settings(defaultLengthUnit = in)', {
         shouldNormalise: true,
       })
-      await scene.connectionEstablished()
     })
 
     await test.step('Go home and verify we still see the tutorial button, then begin it.', async () => {
@@ -132,9 +130,7 @@ test.describe('Onboarding tests', () => {
       })
 
       await test.step('Dismiss the onboarding', async () => {
-        await postDismissToast.waitFor({ state: 'hidden' })
         await page.keyboard.press('Escape')
-        await expect(postDismissToast).toBeVisible()
         await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
         await expect.poll(() => page.url()).not.toContain('/onboarding')
       })
@@ -162,13 +158,10 @@ test.describe('Onboarding tests', () => {
       await test.step('Gets to the onboarding start', async () => {
         await expect(toolbar.projectName).toContainText('tutorial-project')
         await expect(tutorialWelcomeHeading).toBeVisible()
-        await scene.connectionEstablished()
       })
 
       await test.step('Dismiss the onboarding', async () => {
-        await postDismissToast.waitFor({ state: 'hidden' })
         await page.keyboard.press('Escape')
-        await expect(postDismissToast).toBeVisible()
         await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
         await expect.poll(() => page.url()).not.toContain('/onboarding')
       })

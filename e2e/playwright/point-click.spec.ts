@@ -1931,50 +1931,37 @@ sketch002 = startSketchOn(XZ)
     })
   })
 
-  test(`Sweep point-and-click failing validation`, async ({
+  test(`Sweep point-and-click helix`, async ({
     context,
     page,
     homePage,
     scene,
+    editor,
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn(YZ)
-  |> circle(
-       center = [0, 0],
-       radius = 500
-     )
-sketch002 = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
-  |> xLine(length = -500)
-  |> line(endAbsolute = [-2000, 500])
-`
+    const circleCode = `circle(sketch001, center = [0, -1], radius = .1)`
+    const initialCode = `helix001 = helix(
+  axis = X,
+  radius = 1,
+  length = 10,
+  revolutions = 10,
+  angleStart = 0,
+  ccw = false,
+)
+sketch001 = startSketchOn(XZ)
+profile001 = ${circleCode}`
+    const sweepDeclaration = 'sweep001 = sweep(profile001, path = helix001)'
+
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    // One dumb hardcoded screen pixel value
-    const testPoint = { x: 700, y: 250 }
-    const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    const [clickOnSketch2] = scene.makeMouseHelpers(
-      testPoint.x - 50,
-      testPoint.y
-    )
-
-    await test.step(`Look for sketch001`, async () => {
-      await toolbar.closePane('code')
-      await scene.expectPixelColor([53, 53, 53], testPoint, 15)
-    })
-
-    await test.step(`Go through the command bar flow and fail validation with a toast`, async () => {
+    await test.step(`Add sweep through the command bar flow`, async () => {
+      await toolbar.openPane('feature-tree')
       await toolbar.sweepButton.click()
-      await expect
-        .poll(() => page.getByText('Please select one').count())
-        .toBe(1)
       await cmdBar.expectState({
         commandName: 'Sweep',
         currentArgKey: 'sketches',
@@ -1987,7 +1974,8 @@ sketch002 = startSketchOn(XZ)
         highlightedHeaderArg: 'sketches',
         stage: 'arguments',
       })
-      await clickOnSketch1()
+      await editor.scrollToText(circleCode)
+      await page.getByText(circleCode).click()
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Sweep',
@@ -2001,11 +1989,39 @@ sketch002 = startSketchOn(XZ)
         highlightedHeaderArg: 'path',
         stage: 'arguments',
       })
-      await clickOnSketch2()
+      const helix = await toolbar.getFeatureTreeOperation('Helix', 0)
+      await helix.click()
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        currentArgKey: 'path',
+        currentArgValue: '',
+        headerArguments: {
+          Sectional: '',
+          Sketches: '1 face',
+          Path: '',
+        },
+        highlightedHeaderArg: 'path',
+        stage: 'arguments',
+      })
       await cmdBar.progressCmdBar()
-      await expect(
-        page.getByText('Unable to sweep with the current selection. Reason:')
-      ).toBeVisible()
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        headerArguments: {
+          Sketches: '1 face',
+          Path: '1 helix',
+          Sectional: '',
+        },
+        stage: 'review',
+      })
+      await cmdBar.progressCmdBar()
+      await editor.expectEditor.toContain(sweepDeclaration)
+    })
+
+    await test.step('Delete sweep via feature tree selection', async () => {
+      const sweep = await toolbar.getFeatureTreeOperation('Sweep', 0)
+      await sweep.click()
+      await page.keyboard.press('Delete')
+      await editor.expectEditor.not.toContain(sweepDeclaration)
     })
   })
 
@@ -3627,67 +3643,6 @@ profile001 = startProfile(sketch001, at = [-20, 20])
     })
   })
 
-  test(`Shell dry-run validation rejects sweeps`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `sketch001 = startSketchOn(YZ)
-  |> circle(
-       center = [0, 0],
-       radius = 500
-     )
-sketch002 = startSketchOn(XZ)
-    |> startProfile(at = [0, 0])
-  |> xLine(length = -2000)
-sweep001 = sweep(sketch001, path = sketch002)
-`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-
-    // One dumb hardcoded screen pixel value
-    const testPoint = { x: 500, y: 250 }
-    const [clickOnSweep] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-
-    await test.step(`Confirm sweep exists`, async () => {
-      await toolbar.closePane('code')
-      await scene.expectPixelColor([231, 231, 231], testPoint, 15)
-    })
-
-    await test.step(`Go through the Shell flow and fail validation with a toast`, async () => {
-      await toolbar.shellButton.click()
-      await expect
-        .poll(() => page.getByText('Please select one').count())
-        .toBe(1)
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-          Thickness: '',
-        },
-        highlightedHeaderArg: 'selection',
-        commandName: 'Shell',
-      })
-      await clickOnSweep()
-      await page.waitForTimeout(500)
-      await cmdBar.progressCmdBar()
-      await expect(
-        page.getByText('Unable to shell with the current selection. Reason:')
-      ).toBeVisible()
-      await page.waitForTimeout(1000)
-    })
-  })
-
   test.describe('Revolve point and click workflows', () => {
     test('Base case workflow, auto spam continue in command bar', async ({
       context,
@@ -4941,6 +4896,36 @@ path001 = startProfile(sketch001, at = [0, 0])
         `revolve001 = revolve([profile001, profile002], axis = XY, angle = 180)`,
         { shouldNormalise: true }
       )
+    })
+  })
+
+  test(`Point and click codemods can't run on KCL errors`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const badCode = `sketch001 = startSketchOn(XZ)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001 length = 1)`
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, badCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+
+    await test.step(`Start Sketch is disabled`, async () => {
+      await expect(toolbar.startSketchBtn).not.toBeEnabled()
+      await editor.expectEditor.toContain(badCode, { shouldNormalise: true })
+    })
+
+    await test.step(`Helix is disabled`, async () => {
+      await expect(toolbar.helixButton).not.toBeEnabled()
+      await editor.expectEditor.toContain(badCode, { shouldNormalise: true })
     })
   })
 })

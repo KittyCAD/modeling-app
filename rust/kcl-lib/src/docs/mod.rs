@@ -1167,6 +1167,16 @@ mod tests {
         assert_eq!(snippet, r#"clone(${0:part001})"#);
     }
 
+    #[test]
+    fn get_autocomplete_snippet_offset_plane() {
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(offset_plane_fn) = data.find_by_name("offsetPlane").unwrap() else {
+            panic!();
+        };
+        let snippet = offset_plane_fn.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"offsetPlane(${0:XY}, offset = ${1:3.14})"#);
+    }
+
     // We want to test the snippets we compile at lsp start.
     #[test]
     fn get_all_stdlib_autocomplete_snippets() {

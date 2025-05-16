@@ -29,13 +29,21 @@ flowchart LR
   13["Sweep Extrusion<br>[1003, 1024, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 9 }]
   14[Wall]
+    %% face_code_ref=Missing NodePath
   15[Wall]
+    %% face_code_ref=Missing NodePath
   16[Wall]
+    %% face_code_ref=Missing NodePath
   17[Wall]
+    %% face_code_ref=Missing NodePath
   18[Wall]
+    %% face_code_ref=Missing NodePath
   19[Wall]
+    %% face_code_ref=Missing NodePath
   20["Cap Start"]
+    %% face_code_ref=Missing NodePath
   21["Cap End"]
+    %% face_code_ref=Missing NodePath
   22["SweepEdge Opposite"]
   23["SweepEdge Opposite"]
   24["SweepEdge Opposite"]

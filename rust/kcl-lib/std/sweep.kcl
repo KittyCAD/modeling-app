@@ -1,0 +1,5 @@
+/// Local/relative to the trajectory curve
+export TRAJECTORY = 'trajectoryCurve'
+
+/// Local/relative to a position centered within the plane being sketched on
+export SKETCH_PLANE = 'sketchPlane'

@@ -1,4 +1,5 @@
 use std::{
+    fs::read_to_string,
     panic::{catch_unwind, AssertUnwindSafe},
     path::{Path, PathBuf},
 };
@@ -21,7 +22,7 @@ struct Test {
     name: String,
     /// The name of the KCL file that's the entry point, e.g. "main.kcl", in the
     /// `input_dir`.
-    entry_point: String,
+    entry_point: PathBuf,
     /// Input KCL files are in this directory.
     input_dir: PathBuf,
     /// Expected snapshot output files are in this directory.
@@ -34,7 +35,7 @@ impl Test {
     fn new(name: &str) -> Self {
         Self {
             name: name.to_owned(),
-            entry_point: "input.kcl".to_owned(),
+            entry_point: Path::new("tests").join(name).join("input.kcl"),
             input_dir: Path::new("tests").join(name),
             output_dir: Path::new("tests").join(name),
         }
@@ -66,19 +67,12 @@ where
     settings.bind(f);
 }
 
-fn read<P>(filename: &str, dir: P) -> String
-where
-    P: AsRef<Path>,
-{
-    std::fs::read_to_string(dir.as_ref().join(filename)).expect("Failed to read file: {filename}")
-}
-
 fn parse(test_name: &str) {
     parse_test(&Test::new(test_name));
 }
 
 fn parse_test(test: &Test) {
-    let input = read(&test.entry_point, &test.input_dir);
+    let input = read_to_string(&test.entry_point).unwrap();
     let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
 
     // Parse the tokens into an AST.
@@ -98,7 +92,7 @@ async fn unparse(test_name: &str) {
 
 async fn unparse_test(test: &Test) {
     // Parse into an AST
-    let input = read(&test.entry_point, &test.input_dir);
+    let input = read_to_string(&test.entry_point).unwrap();
     let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
     let ast = crate::parsing::parse_tokens(tokens).unwrap();
 
@@ -111,10 +105,9 @@ async fn unparse_test(test: &Test) {
     }));
 
     // Check all the rest of the files in the directory.
-    let entry_point = test.input_dir.join(&test.entry_point);
     let kcl_files = crate::unparser::walk_dir(&test.input_dir).await.unwrap();
     // Filter out the entry point file.
-    let kcl_files = kcl_files.into_iter().filter(|f| f != &entry_point);
+    let kcl_files = kcl_files.into_iter().filter(|f| f != &test.entry_point);
     let futures = kcl_files
         .into_iter()
         .filter(|file| file.extension().is_some_and(|ext| ext == "kcl")) // We only care about kcl
@@ -154,13 +147,11 @@ async fn execute(test_name: &str, render_to_png: bool) {
 }
 
 async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
-    let input = read(&test.entry_point, &test.input_dir);
+    let input = read_to_string(&test.entry_point).unwrap();
     let ast = crate::Program::parse_no_errs(&input).unwrap();
 
     // Run the program.
-    let exec_res =
-        crate::test_server::execute_and_snapshot_ast(ast, Some(test.input_dir.join(&test.entry_point)), export_step)
-            .await;
+    let exec_res = crate::test_server::execute_and_snapshot_ast(ast, Some(test.entry_point.clone()), export_step).await;
     match exec_res {
         Ok((exec_state, env_ref, png, step)) => {
             let fail_path = test.output_dir.join("execution_error.snap");
@@ -314,7 +305,7 @@ fn assert_common_snapshots(
             // Change the snapshot suffix so that it is rendered as a Markdown file
             // in GitHub.
             // Ignore the cpu cooler for now because its being a little bitch.
-            if test.name == "cpu_cooler" {
+            if test.name != "cpu-cooler" {
                 insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
             }
         })
@@ -2748,7 +2739,6 @@ mod import_mesh_clone {
 
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
-    #[ignore = "turn on when katie fixes the mesh import"]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }
@@ -2771,7 +2761,7 @@ mod clone_w_fillets {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     #[ignore] // turn on when https://github.com/KittyCAD/engine/pull/3380 is merged
-              // Theres also a test in clone.rs you need to turn too
+              // There's also a test in clone.rs you need to turn too
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }
@@ -3115,6 +3105,27 @@ mod sketch_on_face_union {
 }
 mod revolve_colinear {
     const TEST_NAME: &str = "revolve-colinear";
+  
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod subtract_regression07 {
+    const TEST_NAME: &str = "subtract_regression07";
 
     /// Test parsing KCL.
     #[test]
