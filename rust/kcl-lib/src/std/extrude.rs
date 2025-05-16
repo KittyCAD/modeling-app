@@ -235,6 +235,7 @@ pub(crate) struct NamedCapTags<'a> {
     pub end: Option<&'a TagNode>,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) async fn do_post_extrude<'a>(
     sketch: &Sketch,
     #[cfg(feature = "artifact-graph")] solid_id: ArtifactId,
