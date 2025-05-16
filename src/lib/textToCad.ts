@@ -196,7 +196,7 @@ export async function submitAndAwaitTextToKclSystemIO({
       }
 
       const TRUNCATED_PROMPT_LENGTH = 24
-      // Only add the prompt name if it is a prexisting project
+      // Only add the prompt name if it is a preexisting project
       newFileName = `${value.prompt
         .slice(0, TRUNCATED_PROMPT_LENGTH)
         .replace(/\s/gi, '-')
