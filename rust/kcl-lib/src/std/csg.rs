@@ -293,13 +293,6 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let solids: Vec<Solid> = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
     let tools: Vec<Solid> = args.get_kw_arg_typed("tools", &RuntimeType::solids(), exec_state)?;
 
-    if solids.len() > 1 {
-        return Err(KclError::UndefinedValue(KclErrorDetails {
-            message: "Only one solid is allowed for a subtract operation, currently.".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
-    }
-
     let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
 
     let solids = inner_subtract(solids, tools, tolerance, exec_state, args).await?;
