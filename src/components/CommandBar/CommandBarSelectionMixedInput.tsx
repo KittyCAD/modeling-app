@@ -6,6 +6,7 @@ import type { Selections } from '@src/lib/selections'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
+  getSelectionTypeDisplayText,
 } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
@@ -109,8 +110,9 @@ export default function CommandBarSelectionMixedInput({
           (!hasSubmitted || canSubmitSelection || 'text-destroy-50')
         }
       >
-        {canSubmitSelection
-          ? 'Select objects in the scene'
+        {canSubmitSelection &&
+        (selection.graphSelections.length || selection.otherSelections.length)
+          ? getSelectionTypeDisplayText(selection) + ' selected'
           : 'Select code or objects in the scene'}
 
         {showSceneSelection && (
