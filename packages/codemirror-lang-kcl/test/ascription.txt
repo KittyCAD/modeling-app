@@ -3,7 +3,11 @@
 true: bool
 
 ==>
-Program(ExpressionStatement(VariableDefinition,
-                            Equals,
-                            ArrayExpression(IntegerRange(Number,
-                                                         Number))))
+Program(ExpressionStatement(AscribedExpression(true, ":", PrimitiveType)))
+
+# numeric units
+
+3.5: number(mm)
+
+==>
+Program(ExpressionStatement(AscribedExpression(3.5, ":", PrimitiveType)))

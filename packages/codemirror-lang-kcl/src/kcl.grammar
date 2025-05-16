@@ -1,19 +1,22 @@
 @precedence {
   annotation
+  typeCall
   member
   call
   exp @left
   mult @left
   add @left
+  ascription @left
   comp @left
   logic @left
   pipe @left
   range
+  statement
 }
 
 @top Program {
   Shebang?
-  statement*
+  (statement !statement statement*)?
 }
 
 statement[@isGroup=Statement] {
@@ -52,13 +55,15 @@ expression[@isGroup=Expression] {
   UnaryExpression { UnaryOp expression } |
   ParenthesizedExpression { "(" expression ")" } |
   IfExpression { kw<"if"> expression Body kw<"else"> Body } |
-  CallExpression { expression !call ArgumentList } |
+  // We don't currently support arbitrary expressions as the callee part of a
+  // function call.
+  CallExpression { identifier !call ArgumentList } |
   ArrayExpression { "[" commaSep<expression | IntegerRange { expression !range ".." expression }> "]" } |
   ObjectExpression { "{" commaSep<ObjectProperty> "}" } |
   MemberExpression { expression !member "." PropertyName } |
   SubscriptExpression { expression !member "[" expression "]" } |
   PipeExpression { expression (!pipe PipeOperator expression)+ } |
-  AscribedExpression { expression ":" type }
+  AscribedExpression { expression !ascription ":" type }
 }
 
 UnaryOp { AddOp | BangOp }
@@ -76,7 +81,7 @@ LabeledArgument { ArgumentLabel Equals expression }
 ArgumentList { "(" commaSep<LabeledArgument | expression> ")" }
 
 type[@isGroup=Type] {
-  PrimitiveType { identifier } |
+  PrimitiveType { identifier !typeCall ("(" identifier ")")? } |
   ArrayType { "[" type !member (";" Number "+"?)? "]" } |
   ObjectType { "{" commaSep<ObjectProperty { PropertyName ":" type }> "}" }
 }
