@@ -130,10 +130,9 @@ fn test_after_engine_generate_manifest() {
 }
 
 fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
-    let parent = entry_point.parent().unwrap();
-    let relative_path = parent
-        .strip_prefix(std::fs::canonicalize(INPUTS_DIR.as_path()).unwrap())
-        .unwrap_or(parent);
+    let parent = std::fs::canonicalize(entry_point.parent().unwrap()).unwrap();
+    let inputs_dir = std::fs::canonicalize(INPUTS_DIR.as_path()).unwrap();
+    let relative_path = parent.strip_prefix(inputs_dir).unwrap();
     Test {
         name: test_name.to_owned(),
         entry_point: entry_point.clone(),
