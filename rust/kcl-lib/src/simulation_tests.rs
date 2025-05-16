@@ -3105,7 +3105,7 @@ mod sketch_on_face_union {
 }
 mod revolve_colinear {
     const TEST_NAME: &str = "revolve-colinear";
-  
+
     /// Test parsing KCL.
     #[test]
     fn parse() {
