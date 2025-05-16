@@ -1277,7 +1277,15 @@ impl KclValue {
                     .satisfied(values.len(), allow_shrink)
                     .ok_or(CoercionError::from(self))?;
 
-                assert!(len <= values.len());
+                if len > values.len() {
+                    let message = format!(
+                        "Internal: Expected coerced array length {len} to be less than or equal to original length {}",
+                        values.len()
+                    );
+                    exec_state.err(CompilationError::err(self.into(), message.clone()));
+                    #[cfg(debug_assertions)]
+                    panic!("{message}");
+                }
                 values.truncate(len);
 
                 Ok(KclValue::HomArray {
