@@ -1,5 +1,4 @@
 use std::{
-    fs::read_to_string,
     panic::{catch_unwind, AssertUnwindSafe},
     path::{Path, PathBuf},
 };
@@ -40,6 +39,11 @@ impl Test {
             output_dir: Path::new("tests").join(name),
         }
     }
+
+    /// Read in the entry point file and return its contents as a string.
+    pub fn read(&self) -> String {
+        std::fs::read_to_string(&self.entry_point).expect("Failed to read file: {filename}")
+    }
 }
 
 fn assert_snapshot<F, R>(test: &Test, operation: &str, f: F)
@@ -72,7 +76,7 @@ fn parse(test_name: &str) {
 }
 
 fn parse_test(test: &Test) {
-    let input = read_to_string(&test.entry_point).unwrap();
+    let input = test.read();
     let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
 
     // Parse the tokens into an AST.
@@ -92,7 +96,7 @@ async fn unparse(test_name: &str) {
 
 async fn unparse_test(test: &Test) {
     // Parse into an AST
-    let input = read_to_string(&test.entry_point).unwrap();
+    let input = test.read();
     let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
     let ast = crate::parsing::parse_tokens(tokens).unwrap();
 
@@ -147,7 +151,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
 }
 
 async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
-    let input = read_to_string(&test.entry_point).unwrap();
+    let input = test.read();
     let ast = crate::Program::parse_no_errs(&input).unwrap();
 
     // Run the program.
