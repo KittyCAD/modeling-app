@@ -133,11 +133,18 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
     let parent = std::fs::canonicalize(entry_point.parent().unwrap()).unwrap();
     let inputs_dir = std::fs::canonicalize(INPUTS_DIR.as_path()).unwrap();
     let relative_path = parent.strip_prefix(inputs_dir).unwrap();
+    let output_dir = std::fs::canonicalize(OUTPUTS_DIR.as_path()).unwrap();
+    let relative_output_dir = output_dir.join(relative_path);
+
+    // Ensure the output directory exists.
+    if !relative_output_dir.exists() {
+        std::fs::create_dir_all(&relative_output_dir).unwrap();
+    }
     Test {
         name: test_name.to_owned(),
         entry_point: entry_point.clone(),
         input_dir: parent.to_path_buf(),
-        output_dir: OUTPUTS_DIR.join(relative_path),
+        output_dir: relative_output_dir,
     }
 }
 
