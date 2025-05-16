@@ -4,18 +4,18 @@ description: Operations executed error_inside_fn_also_has_source_range_of_call_s
 ---
 [
   {
-    "isError": true,
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "String",
         "value": "INVALID"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": [],
+    "isError": true
   },
   {
     "type": "GroupBegin",

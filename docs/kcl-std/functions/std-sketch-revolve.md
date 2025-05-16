@@ -17,7 +17,7 @@ revolve(
   bidirectionalAngle?: number(Angle),
   tagStart?: tag,
   tagEnd?: tag,
-): Solid
+): [Solid; 1+]
 ```
 
 This, like extrude, is able to create a 3-dimensional solid from a
@@ -46,7 +46,7 @@ revolved around the same axis.
 
 ### Returns
 
-[`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extruded surfaces.
+[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
 
 
 ### Examples

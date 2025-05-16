@@ -230,112 +230,117 @@ description: Variables in memory after executing pipe-with-bend.kcl
     }
   },
   "pipe": {
-    "type": "Solid",
-    "value": {
-      "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
+    "type": "HomArray",
+    "value": [
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
           "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudeArc"
-        }
-      ],
-      "sketch": {
-        "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  30.0,
+                  0.0
+                ],
+                "from": [
+                  40.0,
+                  0.0
+                ],
+                "radius": 10.0,
+                "tag": null,
+                "to": [
+                  40.0,
+                  0.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Inches"
+                }
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "type": "plane",
+              "value": "XZ",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              }
             },
-            "ccw": true,
-            "center": [
-              30.0,
-              0.0
-            ],
-            "from": [
-              40.0,
-              0.0
-            ],
-            "radius": 10.0,
-            "tag": null,
-            "to": [
-              40.0,
-              0.0
-            ],
-            "type": "Circle",
+            "start": {
+              "from": [
+                40.0,
+                0.0
+              ],
+              "to": [
+                40.0,
+                0.0
+              ],
+              "units": {
+                "type": "Inches"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Inches"
             }
-          }
-        ],
-        "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "origin": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
           },
-          "type": "plane",
-          "value": "XZ",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
-          }
-        },
-        "start": {
-          "from": [
-            40.0,
-            0.0
-          ],
-          "to": [
-            40.0,
-            0.0
-          ],
+          "height": 0.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
           },
-          "tag": null,
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          }
-        },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
+          "sectional": false
         }
-      },
-      "height": 0.0,
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
-      "sectional": false
-    }
+      }
+    ]
   },
   "pipeProfile": {
     "type": "Sketch",

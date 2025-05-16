@@ -110,7 +110,6 @@ async fn inner_helix(
 
     let helix_result = Box::new(HelixValue {
         value: id,
-        #[cfg(feature = "artifact-graph")]
         artifact_id: id.into(),
         revolutions,
         angle_start,

@@ -30,8 +30,5 @@ description: Operations executed kw_fn_too_few_args.kcl
       }
     },
     "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
   }
 ]

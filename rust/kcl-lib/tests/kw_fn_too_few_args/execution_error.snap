@@ -6,7 +6,7 @@ KCL Semantic error
 
   × semantic: This function requires a parameter y, but you haven't passed it
   │ one.
-   ╭─[1:7]
+   ╭─[1:14]
  1 │ ╭─▶ fn add(x, y) {
  2 │ │     return x + y
  3 │ ├─▶ }
@@ -20,7 +20,7 @@ KCL Semantic error
       
         × semantic: This function requires a parameter y, but you haven't
         │ passed it one.
-         ╭─[1:7]
+         ╭─[1:14]
        1 │ ╭─▶ fn add(x, y) {
        2 │ │     return x + y
        3 │ ├─▶ }

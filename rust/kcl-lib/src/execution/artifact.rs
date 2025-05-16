@@ -2,18 +2,17 @@ use fnv::FnvHashMap;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::{
     self as kcmc,
-    id::ModelingCmdId,
     ok_response::OkModelingCmdResponse,
     shared::ExtrusionFaceCapType,
     websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
     EnableSketchMode, ModelingCmd,
 };
-use schemars::JsonSchema;
 use serde::{ser::SerializeSeq, Serialize};
 use uuid::Uuid;
 
 use crate::{
     errors::KclErrorDetails,
+    execution::ArtifactId,
     parsing::ast::types::{Node, Program},
     KclError, NodePath, SourceRange,
 };
@@ -55,52 +54,6 @@ impl PartialOrd for ArtifactCommand {
         }
         #[cfg(not(test))]
         self.cmd_id.partial_cmp(&other.cmd_id)
-    }
-}
-
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS, JsonSchema)]
-#[ts(export_to = "Artifact.ts")]
-pub struct ArtifactId(Uuid);
-
-impl ArtifactId {
-    pub fn new(uuid: Uuid) -> Self {
-        Self(uuid)
-    }
-}
-
-impl From<Uuid> for ArtifactId {
-    fn from(uuid: Uuid) -> Self {
-        Self::new(uuid)
-    }
-}
-
-impl From<&Uuid> for ArtifactId {
-    fn from(uuid: &Uuid) -> Self {
-        Self::new(*uuid)
-    }
-}
-
-impl From<ArtifactId> for Uuid {
-    fn from(id: ArtifactId) -> Self {
-        id.0
-    }
-}
-
-impl From<&ArtifactId> for Uuid {
-    fn from(id: &ArtifactId) -> Self {
-        id.0
-    }
-}
-
-impl From<ModelingCmdId> for ArtifactId {
-    fn from(id: ModelingCmdId) -> Self {
-        Self::new(*id.as_ref())
-    }
-}
-
-impl From<&ModelingCmdId> for ArtifactId {
-    fn from(id: &ModelingCmdId) -> Self {
-        Self::new(*id.as_ref())
     }
 }
 

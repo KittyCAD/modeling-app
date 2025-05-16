@@ -328,14 +328,14 @@ impl StdLib {
         self.fns.get(name).cloned()
     }
 
-    pub fn get_either(&self, name: &Name) -> FunctionKind {
+    pub fn get_rust_function(&self, name: &Name) -> Option<Box<dyn StdLibFn>> {
         if let Some(name) = name.local_ident() {
             if let Some(f) = self.get(name.inner) {
-                return FunctionKind::Core(f);
+                return Some(f);
             }
         }
 
-        FunctionKind::UserDefined
+        None
     }
 
     pub fn contains_key(&self, key: &str) -> bool {
@@ -347,12 +347,6 @@ impl Default for StdLib {
     fn default() -> Self {
         Self::new()
     }
-}
-
-#[derive(Debug)]
-pub enum FunctionKind {
-    Core(Box<dyn StdLibFn>),
-    UserDefined,
 }
 
 /// The default tolerance for modeling commands in [`kittycad_modeling_cmds::length_unit::LengthUnit`].

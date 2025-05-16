@@ -1,8 +1,8 @@
 import type {
   ArtifactCommand,
-  ArtifactId,
   ArtifactGraph as RustArtifactGraph,
 } from '@rust/kcl-lib/bindings/Artifact'
+import type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 import type { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
@@ -75,7 +75,6 @@ export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
   Artifact,
   ArtifactCommand,
-  ArtifactId,
   Cap as CapArtifact,
   CodeRef,
   CompositeSolid as CompositeSolidArtifact,
@@ -88,6 +87,7 @@ export type {
   SweepEdge,
   Wall as WallArtifact,
 } from '@rust/kcl-lib/bindings/Artifact'
+export type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 export type { BinaryExpression } from '@rust/kcl-lib/bindings/BinaryExpression'
 export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
 export type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'

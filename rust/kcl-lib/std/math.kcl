@@ -448,7 +448,7 @@ export fn legLen(
   hypotenuse: number(Length),
   /// The length of one of the triangle's legs (i.e. non-hypotenuse side).
   leg: number(Length),
-): number(deg) {}
+): number(Length) {}
 
 /// Compute the angle of the given leg for x.
 ///

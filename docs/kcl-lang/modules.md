@@ -177,7 +177,7 @@ You can also import the whole module. This is useful if you want to use the
 result of a module as a variable, like a part.
 
 ```norun
-import "tests/inputs/cube.kcl" as cube
+import "cube.kcl"
 cube
   |> translate(x=10)
 ```
@@ -241,7 +241,7 @@ If you want to have multiple instances of the same object, you can use the
 [`clone`](/docs/kcl/clone) function. This will render a new instance of the object in memory.
 
 ```norun
-import cube from "tests/inputs/cube.kcl"
+import cube from "cube.kcl"
 
 cube  
   |> translate(x=10)
@@ -257,7 +257,7 @@ separate objects in memory, and can be manipulated independently.
 Here is an example with a file from another CAD system:
 
 ```kcl
-import "tests/inputs/cube.step" as cube
+import "tests/inputs/cube.step"
 
 cube
   |> translate(x=10)
