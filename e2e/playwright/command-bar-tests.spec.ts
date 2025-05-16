@@ -410,7 +410,7 @@ test.describe('Command bar tests', () => {
         currentArgValue: '',
         headerArguments: {
           Method: '',
-          Name: 'test',
+          Name: 'main.kcl',
           Code: '1 line',
         },
         highlightedHeaderArg: 'method',
@@ -421,7 +421,7 @@ test.describe('Command bar tests', () => {
         commandName: 'Import file from URL',
         headerArguments: {
           Method: 'New project',
-          Name: 'test',
+          Name: 'main.kcl',
           Code: '1 line',
         },
       })
@@ -474,7 +474,7 @@ test.describe('Command bar tests', () => {
         currentArgValue: '',
         headerArguments: {
           Method: '',
-          Name: 'test',
+          Name: 'main.kcl',
           Code: '1 line',
         },
         highlightedHeaderArg: 'method',
@@ -500,7 +500,7 @@ test.describe('Command bar tests', () => {
         headerArguments: {
           Method: 'Existing project',
           ProjectName: 'testProjectDir',
-          Name: 'test',
+          Name: 'main.kcl',
           Code: '1 line',
         },
       })
