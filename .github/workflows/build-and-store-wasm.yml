@@ -20,22 +20,19 @@ jobs:
         shell: bash
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
-      - name: Install rust
+      - name: Install Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
       - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
         with:
           tool: wasm-pack
-      - name: Rust Cache
+      - name: Use Rust cache
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: rust
       - name: build wasm
         run: npm run build:wasm
-
-
-      # Upload the WASM bundle as an artifact
       - uses: actions/upload-artifact@v4
         with:
           name: wasm-bundle

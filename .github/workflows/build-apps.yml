@@ -81,7 +81,7 @@ jobs:
         with:
           tool: wasm-pack
 
-      - name: Rust Cache
+      - name: Use Rust cache
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: Swatinem/rust-cache@v2
         with:

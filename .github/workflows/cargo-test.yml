@@ -49,7 +49,7 @@ jobs:
         shell: bash
         run: |
           cargo install cargo-insta
-      - name: Rust Cache
+      - name: Use Rust cache
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: rust
@@ -172,11 +172,9 @@ jobs:
       - name: Run tests
         shell: bash
         run: |-
-          cp nextest-archive.tar.zst rust/nextest-archive.tar.zst
-          ls -lah
           cd rust
           cargo nextest run \
-           --retries=10 --no-fail-fast --profile=ci --archive-file nextest-archive.tar.zst \
+           --retries=10 --no-fail-fast --profile=ci --archive-file=../nextest-archive.tar.zst \
            --partition count:${{ matrix.partitionIndex}}/${{ matrix.partitionTotal }} \
            2>&1 | tee /tmp/github-actions.log
         env:
@@ -196,6 +194,7 @@ jobs:
       - runs-on=${{ github.run_id }}
       - runner=32cpu-linux-x64
       - extras=s3-cache
+    needs: build-test-artifacts
     steps:
       - uses: runs-on/action@v1
       - uses: actions/create-github-app-token@v1
@@ -221,6 +220,10 @@ jobs:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
       - uses: taiki-e/install-action@nextest
+      - name: Download archive
+        uses: actions/download-artifact@v4
+        with:
+          name: nextest-archive
       - name: Download internal KCL samples
         run: git clone --depth=1 https://x-access-token:${{ secrets.GH_PAT_KCL_SAMPLES_INTERNAL }}@github.com/KittyCAD/kcl-samples-internal public/kcl-samples/internal
       - name: Run tests
@@ -229,7 +232,7 @@ jobs:
           cd rust/kcl-lib
           cargo nextest run \
            --retries=10 --no-fail-fast --features artifact-graph --profile=ci \
-           internal \
+           --archive-file=../../nextest-archive.tar.zst internal \
            2>&1 | tee /tmp/github-actions.log
         env:
           TWENTY_TWENTY: overwrite
@@ -258,7 +261,7 @@ jobs:
       - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
         with:
           tool: wasm-pack
-      - name: Rust Cache
+      - name: Use Rust cache
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: './rust'
