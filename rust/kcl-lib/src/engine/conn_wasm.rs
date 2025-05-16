@@ -147,32 +147,27 @@ impl EngineConnection {
         id_to_source_range: HashMap<uuid::Uuid, SourceRange>,
     ) -> Result<(), KclError> {
         let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to serialize source range: {:?}", e),
-                source_ranges: vec![source_range],
-            })
+            KclError::Engine(KclErrorDetails::new(
+                format!("Failed to serialize source range: {:?}", e),
+                vec![source_range],
+            ))
         })?;
         let cmd_str = serde_json::to_string(&cmd).map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to serialize modeling command: {:?}", e),
-                source_ranges: vec![source_range],
-            })
+            KclError::Engine(KclErrorDetails::new(
+                format!("Failed to serialize modeling command: {:?}", e),
+                vec![source_range],
+            ))
         })?;
         let id_to_source_range_str = serde_json::to_string(&id_to_source_range).map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to serialize id to source range: {:?}", e),
-                source_ranges: vec![source_range],
-            })
+            KclError::Engine(KclErrorDetails::new(
+                format!("Failed to serialize id to source range: {:?}", e),
+                vec![source_range],
+            ))
         })?;
 
         self.manager
             .fire_modeling_cmd_from_wasm(id.to_string(), source_range_str, cmd_str, id_to_source_range_str)
-            .map_err(|e| {
-                KclError::Engine(KclErrorDetails {
-                    message: e.to_string().into(),
-                    source_ranges: vec![source_range],
-                })
-            })?;
+            .map_err(|e| KclError::Engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
 
         Ok(())
     }
@@ -185,33 +180,28 @@ impl EngineConnection {
         id_to_source_range: HashMap<uuid::Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
         let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to serialize source range: {:?}", e),
-                source_ranges: vec![source_range],
-            })
+            KclError::Engine(KclErrorDetails::new(
+                format!("Failed to serialize source range: {:?}", e),
+                vec![source_range],
+            ))
         })?;
         let cmd_str = serde_json::to_string(&cmd).map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to serialize modeling command: {:?}", e),
-                source_ranges: vec![source_range],
-            })
+            KclError::Engine(KclErrorDetails::new(
+                format!("Failed to serialize modeling command: {:?}", e),
+                vec![source_range],
+            ))
         })?;
         let id_to_source_range_str = serde_json::to_string(&id_to_source_range).map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to serialize id to source range: {:?}", e),
-                source_ranges: vec![source_range],
-            })
+            KclError::Engine(KclErrorDetails::new(
+                format!("Failed to serialize id to source range: {:?}", e),
+                vec![source_range],
+            ))
         })?;
 
         let promise = self
             .manager
             .send_modeling_cmd_from_wasm(id.to_string(), source_range_str, cmd_str, id_to_source_range_str)
-            .map_err(|e| {
-                KclError::Engine(KclErrorDetails {
-                    message: e.to_string().into(),
-                    source_ranges: vec![source_range],
-                })
-            })?;
+            .map_err(|e| KclError::Engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
 
         let value = crate::wasm::JsFuture::from(promise).await.map_err(|e| {
             // Try to parse the error as an engine error.
@@ -219,53 +209,52 @@ impl EngineConnection {
             if let Ok(kittycad_modeling_cmds::websocket::FailureWebSocketResponse { errors, .. }) =
                 serde_json::from_str(&err_str)
             {
-                KclError::Engine(KclErrorDetails {
-                    message: errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
-                    source_ranges: vec![source_range],
-                })
+                KclError::Engine(KclErrorDetails::new(
+                    errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
+                    vec![source_range],
+                ))
             } else if let Ok(data) =
                 serde_json::from_str::<Vec<kittycad_modeling_cmds::websocket::FailureWebSocketResponse>>(&err_str)
             {
                 if let Some(data) = data.first() {
                     // It could also be an array of responses.
-                    KclError::Engine(KclErrorDetails {
-                        message: data
-                            .errors
+                    KclError::Engine(KclErrorDetails::new(
+                        data.errors
                             .iter()
                             .map(|e| e.message.clone())
                             .collect::<Vec<_>>()
                             .join("\n"),
-                        source_ranges: vec![source_range],
-                    })
+                        vec![source_range],
+                    ))
                 } else {
-                    KclError::Engine(KclErrorDetails {
-                        message: "Received empty response from engine".into(),
-                        source_ranges: vec![source_range],
-                    })
+                    KclError::Engine(KclErrorDetails::new(
+                        "Received empty response from engine".into(),
+                        vec![source_range],
+                    ))
                 }
             } else {
-                KclError::Engine(KclErrorDetails {
-                    message: format!("Failed to wait for promise from send modeling command: {:?}", e),
-                    source_ranges: vec![source_range],
-                })
+                KclError::Engine(KclErrorDetails::new(
+                    format!("Failed to wait for promise from send modeling command: {:?}", e),
+                    vec![source_range],
+                ))
             }
         })?;
 
         if value.is_null() || value.is_undefined() {
-            return Err(KclError::Engine(KclErrorDetails {
-                message: "Received null or undefined response from engine".into(),
-                source_ranges: vec![source_range],
-            }));
+            return Err(KclError::Engine(KclErrorDetails::new(
+                "Received null or undefined response from engine".into(),
+                vec![source_range],
+            )));
         }
 
         // Convert JsValue to a Uint8Array
         let data = js_sys::Uint8Array::from(value);
 
         let ws_result: WebSocketResponse = bson::from_slice(&data.to_vec()).map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to deserialize bson response from engine: {:?}", e),
-                source_ranges: vec![source_range],
-            })
+            KclError::Engine(KclErrorDetails::new(
+                format!("Failed to deserialize bson response from engine: {:?}", e),
+                vec![source_range],
+            ))
         })?;
 
         Ok(ws_result)
@@ -316,18 +305,16 @@ impl crate::engine::EngineManager for EngineConnection {
         *self.default_planes.write().await = Some(new_planes);
 
         // Start a new session.
-        let promise = self.manager.start_new_session().map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: e.to_string().into(),
-                source_ranges: vec![source_range],
-            })
-        })?;
+        let promise = self
+            .manager
+            .start_new_session()
+            .map_err(|e| KclError::Engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
 
         crate::wasm::JsFuture::from(promise).await.map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to wait for promise from start new session: {:?}", e),
-                source_ranges: vec![source_range],
-            })
+            KclError::Engine(KclErrorDetails::new(
+                format!("Failed to wait for promise from start new session: {:?}", e),
+                vec![source_range],
+            ))
         })?;
 
         Ok(())

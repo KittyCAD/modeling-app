@@ -543,17 +543,13 @@ impl KclValue {
     /// If this value fits in a u32, return it.
     pub fn get_u32(&self, source_ranges: Vec<SourceRange>) -> Result<u32, KclError> {
         let u = self.as_int().and_then(|n| u64::try_from(n).ok()).ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails {
-                message: "Expected an integer >= 0".to_owned(),
-                source_ranges: source_ranges.clone(),
-            })
+            KclError::Semantic(KclErrorDetails::new(
+                "Expected an integer >= 0".to_owned(),
+                source_ranges.clone(),
+            ))
         })?;
-        u32::try_from(u).map_err(|_| {
-            KclError::Semantic(KclErrorDetails {
-                message: "Number was too big".to_owned(),
-                source_ranges,
-            })
-        })
+        u32::try_from(u)
+            .map_err(|_| KclError::Semantic(KclErrorDetails::new("Number was too big".to_owned(), source_ranges)))
     }
 
     /// If this value is of type function, return it.
@@ -568,10 +564,10 @@ impl KclValue {
     pub fn get_tag_identifier(&self) -> Result<TagIdentifier, KclError> {
         match self {
             KclValue::TagIdentifier(t) => Ok(*t.clone()),
-            _ => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a tag identifier: {:?}", self),
-                source_ranges: self.clone().into(),
-            })),
+            _ => Err(KclError::Semantic(KclErrorDetails::new(
+                format!("Not a tag identifier: {:?}", self),
+                self.clone().into(),
+            ))),
         }
     }
 
@@ -579,20 +575,20 @@ impl KclValue {
     pub fn get_tag_declarator(&self) -> Result<TagNode, KclError> {
         match self {
             KclValue::TagDeclarator(t) => Ok((**t).clone()),
-            _ => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a tag declarator: {:?}", self),
-                source_ranges: self.clone().into(),
-            })),
+            _ => Err(KclError::Semantic(KclErrorDetails::new(
+                format!("Not a tag declarator: {:?}", self),
+                self.clone().into(),
+            ))),
         }
     }
 
     /// If this KCL value is a bool, retrieve it.
     pub fn get_bool(&self) -> Result<bool, KclError> {
         let Self::Bool { value: b, .. } = self else {
-            return Err(KclError::Type(KclErrorDetails {
-                source_ranges: self.into(),
-                message: format!("Expected bool, found {}", self.human_friendly_type()),
-            }));
+            return Err(KclError::Type(KclErrorDetails::new(
+                format!("Expected bool, found {}", self.human_friendly_type()),
+                self.into(),
+            )));
         };
         Ok(*b)
     }

@@ -75,10 +75,10 @@ async fn inner_revolve(
         // We don't use validate() here because we want to return a specific error message that is
         // nice and we use the other data in the docs, so we still need use the derive above for the json schema.
         if !(-360.0..=360.0).contains(&angle) || angle == 0.0 {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected angle to be between -360 and 360 and not 0, found `{}`", angle),
-                source_ranges: vec![args.source_range],
-            }));
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                format!("Expected angle to be between -360 and 360 and not 0, found `{}`", angle),
+                vec![args.source_range],
+            )));
         }
     }
 
@@ -87,35 +87,35 @@ async fn inner_revolve(
         // We don't use validate() here because we want to return a specific error message that is
         // nice and we use the other data in the docs, so we still need use the derive above for the json schema.
         if !(-360.0..=360.0).contains(&bidirectional_angle) || bidirectional_angle == 0.0 {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!(
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                format!(
                     "Expected bidirectional angle to be between -360 and 360 and not 0, found `{}`",
                     bidirectional_angle
                 ),
-                source_ranges: vec![args.source_range],
-            }));
+                vec![args.source_range],
+            )));
         }
 
         if let Some(angle) = angle {
             let ang = angle.signum() * bidirectional_angle + angle;
             if !(-360.0..=360.0).contains(&ang) {
-                return Err(KclError::Semantic(KclErrorDetails {
-                    message: format!(
+                return Err(KclError::Semantic(KclErrorDetails::new(
+                    format!(
                         "Combined angle and bidirectional must be between -360 and 360, found '{}'",
                         ang
                     ),
-                    source_ranges: vec![args.source_range],
-                }));
+                    vec![args.source_range],
+                )));
             }
         }
     }
 
     if symmetric.unwrap_or(false) && bidirectional_angle.is_some() {
-        return Err(KclError::Semantic(KclErrorDetails {
-            source_ranges: vec![args.source_range],
-            message: "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
                 .to_owned(),
-        }));
+            vec![args.source_range],
+        )));
     }
 
     let angle = Angle::from_degrees(angle.unwrap_or(360.0));
