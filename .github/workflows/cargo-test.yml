@@ -237,6 +237,7 @@ jobs:
           EXPECTORATE: overwrite
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
           ZOO_HOST: https://api.dev.zoo.dev
+          MODELING_APP_INTERNAL_SAMPLES_SECRET: ${{secrets.MODELING_APP_INTERNAL_SAMPLES_SECRET}}
   run-wasm-tests:
     name: Run wasm tests
     strategy:
