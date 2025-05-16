@@ -113,7 +113,7 @@ export default function CommandBarSelectionMixedInput({
         {canSubmitSelection &&
         (selection.graphSelections.length || selection.otherSelections.length)
           ? getSelectionTypeDisplayText(selection) + ' selected'
-          : 'Select code or objects in the scene'}
+          : 'Select code/objects, or skip'}
 
         {showSceneSelection && (
           <div className="scene-selection mt-2">
