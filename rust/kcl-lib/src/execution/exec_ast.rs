@@ -1467,7 +1467,6 @@ impl Node<CallExpressionKw> {
                     .await
                     .map_err(|e| {
                         // Add the call expression to the source ranges.
-                        // TODO currently ignored by the frontend
                         e.add_source_ranges(vec![callsite])
                     })?;
 
