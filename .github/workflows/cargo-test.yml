@@ -226,8 +226,8 @@ jobs:
       - name: Run tests
         shell: bash
         run: |-
-          cd rust
-          cargo nextest run -p kcl-lib \
+          cd rust/kcl-lib
+          cargo nextest run \
            --retries=10 --no-fail-fast --profile=ci \
            internal \
            2>&1 | tee /tmp/github-actions.log
