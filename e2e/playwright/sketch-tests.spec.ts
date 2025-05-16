@@ -2449,7 +2449,7 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
       await page.keyboard.press('Enter')
       // If this timeout isn't long enough, the test breaks.
       // TODO: fix https://github.com/KittyCAD/modeling-app/issues/5437
-      await page.waitForTimeout(3_000)
+      await page.waitForTimeout(3100)
     })
 
     await sketchIsDrawnProperly()
