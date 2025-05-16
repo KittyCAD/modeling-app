@@ -3151,6 +3151,27 @@ mod sketch_on_face_union {
 }
 mod multi_target_csg {
     const TEST_NAME: &str = "multi_target_csg";
+  
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod revolve_colinear {
+    const TEST_NAME: &str = "revolve-colinear";
 
     /// Test parsing KCL.
     #[test]
@@ -3166,6 +3187,7 @@ mod multi_target_csg {
 
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
+    #[ignore] // until https://github.com/KittyCAD/engine/pull/3417 lands
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }
