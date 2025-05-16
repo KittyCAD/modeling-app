@@ -212,6 +212,12 @@ code {
   z-index: 99999999999 !important;
 }
 
+.cm-rename-popup input {
+  /* use black text on white background in both light and dark mode */
+  color: black !important;
+  background: white !important;
+}
+
 @keyframes blink {
   0%,
   100% {
@@ -235,7 +241,7 @@ code {
 }
 
 .dark #code-mirror-override .cm-tooltip,
-.cm-tooltip {
+.dark .cm-tooltip {
   @apply bg-chalkboard-110 text-chalkboard-40;
   @apply border-chalkboard-70/20 border-l-liquid-70;
 }

@@ -130,7 +130,7 @@ git tag $VERSION
 git push origin --tags
 ```
 
-This will trigger the `build-apps` workflow, set the version, build & sign the apps, and generate release files as well as updater-test artifacts.
+This will trigger the `build-apps` workflow, set the version, build & sign the apps, and generate release files.
 
 The workflow should be listed right away [in this list](https://github.com/KittyCAD/modeling-app/actions/workflows/build-apps.yml?query=event%3Apush)).
 
@@ -142,13 +142,10 @@ The release builds can be found under the `out-{arch}-{platform}` zip files, at 
 
 Manually test against this [list](https://github.com/KittyCAD/modeling-app/issues/3588) across Windows, MacOS, Linux and posting results as comments in the issue.
 
-##### Updater-test builds
-
-The other `build-apps` output in the release `build-apps` workflow (triggered by 2.) is `updater-test-{arch}-{platform}`. It's a semi-automated process: for macOS, Windows, and Linux, download the corresponding updater-test artifact file, install the app, run it, expect an updater prompt to a dummy v0.255.255, install it and check that the app comes back at that version.
-
-The only difference with these builds is that they point to a different update location on the release bucket, with this dummy v0.255.255 always available. This helps ensuring that the version we release will be able to update to the next one available.
-
-If the prompt doesn't show up, start the app in command line to grab the electron-updater logs. This is likely an issue with the current build that needs addressing (or the updater-test location in the storage bucket).
+A prompt should show up asking for a downgrade to the last release version. Running through that at the end of testing
+and making sure the current release candidate has the ability to be updated to what electron-updater points to is critical,
+but what is actually being downloaded and installed isn't.
+If the prompt doesn't show up, start the app in command line to grab the electron-updater logs. This is likely an issue with the current build that needs addressing.
 
 ```
 # Windows (PowerShell)

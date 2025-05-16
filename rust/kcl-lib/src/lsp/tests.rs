@@ -4316,3 +4316,64 @@ sketch001 = startSketchOn(XY)
         }]
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_diagnostic_compilation_warnings() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"foo = 42
+@settings(defaultLengthUnit = mm)"#
+                    .to_string(),
+            },
+        })
+        .await;
+
+    // Send diagnostics request.
+    let diagnostics = server
+        .diagnostic(tower_lsp::lsp_types::DocumentDiagnosticParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+            identifier: None,
+            previous_result_id: None,
+        })
+        .await
+        .unwrap();
+
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReportResult::Report(diagnostics) = diagnostics {
+        if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+            assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+            assert_eq!(
+                diagnostics.full_document_diagnostic_report.items[0],
+                tower_lsp::lsp_types::Diagnostic {
+                    range: tower_lsp::lsp_types::Range {
+                        start: tower_lsp::lsp_types::Position { line: 0, character: 8 },
+                        end: tower_lsp::lsp_types::Position { line: 1, character: 33 },
+                    },
+                    severity: Some(tower_lsp::lsp_types::DiagnosticSeverity::WARNING),
+                    code: None,
+                    source: Some("kcl".to_string()),
+                    message: "Named attributes should appear before any declarations or expressions.\n\nBecause named attributes apply to the whole function or module, including code written before them, it can be confusing for readers to not have these attributes at the top of code blocks.".to_string(),
+                    related_information: None,
+                    tags: None,
+                    data: None,
+                    code_description: None,
+                }
+            );
+        } else {
+            panic!("Expected full diagnostics");
+        }
+    } else {
+        panic!("Expected diagnostics");
+    }
+}

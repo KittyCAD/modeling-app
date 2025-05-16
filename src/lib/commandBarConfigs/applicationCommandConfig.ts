@@ -10,7 +10,7 @@ import {
   kclSamplesManifestWithNoMultipleFiles,
 } from '@src/lib/kclSamples'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { IS_ML_EXPERIMENTAL, ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
+import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
@@ -168,7 +168,6 @@ export function createApplicationCommands({
       prompt: {
         inputType: 'text',
         required: true,
-        warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
     },
   }

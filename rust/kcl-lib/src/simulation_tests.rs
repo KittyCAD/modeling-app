@@ -314,7 +314,7 @@ fn assert_common_snapshots(
             // Change the snapshot suffix so that it is rendered as a Markdown file
             // in GitHub.
             // Ignore the cpu cooler for now because its being a little bitch.
-            if test.name == "cpu_cooler" {
+            if test.name != "cpu-cooler" {
                 insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
             }
         })
@@ -2748,7 +2748,6 @@ mod import_mesh_clone {
 
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
-    #[ignore = "turn on when katie fixes the mesh import"]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }
@@ -2771,7 +2770,7 @@ mod clone_w_fillets {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     #[ignore] // turn on when https://github.com/KittyCAD/engine/pull/3380 is merged
-              // Theres also a test in clone.rs you need to turn too
+              // There's also a test in clone.rs you need to turn too
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }

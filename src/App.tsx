@@ -117,7 +117,9 @@ export function App() {
 
     // When leaving the modeling scene, cut the engine stream.
     return () => {
-      engineStreamActor.send({ type: EngineStreamTransition.Pause })
+      // When leaving the modeling scene, cut the engine stream.
+      // Stop is more serious than Pause
+      engineStreamActor.send({ type: EngineStreamTransition.Stop })
     }
   }, [])
 

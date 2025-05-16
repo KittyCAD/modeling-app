@@ -129,6 +129,7 @@ impl From<KclErrorWithOutputs> for KclError {
 #[serde(rename_all = "camelCase")]
 pub struct KclErrorWithOutputs {
     pub error: KclError,
+    pub non_fatal: Vec<CompilationError>,
     #[cfg(feature = "artifact-graph")]
     pub operations: Vec<Operation>,
     #[cfg(feature = "artifact-graph")]
@@ -141,8 +142,10 @@ pub struct KclErrorWithOutputs {
 }
 
 impl KclErrorWithOutputs {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         error: KclError,
+        non_fatal: Vec<CompilationError>,
         #[cfg(feature = "artifact-graph")] operations: Vec<Operation>,
         #[cfg(feature = "artifact-graph")] artifact_commands: Vec<ArtifactCommand>,
         #[cfg(feature = "artifact-graph")] artifact_graph: ArtifactGraph,
@@ -152,6 +155,7 @@ impl KclErrorWithOutputs {
     ) -> Self {
         Self {
             error,
+            non_fatal,
             #[cfg(feature = "artifact-graph")]
             operations,
             #[cfg(feature = "artifact-graph")]
@@ -166,6 +170,7 @@ impl KclErrorWithOutputs {
     pub fn no_outputs(error: KclError) -> Self {
         Self {
             error,
+            non_fatal: Default::default(),
             #[cfg(feature = "artifact-graph")]
             operations: Default::default(),
             #[cfg(feature = "artifact-graph")]

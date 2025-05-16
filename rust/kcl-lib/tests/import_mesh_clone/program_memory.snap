@@ -1,0 +1,31 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing import_mesh_clone.kcl
+---
+{
+  "blue": {
+    "type": "ImportedGeometry",
+    "id": "[uuid]",
+    "value": [
+      "cube.obj"
+    ]
+  },
+  "green": {
+    "type": "ImportedGeometry",
+    "id": "[uuid]",
+    "value": [
+      "cube.obj"
+    ]
+  },
+  "red": {
+    "type": "ImportedGeometry",
+    "id": "[uuid]",
+    "value": [
+      "cube.obj"
+    ]
+  },
+  "yellow": {
+    "type": "Module",
+    "value": 1
+  }
+}

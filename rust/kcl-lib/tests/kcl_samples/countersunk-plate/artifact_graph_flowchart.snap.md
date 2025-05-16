@@ -47,9 +47,9 @@ flowchart LR
   1["Plane<br>[700, 717, 0]"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   2["StartSketchOnFace<br>[1606, 1642, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   3["StartSketchOnFace<br>[1606, 1642, 0]"]
-    %% Missing NodePath
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   24["Sweep Extrusion<br>[1494, 1529, 0]"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 12 }]
   25["Sweep Extrusion<br>[1734, 1767, 0]"]
@@ -57,17 +57,29 @@ flowchart LR
   26["Sweep Extrusion<br>[1734, 1767, 0]"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
   27[Wall]
+    %% face_code_ref=Missing NodePath
   28[Wall]
+    %% face_code_ref=Missing NodePath
   29[Wall]
+    %% face_code_ref=Missing NodePath
   30[Wall]
+    %% face_code_ref=Missing NodePath
   31[Wall]
+    %% face_code_ref=Missing NodePath
   32[Wall]
+    %% face_code_ref=Missing NodePath
   33[Wall]
+    %% face_code_ref=Missing NodePath
   34[Wall]
+    %% face_code_ref=Missing NodePath
   35[Wall]
+    %% face_code_ref=Missing NodePath
   36[Wall]
+    %% face_code_ref=Missing NodePath
   37["Cap Start"]
+    %% face_code_ref=Missing NodePath
   38["Cap End"]
+    %% face_code_ref=[ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   39["SweepEdge Opposite"]
   40["SweepEdge Opposite"]
   41["SweepEdge Opposite"]
