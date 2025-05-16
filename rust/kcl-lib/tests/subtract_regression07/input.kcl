@@ -1,0 +1,43 @@
+@settings(defaultLengthUnit = in)
+
+sketch000 = startSketchOn(XY)
+
+sketch000Profile000 = startProfile(sketch000, at = [0.072169, 0.125])
+  |> xLine(length = -0.144338)
+  |> line(end = [-0.072169, -0.125])
+  |> line(end = [0.072169, -0.125])
+  |> xLine(length = 0.144338)
+  |> line(end = [0.072169, 0.125])
+  |> line(end = [-0.072169, 0.125])
+  |> close()
+
+sketch000Profile001 = circle(
+  sketch000,
+  center = [0, 0],
+  radius = 0.0795
+)
+
+sketch000Profile000Holes = sketch000Profile000
+  |> subtract2d(tool = sketch000Profile001)
+
+extrude000 = extrude(sketch000Profile000Holes, length = 0.1875, bidirectionalLength = 0.1875)
+
+sketch001 = startSketchOn(offsetPlane(XY, offset = 0.25))
+
+sketch001Profile000 = circle(
+  sketch001,
+  center = [0, 0],
+  radius = 0.0945
+)
+
+sketch002 = startSketchOn(offsetPlane(XY, offset = 0.1))
+
+sketch002Profile000 = circle(
+  sketch002,
+  center = [0, 0],
+  radius = 0.08
+)
+
+draftCut000Extrude = loft([sketch002Profile000, sketch001Profile000])
+
+draftCut000 = subtract(extrude000, tools = draftCut000Extrude)
