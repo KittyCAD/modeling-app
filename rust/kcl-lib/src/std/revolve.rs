@@ -55,6 +55,14 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     Ok(value.into())
 }
 
+// Simple colinear check, assumes lines are normalised
+fn are_colinear(
+    a: Point3d<f64>,
+    b: Point3d<f64>,
+) -> bool {
+    a == b || a == (Point3d{x: -b.x, y: -b.y, z: -b.z})
+}
+
 #[allow(clippy::too_many_arguments)]
 async fn inner_revolve(
     sketches: Vec<Sketch>,
@@ -132,18 +140,20 @@ async fn inner_revolve(
     for sketch in &sketches {
         let id = exec_state.next_uuid();
 
-        match &axis {
+        let direction = match &axis {
             Axis2dOrEdgeReference::Axis { direction, origin } => {
+                let axis = Point3d {
+                            x: direction[0].to_mm(),
+                            y: direction[1].to_mm(),
+                            z: 0.0,
+                        };
+
                 args.batch_modeling_cmd(
                     id,
                     ModelingCmd::from(mcmd::Revolve {
                         angle,
                         target: sketch.id.into(),
-                        axis: Point3d {
-                            x: direction[0].to_mm(),
-                            y: direction[1].to_mm(),
-                            z: 0.0,
-                        },
+                        axis,
                         origin: Point3d {
                             x: LengthUnit(origin[0].to_mm()),
                             y: LengthUnit(origin[1].to_mm()),
@@ -155,6 +165,7 @@ async fn inner_revolve(
                     }),
                 )
                 .await?;
+                axis
             }
             Axis2dOrEdgeReference::Edge(edge) => {
                 let edge_id = edge.get_engine_id(exec_state, &args)?;
@@ -169,8 +180,28 @@ async fn inner_revolve(
                     }),
                 )
                 .await?;
+                //TODO: fix me
+                Point3d{ x: 0.0, y: 1.0, z: 0.0}
             }
+        };
+
+        let mut edge_id = None;
+        // If an edge lies on the axis of revolution it will not exist after the revolve, so
+        // it cannot be used to retrieve data about the solid
+        for path in sketch.paths.clone() {
+
+        let from = path.get_from();
+        let to = path.get_to();
+
+        let mut dir = Point3d { x: to[0].n - from[0].n, y: to[1].n - from[1].n, z: 0.0};
+        let dir_mag = ((dir.x.powf(2.0) + dir.y.powf(2.0) + dir.z.powf(2.0))).sqrt();
+        dir = dir.map(|x| x / dir_mag);
+         if are_colinear(dir, direction) {
+             continue
         }
+         edge_id = Some(path.get_id());
+         break;
+        };
 
         solids.push(
             do_post_extrude(
@@ -185,6 +216,7 @@ async fn inner_revolve(
                 },
                 exec_state,
                 &args,
+                edge_id,
             )
             .await?,
         );
