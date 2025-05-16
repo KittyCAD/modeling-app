@@ -20,6 +20,7 @@ import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
   ONBOARDING_PROJECT_NAME,
+  ONBOARDING_TOAST_ID,
 } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import type CodeManager from '@src/lang/codeManager'
@@ -341,9 +342,6 @@ export function needsToOnboard(
       !(onboardingStatus === 'completed' || onboardingStatus === 'dismissed'))
   )
 }
-
-export const ONBOARDING_TOAST_ID = 'onboarding-toast'
-export const DOWNLOAD_APP_TOAST_ID = 'download-app-toast'
 
 export function onDismissOnboardingInvite() {
   settingsActor.send({

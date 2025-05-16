@@ -28,6 +28,7 @@ import {
   sceneInfra,
   codeManager,
   kclManager,
+  settingsActor,
 } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -38,16 +39,18 @@ import { BillingTransition } from '@src/machines/billingMachine'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { ShareButton } from '@src/components/ShareButton'
 import {
-  DOWNLOAD_APP_TOAST_ID,
   needsToOnboard,
-  ONBOARDING_TOAST_ID,
   TutorialRequestToast,
 } from '@src/routes/Onboarding/utils'
 import { reportRejection } from '@src/lib/trap'
 import { DownloadAppToast } from '@src/components/DownloadAppBanner'
 import openWindow from '@src/lib/openWindow'
-import { CREATE_FILE_URL_PARAM } from '@src/lib/constants'
-import { isPlaywright } from './lib/isPlaywright'
+import {
+  CREATE_FILE_URL_PARAM,
+  DOWNLOAD_APP_TOAST_ID,
+  ONBOARDING_TOAST_ID,
+} from '@src/lib/constants'
+import { isPlaywright } from '@src/lib/isPlaywright'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -153,7 +156,10 @@ export function App() {
             },
             onDismiss: () => {
               toast.dismiss(DOWNLOAD_APP_TOAST_ID)
-              // TODO: set dismissWebBanner to true
+              settingsActor.send({
+                type: 'set.app.dismissWebBanner',
+                data: { level: 'user', value: true },
+              })
             },
           }),
         {

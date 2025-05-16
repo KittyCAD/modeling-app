@@ -126,6 +126,12 @@ export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
 /** Toast id for the insert foreign part toast */
 export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
 
+/** Toast id for the onboarding */
+export const ONBOARDING_TOAST_ID = 'onboarding-toast'
+
+/** Toast id for the download app toast on web */
+export const DOWNLOAD_APP_TOAST_ID = 'download-app-toast'
+
 /** Local sketch axis values in KCL for operations, it could either be 'X' or 'Y' */
 export const KCL_AXIS_X = 'X'
 export const KCL_AXIS_Y = 'Y'
