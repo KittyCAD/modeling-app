@@ -58,6 +58,8 @@ trace.zip
 /public/kcl-samples/.github
 /public/kcl-samples/screenshots/main.kcl
 /public/kcl-samples/step/main.kcl
+/public/kcl-samples/internal
+/rust/kcl-lib/tests/kcl_samples/internal
 /test-results/
 /playwright-report/
 /blob-report/
