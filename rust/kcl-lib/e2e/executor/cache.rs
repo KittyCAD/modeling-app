@@ -1,5 +1,7 @@
 //! Cache testing framework.
 
+#[cfg(feature = "artifact-graph")]
+use kcl_lib::NodePathStep;
 use kcl_lib::{bust_cache, ExecError, ExecOutcome};
 use kcmc::{each_cmd as mcmd, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
@@ -328,6 +330,40 @@ extrude001 = extrude(profile001, length = 4)
             artifact
         );
     }
+}
+
+#[cfg(feature = "artifact-graph")]
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_add_offset_plane_computes_node_path() {
+    let code = r#"sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+"#;
+    let code_with_more = code.to_owned()
+        + r#"plane001 = offsetPlane(XY, offset = 500)
+"#;
+
+    let result = cache_test(
+        "add_offset_plane_preserves_artifact_commands",
+        vec![
+            Variation {
+                code,
+                other_files: vec![],
+                settings: &Default::default(),
+            },
+            Variation {
+                code: code_with_more.as_str(),
+                other_files: vec![],
+                settings: &Default::default(),
+            },
+        ],
+    )
+    .await;
+
+    let second = &result.last().unwrap().2;
+
+    let v = second.artifact_graph.values().collect::<Vec<_>>();
+    let path_step = &v[2].code_ref().unwrap().node_path.steps[0];
+    assert_eq!(*path_step, NodePathStep::ProgramBodyItem { index: 2 });
 }
 
 #[tokio::test(flavor = "multi_thread")]
