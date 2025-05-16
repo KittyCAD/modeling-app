@@ -241,7 +241,7 @@ code {
 }
 
 .dark #code-mirror-override .cm-tooltip,
-.cm-tooltip {
+.dark .cm-tooltip {
   @apply bg-chalkboard-110 text-chalkboard-40;
   @apply border-chalkboard-70/20 border-l-liquid-70;
 }
