@@ -571,7 +571,7 @@ impl ExecutorContext {
         // part of the scene).
         exec_state.mut_stack().push_new_env_for_scope();
 
-        let result = self.inner_run(&program, &mut exec_state, true).await?;
+        let result = self.inner_run(&program, 0, &mut exec_state, true).await?;
 
         // Restore any temporary variables, then save any newly created variables back to
         // memory in case another run wants to use them. Note this is just saved to the preserved
@@ -590,12 +590,13 @@ impl ExecutorContext {
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
 
-        let (program, mut exec_state, preserve_mem, imports_info) = if let Some(OldAstState {
+        let (program, mut exec_state, preserve_mem, cached_body_items, imports_info) = if let Some(OldAstState {
             ast: old_ast,
             exec_state: mut old_state,
             settings: old_settings,
             result_env,
-        }) = cache::read_old_ast().await
+        }) =
+            cache::read_old_ast().await
         {
             let old = CacheInformation {
                 ast: &old_ast,
@@ -607,11 +608,13 @@ impl ExecutorContext {
             };
 
             // Get the program that actually changed from the old and new information.
-            let (clear_scene, program, import_check_info) = match cache::get_changed_program(old, new).await {
+            let (clear_scene, program, body_items, import_check_info) = match cache::get_changed_program(old, new).await
+            {
                 CacheResult::ReExecute {
                     clear_scene,
                     reapply_settings,
                     program: changed_program,
+                    cached_body_items,
                 } => {
                     if reapply_settings
                         && self
@@ -620,7 +623,7 @@ impl ExecutorContext {
                             .await
                             .is_err()
                     {
-                        (true, program, None)
+                        (true, program, cached_body_items, None)
                     } else {
                         (
                             clear_scene,
@@ -628,6 +631,7 @@ impl ExecutorContext {
                                 ast: changed_program,
                                 original_file_contents: program.original_file_contents,
                             },
+                            cached_body_items,
                             None,
                         )
                     }
@@ -643,7 +647,7 @@ impl ExecutorContext {
                             .await
                             .is_err()
                     {
-                        (true, program, None)
+                        (true, program, old_ast.body.len(), None)
                     } else {
                         // We need to check our imports to see if they changed.
                         let mut new_exec_state = ExecState::new(self);
@@ -676,6 +680,7 @@ impl ExecutorContext {
                                 ast: changed_program,
                                 original_file_contents: program.original_file_contents,
                             },
+                            old_ast.body.len(),
                             // We only care about this if we are clearing the scene.
                             if clear_scene {
                                 Some((new_universe, new_universe_map, new_exec_state))
@@ -704,7 +709,7 @@ impl ExecutorContext {
                         let outcome = old_state.to_exec_outcome(result_env).await;
                         return Ok(outcome);
                     }
-                    (true, program, None)
+                    (true, program, old_ast.body.len(), None)
                 }
                 CacheResult::NoAction(false) => {
                     let outcome = old_state.to_exec_outcome(result_env).await;
@@ -736,17 +741,17 @@ impl ExecutorContext {
                     (old_state, true, None)
                 };
 
-            (program, exec_state, preserve_mem, universe_info)
+            (program, exec_state, preserve_mem, body_items, universe_info)
         } else {
             let mut exec_state = ExecState::new(self);
             self.send_clear_scene(&mut exec_state, Default::default())
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?;
-            (program, exec_state, false, None)
+            (program, exec_state, false, 0, None)
         };
 
         let result = self
-            .run_concurrent(&program, &mut exec_state, imports_info, preserve_mem)
+            .run_concurrent(&program, cached_body_items, &mut exec_state, imports_info, preserve_mem)
             .await;
 
         if result.is_err() {
@@ -780,7 +785,7 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        self.run_concurrent(program, exec_state, None, false).await
+        self.run_concurrent(program, 0, exec_state, None, false).await
     }
 
     /// Perform the execution of a program using a concurrent
@@ -793,6 +798,7 @@ impl ExecutorContext {
     pub async fn run_concurrent(
         &self,
         program: &crate::Program,
+        cached_body_items: usize,
         exec_state: &mut ExecState,
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: bool,
@@ -1016,7 +1022,8 @@ impl ExecutorContext {
             }
         }
 
-        self.inner_run(program, exec_state, preserve_mem).await
+        self.inner_run(program, cached_body_items, exec_state, preserve_mem)
+            .await
     }
 
     /// Get the universe & universe map of the program.
@@ -1071,6 +1078,7 @@ impl ExecutorContext {
     async fn inner_run(
         &self,
         program: &crate::Program,
+        cached_body_items: usize,
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
@@ -1084,7 +1092,7 @@ impl ExecutorContext {
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
         let result = self
-            .execute_and_build_graph(&program.ast, exec_state, preserve_mem)
+            .execute_and_build_graph(&program.ast, cached_body_items, exec_state, preserve_mem)
             .await;
 
         crate::log::log(format!(
@@ -1131,6 +1139,7 @@ impl ExecutorContext {
     async fn execute_and_build_graph(
         &self,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
+        #[cfg_attr(not(feature = "artifact-graph"), expect(unused))] cached_body_items: usize,
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<EnvironmentRef, KclError> {
@@ -1168,6 +1177,7 @@ impl ExecutorContext {
                 &new_commands,
                 &new_responses,
                 program,
+                cached_body_items,
                 &mut exec_state.global.artifacts,
                 initial_graph,
             );
