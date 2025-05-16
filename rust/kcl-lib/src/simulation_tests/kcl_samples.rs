@@ -23,7 +23,7 @@ lazy_static::lazy_static! {
 
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
 fn parse(dir_name: &str, dir_path: &Path) {
-    let t = test(dir_name, dir_path.join("main.kcl").to_str().unwrap().to_owned());
+    let t = test(dir_name, dir_path.join("main.kcl"));
     let write_new = matches!(
         std::env::var("INSTA_UPDATE").as_deref(),
         Ok("auto" | "always" | "new" | "unseen")
@@ -37,7 +37,7 @@ fn parse(dir_name: &str, dir_path: &Path) {
 
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
 async fn unparse(dir_name: &str, dir_path: &Path) {
-    let t = test(dir_name, dir_path.join("main.kcl").to_str().unwrap().to_owned());
+    let t = test(dir_name, dir_path.join("main.kcl"));
     unparse_test(&t).await;
 }
 
@@ -71,7 +71,7 @@ async fn unparse_test(test: &Test) {
 
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
 async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
-    let t = test(dir_name, dir_path.join("main.kcl").to_str().unwrap().to_owned());
+    let t = test(dir_name, dir_path.join("main.kcl"));
     super::execute_test(&t, true, true).await;
 }
 
@@ -129,12 +129,22 @@ fn test_after_engine_generate_manifest() {
     generate_kcl_manifest(&INPUTS_DIR).unwrap();
 }
 
-fn test(test_name: &str, entry_point: String) -> Test {
+fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
+    let parent = std::fs::canonicalize(entry_point.parent().unwrap()).unwrap();
+    let inputs_dir = std::fs::canonicalize(INPUTS_DIR.as_path()).unwrap();
+    let relative_path = parent.strip_prefix(inputs_dir).unwrap();
+    let output_dir = std::fs::canonicalize(OUTPUTS_DIR.as_path()).unwrap();
+    let relative_output_dir = output_dir.join(relative_path);
+
+    // Ensure the output directory exists.
+    if !relative_output_dir.exists() {
+        std::fs::create_dir_all(&relative_output_dir).unwrap();
+    }
     Test {
         name: test_name.to_owned(),
-        entry_point,
-        input_dir: INPUTS_DIR.join(test_name),
-        output_dir: OUTPUTS_DIR.join(test_name),
+        entry_point: entry_point.clone(),
+        input_dir: parent.to_path_buf(),
+        output_dir: relative_output_dir,
     }
 }
 
@@ -173,8 +183,9 @@ fn kcl_samples_inputs() -> Vec<Test> {
         eprintln!("Found KCL sample: {:?}", dir_name.to_string_lossy());
         // Look for the entry point inside the directory.
         let sub_dir = INPUTS_DIR.join(dir_name);
-        let entry_point = if sub_dir.join("main.kcl").exists() {
-            "main.kcl".to_owned()
+        let main_kcl_path = sub_dir.join("main.kcl");
+        let entry_point = if main_kcl_path.exists() {
+            main_kcl_path
         } else {
             panic!("No main.kcl found in {:?}", sub_dir);
         };
