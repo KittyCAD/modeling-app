@@ -226,8 +226,6 @@ jobs:
       - name: Run tests
         shell: bash
         run: |-
-          cp nextest-archive.tar.zst rust/nextest-archive.tar.zst
-          ls -lah
           cd rust
           cargo nextest run -p kcl-lib \
            --retries=10 --no-fail-fast --profile=ci \
