@@ -247,6 +247,7 @@ export const parse = (code: string | Error): ParseResult | Error => {
       bestSourceRange(parsed),
       [],
       [],
+      [],
       defaultArtifactGraph(),
       {},
       null
@@ -401,6 +402,7 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
     parsed.error.kind,
     parsed.error.msg,
     bestSourceRange(parsed.error),
+    parsed.nonFatal,
     parsed.operations,
     parsed.artifactCommands,
     rustArtifactGraphToMap(parsed.artifactGraph),
