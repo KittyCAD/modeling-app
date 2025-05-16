@@ -958,12 +958,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'edgeCutEdge',
         ],
         multiple: true,
-        required: true,
+        required: false,
         selectionSource: {
           allowSceneSelection: true,
           allowCodeSelection: true,
         },
-        skip: true,
+        skip: false,
         warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
       prompt: {
