@@ -3,8 +3,10 @@ name: Build WASM
 on:
   workflow_call:
 
-jobs:
+permissions:
+  contents: read
 
+jobs:
   npm-build-wasm:
     runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
     steps:
