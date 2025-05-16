@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing revolve-colinear.kcl
+---
+sk0 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> yLine(length = 2)
+  |> xLine(length = 1)
+  |> yLine(length = -2)
+  |> close()
+  |> revolve(axis = Y)

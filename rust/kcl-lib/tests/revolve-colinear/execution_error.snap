@@ -1,0 +1,25 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing revolve-colinear.kcl
+---
+KCL Engine error
+
+  × engine: Solid3D revolve failed:  sketch profile must lie entirely on one
+  │ side of the revolution axis
+   ╭─[7:6]
+ 6 │   |> close()
+ 7 │   |> revolve(axis = Y)
+   ·      ────────┬────────┬
+   ·              ╰── tests/revolve-colinear/input.kcl
+   ·              ╰── tests/revolve-colinear/input.kcl
+   ╰────
+  ╰─▶ KCL Engine error
+      
+        × engine: Solid3D revolve failed:  sketch profile must lie entirely on
+        │ one side of the revolution axis
+         ╭─[7:6]
+       6 │   |> close()
+       7 │   |> revolve(axis = Y)
+         ·      ────────┬────────
+         ·              ╰── tests/revolve-colinear/input.kcl
+         ╰────
