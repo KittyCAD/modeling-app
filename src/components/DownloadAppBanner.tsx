@@ -11,13 +11,17 @@ export function DownloadAppToast({
   onDismiss,
 }: DownloadAppToastProps) {
   return (
-    <div data-testid="download-app-toast" className="flex items-center gap-6">
+    <div
+      data-testid="download-app-toast"
+      className="flex items-center gap-6 min-w-md"
+    >
       <Logo className="w-auto h-8 flex-none" />
-      <div className="flex flex-col justify-between gap-6">
+      <div className="flex flex-col justify-between gap-6 min-w-80">
         <section>
-          <h2>Design Studio is primarily a desktop app!</h2>
+          <h2>Zoo Design Studio is primarily a desktop app</h2>
           <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-            The web app is very limited in features.
+            The present web app is limited in features. We don't want you to
+            miss out!
           </p>
           {!navigator?.userAgent.includes('Chrome') && (
             <p className="mt-6">

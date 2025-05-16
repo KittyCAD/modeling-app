@@ -138,6 +138,26 @@ export function App() {
       settings.app.onboardingStatus.current ||
       settings.app.onboardingStatus.default
     const needsOnboarded = needsToOnboard(location, onboardingStatus)
+
+    if (!isDesktop() && needsOnboarded) {
+      toast.success(
+        () =>
+          TutorialRequestToast({
+            onboardingStatus: settings.app.onboardingStatus.current,
+            navigate,
+            codeManager,
+            kclManager,
+          }),
+        {
+          id: ONBOARDING_TOAST_ID,
+          duration: Number.POSITIVE_INFINITY,
+          icon: null,
+        }
+      )
+    }
+  }, [location, settings.app.onboardingStatus, navigate])
+
+  useEffect(() => {
     const needsDownloadAppToast =
       !isDesktop() &&
       !isPlaywright() &&
@@ -169,24 +189,7 @@ export function App() {
         }
       )
     }
-
-    if (!isDesktop() && needsOnboarded) {
-      toast.success(
-        () =>
-          TutorialRequestToast({
-            onboardingStatus: settings.app.onboardingStatus.current,
-            navigate,
-            codeManager,
-            kclManager,
-          }),
-        {
-          id: ONBOARDING_TOAST_ID,
-          duration: Number.POSITIVE_INFINITY,
-          icon: null,
-        }
-      )
-    }
-  }, [location, settings.app.onboardingStatus, navigate])
+  }, [])
 
   // Only create the native file menus on desktop
   useEffect(() => {
