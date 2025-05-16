@@ -49,6 +49,7 @@ export function useCreateFileLinkQuery(
           decodeURIComponent(searchParams.get('code') ?? '')
         ),
         name: searchParams.get('name') ?? DEFAULT_FILE_NAME,
+        isRestrictedToOrg: false,
       }
 
       const argDefaultValues: CreateFileSchemaMethodOptional = {

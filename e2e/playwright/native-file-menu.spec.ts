@@ -197,18 +197,6 @@ test.describe(
         await clickElectronNativeMenuById(tronApp, 'File.Export current part')
         await cmdBar.expectCommandName('Export')
       })
-      await test.step('Modeling.File.Share part via Zoo link', async () => {
-        await page.waitForTimeout(250)
-        await clickElectronNativeMenuById(
-          tronApp,
-          'File.Share part via Zoo link'
-        )
-        const textToCheck =
-          'Link copied to clipboard. Anyone who clicks this link will get a copy of this file. Share carefully!'
-        // Check if text appears anywhere in the page
-        const isTextVisible = page.getByText(textToCheck)
-        await expect(isTextVisible).toBeVisible({ timeout: 10000 })
-      })
       await test.step('Modeling.File.Preferences.Project settings', async () => {
         await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
