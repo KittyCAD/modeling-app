@@ -38,11 +38,15 @@ import { BillingTransition } from '@src/machines/billingMachine'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { ShareButton } from '@src/components/ShareButton'
 import {
+  DOWNLOAD_APP_TOAST_ID,
   needsToOnboard,
   ONBOARDING_TOAST_ID,
   TutorialRequestToast,
 } from '@src/routes/Onboarding/utils'
 import { reportRejection } from '@src/lib/trap'
+import { DownloadAppToast } from '@src/components/DownloadAppBanner'
+import openWindow from '@src/lib/openWindow'
+import { CREATE_FILE_URL_PARAM } from '@src/lib/constants'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -130,6 +134,33 @@ export function App() {
       settings.app.onboardingStatus.current ||
       settings.app.onboardingStatus.default
     const needsOnboarded = needsToOnboard(location, onboardingStatus)
+    const needsDownloadAppToast =
+      searchParams.has(CREATE_FILE_URL_PARAM) ||
+      settings.app.dismissWebBanner.current
+
+    if (!isDesktop() && needsDownloadAppToast) {
+      toast.success(
+        () =>
+          DownloadAppToast({
+            onAccept: () => {
+              openWindow('https://zoo.dev/modeling-app/download')
+                .then(() => {
+                  toast.dismiss(DOWNLOAD_APP_TOAST_ID)
+                })
+                .catch(reportRejection)
+            },
+            onDismiss: () => {
+              toast.dismiss(DOWNLOAD_APP_TOAST_ID)
+              // TODO: set dismissWebBanner to true
+            },
+          }),
+        {
+          id: DOWNLOAD_APP_TOAST_ID,
+          duration: Number.POSITIVE_INFINITY,
+          icon: null,
+        }
+      )
+    }
 
     if (!isDesktop() && needsOnboarded) {
       toast.success(

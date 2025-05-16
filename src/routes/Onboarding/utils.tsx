@@ -343,6 +343,7 @@ export function needsToOnboard(
 }
 
 export const ONBOARDING_TOAST_ID = 'onboarding-toast'
+export const DOWNLOAD_APP_TOAST_ID = 'download-app-toast'
 
 export function onDismissOnboardingInvite() {
   settingsActor.send({
