@@ -2,10 +2,21 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing import_mesh_clone.kcl
 ---
-import "../inputs/cube.obj" as cube
+@(lengthUnit = m)
+import "../inputs/cube.obj" as yellow
 
-model = cube
+yellow
+  |> translate(%, x = -2000, y = -2000)
+appearance(yellow, color = "#ffff00")
 
-model2 = clone(model)
-  |> translate(x = 1020)
-  |> appearance(color = "#ff0000", metalness = 50, roughness = 50)
+red = clone(yellow)
+  |> translate(%, x = 4000)
+appearance(red, color = "#ff0000")
+
+green = clone(yellow)
+  |> translate(%, y = 4000)
+appearance(green, color = "#00ff00")
+
+blue = clone(red)
+  |> translate(%, y = 4000)
+appearance(blue, color = "#0000ff")

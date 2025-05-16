@@ -426,14 +426,14 @@ impl ExecutorContext {
     }
 
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_mock() -> Self {
+    pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
             engine: Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
             )),
             fs: Arc::new(FileManager::new()),
             stdlib: Arc::new(StdLib::new()),
-            settings: Default::default(),
+            settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
         }
     }
@@ -823,6 +823,7 @@ impl ExecutorContext {
 
                 KclErrorWithOutputs::new(
                     err,
+                    exec_state.errors().to_vec(),
                     #[cfg(feature = "artifact-graph")]
                     exec_state.global.operations.clone(),
                     #[cfg(feature = "artifact-graph")]
@@ -999,6 +1000,7 @@ impl ExecutorContext {
 
                         return Err(KclErrorWithOutputs::new(
                             e,
+                            exec_state.errors().to_vec(),
                             #[cfg(feature = "artifact-graph")]
                             exec_state.global.operations.clone(),
                             #[cfg(feature = "artifact-graph")]
@@ -1048,6 +1050,7 @@ impl ExecutorContext {
 
             KclErrorWithOutputs::new(
                 err,
+                exec_state.errors().to_vec(),
                 #[cfg(feature = "artifact-graph")]
                 exec_state.global.operations.clone(),
                 #[cfg(feature = "artifact-graph")]
@@ -1100,6 +1103,7 @@ impl ExecutorContext {
 
             KclErrorWithOutputs::new(
                 e,
+                exec_state.errors().to_vec(),
                 #[cfg(feature = "artifact-graph")]
                 exec_state.global.operations.clone(),
                 #[cfg(feature = "artifact-graph")]
@@ -1155,23 +1159,24 @@ impl ExecutorContext {
 
         #[cfg(feature = "artifact-graph")]
         {
-            // Move the artifact commands and responses to simplify cache management
-            // and error creation.
-            exec_state
-                .global
-                .artifact_commands
-                .extend(self.engine.take_artifact_commands().await);
-            exec_state
-                .global
-                .artifact_responses
-                .extend(self.engine.take_responses().await);
+            let new_commands = self.engine.take_artifact_commands().await;
+            let new_responses = self.engine.take_responses().await;
+            let initial_graph = exec_state.global.artifact_graph.clone();
+
             // Build the artifact graph.
-            match build_artifact_graph(
-                &exec_state.global.artifact_commands,
-                &exec_state.global.artifact_responses,
+            let graph_result = build_artifact_graph(
+                &new_commands,
+                &new_responses,
                 program,
-                &exec_state.global.artifacts,
-            ) {
+                &mut exec_state.global.artifacts,
+                initial_graph,
+            );
+            // Move the artifact commands and responses into ExecState to
+            // simplify cache management and error creation.
+            exec_state.global.artifact_commands.extend(new_commands);
+            exec_state.global.artifact_responses.extend(new_responses);
+
+            match graph_result {
                 Ok(artifact_graph) => {
                     exec_state.global.artifact_graph = artifact_graph;
                     exec_result.map(|(_, env_ref, _)| env_ref)
@@ -2232,7 +2237,7 @@ w = f() + f()
         let result = ctx.run_with_caching(program).await.unwrap();
         assert_eq!(result.variables.get("x").unwrap().as_f64().unwrap(), 2.0);
 
-        let ctx2 = ExecutorContext::new_mock().await;
+        let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
         let result = ctx2.run_mock(program2, true).await.unwrap();
         assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);

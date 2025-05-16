@@ -1533,7 +1533,6 @@ sketch001 = startSketchOn(XZ)
     await homePage.goToModelingScene()
 
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
 
     await scene.expectPixelColor(
       TEST_COLORS.DARK_MODE_BKGD,

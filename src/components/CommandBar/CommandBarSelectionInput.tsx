@@ -8,6 +8,7 @@ import {
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
+  type Selections,
 } from '@src/lib/selections'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -56,9 +57,13 @@ function CommandBarSelectionInput({
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(selection)
   }, [selection])
+  const isArgRequired =
+    arg.required instanceof Function
+      ? arg.required(commandBarState.context)
+      : arg.required
   const canSubmitSelection = useMemo<boolean>(
-    () => canSubmitSelectionArg(selectionsByType, arg),
-    [selectionsByType]
+    () => !isArgRequired || canSubmitSelectionArg(selectionsByType, arg),
+    [selectionsByType, arg, isArgRequired]
   )
 
   useEffect(() => {
@@ -110,7 +115,18 @@ function CommandBarSelectionInput({
       return
     }
 
-    onSubmit(selection)
+    /**
+     * Now that arguments like this can be optional, we need to
+     * construct an empty selection if it's not required to get it past our validation.
+     */
+    const resolvedSelection: Selections | undefined = isArgRequired
+      ? selection
+      : selection || {
+          graphSelections: [],
+          otherSelections: [],
+        }
+
+    onSubmit(resolvedSelection)
   }
 
   // Clear selection if needed
@@ -143,11 +159,6 @@ function CommandBarSelectionInput({
           : `Please select ${
               arg.multiple ? 'one or more ' : 'one '
             }${getSemanticSelectionType(arg.selectionTypes).join(' or ')}`}
-        {arg.warningMessage && (
-          <p className="text-warn-80 bg-warn-10 px-2 py-1 rounded-sm mt-3 mr-2 -mb-2 w-full text-sm cursor-default">
-            {arg.warningMessage}
-          </p>
-        )}
         <span data-testid="cmd-bar-arg-name" className="sr-only">
           {arg.name}
         </span>

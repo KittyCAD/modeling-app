@@ -535,7 +535,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "117725a109d387c937a1533ce01b450cbde6b88abceea8473c4d7a85853cda3c"
 dependencies = [
  "lazy_static",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -963,7 +963,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "33d852cb9b869c2a9b3df2f71a3074817f01e1844f839a144f5fcef059a4eb5d"
 dependencies = [
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1746,7 +1746,7 @@ checksum = "e04d7f318608d35d4b61ddd75cbdaee86b023ebe2bd5a66ee0915f0bf93095a9"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1815,7 +1815,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.70"
+version = "0.1.73"
 dependencies = [
  "anyhow",
  "clap",
@@ -1826,7 +1826,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.70"
+version = "0.1.73"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1845,8 +1845,9 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.70"
+version = "0.1.73"
 dependencies = [
+ "convert_case",
  "proc-macro2",
  "quote",
  "syn 2.0.100",
@@ -1854,7 +1855,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.70"
+version = "0.2.73"
 dependencies = [
  "anyhow",
  "clap",
@@ -1875,7 +1876,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.70"
+version = "0.1.73"
 dependencies = [
  "anyhow",
  "clap",
@@ -1895,7 +1896,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.70"
+version = "0.2.73"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1971,7 +1972,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.70"
+version = "0.3.73"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -1986,7 +1987,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.70"
+version = "0.1.73"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -1999,7 +2000,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.70"
+version = "0.1.73"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2013,7 +2014,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.70"
+version = "0.1.73"
 dependencies = [
  "anyhow",
  "bson",
@@ -2987,7 +2988,7 @@ dependencies = [
  "once_cell",
  "socket2",
  "tracing",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -3306,7 +3307,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -3900,7 +3901,7 @@ dependencies = [
  "getrandom 0.3.1",
  "once_cell",
  "rustix",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4753,7 +4754,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]

@@ -44,6 +44,8 @@ export const lowerRightMasks = (page: Page) => [
 export type TestColor = [number, number, number]
 export const TEST_COLORS: { [key: string]: TestColor } = {
   WHITE: [249, 249, 249],
+  OFFWHITE: [237, 237, 237],
+  GREY: [142, 142, 142],
   YELLOW: [255, 255, 0],
   BLUE: [0, 0, 255],
   DARK_MODE_BKGD: [27, 27, 27],
@@ -549,11 +551,6 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
     createNewFile: async (name: string) => {
       return test?.step(`Create a file named ${name}`, async () => {
-        // If the application is in the middle of connecting a stream
-        // then creating a new file won't work in the end.
-        await expect(
-          page.getByRole('button', { name: 'Start Sketch' })
-        ).not.toBeDisabled()
         await page.getByTestId('create-file-button').click()
         await page.getByTestId('tree-input-field').fill(name)
         await page.keyboard.press('Enter')
