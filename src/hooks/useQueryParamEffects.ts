@@ -25,22 +25,22 @@ export type CreateFileSchemaMethodOptional = Omit<
 }
 
 /**
- * A hook that watches for query parameters and dispatches a callback.
+ * A set of hooks that watch for query parameters and dispatch a callback.
  * Currently watches for:
  * `?createFile`
- * "?cmd"
- * "?pool"
+ * "?cmd=<some-command-name>&groupId=<some-group-id>"
  */
 export function useQueryParamEffects() {
-  const { pathname } = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
+  const shouldInvokeCreateFile = searchParams.has(CREATE_FILE_URL_PARAM)
+  const shouldInvokeGenericCmd =
+    searchParams.has(CMD_NAME_QUERY_PARAM) &&
+    searchParams.has(CMD_GROUP_QUERY_PARAM)
 
+  /**
+   * Watches for legacy `?create-file` hook, which share links currently use.
+   */
   useEffect(() => {
-    const shouldInvokeCreateFile = searchParams.has(CREATE_FILE_URL_PARAM)
-    const shouldInvokeGenericCmd =
-      searchParams.has(CMD_NAME_QUERY_PARAM) &&
-      searchParams.has(CMD_GROUP_QUERY_PARAM)
-
     if (shouldInvokeCreateFile) {
       const argDefaultValues = buildCreateFileCommandArgs(searchParams)
       commandBarActor.send({
@@ -55,7 +55,15 @@ export function useQueryParamEffects() {
       // Delete the query param after the command has been invoked.
       searchParams.delete(CREATE_FILE_URL_PARAM)
       setSearchParams(searchParams)
-    } else if (shouldInvokeGenericCmd) {
+    }
+  }, [shouldInvokeCreateFile, setSearchParams])
+
+  /**
+   * Generic commands are triggered by query parameters
+   * with the pattern: `?cmd=<command-name>&groupId=<group-id>`
+   */
+  useEffect(() => {
+    if (shouldInvokeGenericCmd) {
       const commandData = buildGenericCommandArgs(searchParams)
       if (!commandData) {
         return
@@ -80,7 +88,7 @@ export function useQueryParamEffects() {
             POOL_QUERY_PARAM,
           ]
 
-          return reservedKeys.includes(key)
+          return !reservedKeys.includes(key)
         })
 
       for (const [key] of keysToDelete) {
@@ -88,7 +96,7 @@ export function useQueryParamEffects() {
       }
       setSearchParams(searchParams)
     }
-  }, [pathname])
+  }, [shouldInvokeGenericCmd, setSearchParams])
 }
 
 function buildCreateFileCommandArgs(searchParams: URLSearchParams) {
