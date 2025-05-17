@@ -3,6 +3,7 @@ import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import { default_app_settings } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { TEST } from '@src/env'
+import { getSettings } from '@src/lib/singletons'
 
 import {
   defaultAppSettings,
@@ -541,10 +542,7 @@ export function getSettingInputType(setting: Setting) {
 export const jsAppSettings = async (): Promise<DeepPartial<Configuration>> => {
   let jsAppSettings = default_app_settings()
   if (!TEST) {
-    // TODO: https://github.com/KittyCAD/modeling-app/issues/6445
-    const settings = await import('@src/lib/singletons').then((module) =>
-      module.getSettings()
-    )
+    const settings = getSettings()
     if (settings) {
       jsAppSettings = getAllCurrentSettings(settings)
     }
