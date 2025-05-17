@@ -101,7 +101,23 @@ function CommandBarSelectionInput({
     if (canSubmitSelection && arg.skip && argValue === undefined) {
       handleSubmit()
     }
-  }, [canSubmitSelection])
+
+    // Watch for outside teardowns of this component
+    // (such as clicking another argument in the command palette header)
+    // and quickly save the current selection if we can
+    return () => {
+      const resolvedSelection: Selections | undefined = isArgRequired
+        ? selection
+        : selection || {
+            graphSelections: [],
+            otherSelections: [],
+          }
+
+      if (canSubmitSelection && resolvedSelection) {
+        onSubmit(resolvedSelection)
+      }
+    }
+  }, [arg.name, canSubmitSelection])
 
   function handleChange() {
     inputRef.current?.focus()

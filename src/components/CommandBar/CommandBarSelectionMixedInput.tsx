@@ -63,7 +63,23 @@ export default function CommandBarSelectionMixedInput({
         setHasAutoSkipped(true)
       }
     }
-  }, [])
+
+    // Watch for outside teardowns of this component
+    // (such as clicking another argument in the command palette header)
+    // and quickly save the current selection if we can
+    return () => {
+      const resolvedSelection: Selections | undefined = isArgRequired
+        ? selection
+        : selection || {
+            graphSelections: [],
+            otherSelections: [],
+          }
+
+      if (canSubmitSelection && resolvedSelection) {
+        onSubmit(resolvedSelection)
+      }
+    }
+  }, [arg.name])
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
