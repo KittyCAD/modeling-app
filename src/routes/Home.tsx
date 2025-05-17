@@ -19,7 +19,7 @@ import {
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
 import { BillingDialog } from '@src/components/BillingDialog'
-import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
+import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
@@ -70,6 +70,7 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  useQueryParamEffects()
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
@@ -87,18 +88,6 @@ const Home = () => {
     }
     billingActor.send({ type: BillingTransition.Update, apiToken })
   }, [])
-
-  // Keep a lookout for a URL query string that invokes the 'import file from URL' command
-  useCreateFileLinkQuery((argDefaultValues) => {
-    commandBarActor.send({
-      type: 'Find and select command',
-      data: {
-        groupId: 'projects',
-        name: 'Import file from URL',
-        argDefaultValues,
-      },
-    })
-  })
 
   const location = useLocation()
   const settings = useSettings()

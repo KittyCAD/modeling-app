@@ -220,6 +220,7 @@ async fn inner_extrude(
                 },
                 exec_state,
                 &args,
+                None,
             )
             .await?,
         );
@@ -234,6 +235,7 @@ pub(crate) struct NamedCapTags<'a> {
     pub end: Option<&'a TagNode>,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) async fn do_post_extrude<'a>(
     sketch: &Sketch,
     #[cfg(feature = "artifact-graph")] solid_id: ArtifactId,
@@ -242,6 +244,7 @@ pub(crate) async fn do_post_extrude<'a>(
     named_cap_tags: &'a NamedCapTags<'a>,
     exec_state: &mut ExecState,
     args: &Args,
+    edge_id: Option<Uuid>,
 ) -> Result<Solid, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
@@ -251,7 +254,9 @@ pub(crate) async fn do_post_extrude<'a>(
     )
     .await?;
 
-    let any_edge_id = if let Some(edge_id) = sketch.mirror {
+    let any_edge_id = if let Some(id) = edge_id {
+        id
+    } else if let Some(edge_id) = sketch.mirror {
         edge_id
     } else {
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.

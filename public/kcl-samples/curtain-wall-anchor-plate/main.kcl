@@ -1,0 +1,155 @@
+// Curtain Wall Anchor Plate
+// A structural steel L-plate used to anchor curtain wall systems to concrete slabs, with elongated holes for adjustability and bolts with nuts and base plates for secure fastening
+
+// Set units in millimeters (mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Define parameters
+slabPlateBaseLength = 300
+slabPlateHookLength = 80
+slabPlateWidth = 200
+slabPlateThickness = 8
+offsetSlabRail = 200
+
+// Generate L-shaped anchor profile with base and hook flange
+// Includes fillets at internal and external corners for strength and safety
+fn lProfileFn(lengthBase, lengthHook, width, thickness) {
+  profilePlane = startSketchOn(offsetPlane(XZ, offset = -width / 2))
+  profileShape = startProfile(profilePlane, at = [0, 0])
+    |> yLine(length = lengthHook, tag = $hookOutside)
+    |> xLine(length = thickness)
+    |> yLine(length = thickness - lengthHook, tag = $hookInside)
+    |> xLine(length = lengthBase - thickness, tag = $baseInside)
+    |> yLine(length = -thickness)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $baseOutside)
+    |> close()
+  profileBody = extrude(profileShape, length = width)
+    |> fillet(
+         radius = thickness,
+         tags = [
+           getCommonEdge(faces = [baseInside, hookInside])
+         ],
+       )
+    |> fillet(
+         radius = thickness * 2,
+         tags = [
+           getCommonEdge(faces = [baseOutside, hookOutside])
+         ],
+       )
+  return profileBody
+}
+
+// Create a hexagonal shape used for bolt and nut heads
+fn hexagonFn(plane, radius) {
+  shape = startProfile(plane, at = [-radius, 0])
+    |> angledLine(angle = 60, length = radius)
+    |> xLine(length = radius)
+    |> angledLine(angle = -60, length = radius)
+    |> angledLine(angle = -120, length = radius)
+    |> xLine(length = -radius)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  return shape
+}
+
+// Build a bolt with a hexagonal head and cylindrical shaft
+fn boltFn(diameter, length) {
+  boltHeadPlane = startSketchOn(XY)
+  boltHeadShape = hexagonFn(plane = boltHeadPlane, radius = diameter)
+  boltHeadBody = extrude(boltHeadShape, length = diameter * 0.7)
+  boltPlane = startSketchOn(boltHeadBody, face = START)
+  boltShape = circle(boltPlane, center = [0, 0], radius = diameter / 2)
+  boltBody = extrude(boltShape, length = length)
+  return boltBody
+}
+
+// Construct a bolt assembly with base plate and hex nut
+// Assembles all parts for realistic anchor simulation
+fn boltWithPlateAndNutFn(diameter, length, gap) {
+  plateSide = diameter * 3
+  plateplane = startSketchOn(offsetPlane(XY, offset = -gap))
+  plateShape = startProfile(plateplane, at = [-plateSide / 2, -plateSide / 2])
+    |> yLine(length = plateSide)
+    |> xLine(length = plateSide)
+    |> yLine(length = -plateSide)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  plateBody = extrude(plateShape, length = -diameter * 0.3)
+  nutPlane = startSketchOn(plateBody, face = START)
+  boltHeadShape = hexagonFn(plane = nutPlane, radius = 12)
+  boltHeadBody = extrude(boltHeadShape, length = diameter * 0.7)
+  boltBody = boltFn(diameter = diameter, length = gap + diameter + 3)
+  mergedBody = union([boltHeadBody, boltBody])
+  return mergedBody
+}
+
+// Generate the plate geometry with a vertical hook for slab attachment
+slabPlate = lProfileFn(
+  lengthBase = slabPlateBaseLength,
+  lengthHook = slabPlateHookLength,
+  width = slabPlateWidth,
+  thickness = slabPlateThickness,
+)
+
+// Define oblong holes for bolts, allowing positional adjustment
+wideHoleWidth = 12
+wideHoleLength = 60
+wideHoleOffset = 30
+
+// Two slots mirrored across the plate width
+wideHolePlane = startSketchOn(XY)
+wideHoleShape = startProfile(
+       wideHolePlane,
+       at = [
+         -(wideHoleLength - wideHoleWidth) / 2,
+         wideHoleWidth / 2
+       ],
+     )
+  |> xLine(length = wideHoleLength - wideHoleWidth)
+  |> tangentialArc(endAbsolute = [
+       (wideHoleLength - wideHoleWidth) / 2,
+       -wideHoleWidth / 2
+     ])
+  |> xLine(length = wideHoleWidth - wideHoleLength)
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> translate(
+       %,
+       x = offsetSlabRail,
+       y = wideHoleOffset - (slabPlateWidth / 2),
+       z = -1,
+     )
+wideHoleVoidLeft = extrude(wideHoleShape, length = slabPlateThickness + 2)
+wideHoleVoidRight = clone(wideHoleVoidLeft)
+  |> translate(
+       %,
+       x = 0,
+       y = slabPlateWidth - (wideHoleOffset * 2),
+       z = 0,
+     )
+
+// Cut the holes into the anchor plate body
+slabPlatePunchOne = subtract([slabPlate], tools = [wideHoleVoidLeft])
+slabPlatePunchTwo = subtract([slabPlatePunchOne], tools = [wideHoleVoidRight])
+
+// Add two bolt assemblies into the oblong slots
+// Properly rotated and spaced to match anchor hole layout
+slabPlateBolts = boltWithPlateAndNutFn(diameter = 10, length = 20, gap = slabPlateThickness + 5)
+  |> rotate(
+       %,
+       roll = 180,
+       pitch = 0,
+       yaw = 0,
+     )
+  |> translate(
+       %,
+       x = offsetSlabRail,
+       y = wideHoleOffset - (slabPlateWidth / 2),
+       z = 5,
+     )
+  |> patternLinear3d(
+       %,
+       instances = 2,
+       distance = slabPlateWidth - (wideHoleOffset * 2),
+       axis = [0, -1, 0],
+     )

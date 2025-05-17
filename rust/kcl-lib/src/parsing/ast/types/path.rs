@@ -62,14 +62,21 @@ pub enum Step {
 impl NodePath {
     /// Given a program and a [`SourceRange`], return the path to the node that
     /// contains the range.
-    pub(crate) fn from_range(program: &Node<Program>, range: SourceRange) -> Option<Self> {
-        Self::from_body(&program.body, range, NodePath::default())
+    pub(crate) fn from_range(program: &Node<Program>, cached_body_items: usize, range: SourceRange) -> Option<Self> {
+        Self::from_body(&program.body, cached_body_items, range, NodePath::default())
     }
 
-    fn from_body(body: &[BodyItem], range: SourceRange, mut path: NodePath) -> Option<NodePath> {
+    fn from_body(
+        body: &[BodyItem],
+        cached_body_items: usize,
+        range: SourceRange,
+        mut path: NodePath,
+    ) -> Option<NodePath> {
         for (i, item) in body.iter().enumerate() {
             if item.contains_range(&range) {
-                path.push(Step::ProgramBodyItem { index: i });
+                path.push(Step::ProgramBodyItem {
+                    index: cached_body_items + i,
+                });
                 return Self::from_body_item(item, range, path);
             }
         }
@@ -262,7 +269,7 @@ impl NodePath {
                 }
                 if node.then_val.contains_range(&range) {
                     path.push(Step::IfExpressionThen);
-                    return Self::from_body(&node.then_val.body, range, path);
+                    return Self::from_body(&node.then_val.body, 0, range, path);
                 }
                 for else_if in &node.else_ifs {
                     if else_if.contains_range(&range) {
@@ -273,14 +280,14 @@ impl NodePath {
                         }
                         if else_if.then_val.contains_range(&range) {
                             path.push(Step::IfExpressionElseIfBody);
-                            return Self::from_body(&else_if.then_val.body, range, path);
+                            return Self::from_body(&else_if.then_val.body, 0, range, path);
                         }
                         return Some(path);
                     }
                 }
                 if node.final_else.contains_range(&range) {
                     path.push(Step::IfExpressionElse);
-                    return Self::from_body(&node.final_else.body, range, path);
+                    return Self::from_body(&node.final_else.body, 0, range, path);
                 }
             }
             Expr::LabelledExpression(node) => {
@@ -345,7 +352,7 @@ mod tests {
         // fn cube(sideLength, center) {
         //    ^^^^
         assert_eq!(
-            NodePath::from_range(&program.ast, range(38, 42)).unwrap(),
+            NodePath::from_range(&program.ast, 0, range(38, 42)).unwrap(),
             NodePath {
                 steps: vec![Step::ProgramBodyItem { index: 0 }, Step::VariableDeclarationDeclaration],
             }
@@ -353,7 +360,7 @@ mod tests {
         // fn cube(sideLength, center) {
         //                     ^^^^^^
         assert_eq!(
-            NodePath::from_range(&program.ast, range(55, 61)).unwrap(),
+            NodePath::from_range(&program.ast, 0, range(55, 61)).unwrap(),
             NodePath {
                 steps: vec![
                     Step::ProgramBodyItem { index: 0 },
@@ -366,7 +373,7 @@ mod tests {
         // |> line(endAbsolute = p1)
         //                       ^^
         assert_eq!(
-            NodePath::from_range(&program.ast, range(293, 295)).unwrap(),
+            NodePath::from_range(&program.ast, 0, range(293, 295)).unwrap(),
             NodePath {
                 steps: vec![
                     Step::ProgramBodyItem { index: 0 },
@@ -383,7 +390,7 @@ mod tests {
         // myCube = cube(sideLength = 40, center = [0, 0])
         //                                             ^
         assert_eq!(
-            NodePath::from_range(&program.ast, range(485, 486)).unwrap(),
+            NodePath::from_range(&program.ast, 0, range(485, 486)).unwrap(),
             NodePath {
                 steps: vec![
                     Step::ProgramBodyItem { index: 1 },

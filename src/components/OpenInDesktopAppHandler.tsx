@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
 import {
+  APP_DOWNLOAD_PATH,
   ASK_TO_OPEN_QUERY_PARAM,
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
@@ -120,7 +121,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
                 buttonClasses +
                 ' text-sm border-transparent justify-center dark:bg-transparent'
               }
-              to={`${VITE_KC_SITE_BASE_URL}/modeling-app/download`}
+              to={`${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`}
               iconEnd={{ icon: 'link', bgClassName: '!bg-transparent' }}
             >
               Download desktop app

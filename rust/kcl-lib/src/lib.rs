@@ -99,7 +99,7 @@ pub use lsp::{
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
 pub use modules::ModuleId;
-pub use parsing::ast::types::{FormatOptions, NodePath};
+pub use parsing::ast::types::{FormatOptions, NodePath, Step as NodePathStep};
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
 pub use source_range::SourceRange;
 #[cfg(not(target_arch = "wasm32"))]
@@ -250,8 +250,8 @@ impl Program {
         self.ast.lint(rule)
     }
 
-    pub fn node_path_from_range(&self, range: SourceRange) -> Option<NodePath> {
-        NodePath::from_range(&self.ast, range)
+    pub fn node_path_from_range(&self, cached_body_items: usize, range: SourceRange) -> Option<NodePath> {
+        NodePath::from_range(&self.ast, cached_body_items, range)
     }
 
     pub fn recast(&self) -> String {
