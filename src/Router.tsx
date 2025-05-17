@@ -14,7 +14,6 @@ import { CommandBar } from '@src/components/CommandBar/CommandBar'
 import { ErrorPage } from '@src/components/ErrorPage'
 import FileMachineProvider from '@src/components/FileMachineProvider'
 import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
-import { WasmErrBanner } from '@src/components/WasmErrBanner'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
 import { coreDump } from '@src/lang/wasm'
@@ -84,7 +83,6 @@ const router = createRouter([
                 <App />
                 <CommandBar />
               </ModelingMachineProvider>
-              <WasmErrBanner />
             </FileMachineProvider>
           </Auth>
         ),
