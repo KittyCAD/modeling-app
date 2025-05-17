@@ -208,7 +208,7 @@ export const ONBOARDING_DATA_ATTRIBUTE = 'onboarding-id'
 export const CMD_NAME_QUERY_PARAM = 'cmd'
 /** A query parameter that invokes a command */
 export const CMD_GROUP_QUERY_PARAM = 'groupId'
-/** A query parameter that manually the engine pool the frontend should use. */
+/** A query parameter that manually sets the engine pool the frontend should use. */
 export const POOL_QUERY_PARAM = 'pool'
 /** A query parameter to create a file
  * @deprecated: supporting old share links with this. For new command URLs, use "cmd"
