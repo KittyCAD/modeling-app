@@ -149,6 +149,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "curtain-wall-anchor-plate/main.kcl",
+    "multipleFiles": false,
+    "title": "Curtain Wall Anchor Plate",
+    "description": "A structural steel L-plate used to anchor curtain wall systems to concrete slabs, with elongated holes for adjustability and bolts with nuts and base plates for secure fastening",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "cycloidal-gear/main.kcl",
     "multipleFiles": false,
     "title": "Cycloidal Gear",
@@ -173,6 +183,16 @@
     "multipleFiles": false,
     "title": "Enclosure",
     "description": "An enclosure body and sealing lid for storing items",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "engine-valve/main.kcl",
+    "multipleFiles": false,
+    "title": "Engine Valve",
+    "description": "A mechanical valve used in internal combustion engines to control intake or exhaust flow",
     "files": [
       "main.kcl"
     ]
@@ -424,6 +444,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "pdu-faceplate/main.kcl",
+    "multipleFiles": false,
+    "title": "Power Distribution Unit (PDU) faceplate with European plug sockets and switch",
+    "description": "Designed for standard 19-inch rack systems with 1U height and 8 sockets",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "pillow-block-bearing/main.kcl",
     "multipleFiles": true,
     "title": "Pillow Block Bearing",
@@ -514,6 +544,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "sash-window/main.kcl",
+    "multipleFiles": false,
+    "title": "Sash Window",
+    "description": "A traditional wooden sash window with two vertically sliding panels and a central locking mechanism",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "sheet-metal-bracket/main.kcl",
     "multipleFiles": false,
     "title": "Sheet Metal Bracket",
@@ -524,10 +564,30 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "shepherds-hook-bolt/main.kcl",
+    "multipleFiles": false,
+    "title": "Shepherd’s Hook Bolt",
+    "description": "A bent bolt with a curved hook, typically used for hanging or anchoring loads. The threaded end allows secure attachment to surfaces or materials, while the curved hook resists pull-out under tension.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "socket-head-cap-screw/main.kcl",
     "multipleFiles": false,
     "title": "Socket Head Cap Screw",
     "description": "This is for a #10-24 screw that is 1.00 inches long. A socket head cap screw is a type of fastener that is widely used in a variety of applications requiring a high strength fastening solution. It is characterized by its cylindrical head and internal hexagonal drive, which allows for tightening with an Allen wrench or hex key.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "spinning-highrise-tower/main.kcl",
+    "multipleFiles": false,
+    "title": "Spinning Highrise Tower",
+    "description": "A conceptual high-rise tower with a central core and rotating floor slabs, demonstrating dynamic form through vertical repetition and transformation",
     "files": [
       "main.kcl"
     ]
@@ -558,6 +618,16 @@
     "multipleFiles": false,
     "title": "Surgical Drill Guide",
     "description": "A surgical drill guide is a tool used in medical procedures to assist in drilling holes to a desired depth, ensuring proper orientation and minimizing intraosseal pressure",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "thermal-block-insert/main.kcl",
+    "multipleFiles": false,
+    "title": "Thermal Block Insert",
+    "description": "Interlocking insulation insert for masonry walls, designed with a tongue-and-groove profile for modular alignment and thermal efficiency",
     "files": [
       "main.kcl"
     ]

@@ -1,0 +1,79 @@
+// Engine Valve
+// A mechanical valve used in internal combustion engines to control intake or exhaust flow
+
+
+
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Define parameters
+valveDiameter = 30
+valveLength = 120
+valveHeadLength = valveDiameter * 1.0
+valveHeadThickness = 3
+stemDiameter = 6
+stemHeadLength = 9
+stemLength = valveLength - valveHeadLength - stemHeadLength
+
+// Create the valve head
+valveRadius = valveDiameter / 2
+valveHeadPlane = startSketchOn(XZ)
+valveHeadShape = startProfile(valveHeadPlane, at = [-0.01, valveHeadLength])
+  |> xLine(length = 0.01 - (stemDiameter / 2))
+  |> line(endAbsolute = [0.01 - (stemDiameter / 2), valveRadius])
+  |> tangentialArc(endAbsolute = [-0.8 * valveRadius, valveHeadThickness], tag = $seg01)
+  |> tangentialArc(endAbsolute = [-valveRadius, 0])
+  |> xLine(length = 0.3 * valveRadius)
+  |> arc(
+       interiorAbsolute = [
+         -0.34 * valveRadius,
+         0.08 * valveRadius
+       ],
+       endAbsolute = [
+         -0.02 * valveRadius,
+         0.11 * valveRadius
+       ],
+     )
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+valveHead = revolve(valveHeadShape, angle = 360, axis = Y)
+
+// Create the valve stem
+valveStemSketch = startSketchOn(offsetPlane(XY, offset = valveHeadLength))
+  |> circle(center = [0, 0], radius = stemDiameter / 2)
+  |> extrude(length = stemLength - valveHeadLength - stemHeadLength)
+
+// Create the valve stem end
+stepLength = stemHeadLength / 10
+step1 = startSketchOn(valveStemSketch, face = END)
+  |> circle(%, center = [0, 0], radius = stemDiameter / 2 * 0.9)
+  |> extrude(%, length = stepLength * 2)
+step2 = startSketchOn(step1, face = END)
+  |> circle(%, center = [0, 0], radius = stemDiameter / 2 * 0.8)
+  |> extrude(%, length = stepLength)
+step3 = startSketchOn(step2, face = END)
+  |> circle(%, center = [0, 0], radius = stemDiameter / 2 * 0.9)
+  |> extrude(%, length = stepLength)
+step4 = startSketchOn(step3, face = END)
+  |> circle(%, center = [0, 0], radius = stemDiameter / 2 * 0.8)
+  |> extrude(%, length = stepLength)
+step5 = startSketchOn(step4, face = END)
+  |> circle(%, center = [0, 0], radius = stemDiameter / 2 * 0.9)
+  |> extrude(%, length = stepLength)
+step6 = startSketchOn(step5, face = END)
+  |> circle(%, center = [0, 0], radius = stemDiameter / 2 * 0.8)
+  |> extrude(%, length = stepLength)
+step7 = startSketchOn(step6, face = END)
+  |> circle(
+       %,
+       center = [0, 0],
+       radius = stemDiameter / 2 * 0.9,
+       tag = $seg02,
+     )
+  |> extrude(%, length = stepLength * 3, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 0.5,
+       tags = [
+         getCommonEdge(faces = [seg02, capEnd001])
+       ],
+     )
