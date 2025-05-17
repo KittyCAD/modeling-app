@@ -474,6 +474,23 @@ impl KclError {
         }
     }
 
+    pub fn backtrace(&self) -> Vec<BacktraceItem> {
+        match self {
+            KclError::Lexical(e)
+            | KclError::Syntax(e)
+            | KclError::Semantic(e)
+            | KclError::ImportCycle(e)
+            | KclError::Type(e)
+            | KclError::Io(e)
+            | KclError::Unexpected(e)
+            | KclError::ValueAlreadyDefined(e)
+            | KclError::UndefinedValue(e)
+            | KclError::InvalidExpression(e)
+            | KclError::Engine(e)
+            | KclError::Internal(e) => e.backtrace.clone(),
+        }
+    }
+
     pub(crate) fn override_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
         let mut new = self.clone();
         match &mut new {
