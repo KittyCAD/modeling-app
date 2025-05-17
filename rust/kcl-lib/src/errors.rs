@@ -726,9 +726,13 @@ impl CompilationError {
 
 impl From<CompilationError> for KclErrorDetails {
     fn from(err: CompilationError) -> Self {
+        let backtrace = vec![BacktraceItem {
+            source_range: err.source_range,
+            fn_name: None,
+        }];
         KclErrorDetails {
             source_ranges: vec![err.source_range],
-            backtrace: Default::default(),
+            backtrace,
             message: err.message,
         }
     }
