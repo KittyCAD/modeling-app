@@ -184,8 +184,7 @@ export function App() {
   }, [])
 
   useEffect(() => {
-    const needsWasmInitFailedToast =
-      true || (!isDesktop() && kclManager.wasmInitFailed)
+    const needsWasmInitFailedToast = !isDesktop() && kclManager.wasmInitFailed
     if (needsWasmInitFailedToast) {
       toast.success(
         () =>
