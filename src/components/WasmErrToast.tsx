@@ -9,9 +9,10 @@ export function WasmErrToast({ onDismiss }: WasmErrorToastProps) {
       data-testid="download-app-toast"
       className="flex items-center gap-6 min-w-md"
     >
+      <span className="w-24 text-xl font-mono text-center">:(</span>
       <div className="flex flex-col justify-between gap-6 min-w-80">
         <section>
-          <h2>Problem with our WASM blob :(</h2>
+          <h2>Problem with our WASM blob</h2>
           <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
             <a
               href="https://webassembly.org/"
