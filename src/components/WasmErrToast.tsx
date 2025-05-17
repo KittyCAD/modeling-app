@@ -6,10 +6,10 @@ export type WasmErrorToastProps = {
 export function WasmErrToast({ onDismiss }: WasmErrorToastProps) {
   return (
     <div
-      data-testid="download-app-toast"
+      data-testid="wasm-init-failed-toast"
       className="flex items-center gap-6 min-w-md"
     >
-      <span className="w-24 text-xl font-mono text-center">:(</span>
+      <span className="flex-none w-24 text-3xl font-mono text-center">:(</span>
       <div className="flex flex-col justify-between gap-6 min-w-80">
         <section>
           <h2>Problem with our WASM blob</h2>
@@ -22,7 +22,7 @@ export function WasmErrToast({ onDismiss }: WasmErrorToastProps) {
             >
               WASM or web assembly
             </a>{' '}
-            is core part of how our app works. It might because you OS is not
+            is core part of how our app works. It might because your OS is not
             up-to-date. If you're able to update your OS to a later version, try
             that. If not create an issue on{' '}
             <a
