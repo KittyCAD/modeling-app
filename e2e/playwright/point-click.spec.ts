@@ -3691,7 +3691,7 @@ tag=$rectangleSegmentC002,
       await scene.settled(cmdBar)
 
       // select line of code
-      const codeToSelection = `segAng(rectangleSegmentA002) - 90,`
+      const codeToSelection = `startProfile(at = [-66.77, 84.81])`
       // revolve
       await editor.scrollToText(codeToSelection)
       await page.getByText(codeToSelection).click()
