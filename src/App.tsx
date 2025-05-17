@@ -42,13 +42,15 @@ import {
   TutorialRequestToast,
 } from '@src/routes/Onboarding/utils'
 import { reportRejection } from '@src/lib/trap'
-import { DownloadAppToast } from '@src/components/DownloadAppBanner'
+import { DownloadAppToast } from '@src/components/DownloadAppToast'
+import { WasmErrToast } from '@src/components/WasmErrToast'
 import openWindow from '@src/lib/openWindow'
 import {
   APP_DOWNLOAD_PATH,
   CREATE_FILE_URL_PARAM,
   DOWNLOAD_APP_TOAST_ID,
   ONBOARDING_TOAST_ID,
+  WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import { VITE_KC_SITE_BASE_URL } from '@src/env'
@@ -180,6 +182,25 @@ export function App() {
       )
     }
   }, [])
+
+  useEffect(() => {
+    const needsWasmInitFailedToast = !isDesktop() && kclManager.wasmInitFailed
+    if (needsWasmInitFailedToast) {
+      toast.success(
+        () =>
+          WasmErrToast({
+            onDismiss: () => {
+              toast.dismiss(WASM_INIT_FAILED_TOAST_ID)
+            },
+          }),
+        {
+          id: WASM_INIT_FAILED_TOAST_ID,
+          duration: Number.POSITIVE_INFINITY,
+          icon: null,
+        }
+      )
+    }
+  }, [kclManager.wasmInitFailed])
 
   // Only create the native file menus on desktop
   useEffect(() => {
