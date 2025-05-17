@@ -153,7 +153,7 @@ export function App() {
     const needsDownloadAppToast =
       !isDesktop() &&
       !isPlaywright() &&
-      !searchParams.has(CREATE_FILE_URL_PARAM) &&
+      searchParams.size > 0 &&
       !settings.app.dismissWebBanner.current
     if (needsDownloadAppToast) {
       toast.success(
