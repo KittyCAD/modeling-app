@@ -80,8 +80,7 @@ export function useQueryParamEffects() {
             POOL_QUERY_PARAM,
           ]
 
-          const indexOfKey = reservedKeys.indexOf(key)
-          return indexOfKey === -1
+          return reservedKeys.includes(key)
         })
 
       for (const [key] of keysToDelete) {
@@ -112,7 +111,7 @@ function buildGenericCommandArgs(searchParams: URLSearchParams) {
   const name = searchParams.get('cmd')
   const groupId = searchParams.get('groupId')
 
-  if (name === null || groupId === null) {
+  if (!name || !groupId) {
     return
   }
 
