@@ -1,0 +1,7 @@
+sk0 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> yLine(length = 2)
+  |> xLine(length = 1)
+  |> yLine(length = -2)
+  |> close()
+  |> revolve(axis = Y)

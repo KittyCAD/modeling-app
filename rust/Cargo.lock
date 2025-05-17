@@ -1815,7 +1815,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.73"
+version = "0.1.74"
 dependencies = [
  "anyhow",
  "clap",
@@ -1826,7 +1826,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.73"
+version = "0.1.74"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1845,7 +1845,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.73"
+version = "0.1.74"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -1855,7 +1855,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.73"
+version = "0.2.74"
 dependencies = [
  "anyhow",
  "clap",
@@ -1876,7 +1876,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.73"
+version = "0.1.74"
 dependencies = [
  "anyhow",
  "clap",
@@ -1896,7 +1896,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.73"
+version = "0.2.74"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1935,6 +1935,7 @@ dependencies = [
  "measurements",
  "miette",
  "mime_guess",
+ "nalgebra-glm",
  "parse-display 0.10.0",
  "pretty_assertions",
  "pyo3",
@@ -1972,7 +1973,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.73"
+version = "0.3.74"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -1987,7 +1988,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.73"
+version = "0.1.74"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2000,7 +2001,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.73"
+version = "0.1.74"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2014,7 +2015,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.73"
+version = "0.1.74"
 dependencies = [
  "anyhow",
  "bson",
@@ -2255,6 +2256,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "matrixmultiply"
+version = "0.3.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a06de3016e9fae57a36fd14dba131fccf49f74b40b7fbdb472f96e361ec71a08"
+dependencies = [
+ "autocfg",
+ "rawpointer",
+]
+
+[[package]]
 name = "measurements"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2375,6 +2386,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "nalgebra"
+version = "0.33.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "26aecdf64b707efd1310e3544d709c5c0ac61c13756046aaaba41be5c4f66a3b"
+dependencies = [
+ "approx 0.5.1",
+ "matrixmultiply",
+ "num-complex",
+ "num-rational",
+ "num-traits 0.2.19",
+ "simba",
+ "typenum",
+]
+
+[[package]]
+name = "nalgebra-glm"
+version = "0.19.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e441f43bccdf40cb6bd4294321e6983c5bc7b9886112d19fd4c9813976b117e4"
+dependencies = [
+ "approx 0.5.1",
+ "nalgebra",
+ "num-traits 0.2.19",
+ "simba",
+]
+
+[[package]]
 name = "newline-converter"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2414,6 +2452,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "num-complex"
+version = "0.4.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "73f88a1307638156682bada9d7604135552957b7818057dcef22705b4d509495"
+dependencies = [
+ "num-traits 0.2.19",
+]
+
+[[package]]
 name = "num-conv"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2441,6 +2488,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "537b596b97c40fcf8056d153049eb22f481c17ebce72a513ec9286e4986d1bb6"
 dependencies = [
  "num-modular",
+]
+
+[[package]]
+name = "num-rational"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f83d14da390562dca69fc84082e73e548e1ad308d24accdedd2720017cb37824"
+dependencies = [
+ "num-bigint",
+ "num-integer",
+ "num-traits 0.2.19",
 ]
 
 [[package]]
@@ -2595,6 +2653,12 @@ dependencies = [
  "structmeta",
  "syn 2.0.100",
 ]
+
+[[package]]
+name = "paste"
+version = "1.0.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 
 [[package]]
 name = "pbkdf2"
@@ -3095,6 +3159,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "rawpointer"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "60a357793950651c4ed0f3f52338f53b2f809f32d83a07f72909fa13e4c6c1e3"
+
+[[package]]
 name = "rayon"
 version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3378,6 +3448,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "28d3b2b1366ec20994f1fd18c3c594f05c5dd4bc44d8bb0c1c632c8d6829481f"
 
 [[package]]
+name = "safe_arch"
+version = "0.7.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "96b02de82ddbe1b636e6170c21be622223aea188ef2e139be0a5b219ec215323"
+dependencies = [
+ "bytemuck",
+]
+
+[[package]]
 name = "same-file"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3630,6 +3709,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a9e9e0b4211b72e7b8b6e85c807d36c212bdb33ea8587f7569562a84df5465b1"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "simba"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b3a386a501cd104797982c15ae17aafe8b9261315b5d07e3ec803f2ea26be0fa"
+dependencies = [
+ "approx 0.5.1",
+ "num-complex",
+ "num-traits 0.2.19",
+ "paste",
+ "wide",
 ]
 
 [[package]]
@@ -4730,6 +4822,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2210b291f7ea53617fbafcc4939f10914214ec15aace5ba62293a668f322c5c9"
 dependencies = [
  "rustls-pki-types",
+]
+
+[[package]]
+name = "wide"
+version = "0.7.32"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "41b5576b9a81633f3e8df296ce0063042a73507636cbe956c61133dd7034ab22"
+dependencies = [
+ "bytemuck",
+ "safe_arch",
 ]
 
 [[package]]
