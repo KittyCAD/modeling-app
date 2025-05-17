@@ -773,12 +773,12 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       )
       await expect(page.getByTestId('app-header-file-name')).toBeVisible()
       await expect(page.getByTestId('app-header-file-name')).toContainText(
-        '2x2x2-cube.kcl'
+        'main.kcl'
       )
 
       await u.openFilePanel()
       await expect(
-        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
+        page.getByTestId('file-tree-item').getByText('main.kcl')
       ).toBeVisible()
     }
   )
@@ -913,7 +913,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       )
       await expect(page.getByTestId('app-header-file-name')).toBeVisible()
       await expect(page.getByTestId('app-header-file-name')).toContainText(
-        '2x2x2-cube.kcl'
+        'main.kcl'
       )
 
       await page.getByRole('button', { name: 'Reject' }).click()
@@ -961,7 +961,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       )
       await expect(page.getByTestId('app-header-file-name')).toBeVisible()
       await expect(page.getByTestId('app-header-file-name')).toContainText(
-        '2x2x2-cube.kcl'
+        'main.kcl'
       )
     }
   )
@@ -1213,18 +1213,14 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       )
       await expect(page.getByTestId('app-header-file-name')).toBeVisible()
       await expect(page.getByTestId('app-header-file-name')).toContainText(
-        '2x2x2-cube.kcl'
+        'main.kcl'
       )
 
       // Check file is created
       await u.openFilePanel()
       await expect(
-        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
-      ).toBeVisible()
-
-      await expect(
         page.getByTestId('file-tree-item').getByText('main.kcl')
-      ).not.toBeVisible()
+      ).toBeVisible()
     }
   )
 

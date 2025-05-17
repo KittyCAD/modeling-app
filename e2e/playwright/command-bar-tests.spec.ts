@@ -410,7 +410,7 @@ test.describe('Command bar tests', () => {
         currentArgValue: '',
         headerArguments: {
           Method: '',
-          Name: 'test',
+          Name: 'main.kcl',
           Code: '1 line',
         },
         highlightedHeaderArg: 'method',
@@ -421,7 +421,7 @@ test.describe('Command bar tests', () => {
         commandName: 'Import file from URL',
         headerArguments: {
           Method: 'New project',
-          Name: 'test',
+          Name: 'main.kcl',
           Code: '1 line',
         },
       })
@@ -474,7 +474,7 @@ test.describe('Command bar tests', () => {
         currentArgValue: '',
         headerArguments: {
           Method: '',
-          Name: 'test',
+          Name: 'main.kcl',
           Code: '1 line',
         },
         highlightedHeaderArg: 'method',
@@ -487,7 +487,7 @@ test.describe('Command bar tests', () => {
         currentArgValue: '',
         headerArguments: {
           Method: 'Existing project',
-          Name: 'test',
+          Name: 'main.kcl',
           ProjectName: '',
           Code: '1 line',
         },
@@ -500,7 +500,7 @@ test.describe('Command bar tests', () => {
         headerArguments: {
           Method: 'Existing project',
           ProjectName: 'testProjectDir',
-          Name: 'test',
+          Name: 'main.kcl',
           Code: '1 line',
         },
       })
@@ -510,7 +510,7 @@ test.describe('Command bar tests', () => {
     await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
       await editor.expectEditor.toContain('extrusionDistance = 12')
       await toolbar.openPane('files')
-      await toolbar.expectFileTreeState(['main.kcl', 'test.kcl'])
+      await toolbar.expectFileTreeState(['main-1.kcl', 'main.kcl'])
     })
   })
 

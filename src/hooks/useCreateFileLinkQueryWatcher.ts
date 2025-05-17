@@ -5,11 +5,14 @@ import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { base64ToString } from '@src/lib/base64'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { CREATE_FILE_URL_PARAM, DEFAULT_FILE_NAME } from '@src/lib/constants'
+import {
+  CREATE_FILE_URL_PARAM,
+  DEFAULT_FILE_NAME,
+  PROJECT_ENTRYPOINT,
+} from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
 import { PATHS } from '@src/lib/paths'
-import { useSettings } from '@src/lib/singletons'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -32,7 +35,6 @@ export function useCreateFileLinkQuery(
   const { immediateState } = useNetworkContext()
   const { pathname } = useLocation()
   const [searchParams] = useSearchParams()
-  const settings = useSettings()
 
   useEffect(() => {
     const isHome = pathname === PATHS.HOME
@@ -53,13 +55,7 @@ export function useCreateFileLinkQuery(
       }
 
       const argDefaultValues: CreateFileSchemaMethodOptional = {
-        name: params.name
-          ? isDesktop()
-            ? params.name.replace('.kcl', '')
-            : params.name
-          : isDesktop()
-            ? settings.projects.defaultProjectName.current
-            : DEFAULT_FILE_NAME,
+        name: PROJECT_ENTRYPOINT,
         code: params.code || '',
         method: isDesktop() ? undefined : 'existingProject',
       }
