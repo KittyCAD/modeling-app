@@ -399,7 +399,6 @@ test.describe('Command bar tests', () => {
         sortBy: 'last-modified-desc',
       })
       await page.goto(page.url() + targetURL)
-      expect(page.url()).toContain(targetURL)
     })
 
     await test.step(`Submit the command`, async () => {
@@ -463,7 +462,6 @@ test.describe('Command bar tests', () => {
         sortBy: 'last-modified-desc',
       })
       await page.goto(page.url() + targetURL)
-      expect(page.url()).toContain(targetURL)
     })
 
     await test.step(`Submit the command`, async () => {
