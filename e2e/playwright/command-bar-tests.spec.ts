@@ -399,7 +399,6 @@ test.describe('Command bar tests', () => {
         sortBy: 'last-modified-desc',
       })
       await page.goto(page.url() + targetURL)
-      expect(page.url()).toContain(targetURL)
     })
 
     await test.step(`Submit the command`, async () => {
@@ -463,7 +462,6 @@ test.describe('Command bar tests', () => {
         sortBy: 'last-modified-desc',
       })
       await page.goto(page.url() + targetURL)
-      expect(page.url()).toContain(targetURL)
     })
 
     await test.step(`Submit the command`, async () => {
@@ -660,5 +658,28 @@ c = 3 + a`
     await editor.expectEditor.toContain(
       `a = 5b = a * amyParameter001 = ${newValue}c = 3 + a`
     )
+  })
+
+  test('Command palette can be opened via query parameter', async ({
+    page,
+    homePage,
+    cmdBar,
+  }) => {
+    await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
+    await homePage.expectState({
+      projectCards: [],
+      sortBy: 'last-modified-desc',
+    })
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Settings · app · theme',
+      currentArgKey: 'value',
+      currentArgValue: '',
+      headerArguments: {
+        Level: 'user',
+        Value: '',
+      },
+      highlightedHeaderArg: 'value',
+    })
   })
 })

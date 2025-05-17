@@ -229,7 +229,7 @@ export const commandBarMachine = setup({
             cmd.name === event.data.name && cmd.groupId === event.data.groupId
         )
 
-        return !!found ? found : context.selectedCommand
+        return found || context.selectedCommand
       },
     }),
     'Initialize arguments to submit': assign({

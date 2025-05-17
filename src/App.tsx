@@ -17,7 +17,7 @@ import { useLspContext } from '@src/components/LspProvider'
 import { ModelingSidebar } from '@src/components/ModelingSidebar/ModelingSidebar'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
+import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
@@ -33,7 +33,6 @@ import {
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import type { IndexLoaderData } from '@src/lib/types'
 import { engineStreamActor, useSettings, useToken } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
 import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
 import { BillingTransition } from '@src/machines/billingMachine'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
@@ -62,20 +61,9 @@ maybeWriteToDisk()
   .catch(() => {})
 
 export function App() {
+  useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
-
-  // Keep a lookout for a URL query string that invokes the 'import file from URL' command
-  useCreateFileLinkQuery((argDefaultValues) => {
-    commandBarActor.send({
-      type: 'Find and select command',
-      data: {
-        groupId: 'projects',
-        name: 'Import file from URL',
-        argDefaultValues,
-      },
-    })
-  })
 
   const location = useLocation()
   const navigate = useNavigate()
