@@ -11,7 +11,6 @@ import {
 import { App } from '@src/App'
 import { Auth } from '@src/Auth'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
-import DownloadAppBanner from '@src/components/DownloadAppBanner'
 import { ErrorPage } from '@src/components/ErrorPage'
 import FileMachineProvider from '@src/components/FileMachineProvider'
 import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
@@ -84,10 +83,6 @@ const router = createRouter([
                 <Outlet />
                 <App />
                 <CommandBar />
-                {
-                  // @ts-ignore
-                  !isDesktop() && import.meta.env.PROD && <DownloadAppBanner />
-                }
               </ModelingMachineProvider>
               <WasmErrBanner />
             </FileMachineProvider>

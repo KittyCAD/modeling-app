@@ -28,6 +28,7 @@ import {
   sceneInfra,
   codeManager,
   kclManager,
+  settingsActor,
 } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -39,10 +40,19 @@ import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { ShareButton } from '@src/components/ShareButton'
 import {
   needsToOnboard,
-  ONBOARDING_TOAST_ID,
   TutorialRequestToast,
 } from '@src/routes/Onboarding/utils'
 import { reportRejection } from '@src/lib/trap'
+import { DownloadAppToast } from '@src/components/DownloadAppBanner'
+import openWindow from '@src/lib/openWindow'
+import {
+  APP_DOWNLOAD_PATH,
+  CREATE_FILE_URL_PARAM,
+  DOWNLOAD_APP_TOAST_ID,
+  ONBOARDING_TOAST_ID,
+} from '@src/lib/constants'
+import { isPlaywright } from '@src/lib/isPlaywright'
+import { VITE_KC_SITE_BASE_URL } from '@src/env'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -148,6 +158,40 @@ export function App() {
       )
     }
   }, [location, settings.app.onboardingStatus, navigate])
+
+  useEffect(() => {
+    const needsDownloadAppToast =
+      !isDesktop() &&
+      !isPlaywright() &&
+      !searchParams.has(CREATE_FILE_URL_PARAM) &&
+      !settings.app.dismissWebBanner.current
+    if (needsDownloadAppToast) {
+      toast.success(
+        () =>
+          DownloadAppToast({
+            onAccept: () => {
+              openWindow(`${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`)
+                .then(() => {
+                  toast.dismiss(DOWNLOAD_APP_TOAST_ID)
+                })
+                .catch(reportRejection)
+            },
+            onDismiss: () => {
+              toast.dismiss(DOWNLOAD_APP_TOAST_ID)
+              settingsActor.send({
+                type: 'set.app.dismissWebBanner',
+                data: { level: 'user', value: true },
+              })
+            },
+          }),
+        {
+          id: DOWNLOAD_APP_TOAST_ID,
+          duration: Number.POSITIVE_INFINITY,
+          icon: null,
+        }
+      )
+    }
+  }, [])
 
   // Only create the native file menus on desktop
   useEffect(() => {

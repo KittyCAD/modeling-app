@@ -3,6 +3,7 @@ import type { Models } from '@kittycad/lib/dist/types/src'
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 export const APP_NAME = 'Design Studio'
+export const APP_DOWNLOAD_PATH = 'modeling-app/download'
 /** Search string in new project names to increment as an index */
 export const INDEX_IDENTIFIER = '$n'
 /** The maximum number of 0's to pad a default project name's index with */
@@ -125,6 +126,12 @@ export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
 
 /** Toast id for the insert foreign part toast */
 export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
+
+/** Toast id for the onboarding */
+export const ONBOARDING_TOAST_ID = 'onboarding-toast'
+
+/** Toast id for the download app toast on web */
+export const DOWNLOAD_APP_TOAST_ID = 'download-app-toast'
 
 /** Local sketch axis values in KCL for operations, it could either be 'X' or 'Y' */
 export const KCL_AXIS_X = 'X'
