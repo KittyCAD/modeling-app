@@ -79,7 +79,7 @@ test.describe('Point-and-click tests', () => {
         currentArgKey: 'sketches',
         currentArgValue: '',
         headerArguments: { Profiles: '', Length: '' },
-        highlightedHeaderArg: 'sketches',
+        highlightedHeaderArg: 'Profiles',
         commandName: 'Extrude',
       })
       await cmdBar.progressCmdBar()
@@ -1635,7 +1635,7 @@ sketch002 = startSketchOn(plane001)
             currentArgKey: 'sketches',
             currentArgValue: '',
             headerArguments: { Profiles: '' },
-            highlightedHeaderArg: 'sketches',
+            highlightedHeaderArg: 'Profiles',
             commandName: 'Loft',
           })
           await selectSketches()
@@ -1659,7 +1659,7 @@ sketch002 = startSketchOn(plane001)
             currentArgKey: 'sketches',
             currentArgValue: '',
             headerArguments: { Profiles: '' },
-            highlightedHeaderArg: 'sketches',
+            highlightedHeaderArg: 'Profiles',
             commandName: 'Loft',
           })
           await cmdBar.progressCmdBar()
@@ -1833,7 +1833,7 @@ sketch002 = startSketchOn(XZ)
             Profiles: '',
             Path: '',
           },
-          highlightedHeaderArg: 'sketches',
+          highlightedHeaderArg: 'Profiles',
           stage: 'arguments',
         })
         await clickOnSketch1()
@@ -1971,7 +1971,7 @@ profile001 = ${circleCode}`
           Profiles: '',
           Path: '',
         },
-        highlightedHeaderArg: 'sketches',
+        highlightedHeaderArg: 'Profiles',
         stage: 'arguments',
       })
       await editor.scrollToText(circleCode)
@@ -4637,7 +4637,7 @@ path001 = startProfile(sketch001, at = [0, 0])
           Profiles: '',
           Length: '',
         },
-        highlightedHeaderArg: 'sketches',
+        highlightedHeaderArg: 'Profiles',
         commandName: 'Extrude',
       })
       await cmdBar.progressCmdBar()
@@ -4732,7 +4732,7 @@ path001 = startProfile(sketch001, at = [0, 0])
           Path: '',
           Sectional: '',
         },
-        highlightedHeaderArg: 'sketches',
+        highlightedHeaderArg: 'Profiles',
         commandName: 'Sweep',
       })
       await cmdBar.progressCmdBar()
@@ -4829,7 +4829,7 @@ path001 = startProfile(sketch001, at = [0, 0])
           AxisOrEdge: '',
           Angle: '',
         },
-        highlightedHeaderArg: 'sketches',
+        highlightedHeaderArg: 'Profiles',
         commandName: 'Revolve',
       })
       await cmdBar.progressCmdBar()

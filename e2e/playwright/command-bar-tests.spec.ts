@@ -48,7 +48,7 @@ test.describe('Command bar tests', () => {
         Profiles: '',
         Length: '',
       },
-      highlightedHeaderArg: 'sketches',
+      highlightedHeaderArg: 'Profiles',
     })
     await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
