@@ -191,7 +191,7 @@ description: Result of parsing sash-window.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "sashOpeningCountHorisontal",
+            "name": "sashOpeningCountHorizontal",
             "start": 0,
             "type": "Identifier"
           },
@@ -1495,7 +1495,7 @@ description: Result of parsing sash-window.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "divisionTotalThicknessHorisontal",
+                      "name": "divisionTotalThicknessHorizontal",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -1529,7 +1529,7 @@ description: Result of parsing sash-window.kcl
                           "name": {
                             "commentStart": 0,
                             "end": 0,
-                            "name": "openingCountHorisontal",
+                            "name": "openingCountHorizontal",
                             "start": 0,
                             "type": "Identifier"
                           },
@@ -1699,7 +1699,7 @@ description: Result of parsing sash-window.kcl
                           "name": {
                             "commentStart": 0,
                             "end": 0,
-                            "name": "divisionTotalThicknessHorisontal",
+                            "name": "divisionTotalThicknessHorizontal",
                             "start": 0,
                             "type": "Identifier"
                           },
@@ -1720,7 +1720,7 @@ description: Result of parsing sash-window.kcl
                         "name": {
                           "commentStart": 0,
                           "end": 0,
-                          "name": "openingCountHorisontal",
+                          "name": "openingCountHorizontal",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -1835,7 +1835,7 @@ description: Result of parsing sash-window.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "voidStepHorisontal",
+                      "name": "voidStepHorizontal",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -2501,7 +2501,7 @@ description: Result of parsing sash-window.kcl
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "name": "openingCountHorisontal",
+                                  "name": "openingCountHorizontal",
                                   "start": 0,
                                   "type": "Identifier"
                                 },
@@ -2527,7 +2527,7 @@ description: Result of parsing sash-window.kcl
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "name": "voidStepHorisontal",
+                                  "name": "voidStepHorizontal",
                                   "start": 0,
                                   "type": "Identifier"
                                 },
@@ -3032,7 +3032,7 @@ description: Result of parsing sash-window.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "openingCountHorisontal",
+                  "name": "openingCountHorizontal",
                   "start": 0,
                   "type": "Identifier"
                 }
@@ -3291,7 +3291,7 @@ description: Result of parsing sash-window.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "openingCountHorisontal",
+                  "name": "openingCountHorizontal",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3630,7 +3630,7 @@ description: Result of parsing sash-window.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "openingCountHorisontal",
+                      "name": "openingCountHorizontal",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -3641,7 +3641,7 @@ description: Result of parsing sash-window.kcl
                       "name": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "sashOpeningCountHorisontal",
+                        "name": "sashOpeningCountHorizontal",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -6463,7 +6463,7 @@ description: Result of parsing sash-window.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "openingCountHorisontal",
+                      "name": "openingCountHorizontal",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -6474,7 +6474,7 @@ description: Result of parsing sash-window.kcl
                       "name": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "sashOpeningCountHorisontal",
+                        "name": "sashOpeningCountHorizontal",
                         "start": 0,
                         "type": "Identifier"
                       },

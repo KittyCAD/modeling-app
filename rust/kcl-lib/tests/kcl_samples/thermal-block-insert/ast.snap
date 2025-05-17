@@ -1634,7 +1634,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "groooveShape",
+            "name": "grooveShape",
             "start": 0,
             "type": "Identifier"
           },
@@ -2167,7 +2167,7 @@ description: Result of parsing thermal-block-insert.kcl
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "groooveShape",
+                    "name": "grooveShape",
                     "start": 0,
                     "type": "Identifier"
                   },

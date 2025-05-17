@@ -2058,7 +2058,65 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       }
     }
   },
-  "wideHoldeShape": {
+  "wideHoleLength": {
+    "type": "Number",
+    "value": 60.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "wideHoleOffset": {
+    "type": "Number",
+    "value": 30.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "wideHolePlane": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "value": "XY",
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      }
+    }
+  },
+  "wideHoleShape": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -2222,64 +2280,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
-    }
-  },
-  "wideHoleLength": {
-    "type": "Number",
-    "value": 60.0,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "wideHoleOffset": {
-    "type": "Number",
-    "value": 30.0,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "wideHolePlane": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "value": "XY",
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
       }
     }
   },

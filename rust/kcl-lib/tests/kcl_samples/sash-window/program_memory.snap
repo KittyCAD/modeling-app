@@ -1697,7 +1697,7 @@ description: Variables in memory after executing sash-window.kcl
       }
     }
   },
-  "sashOpeningCountHorisontal": {
+  "sashOpeningCountHorizontal": {
     "type": "Number",
     "value": 2.0,
     "ty": {

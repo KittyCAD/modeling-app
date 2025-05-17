@@ -4491,7 +4491,7 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "wideHoldeShape",
+            "name": "wideHoleShape",
             "start": 0,
             "type": "Identifier"
           },
@@ -5344,7 +5344,7 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
               "name": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "wideHoldeShape",
+                "name": "wideHoleShape",
                 "start": 0,
                 "type": "Identifier"
               },
