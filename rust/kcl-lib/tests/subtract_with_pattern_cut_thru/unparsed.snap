@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing subtract_with_pattern_cut_thru.kcl
+---
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [2.65, 12.2])
+  |> xLine(length = 23.49)
+  |> yLine(length = -22.68)
+  |> xLine(length = -24.2)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+extrude001 = extrude(profile001, length = 500)
+
+sketch002 = startSketchOn(XZ)
+profile002 = circle(sketch002, center = [17.5, 42.02], radius = 30.16)
+
+extrude002 = extrude(profile002, length = 50)
+  |> translate(y = 30)
+
+myPatterns = patternLinear3d(
+  extrude002,
+  instances = 5,
+  distance = 80,
+  axis = [0, 0, 1],
+)
+
+results = subtract([extrude001], tools = [myPatterns])
+  |> rotate(angle = 90, axis = [0, 1, 0]) // we do this to ensure the id is okay after the subtract

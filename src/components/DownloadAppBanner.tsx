@@ -1,32 +1,27 @@
-import { Dialog } from '@headlessui/react'
-import { useState } from 'react'
-
 import { ActionButton } from '@src/components/ActionButton'
-import { CREATE_FILE_URL_PARAM } from '@src/lib/constants'
-import { useSettings } from '@src/lib/singletons'
-import { useSearchParams } from 'react-router-dom'
+import { Logo } from '@src/components/Logo'
 
-const DownloadAppBanner = () => {
-  const [searchParams] = useSearchParams()
-  const settings = useSettings()
-  const [isBannerDismissed, setIsBannerDismissed] = useState(
-    searchParams.has(CREATE_FILE_URL_PARAM) ||
-      settings.app.dismissWebBanner.current
-  )
+export type DownloadAppToastProps = {
+  onAccept: () => void
+  onDismiss: () => void
+}
 
+export function DownloadAppToast({
+  onAccept,
+  onDismiss,
+}: DownloadAppToastProps) {
   return (
-    <Dialog
-      className="fixed inset-0 z-50 grid place-items-center"
-      open={!isBannerDismissed}
-      onClose={() => ({})}
+    <div
+      data-testid="download-app-toast"
+      className="flex items-center gap-6 min-w-md"
     >
-      <Dialog.Overlay className="fixed inset-0 bg-chalkboard-10/80 dark:bg-chalkboard-100/70" />
-      <Dialog.Panel className="relative max-w-xl bg-warn-20 text-warn-80 px-8 py-4 rounded-md">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold mb-4">Be warned!</h2>
-          <p>
-            Zoo Design Studio Desktop is more reliable! The web app is not
-            officially supported.
+      <Logo className="w-auto h-8 flex-none" />
+      <div className="flex flex-col justify-between gap-6 min-w-80">
+        <section>
+          <h2>Zoo Design Studio is primarily a desktop app</h2>
+          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+            The present web app is limited in features. We don't want you to
+            miss out!
           </p>
           {!navigator?.userAgent.includes('Chrome') && (
             <p className="mt-6">
@@ -43,37 +38,31 @@ const DownloadAppBanner = () => {
               to download it.
             </p>
           )}
-          <div className="flex flex-row-reverse gap-4 justify-between mt-6">
-            <ActionButton
-              Element="externalLink"
-              to="https://zoo.dev/modeling-app/download"
-              className="group !text-warn-10 pr-1 border-warn-70 hover:border-warn-80 dark:!border-warn-70 dark:hover:!border-warn-80 bg-warn-70 group-hover:bg-warn-80 dark:bg-warn-70 dark:group-hover:bg-warn-80"
-              iconEnd={{
-                icon: 'arrowRight',
-                iconClassName: 'text-warn-10 dark:text-warn-10',
-                bgClassName: '!bg-transparent',
-              }}
-            >
-              Download Desktop App
-            </ActionButton>
-            <ActionButton
-              Element="button"
-              onClick={() => setIsBannerDismissed(true)}
-              className="group text-warn-80 bg-warn-10 border-warn-50 hover:border-warn-80 hover:bg-warn-10 dark:bg-warn-10 dark:!border-warn-50 dark:hover:!border-warn-80 dark:text-warn-80 dark:hover:bg-warn-10"
-              iconStart={{
-                icon: 'checkmark',
-                iconClassName: 'text-warn-10 dark:text-warn-10',
-                bgClassName:
-                  'bg-warn-50 group-hover:bg-warn-80 dark:bg-warn-50 dark:group-hover:bg-warn-80',
-              }}
-            >
-              Proceed at my own risk
-            </ActionButton>
-          </div>
+        </section>
+        <div className="flex justify-between gap-8">
+          <ActionButton
+            Element="button"
+            iconStart={{
+              icon: 'close',
+            }}
+            data-negative-button="dismiss"
+            name="dismiss"
+            onClick={onDismiss}
+          >
+            Not right now
+          </ActionButton>
+          <ActionButton
+            Element="button"
+            iconStart={{
+              icon: 'download',
+            }}
+            name="accept"
+            onClick={onAccept}
+          >
+            Download the app
+          </ActionButton>
         </div>
-      </Dialog.Panel>
-    </Dialog>
+      </div>
+    </div>
   )
 }
-
-export default DownloadAppBanner

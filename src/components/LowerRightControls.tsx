@@ -17,6 +17,9 @@ import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 
 import { billingActor } from '@src/lib/singletons'
 import { ActionButton } from '@src/components/ActionButton'
+import { isDesktop } from '@src/lib/isDesktop'
+import { VITE_KC_SITE_BASE_URL } from '@src/env'
+import { APP_DOWNLOAD_PATH } from '@src/lib/constants'
 
 export function LowerRightControls({
   children,
@@ -52,16 +55,33 @@ export function LowerRightControls({
             <BillingDialog billingActor={billingActor} />
           </Popover.Panel>
         </Popover>
-        <ActionButton
-          Element="externalLink"
-          to={getReleaseUrl()}
-          className={
-            '!no-underline !border-none !bg-transparent font-mono text-xs' +
-            linkOverrideClassName
-          }
-        >
-          v{APP_VERSION}
-        </ActionButton>
+        {isDesktop() ? (
+          <ActionButton
+            Element="externalLink"
+            to={getReleaseUrl()}
+            className={
+              '!no-underline !border-none !bg-transparent font-mono text-xs' +
+              linkOverrideClassName
+            }
+          >
+            v{APP_VERSION}
+          </ActionButton>
+        ) : (
+          <ActionButton
+            Element="externalLink"
+            to={`${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`}
+            className={
+              '!no-underline !border-none !bg-transparent font-mono text-xs' +
+              linkOverrideClassName
+            }
+            iconStart={{
+              icon: 'download',
+              className: `w-5 h-5 !bg-transparent`,
+            }}
+          >
+            Download the app
+          </ActionButton>
+        )}
         <Link
           to={
             location.pathname.includes(PATHS.FILE)

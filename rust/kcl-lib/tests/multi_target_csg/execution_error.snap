@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing multi_target_csg.kcl
+---
+KCL Engine error
+
+  × engine: Currently the engine does not support multiple targets on subtract
+    ╭─[69:10]
+ 68 │ 
+ 69 │ cut000 = subtract(extrude001, tools = cut000Extrude)
+    ·          ─────────────────────┬─────────────────────
+    ·                               ╰── tests/multi_target_csg/input.kcl
+ 70 │ 
+    ╰────
