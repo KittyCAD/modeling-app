@@ -380,20 +380,39 @@ impl miette::Diagnostic for Report {
 }
 
 #[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq, thiserror::Error, miette::Diagnostic)]
+#[serde(rename_all = "camelCase")]
 #[error("{message}")]
 #[ts(export)]
 pub struct KclErrorDetails {
-    #[serde(rename = "sourceRanges")]
     #[label(collection, "Errors")]
     pub source_ranges: Vec<SourceRange>,
+    pub backtrace: Vec<BacktraceItem>,
     #[serde(rename = "msg")]
     pub message: String,
+}
+
+impl KclErrorDetails {
+    pub fn new(message: String, source_ranges: Vec<SourceRange>) -> KclErrorDetails {
+        let backtrace = source_ranges
+            .iter()
+            .map(|s| BacktraceItem {
+                source_range: *s,
+                fn_name: None,
+            })
+            .collect();
+        KclErrorDetails {
+            source_ranges,
+            backtrace,
+            message,
+        }
+    }
 }
 
 impl KclError {
     pub fn internal(message: String) -> KclError {
         KclError::Internal(KclErrorDetails {
             source_ranges: Default::default(),
+            backtrace: Default::default(),
             message,
         })
     }
@@ -455,44 +474,121 @@ impl KclError {
         }
     }
 
+    pub fn backtrace(&self) -> Vec<BacktraceItem> {
+        match self {
+            KclError::Lexical(e)
+            | KclError::Syntax(e)
+            | KclError::Semantic(e)
+            | KclError::ImportCycle(e)
+            | KclError::Type(e)
+            | KclError::Io(e)
+            | KclError::Unexpected(e)
+            | KclError::ValueAlreadyDefined(e)
+            | KclError::UndefinedValue(e)
+            | KclError::InvalidExpression(e)
+            | KclError::Engine(e)
+            | KclError::Internal(e) => e.backtrace.clone(),
+        }
+    }
+
     pub(crate) fn override_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
         let mut new = self.clone();
         match &mut new {
-            KclError::Lexical(e) => e.source_ranges = source_ranges,
-            KclError::Syntax(e) => e.source_ranges = source_ranges,
-            KclError::Semantic(e) => e.source_ranges = source_ranges,
-            KclError::ImportCycle(e) => e.source_ranges = source_ranges,
-            KclError::Type(e) => e.source_ranges = source_ranges,
-            KclError::Io(e) => e.source_ranges = source_ranges,
-            KclError::Unexpected(e) => e.source_ranges = source_ranges,
-            KclError::ValueAlreadyDefined(e) => e.source_ranges = source_ranges,
-            KclError::UndefinedValue(e) => e.source_ranges = source_ranges,
-            KclError::InvalidExpression(e) => e.source_ranges = source_ranges,
-            KclError::Engine(e) => e.source_ranges = source_ranges,
-            KclError::Internal(e) => e.source_ranges = source_ranges,
+            KclError::Lexical(e)
+            | KclError::Syntax(e)
+            | KclError::Semantic(e)
+            | KclError::ImportCycle(e)
+            | KclError::Type(e)
+            | KclError::Io(e)
+            | KclError::Unexpected(e)
+            | KclError::ValueAlreadyDefined(e)
+            | KclError::UndefinedValue(e)
+            | KclError::InvalidExpression(e)
+            | KclError::Engine(e)
+            | KclError::Internal(e) => {
+                e.backtrace = source_ranges
+                    .iter()
+                    .map(|s| BacktraceItem {
+                        source_range: *s,
+                        fn_name: None,
+                    })
+                    .collect();
+                e.source_ranges = source_ranges;
+            }
         }
 
         new
     }
 
-    pub(crate) fn add_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
+    pub(crate) fn set_last_backtrace_fn_name(&self, last_fn_name: Option<String>) -> Self {
         let mut new = self.clone();
         match &mut new {
-            KclError::Lexical(e) => e.source_ranges.extend(source_ranges),
-            KclError::Syntax(e) => e.source_ranges.extend(source_ranges),
-            KclError::Semantic(e) => e.source_ranges.extend(source_ranges),
-            KclError::ImportCycle(e) => e.source_ranges.extend(source_ranges),
-            KclError::Type(e) => e.source_ranges.extend(source_ranges),
-            KclError::Io(e) => e.source_ranges.extend(source_ranges),
-            KclError::Unexpected(e) => e.source_ranges.extend(source_ranges),
-            KclError::ValueAlreadyDefined(e) => e.source_ranges.extend(source_ranges),
-            KclError::UndefinedValue(e) => e.source_ranges.extend(source_ranges),
-            KclError::InvalidExpression(e) => e.source_ranges.extend(source_ranges),
-            KclError::Engine(e) => e.source_ranges.extend(source_ranges),
-            KclError::Internal(e) => e.source_ranges.extend(source_ranges),
+            KclError::Lexical(e)
+            | KclError::Syntax(e)
+            | KclError::Semantic(e)
+            | KclError::ImportCycle(e)
+            | KclError::Type(e)
+            | KclError::Io(e)
+            | KclError::Unexpected(e)
+            | KclError::ValueAlreadyDefined(e)
+            | KclError::UndefinedValue(e)
+            | KclError::InvalidExpression(e)
+            | KclError::Engine(e)
+            | KclError::Internal(e) => {
+                if let Some(item) = e.backtrace.last_mut() {
+                    item.fn_name = last_fn_name;
+                }
+            }
         }
 
         new
+    }
+
+    pub(crate) fn add_unwind_location(&self, last_fn_name: Option<String>, source_range: SourceRange) -> Self {
+        let mut new = self.clone();
+        match &mut new {
+            KclError::Lexical(e)
+            | KclError::Syntax(e)
+            | KclError::Semantic(e)
+            | KclError::ImportCycle(e)
+            | KclError::Type(e)
+            | KclError::Io(e)
+            | KclError::Unexpected(e)
+            | KclError::ValueAlreadyDefined(e)
+            | KclError::UndefinedValue(e)
+            | KclError::InvalidExpression(e)
+            | KclError::Engine(e)
+            | KclError::Internal(e) => {
+                if let Some(item) = e.backtrace.last_mut() {
+                    item.fn_name = last_fn_name;
+                }
+                e.backtrace.push(BacktraceItem {
+                    source_range,
+                    fn_name: None,
+                });
+                e.source_ranges.push(source_range);
+            }
+        }
+
+        new
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS, thiserror::Error, miette::Diagnostic)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct BacktraceItem {
+    pub source_range: SourceRange,
+    pub fn_name: Option<String>,
+}
+
+impl std::fmt::Display for BacktraceItem {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(fn_name) = &self.fn_name {
+            write!(f, "{fn_name}: {:?}", self.source_range)
+        } else {
+            write!(f, "(fn): {:?}", self.source_range)
+        }
     }
 }
 
@@ -551,6 +647,7 @@ impl From<pyo3::PyErr> for KclError {
     fn from(error: pyo3::PyErr) -> Self {
         KclError::Internal(KclErrorDetails {
             source_ranges: vec![],
+            backtrace: Default::default(),
             message: error.to_string(),
         })
     }
@@ -629,8 +726,13 @@ impl CompilationError {
 
 impl From<CompilationError> for KclErrorDetails {
     fn from(err: CompilationError) -> Self {
+        let backtrace = vec![BacktraceItem {
+            source_range: err.source_range,
+            fn_name: None,
+        }];
         KclErrorDetails {
             source_ranges: vec![err.source_range],
+            backtrace,
             message: err.message,
         }
     }

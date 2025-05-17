@@ -59,10 +59,10 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[TyF64; 2], KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
     let (p, ty) = path.end_point_components();
     // Docs generation isn't smart enough to handle ([f64; 2], NumericType).
@@ -104,10 +104,10 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
 
     Ok(TyF64::new(path.get_base().to[0], path.get_base().units.into()))
@@ -147,10 +147,10 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
 
     Ok(path.get_to()[1].clone())
@@ -201,10 +201,10 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[TyF64; 2], KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
     let (p, ty) = path.start_point_components();
     // Docs generation isn't smart enough to handle ([f64; 2], NumericType).
@@ -246,10 +246,10 @@ pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
 fn inner_segment_start_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
 
     Ok(path.get_from()[0].clone())
@@ -289,10 +289,10 @@ pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
 fn inner_segment_start_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
 
     Ok(path.get_from()[1].clone())
@@ -334,10 +334,10 @@ fn inner_last_segment_x(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
         .paths
         .last()
         .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
-                source_ranges: vec![args.source_range],
-            })
+            KclError::Type(KclErrorDetails::new(
+                format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
+                vec![args.source_range],
+            ))
         })?
         .get_base();
 
@@ -381,10 +381,10 @@ fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
         .paths
         .last()
         .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
-                source_ranges: vec![args.source_range],
-            })
+            KclError::Type(KclErrorDetails::new(
+                format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
+                vec![args.source_range],
+            ))
         })?
         .get_base();
 
@@ -429,10 +429,10 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
 fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
 
     Ok(path.length())
@@ -473,10 +473,10 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
 
     let result = between(path.get_base().from, path.get_base().to);
@@ -575,10 +575,10 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 async fn inner_tangent_to_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
 
     let from = untype_point(path.get_to()).0;

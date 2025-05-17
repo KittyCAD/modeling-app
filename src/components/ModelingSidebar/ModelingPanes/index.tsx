@@ -118,7 +118,9 @@ export const sidebarPanes: SidebarPane[] = [
     keybinding: 'Shift + C',
     showBadge: {
       value: ({ kclContext }) => {
-        return kclContext.diagnostics.length
+        return kclContext.diagnostics.filter(
+          (diagnostic) => diagnostic.severity === 'error'
+        ).length
       },
       onClick: (e) => {
         e.preventDefault()

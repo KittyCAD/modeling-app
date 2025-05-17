@@ -166,7 +166,7 @@ function bestSourceRange(error: RustKclError): SourceRange {
   // When there's an error, the call stack is unwound, and the locations are
   // built up from deepest location to shallowest. So the shallowest call is
   // last. That's the most useful to the user.
-  for (let i = error.sourceRanges.length - 1; i >= 0; i--) {
+  for (let i = 0; i < error.sourceRanges.length; i++) {
     const range = error.sourceRanges[i]
     // Skip ranges pointing into files that aren't the top-level module.
     if (isTopLevelModule(range)) {
@@ -174,7 +174,7 @@ function bestSourceRange(error: RustKclError): SourceRange {
     }
   }
   // We didn't find a top-level module range, so just use the last one.
-  return sourceRangeFromRust(error.sourceRanges[error.sourceRanges.length - 1])
+  return sourceRangeFromRust(error.sourceRanges[0])
 }
 
 const splitErrors = (
@@ -245,6 +245,7 @@ export const parse = (code: string | Error): ParseResult | Error => {
       parsed.kind,
       parsed.msg,
       bestSourceRange(parsed),
+      [],
       [],
       [],
       [],
@@ -402,6 +403,7 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
     parsed.error.kind,
     parsed.error.msg,
     bestSourceRange(parsed.error),
+    parsed.error.backtrace,
     parsed.nonFatal,
     parsed.operations,
     parsed.artifactCommands,

@@ -61,10 +61,10 @@ async fn call_map_closure(
     let output = map_fn.call_kw(None, exec_state, ctxt, args, source_range).await?;
     let source_ranges = vec![source_range];
     let output = output.ok_or_else(|| {
-        KclError::Semantic(KclErrorDetails {
-            message: "Map function must return a value".to_string(),
+        KclError::Semantic(KclErrorDetails::new(
+            "Map function must return a value".to_owned(),
             source_ranges,
-        })
+        ))
     })?;
     Ok(output)
 }
@@ -121,10 +121,10 @@ async fn call_reduce_closure(
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
     let out = transform_fn_return.ok_or_else(|| {
-        KclError::Semantic(KclErrorDetails {
-            message: "Reducer function must return a value".to_string(),
-            source_ranges: source_ranges.clone(),
-        })
+        KclError::Semantic(KclErrorDetails::new(
+            "Reducer function must return a value".to_string(),
+            source_ranges.clone(),
+        ))
     })?;
     Ok(out)
 }
@@ -136,10 +136,10 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let KclValue::HomArray { value: values, ty } = array else {
         let meta = vec![args.source_range];
         let actual_type = array.human_friendly_type();
-        return Err(KclError::Semantic(KclErrorDetails {
-            source_ranges: meta,
-            message: format!("You can't push to a value of type {actual_type}, only an array"),
-        }));
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            format!("You can't push to a value of type {actual_type}, only an array"),
+            meta,
+        )));
     };
     let ty = if item.has_type(&ty) {
         ty
@@ -164,10 +164,10 @@ pub async fn pop(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let KclValue::HomArray { value: values, ty } = array else {
         let meta = vec![args.source_range];
         let actual_type = array.human_friendly_type();
-        return Err(KclError::Semantic(KclErrorDetails {
-            source_ranges: meta,
-            message: format!("You can't pop from a value of type {actual_type}, only an array"),
-        }));
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            format!("You can't pop from a value of type {actual_type}, only an array"),
+            meta,
+        )));
     };
 
     let new_array = inner_pop(values, &args)?;
@@ -176,10 +176,10 @@ pub async fn pop(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 
 fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<Vec<KclValue>, KclError> {
     if array.is_empty() {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Cannot pop from an empty array".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            "Cannot pop from an empty array".to_string(),
+            vec![args.source_range],
+        )));
     }
 
     // Create a new array with all elements except the last one

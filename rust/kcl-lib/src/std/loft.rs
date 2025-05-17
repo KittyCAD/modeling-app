@@ -148,13 +148,13 @@ async fn inner_loft(
 ) -> Result<Box<Solid>, KclError> {
     // Make sure we have at least two sketches.
     if sketches.len() < 2 {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: format!(
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            format!(
                 "Loft requires at least two sketches, but only {} were provided.",
                 sketches.len()
             ),
-            source_ranges: vec![args.source_range],
-        }));
+            vec![args.source_range],
+        )));
     }
 
     let id = exec_state.next_uuid();
