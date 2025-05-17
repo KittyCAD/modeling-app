@@ -19,7 +19,8 @@ import type { modelingMachine } from '@src/machines/modelingMachine'
 const semanticEntityNames: {
   [key: string]: Array<Artifact['type'] | 'defaultPlane'>
 } = {
-  face: ['wall', 'cap', 'solid2d'],
+  face: ['wall', 'cap'],
+  profile: ['solid2d'],
   edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
   point: [],
   plane: ['defaultPlane'],

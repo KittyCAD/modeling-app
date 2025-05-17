@@ -995,8 +995,8 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
-    // click "line(end = [1.32, 0.38])"
-    await page.getByText(`line(end = [1.32, 0.38])`).click()
+    // click profile in code
+    await page.getByText(`startProfile(at = [-0.45, 0.87])`).click()
     await page.waitForTimeout(100)
     await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
       { timeout: 10_000 }
@@ -1014,14 +1014,14 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
     // click extrude
     await toolbar.extrudeButton.click()
 
-    // sketch selection should already have been made. "Sketches: 1 face" only show up when the selection has been made already
+    // sketch selection should already have been made.
     // otherwise the cmdbar would be waiting for a selection.
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'arguments',
       currentArgKey: 'length',
       currentArgValue: '5',
-      headerArguments: { Sketches: '1 segment', Length: '' },
+      headerArguments: { Profiles: '1 profile', Length: '' },
       highlightedHeaderArg: 'length',
       commandName: 'Extrude',
     })
