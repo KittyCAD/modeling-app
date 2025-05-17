@@ -210,11 +210,11 @@ export function useNetworkStatus() {
 
       // When the component is unmounted these should be assigned, but it's possible
       // the component mounts and unmounts before engine is available.
-      engineCommandManager.engineConnection?.addEventListener(
+      engineCommandManager.engineConnection?.removeEventListener(
         EngineConnectionEvents.PingPongChanged,
         onPingPongChange as EventListener
       )
-      engineCommandManager.engineConnection?.addEventListener(
+      engineCommandManager.engineConnection?.removeEventListener(
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChange as EventListener
       )
