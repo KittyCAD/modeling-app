@@ -245,6 +245,7 @@ const FileTreeItem = ({
         let code = await window.electron.readFile(path, { encoding: 'utf-8' })
         code = normalizeLineEndings(code)
         codeManager.updateCodeStateEditor(code)
+        await kclManager.executeCode()
       } else if (isImportedInCurrentFile && eventType === 'change') {
         await kclManager.executeAst()
       }
