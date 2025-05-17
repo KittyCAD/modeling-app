@@ -1,0 +1,53 @@
+@settings(defaultLengthUnit = in)
+
+sketch001 = startSketchOn(XY)
+
+sketch001Profile000 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 0.937)
+  |> arc(
+       angleStart = 270,
+       angleEnd = 360,
+       radius = 2.313
+     )
+  |> yLine(length = 0.937)
+
+sketch000 = startSketchOn(YZ)
+
+sketch000Profile000 = circle(
+  sketch000,
+  center = [0, 0],
+  radius = 1.1875
+)
+
+sweepExtrude000 = sweep(
+  sketch000Profile000,
+  path = sketch001Profile000,
+  sectional = true,
+)
+
+sketch003 = startSketchOn(XY)
+
+sketch003Profile000 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 0.937)
+  |> arc(
+       angleStart = 270,
+       angleEnd = 360,
+       radius = 2.313
+     )
+  |> yLine(length = 0.937)
+
+sketch002 = startSketchOn(YZ)
+
+sketch002Profile000 = circle(
+  sketch002,
+  center = [0, 0],
+  radius = 0.9375
+)
+
+sweepCut000Extrude = sweep(
+  sketch002Profile000,
+  path = sketch003Profile000,
+  sectional = true
+)
+
+sweepCut000 = subtract(sweepExtrude000, tools = sweepCut000Extrude)
