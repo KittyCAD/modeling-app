@@ -45,7 +45,7 @@ test.describe('Command bar tests', () => {
       currentArgKey: 'sketches',
       currentArgValue: '',
       headerArguments: {
-        Sketches: '',
+        Profiles: '',
         Length: '',
       },
       highlightedHeaderArg: 'sketches',

@@ -78,7 +78,7 @@ test.describe('Point-and-click tests', () => {
         stage: 'arguments',
         currentArgKey: 'sketches',
         currentArgValue: '',
-        headerArguments: { Sketches: '', Length: '' },
+        headerArguments: { Profiles: '', Length: '' },
         highlightedHeaderArg: 'sketches',
         commandName: 'Extrude',
       })
@@ -87,7 +87,7 @@ test.describe('Point-and-click tests', () => {
         stage: 'arguments',
         currentArgKey: 'length',
         currentArgValue: '5',
-        headerArguments: { Sketches: '1 face', Length: '' },
+        headerArguments: { Profiles: '1 profile', Length: '' },
         highlightedHeaderArg: 'length',
         commandName: 'Extrude',
       })
@@ -98,7 +98,7 @@ test.describe('Point-and-click tests', () => {
 
       await cmdBar.expectState({
         stage: 'review',
-        headerArguments: { Sketches: '1 face', Length: '5' },
+        headerArguments: { Profiles: '1 profile', Length: '5' },
         commandName: 'Extrude',
       })
       await cmdBar.progressCmdBar()
@@ -1634,7 +1634,7 @@ sketch002 = startSketchOn(plane001)
             stage: 'arguments',
             currentArgKey: 'sketches',
             currentArgValue: '',
-            headerArguments: { Sketches: '' },
+            headerArguments: { Profiles: '' },
             highlightedHeaderArg: 'sketches',
             commandName: 'Loft',
           })
@@ -1642,7 +1642,7 @@ sketch002 = startSketchOn(plane001)
           await cmdBar.progressCmdBar()
           await cmdBar.expectState({
             stage: 'review',
-            headerArguments: { Sketches: '2 faces' },
+            headerArguments: { Profiles: '2 profiles' },
             commandName: 'Loft',
           })
           await cmdBar.submit()
@@ -1658,14 +1658,14 @@ sketch002 = startSketchOn(plane001)
             stage: 'arguments',
             currentArgKey: 'sketches',
             currentArgValue: '',
-            headerArguments: { Sketches: '' },
+            headerArguments: { Profiles: '' },
             highlightedHeaderArg: 'sketches',
             commandName: 'Loft',
           })
           await cmdBar.progressCmdBar()
           await cmdBar.expectState({
             stage: 'review',
-            headerArguments: { Sketches: '2 faces' },
+            headerArguments: { Profiles: '2 profiles' },
             commandName: 'Loft',
           })
           await cmdBar.submit()
@@ -1830,7 +1830,7 @@ sketch002 = startSketchOn(XZ)
           currentArgValue: '',
           headerArguments: {
             Sectional: '',
-            Sketches: '',
+            Profiles: '',
             Path: '',
           },
           highlightedHeaderArg: 'sketches',
@@ -1844,7 +1844,7 @@ sketch002 = startSketchOn(XZ)
           currentArgValue: '',
           headerArguments: {
             Sectional: '',
-            Sketches: '1 face',
+            Profiles: '1 profile',
             Path: '',
           },
           highlightedHeaderArg: 'path',
@@ -1857,7 +1857,7 @@ sketch002 = startSketchOn(XZ)
           currentArgValue: '',
           headerArguments: {
             Sectional: '',
-            Sketches: '1 face',
+            Profiles: '1 profile',
             Path: '',
           },
           highlightedHeaderArg: 'path',
@@ -1867,7 +1867,7 @@ sketch002 = startSketchOn(XZ)
         await cmdBar.expectState({
           commandName: 'Sweep',
           headerArguments: {
-            Sketches: '1 face',
+            Profiles: '1 profile',
             Path: '1 segment',
             Sectional: '',
           },
@@ -1968,7 +1968,7 @@ profile001 = ${circleCode}`
         currentArgValue: '',
         headerArguments: {
           Sectional: '',
-          Sketches: '',
+          Profiles: '',
           Path: '',
         },
         highlightedHeaderArg: 'sketches',
@@ -1983,7 +1983,7 @@ profile001 = ${circleCode}`
         currentArgValue: '',
         headerArguments: {
           Sectional: '',
-          Sketches: '1 face',
+          Profiles: '1 profile',
           Path: '',
         },
         highlightedHeaderArg: 'path',
@@ -1997,7 +1997,7 @@ profile001 = ${circleCode}`
         currentArgValue: '',
         headerArguments: {
           Sectional: '',
-          Sketches: '1 face',
+          Profiles: '1 profile',
           Path: '',
         },
         highlightedHeaderArg: 'path',
@@ -2007,7 +2007,7 @@ profile001 = ${circleCode}`
       await cmdBar.expectState({
         commandName: 'Sweep',
         headerArguments: {
-          Sketches: '1 face',
+          Profiles: '1 profile',
           Path: '1 helix',
           Sectional: '',
         },
@@ -4634,7 +4634,7 @@ path001 = startProfile(sketch001, at = [0, 0])
         currentArgKey: 'sketches',
         currentArgValue: '',
         headerArguments: {
-          Sketches: '',
+          Profiles: '',
           Length: '',
         },
         highlightedHeaderArg: 'sketches',
@@ -4646,7 +4646,7 @@ path001 = startProfile(sketch001, at = [0, 0])
         currentArgKey: 'length',
         currentArgValue: '5',
         headerArguments: {
-          Sketches: '2 faces',
+          Profiles: '2 profiles',
           Length: '',
         },
         highlightedHeaderArg: 'length',
@@ -4657,7 +4657,7 @@ path001 = startProfile(sketch001, at = [0, 0])
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Sketches: '2 faces',
+          Profiles: '2 profiles',
           Length: '1',
         },
         commandName: 'Extrude',
@@ -4728,7 +4728,7 @@ path001 = startProfile(sketch001, at = [0, 0])
         currentArgKey: 'sketches',
         currentArgValue: '',
         headerArguments: {
-          Sketches: '',
+          Profiles: '',
           Path: '',
           Sectional: '',
         },
@@ -4741,7 +4741,7 @@ path001 = startProfile(sketch001, at = [0, 0])
         currentArgKey: 'path',
         currentArgValue: '',
         headerArguments: {
-          Sketches: '2 faces',
+          Profiles: '2 profiles',
           Path: '',
           Sectional: '',
         },
@@ -4754,7 +4754,7 @@ path001 = startProfile(sketch001, at = [0, 0])
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Sketches: '2 faces',
+          Profiles: '2 profiles',
           Path: '1 segment',
           Sectional: '',
         },
@@ -4825,7 +4825,7 @@ path001 = startProfile(sketch001, at = [0, 0])
         currentArgKey: 'sketches',
         currentArgValue: '',
         headerArguments: {
-          Sketches: '',
+          Profiles: '',
           AxisOrEdge: '',
           Angle: '',
         },
@@ -4838,7 +4838,7 @@ path001 = startProfile(sketch001, at = [0, 0])
         currentArgKey: 'axisOrEdge',
         currentArgValue: '',
         headerArguments: {
-          Sketches: '2 faces',
+          Profiles: '2 profiles',
           AxisOrEdge: '',
           Angle: '',
         },
@@ -4854,7 +4854,7 @@ path001 = startProfile(sketch001, at = [0, 0])
         currentArgKey: 'angle',
         currentArgValue: '360',
         headerArguments: {
-          Sketches: '2 faces',
+          Profiles: '2 profiles',
           AxisOrEdge: 'Edge',
           Edge: '1 segment',
           Angle: '',
@@ -4867,7 +4867,7 @@ path001 = startProfile(sketch001, at = [0, 0])
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Sketches: '2 faces',
+          Profiles: '2 profiles',
           AxisOrEdge: 'Edge',
           Edge: '1 segment',
           Angle: '180',
