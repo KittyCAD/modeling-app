@@ -14,8 +14,6 @@ mirror2d(
 ): Sketch
 ```
 
-Only works on unclosed sketches for now.
-
 Mirror occurs around a local sketch axis rather than a global axis.
 
 ### Arguments
