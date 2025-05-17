@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useLocation, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 
 import { base64ToString } from '@src/lib/base64'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
