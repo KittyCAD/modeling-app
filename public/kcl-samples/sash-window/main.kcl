@@ -16,7 +16,7 @@ frameWidth = 30
 frameDepth = 50
 
 // Number of divisions per sash (horizontal and vertical)
-sashOpeningCountHorisontal = 2
+sashOpeningCountHorizontal = 2
 sashOpeningCountVertical = 1
 
 // Derived dimensions
@@ -26,7 +26,7 @@ sashDepth = frameDepth / 2 - 2
 sashTravelDistance = sashHeight * windowState * 0.8
 
 // Function to create panel with frame and openings
-fn panelFn(plane, offset, width, height, depth, perimeter, divisionThickness, openingCountHorisontal, openingCountVertical) {
+fn panelFn(plane, offset, width, height, depth, perimeter, divisionThickness, openingCountHorizontal, openingCountVertical) {
   // Create panel base shape
   panelPlane = startSketchOn(offsetPlane(XZ, offset = offset))
   panelShape = startProfile(panelPlane, at = [-width / 2, -height / 2])
@@ -41,12 +41,12 @@ fn panelFn(plane, offset, width, height, depth, perimeter, divisionThickness, op
   voidAreaWidth = width - (perimeter * 2)
   voidAreaHeight = height - (perimeter * 2)
 
-  divisionTotalThicknessHorisontal = divisionThickness * openingCountHorisontal - divisionThickness
+  divisionTotalThicknessHorizontal = divisionThickness * openingCountHorizontal - divisionThickness
   divisionTotalThicknessVertical = divisionThickness * openingCountVertical - divisionThickness
-  voidWidth = (voidAreaWidth - divisionTotalThicknessHorisontal) / openingCountHorisontal
+  voidWidth = (voidAreaWidth - divisionTotalThicknessHorizontal) / openingCountHorizontal
   voidHeight = (voidAreaHeight - divisionTotalThicknessVertical) / openingCountVertical
 
-  voidStepHorisontal = voidWidth + divisionThickness
+  voidStepHorizontal = voidWidth + divisionThickness
   voidStepVertical = voidHeight + divisionThickness
   voidPlane = startSketchOn(panelBody, face = END)
   voidShape = startProfile(
@@ -63,8 +63,8 @@ fn panelFn(plane, offset, width, height, depth, perimeter, divisionThickness, op
     |> close()
     |> patternLinear2d(
          %,
-         instances = openingCountHorisontal,
-         distance = voidStepHorisontal,
+         instances = openingCountHorizontal,
+         distance = voidStepHorizontal,
          axis = [1, 0],
        )
     |> patternLinear2d(
@@ -87,7 +87,7 @@ frame = panelFn(
   depth = frameDepth,
   perimeter = frameWidth,
   divisionThickness = 10,
-  openingCountHorisontal = 1,
+  openingCountHorizontal = 1,
   openingCountVertical = 1,
 )
 
@@ -100,7 +100,7 @@ bottomSash = panelFn(
        depth = sashDepth,
        perimeter = frameWidth,
        divisionThickness = 10,
-       openingCountHorisontal = sashOpeningCountHorisontal,
+       openingCountHorizontal = sashOpeningCountHorizontal,
        openingCountVertical = sashOpeningCountVertical,
      )
   |> translate(
@@ -187,7 +187,7 @@ topSash = panelFn(
        depth = sashDepth,
        perimeter = frameWidth,
        divisionThickness = 10,
-       openingCountHorisontal = sashOpeningCountHorisontal,
+       openingCountHorizontal = sashOpeningCountHorizontal,
        openingCountVertical = sashOpeningCountVertical,
      )
   |> translate(

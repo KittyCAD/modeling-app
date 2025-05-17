@@ -28,14 +28,14 @@ faceplateShape = startSketchOn(offsetPlane(XY, offset = -faceplateHeight / 2))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
   |> close()
 faceplateBody = extrude(faceplateShape, length = faceplateHeight)
-facepplateFrontFace = startSketchOn(faceplateBody, face = seg01)
+faceplateFrontFace = startSketchOn(faceplateBody, face = seg01)
 
 // Creates recessed volume within the faceplate for inserting modules
 nestWall = 2
 nestWidth = faceplateWidth - (nestWall * 2)
 nestHeight = faceplateHeight - (nestWall * 2)
 nestDepth = faceplateDepth - nestWall
-nestShape = startProfile(facepplateFrontFace, at = [-nestWidth / 2, nestHeight / 2])
+nestShape = startProfile(faceplateFrontFace, at = [-nestWidth / 2, nestHeight / 2])
   |> xLine(length = nestWidth)
   |> yLine(length = -nestHeight)
   |> xLine(length = -nestWidth)
@@ -205,7 +205,7 @@ holeStraightSegment = holeWidth - holeDiameter
 holeVerticalDistance = faceplateHeight * 0.3
 
 holeShapes = startProfile(
-       facepplateFrontFace,
+       faceplateFrontFace,
        at = [
          -holeStraightSegment / 2,
          holeDiameter / 2

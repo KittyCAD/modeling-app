@@ -98,7 +98,7 @@ wideHoleOffset = 30
 
 // Two slots mirrored across the plate width
 wideHolePlane = startSketchOn(XY)
-wideHoldeShape = startProfile(
+wideHoleShape = startProfile(
        wideHolePlane,
        at = [
          -(wideHoleLength - wideHoleWidth) / 2,
@@ -119,7 +119,7 @@ wideHoldeShape = startProfile(
        y = wideHoleOffset - (slabPlateWidth / 2),
        z = -1,
      )
-wideHoleVoidLeft = extrude(wideHoldeShape, length = slabPlateThickness + 2)
+wideHoleVoidLeft = extrude(wideHoleShape, length = slabPlateThickness + 2)
 wideHoleVoidRight = clone(wideHoleVoidLeft)
   |> translate(
        %,
