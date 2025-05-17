@@ -1,6 +1,9 @@
 // Engine Valve
 // A mechanical valve used in internal combustion engines to control intake or exhaust flow
 
+
+
+
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Define parameters
@@ -21,9 +24,16 @@ valveHeadShape = startProfile(valveHeadPlane, at = [-0.01, valveHeadLength])
   |> tangentialArc(endAbsolute = [-0.8 * valveRadius, valveHeadThickness], tag = $seg01)
   |> tangentialArc(endAbsolute = [-valveRadius, 0])
   |> xLine(length = 0.3 * valveRadius)
-  |> arc(interiorAbsolute = [
-    -0.34 * valveRadius, 0.08 * valveRadius],
-    endAbsolute = [ -0.02 * valveRadius, 0.11 * valveRadius])
+  |> arc(
+       interiorAbsolute = [
+         -0.34 * valveRadius,
+         0.08 * valveRadius
+       ],
+       endAbsolute = [
+         -0.02 * valveRadius,
+         0.11 * valveRadius
+       ],
+     )
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 valveHead = revolve(valveHeadShape, angle = 360, axis = Y)
@@ -54,6 +64,16 @@ step6 = startSketchOn(step5, face = END)
   |> circle(%, center = [0, 0], radius = stemDiameter / 2 * 0.8)
   |> extrude(%, length = stepLength)
 step7 = startSketchOn(step6, face = END)
-  |> circle(%,center = [0, 0],radius = stemDiameter / 2 * 0.9,tag = $seg02)
+  |> circle(
+       %,
+       center = [0, 0],
+       radius = stemDiameter / 2 * 0.9,
+       tag = $seg02,
+     )
   |> extrude(%, length = stepLength * 3, tagEnd = $capEnd001)
-  |> chamfer(length = 0.5,tags = [  getCommonEdge(faces = [seg02, capEnd001])])
+  |> chamfer(
+       length = 0.5,
+       tags = [
+         getCommonEdge(faces = [seg02, capEnd001])
+       ],
+     )

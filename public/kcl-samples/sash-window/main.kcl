@@ -49,14 +49,30 @@ fn panelFn(plane, offset, width, height, depth, perimeter, divisionThickness, op
   voidStepHorisontal = voidWidth + divisionThickness
   voidStepVertical = voidHeight + divisionThickness
   voidPlane = startSketchOn(panelBody, face = END)
-  voidShape = startProfile(voidPlane, at = [ -voidAreaWidth / 2, -voidAreaHeight / 2],)
+  voidShape = startProfile(
+         voidPlane,
+         at = [
+           -voidAreaWidth / 2,
+           -voidAreaHeight / 2
+         ],
+       )
     |> yLine(length = voidHeight)
     |> xLine(length = voidWidth)
     |> yLine(length = -voidHeight)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
-    |> patternLinear2d(%,instances = openingCountHorisontal,distance = voidStepHorisontal,axis = [1, 0],)
-    |> patternLinear2d(%,instances = openingCountVertical,distance = voidStepVertical,axis = [0, 1],)
+    |> patternLinear2d(
+         %,
+         instances = openingCountHorisontal,
+         distance = voidStepHorisontal,
+         axis = [1, 0],
+       )
+    |> patternLinear2d(
+         %,
+         instances = openingCountVertical,
+         distance = voidStepVertical,
+         axis = [0, 1],
+       )
   voidBody = extrude(voidShape, length = -depth)
     |> appearance(color = "#a55e2c")
   return panelBody
@@ -77,34 +93,61 @@ frame = panelFn(
 
 // Create bottom sliding sash
 bottomSash = panelFn(
-  plane = XZ,
-  offset = (frameDepth/2-sashDepth)/2,
-  width = sashWidth,
-  height = sashHeight,
-  depth = sashDepth,
-  perimeter = frameWidth,
-  divisionThickness = 10,
-  openingCountHorisontal = sashOpeningCountHorisontal,
-  openingCountVertical = sashOpeningCountVertical,)
-  |> translate(%, x = 0, y = 0, z = frameWidth / 2 - (sashHeight / 2),)
-  |> translate(%, x = 0, y = 0, z = sashTravelDistance,) // open / close
+       plane = XZ,
+       offset = (frameDepth / 2 - sashDepth) / 2,
+       width = sashWidth,
+       height = sashHeight,
+       depth = sashDepth,
+       perimeter = frameWidth,
+       divisionThickness = 10,
+       openingCountHorisontal = sashOpeningCountHorisontal,
+       openingCountVertical = sashOpeningCountVertical,
+     )
+  |> translate(
+       %,
+       x = 0,
+       y = 0,
+       z = frameWidth / 2 - (sashHeight / 2),
+     )
+  |> translate(
+       %,
+       x = 0,
+       y = 0,
+       z = sashTravelDistance,
+     ) // open / close
 
-// Latch mechanism on bottom sash
+  // Latch mechanism on bottom sash
 // Create latch plate
 latchPlateWidth = 13
 latchPlateLength = 30
 latchPlateThickness = 1
 
-latchPlatePlane = startSketchOn(offsetPlane(XY, offset = frameWidth/2))
-latchPlateShape = startProfile(latchPlatePlane, at = [-latchPlateLength/2, -latchPlateWidth/2])
+latchPlatePlane = startSketchOn(offsetPlane(XY, offset = frameWidth / 2))
+latchPlateShape = startProfile(
+       latchPlatePlane,
+       at = [
+         -latchPlateLength / 2,
+         -latchPlateWidth / 2
+       ],
+     )
   |> yLine(length = latchPlateWidth)
   |> xLine(length = latchPlateLength)
   |> yLine(length = -latchPlateWidth)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 latchPlateBody = extrude(latchPlateShape, length = latchPlateThickness)
-  |> translate(%, x = 0, y = -frameDepth/4, z = 0)
-  |> translate(%, x = 0, y = 0, z = sashTravelDistance,) // open / close
+  |> translate(
+       %,
+       x = 0,
+       y = -frameDepth / 4,
+       z = 0,
+     )
+  |> translate(
+       %,
+       x = 0,
+       y = 0,
+       z = sashTravelDistance,
+     ) // open / close
 
 // Create latch cylinder
 latchCylinderHeight = 5
@@ -116,14 +159,29 @@ latchCylinderShape = startProfile(latchCylinderPlane, at = [40, -1])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 latchCylinderBody = extrude(latchCylinderShape, length = latchCylinderHeight)
-  |> translate(%, x = 0, y = -frameDepth/4, z = 0)
-  |> translate(%, x = 0, y = 0, z = sashTravelDistance,) // open / close
-  |> rotate(%, roll = 0, pitch = 0, yaw = -90 * windowState)
+  |> translate(
+       %,
+       x = 0,
+       y = -frameDepth / 4,
+       z = 0,
+     )
+  |> translate(
+       %,
+       x = 0,
+       y = 0,
+       z = sashTravelDistance,
+     ) // open / close
+  |> rotate(
+       %,
+       roll = 0,
+       pitch = 0,
+       yaw = -90 * windowState,
+     )
 
 // Create top fixed sash
 topSash = panelFn(
        plane = XZ,
-       offset = -(frameDepth/2-sashDepth)/2-sashDepth,
+       offset = -(frameDepth / 2 - sashDepth) / 2 - sashDepth,
        width = sashWidth,
        height = sashHeight,
        depth = sashDepth,
@@ -132,11 +190,22 @@ topSash = panelFn(
        openingCountHorisontal = sashOpeningCountHorisontal,
        openingCountVertical = sashOpeningCountVertical,
      )
-  |> translate( %, x = 0, y = 0, z = sashHeight / 2 - (frameWidth / 2), )
+  |> translate(
+       %,
+       x = 0,
+       y = 0,
+       z = sashHeight / 2 - (frameWidth / 2),
+     )
 
 // Create latch nut on the top sash
 latchNutPlane = startSketchOn(XZ)
-latchNutShape = startProfile(latchNutPlane, at = [-latchPlateLength/2, -latchPlateWidth/2])
+latchNutShape = startProfile(
+       latchNutPlane,
+       at = [
+         -latchPlateLength / 2,
+         -latchPlateWidth / 2
+       ],
+     )
   |> yLine(length = latchPlateWidth)
   |> xLine(length = latchPlateLength)
   |> yLine(length = -latchPlateWidth)

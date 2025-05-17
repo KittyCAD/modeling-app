@@ -1,6 +1,9 @@
 // Spinning Highrise Tower
 // A conceptual high-rise tower with a central core and rotating floor slabs, demonstrating dynamic form through vertical repetition and transformation
 
+
+
+
 @settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 // Define global parameters for floor geometry and building layout
@@ -24,7 +27,7 @@ windowCount = round(windowTargetCount)
 windowWidth = facadeWidth / windowCount
 
 // Helper function: Creates a box from a center plane with given width and height
-fn boxFn (plane, width, height) {
+fn boxFn(plane, width, height) {
   shape = startSketchOn(plane)
     |> startProfile(%, at = [-width / 2, -width / 2])
     |> line(%, end = [0, width])
@@ -46,20 +49,16 @@ fn transformFn(@i) {
 
 // Create building base
 baseThickness = 0.2
-baseSlab = boxFn(plane=XY, width=slabWidth, height=-baseThickness)
+baseSlab = boxFn(plane = XY, width = slabWidth, height = -baseThickness)
   |> appearance(%, color = "#dbd7d2")
 
 // Create ground platform beneath the base
 goundSize = 50
-groundBody = boxFn(
-  plane = offsetPlane(XY, offset = -baseThickness),
-  width = goundSize, height = -5)
+groundBody = boxFn(plane = offsetPlane(XY, offset = -baseThickness), width = goundSize, height = -5)
   |> appearance(%, color = "#3a3631")
 
 // Create a single slab with handrail height to be reused with pattern
-slabAndHandrailGeometry = boxFn(
-  plane = offsetPlane(XY, offset = floorHeight-slabThickness),
-  width = slabWidth, height = slabThickness + handrailHeight)
+slabAndHandrailGeometry = boxFn(plane = offsetPlane(XY, offset = floorHeight - slabThickness), width = slabWidth, height = slabThickness + handrailHeight)
 slabVoidStart = -slabWidth / 2 + handrailThickness
 slabVoidWidth = slabWidth - (handrailThickness * 2)
 slabVoidShape = startSketchOn(slabAndHandrailGeometry, face = END)

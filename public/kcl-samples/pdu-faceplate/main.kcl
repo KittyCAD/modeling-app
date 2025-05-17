@@ -10,6 +10,7 @@ faceplateWidth = 482.6 // this is standardized to fit 19-inch racks)
 faceplateHeight = 44.45 // usually 1U (44.45 mm), but can be 2U (88.9 mm) or more
 faceplateDepth = 100 // varies by manufacturer, but commonly between 100 mm and 300 mm
 
+
 // Define dimensions of side supports (width and thickness)
 supportWidth = 50
 supportThickness = 3
@@ -50,7 +51,7 @@ moduleDepth = nestHeight
 leftSpacerWidth = moduleWidth * 1.5
 leftSpacerPosition = leftSpacerWidth / 2 - (nestWidth / 2)
 
-fn boxModuleFn (width) {
+fn boxModuleFn(width) {
   shape = startSketchOn(XZ)
     |> startProfile(%, at = [-width / 2, moduleHeight / 2])
     |> xLine(length = width)
@@ -62,10 +63,15 @@ fn boxModuleFn (width) {
   return body
 }
 leftSpacerShape = boxModuleFn(width = leftSpacerWidth)
-  |> translate(%, x = leftSpacerPosition, y = 0, z = 0)
+  |> translate(
+       %,
+       x = leftSpacerPosition,
+       y = 0,
+       z = 0,
+     )
 
 // Module for power switch including front plate and red rocker button
-switchPosition = leftSpacerPosition + leftSpacerWidth/2 + moduleWidth/2
+switchPosition = leftSpacerPosition + leftSpacerWidth / 2 + moduleWidth / 2
 swtichWidth = moduleWidth
 
 // Switch Body
@@ -76,61 +82,121 @@ swtichPlateWidth = 20
 switchPlateHeight = 30
 switchPlateThickness = 3
 switchPlateShape = startSketchOn(switchBody, face = END)
-  |> startProfile(%,at = [  -swtichPlateWidth / 2,  -switchPlateHeight / 2])
+  |> startProfile(
+       %,
+       at = [
+         -swtichPlateWidth / 2,
+         -switchPlateHeight / 2
+       ],
+     )
   |> yLine(length = switchPlateHeight)
   |> xLine(length = swtichPlateWidth)
   |> yLine(length = -switchPlateHeight)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 switchPlateBody = extrude(switchPlateShape, length = switchPlateThickness)
-  |> translate(%, x = switchPosition, y = 0, z = 0)
+  |> translate(
+       %,
+       x = switchPosition,
+       y = 0,
+       z = 0,
+     )
 
 // Switch Button
 switchButtonHeight = 26
 swtichButtonWidth = 15
-switchButtonShape = startSketchOn(offsetPlane(-YZ, offset = -swtichButtonWidth/2))
-  |> startProfile(%, at = [switchPlateThickness, switchButtonHeight/2])
+switchButtonShape = startSketchOn(offsetPlane(-YZ, offset = -swtichButtonWidth / 2))
+  |> startProfile(
+       %,
+       at = [
+         switchPlateThickness,
+         switchButtonHeight / 2
+       ],
+     )
   |> line(end = [3, -1])
   |> arc(interiorAbsolute = [6, 0], endAbsolute = [12, -9])
-  |> line(endAbsolute = [switchPlateThickness, -switchButtonHeight/2])
+  |> line(endAbsolute = [
+       switchPlateThickness,
+       -switchButtonHeight / 2
+     ])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 switchButtonBody = extrude(switchButtonShape, length = swtichButtonWidth)
-  |> translate(%, x = switchPosition, y = 0, z = 0)
+  |> translate(
+       %,
+       x = switchPosition,
+       y = 0,
+       z = 0,
+     )
   |> appearance(%, color = "#ff0000")
 
 // Spacer between switch and plug modules for layout alignment
-secondSpacerWidth = moduleWidth/2
-secondSpacerPosition = switchPosition + swtichWidth/2 + secondSpacerWidth/2
+secondSpacerWidth = moduleWidth / 2
+secondSpacerPosition = switchPosition + swtichWidth / 2 + secondSpacerWidth / 2
 secondSpacerBody = boxModuleFn(width = secondSpacerWidth)
-  |> translate(%, x = secondSpacerPosition, y = 0, z = 0)
+  |> translate(
+       %,
+       x = secondSpacerPosition,
+       y = 0,
+       z = 0,
+     )
 
-// European power plug modules with circular sockets and two-pin holes
+  // European power plug modules with circular sockets and two-pin holes
 // 8 identical sockets, each with grounding notch and dual-pin recesses
 powerPlugWidth = moduleWidth
 powerPlugCount = 8
 powerPlugOveralWidth = powerPlugWidth * powerPlugCount
-firstPowerPlugPosition = secondSpacerPosition + secondSpacerWidth/2 + powerPlugWidth/2
-lastPowerPlugPosition = firstPowerPlugPosition + powerPlugWidth * (powerPlugCount-1)
+firstPowerPlugPosition = secondSpacerPosition + secondSpacerWidth / 2 + powerPlugWidth / 2
+lastPowerPlugPosition = firstPowerPlugPosition + powerPlugWidth * (powerPlugCount - 1)
 powerPlugBody = boxModuleFn(width = powerPlugWidth)
-  |> translate(%, x = firstPowerPlugPosition, y = 0, z = 0)
+  |> translate(
+       %,
+       x = firstPowerPlugPosition,
+       y = 0,
+       z = 0,
+     )
 plugShape = startSketchOn(powerPlugBody, face = END)
-  |> circle(%, center = [0,0], radius = 17)
-  |> translate(%, x = firstPowerPlugPosition, y = 0, z = 0)
+  |> circle(%, center = [0, 0], radius = 17)
+  |> translate(
+       %,
+       x = firstPowerPlugPosition,
+       y = 0,
+       z = 0,
+     )
 plugBody = extrude(plugShape, length = -20)
 plugHoleDistance = 20
 plugHoleShape = startSketchOn(plugBody, face = START)
-  |> circle(%, center = [-plugHoleDistance/2,0], radius = 3)
-  |> translate(%, x = firstPowerPlugPosition, y = 0, z = 0)
-  |> patternLinear2d(%, instances = 2, distance = plugHoleDistance, axis = [1, 0])
+  |> circle(%, center = [-plugHoleDistance / 2, 0], radius = 3)
+  |> translate(
+       %,
+       x = firstPowerPlugPosition,
+       y = 0,
+       z = 0,
+     )
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = plugHoleDistance,
+       axis = [1, 0],
+     )
 plugHoleBody = extrude(plugHoleShape, length = -5)
-  |> patternLinear3d(%, instances = powerPlugCount, distance = powerPlugWidth, axis = [1, 0, 0])
+  |> patternLinear3d(
+       %,
+       instances = powerPlugCount,
+       distance = powerPlugWidth,
+       axis = [1, 0, 0],
+     )
 
 // Rightmost spacer to fill in remaining horizontal space
-rightSpacerWidth = nestWidth/2 - lastPowerPlugPosition - powerPlugWidth/2
-rightSpacerPosition = lastPowerPlugPosition + powerPlugWidth/2 + rightSpacerWidth/2
+rightSpacerWidth = nestWidth / 2 - lastPowerPlugPosition - (powerPlugWidth / 2)
+rightSpacerPosition = lastPowerPlugPosition + powerPlugWidth / 2 + rightSpacerWidth / 2
 rightSpacerBody = boxModuleFn(width = rightSpacerWidth)
-  |> translate(%, x = rightSpacerPosition, y = 0, z = 0)
+  |> translate(
+       %,
+       x = rightSpacerPosition,
+       y = 0,
+       z = 0,
+     )
 
 // Rack mounting holes on flanges, elongated for alignment flexibility
 holeWidth = 25
@@ -138,13 +204,37 @@ holeDiameter = 5
 holeStraightSegment = holeWidth - holeDiameter
 holeVerticalDistance = faceplateHeight * 0.3
 
-holeShapes = startProfile(facepplateFrontFace,at = [  -holeStraightSegment / 2,  holeDiameter / 2])
+holeShapes = startProfile(
+       facepplateFrontFace,
+       at = [
+         -holeStraightSegment / 2,
+         holeDiameter / 2
+       ],
+     )
   |> xLine(length = holeStraightSegment)
-  |> tangentialArc(endAbsolute = [holeStraightSegment / 2,-holeDiameter / 2])
+  |> tangentialArc(endAbsolute = [
+       holeStraightSegment / 2,
+       -holeDiameter / 2
+     ])
   |> xLine(length = -holeStraightSegment)
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> translate(%,x = -faceplateWidth / 2 - (supportWidth / 2),y = 0,z = -holeVerticalDistance)
-  |> patternLinear2d(%,instances = 3,distance = holeVerticalDistance,axis = [0, 1])
-  |> patternLinear2d(%,instances = 2,distance = faceplateWidth + supportWidth,axis = [1, 0])
+  |> translate(
+       %,
+       x = -faceplateWidth / 2 - (supportWidth / 2),
+       y = 0,
+       z = -holeVerticalDistance,
+     )
+  |> patternLinear2d(
+       %,
+       instances = 3,
+       distance = holeVerticalDistance,
+       axis = [0, 1],
+     )
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = faceplateWidth + supportWidth,
+       axis = [1, 0],
+     )
 holeVoid = extrude(holeShapes, length = -supportThickness)

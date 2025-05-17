@@ -24,8 +24,18 @@ fn lProfileFn(lengthBase, lengthHook, width, thickness) {
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $baseOutside)
     |> close()
   profileBody = extrude(profileShape, length = width)
-    |> fillet(radius = thickness,tags = [  getCommonEdge(faces = [baseInside, hookInside])])
-    |> fillet(radius = thickness * 2,tags = [  getCommonEdge(faces = [baseOutside, hookOutside])])
+    |> fillet(
+         radius = thickness,
+         tags = [
+           getCommonEdge(faces = [baseInside, hookInside])
+         ],
+       )
+    |> fillet(
+         radius = thickness * 2,
+         tags = [
+           getCommonEdge(faces = [baseOutside, hookOutside])
+         ],
+       )
   return profileBody
 }
 
@@ -56,7 +66,7 @@ fn boltFn(diameter, length) {
 // Construct a bolt assembly with base plate and hex nut
 // Assembles all parts for realistic anchor simulation
 fn boltWithPlateAndNutFn(diameter, length, gap) {
-  plateSide = diameter*3
+  plateSide = diameter * 3
   plateplane = startSketchOn(offsetPlane(XY, offset = -gap))
   plateShape = startProfile(plateplane, at = [-plateSide / 2, -plateSide / 2])
     |> yLine(length = plateSide)
@@ -88,16 +98,35 @@ wideHoleOffset = 30
 
 // Two slots mirrored across the plate width
 wideHolePlane = startSketchOn(XY)
-wideHoldeShape = startProfile(wideHolePlane, at = [-(wideHoleLength-wideHoleWidth)/2, wideHoleWidth/2])
-  |> xLine(length = wideHoleLength-wideHoleWidth)
-  |> tangentialArc(endAbsolute = [(wideHoleLength-wideHoleWidth)/2, -wideHoleWidth/2])
-  |> xLine(length = wideHoleWidth-wideHoleLength)
+wideHoldeShape = startProfile(
+       wideHolePlane,
+       at = [
+         -(wideHoleLength - wideHoleWidth) / 2,
+         wideHoleWidth / 2
+       ],
+     )
+  |> xLine(length = wideHoleLength - wideHoleWidth)
+  |> tangentialArc(endAbsolute = [
+       (wideHoleLength - wideHoleWidth) / 2,
+       -wideHoleWidth / 2
+     ])
+  |> xLine(length = wideHoleWidth - wideHoleLength)
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> translate(%, x = offsetSlabRail, y = wideHoleOffset-slabPlateWidth/2, z = -1)
-wideHoleVoidLeft = extrude(wideHoldeShape, length = slabPlateThickness+2)
+  |> translate(
+       %,
+       x = offsetSlabRail,
+       y = wideHoleOffset - (slabPlateWidth / 2),
+       z = -1,
+     )
+wideHoleVoidLeft = extrude(wideHoldeShape, length = slabPlateThickness + 2)
 wideHoleVoidRight = clone(wideHoleVoidLeft)
-  |> translate(%, x = 0, y = slabPlateWidth-wideHoleOffset*2, z = 0)
+  |> translate(
+       %,
+       x = 0,
+       y = slabPlateWidth - (wideHoleOffset * 2),
+       z = 0,
+     )
 
 // Cut the holes into the anchor plate body
 slabPlatePunchOne = subtract([slabPlate], tools = [wideHoleVoidLeft])
@@ -105,7 +134,22 @@ slabPlatePunchTwo = subtract([slabPlatePunchOne], tools = [wideHoleVoidRight])
 
 // Add two bolt assemblies into the oblong slots
 // Properly rotated and spaced to match anchor hole layout
-slabPlateBolts = boltWithPlateAndNutFn(diameter = 10, length = 20, gap = slabPlateThickness+5)
-  |> rotate(%, roll = 180, pitch = 0, yaw = 0)
-  |> translate(%, x = offsetSlabRail, y = wideHoleOffset-slabPlateWidth/2, z = 5)
-  |> patternLinear3d(%, instances = 2, distance = slabPlateWidth-wideHoleOffset*2, axis = [0, -1, 0])
+slabPlateBolts = boltWithPlateAndNutFn(diameter = 10, length = 20, gap = slabPlateThickness + 5)
+  |> rotate(
+       %,
+       roll = 180,
+       pitch = 0,
+       yaw = 0,
+     )
+  |> translate(
+       %,
+       x = offsetSlabRail,
+       y = wideHoleOffset - (slabPlateWidth / 2),
+       z = 5,
+     )
+  |> patternLinear3d(
+       %,
+       instances = 2,
+       distance = slabPlateWidth - (wideHoleOffset * 2),
+       axis = [0, -1, 0],
+     )

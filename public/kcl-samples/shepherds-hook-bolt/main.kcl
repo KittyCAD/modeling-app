@@ -51,16 +51,32 @@ tipShape = circle(
   tipPlane,
   center = [hookRadius, 0],
   radius = boltDiameter / 2,
-  tag = $seg01)
-tipBody = extrude(tipShape,length = hookRadius * 0.5,tagStart = $startTag,tagEnd = $capEnd001)
-  |> fillet(radius = boltDiameter / 4,tags = [  getCommonEdge(faces = [seg01, capEnd001])])
+  tag = $seg01,
+)
+tipBody = extrude(
+       tipShape,
+       length = hookRadius * 0.5,
+       tagStart = $startTag,
+       tagEnd = $capEnd001,
+     )
+  |> fillet(
+       radius = boltDiameter / 4,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )
 
-// Create the threaded end of the bolt
-
+  // Create the threaded end of the bolt
 
 // Construct the triangular profile for thread cutting
 boltThreadSectionPlane = startSketchOn(XZ)
-boltThreadSectionShapeForRevolve = startProfile(boltThreadSectionPlane,at = [ innerRadius, -shankOffset-shankLength-threadedEndLength])
+boltThreadSectionShapeForRevolve = startProfile(
+       boltThreadSectionPlane,
+       at = [
+         innerRadius,
+         -shankOffset - shankLength - threadedEndLength
+       ],
+     )
   |> line(end = [threadDepth, approximatePitch / 2])
   |> line(end = [-threadDepth, approximatePitch / 2])
   |> patternLinear2d(axis = [0, 1], instances = boltNumberOfRevolutions, distance = approximatePitch)
