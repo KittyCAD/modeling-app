@@ -528,7 +528,7 @@ test.describe(
           'Design.Modify with Zoo Text-To-CAD'
         )
         await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Prompt-to-edit')
+        await cmdBar.expectCommandName('Text-to-CAD Edit')
       })
 
       await test.step('Modeling.Help.KCL code samples', async () => {
