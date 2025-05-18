@@ -146,9 +146,7 @@ export class CmdBarFixture {
     await this.cmdBarOpenBtn.click()
     await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()
     if (selectCmd === 'promptToEdit') {
-      const promptEditCommand = this.page.getByText(
-        'Use Zoo AI to edit your parts and code.'
-      )
+      const promptEditCommand = this.selectOption({ name: 'Text-to-CAD Edit' })
       await expect(promptEditCommand.first()).toBeVisible()
       await promptEditCommand.first().scrollIntoViewIfNeeded()
       await promptEditCommand.first().click()
