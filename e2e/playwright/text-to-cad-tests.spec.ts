@@ -4,9 +4,10 @@ import type { Page } from '@playwright/test'
 
 import { createProject, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 
 test.describe('Text-to-CAD tests', () => {
-  test('basic lego happy case', async ({ page, homePage }) => {
+  test('basic lego happy case', async ({ page, homePage, cmdBar }) => {
     const u = await getUtils(page)
 
     await test.step('Set up', async () => {
@@ -15,7 +16,11 @@ test.describe('Text-to-CAD tests', () => {
       await u.waitForPageLoad()
     })
 
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'a 2x4 lego',
+      cmdBar
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -56,6 +61,7 @@ test.describe('Text-to-CAD tests', () => {
   test('success model, then ignore success toast, user can create new prompt from command bar', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -64,7 +70,11 @@ test.describe('Text-to-CAD tests', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x6 lego')
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'a 2x6 lego',
+      cmdBar
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -82,7 +92,11 @@ test.describe('Text-to-CAD tests', () => {
     await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     // Can send a new prompt from the command bar.
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'a 2x4 lego',
+      cmdBar
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -100,6 +114,7 @@ test.describe('Text-to-CAD tests', () => {
   test('you can reject text-to-cad output and it does nothing', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -108,7 +123,11 @@ test.describe('Text-to-CAD tests', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'a 2x4 lego',
+      cmdBar
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -141,6 +160,7 @@ test.describe('Text-to-CAD tests', () => {
   test('sending a bad prompt fails, can dismiss', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -150,7 +170,11 @@ test.describe('Text-to-CAD tests', () => {
     await u.waitForPageLoad()
 
     const randomPrompt = `aslkdfja;` + Date.now() + `FFFFEIWJF`
-    await sendPromptFromCommandBarTriggeredByButton(page, randomPrompt)
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      randomPrompt,
+      cmdBar
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -188,6 +212,7 @@ test.describe('Text-to-CAD tests', () => {
   test('sending a bad prompt fails, can start over from toast', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -197,7 +222,7 @@ test.describe('Text-to-CAD tests', () => {
     await u.waitForPageLoad()
 
     const badPrompt = 'akjsndladf lajbhflauweyfaaaljhr472iouafyvsssssss'
-    await sendPromptFromCommandBarTriggeredByButton(page, badPrompt)
+    await sendPromptFromCommandBarAndSetExistingProject(page, badPrompt, cmdBar)
 
     // Find the toast.
     // Look out for the toast message
@@ -256,6 +281,7 @@ test.describe('Text-to-CAD tests', () => {
   test('sending a bad prompt fails, can ignore toast, can start over from command bar', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -265,7 +291,7 @@ test.describe('Text-to-CAD tests', () => {
     await u.waitForPageLoad()
 
     const badPrompt = 'akjsndladflajbhflauweyf15;'
-    await sendPromptFromCommandBarTriggeredByButton(page, badPrompt)
+    await sendPromptFromCommandBarAndSetExistingProject(page, badPrompt, cmdBar)
 
     // Find the toast.
     // Look out for the toast message
@@ -292,7 +318,11 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.getByText(`Text-to-CAD failed`)).toBeVisible()
 
     // They should be able to try again from the command bar.
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'a 2x4 lego',
+      cmdBar
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -354,6 +384,7 @@ test.describe('Text-to-CAD tests', () => {
   test('can do many at once and get many prompts back, and interact with many', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     // Let this test run longer since we've seen it timeout.
     test.setTimeout(180_000)
@@ -365,11 +396,23 @@ test.describe('Text-to-CAD tests', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'a 2x4 lego',
+      cmdBar
+    )
 
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x8 lego')
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'a 2x8 lego',
+      cmdBar
+    )
 
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x10 lego')
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'a 2x10 lego',
+      cmdBar
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -440,6 +483,7 @@ test.describe('Text-to-CAD tests', () => {
   test('can do many at once with errors, clicking dismiss error does not dismiss all', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -448,11 +492,16 @@ test.describe('Text-to-CAD tests', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
-
-    await sendPromptFromCommandBarTriggeredByButton(
+    await sendPromptFromCommandBarAndSetExistingProject(
       page,
-      'alkjsdnlajshdbfjlhsbdf a;askjdnf'
+      'a 2x4 lego',
+      cmdBar
+    )
+
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'alkjsdnlajshdbfjlhsbdf a;askjdnf',
+      cmdBar
     )
 
     // Find the toast.
@@ -526,7 +575,9 @@ async function _sendPromptFromCommandBar(page: Page, promptStr: string) {
     const cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
 
-    const textToCadCommand = page.getByText('Use the Zoo Text-to-CAD API')
+    const textToCadCommand = page.getByRole('option', {
+      name: 'Text-to-CAD Create',
+    })
     await expect(textToCadCommand.first()).toBeVisible()
     // Click the Text-to-CAD command
     await textToCadCommand.first().scrollIntoViewIfNeeded()
@@ -544,29 +595,67 @@ async function _sendPromptFromCommandBar(page: Page, promptStr: string) {
   })
 }
 
-async function sendPromptFromCommandBarTriggeredByButton(
+async function sendPromptFromCommandBarAndSetExistingProject(
   page: Page,
-  promptStr: string
+  promptStr: string,
+  cmdBar: CmdBarFixture,
+  projectName = 'testDefault'
 ) {
   await page.waitForTimeout(1000)
   await test.step(`Send prompt from command bar: ${promptStr}`, async () => {
-    await page.getByTestId('text-to-cad').click()
+    await cmdBar.openCmdBar()
+    await cmdBar.selectOption({ name: 'Text-to-CAD Create' }).click()
 
-    // Enter the prompt.
-    const prompt = page.getByRole('textbox', { name: 'Prompt' })
-    await expect(prompt.first()).toBeVisible()
+    await cmdBar.expectState({
+      commandName: 'Text-to-CAD Create',
+      stage: 'arguments',
+      currentArgKey: 'method',
+      currentArgValue: '',
+      highlightedHeaderArg: 'method',
+      headerArguments: {
+        Method: '',
+        Prompt: '',
+      },
+    })
+    await cmdBar.currentArgumentInput.fill('existing')
+    await cmdBar.progressCmdBar()
 
-    // Type the prompt.
-    await page.keyboard.type(promptStr)
-    await page.waitForTimeout(200)
-    await page.keyboard.press('Enter')
+    await cmdBar.expectState({
+      commandName: 'Text-to-CAD Create',
+      stage: 'arguments',
+      currentArgKey: 'projectName',
+      currentArgValue: '',
+      highlightedHeaderArg: 'projectName',
+      headerArguments: {
+        Method: 'Existing project',
+        ProjectName: '',
+        Prompt: '',
+      },
+    })
+    await cmdBar.currentArgumentInput.fill(projectName)
+    await cmdBar.progressCmdBar()
+
+    await cmdBar.expectState({
+      commandName: 'Text-to-CAD Create',
+      stage: 'arguments',
+      currentArgKey: 'prompt',
+      currentArgValue: '',
+      highlightedHeaderArg: 'prompt',
+      headerArguments: {
+        Method: 'Existing project',
+        ProjectName: projectName,
+        Prompt: '',
+      },
+    })
+    await cmdBar.currentArgumentInput.fill(promptStr)
+    await cmdBar.progressCmdBar()
   })
 }
 
 test(
   'Text-to-CAD functionality',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, cmdBar }, testInfo) => {
     const projectName = 'project-000'
     const prompt = 'lego 2x4'
     const textToCadFileName = 'lego-2x4.kcl'
@@ -603,7 +692,7 @@ test(
     await openKclCodePanel()
 
     await test.step(`Test file creation`, async () => {
-      await sendPromptFromCommandBarTriggeredByButton(page, prompt)
+      await sendPromptFromCommandBarAndSetExistingProject(page, prompt, cmdBar)
       // File is considered created if it shows up in the Project Files pane
       await expect(textToCadFileButton).toBeVisible({ timeout: 20_000 })
       expect(fileExists()).toBeTruthy()
