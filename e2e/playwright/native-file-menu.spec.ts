@@ -518,7 +518,7 @@ test.describe(
           'Design.Create with Zoo Text-To-CAD'
         )
         await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Text to CAD')
+        await cmdBar.expectCommandName('Text-to-CAD Create')
       })
 
       await test.step('Modeling.Design.Modify with Zoo Text-To-CAD', async () => {
