@@ -1,5 +1,4 @@
 import type { EventFrom, StateFrom } from 'xstate'
-import { settingsActor } from '@src/lib/singletons'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
