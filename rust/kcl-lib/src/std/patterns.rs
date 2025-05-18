@@ -959,9 +959,9 @@ struct CircularPattern2dData {
     /// The center about which to make the pattern. This is a 2D vector.
     pub center: [TyF64; 2],
     /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
-    pub arc_degrees: f64,
+    pub arc_degrees: Option<f64>,
     /// Whether or not to rotate the duplicates as they are copied.
-    pub rotate_duplicates: bool,
+    pub rotate_duplicates: Option<bool>,
     /// If the target being patterned is itself a pattern, then, should you use the original solid,
     /// or the pattern?
     #[serde(default)]
@@ -983,9 +983,9 @@ struct CircularPattern3dData {
     /// The center about which to make the pattern. This is a 3D vector.
     pub center: [TyF64; 3],
     /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
-    pub arc_degrees: f64,
+    pub arc_degrees: Option<f64>,
     /// Whether or not to rotate the duplicates as they are copied.
-    pub rotate_duplicates: bool,
+    pub rotate_duplicates: Option<bool>,
     /// If the target being patterned is itself a pattern, then, should you use the original solid,
     /// or the pattern?
     #[serde(default)]
@@ -1040,14 +1040,14 @@ impl CircularPattern {
         RepetitionsNeeded::from(n)
     }
 
-    pub fn arc_degrees(&self) -> f64 {
+    pub fn arc_degrees(&self) -> Option<f64> {
         match self {
             CircularPattern::TwoD(lp) => lp.arc_degrees,
             CircularPattern::ThreeD(lp) => lp.arc_degrees,
         }
     }
 
-    pub fn rotate_duplicates(&self) -> bool {
+    pub fn rotate_duplicates(&self) -> Option<bool> {
         match self {
             CircularPattern::TwoD(lp) => lp.rotate_duplicates,
             CircularPattern::ThreeD(lp) => lp.rotate_duplicates,
@@ -1067,15 +1067,15 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
     let center: [TyF64; 2] = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
-    let arc_degrees: TyF64 = args.get_kw_arg_typed("arcDegrees", &RuntimeType::degrees(), exec_state)?;
-    let rotate_duplicates: bool = args.get_kw_arg("rotateDuplicates")?;
+    let arc_degrees: Option<TyF64> = args.get_kw_arg_opt_typed("arcDegrees", &RuntimeType::degrees(), exec_state)?;
+    let rotate_duplicates: Option<bool> = args.get_kw_arg_opt("rotateDuplicates")?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
     let sketches = inner_pattern_circular_2d(
         sketches,
         instances,
         center,
-        arc_degrees.n,
+        arc_degrees.map(|x| x.n),
         rotate_duplicates,
         use_original,
         exec_state,
@@ -1114,8 +1114,8 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
         sketch_set = { docs = "Which sketch(es) to pattern" },
         instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect."},
         center = { docs = "The center about which to make the pattern. This is a 2D vector."},
-        arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0."},
-        rotate_duplicates= { docs = "Whether or not to rotate the duplicates as they are copied."},
+        arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0. Defaults to 360."},
+        rotate_duplicates= { docs = "Whether or not to rotate the duplicates as they are copied. Defaults to true."},
         use_original= { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
     },
     tags = ["sketch"]
@@ -1125,8 +1125,8 @@ async fn inner_pattern_circular_2d(
     sketch_set: Vec<Sketch>,
     instances: u32,
     center: [TyF64; 2],
-    arc_degrees: f64,
-    rotate_duplicates: bool,
+    arc_degrees: Option<f64>,
+    rotate_duplicates: Option<bool>,
     use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
@@ -1180,9 +1180,9 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
     // The center about which to make the pattern. This is a 3D vector.
     let center: [TyF64; 3] = args.get_kw_arg_typed("center", &RuntimeType::point3d(), exec_state)?;
     // The arc angle (in degrees) to place the repetitions. Must be greater than 0.
-    let arc_degrees: TyF64 = args.get_kw_arg_typed("arcDegrees", &RuntimeType::degrees(), exec_state)?;
+    let arc_degrees: Option<TyF64> = args.get_kw_arg_opt_typed("arcDegrees", &RuntimeType::degrees(), exec_state)?;
     // Whether or not to rotate the duplicates as they are copied.
-    let rotate_duplicates: bool = args.get_kw_arg("rotateDuplicates")?;
+    let rotate_duplicates: Option<bool> = args.get_kw_arg_opt("rotateDuplicates")?;
     // If the target being patterned is itself a pattern, then, should you use the original solid,
     // or the pattern?
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
@@ -1192,7 +1192,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
         instances,
         [axis[0].n, axis[1].n, axis[2].n],
         center,
-        arc_degrees.n,
+        arc_degrees.map(|x| x.n),
         rotate_duplicates,
         use_original,
         exec_state,
@@ -1230,8 +1230,8 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
         instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect."},
         axis = { docs = "The axis around which to make the pattern. This is a 3D vector"},
         center = { docs = "The center about which to make the pattern. This is a 3D vector."},
-        arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0."},
-        rotate_duplicates = { docs = "Whether or not to rotate the duplicates as they are copied."},
+        arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0. Defaults to 360."},
+        rotate_duplicates = { docs = "Whether or not to rotate the duplicates as they are copied. Defaults to true."},
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
     },
     tags = ["solid"]
@@ -1242,8 +1242,8 @@ async fn inner_pattern_circular_3d(
     instances: u32,
     axis: [f64; 3],
     center: [TyF64; 3],
-    arc_degrees: f64,
-    rotate_duplicates: bool,
+    arc_degrees: Option<f64>,
+    rotate_duplicates: Option<bool>,
     use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
@@ -1327,8 +1327,8 @@ async fn pattern_circular(
                     z: LengthUnit(center[2]),
                 },
                 num_repetitions,
-                arc_degrees: data.arc_degrees(),
-                rotate_duplicates: data.rotate_duplicates(),
+                arc_degrees: data.arc_degrees().unwrap_or(360.0),
+                rotate_duplicates: data.rotate_duplicates().unwrap_or(true),
             }),
         )
         .await?;
