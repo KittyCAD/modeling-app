@@ -47,7 +47,6 @@ import { WasmErrToast } from '@src/components/WasmErrToast'
 import openWindow from '@src/lib/openWindow'
 import {
   APP_DOWNLOAD_PATH,
-  CREATE_FILE_URL_PARAM,
   DOWNLOAD_APP_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
