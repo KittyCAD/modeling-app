@@ -1,12 +1,12 @@
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection, Transaction } from '@codemirror/state'
 import type { Models } from '@kittycad/lib'
-import { VITE_KC_API_BASE_URL } from '@src/env'
+import { VITE_KC_API_BASE_URL, VITE_KC_SITE_BASE_URL } from '@src/env'
 import { diffLines } from 'diff'
 import toast from 'react-hot-toast'
 import type { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
 import { getCookie, TOKEN_PERSIST_KEY } from '@src/machines/authMachine'
-import { COOKIE_NAME } from '@src/lib/constants'
+import { APP_DOWNLOAD_PATH, COOKIE_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { ActionButton } from '@src/components/ActionButton'
@@ -436,6 +436,7 @@ export async function promptToEditFlow({
     return Promise.reject(result)
   }
   const oldCodeWebAppOnly = codeManager.code
+  const downloadLink = `${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`
 
   if (!isDesktop() && Object.values(result.outputs).length > 1) {
     const toastId = uuidv4()
@@ -447,13 +448,11 @@ export async function promptToEditFlow({
           <div className="flex justify-between items-center mt-2">
             <>
               <a
-                href="https://zoo.dev/modeling-app/download"
+                href={downloadLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-400 hover:text-blue-300 underline flex align-middle"
-                onClick={openExternalBrowserIfDesktop(
-                  'https://zoo.dev/modeling-app/download'
-                )}
+                onClick={openExternalBrowserIfDesktop(downloadLink)}
               >
                 <CustomIcon
                   name="link"

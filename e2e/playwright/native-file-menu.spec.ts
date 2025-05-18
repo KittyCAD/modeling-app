@@ -252,7 +252,7 @@ test.describe(
           tronApp,
           'Edit.Modify with Zoo Text-To-CAD'
         )
-        await cmdBar.expectCommandName('Prompt-to-edit')
+        await cmdBar.expectCommandName('Text-to-CAD Edit')
       })
       await test.step('Modeling.Edit.Edit parameter', async () => {
         await page.waitForTimeout(250)
@@ -518,7 +518,7 @@ test.describe(
           'Design.Create with Zoo Text-To-CAD'
         )
         await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Text to CAD')
+        await cmdBar.expectCommandName('Text-to-CAD Create')
       })
 
       await test.step('Modeling.Design.Modify with Zoo Text-To-CAD', async () => {
@@ -528,7 +528,7 @@ test.describe(
           'Design.Modify with Zoo Text-To-CAD'
         )
         await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Prompt-to-edit')
+        await cmdBar.expectCommandName('Text-to-CAD Edit')
       })
 
       await test.step('Modeling.Help.KCL code samples', async () => {

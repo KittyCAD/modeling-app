@@ -2,292 +2,182 @@
 flowchart LR
   subgraph path8 [Path]
     8["Path<br>[341, 388, 1]"]
-      %% Missing NodePath
     31["Segment<br>[394, 462, 1]"]
-      %% Missing NodePath
     32["Segment<br>[468, 568, 1]"]
-      %% Missing NodePath
     33["Segment<br>[574, 691, 1]"]
-      %% Missing NodePath
     34["Segment<br>[697, 782, 1]"]
-      %% Missing NodePath
     35["Segment<br>[788, 795, 1]"]
-      %% Missing NodePath
     105[Solid2d]
   end
   subgraph path9 [Path]
     9["Path<br>[819, 854, 1]"]
-      %% Missing NodePath
     36["Segment<br>[819, 854, 1]"]
-      %% Missing NodePath
     100[Solid2d]
   end
   subgraph path10 [Path]
     10["Path<br>[879, 1026, 1]"]
-      %% Missing NodePath
     37["Segment<br>[879, 1026, 1]"]
-      %% Missing NodePath
     114[Solid2d]
   end
   subgraph path11 [Path]
     11["Path<br>[1051, 1199, 1]"]
-      %% Missing NodePath
     38["Segment<br>[1051, 1199, 1]"]
-      %% Missing NodePath
     104[Solid2d]
   end
   subgraph path12 [Path]
     12["Path<br>[1224, 1372, 1]"]
-      %% Missing NodePath
     39["Segment<br>[1224, 1372, 1]"]
-      %% Missing NodePath
     110[Solid2d]
   end
   subgraph path13 [Path]
     13["Path<br>[1397, 1546, 1]"]
-      %% Missing NodePath
     40["Segment<br>[1397, 1546, 1]"]
-      %% Missing NodePath
     115[Solid2d]
   end
   subgraph path14 [Path]
     14["Path<br>[1714, 1770, 1]"]
-      %% Missing NodePath
     41["Segment<br>[1776, 1841, 1]"]
-      %% Missing NodePath
     42["Segment<br>[1847, 1899, 1]"]
-      %% Missing NodePath
     43["Segment<br>[1905, 1956, 1]"]
-      %% Missing NodePath
     44["Segment<br>[1962, 2014, 1]"]
-      %% Missing NodePath
     45["Segment<br>[2020, 2086, 1]"]
-      %% Missing NodePath
     46["Segment<br>[2092, 2144, 1]"]
-      %% Missing NodePath
     47["Segment<br>[2150, 2182, 1]"]
-      %% Missing NodePath
     48["Segment<br>[2188, 2253, 1]"]
-      %% Missing NodePath
     49["Segment<br>[2259, 2266, 1]"]
-      %% Missing NodePath
     101[Solid2d]
   end
   subgraph path15 [Path]
     15["Path<br>[2615, 2728, 1]"]
-      %% Missing NodePath
     50["Segment<br>[2734, 2789, 1]"]
-      %% Missing NodePath
     51["Segment<br>[2795, 2830, 1]"]
-      %% Missing NodePath
     52["Segment<br>[2836, 2891, 1]"]
-      %% Missing NodePath
     53["Segment<br>[2897, 2933, 1]"]
-      %% Missing NodePath
     54["Segment<br>[2939, 2994, 1]"]
-      %% Missing NodePath
     55["Segment<br>[3000, 3036, 1]"]
-      %% Missing NodePath
     56["Segment<br>[3042, 3097, 1]"]
-      %% Missing NodePath
     57["Segment<br>[3103, 3159, 1]"]
-      %% Missing NodePath
   end
   subgraph path16 [Path]
     16["Path<br>[3308, 3359, 1]"]
-      %% Missing NodePath
     58["Segment<br>[3308, 3359, 1]"]
-      %% Missing NodePath
     113[Solid2d]
   end
   subgraph path17 [Path]
     17["Path<br>[3538, 3600, 1]"]
-      %% Missing NodePath
     59["Segment<br>[3606, 3674, 1]"]
-      %% Missing NodePath
     60["Segment<br>[3680, 3780, 1]"]
-      %% Missing NodePath
     61["Segment<br>[3786, 3903, 1]"]
-      %% Missing NodePath
     62["Segment<br>[3909, 3994, 1]"]
-      %% Missing NodePath
     63["Segment<br>[4000, 4007, 1]"]
-      %% Missing NodePath
     107[Solid2d]
   end
   subgraph path18 [Path]
     18["Path<br>[4031, 4082, 1]"]
-      %% Missing NodePath
     64["Segment<br>[4031, 4082, 1]"]
-      %% Missing NodePath
     99[Solid2d]
   end
   subgraph path19 [Path]
     19["Path<br>[4107, 4254, 1]"]
-      %% Missing NodePath
     65["Segment<br>[4107, 4254, 1]"]
-      %% Missing NodePath
     108[Solid2d]
   end
   subgraph path20 [Path]
     20["Path<br>[4279, 4427, 1]"]
-      %% Missing NodePath
     66["Segment<br>[4279, 4427, 1]"]
-      %% Missing NodePath
     106[Solid2d]
   end
   subgraph path21 [Path]
     21["Path<br>[4452, 4600, 1]"]
-      %% Missing NodePath
     67["Segment<br>[4452, 4600, 1]"]
-      %% Missing NodePath
     103[Solid2d]
   end
   subgraph path22 [Path]
     22["Path<br>[4625, 4774, 1]"]
-      %% Missing NodePath
     68["Segment<br>[4625, 4774, 1]"]
-      %% Missing NodePath
     98[Solid2d]
   end
   subgraph path23 [Path]
     23["Path<br>[4916, 4954, 1]"]
-      %% Missing NodePath
     69["Segment<br>[4916, 4954, 1]"]
-      %% Missing NodePath
     118[Solid2d]
   end
   subgraph path24 [Path]
     24["Path<br>[5027, 5063, 1]"]
-      %% Missing NodePath
     70["Segment<br>[5027, 5063, 1]"]
-      %% Missing NodePath
     111[Solid2d]
   end
   subgraph path25 [Path]
     25["Path<br>[295, 345, 3]"]
-      %% Missing NodePath
     71["Segment<br>[295, 345, 3]"]
-      %% Missing NodePath
     102[Solid2d]
   end
   subgraph path26 [Path]
     26["Path<br>[520, 555, 3]"]
-      %% Missing NodePath
     72["Segment<br>[520, 555, 3]"]
-      %% Missing NodePath
     112[Solid2d]
   end
   subgraph path27 [Path]
     27["Path<br>[234, 273, 4]"]
-      %% Missing NodePath
     73["Segment<br>[279, 309, 4]"]
-      %% Missing NodePath
     74["Segment<br>[315, 354, 4]"]
-      %% Missing NodePath
     75["Segment<br>[360, 384, 4]"]
-      %% Missing NodePath
     76["Segment<br>[390, 414, 4]"]
-      %% Missing NodePath
     77["Segment<br>[420, 461, 4]"]
-      %% Missing NodePath
     78["Segment<br>[467, 505, 4]"]
-      %% Missing NodePath
     79["Segment<br>[511, 534, 4]"]
-      %% Missing NodePath
     80["Segment<br>[540, 557, 4]"]
-      %% Missing NodePath
     81["Segment<br>[563, 584, 4]"]
-      %% Missing NodePath
     82["Segment<br>[590, 677, 4]"]
-      %% Missing NodePath
     83["Segment<br>[683, 720, 4]"]
-      %% Missing NodePath
     84["Segment<br>[726, 763, 4]"]
-      %% Missing NodePath
     85["Segment<br>[769, 776, 4]"]
-      %% Missing NodePath
     109[Solid2d]
   end
   subgraph path28 [Path]
     28["Path<br>[1131, 1221, 4]"]
-      %% Missing NodePath
     87["Segment<br>[1229, 1298, 4]"]
-      %% Missing NodePath
     89["Segment<br>[1306, 1606, 4]"]
-      %% Missing NodePath
     91["Segment<br>[1614, 1916, 4]"]
-      %% Missing NodePath
     93["Segment<br>[1924, 2143, 4]"]
-      %% Missing NodePath
     94["Segment<br>[2151, 2158, 4]"]
-      %% Missing NodePath
     97[Solid2d]
   end
   subgraph path29 [Path]
     29["Path<br>[1131, 1221, 4]"]
-      %% Missing NodePath
     96["Segment<br>[2151, 2158, 4]"]
-      %% Missing NodePath
     116[Solid2d]
   end
   subgraph path30 [Path]
     30["Path<br>[1131, 1221, 4]"]
-      %% Missing NodePath
     86["Segment<br>[1229, 1298, 4]"]
-      %% Missing NodePath
     88["Segment<br>[1306, 1606, 4]"]
-      %% Missing NodePath
     90["Segment<br>[1614, 1916, 4]"]
-      %% Missing NodePath
     92["Segment<br>[1924, 2143, 4]"]
-      %% Missing NodePath
     95["Segment<br>[2151, 2158, 4]"]
-      %% Missing NodePath
     117[Solid2d]
   end
   1["Plane<br>[318, 335, 1]"]
-    %% Missing NodePath
   2["Plane<br>[222, 249, 3]"]
-    %% Missing NodePath
   3["Plane<br>[485, 513, 3]"]
-    %% Missing NodePath
   4["Plane<br>[211, 228, 4]"]
-    %% Missing NodePath
   5["Plane<br>[1084, 1122, 4]"]
-    %% Missing NodePath
   6["Plane<br>[1084, 1122, 4]"]
-    %% Missing NodePath
   7["Plane<br>[1084, 1122, 4]"]
-    %% Missing NodePath
   119["Sweep Extrusion<br>[1553, 1572, 1]"]
-    %% Missing NodePath
   120["Sweep Extrusion<br>[2406, 2426, 1]"]
-    %% Missing NodePath
   121["Sweep Extrusion<br>[2406, 2426, 1]"]
-    %% Missing NodePath
   122["Sweep Extrusion<br>[2406, 2426, 1]"]
-    %% Missing NodePath
   123["Sweep Extrusion<br>[2406, 2426, 1]"]
-    %% Missing NodePath
   124["Sweep Extrusion<br>[3165, 3200, 1]"]
-    %% Missing NodePath
   125["Sweep Extrusion<br>[3365, 3403, 1]"]
-    %% Missing NodePath
   126["Sweep Extrusion<br>[4781, 4800, 1]"]
-    %% Missing NodePath
   127["Sweep Extrusion<br>[4960, 4980, 1]"]
-    %% Missing NodePath
   128["Sweep Extrusion<br>[5069, 5090, 1]"]
-    %% Missing NodePath
   129["Sweep Extrusion<br>[351, 371, 3]"]
-    %% Missing NodePath
   130["Sweep Extrusion<br>[561, 582, 3]"]
-    %% Missing NodePath
   131["Sweep Revolve<br>[782, 864, 4]"]
-    %% Missing NodePath
   132["Sweep Loft<br>[2472, 2491, 4]"]
-    %% Missing NodePath
   133[Wall]
     %% face_code_ref=Missing NodePath
   134[Wall]
@@ -480,25 +370,15 @@ flowchart LR
   265["SweepEdge Adjacent"]
   266["SweepEdge Adjacent"]
   267["EdgeCut Fillet<br>[5131, 5642, 1]"]
-    %% Missing NodePath
   268["EdgeCut Fillet<br>[5131, 5642, 1]"]
-    %% Missing NodePath
   269["EdgeCut Fillet<br>[5131, 5642, 1]"]
-    %% Missing NodePath
   270["EdgeCut Fillet<br>[5131, 5642, 1]"]
-    %% Missing NodePath
   271["EdgeCut Fillet<br>[5131, 5642, 1]"]
-    %% Missing NodePath
   272["EdgeCut Fillet<br>[5131, 5642, 1]"]
-    %% Missing NodePath
   273["EdgeCut Fillet<br>[5131, 5642, 1]"]
-    %% Missing NodePath
   274["EdgeCut Fillet<br>[5131, 5642, 1]"]
-    %% Missing NodePath
   275["EdgeCut Fillet<br>[412, 470, 3]"]
-    %% Missing NodePath
   276["EdgeCut Fillet<br>[412, 470, 3]"]
-    %% Missing NodePath
   1 --- 8
   1 --- 9
   1 --- 10
@@ -781,19 +661,19 @@ flowchart LR
   84 --- 144
   84 --- 237
   86 --- 168
-  86 x--> 188
+  86 x--> 189
   86 --- 212
   86 --- 256
   88 --- 169
-  88 x--> 188
+  88 x--> 189
   88 --- 213
   88 --- 257
   90 --- 167
-  90 x--> 188
+  90 x--> 189
   90 --- 214
   90 --- 258
   92 --- 170
-  92 x--> 188
+  92 x--> 189
   92 --- 215
   92 --- 259
   119 --- 133
@@ -1075,10 +955,10 @@ flowchart LR
   218 <--x 186
   219 <--x 186
   194 <--x 187
-  212 <--x 189
-  213 <--x 189
-  214 <--x 189
-  215 <--x 189
+  212 <--x 188
+  213 <--x 188
+  214 <--x 188
+  215 <--x 188
   220 <--x 275
   223 <--x 270
   224 <--x 274

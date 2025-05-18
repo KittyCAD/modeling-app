@@ -20,6 +20,7 @@ import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
   ONBOARDING_PROJECT_NAME,
+  ONBOARDING_TOAST_ID,
 } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import type CodeManager from '@src/lang/codeManager'
@@ -342,8 +343,6 @@ export function needsToOnboard(
   )
 }
 
-export const ONBOARDING_TOAST_ID = 'onboarding-toast'
-
 export function onDismissOnboardingInvite() {
   settingsActor.send({
     type: 'set.app.onboardingStatus',
@@ -370,7 +369,7 @@ export function TutorialRequestToast(props: OnboardingUtilDeps) {
   return (
     <div
       data-testid="onboarding-toast"
-      className="flex items-center gap-6 min-w-80"
+      className="flex items-center gap-6 min-w-md"
     >
       <Logo className="w-auto h-8 flex-none" />
       <div className="flex flex-col justify-between gap-6">

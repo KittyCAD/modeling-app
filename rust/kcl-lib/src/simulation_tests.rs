@@ -42,7 +42,8 @@ impl Test {
 
     /// Read in the entry point file and return its contents as a string.
     pub fn read(&self) -> String {
-        std::fs::read_to_string(&self.entry_point).expect("Failed to read file: {filename}")
+        std::fs::read_to_string(&self.entry_point)
+            .unwrap_or_else(|e| panic!("Failed to read file: {:?} due to {e}", self.entry_point))
     }
 }
 
