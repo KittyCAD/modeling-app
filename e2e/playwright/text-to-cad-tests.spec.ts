@@ -340,17 +340,40 @@ test.describe('Text-to-CAD tests', () => {
   test('ensure you can shift+enter in the prompt box', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.goToModelingScene()
+    const projectName = await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
     const promptWithNewline = `a 2x4\nlego`
 
-    await page.getByTestId('text-to-cad').click()
+    await test.step('Get to the prompt step to test', async () => {
+      await cmdBar.openCmdBar()
+      await cmdBar.selectOption({ name: 'Text-to-CAD Create' }).click()
+
+      await cmdBar.currentArgumentInput.fill('existing')
+      await cmdBar.progressCmdBar()
+
+      await cmdBar.currentArgumentInput.fill(projectName)
+      await cmdBar.progressCmdBar()
+
+      await cmdBar.expectState({
+        commandName: 'Text-to-CAD Create',
+        stage: 'arguments',
+        currentArgKey: 'prompt',
+        currentArgValue: '',
+        highlightedHeaderArg: 'prompt',
+        headerArguments: {
+          Method: 'Existing project',
+          ProjectName: projectName,
+          Prompt: '',
+        },
+      })
+    })
 
     // Type the prompt.
     await page.keyboard.type('a 2x4')
@@ -692,7 +715,12 @@ test(
     await openKclCodePanel()
 
     await test.step(`Test file creation`, async () => {
-      await sendPromptFromCommandBarAndSetExistingProject(page, prompt, cmdBar)
+      await sendPromptFromCommandBarAndSetExistingProject(
+        page,
+        prompt,
+        cmdBar,
+        projectName
+      )
       // File is considered created if it shows up in the Project Files pane
       await expect(textToCadFileButton).toBeVisible({ timeout: 20_000 })
       expect(fileExists()).toBeTruthy()
