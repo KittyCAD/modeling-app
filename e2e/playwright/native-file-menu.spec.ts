@@ -252,7 +252,7 @@ test.describe(
           tronApp,
           'Edit.Modify with Zoo Text-To-CAD'
         )
-        await cmdBar.expectCommandName('Prompt-to-edit')
+        await cmdBar.expectCommandName('Text-to-CAD Edit')
       })
       await test.step('Modeling.Edit.Edit parameter', async () => {
         await page.waitForTimeout(250)
