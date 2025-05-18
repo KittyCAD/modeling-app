@@ -308,6 +308,11 @@ impl ArtifactGraph {
             // a child of the line above it.
             let label = label.unwrap_or("");
             if code_ref.node_path.is_empty() {
+                if !code_ref.range.module_id().is_top_level() {
+                    // This is pointing to another module. We don't care about
+                    // these. It's okay that it's missing, for now.
+                    return Ok(());
+                }
                 return writeln!(output, "{prefix}  %% {label}Missing NodePath");
             }
             writeln!(output, "{prefix}  %% {label}{:?}", code_ref.node_path.steps)
