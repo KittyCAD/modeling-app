@@ -939,7 +939,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Prompt-to-edit': {
-    description: 'Use Zoo AI to edit your parts and code.',
+    displayName: 'Text-to-CAD Edit',
+    description:
+      'Use machine learning to edit your parts and code from a text prompt.',
     icon: 'chat',
     status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
     args: {
