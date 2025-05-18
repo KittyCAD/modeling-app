@@ -6,6 +6,7 @@ import type { Selections } from '@src/lib/selections'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
+  getSelectionTypeDisplayText,
 } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
@@ -30,8 +31,14 @@ export default function CommandBarSelectionMixedInput({
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(selection)
   }, [selection])
+  const isArgRequired =
+    arg.required instanceof Function
+      ? arg.required(commandBarState.context)
+      : arg.required
 
   const canSubmitSelection = useMemo<boolean>(() => {
+    // Don't do additional checks if this argument is not required
+    if (!isArgRequired) return true
     if (!selection) return false
     const isNonZeroRange = selection.graphSelections.some((sel) => {
       const range = sel.codeRef.range
@@ -39,7 +46,7 @@ export default function CommandBarSelectionMixedInput({
     })
     if (isNonZeroRange) return true
     return canSubmitSelectionArg(selectionsByType, arg)
-  }, [selectionsByType, selection])
+  }, [selectionsByType, selection, arg, isArgRequired])
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -76,7 +83,18 @@ export default function CommandBarSelectionMixedInput({
       return
     }
 
-    onSubmit(selection)
+    /**
+     * Now that arguments like this can be optional, we need to
+     * construct an empty selection if it's not required to get it past our validation.
+     */
+    const resolvedSelection: Selections | undefined = isArgRequired
+      ? selection
+      : selection || {
+          graphSelections: [],
+          otherSelections: [],
+        }
+
+    onSubmit(resolvedSelection)
   }
 
   const isMixedSelection = arg.inputType === 'selectionMixed'
@@ -92,9 +110,10 @@ export default function CommandBarSelectionMixedInput({
           (!hasSubmitted || canSubmitSelection || 'text-destroy-50')
         }
       >
-        {canSubmitSelection
-          ? 'Select objects in the scene'
-          : 'Select code or objects in the scene'}
+        {canSubmitSelection &&
+        (selection.graphSelections.length || selection.otherSelections.length)
+          ? getSelectionTypeDisplayText(selection) + ' selected'
+          : 'Select code/objects, or skip'}
 
         {showSceneSelection && (
           <div className="scene-selection mt-2">
@@ -113,11 +132,6 @@ export default function CommandBarSelectionMixedInput({
           >
             Continue without selection
           </button>
-        )}
-        {arg.warningMessage && (
-          <p className="text-warn-80 bg-warn-10 px-2 py-1 rounded-sm mt-3 mr-2 -mb-2 w-full text-sm cursor-default">
-            {arg.warningMessage}
-          </p>
         )}
         <span data-testid="cmd-bar-arg-name" className="sr-only">
           {arg.name}

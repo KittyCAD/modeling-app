@@ -20,6 +20,8 @@ use crate::{
     std::{axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude, Args},
 };
 
+extern crate nalgebra_glm as glm;
+
 /// Revolve a sketch or set of sketches around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
@@ -131,8 +133,9 @@ async fn inner_revolve(
     let mut solids = Vec::new();
     for sketch in &sketches {
         let id = exec_state.next_uuid();
+        let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE);
 
-        match &axis {
+        let direction = match &axis {
             Axis2dOrEdgeReference::Axis { direction, origin } => {
                 args.batch_modeling_cmd(
                     id,
@@ -149,12 +152,13 @@ async fn inner_revolve(
                             y: LengthUnit(origin[1].to_mm()),
                             z: LengthUnit(0.0),
                         },
-                        tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
+                        tolerance: LengthUnit(tolerance),
                         axis_is_2d: true,
                         opposite: opposite.clone(),
                     }),
                 )
                 .await?;
+                glm::DVec2::new(direction[0].to_mm(), direction[1].to_mm())
             }
             Axis2dOrEdgeReference::Edge(edge) => {
                 let edge_id = edge.get_engine_id(exec_state, &args)?;
@@ -164,12 +168,29 @@ async fn inner_revolve(
                         angle,
                         target: sketch.id.into(),
                         edge_id,
-                        tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
+                        tolerance: LengthUnit(tolerance),
                         opposite: opposite.clone(),
                     }),
                 )
                 .await?;
+                //TODO: fix me! Need to be able to calculate this to ensure the path isn't colinear
+                glm::DVec2::new(0.0, 1.0)
             }
+        };
+
+        let mut edge_id = None;
+        // If an edge lies on the axis of revolution it will not exist after the revolve, so
+        // it cannot be used to retrieve data about the solid
+        for path in sketch.paths.clone() {
+            let from = path.get_from();
+            let to = path.get_to();
+
+            let dir = glm::DVec2::new(to[0].n - from[0].n, to[1].n - from[1].n);
+            if glm::are_collinear2d(&dir, &direction, tolerance) {
+                continue;
+            }
+            edge_id = Some(path.get_id());
+            break;
         }
 
         solids.push(
@@ -184,6 +205,7 @@ async fn inner_revolve(
                 },
                 exec_state,
                 &args,
+                edge_id,
             )
             .await?,
         );

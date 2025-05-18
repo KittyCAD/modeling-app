@@ -79,6 +79,9 @@ pub(super) enum CacheResult {
         reapply_settings: bool,
         /// The program that needs to be executed.
         program: Node<Program>,
+        /// The number of body items that were cached and omitted from the
+        /// program that needs to be executed. Used to compute [`crate::NodePath`].
+        cached_body_items: usize,
     },
     /// Check only the imports, and not the main program.
     /// Before sending this we already checked the main program and it is the same.
@@ -191,6 +194,7 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
             clear_scene: true,
             reapply_settings: true,
             program: new.ast.clone(),
+            cached_body_items: 0,
         };
     }
 
@@ -219,6 +223,7 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>, 
             clear_scene: true,
             reapply_settings,
             program: new_ast,
+            cached_body_items: 0,
         };
     }
 
@@ -239,6 +244,7 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>, 
                 clear_scene: true,
                 reapply_settings,
                 program: new_ast,
+                cached_body_items: 0,
             }
         }
         std::cmp::Ordering::Greater => {
@@ -255,6 +261,7 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>, 
                 clear_scene: false,
                 reapply_settings,
                 program: new_ast,
+                cached_body_items: old_ast.body.len(),
             }
         }
         std::cmp::Ordering::Equal => {
@@ -592,7 +599,8 @@ startSketchOn(XY)
             CacheResult::ReExecute {
                 clear_scene: true,
                 reapply_settings: true,
-                program: new_program.ast
+                program: new_program.ast,
+                cached_body_items: 0,
             }
         );
     }
@@ -630,7 +638,8 @@ startSketchOn(XY)
             CacheResult::ReExecute {
                 clear_scene: true,
                 reapply_settings: true,
-                program: new_program.ast
+                program: new_program.ast,
+                cached_body_items: 0,
             }
         );
     }

@@ -10,7 +10,7 @@ import {
   kclSamplesManifestWithNoMultipleFiles,
 } from '@src/lib/kclSamples'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
+import { IS_ML_EXPERIMENTAL, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
@@ -22,11 +22,13 @@ function onSubmitKCLSampleCreation({
   kclSample,
   uniqueNameIfNeeded,
   systemIOActor,
+  isProjectNew,
 }: {
   sample: any
   kclSample: ReturnType<typeof findKclSample>
   uniqueNameIfNeeded: any
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  isProjectNew: boolean
 }) {
   if (!kclSample) {
     toast.error('The command could not be submitted, unable to find Zoo sample')
@@ -72,11 +74,15 @@ function onSubmitKCLSampleCreation({
          * Navigates to the single file that could be renamed on disk for duplicates
          */
         const folderNameBecomesKCLFileName = projectPathPart + FILE_EXT
+        // If the project is new create the single file as main.kcl
+        const requestedFileNameWithExtension = isProjectNew
+          ? PROJECT_ENTRYPOINT
+          : folderNameBecomesKCLFileName
         systemIOActor.send({
           type: SystemIOMachineEvents.importFileFromURL,
           data: {
             requestedProjectName: requestedFiles[0].requestedProjectName,
-            requestedFileNameWithExtension: folderNameBecomesKCLFileName,
+            requestedFileNameWithExtension: requestedFileNameWithExtension,
             requestedCode: requestedFiles[0].requestedCode,
           },
         })
@@ -104,7 +110,7 @@ export function createApplicationCommands({
   const textToCADCommand: Command = {
     name: 'Text-to-CAD',
     description: 'Generate parts from text prompts.',
-    displayName: 'Text to CAD',
+    displayName: 'Text-to-CAD Create',
     groupId: 'application',
     needsReview: false,
     status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
@@ -206,6 +212,7 @@ export function createApplicationCommands({
             kclSample,
             uniqueNameIfNeeded,
             systemIOActor,
+            isProjectNew,
           })
         } else if (data.source === 'local' && data.path) {
           const clonePath = data.path
@@ -396,6 +403,7 @@ export function createApplicationCommands({
           kclSample,
           uniqueNameIfNeeded,
           systemIOActor,
+          isProjectNew: true,
         })
       }
     },

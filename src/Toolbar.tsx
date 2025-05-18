@@ -325,7 +325,7 @@ export function Toolbar({
           // A single button
           return (
             <div
-              className="relative"
+              className={`relative ${itemConfig.alwaysDark ? ' dark bg-chalkboard-90 ' : ''}`}
               key={itemConfig.id}
               // Mouse events do not fire on disabled buttons
               onMouseEnter={handleMouseEnter}
@@ -552,6 +552,12 @@ const ToolbarItemTooltipRichContent = ({
         )}
       </div>
       <p className="px-2 my-2 text-ch font-sans">{itemConfig.description}</p>
+      {itemConfig.extraNote && (
+        <p className="px-2 my-2 text-ch font-sans">
+          <span className="font-semibold">Note: </span>
+          {itemConfig.extraNote}
+        </p>
+      )}
       {/* Add disabled reason if item is disabled */}
       {itemConfig.disabled && itemConfig.disabledReason && (
         <>

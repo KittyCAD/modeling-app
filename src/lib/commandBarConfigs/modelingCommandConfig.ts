@@ -762,8 +762,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
-        warningMessage:
-          'Chamfers cannot touch other chamfers yet. This is under development.',
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       length: {
@@ -941,8 +939,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Prompt-to-edit': {
-    description: 'Use Zoo AI to edit your parts and code.',
-    icon: 'chat',
+    displayName: 'Text-to-CAD Edit',
+    description:
+      'Use machine learning to edit your parts and code from a text prompt.',
+    icon: 'sparkles',
     status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
     args: {
       selection: {
@@ -957,12 +957,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'edgeCutEdge',
         ],
         multiple: true,
-        required: true,
+        required: false,
         selectionSource: {
           allowSceneSelection: true,
           allowCodeSelection: true,
         },
-        skip: true,
+        skip: false,
       },
       prompt: {
         inputType: 'text',

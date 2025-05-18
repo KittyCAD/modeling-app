@@ -11,7 +11,7 @@ use std::{
 
 use anyhow::Result;
 use parse_display::{Display, FromStr};
-pub use path::NodePath;
+pub use path::{NodePath, Step};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{

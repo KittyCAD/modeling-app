@@ -102,10 +102,12 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
               )}
             </p>
             {Object.entries(nonHiddenArgs || {})
-              .filter(([_, argConfig]) =>
-                typeof argConfig.required === 'function'
-                  ? argConfig.required(commandBarState.context)
-                  : argConfig.required
+              .filter(
+                ([_, argConfig]) =>
+                  argConfig.skip === false ||
+                  (typeof argConfig.required === 'function'
+                    ? argConfig.required(commandBarState.context)
+                    : argConfig.required)
               )
               .map(([argName, arg], i) => {
                 const argValue =
@@ -208,23 +210,27 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
           {isReviewing ? (
             <ReviewingButton
               bgClassName={
-                selectedCommand.status === 'experimental' ? '!bg-ml-green' : ''
+                selectedCommand.status === 'experimental'
+                  ? '!bg-ml-green'
+                  : '!bg-primary'
               }
               iconClassName={
                 selectedCommand.status === 'experimental'
                   ? '!text-ml-black'
-                  : ''
+                  : '!text-chalkboard-10'
               }
             />
           ) : (
             <GatheringArgsButton
               bgClassName={
-                selectedCommand.status === 'experimental' ? '!bg-ml-green' : ''
+                selectedCommand.status === 'experimental'
+                  ? '!bg-ml-green'
+                  : '!bg-primary'
               }
               iconClassName={
                 selectedCommand.status === 'experimental'
                   ? '!text-ml-black'
-                  : ''
+                  : '!text-chalkboard-10'
               }
             />
           )}
@@ -248,8 +254,8 @@ function ReviewingButton({ bgClassName, iconClassName }: ButtonProps) {
       data-testid="command-bar-submit"
       iconStart={{
         icon: 'checkmark',
-        bgClassName: `p-1 rounded-sm !bg-primary hover:brightness-110 ${bgClassName}`,
-        iconClassName: `!text-chalkboard-10 ${iconClassName}`,
+        bgClassName: `p-1 rounded-sm hover:brightness-110 ${bgClassName}`,
+        iconClassName: `${iconClassName}`,
       }}
     >
       <span className="sr-only">Submit command</span>
@@ -267,8 +273,8 @@ function GatheringArgsButton({ bgClassName, iconClassName }: ButtonProps) {
       data-testid="command-bar-continue"
       iconStart={{
         icon: 'arrowRight',
-        bgClassName: `p-1 rounded-sm !bg-primary hover:brightness-110 ${bgClassName}`,
-        iconClassName: `!text-chalkboard-10 ${iconClassName}`,
+        bgClassName: `p-1 rounded-sm hover:brightness-110 ${bgClassName}`,
+        iconClassName: `${iconClassName}`,
       }}
     >
       <span className="sr-only">Continue</span>

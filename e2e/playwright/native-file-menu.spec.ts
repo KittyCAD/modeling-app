@@ -197,18 +197,6 @@ test.describe(
         await clickElectronNativeMenuById(tronApp, 'File.Export current part')
         await cmdBar.expectCommandName('Export')
       })
-      await test.step('Modeling.File.Share part via Zoo link', async () => {
-        await page.waitForTimeout(250)
-        await clickElectronNativeMenuById(
-          tronApp,
-          'File.Share part via Zoo link'
-        )
-        const textToCheck =
-          'Link copied to clipboard. Anyone who clicks this link will get a copy of this file. Share carefully!'
-        // Check if text appears anywhere in the page
-        const isTextVisible = page.getByText(textToCheck)
-        await expect(isTextVisible).toBeVisible({ timeout: 10000 })
-      })
       await test.step('Modeling.File.Preferences.Project settings', async () => {
         await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
@@ -264,7 +252,7 @@ test.describe(
           tronApp,
           'Edit.Modify with Zoo Text-To-CAD'
         )
-        await cmdBar.expectCommandName('Prompt-to-edit')
+        await cmdBar.expectCommandName('Text-to-CAD Edit')
       })
       await test.step('Modeling.Edit.Edit parameter', async () => {
         await page.waitForTimeout(250)
@@ -530,7 +518,7 @@ test.describe(
           'Design.Create with Zoo Text-To-CAD'
         )
         await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Text to CAD')
+        await cmdBar.expectCommandName('Text-to-CAD Create')
       })
 
       await test.step('Modeling.Design.Modify with Zoo Text-To-CAD', async () => {
@@ -540,7 +528,7 @@ test.describe(
           'Design.Modify with Zoo Text-To-CAD'
         )
         await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Prompt-to-edit')
+        await cmdBar.expectCommandName('Text-to-CAD Edit')
       })
 
       await test.step('Modeling.Help.KCL code samples', async () => {

@@ -1,0 +1,1406 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed spinning-highrise-tower.kcl
+---
+[
+  {
+    "labeledArgs": {},
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {},
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {},
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {},
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -0.2,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "M"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "M"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 1.7,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "M"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 4.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "M"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "boxFn",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "height": {
+          "value": {
+            "type": "Number",
+            "value": -0.2,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "M"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "plane": {
+          "value": {
+            "type": "Plane",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
+        },
+        "width": {
+          "value": {
+            "type": "Number",
+            "value": 30.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "M"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "boxFn",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "height": {
+          "value": {
+            "type": "Number",
+            "value": -5.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "M"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "plane": {
+          "value": {
+            "type": "Plane",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
+        },
+        "width": {
+          "value": {
+            "type": "Number",
+            "value": 50.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "M"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
+    "name": "offsetPlane",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": -0.2,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "M"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "boxFn",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "height": {
+          "value": {
+            "type": "Number",
+            "value": 1.7,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "M"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "plane": {
+          "value": {
+            "type": "Plane",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
+        },
+        "width": {
+          "value": {
+            "type": "Number",
+            "value": 30.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "M"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
+    "name": "offsetPlane",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": 4.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "M"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "face": {
+        "value": {
+          "type": "String",
+          "value": "end"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -1.2,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "M"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 2.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 3.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 4.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 6.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 7.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 8.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 9.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 11.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 12.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 13.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 14.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 15.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 16.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "instances": {
+        "value": {
+          "type": "Number",
+          "value": 17.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "M"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "transform": {
+        "value": {
+          "type": "Function"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "patternTransform",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {},
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 84.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "M"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "boxFn",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "height": {
+          "value": {
+            "type": "Number",
+            "value": 4.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "M"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "plane": {
+          "value": {
+            "type": "Plane",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
+        },
+        "width": {
+          "value": {
+            "type": "Number",
+            "value": 24.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "M"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 2.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 3.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 4.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 6.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 7.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 8.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 9.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 11.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 12.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 13.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 14.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 15.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 16.0,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "instances": {
+        "value": {
+          "type": "Number",
+          "value": 17.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "M"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "transform": {
+        "value": {
+          "type": "Function"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "patternTransform",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  }
+]

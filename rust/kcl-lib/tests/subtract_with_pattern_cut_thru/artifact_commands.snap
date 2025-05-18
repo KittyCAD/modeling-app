@@ -1,0 +1,591 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact commands subtract_with_pattern_cut_thru.kcl
+---
+[
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "edge_lines_visible",
+      "hidden": false
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 2.65,
+        "y": 12.2,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 23.49,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": -22.68,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -24.2,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 2.65,
+          "y": 12.2,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 500.0,
+      "faces": null,
+      "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_adjacency_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 17.5,
+          "y": 42.02
+        },
+        "radius": 30.16,
+        "start": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 47.66,
+        "y": 42.02,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 50.0,
+      "faces": null,
+      "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_adjacency_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_object_transform",
+      "object_id": "[uuid]",
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 0.0,
+              "y": 30.0,
+              "z": 0.0
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": [
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 80.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 160.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 240.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 320.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "boolean_subtract",
+      "target_ids": [
+        "[uuid]"
+      ],
+      "tool_ids": [
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
+        "[uuid]"
+      ],
+      "tolerance": 0.0000001
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_object_transform",
+      "object_id": "[uuid]",
+      "transforms": [
+        {
+          "translate": null,
+          "rotate_rpy": null,
+          "rotate_angle_axis": {
+            "property": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0,
+              "w": 90.0
+            },
+            "set": false,
+            "is_local": true
+          },
+          "scale": null
+        }
+      ]
+    }
+  }
+]

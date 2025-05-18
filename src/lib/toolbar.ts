@@ -1,5 +1,4 @@
 import type { EventFrom, StateFrom } from 'xstate'
-import { settingsActor } from '@src/lib/singletons'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
@@ -35,6 +34,7 @@ export type ToolbarItem = {
   id: string
   onClick: (props: ToolbarItemCallbackProps) => void
   icon?: CustomIconName
+  className?: string
   iconColor?: string
   alwaysDark?: true
   status: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
@@ -46,6 +46,7 @@ export type ToolbarItem = {
     | string
     | ((state: StateFrom<typeof modelingMachine>) => string | string[])
   description: string
+  extraNote?: string
   links: { label: string; url: string }[]
   isActive?: (state: StateFrom<typeof modelingMachine>) => boolean
   disabledReason?:
@@ -208,7 +209,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: 'Chamfer',
         hotkey: 'C',
         description: 'Bevel the edges of a 3D solid.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/chamfer' }],
+        extraNote:
+          'Chamfers cannot touch other chamfers yet. This is under development, see issue tracker.',
+        links: [
+          {
+            label: 'issue tracker',
+            url: 'https://github.com/KittyCAD/modeling-app/issues/6617',
+          },
+          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/chamfer' },
+        ],
       },
       {
         id: 'shell',
@@ -416,54 +425,20 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       'break',
       {
-        id: 'ai',
-        array: [
-          {
-            id: 'text-to-cad',
-            onClick: () => {
-              const currentProject =
-                settingsActor.getSnapshot().context.currentProject
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: {
-                  name: 'Text-to-CAD',
-                  groupId: 'application',
-                  argDefaultValues: {
-                    method: 'existingProject',
-                    projectName: currentProject?.name,
-                  },
-                },
-              })
-            },
-            icon: 'sparkles',
-            iconColor: '#29FFA4',
-            alwaysDark: true,
-            status: IS_ML_EXPERIMENTAL ? 'experimental' : 'available',
-            title: 'Create with Zoo Text-to-CAD',
-            description: 'Create geometry with AI / ML.',
-            links: [
-              {
-                label: 'API docs',
-                url: 'https://zoo.dev/docs/api/ml/generate-a-cad-model-from-text',
-              },
-            ],
-          },
-          {
-            id: 'prompt-to-edit',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Prompt-to-edit', groupId: 'modeling' },
-              }),
-            icon: 'sparkles',
-            iconColor: '#29FFA4',
-            alwaysDark: true,
-            status: IS_ML_EXPERIMENTAL ? 'experimental' : 'available',
-            title: 'Modify with Zoo Text-to-CAD',
-            description: 'Edit geometry with AI / ML.',
-            links: [],
-          },
-        ],
+        id: 'prompt-to-edit',
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Prompt-to-edit', groupId: 'modeling' },
+          }),
+        icon: 'sparkles',
+        iconColor: '#29FFA4',
+        alwaysDark: true,
+        status: IS_ML_EXPERIMENTAL ? 'experimental' : 'available',
+        title: 'Text-to-CAD',
+        description:
+          'Edit or create geometry from a text prompt and selection.',
+        links: [],
       },
     ],
   },

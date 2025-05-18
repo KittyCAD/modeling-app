@@ -264,8 +264,9 @@ export const EngineStream = (props: {
         last.current = Date.now()
 
         if (
-          Math.abs(video.width - window.innerWidth) > 4 ||
-          Math.abs(video.height - window.innerHeight) > 4
+          (Math.abs(video.width - window.innerWidth) > 4 ||
+            Math.abs(video.height - window.innerHeight) > 4) &&
+          !engineStreamState.matches(EngineStreamState.WaitingToPlay)
         ) {
           timeoutStart.current = Date.now()
           startOrReconfigureEngine()

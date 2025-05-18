@@ -1,0 +1,61 @@
+// Thermal Block Insert
+// Interlocking insulation insert for masonry walls, designed with a tongue-and-groove profile for modular alignment and thermal efficiency
+
+// Set units in millimeters (mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Define overall dimensions of the insert block
+insertLength = 400
+insertHeight = 200
+insertThickness = 50
+
+// Define tongue-and-groove profile parameters for interlocking geometry
+setbackFactor = 0.25 // spacing between tongues
+tongueTargetCount = insertLength / 80
+tongueCount = round(tongueTargetCount)
+tongueLength = insertLength / (tongueCount * (1 + setbackFactor * 2) + 1)
+tongueGap = tongueLength * setbackFactor * 2
+tongueStep = tongueLength + tongueGap
+tongueDepth = tongueLength * 0.5
+tongueSetback = tongueLength * setbackFactor
+
+// Function to create one side of the repeating tongue geometry along the block edge
+fn tongueBlockFn() {
+  tongueSingleBlock = xLine(length = tongueLength)
+    |> line(end = [-tongueSetback, tongueDepth])
+    |> xLine(length = tongueLength)
+    |> line(end = [-tongueSetback, -tongueDepth])
+    |> patternLinear2d(
+         %,
+         instances = tongueCount,
+         distance = tongueStep,
+         axis = [1, 0],
+       )
+    |> xLine(length = tongueLength)
+  return tongueSingleBlock
+}
+
+// Create top-side profile with tongues
+tongueShape = startSketchOn(XY)
+  |> startProfile(%, at = [-insertLength / 2, insertThickness / 2])
+  |> tongueBlockFn()
+  |> yLine(length = -insertThickness / 2)
+  |> xLine(length = -insertLength)
+  |> close(%)
+
+// Create bottom-side profile with grooves (inverse of tongue)
+grooveShape = startSketchOn(XY)
+  |> startProfile(
+       %,
+       at = [
+         -insertLength / 2,
+         -insertThickness / 2 - tongueDepth
+       ],
+     )
+  |> tongueBlockFn()
+  |> yLine(length = insertThickness / 2 + tongueDepth)
+  |> xLine(length = -insertLength)
+  |> close(%)
+
+// Extrude both tongue and groove profiles to form the final thermal insert block
+insertShape = extrude([tongueShape, grooveShape], length = insertHeight)

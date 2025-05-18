@@ -317,7 +317,7 @@ export const engineStreamMachine = setup({
         [EngineStreamTransition.Play]: {
           target: EngineStreamState.Playing,
         },
-        // We actually failed inbetween needing to play and sending commands.
+        // We actually failed in between needing to play and sending commands.
         [EngineStreamTransition.StartOrReconfigureEngine]: {
           target: EngineStreamState.WaitingForMediaStream,
           reenter: true,

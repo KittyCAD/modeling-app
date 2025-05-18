@@ -17,7 +17,7 @@ import { useLspContext } from '@src/components/LspProvider'
 import { ModelingSidebar } from '@src/components/ModelingSidebar/ModelingSidebar'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
+import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
@@ -28,21 +28,31 @@ import {
   sceneInfra,
   codeManager,
   kclManager,
+  settingsActor,
 } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import type { IndexLoaderData } from '@src/lib/types'
 import { engineStreamActor, useSettings, useToken } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
 import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
 import { BillingTransition } from '@src/machines/billingMachine'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { ShareButton } from '@src/components/ShareButton'
 import {
   needsToOnboard,
-  ONBOARDING_TOAST_ID,
   TutorialRequestToast,
 } from '@src/routes/Onboarding/utils'
 import { reportRejection } from '@src/lib/trap'
+import { DownloadAppToast } from '@src/components/DownloadAppToast'
+import { WasmErrToast } from '@src/components/WasmErrToast'
+import openWindow from '@src/lib/openWindow'
+import {
+  APP_DOWNLOAD_PATH,
+  DOWNLOAD_APP_TOAST_ID,
+  ONBOARDING_TOAST_ID,
+  WASM_INIT_FAILED_TOAST_ID,
+} from '@src/lib/constants'
+import { isPlaywright } from '@src/lib/isPlaywright'
+import { VITE_KC_SITE_BASE_URL } from '@src/env'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -52,20 +62,9 @@ maybeWriteToDisk()
   .catch(() => {})
 
 export function App() {
+  useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
-
-  // Keep a lookout for a URL query string that invokes the 'import file from URL' command
-  useCreateFileLinkQuery((argDefaultValues) => {
-    commandBarActor.send({
-      type: 'Find and select command',
-      data: {
-        groupId: 'projects',
-        name: 'Import file from URL',
-        argDefaultValues,
-      },
-    })
-  })
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -148,6 +147,59 @@ export function App() {
       )
     }
   }, [location, settings.app.onboardingStatus, navigate])
+
+  useEffect(() => {
+    const needsDownloadAppToast =
+      !isDesktop() &&
+      !isPlaywright() &&
+      searchParams.size === 0 &&
+      !settings.app.dismissWebBanner.current
+    if (needsDownloadAppToast) {
+      toast.success(
+        () =>
+          DownloadAppToast({
+            onAccept: () => {
+              openWindow(`${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`)
+                .then(() => {
+                  toast.dismiss(DOWNLOAD_APP_TOAST_ID)
+                })
+                .catch(reportRejection)
+            },
+            onDismiss: () => {
+              toast.dismiss(DOWNLOAD_APP_TOAST_ID)
+              settingsActor.send({
+                type: 'set.app.dismissWebBanner',
+                data: { level: 'user', value: true },
+              })
+            },
+          }),
+        {
+          id: DOWNLOAD_APP_TOAST_ID,
+          duration: Number.POSITIVE_INFINITY,
+          icon: null,
+        }
+      )
+    }
+  }, [])
+
+  useEffect(() => {
+    const needsWasmInitFailedToast = !isDesktop() && kclManager.wasmInitFailed
+    if (needsWasmInitFailedToast) {
+      toast.success(
+        () =>
+          WasmErrToast({
+            onDismiss: () => {
+              toast.dismiss(WASM_INIT_FAILED_TOAST_ID)
+            },
+          }),
+        {
+          id: WASM_INIT_FAILED_TOAST_ID,
+          duration: Number.POSITIVE_INFINITY,
+          icon: null,
+        }
+      )
+    }
+  }, [kclManager.wasmInitFailed])
 
   // Only create the native file menus on desktop
   useEffect(() => {
