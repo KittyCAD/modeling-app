@@ -22,9 +22,9 @@ export function WasmErrToast({ onDismiss }: WasmErrorToastProps) {
             >
               WASM or web assembly
             </a>{' '}
-            is core part of how our app works. It might be because your OS is not
-            up-to-date. If you're able to update your OS to a later version, try
-            that. If not create an issue on{' '}
+            is core part of how our app works. It might be because your OS is
+            not up-to-date. If you're able to update your OS to a later version,
+            try that. If not create an issue on{' '}
             <a
               href="https://github.com/KittyCAD/modeling-app"
               rel="noopener noreferrer"
