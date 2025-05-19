@@ -486,7 +486,7 @@ export function getSelectionTypeDisplayText(
     .map(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
-        `${count} ${type.replace('wall', 'face').replace('solid2d', 'face')}${
+        `${count} ${type.replace('wall', 'face').replace('solid2d', 'profile')}${
           count > 1 ? 's' : ''
         }`
     )
