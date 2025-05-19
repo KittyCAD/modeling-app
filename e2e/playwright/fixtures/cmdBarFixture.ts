@@ -308,6 +308,11 @@ export class CmdBarFixture {
     await expect(this.cmdBarElement).toBeVisible({ timeout: 10_000 })
   }
 
+  async toBeClosed() {
+    // Check that the command bar is closed
+    await expect(this.cmdBarElement).not.toBeVisible({ timeout: 10_000 })
+  }
+
   async expectArgValue(value: string) {
     // Check the placeholder project name exists
     const actualArgument = await this.cmdBarElement
