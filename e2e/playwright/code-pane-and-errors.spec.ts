@@ -242,8 +242,8 @@ extrude001 = extrude(sketch001, length = 5)`
     scene,
     cmdBar,
     editor,
+    toolbar,
   }) => {
-    const u = await getUtils(page)
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
@@ -259,7 +259,7 @@ middle(1)
 middle(0)
 `
     await test.step('Set the code with a KCL error', async () => {
-      await u.openKclCodePanel()
+      await toolbar.openPane('code')
       await editor.replaceCode('', code)
     })
     // This shows all the diagnostics in a way that doesn't require the mouse
