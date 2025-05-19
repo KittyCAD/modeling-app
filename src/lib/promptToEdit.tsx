@@ -415,7 +415,7 @@ export async function promptToEditFlow({
   token,
   artifactGraph,
   projectName,
-  filePath
+  filePath,
 }: {
   prompt: string
   selections: Selections
@@ -425,7 +425,6 @@ export async function promptToEditFlow({
   projectName: string
   filePath: string | undefined
 }) {
-  console.log('FILE PATH FUCK YOU', filePath)
   const result = await doPromptEdit({
     prompt,
     selections,
@@ -498,11 +497,10 @@ export async function promptToEditFlow({
       })
     }
 
-    console.log('FILE PATH FUCK YOU', filePath)
     await writeOverFilesAndExecute({
       requestedFiles,
       projectName,
-      filePath
+      filePath,
     })
   } else {
     const newCode = result.outputs['main.kcl']

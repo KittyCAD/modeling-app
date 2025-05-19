@@ -588,7 +588,7 @@ export function ToastPromptToEditCadSuccess({
 export const writeOverFilesAndExecute = async ({
   requestedFiles,
   projectName,
-  filePath
+  filePath,
 }: {
   requestedFiles: RequestedKCLFile[]
   projectName: string

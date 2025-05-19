@@ -71,7 +71,6 @@ export function SystemIOMachineLogicListenerDesktop() {
       encodedURI
     ) {
       filePathWithExtension = decodeURIComponent(encodedURI)
-      console.log('filePathWithExetension', filePathWithExtension)
       const applicationProjectDirectory = settings.app.projectDirectory.current
       projectDirectory = getProjectDirectoryFromKCLFilePath(
         filePathWithExtension,
@@ -106,7 +105,6 @@ export function SystemIOMachineLogicListenerDesktop() {
     }
 
     kclManager.isExecuting = false
-    console.log('REQUESTED PATH', requestedPath)
     navigate(requestedPath)
   }
 
@@ -131,7 +129,6 @@ export function SystemIOMachineLogicListenerDesktop() {
         safeEncodeForRouterPaths(projectPathWithoutSpecificKCLFile),
         requestedProjectName.subRoute || ''
       )
-      console.log('there!')
       safestNavigateToFile({
         requestedPath,
         requestedFilePathWithExtension: null,
@@ -166,10 +163,6 @@ export function SystemIOMachineLogicListenerDesktop() {
         safeEncodeForRouterPaths(filePath),
         requestedFileName.subRoute || ''
       )
-      console.log('here!')
-      console.log(filePath)
-      console.log(projectPathWithoutSpecificKCLFile)
-      console.log(requestedPath)
       safestNavigateToFile({
         requestedPath,
         requestedFilePathWithExtension: filePath,

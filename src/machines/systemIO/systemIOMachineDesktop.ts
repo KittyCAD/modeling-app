@@ -381,6 +381,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedProjectName: string
           override?: boolean
           requestedFileNameWithExtension: string
+          requestedSubRoute?: string
         }
       }) => {
         const message = await sharedBulkCreateWorkflow({
@@ -393,6 +394,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           ...message,
           projectName: input.requestedProjectName,
           fileName: input.requestedFileNameWithExtension || '',
+          subRoute: input.requestedSubRoute || '',
         }
       }
     ),

@@ -101,7 +101,7 @@ export const systemIOMachine = setup({
             override?: boolean
             requestedSubRoute?: string
           }
-      }
+        }
       | {
           type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile
           data: {
@@ -109,6 +109,7 @@ export const systemIOMachine = setup({
             requestedProjectName: string
             requestedFileNameWithExtension: string
             override?: boolean
+            requestedSubRoute?: string
           }
         }
       | {
@@ -358,13 +359,15 @@ export const systemIOMachine = setup({
           rootContext: AppMachineContext
           requestedProjectName: string
           requestedFileNameWithExtension: string
+          requestedSubRoute?: string
         }
       }): Promise<{
         message: string
         fileName: string
         projectName: string
+        subRoute: string
       }> => {
-        return { message: '', fileName: '', projectName: '' }
+        return { message: '', fileName: '', projectName: '', subRoute: '' }
       }
     ),
   },
@@ -443,8 +446,7 @@ export const systemIOMachine = setup({
             SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
         },
         [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile]: {
-          target:
-            SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
+          target: SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
         },
       },
     },
@@ -730,7 +732,9 @@ export const systemIOMachine = setup({
             rootContext: self.system.get('root').getSnapshot().context,
             requestedProjectName: event.data.requestedProjectName,
             override: event.data.override,
-            requestedFileNameWithExtension: event.data.requestedFileNameWithExtension
+            requestedFileNameWithExtension:
+              event.data.requestedFileNameWithExtension,
+            requestedSubRoute: event.data.requestedSubRoute,
           }
         },
         onDone: {
@@ -738,12 +742,14 @@ export const systemIOMachine = setup({
           actions: [
             assign({
               requestedFileName: ({ event }) => {
-                assertEvent(event, SystemIOMachineEvents.done_bulkCreateKCLFilesAndNavigateToFile)
+                assertEvent(
+                  event,
+                  SystemIOMachineEvents.done_bulkCreateKCLFilesAndNavigateToFile
+                )
                 // Gotcha: file could have an ending of .kcl...
                 const file = event.output.fileName.endsWith('.kcl')
                   ? event.output.fileName
                   : event.output.fileName + '.kcl'
-                console.log('FILE PATH SETTING', file)
                 return {
                   project: event.output.projectName,
                   file,

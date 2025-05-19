@@ -59,7 +59,8 @@ export enum SystemIOMachineEvents {
   bulkCreateKCLFiles = 'bulk create kcl files',
   bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
   bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
-  done_bulkCreateKCLFilesAndNavigateToFile = donePrefix + 'bulk create kcl files and navigate to file',
+  done_bulkCreateKCLFilesAndNavigateToFile = donePrefix +
+    'bulk create kcl files and navigate to file',
 }
 
 export enum SystemIOMachineActions {

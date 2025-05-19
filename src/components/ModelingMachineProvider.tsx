@@ -1750,7 +1750,6 @@ export const ModelingMachineProvider = ({
               execStateFileNamesIndex: 0,
             },
           ]
-          // Active file you are currently in
           const execStateNameToIndexMap: { [fileName: string]: number } = {}
           Object.entries(kclManager.execState.filenames).forEach(
             ([index, val]) => {
@@ -1761,6 +1760,7 @@ export const ModelingMachineProvider = ({
           )
           let basePath = ''
           if (isDesktop() && context?.project?.children) {
+            // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
             basePath = context?.project?.path
             const filePromises: Promise<FileMeta | null>[] = []
             let uploadSize = 0
@@ -1829,11 +1829,9 @@ export const ModelingMachineProvider = ({
             }
           }
           let filePath = file?.path
+          // When prompt to edit finishes, try to route to the file they were in otherwise go to main.kcl
           if (filePath) {
-            filePath = window.electron.path.relative(
-              basePath,
-              filePath
-            )
+            filePath = window.electron.path.relative(basePath, filePath)
           } else {
             filePath = PROJECT_ENTRYPOINT
           }
@@ -1844,7 +1842,7 @@ export const ModelingMachineProvider = ({
             token,
             artifactGraph: kclManager.artifactGraph,
             projectName: context.project.name,
-            filePath
+            filePath,
           })
         }),
       },
