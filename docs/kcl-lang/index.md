@@ -4,7 +4,7 @@ excerpt: "Documentation of the KCL language for the Zoo Design Studio."
 layout: manual
 ---
 
-This is a reference for KCL. If you are learning KCL, you may prefer the [guide]() which explains
+This is a reference for KCL. If you are learning KCL, you may prefer the [guide](https://zoo.dev/docs/kcl-book/intro.html) which explains
 things in a more tutorial fashion. See also our documentation of the [standard library](/docs/kcl-std).
 
 ## Topics
