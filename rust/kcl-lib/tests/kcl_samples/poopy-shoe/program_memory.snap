@@ -904,7 +904,7 @@ description: Variables in memory after executing poopy-shoe.kcl
       },
       "height": 0.0,
       "startCapId": "[uuid]",
-      "endCapId": null,
+      "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
       },
