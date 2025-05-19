@@ -18,7 +18,7 @@ This module contains functions for modifying solids, e.g., by adding a fillet or
 * [`intersect`](/docs/kcl-std/intersect)
 * [`patternCircular3d`](/docs/kcl-std/patternCircular3d)
 * [`patternLinear3d`](/docs/kcl-std/patternLinear3d)
-* [`patternTransform`](/docs/kcl-std/patternTransform)
+* [`patternTransform`](/docs/kcl-std/functions/std-solid-patternTransform)
 * [`shell`](/docs/kcl-std/functions/std-solid-shell)
 * [`subtract`](/docs/kcl-std/subtract)
 * [`union`](/docs/kcl-std/union)

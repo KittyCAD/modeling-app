@@ -58,8 +58,8 @@ impl ModuleLoader {
     }
 
     pub(crate) fn import_cycle_error(&self, path: &ModulePath, source_range: SourceRange) -> KclError {
-        KclError::ImportCycle(KclErrorDetails {
-            message: format!(
+        KclError::ImportCycle(KclErrorDetails::new(
+            format!(
                 "circular import of modules is not allowed: {} -> {}",
                 self.import_stack
                     .iter()
@@ -68,8 +68,8 @@ impl ModuleLoader {
                     .join(" -> "),
                 path,
             ),
-            source_ranges: vec![source_range],
-        })
+            vec![source_range],
+        ))
     }
 
     pub(crate) fn enter_module(&mut self, path: &ModulePath) {
@@ -169,10 +169,10 @@ impl ModulePath {
             ModulePath::Std { value: name } => Ok(ModuleSource {
                 source: read_std(name)
                     .ok_or_else(|| {
-                        KclError::Semantic(KclErrorDetails {
-                            message: format!("Cannot find standard library module to import: std::{name}."),
-                            source_ranges: vec![source_range],
-                        })
+                        KclError::Semantic(KclErrorDetails::new(
+                            format!("Cannot find standard library module to import: std::{name}."),
+                            vec![source_range],
+                        ))
                     })
                     .map(str::to_owned)?,
                 path: self.clone(),

@@ -325,17 +325,17 @@ async fn inner_polygon(
     args: Args,
 ) -> Result<Sketch, KclError> {
     if num_sides < 3 {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "Polygon must have at least 3 sides".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Type(KclErrorDetails::new(
+            "Polygon must have at least 3 sides".to_string(),
+            vec![args.source_range],
+        )));
     }
 
     if radius.n <= 0.0 {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "Radius must be greater than 0".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Type(KclErrorDetails::new(
+            "Radius must be greater than 0".to_string(),
+            vec![args.source_range],
+        )));
     }
 
     let (sketch_surface, units) = match sketch_surface_or_group {

@@ -110,7 +110,6 @@ description: Operations executed error_revolve_on_edge_get_edge.kcl
         "sourceRange": []
       }
     },
-    "sourceRange": [],
-    "isError": true
+    "sourceRange": []
   }
 ]

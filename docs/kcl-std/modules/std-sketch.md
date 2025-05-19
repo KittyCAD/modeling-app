@@ -30,7 +30,7 @@ This module contains functions for creating and manipulating sketches, and makin
 * [`line`](/docs/kcl-std/line)
 * [`loft`](/docs/kcl-std/loft)
 * [`patternCircular2d`](/docs/kcl-std/patternCircular2d)
-* [`patternTransform2d`](/docs/kcl-std/patternTransform2d)
+* [`patternTransform2d`](/docs/kcl-std/functions/std-sketch-patternTransform2d)
 * [`polygon`](/docs/kcl-std/polygon)
 * [`profileStart`](/docs/kcl-std/profileStart)
 * [`profileStartX`](/docs/kcl-std/profileStartX)

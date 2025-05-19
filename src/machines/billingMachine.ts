@@ -2,7 +2,9 @@ import type { Models } from '@kittycad/lib'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
-import { err } from '@src/lib/trap'
+import { isErr } from '@src/lib/trap'
+
+const _TIME_1_SECOND = 1000
 
 export enum BillingState {
   Updating = 'updating',
@@ -42,6 +44,7 @@ export interface BillingContext {
   urlUserService: string
   tier: undefined | Tier
   subscriptionsOrError: undefined | SubscriptionsOrError
+  lastFetch: undefined | Date
 }
 
 export interface BillingUpdateEvent {
@@ -56,14 +59,15 @@ export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
   tier: undefined,
   subscriptionsOrError: undefined,
   urlUserService: '',
+  lastFetch: undefined,
 })
 
 const toTierFrom = (args: TierBasedOn): Tier => {
-  if (typeof args.orgOrError !== 'number' && !err(args.orgOrError)) {
+  if (typeof args.orgOrError !== 'number' && !isErr(args.orgOrError)) {
     return Tier.Organization
   } else if (
     typeof args.subscriptionsOrError !== 'number' &&
-    !err(args.subscriptionsOrError)
+    !isErr(args.subscriptionsOrError)
   ) {
     const subscriptions: Models['ZooProductSubscriptions_type'] =
       args.subscriptionsOrError
@@ -88,6 +92,14 @@ export const billingMachine = setup({
       async ({
         input,
       }: { input: { context: BillingContext; event: BillingUpdateEvent } }) => {
+        // Rate limit on the client side to 1 request per second.
+        if (
+          input.context.lastFetch &&
+          Date.now() - input.context.lastFetch.getTime() < _TIME_1_SECOND
+        ) {
+          return input.context
+        }
+
         const billingOrError: Models['CustomerBalance_type'] | number | Error =
           await crossPlatformFetch(
             `${input.context.urlUserService}/user/payment/balance`,
@@ -95,7 +107,7 @@ export const billingMachine = setup({
             input.event.apiToken
           )
 
-        if (typeof billingOrError === 'number' || err(billingOrError)) {
+        if (typeof billingOrError === 'number' || isErr(billingOrError)) {
           return Promise.reject(billingOrError)
         }
         const billing: Models['CustomerBalance_type'] = billingOrError
@@ -135,7 +147,7 @@ export const billingMachine = setup({
             // TS too dumb Tier.Free has the same logic
             if (
               typeof subscriptionsOrError !== 'number' &&
-              !err(subscriptionsOrError)
+              !isErr(subscriptionsOrError)
             ) {
               allowance = Number(
                 subscriptionsOrError.modeling_app
@@ -157,6 +169,7 @@ export const billingMachine = setup({
           subscriptionsOrError,
           credits,
           allowance,
+          lastFetch: new Date(),
         }
       }
     ),
