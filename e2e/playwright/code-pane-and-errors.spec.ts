@@ -244,19 +244,10 @@ extrude001 = extrude(sketch001, length = 5)`
     editor,
   }) => {
     const u = await getUtils(page)
-
-    // Load the app with empty code.
-    await page.addInitScript(() => {
-      localStorage.setItem('persistCode', '')
-    })
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    const code = `@settings(defaultLengthUnit = mm)
-
-fn check(@x) {
+    const code = `fn check(@x) {
   return assert(x, isGreaterThan = 0)
 }
 
