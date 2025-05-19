@@ -35,6 +35,7 @@ import {
 } from '@src/machines/systemIO/utils'
 import {
   useProjectDirectoryPath,
+  useRequestedFileName,
   useRequestedProjectName,
 } from '@src/machines/systemIO/hooks'
 import { commandBarActor } from '@src/lib/singletons'
@@ -498,7 +499,14 @@ export function ToastPromptToEditCadSuccess({
   token?: string
 }) {
   const modelId = data.id
-  const requestedProjectName = useRequestedProjectName()
+  const possibleRequestedProjectName = useRequestedProjectName()
+  const possibleRequestedFileName = useRequestedFileName()
+
+  // Depends on navigation method
+  const requestedProjectName = {
+    name:
+      possibleRequestedProjectName.name || possibleRequestedFileName.project,
+  }
 
   return (
     <div className="flex gap-4 min-w-80">
@@ -548,6 +556,7 @@ export function ToastPromptToEditCadSuccess({
                   await writeOverFilesAndExecute({
                     requestedFiles: requestedFiles,
                     projectName: requestedProjectName.name,
+                    filePath: possibleRequestedFileName.file,
                   })
                 } else {
                   codeManager.updateCodeEditor(oldCode)
