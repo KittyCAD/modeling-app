@@ -4,7 +4,7 @@ import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import { billingActor, commandBarActor } from '@src/lib/singletons'
-import { useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Popover } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
@@ -23,7 +23,7 @@ const canPasswordProtectShareLinks = (
 }
 
 /** Share Zoo link button shown in the upper-right of the modeling view */
-export const ShareButton = () => {
+export const ShareButton = memo(function ShareButton() {
   const platform = usePlatform()
 
   const [showOptions, setShowOptions] = useState(false)
@@ -40,7 +40,7 @@ export const ShareButton = () => {
 
   // Prevents Organization and Pro tier users from one-click sharing,
   // and give them a chance to set a password and restrict to org.
-  const onShareClickFreeOrUnknownRestricted = () => {
+  const onShareClickFreeOrUnknownRestricted = useCallback(() => {
     if (hasOptions) {
       setShowOptions(true)
       return
@@ -54,9 +54,9 @@ export const ShareButton = () => {
         isRestrictedToOrg: false,
       },
     })
-  }
+  }, [hasOptions])
 
-  const onShareClickProOrOrganization = () => {
+  const onShareClickProOrOrganization = useCallback(() => {
     setShowOptions(false)
 
     commandBarActor.send({
@@ -68,7 +68,7 @@ export const ShareButton = () => {
         password,
       },
     })
-  }
+  }, [isRestrictedToOrg, password])
 
   useHotkeys(shareHotkey, onShareClickFreeOrUnknownRestricted, {
     scopes: ['modeling'],
@@ -165,4 +165,4 @@ export const ShareButton = () => {
       )}
     </Popover>
   )
-}
+})

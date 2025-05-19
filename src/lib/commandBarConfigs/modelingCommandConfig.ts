@@ -383,7 +383,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       sketches: {
         inputType: 'selection',
-        selectionTypes: ['solid2d', 'segment'],
+        displayName: 'Profiles',
+        selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -411,7 +412,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       sketches: {
         inputType: 'selection',
-        selectionTypes: ['solid2d', 'segment'],
+        displayName: 'Profiles',
+        selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -444,6 +446,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       sketches: {
         inputType: 'selection',
+        displayName: 'Profiles',
         selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
@@ -464,7 +467,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       sketches: {
         inputType: 'selection',
-        selectionTypes: ['solid2d', 'segment'],
+        displayName: 'Profiles',
+        selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
