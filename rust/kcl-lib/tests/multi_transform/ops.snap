@@ -108,13 +108,8 @@ description: Operations executed multi_transform.kcl
           "type": "Number",
           "value": 3.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []

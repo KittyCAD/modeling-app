@@ -80,8 +80,6 @@ lazy_static! {
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
         Box::new(crate::std::patterns::PatternCircular3D),
-        Box::new(crate::std::patterns::PatternTransform),
-        Box::new(crate::std::patterns::PatternTransform2D),
         Box::new(crate::std::edge::GetOppositeEdge),
         Box::new(crate::std::edge::GetNextAdjacentEdge),
         Box::new(crate::std::edge::GetPreviousAdjacentEdge),
@@ -279,6 +277,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("prelude", "clone") => (
             |e, a| Box::pin(crate::std::clone::clone(e, a)),
             StdFnProps::default("std::clone").include_in_feature_tree(),
+        ),
+        ("solid", "patternTransform") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_transform(e, a)),
+            StdFnProps::default("std::solid::patternTransform").include_in_feature_tree(),
+        ),
+        ("sketch", "patternTransform2d") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
+            StdFnProps::default("std::sketch::patternTransform2d"),
         ),
         _ => unreachable!(),
     }
