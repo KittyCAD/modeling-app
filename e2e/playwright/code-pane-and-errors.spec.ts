@@ -235,6 +235,57 @@ extrude001 = extrude(sketch001, length = 5)`
         .first()
     ).toBeVisible()
   })
+
+  test('KCL errors with functions show hints for the entire backtrace', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+  }) => {
+    const u = await getUtils(page)
+
+    // Load the app with empty code.
+    await page.addInitScript(() => {
+      localStorage.setItem('persistCode', '')
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    const code = `@settings(defaultLengthUnit = mm)
+
+fn check(@x) {
+  return assert(x, isGreaterThan = 0)
+}
+
+fn middle(@x) {
+  return check(x)
+}
+
+middle(1)
+middle(0)
+`
+    await test.step('Set the code with a KCL error', async () => {
+      await u.openKclCodePanel()
+      await editor.replaceCode('', code)
+    })
+    // This shows all the diagnostics in a way that doesn't require the mouse
+    // pointer hovering over a coordinate, which would be brittle.
+    await test.step('Open CodeMirror diagnostics list', async () => {
+      // Ensure keyboard focus is in the editor.
+      await page.getByText('fn check(').click()
+      await page.keyboard.press('ControlOrMeta+Shift+M')
+    })
+    await expect(
+      page.getByText(`assert failed: Expected 0 to be greater than 0 but it wasn't
+check()
+middle()`)
+    ).toBeVisible()
+    // There should be one hint inside middle() and one at the top level.
+    await expect(page.getByText('Part of the error backtrace')).toHaveCount(2)
+  })
 })
 
 test(
