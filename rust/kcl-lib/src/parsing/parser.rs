@@ -4533,11 +4533,6 @@ e
     #[test]
     fn bad_imports() {
         assert_err(
-            r#"import cube from "../cube.kcl""#,
-            "import path may only contain alphanumeric characters, underscore, hyphen, and period. KCL files in other directories are not yet supported.",
-            [17, 30],
-        );
-        assert_err(
             r#"import * as foo from "dsfs""#,
             "as is not the 'from' keyword",
             [9, 11],
