@@ -132,11 +132,20 @@ export const EngineStream = (props: {
   }
 
   useEffect(() => {
+    // Only try to start the stream if we're stopped or think we're done
+    // waiting for dependencies.
     if (
-      engineStreamState.value !== EngineStreamState.WaitingForDependencies &&
-      engineStreamState.value !== EngineStreamState.Stopped
+      !(
+        engineStreamState.value === EngineStreamState.WaitingForDependencies ||
+        engineStreamState.value === EngineStreamState.Stopped
+      )
     )
       return
+
+    // Don't bother trying to connect if the auth token is empty.
+    // We have the checks in the machine but this can cause a hot loop.
+    if (!engineStreamState.context.authToken) return
+
     startOrReconfigureEngine()
   }, [engineStreamState, setAppState])
 
@@ -249,7 +258,12 @@ export const EngineStream = (props: {
   }, [engineStreamState, attemptTimes, isRestartRequestStarting])
 
   useEffect(() => {
+    // If engineStreamMachine is already reconfiguring, bail.
     if (engineStreamState.value === EngineStreamState.Reconfiguring) return
+
+    // But if the user resizes, and we're stopped or paused, then we want
+    // to try to restart the stream!
+
     const video = engineStreamState.context.videoRef?.current
     if (!video) return
     const canvas = engineStreamState.context.canvasRef?.current
