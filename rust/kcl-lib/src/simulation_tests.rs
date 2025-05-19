@@ -3188,7 +3188,6 @@ mod revolve_colinear {
 
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
-    #[ignore] // until https://github.com/KittyCAD/engine/pull/3417 lands
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }
