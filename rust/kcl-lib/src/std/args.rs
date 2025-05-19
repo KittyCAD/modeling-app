@@ -1283,6 +1283,32 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrEdgeReference {
     }
 }
 
+impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrPoint2d {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = |arg: &KclValue| {
+            let obj = arg.as_object()?;
+            let_field_of!(obj, direction);
+            let_field_of!(obj, origin);
+            Some(Self::Axis { direction, origin })
+        };
+        let case2 = <[TyF64; 2]>::from_kcl_val;
+        case1(arg).or_else(|| case2(arg).map(Self::Point))
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrPoint3d {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = |arg: &KclValue| {
+            let obj = arg.as_object()?;
+            let_field_of!(obj, direction);
+            let_field_of!(obj, origin);
+            Some(Self::Axis { direction, origin })
+        };
+        let case2 = <[TyF64; 3]>::from_kcl_val;
+        case1(arg).or_else(|| case2(arg).map(Self::Point))
+    }
+}
+
 impl<'a> FromKclValue<'a> for i64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
