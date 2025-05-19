@@ -63,9 +63,9 @@ slabVoidStart = -slabWidth / 2 + handrailThickness
 slabVoidWidth = slabWidth - (handrailThickness * 2)
 slabVoidShape = startSketchOn(slabAndHandrailGeometry, face = END)
   |> startProfile(%, at = [slabVoidStart, slabVoidStart])
-  |> line(%, end = [0, slabVoidWidth], %)
-  |> line(%, end = [slabVoidWidth, 0], %)
-  |> line(%, end = [0, -slabVoidWidth], %)
+  |> line(%, end = [0, slabVoidWidth])
+  |> line(%, end = [slabVoidWidth, 0])
+  |> line(%, end = [0, -slabVoidWidth])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close(%)
 

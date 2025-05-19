@@ -4,9 +4,7 @@ use std::sync::Arc;
 
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
-pub use artifact::{
-    Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane,
-};
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use cache::OldAstState;
 pub use cache::{bust_cache, clear_mem_cache};
 #[cfg(feature = "artifact-graph")]
@@ -22,11 +20,12 @@ use kcmc::{
     websocket::{ModelingSessionData, OkWebSocketResponseData},
     ImageFormat, ModelingCmd,
 };
-use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 pub use state::{ExecState, MetaSettings};
+use uuid::Uuid;
 
 #[cfg(feature = "artifact-graph")]
 use crate::execution::artifact::build_artifact_graph;
@@ -51,9 +50,9 @@ pub(crate) mod annotations;
 #[cfg(feature = "artifact-graph")]
 mod artifact;
 pub(crate) mod cache;
-#[cfg(feature = "artifact-graph")]
 mod cad_op;
 mod exec_ast;
+pub mod fn_call;
 mod geometry;
 mod id_generator;
 mod import;
@@ -62,6 +61,11 @@ mod memory;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
+
+enum StatementKind<'a> {
+    Declaration { name: &'a str },
+    Expression,
+}
 
 /// Outcome of executing a program.  This is used in TS.
 #[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
@@ -1321,6 +1325,51 @@ impl ExecutorContext {
 
     pub async fn close(&self) {
         self.engine.close().await;
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS, JsonSchema)]
+pub struct ArtifactId(Uuid);
+
+impl ArtifactId {
+    pub fn new(uuid: Uuid) -> Self {
+        Self(uuid)
+    }
+}
+
+impl From<Uuid> for ArtifactId {
+    fn from(uuid: Uuid) -> Self {
+        Self::new(uuid)
+    }
+}
+
+impl From<&Uuid> for ArtifactId {
+    fn from(uuid: &Uuid) -> Self {
+        Self::new(*uuid)
+    }
+}
+
+impl From<ArtifactId> for Uuid {
+    fn from(id: ArtifactId) -> Self {
+        id.0
+    }
+}
+
+impl From<&ArtifactId> for Uuid {
+    fn from(id: &ArtifactId) -> Self {
+        id.0
+    }
+}
+
+impl From<ModelingCmdId> for ArtifactId {
+    fn from(id: ModelingCmdId) -> Self {
+        Self::new(*id.as_ref())
+    }
+}
+
+impl From<&ModelingCmdId> for ArtifactId {
+    fn from(id: &ModelingCmdId) -> Self {
+        Self::new(*id.as_ref())
     }
 }
 

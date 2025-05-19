@@ -12,7 +12,7 @@ reduce(
   @array: [any],
   initial: any,
   f: fn(any, accum: any): any,
-): [any]
+): any
 ```
 
 Take a starting value. Then, for each element of an array, calculate the next value,
@@ -28,7 +28,7 @@ using the previous value and the element.
 
 ### Returns
 
-[`[any]`](/docs/kcl-std/types/std-types-any)
+[`any`](/docs/kcl-std/types/std-types-any)
 
 
 ### Examples

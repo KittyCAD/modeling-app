@@ -66,7 +66,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     name: 'Extrude',
     groupId: 'modeling',
   }
-  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+  if (operation.type !== 'StdLibCall') {
     return { reason: 'Wrong operation type' }
   }
 
@@ -123,7 +123,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
+    operation.type !== 'StdLibCall' ||
     !operation.labeledArgs ||
     (!isChamfer && !isFillet)
   ) {
@@ -225,7 +225,7 @@ const prepareToEditShell: PrepareToEditCallback =
     }
 
     if (
-      (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
+      operation.type !== 'StdLibCall' ||
       !operation.labeledArgs ||
       !operation.unlabeledArg ||
       !('thickness' in operation.labeledArgs) ||
@@ -346,7 +346,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
+    operation.type !== 'StdLibCall' ||
     !operation.labeledArgs ||
     !operation.unlabeledArg ||
     !('offset' in operation.labeledArgs) ||
@@ -412,7 +412,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
 }
 
 /**
- * Gather up the argument values for the Revolve command
+ * Gather up the argument values for the sweep command
  * to be used in the command bar edit flow.
  */
 const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
@@ -420,7 +420,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     name: 'Sweep',
     groupId: 'modeling',
   }
-  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+  if (operation.type !== 'StdLibCall') {
     return { reason: 'Wrong operation type' }
   }
 
@@ -515,7 +515,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     name: 'Helix',
     groupId: 'modeling',
   }
-  if (operation.type !== 'KclStdLibCall' || !operation.labeledArgs) {
+  if (operation.type !== 'StdLibCall' || !operation.labeledArgs) {
     return { reason: 'Wrong operation type or arguments' }
   }
 
@@ -768,11 +768,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     name: 'Revolve',
     groupId: 'modeling',
   }
-  if (
-    !artifact ||
-    operation.type !== 'KclStdLibCall' ||
-    !operation.labeledArgs
-  ) {
+  if (!artifact || operation.type !== 'StdLibCall' || !operation.labeledArgs) {
     return { reason: 'Wrong operation type or artifact' }
   }
 
@@ -1041,8 +1037,6 @@ export function getOperationLabel(op: Operation): string {
   switch (op.type) {
     case 'StdLibCall':
       return stdLibMap[op.name]?.label ?? op.name
-    case 'KclStdLibCall':
-      return stdLibMap[op.name]?.label ?? op.name
     case 'GroupBegin':
       if (op.group.type === 'FunctionCall') {
         return op.group.name ?? 'anonymous'
@@ -1066,8 +1060,6 @@ export function getOperationLabel(op: Operation): string {
 export function getOperationIcon(op: Operation): CustomIconName {
   switch (op.type) {
     case 'StdLibCall':
-      return stdLibMap[op.name]?.icon ?? 'questionMark'
-    case 'KclStdLibCall':
       return stdLibMap[op.name]?.icon ?? 'questionMark'
     case 'GroupBegin':
       if (op.group.type === 'ModuleInstance') {
@@ -1173,7 +1165,7 @@ export async function enterEditFlow({
   operation,
   artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+  if (operation.type !== 'StdLibCall') {
     return new Error(
       'Feature tree editing not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
@@ -1211,7 +1203,7 @@ export async function enterEditFlow({
 export async function enterAppearanceFlow({
   operation,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+  if (operation.type !== 'StdLibCall') {
     return new Error(
       'Appearance setting not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
@@ -1245,7 +1237,7 @@ export async function enterTranslateFlow({
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
-    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
+    operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
   if (!isModuleImport && !isSupportedStdLibCall) {
     return new Error(
@@ -1307,7 +1299,7 @@ export async function enterRotateFlow({
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
-    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
+    operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
   if (!isModuleImport && !isSupportedStdLibCall) {
     return new Error(
@@ -1369,7 +1361,7 @@ export async function enterCloneFlow({
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
-    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
+    operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
   if (!isModuleImport && !isSupportedStdLibCall) {
     return new Error(

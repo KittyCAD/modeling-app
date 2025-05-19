@@ -9,11 +9,12 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[cfg(feature = "artifact-graph")]
-use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, Operation};
+use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     execution::{
         annotations,
+        cad_op::Operation,
         id_generator::IdGenerator,
         memory::{ProgramMemory, Stack},
         types,
@@ -199,6 +200,13 @@ impl ExecState {
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
         self.global.artifacts.insert(id, artifact);
+    }
+
+    pub(crate) fn push_op(&mut self, op: Operation) {
+        #[cfg(feature = "artifact-graph")]
+        self.global.operations.push(op);
+        #[cfg(not(feature = "artifact-graph"))]
+        drop(op);
     }
 
     pub(super) fn next_module_id(&self) -> ModuleId {
