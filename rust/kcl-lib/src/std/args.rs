@@ -1,7 +1,6 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use indexmap::IndexMap;
 use kcmc::{
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
     ModelingCmd,
@@ -15,8 +14,8 @@ use crate::{
     execution::{
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
-        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch,
-        SketchSurface, Solid, TagIdentifier,
+        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
+        TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
@@ -28,55 +27,10 @@ use crate::{
     ModuleId,
 };
 
+pub use crate::execution::fn_call::Args;
+
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`";
-
-#[derive(Debug, Clone)]
-pub struct Arg {
-    /// The evaluated argument.
-    pub value: KclValue,
-    /// The source range of the unevaluated argument.
-    pub source_range: SourceRange,
-}
-
-impl Arg {
-    pub fn new(value: KclValue, source_range: SourceRange) -> Self {
-        Self { value, source_range }
-    }
-
-    pub fn synthetic(value: KclValue) -> Self {
-        Self {
-            value,
-            source_range: SourceRange::synthetic(),
-        }
-    }
-
-    pub fn source_ranges(&self) -> Vec<SourceRange> {
-        vec![self.source_range]
-    }
-}
-
-#[derive(Debug, Clone, Default)]
-pub struct KwArgs {
-    /// Unlabeled keyword args. Currently only the first arg can be unlabeled.
-    /// If the argument was a local variable, then the first element of the tuple is its name
-    /// which may be used to treat this arg as a labelled arg.
-    pub unlabeled: Option<(Option<String>, Arg)>,
-    /// Labeled args.
-    pub labeled: IndexMap<String, Arg>,
-    pub errors: Vec<Arg>,
-}
-
-impl KwArgs {
-    /// How many arguments are there?
-    pub fn len(&self) -> usize {
-        self.labeled.len() + if self.unlabeled.is_some() { 1 } else { 0 }
-    }
-    /// Are there no arguments?
-    pub fn is_empty(&self) -> bool {
-        self.labeled.len() == 0 && self.unlabeled.is_none()
-    }
-}
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -153,41 +107,7 @@ impl JsonSchema for TyF64 {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct Args {
-    /// Positional args.
-    pub args: Vec<Arg>,
-    /// Keyword arguments
-    pub kw_args: KwArgs,
-    pub source_range: SourceRange,
-    pub ctx: ExecutorContext,
-    /// If this call happens inside a pipe (|>) expression, this holds the LHS of that |>.
-    /// Otherwise it's None.
-    pub pipe_value: Option<Arg>,
-}
-
 impl Args {
-    pub fn new(args: Vec<Arg>, source_range: SourceRange, ctx: ExecutorContext, pipe_value: Option<Arg>) -> Self {
-        Self {
-            args,
-            kw_args: Default::default(),
-            source_range,
-            ctx,
-            pipe_value,
-        }
-    }
-
-    /// Collect the given keyword arguments.
-    pub fn new_kw(kw_args: KwArgs, source_range: SourceRange, ctx: ExecutorContext, pipe_value: Option<Arg>) -> Self {
-        Self {
-            args: Default::default(),
-            kw_args,
-            source_range,
-            ctx,
-            pipe_value,
-        }
-    }
-
     /// Get a keyword argument. If not set, returns None.
     pub(crate) fn get_kw_arg_opt<'a, T>(&'a self, label: &str) -> Result<Option<T>, KclError>
     where
@@ -337,16 +257,6 @@ impl Args {
                 Ok((val, source))
             })
             .collect::<Result<Vec<_>, _>>()
-    }
-
-    /// Get the unlabeled keyword argument. If not set, returns None.
-    pub(crate) fn unlabeled_kw_arg_unconverted(&self) -> Option<&Arg> {
-        self.kw_args
-            .unlabeled
-            .as_ref()
-            .map(|(_, a)| a)
-            .or(self.args.first())
-            .or(self.pipe_value.as_ref())
     }
 
     /// Get the unlabeled keyword argument. If not set, returns Err.  If it
@@ -1280,6 +1190,32 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrEdgeReference {
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
         case1(arg).or_else(|| case2(arg).map(Self::Edge))
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrPoint2d {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = |arg: &KclValue| {
+            let obj = arg.as_object()?;
+            let_field_of!(obj, direction);
+            let_field_of!(obj, origin);
+            Some(Self::Axis { direction, origin })
+        };
+        let case2 = <[TyF64; 2]>::from_kcl_val;
+        case1(arg).or_else(|| case2(arg).map(Self::Point))
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrPoint3d {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = |arg: &KclValue| {
+            let obj = arg.as_object()?;
+            let_field_of!(obj, direction);
+            let_field_of!(obj, origin);
+            Some(Self::Axis { direction, origin })
+        };
+        let case2 = <[TyF64; 3]>::from_kcl_val;
+        case1(arg).or_else(|| case2(arg).map(Self::Point))
     }
 }
 

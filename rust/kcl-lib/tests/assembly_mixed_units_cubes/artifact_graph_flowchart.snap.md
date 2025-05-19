@@ -2,42 +2,26 @@
 flowchart LR
   subgraph path3 [Path]
     3["Path<br>[74, 114, 1]"]
-      %% Missing NodePath
     5["Segment<br>[120, 137, 1]"]
-      %% Missing NodePath
     6["Segment<br>[143, 161, 1]"]
-      %% Missing NodePath
     7["Segment<br>[167, 185, 1]"]
-      %% Missing NodePath
     8["Segment<br>[191, 247, 1]"]
-      %% Missing NodePath
     9["Segment<br>[253, 260, 1]"]
-      %% Missing NodePath
     15[Solid2d]
   end
   subgraph path4 [Path]
     4["Path<br>[74, 112, 2]"]
-      %% Missing NodePath
     10["Segment<br>[118, 135, 2]"]
-      %% Missing NodePath
     11["Segment<br>[141, 159, 2]"]
-      %% Missing NodePath
     12["Segment<br>[165, 183, 2]"]
-      %% Missing NodePath
     13["Segment<br>[189, 245, 2]"]
-      %% Missing NodePath
     14["Segment<br>[251, 258, 2]"]
-      %% Missing NodePath
     16[Solid2d]
   end
   1["Plane<br>[47, 64, 1]"]
-    %% Missing NodePath
   2["Plane<br>[47, 64, 2]"]
-    %% Missing NodePath
   17["Sweep Extrusion<br>[266, 288, 1]"]
-    %% Missing NodePath
   18["Sweep Extrusion<br>[264, 286, 2]"]
-    %% Missing NodePath
   19[Wall]
     %% face_code_ref=Missing NodePath
   20[Wall]

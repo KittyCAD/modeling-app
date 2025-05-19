@@ -42,7 +42,8 @@ impl Test {
 
     /// Read in the entry point file and return its contents as a string.
     pub fn read(&self) -> String {
-        std::fs::read_to_string(&self.entry_point).expect("Failed to read file: {filename}")
+        std::fs::read_to_string(&self.entry_point)
+            .unwrap_or_else(|e| panic!("Failed to read file: {:?} due to {e}", self.entry_point))
     }
 }
 
@@ -3194,6 +3195,69 @@ mod revolve_colinear {
 }
 mod subtract_regression07 {
     const TEST_NAME: &str = "subtract_regression07";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod subtract_regression08 {
+    const TEST_NAME: &str = "subtract_regression08";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod subtract_regression09 {
+    const TEST_NAME: &str = "subtract_regression09";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod subtract_regression10 {
+    const TEST_NAME: &str = "subtract_regression10";
 
     /// Test parsing KCL.
     #[test]

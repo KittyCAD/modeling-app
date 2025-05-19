@@ -325,7 +325,7 @@ export function Toolbar({
           // A single button
           return (
             <div
-              className="relative"
+              className={`relative ${itemConfig.alwaysDark ? ' dark bg-chalkboard-90 ' : ''}`}
               key={itemConfig.id}
               // Mouse events do not fire on disabled buttons
               onMouseEnter={handleMouseEnter}

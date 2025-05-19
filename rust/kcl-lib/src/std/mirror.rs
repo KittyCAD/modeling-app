@@ -17,7 +17,6 @@ use crate::{
 };
 
 /// Mirror a sketch.
-///
 pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let axis = args.get_kw_arg_typed(
@@ -34,7 +33,6 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 }
 
 /// Mirror a sketch.
-///
 async fn inner_mirror_2d(
     sketches: Vec<Sketch>,
     axis: Axis2dOrEdgeReference,
