@@ -63,13 +63,31 @@ export default function CommandBarSelectionMixedInput({
         setHasAutoSkipped(true)
       }
     }
-  }, [])
+  }, [arg.name])
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
     return () => kclManager.defaultSelectionFilter(selection)
   }, [arg.selectionFilter])
+
+  // Watch for outside teardowns of this component
+  // (such as clicking another argument in the command palette header)
+  // and quickly save the current selection if we can
+  useEffect(() => {
+    return () => {
+      const resolvedSelection: Selections | undefined = isArgRequired
+        ? selection
+        : selection || {
+            graphSelections: [],
+            otherSelections: [],
+          }
+
+      if (canSubmitSelection && resolvedSelection) {
+        onSubmit(resolvedSelection)
+      }
+    }
+  }, [])
 
   function handleChange() {
     inputRef.current?.focus()

@@ -19,7 +19,8 @@ import type { modelingMachine } from '@src/machines/modelingMachine'
 const semanticEntityNames: {
   [key: string]: Array<Artifact['type'] | 'defaultPlane'>
 } = {
-  face: ['wall', 'cap', 'solid2d'],
+  face: ['wall', 'cap'],
+  profile: ['solid2d'],
   edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
   point: [],
   plane: ['defaultPlane'],
@@ -53,6 +54,7 @@ function CommandBarSelectionInput({
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = useCommandBarState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
+  const [hasClearedSelection, setHasClearedSelection] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(selection)
@@ -101,7 +103,7 @@ function CommandBarSelectionInput({
     if (canSubmitSelection && arg.skip && argValue === undefined) {
       handleSubmit()
     }
-  }, [canSubmitSelection])
+  }, [arg.name, canSubmitSelection])
 
   function handleChange() {
     inputRef.current?.focus()
@@ -138,7 +140,30 @@ function CommandBarSelectionInput({
           selectionType: 'singleCodeCursor',
         },
       })
-  }, [arg.clearSelectionFirst])
+    setHasClearedSelection(true)
+  }, [arg])
+
+  // Watch for outside teardowns of this component
+  // (such as clicking another argument in the command palette header)
+  // and quickly save the current selection if we can
+  useEffect(() => {
+    return () => {
+      const resolvedSelection: Selections | undefined = isArgRequired
+        ? selection
+        : selection || {
+            graphSelections: [],
+            otherSelections: [],
+          }
+
+      if (
+        !(arg.clearSelectionFirst && !hasClearedSelection) &&
+        canSubmitSelection &&
+        resolvedSelection
+      ) {
+        onSubmit(resolvedSelection)
+      }
+    }
+  }, [hasClearedSelection])
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
