@@ -277,4 +277,4 @@ export fn revolve(
   tagStart?: tag,
   /// A named tag for the face at the end of the revolve.
   tagEnd?: tag,
-): [Solid; 1+] {}
+): Solid {}
