@@ -162,7 +162,7 @@ bodyDiscBell = startProfile(
   |> line(end = [0, -2]) // Wall thickness.
   |> xLine(length = -1 * (tBell + wUndercut))
   |> close(%)
-  |> revolve(%, axis = Y)
+  |> revolve(axis = Y)
 
 // Drill lug holes.
 sketchLugs = startSketchOn(bodyDiscBell, face = seg04)
