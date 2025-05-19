@@ -684,4 +684,33 @@ c = 3 + a`
       highlightedHeaderArg: 'value',
     })
   })
+
+  test('Text-to-CAD command can be closed with escape while in prompt', async ({
+    page,
+    homePage,
+    cmdBar,
+  }) => {
+    await homePage.expectState({
+      projectCards: [],
+      sortBy: 'last-modified-desc',
+    })
+    await homePage.textToCadBtn.click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Text-to-CAD Create',
+      currentArgKey: 'prompt',
+      currentArgValue: '',
+      headerArguments: {
+        Method: 'New project',
+        NewProjectName: 'untitled',
+        Prompt: '',
+      },
+      highlightedHeaderArg: 'prompt',
+    })
+    await page.keyboard.press('Escape')
+    await cmdBar.toBeClosed()
+    await cmdBar.expectState({
+      stage: 'commandBarClosed',
+    })
+  })
 })
