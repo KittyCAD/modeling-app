@@ -416,15 +416,10 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "name": "patternCircular3d",
     "unlabeledArg": {
       "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
       },
       "sourceRange": []
     },
@@ -3405,15 +3400,10 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "name": "patternCircular3d",
     "unlabeledArg": {
       "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
       },
       "sourceRange": []
     },
@@ -3559,15 +3549,10 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "name": "patternCircular3d",
     "unlabeledArg": {
       "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
       },
       "sourceRange": []
     },

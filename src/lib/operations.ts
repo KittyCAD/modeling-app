@@ -412,7 +412,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
 }
 
 /**
- * Gather up the argument values for the Revolve command
+ * Gather up the argument values for the sweep command
  * to be used in the command bar edit flow.
  */
 const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {

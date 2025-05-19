@@ -43,13 +43,12 @@ import {
   kclSettings,
   recast,
   sketchFromKclValue,
-  sketchFromKclValueOptional,
   unitAngToUnitAngle,
   unitLenToUnitLength,
 } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/lib/selections'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
-import { Reason, err } from '@src/lib/trap'
+import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -633,34 +632,6 @@ export function isLinesParallelAndConstrained(
       selection: null,
     }
   }
-}
-
-export function hasExtrudeSketch({
-  ast,
-  selection,
-  memVars,
-}: {
-  ast: Program
-  selection: Selection
-  memVars: VariableMap
-}): boolean {
-  const varDecMeta = getNodeFromPath<VariableDeclaration>(
-    ast,
-    selection?.codeRef?.pathToNode,
-    'VariableDeclaration'
-  )
-  if (err(varDecMeta)) {
-    console.error(varDecMeta)
-    return false
-  }
-  const varDec = varDecMeta.node
-  if (varDec.type !== 'VariableDeclaration') return false
-  const varName = varDec.declaration.id.name
-  const varValue = memVars[varName]
-  return (
-    varValue?.type === 'Solid' ||
-    !(sketchFromKclValueOptional(varValue, varName) instanceof Reason)
-  )
 }
 
 export function artifactIsPlaneWithPaths(selectionRanges: Selections) {
