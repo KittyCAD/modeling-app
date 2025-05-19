@@ -805,13 +805,8 @@ description: Operations executed spinning-highrise-tower.kcl
           "type": "Number",
           "value": 17.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "M"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -1275,13 +1270,8 @@ description: Operations executed spinning-highrise-tower.kcl
           "type": "Number",
           "value": 17.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "M"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
