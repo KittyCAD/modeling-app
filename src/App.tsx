@@ -129,9 +129,11 @@ export function App() {
       settings.app.onboardingStatus.current ||
       settings.app.onboardingStatus.default
     const needsOnboarded =
-      searchParams.size === 0 && needsToOnboard(location, onboardingStatus)
+      !isDesktop() &&
+      searchParams.size === 0 &&
+      needsToOnboard(location, onboardingStatus)
 
-    if (!isDesktop() && needsOnboarded) {
+    if (needsOnboarded) {
       toast.success(
         () =>
           TutorialRequestToast({
@@ -147,7 +149,7 @@ export function App() {
         }
       )
     }
-  }, [location, settings.app.onboardingStatus, navigate])
+  }, [settings.app.onboardingStatus])
 
   useEffect(() => {
     const needsDownloadAppToast =
