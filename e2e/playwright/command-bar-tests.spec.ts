@@ -36,27 +36,29 @@ test.describe('Command bar tests', () => {
     await u.closeDebugPanel()
 
     // Click the line of code for xLine.
-    await page.getByText(`close()`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+    await page.getByText(`startProfile(at = [-10, -10])`).click()
+
+    // Wait for the selection to register (TODO: we need a definitive way to wait for this)
+    await page.waitForTimeout(200)
 
     await toolbar.extrudeButton.click()
     await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
-      currentArgKey: 'sketches',
-      currentArgValue: '',
+      currentArgKey: 'length',
+      currentArgValue: '5',
       headerArguments: {
-        Sketches: '',
+        Profiles: '1 profile',
         Length: '',
       },
-      highlightedHeaderArg: 'sketches',
+      highlightedHeaderArg: 'length',
     })
-    await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
       commandName: 'Extrude',
       headerArguments: {
-        Sketches: '1 segment',
+        Profiles: '1 profile',
         Length: '5',
       },
     })
@@ -286,7 +288,7 @@ test.describe('Command bar tests', () => {
     await cmdBar.cmdOptions.getByText('Extrude').click()
 
     // Assert that we're on the selection step
-    await expect(page.getByRole('button', { name: 'sketches' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Profiles' })).toBeDisabled()
     // Select a face
     await page.mouse.move(700, 200)
     await page.mouse.click(700, 200)

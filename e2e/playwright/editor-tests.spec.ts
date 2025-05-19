@@ -1131,14 +1131,15 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(100)
 
     await page.getByText('startProfile(at = [4.61, -14.01])').click()
+    // Wait for the selection to register (TODO: we need a definitive way to wait for this)
+    await page.waitForTimeout(200)
     await toolbar.extrudeButton.click()
-    await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'arguments',
       currentArgKey: 'length',
       currentArgValue: '5',
       headerArguments: {
-        Sketches: '1 face',
+        Profiles: '1 profile',
         Length: '',
       },
       highlightedHeaderArg: 'length',
@@ -1148,7 +1149,7 @@ sketch001 = startSketchOn(XZ)
     await cmdBar.expectState({
       stage: 'review',
       headerArguments: {
-        Sketches: '1 face',
+        Profiles: '1 profile',
         Length: '5',
       },
       commandName: 'Extrude',
@@ -1354,7 +1355,9 @@ sketch001 = startSketchOn(XZ)
       const u = await getUtils(page)
       const projectLink = page.getByRole('link', { name: 'cube' })
       const gizmo = page.locator('[aria-label*=gizmo]')
-      const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
+      const resetCameraButton = page.getByRole('button', {
+        name: 'Reset view',
+      })
       const locationToHaveColor = async (
         position: { x: number; y: number },
         color: [number, number, number]

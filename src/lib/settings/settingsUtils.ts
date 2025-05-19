@@ -27,7 +27,10 @@ import {
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { Setting } from '@src/lib/settings/initialSettings'
-import { createSettings, settings } from '@src/lib/settings/initialSettings'
+import {
+  createSettings,
+  type settings,
+} from '@src/lib/settings/initialSettings'
 import type {
   SaveSettingsPayload,
   SettingsLevel,
@@ -321,7 +324,7 @@ export async function loadAndValidateSettings(
 
   // Because getting the default directory is async, we need to set it after
   if (onDesktop) {
-    settings.app.projectDirectory.default = await getInitialDefaultDir()
+    settingsNext.app.projectDirectory.default = await getInitialDefaultDir()
   }
 
   settingsNext = setSettingsAtLevel(
