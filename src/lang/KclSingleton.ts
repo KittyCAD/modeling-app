@@ -487,10 +487,10 @@ export class KclManager {
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
+      // updateArtifactGraph relies on updated executeState/variables
+      await this.updateArtifactGraph(execState.artifactGraph)
     }
     this.ast = structuredClone(ast)
-    // updateArtifactGraph relies on updated executeState/variables
-    await this.updateArtifactGraph(execState.artifactGraph)
     if (!isInterrupted) {
       this.singletons.sceneInfra.modelingSend({
         type: 'code edit during sketch',
