@@ -44,7 +44,7 @@ impl Axis2dOrPoint2d {
 /// A 3D axis or a raw point3d.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Axis3dOrPoint3d {
-    /// #D axis and origin.
+    /// 3D axis and origin.
     Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
     /// Raw point3d.
     Point([TyF64; 3]),
