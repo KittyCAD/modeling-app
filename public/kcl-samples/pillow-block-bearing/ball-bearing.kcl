@@ -71,7 +71,7 @@ bearingUpper = startProfile(
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> revolve(angle = 360, axis = Y)
-  |> appearance(%, color = "#121212")
+  |> appearance(color = "#121212")
 
 bearingLower = startProfile(bearingBody, at = [bearingBoreDiameter / 2, 0.025])
   |> xLine(length = 0.05)
@@ -88,7 +88,7 @@ bearingLower = startProfile(bearingBody, at = [bearingBoreDiameter / 2, 0.025])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> revolve(angle = 360, axis = Y)
-  |> appearance(%, color = "#f0f0f0")
+  |> appearance(color = "#f0f0f0")
 
 // Revolve the link sketch
 revolve(linkSketch, axis = Y, angle = 360 / 16)

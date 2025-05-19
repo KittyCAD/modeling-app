@@ -49,4 +49,4 @@ bottomExtrusion = startSketchOn(flangeBase, face = START)
 // Cut a hole through the entire body
 pipeHole = startSketchOn(topExtrusion, face = END)
   |> circle(center = [0, 0], radius = pipeDia / 2)
-  |> extrude(%, length = -(topTotalThickness + baseThickness + bottomThickness))
+  |> extrude(length = -(topTotalThickness + baseThickness + bottomThickness))

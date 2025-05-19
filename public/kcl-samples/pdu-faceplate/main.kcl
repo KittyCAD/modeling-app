@@ -17,7 +17,7 @@ supportThickness = 3
 
 // Main body of the PDU faceplate with integrated rack mounting flanges
 faceplateShape = startSketchOn(offsetPlane(XY, offset = -faceplateHeight / 2))
-  |> startProfile(%, at = [-faceplateWidth / 2 - supportWidth, 0])
+  |> startProfile(at = [-faceplateWidth / 2 - supportWidth, 0])
   |> yLine(length = supportThickness)
   |> xLine(length = supportWidth)
   |> yLine(length = faceplateDepth - supportThickness)
@@ -53,7 +53,7 @@ leftSpacerPosition = leftSpacerWidth / 2 - (nestWidth / 2)
 
 fn boxModuleFn(width) {
   shape = startSketchOn(XZ)
-    |> startProfile(%, at = [-width / 2, moduleHeight / 2])
+    |> startProfile(at = [-width / 2, moduleHeight / 2])
     |> xLine(length = width)
     |> yLine(length = -moduleHeight)
     |> xLine(length = -width)
@@ -128,7 +128,7 @@ switchButtonBody = extrude(switchButtonShape, length = swtichButtonWidth)
        y = 0,
        z = 0,
      )
-  |> appearance(%, color = "#ff0000")
+  |> appearance(color = "#ff0000")
 
 // Spacer between switch and plug modules for layout alignment
 secondSpacerWidth = moduleWidth / 2
@@ -156,7 +156,7 @@ powerPlugBody = boxModuleFn(width = powerPlugWidth)
        z = 0,
      )
 plugShape = startSketchOn(powerPlugBody, face = END)
-  |> circle(%, center = [0, 0], radius = 17)
+  |> circle(center = [0, 0], radius = 17)
   |> translate(
        %,
        x = firstPowerPlugPosition,
@@ -166,7 +166,7 @@ plugShape = startSketchOn(powerPlugBody, face = END)
 plugBody = extrude(plugShape, length = -20)
 plugHoleDistance = 20
 plugHoleShape = startSketchOn(plugBody, face = START)
-  |> circle(%, center = [-plugHoleDistance / 2, 0], radius = 3)
+  |> circle(center = [-plugHoleDistance / 2, 0], radius = 3)
   |> translate(
        %,
        x = firstPowerPlugPosition,

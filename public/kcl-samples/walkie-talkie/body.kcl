@@ -14,7 +14,7 @@ body = startSketchOn(XZ)
   |> yLine(length = -height, tag = $chamfer2)
   |> xLine(length = -width, tag = $chamfer3)
   |> close(tag = $chamfer4)
-  |> extrude(%, length = thickness)
+  |> extrude(length = thickness)
   |> chamfer(
        length = chamferLength,
        tags = [

@@ -29,4 +29,4 @@ bottleNeck = startSketchOn(bottleBody, face = END)
 
 // Define a shell operation so that the entire body and neck are hollow, with only the top face opened
 bottleShell = shell(bottleNeck, faces = [END], thickness = wallThickness)
-  |> appearance(%, color = "#0078c2")
+  |> appearance(color = "#0078c2")

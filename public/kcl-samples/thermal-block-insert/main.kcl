@@ -37,7 +37,7 @@ fn tongueBlockFn() {
 
 // Create top-side profile with tongues
 tongueShape = startSketchOn(XY)
-  |> startProfile(%, at = [-insertLength / 2, insertThickness / 2])
+  |> startProfile(at = [-insertLength / 2, insertThickness / 2])
   |> tongueBlockFn()
   |> yLine(length = -insertThickness / 2)
   |> xLine(length = -insertLength)
