@@ -1862,7 +1862,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
     let path = if path_string.ends_with(".kcl") {
         if path_string
             .chars()
-            .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
+            .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.' && c != '/' && c != '\\')
         {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
