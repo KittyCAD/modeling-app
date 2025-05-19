@@ -578,10 +578,10 @@ impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
             // This is an offset, not an index, and may point to
             // the end of input (input.len()) on eof errors.
 
-            return KclError::Lexical(crate::errors::KclErrorDetails {
-                source_ranges: vec![SourceRange::new(offset, offset, module_id)],
-                message: "unexpected EOF while parsing".to_string(),
-            });
+            return KclError::Lexical(crate::errors::KclErrorDetails::new(
+                "unexpected EOF while parsing".to_owned(),
+                vec![SourceRange::new(offset, offset, module_id)],
+            ));
         }
 
         // TODO: Add the Winnow tokenizer context to the error.
@@ -589,9 +589,9 @@ impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
         let bad_token = &input[offset];
         // TODO: Add the Winnow parser context to the error.
         // See https://github.com/KittyCAD/modeling-app/issues/784
-        KclError::Lexical(crate::errors::KclErrorDetails {
-            source_ranges: vec![SourceRange::new(offset, offset + 1, module_id)],
-            message: format!("found unknown token '{}'", bad_token),
-        })
+        KclError::Lexical(crate::errors::KclErrorDetails::new(
+            format!("found unknown token '{}'", bad_token),
+            vec![SourceRange::new(offset, offset + 1, module_id)],
+        ))
     }
 }

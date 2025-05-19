@@ -941,12 +941,10 @@ fn artifacts_to_update(
         ModelingCmd::StartPath(_) => {
             let mut return_arr = Vec::new();
             let current_plane_id = path_to_plane_id_map.get(&artifact_command.cmd_id).ok_or_else(|| {
-                KclError::Internal(KclErrorDetails {
-                    message: format!(
-                        "Expected a current plane ID when processing StartPath command, but we have none: {id:?}"
-                    ),
-                    source_ranges: vec![range],
-                })
+                KclError::Internal(KclErrorDetails::new(
+                    format!("Expected a current plane ID when processing StartPath command, but we have none: {id:?}"),
+                    vec![range],
+                ))
             })?;
             return_arr.push(Artifact::Path(Path {
                 id,
@@ -1065,10 +1063,10 @@ fn artifacts_to_update(
                 // TODO: Using the first one.  Make sure to revisit this
                 // choice, don't think it matters for now.
                 path_id: ArtifactId::new(*loft_cmd.section_ids.first().ok_or_else(|| {
-                    KclError::Internal(KclErrorDetails {
-                        message: format!("Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"),
-                        source_ranges: vec![range],
-                    })
+                    KclError::Internal(KclErrorDetails::new(
+                        format!("Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"),
+                        vec![range],
+                    ))
                 })?),
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
@@ -1108,12 +1106,12 @@ fn artifacts_to_update(
                 };
                 last_path = Some(path);
                 let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                    KclError::Internal(KclErrorDetails {
-                        message:format!(
+                    KclError::Internal(KclErrorDetails::new(
+                        format!(
                             "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
                         ),
-                        source_ranges: vec![range],
-                    })
+                        vec![range],
+                    ))
                 })?;
                 let extra_artifact = exec_artifacts.values().find(|a| {
                     if let Artifact::StartSketchOnFace(s) = a {
@@ -1162,12 +1160,12 @@ fn artifacts_to_update(
                         continue;
                     };
                     let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                        KclError::Internal(KclErrorDetails {
-                            message:format!(
+                        KclError::Internal(KclErrorDetails::new(
+                            format!(
                                 "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
                             ),
-                            source_ranges: vec![range],
-                        })
+                            vec![range],
+                        ))
                     })?;
                     let extra_artifact = exec_artifacts.values().find(|a| {
                         if let Artifact::StartSketchOnFace(s) = a {

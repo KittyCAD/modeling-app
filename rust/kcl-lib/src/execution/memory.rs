@@ -364,10 +364,10 @@ impl ProgramMemory {
             };
         }
 
-        Err(KclError::UndefinedValue(KclErrorDetails {
-            message: format!("`{}` is not defined", var),
-            source_ranges: vec![source_range],
-        }))
+        Err(KclError::UndefinedValue(KclErrorDetails::new(
+            format!("`{}` is not defined", var),
+            vec![source_range],
+        )))
     }
 
     /// Iterate over all key/value pairs in the specified environment which satisfy the provided
@@ -485,10 +485,10 @@ impl ProgramMemory {
             };
         }
 
-        Err(KclError::UndefinedValue(KclErrorDetails {
-            message: format!("`{}` is not defined", var),
-            source_ranges: vec![],
-        }))
+        Err(KclError::UndefinedValue(KclErrorDetails::new(
+            format!("`{}` is not defined", var),
+            vec![],
+        )))
     }
 }
 
@@ -643,10 +643,10 @@ impl Stack {
     pub fn add(&mut self, key: String, value: KclValue, source_range: SourceRange) -> Result<(), KclError> {
         let env = self.memory.get_env(self.current_env.index());
         if env.contains_key(&key) {
-            return Err(KclError::ValueAlreadyDefined(KclErrorDetails {
-                message: format!("Cannot redefine `{}`", key),
-                source_ranges: vec![source_range],
-            }));
+            return Err(KclError::ValueAlreadyDefined(KclErrorDetails::new(
+                format!("Cannot redefine `{}`", key),
+                vec![source_range],
+            )));
         }
 
         self.memory.stats.mutation_count.fetch_add(1, Ordering::Relaxed);

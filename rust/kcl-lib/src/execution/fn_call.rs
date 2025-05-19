@@ -1,22 +1,22 @@
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use crate::execution::cad_op::{Group, OpArg, OpKclValue, Operation};
+use super::{types::ArrayLen, EnvironmentRef};
 use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::FunctionSource, memory, types::RuntimeType, BodyType, ExecState, ExecutorContext, KclValue,
-        Metadata, StatementKind, TagEngineInfo, TagIdentifier,
+        cad_op::{Group, OpArg, OpKclValue, Operation},
+        kcl_value::FunctionSource,
+        memory,
+        types::RuntimeType,
+        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
     },
     parsing::ast::types::{CallExpressionKw, DefaultParamVal, FunctionExpression, Node, Program, Type},
     source_range::SourceRange,
     std::StdFn,
     CompilationError,
 };
-
-use super::types::ArrayLen;
-use super::EnvironmentRef;
 
 #[derive(Debug, Clone)]
 pub struct Args {
@@ -281,6 +281,13 @@ impl Node<CallExpressionKw> {
                 def.call_kw(Some(func.name()), exec_state, ctx, args, callsite)
                     .await
                     .map(Option::unwrap)
+                    .map_err(|e| {
+                        // This is used for the backtrace display.  We don't add
+                        // another location the way we do for user-defined
+                        // functions because the error uses the Args, which
+                        // already points here.
+                        e.set_last_backtrace_fn_name(Some(func.name()))
+                    })
             }
             None => {
                 // Clone the function so that we can use a mutable reference to
@@ -288,10 +295,10 @@ impl Node<CallExpressionKw> {
                 let func = fn_name.get_result(exec_state, ctx).await?.clone();
 
                 let Some(fn_src) = func.as_fn() else {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: "cannot call this because it isn't a function".to_string(),
-                        source_ranges: vec![callsite],
-                    }));
+                    return Err(KclError::Semantic(KclErrorDetails::new(
+                        "cannot call this because it isn't a function".to_string(),
+                        vec![callsite],
+                    )));
                 };
 
                 let return_value = fn_src
@@ -299,7 +306,10 @@ impl Node<CallExpressionKw> {
                     .await
                     .map_err(|e| {
                         // Add the call expression to the source ranges.
-                        e.add_source_ranges(vec![callsite])
+                        //
+                        // TODO: Use the name that the function was defined
+                        // with, not the identifier it was used with.
+                        e.add_unwind_location(Some(fn_name.name.name.clone()), callsite)
                     })?;
 
                 let result = return_value.ok_or_else(move || {
@@ -308,10 +318,10 @@ impl Node<CallExpressionKw> {
                     if let KclValue::Function { meta, .. } = func {
                         source_ranges = meta.iter().map(|m| m.source_range).collect();
                     };
-                    KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Result of user-defined function {} is undefined", fn_name),
+                    KclError::UndefinedValue(KclErrorDetails::new(
+                        format!("Result of user-defined function {} is undefined", fn_name),
                         source_ranges,
-                    })
+                    ))
                 })?;
 
                 Ok(result)
@@ -490,10 +500,10 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     let tag_id = if let Some(t) = value.sketch.tags.get(&tag.name) {
                         let mut t = t.clone();
                         let Some(info) = t.get_cur_info() else {
-                            return Err(KclError::Internal(KclErrorDetails {
-                                message: format!("Tag {} does not have path info", tag.name),
-                                source_ranges: vec![tag.into()],
-                            }));
+                            return Err(KclError::Internal(KclErrorDetails::new(
+                                format!("Tag {} does not have path info", tag.name),
+                                vec![tag.into()],
+                            )));
                         };
 
                         let mut info = info.clone();
@@ -608,10 +618,10 @@ fn type_check_params_kw(
                                 // TODO if we have access to the AST for the argument we could choose which example to suggest.
                                 message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`");
                             }
-                            KclError::Semantic(KclErrorDetails {
+                            KclError::Semantic(KclErrorDetails::new(
                                 message,
-                                source_ranges: vec![arg.source_range],
-                            })
+                                vec![arg.source_range],
+                            ))
                         })?;
                 }
             }
@@ -673,8 +683,8 @@ fn type_check_params_kw(
                     exec_state,
                 )
                 .map_err(|_| {
-                    KclError::Semantic(KclErrorDetails {
-                        message: format!(
+                    KclError::Semantic(KclErrorDetails::new(
+                        format!(
                             "The input argument of {} requires a value with type `{}`, but found {}",
                             fn_name
                                 .map(|n| format!("`{}`", n))
@@ -682,8 +692,8 @@ fn type_check_params_kw(
                             ty,
                             arg.1.value.human_friendly_type()
                         ),
-                        source_ranges: vec![arg.1.source_range],
-                    })
+                        vec![arg.1.source_range],
+                    ))
                 })?;
         }
     } else if let Some((name, _)) = &fn_def.input_arg {
@@ -730,13 +740,13 @@ fn assign_args_to_params_kw(
                         .add(name.clone(), value, default_val.source_range())?;
                 }
                 None => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        source_ranges,
-                        message: format!(
+                    return Err(KclError::Semantic(KclErrorDetails::new(
+                        format!(
                             "This function requires a parameter {}, but you haven't passed it one.",
                             name
                         ),
-                    }));
+                        source_ranges,
+                    )));
                 }
             },
         }
@@ -747,16 +757,15 @@ fn assign_args_to_params_kw(
 
         let Some(unlabeled) = unlabelled else {
             return Err(if args.kw_args.labeled.contains_key(param_name) {
-                KclError::Semantic(KclErrorDetails {
+                KclError::Semantic(KclErrorDetails::new(
+                    format!("The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name}:`"),
                     source_ranges,
-                    message: format!("The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name}:`"),
-                })
+                ))
             } else {
-                KclError::Semantic(KclErrorDetails {
+                KclError::Semantic(KclErrorDetails::new(
+                    "This function expects an unlabeled first parameter, but you haven't passed it one.".to_owned(),
                     source_ranges,
-                    message: "This function expects an unlabeled first parameter, but you haven't passed it one."
-                        .to_owned(),
-                })
+                ))
             });
         };
         exec_state.mut_stack().add(
@@ -789,14 +798,14 @@ fn coerce_result_type(
                 ty = RuntimeType::Union(vec![(**inner).clone(), ty]);
             }
             let val = val.coerce(&ty, exec_state).map_err(|_| {
-                KclError::Semantic(KclErrorDetails {
-                    message: format!(
+                KclError::Semantic(KclErrorDetails::new(
+                    format!(
                         "This function requires its result to be of type `{}`, but found {}",
                         ty.human_friendly_type(),
                         val.human_friendly_type(),
                     ),
-                    source_ranges: ret_ty.as_source_ranges(),
-                })
+                    ret_ty.as_source_ranges(),
+                ))
             })?;
             Ok(Some(val))
         } else {
@@ -873,10 +882,10 @@ mod test {
                 "all params required, none given, should error",
                 vec![req_param("x")],
                 vec![],
-                Err(KclError::Semantic(KclErrorDetails {
-                    source_ranges: vec![SourceRange::default()],
-                    message: "This function requires a parameter x, but you haven't passed it one.".to_owned(),
-                })),
+                Err(KclError::Semantic(KclErrorDetails::new(
+                    "This function requires a parameter x, but you haven't passed it one.".to_owned(),
+                    vec![SourceRange::default()],
+                ))),
             ),
             (
                 "all params optional, none given, should be OK",
@@ -888,10 +897,10 @@ mod test {
                 "mixed params, too few given",
                 vec![req_param("x"), opt_param("y")],
                 vec![],
-                Err(KclError::Semantic(KclErrorDetails {
-                    source_ranges: vec![SourceRange::default()],
-                    message: "This function requires a parameter x, but you haven't passed it one.".to_owned(),
-                })),
+                Err(KclError::Semantic(KclErrorDetails::new(
+                    "This function requires a parameter x, but you haven't passed it one.".to_owned(),
+                    vec![SourceRange::default()],
+                ))),
             ),
             (
                 "mixed params, minimum given, should be OK",

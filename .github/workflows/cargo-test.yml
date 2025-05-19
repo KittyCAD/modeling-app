@@ -88,6 +88,7 @@ jobs:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
           ZOO_HOST: https://api.dev.zoo.dev
           RUST_BACKTRACE: full
+          RUST_MIN_STACK: 10485760000
       - name: Commit differences
         if: steps.path-changes.outputs.outside-kcl-samples == 'false' && steps.cargo-test-kcl-samples.outcome == 'failure'
         shell: bash
@@ -119,6 +120,7 @@ jobs:
           # Configure nextest when it's run by insta (via just).
           NEXTEST_PROFILE: ci
           RUST_BACKTRACE: full
+          RUST_MIN_STACK: 10485760000
       - name: Build and archive tests
         run: |
           cd rust
@@ -182,6 +184,7 @@ jobs:
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
           ZOO_HOST: https://api.dev.zoo.dev
+          RUST_MIN_STACK: 10485760000
       - name: Upload results
         if: always()
         run: .github/ci-cd-scripts/upload-results.sh
@@ -238,6 +241,7 @@ jobs:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
           ZOO_HOST: https://api.dev.zoo.dev
           MODELING_APP_INTERNAL_SAMPLES_SECRET: ${{secrets.MODELING_APP_INTERNAL_SAMPLES_SECRET}}
+          RUST_MIN_STACK: 10485760000
   run-wasm-tests:
     name: Run wasm tests
     strategy:

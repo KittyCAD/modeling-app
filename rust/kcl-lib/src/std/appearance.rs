@@ -32,10 +32,10 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 
     // Make sure the color if set is valid.
     if !HEX_REGEX.is_match(&color) {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: format!("Invalid hex color (`{}`), try something like `#fff000`", color),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            format!("Invalid hex color (`{}`), try something like `#fff000`", color),
+            vec![args.source_range],
+        )));
     }
 
     let result = inner_appearance(
@@ -282,10 +282,10 @@ async fn inner_appearance(
     for solid_id in solids.ids(&args.ctx).await? {
         // Set the material properties.
         let rgb = rgba_simple::RGB::<f32>::from_hex(&color).map_err(|err| {
-            KclError::Semantic(KclErrorDetails {
-                message: format!("Invalid hex color (`{color}`): {err}"),
-                source_ranges: vec![args.source_range],
-            })
+            KclError::Semantic(KclErrorDetails::new(
+                format!("Invalid hex color (`{color}`): {err}"),
+                vec![args.source_range],
+            ))
         })?;
 
         let color = Color {

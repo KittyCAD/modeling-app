@@ -96,11 +96,11 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>, KclEr
         if stage_modules.is_empty() {
             waiting_modules.sort();
 
-            return Err(KclError::ImportCycle(KclErrorDetails {
-                message: format!("circular import of modules not allowed: {}", waiting_modules.join(", ")),
+            return Err(KclError::ImportCycle(KclErrorDetails::new(
+                format!("circular import of modules not allowed: {}", waiting_modules.join(", ")),
                 // TODO: we can get the right import lines from the AST, but we don't
-                source_ranges: vec![SourceRange::default()],
-            }));
+                vec![SourceRange::default()],
+            )));
         }
 
         // not strictly needed here, but perhaps helpful to avoid thinking
@@ -137,20 +137,20 @@ pub(crate) fn import_dependencies(repr: &ModuleRepr, ctx: &ExecutorContext) -> R
                     // This is a bit of a hack, but it works for now.
                     ret.lock()
                         .map_err(|err| {
-                            KclError::Internal(KclErrorDetails {
-                                message: format!("Failed to lock mutex: {}", err),
-                                source_ranges: Default::default(),
-                            })
+                            KclError::Internal(KclErrorDetails::new(
+                                format!("Failed to lock mutex: {}", err),
+                                Default::default(),
+                            ))
                         })?
                         .push((filename.to_string(), is.clone(), resolved_path));
                 }
                 ImportPath::Foreign { path } => {
                     ret.lock()
                         .map_err(|err| {
-                            KclError::Internal(KclErrorDetails {
-                                message: format!("Failed to lock mutex: {}", err),
-                                source_ranges: Default::default(),
-                            })
+                            KclError::Internal(KclErrorDetails::new(
+                                format!("Failed to lock mutex: {}", err),
+                                Default::default(),
+                            ))
                         })?
                         .push((path.to_string(), is.clone(), resolved_path));
                 }
@@ -169,10 +169,10 @@ pub(crate) fn import_dependencies(repr: &ModuleRepr, ctx: &ExecutorContext) -> R
     walk(ret.clone(), prog.into(), ctx)?;
 
     let ret = ret.lock().map_err(|err| {
-        KclError::Internal(KclErrorDetails {
-            message: format!("Failed to lock mutex: {}", err),
-            source_ranges: Default::default(),
-        })
+        KclError::Internal(KclErrorDetails::new(
+            format!("Failed to lock mutex: {}", err),
+            Default::default(),
+        ))
     })?;
 
     Ok(ret.clone())
@@ -213,10 +213,10 @@ pub(crate) async fn import_universe(
 
         let repr = {
             let Some(module_info) = exec_state.get_module(module_id) else {
-                return Err(KclError::Internal(KclErrorDetails {
-                    message: format!("Module {} not found", module_id),
-                    source_ranges: vec![import_stmt.into()],
-                }));
+                return Err(KclError::Internal(KclErrorDetails::new(
+                    format!("Module {} not found", module_id),
+                    vec![import_stmt.into()],
+                )));
             };
             module_info.repr.clone()
         };
