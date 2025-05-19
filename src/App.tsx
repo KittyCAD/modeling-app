@@ -128,7 +128,8 @@ export function App() {
     const onboardingStatus =
       settings.app.onboardingStatus.current ||
       settings.app.onboardingStatus.default
-    const needsOnboarded = needsToOnboard(location, onboardingStatus)
+    const needsOnboarded =
+      searchParams.size === 0 && needsToOnboard(location, onboardingStatus)
 
     if (!isDesktop() && needsOnboarded) {
       toast.success(
