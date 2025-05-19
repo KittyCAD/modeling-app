@@ -436,7 +436,7 @@ fn pipe_expression(i: &mut TokenSlice) -> PResult<Node<PipeExpression>> {
     ))
 }
 
-fn bool_value(i: &mut TokenSlice) -> PResult<BoxNode<Literal>> {
+fn bool_value(i: &mut TokenSlice) -> PResult<Node<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Keyword if token.value == "true" => Ok((true, token)),
@@ -448,7 +448,7 @@ fn bool_value(i: &mut TokenSlice) -> PResult<BoxNode<Literal>> {
         })
         .context(expected("a boolean literal (either true or false)"))
         .parse_next(i)?;
-    Ok(Box::new(Node::new(
+    Ok(Node::new(
         Literal {
             value: LiteralValue::Bool(value),
             raw: value.to_string(),
@@ -457,11 +457,11 @@ fn bool_value(i: &mut TokenSlice) -> PResult<BoxNode<Literal>> {
         token.start,
         token.end,
         token.module_id,
-    )))
+    ))
 }
 
 fn literal(i: &mut TokenSlice) -> PResult<BoxNode<Literal>> {
-    alt((string_literal, unsigned_number_literal))
+    alt((string_literal, unsigned_number_literal, bool_value))
         .map(Box::new)
         .context(expected("a KCL literal, like 'myPart' or 3"))
         .parse_next(i)
@@ -2051,7 +2051,7 @@ fn unnecessarily_bracketed(i: &mut TokenSlice) -> PResult<Expr> {
 fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> PResult<Expr> {
     alt((
         member_expression.map(Box::new).map(Expr::MemberExpression),
-        bool_value.map(Expr::Literal),
+        bool_value.map(Box::new).map(Expr::Literal),
         tag.map(Box::new).map(Expr::TagDeclarator),
         literal.map(Expr::Literal),
         fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
@@ -2070,7 +2070,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> PResult<Expr> {
 fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
     let mut expr = alt((
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
-        bool_value.map(Expr::Literal),
+        bool_value.map(Box::new).map(Expr::Literal),
         member_expression.map(Box::new).map(Expr::MemberExpression),
         literal.map(Expr::Literal),
         fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
@@ -4866,6 +4866,15 @@ let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
     |> line(%, tag = $var01)"#;
         assert_no_err(some_program_string);
     }
+
+    #[test]
+    fn test_parse_param_bool_default() {
+        let some_program_string = r#"fn patternTransform(
+  use_original?: boolean = false,
+) {}"#;
+        assert_no_err(some_program_string);
+    }
+
     #[test]
     fn parse_function_types() {
         let code = r#"foo = x: fn
