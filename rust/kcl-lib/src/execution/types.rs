@@ -155,9 +155,8 @@ impl RuntimeType {
                 .map(RuntimeType::Union),
             Type::Object { properties } => properties
                 .into_iter()
-                .map(|p| {
-                    RuntimeType::from_parsed(p.type_.unwrap().inner, exec_state, source_range)
-                        .map(|ty| (p.identifier.inner.name, ty))
+                .map(|(id, ty)| {
+                    RuntimeType::from_parsed(ty.inner, exec_state, source_range).map(|ty| (id.name.clone(), ty))
                 })
                 .collect::<Result<Vec<_>, CompilationError>>()
                 .map(RuntimeType::Object),
