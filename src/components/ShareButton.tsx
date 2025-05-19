@@ -1,4 +1,4 @@
-import { err } from '@src/lib/trap'
+import { isErr } from '@src/lib/trap'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
@@ -17,7 +17,7 @@ const shareHotkey = 'mod+alt+s'
 const canPasswordProtectShareLinks = (
   subOrErr: undefined | SubscriptionsOrError
 ): boolean => {
-  if (subOrErr === undefined || typeof subOrErr === 'number' || err(subOrErr))
+  if (subOrErr === undefined || typeof subOrErr === 'number' || isErr(subOrErr))
     return false
   return subOrErr.modeling_app.share_links[0] === 'password_protected'
 }
