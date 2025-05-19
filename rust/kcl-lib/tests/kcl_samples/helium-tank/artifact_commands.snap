@@ -203,7 +203,7 @@ description: Artifact commands helium-tank.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 95.88500000000016,
+        "radius": 95.8850000000001,
         "offset": {
           "unit": "degrees",
           "value": -90.0
