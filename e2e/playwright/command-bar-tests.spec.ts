@@ -38,19 +38,21 @@ test.describe('Command bar tests', () => {
     // Click the line of code for xLine.
     await page.getByText(`startProfile(at = [-10, -10])`).click()
 
+    // Wait for the selection to register (TODO: we need a definitive way to wait for this)
+    await page.waitForTimeout(200)
+
     await toolbar.extrudeButton.click()
     await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
-      currentArgKey: 'sketches',
-      currentArgValue: '',
+      currentArgKey: 'length',
+      currentArgValue: '5',
       headerArguments: {
-        Profiles: '',
+        Profiles: '1 profile',
         Length: '',
       },
-      highlightedHeaderArg: 'Profiles',
+      highlightedHeaderArg: 'length',
     })
-    await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',

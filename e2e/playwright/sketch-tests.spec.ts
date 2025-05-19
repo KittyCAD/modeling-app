@@ -1016,7 +1016,6 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
 
     // sketch selection should already have been made.
     // otherwise the cmdbar would be waiting for a selection.
-    await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'arguments',
       currentArgKey: 'length',
