@@ -3936,19 +3936,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
       }
     }
   },
-  "goundSize": {
-    "type": "Number",
-    "value": 50.0,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
   "groundBody": {
     "type": "Solid",
     "value": {
@@ -4146,6 +4133,19 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "type": "M"
       },
       "sectional": false
+    }
+  },
+  "groundSize": {
+    "type": "Number",
+    "value": 50.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "M"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "handrailHeight": {
