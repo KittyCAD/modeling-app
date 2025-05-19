@@ -4,6 +4,8 @@ import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
 import { err } from '@src/lib/trap'
 
+const _TIME_1_SECOND = 1000
+
 export enum BillingState {
   Updating = 'updating',
   Waiting = 'waiting',
@@ -42,6 +44,7 @@ export interface BillingContext {
   urlUserService: string
   tier: undefined | Tier
   subscriptionsOrError: undefined | SubscriptionsOrError
+  lastFetch: undefined | Date
 }
 
 export interface BillingUpdateEvent {
@@ -56,6 +59,7 @@ export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
   tier: undefined,
   subscriptionsOrError: undefined,
   urlUserService: '',
+  lastFetch: undefined,
 })
 
 const toTierFrom = (args: TierBasedOn): Tier => {
@@ -88,6 +92,18 @@ export const billingMachine = setup({
       async ({
         input,
       }: { input: { context: BillingContext; event: BillingUpdateEvent } }) => {
+        // Rate limit on the client side to 1 request per second.
+        if (
+          input.context.lastFetch &&
+          Date.now() - input.context.lastFetch.getTime() < _TIME_1_SECOND
+        ) {
+          return input.context
+        }
+
+        // Record the lastFetch immediately rather than after all the fetches,
+        // in-case the fetches fail and cause a loop.
+        const lastFetch = new Date()
+
         const billingOrError: Models['CustomerBalance_type'] | number | Error =
           await crossPlatformFetch(
             `${input.context.urlUserService}/user/payment/balance`,
@@ -157,6 +173,7 @@ export const billingMachine = setup({
           subscriptionsOrError,
           credits,
           allowance,
+          lastFetch,
         }
       }
     ),
