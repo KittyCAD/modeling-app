@@ -1873,6 +1873,27 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             ));
         }
 
+        if path_string.starts_with("..") {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    path_range,
+                    "import path may not start with '..'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+                )
+                .into(),
+            ));
+        }
+
+        // Make sure they are not using an absolute path.
+        if path_string.starts_with('/') || path_string.starts_with('\\') {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    path_range,
+                    "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+                )
+                .into(),
+            ));
+        }
+
         ImportPath::Kcl { filename: path_string }
     } else if path_string.starts_with("std::") {
         ParseContext::warn(CompilationError::err(
@@ -4532,6 +4553,21 @@ e
 
     #[test]
     fn bad_imports() {
+        assert_err(
+            r#"import cube from "../cube.kcl""#,
+            "import path may not start with '..'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            [17, 30],
+        );
+        assert_err(
+            r#"import cube from "/cube.kcl""#,
+            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            [17, 28],
+        );
+        assert_err(
+            r#"import cube from "C:\cube.kcl""#,
+            "import path may only contain alphanumeric characters, underscore, hyphen, and period. KCL files in other directories are not yet supported.",
+            [17, 30],
+        );
         assert_err(
             r#"import * as foo from "dsfs""#,
             "as is not the 'from' keyword",
