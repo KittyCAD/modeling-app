@@ -27,7 +27,10 @@ import {
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { Setting } from '@src/lib/settings/initialSettings'
-import { createSettings, settings } from '@src/lib/settings/initialSettings'
+import {
+  createSettings,
+  type settings,
+} from '@src/lib/settings/initialSettings'
 import type {
   SaveSettingsPayload,
   SettingsLevel,
