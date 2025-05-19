@@ -60,7 +60,7 @@ fn createDiscHalf(plane, dDiscParam, hFrictionSurfaceParam, tDiscHalfParam) {
   // Create a disc half with a vent hole pattern.
   sketchFace = startSketchOn(plane)
   profileFace = circle(sketchFace, center = [0, 0], radius = dDiscParam / 2)
-    |> subtract2d(%, tool = circle(sketchFace, center = [0, 0], radius = dDiscParam / 2 - hFrictionSurfaceParam))
+    |> subtract2d(tool = circle(sketchFace, center = [0, 0], radius = dDiscParam / 2 - hFrictionSurfaceParam))
 
   // Create three circles at t = 0, 0.5, and 1
   hole1 = drillHole(activeSketch = sketchFace, t = 0.2)
