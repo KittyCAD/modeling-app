@@ -11,11 +11,13 @@ use kcmc::{
 };
 use kittycad_modeling_cmds as kcmc;
 
-use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, KclValue, SolidOrSketchOrImportedGeometry},
-    std::Args,
+    execution::{
+        types::{PrimitiveType, RuntimeType},
+        ExecState, KclValue, SolidOrSketchOrImportedGeometry,
+    },
+    std::{args::TyF64, axis_or_reference::Axis3dOrPoint3d, Args},
 };
 
 /// Scale a solid or a sketch.
@@ -446,7 +448,15 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let roll: Option<TyF64> = args.get_kw_arg_opt_typed("roll", &RuntimeType::degrees(), exec_state)?;
     let pitch: Option<TyF64> = args.get_kw_arg_opt_typed("pitch", &RuntimeType::degrees(), exec_state)?;
     let yaw: Option<TyF64> = args.get_kw_arg_opt_typed("yaw", &RuntimeType::degrees(), exec_state)?;
-    let axis: Option<[TyF64; 3]> = args.get_kw_arg_opt_typed("axis", &RuntimeType::point3d(), exec_state)?;
+    let axis: Option<Axis3dOrPoint3d> = args.get_kw_arg_opt_typed(
+        "axis",
+        &RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Axis3d),
+            RuntimeType::point3d(),
+        ]),
+        exec_state,
+    )?;
+    let axis = axis.map(|a| a.to_point3d());
     let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::degrees(), exec_state)?;
     let global = args.get_kw_arg_opt("global")?;
 
@@ -642,7 +652,51 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 ///
 /// ```no_run
-/// // Rotate a pipe about an axis with an angle.
+/// // Rotate a pipe about a named axis with an angle.
+///
+/// // Create a path for the sweep.
+/// sweepPath = startSketchOn(XZ)
+///     |> startProfile(at = [0.05, 0.05])
+///     |> line(end = [0, 7])
+///     |> tangentialArc(angle = 90, radius = 5)
+///     |> line(end = [-3, 0])
+///     |> tangentialArc(angle = -90, radius = 5)
+///     |> line(end = [0, 7])
+///
+/// // Create a hole for the pipe.
+/// pipeHole = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 1.5,
+///    )
+///
+/// sweepSketch = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 2,
+///         )              
+///     |> subtract2d(tool = pipeHole)
+///     |> sweep(path = sweepPath)   
+///     |> rotate(
+///     axis =  Z,
+///     angle = 90,
+///     )
+/// ```
+///
+/// ```no_run
+/// // Rotate an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
+///     |> rotate(
+///     axis =  [0, 0, 1.0],
+///     angle = 9,
+///     )
+/// ```
+///
+/// ```no_run
+/// // Rotate a pipe about a raw axis with an angle.
 ///
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn(XZ)
@@ -670,18 +724,6 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> rotate(
 ///     axis =  [0, 0, 1.0],
 ///     angle = 90,
-///     )
-/// ```
-///
-/// ```no_run
-/// // Rotate an imported model.
-///
-/// import "tests/inputs/cube.sldprt" as cube
-///
-/// cube
-///     |> rotate(
-///     axis =  [0, 0, 1.0],
-///     angle = 9,
 ///     )
 /// ```
 ///

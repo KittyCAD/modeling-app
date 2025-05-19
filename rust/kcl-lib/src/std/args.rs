@@ -9,6 +9,7 @@ use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::Serialize;
 
+pub use crate::execution::fn_call::Args;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -26,8 +27,6 @@ use crate::{
     },
     ModuleId,
 };
-
-pub use crate::execution::fn_call::Args;
 
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`";
