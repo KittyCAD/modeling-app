@@ -15,20 +15,23 @@ use kittycad_modeling_cmds::{
 use serde::Serialize;
 use uuid::Uuid;
 
-use super::{
-    args::{Arg, KwArgs},
-    utils::{point_3d_to_mm, point_to_mm},
-};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         kcl_value::FunctionSource,
-        types::{NumericType, RuntimeType},
+        types::{NumericType, PrimitiveType, RuntimeType},
         ExecState, Geometries, Geometry, KclObjectFields, KclValue, Sketch, Solid,
     },
-    std::{args::TyF64, Args},
+    std::{
+        args::{Arg, KwArgs, TyF64},
+        axis_or_reference::Axis2dOrPoint2d,
+        utils::{point_3d_to_mm, point_to_mm},
+        Args,
+    },
     ExecutorContext, SourceRange,
 };
+
+use super::axis_or_reference::Axis3dOrPoint3d;
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
 
@@ -742,9 +745,17 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
     let distance: TyF64 = args.get_kw_arg_typed("distance", &RuntimeType::length(), exec_state)?;
-    let axis: [TyF64; 2] = args.get_kw_arg_typed("axis", &RuntimeType::point2d(), exec_state)?;
+    let axis: Axis2dOrPoint2d = args.get_kw_arg_typed(
+        "axis",
+        &RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Axis2d),
+            RuntimeType::point2d(),
+        ]),
+        exec_state,
+    )?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
+    let axis = axis.to_point2d();
     if axis[0].n == 0.0 && axis[1].n == 0.0 {
         return Err(KclError::Semantic(KclErrorDetails {
             message:
@@ -762,6 +773,22 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 /// of distance between each repetition, some specified number of times.
 ///
 /// ```no_run
+/// /// Pattern using a named axis.
+///
+/// exampleSketch = startSketchOn(XZ)
+///   |> circle(center = [0, 0], radius = 1)
+///   |> patternLinear2d(
+///        axis = X,
+///        instances = 7,
+///        distance = 4
+///      )
+///
+/// example = extrude(exampleSketch, length = 1)
+/// ```
+///
+/// ```no_run
+/// /// Pattern using a raw axis.
+///
 /// exampleSketch = startSketchOn(XZ)
 ///   |> circle(center = [0, 0], radius = 1)
 ///   |> patternLinear2d(
@@ -821,9 +848,17 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
     let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
     let distance: TyF64 = args.get_kw_arg_typed("distance", &RuntimeType::length(), exec_state)?;
-    let axis: [TyF64; 3] = args.get_kw_arg_typed("axis", &RuntimeType::point3d(), exec_state)?;
+    let axis: Axis3dOrPoint3d = args.get_kw_arg_typed(
+        "axis",
+        &RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Axis3d),
+            RuntimeType::point3d(),
+        ]),
+        exec_state,
+    )?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
+    let axis = axis.to_point3d();
     if axis[0].n == 0.0 && axis[1].n == 0.0 && axis[2].n == 0.0 {
         return Err(KclError::Semantic(KclErrorDetails {
             message:
@@ -841,6 +876,26 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 /// of distance between each repetition, some specified number of times.
 ///
 /// ```no_run
+/// /// Pattern using a named axis.
+///
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [0, 2])
+///   |> line(end = [3, 1])
+///   |> line(end = [0, -4])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 1)
+///   |> patternLinear3d(
+///       axis = X,
+///       instances = 7,
+///       distance = 6
+///     )
+/// ```
+///
+/// ```no_run
+/// /// Pattern using a raw axis.
+///
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 2])
