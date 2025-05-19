@@ -1138,7 +1138,7 @@ sketch001 = startSketchOn(XZ)
       currentArgKey: 'length',
       currentArgValue: '5',
       headerArguments: {
-        Sketches: '1 face',
+        Profiles: '1 profile',
         Length: '',
       },
       highlightedHeaderArg: 'length',
@@ -1148,7 +1148,7 @@ sketch001 = startSketchOn(XZ)
     await cmdBar.expectState({
       stage: 'review',
       headerArguments: {
-        Sketches: '1 face',
+        Profiles: '1 profile',
         Length: '5',
       },
       commandName: 'Extrude',
