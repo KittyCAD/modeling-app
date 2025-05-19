@@ -15,6 +15,7 @@ use kittycad_modeling_cmds::{
 use serde::Serialize;
 use uuid::Uuid;
 
+use super::axis_or_reference::Axis3dOrPoint3d;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -30,8 +31,6 @@ use crate::{
     },
     ExecutorContext, SourceRange,
 };
-
-use super::axis_or_reference::Axis3dOrPoint3d;
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
 
@@ -1008,7 +1007,16 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
     // If instances is 1, this has no effect.
     let instances: u32 = args.get_kw_arg_typed("instances", &RuntimeType::count(), exec_state)?;
     // The axis around which to make the pattern. This is a 3D vector.
-    let axis: [TyF64; 3] = args.get_kw_arg_typed("axis", &RuntimeType::point3d(), exec_state)?;
+    let axis: Axis3dOrPoint3d = args.get_kw_arg_typed(
+        "axis",
+        &RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Axis3d),
+            RuntimeType::point3d(),
+        ]),
+        exec_state,
+    )?;
+    let axis = axis.to_point3d();
+
     // The center about which to make the pattern. This is a 3D vector.
     let center: [TyF64; 3] = args.get_kw_arg_typed("center", &RuntimeType::point3d(), exec_state)?;
     // The arc angle (in degrees) to place the repetitions. Must be greater than 0.
@@ -1040,6 +1048,24 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 /// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
+/// /// Pattern using a named axis.
+///
+/// exampleSketch = startSketchOn(XZ)
+///   |> circle(center = [0, 0], radius = 1)
+///
+/// example = extrude(exampleSketch, length = -5)
+///   |> patternCircular3d(
+///        axis = X,
+///        center = [10, -20, 0],
+///        instances = 11,
+///        arcDegrees = 360,
+///        rotateDuplicates = true
+///      )
+/// ```
+///
+/// ```no_run
+/// /// Pattern using a raw axis.
+///
 /// exampleSketch = startSketchOn(XZ)
 ///   |> circle(center = [0, 0], radius = 1)
 ///
