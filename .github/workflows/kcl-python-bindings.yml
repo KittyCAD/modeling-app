@@ -113,7 +113,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - uses: taiki-e/install-action@just
       - name: Run tests
@@ -130,7 +130,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
       - name: Install codespell
         run: |
           uv venv .venv
@@ -161,7 +161,7 @@ jobs:
         with:
           path: rust/kcl-python-bindings
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
       - name: do uv things
         run: |
           cd rust/kcl-python-bindings
