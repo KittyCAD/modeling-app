@@ -167,32 +167,6 @@ jobs:
           retention-days: 30
           overwrite: true
 
-      - name: Check diff
-        if: ${{ github.ref != 'refs/heads/main' }}
-        shell: bash
-        id: git-check
-        run: |
-            git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
-            if git status | grep -q "Changes to be committed"
-            then echo "modified=true" >> $GITHUB_OUTPUT
-            else echo "modified=false" >> $GITHUB_OUTPUT
-            fi
-
-      - name: Commit changes
-        if: ${{ steps.git-check.outputs.modified == 'true' }}
-        shell: bash
-        run: |
-          git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          git fetch origin
-          echo ${{ github.head_ref }}
-          git checkout ${{ github.head_ref }}
-          git commit --message "Update snapshots" || true
-          git push
-          git push origin ${{ github.head_ref }}
-
   electron:
     needs: [prepare-wasm]
     timeout-minutes: 60
