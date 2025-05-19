@@ -2780,27 +2780,31 @@ fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
         .parse_next(i)
 }
 
+fn record_ty_field(i: &mut TokenSlice) -> PResult<(Node<Identifier>, Node<Type>)> {
+    (identifier, colon, opt(whitespace), type_)
+        .map(|(id, _, _, ty)| (id, ty))
+        .parse_next(i)
+}
+
 /// Parse a type in various positions.
 fn type_(i: &mut TokenSlice) -> PResult<Node<Type>> {
     let type_ = alt((
         // Object types
-        // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
-        (open_brace, parameters, close_brace).try_map(|(open, params, close)| {
-            for p in &params {
-                if p.type_.is_none() {
-                    return Err(CompilationError::fatal(
-                        p.identifier.as_source_range(),
-                        "Missing type for field in record type",
-                    ));
-                }
-            }
-            Ok(Node::new(
-                Type::Object { properties: params },
-                open.start,
-                close.end,
-                open.module_id,
-            ))
-        }),
+        (
+            open_brace,
+            opt(whitespace),
+            separated(0.., record_ty_field, comma_sep),
+            opt(whitespace),
+            close_brace,
+        )
+            .try_map(|(open, _, params, _, close)| {
+                Ok(Node::new(
+                    Type::Object { properties: params },
+                    open.start,
+                    close.end,
+                    open.module_id,
+                ))
+            }),
         // Array types
         array_type,
         // Primitive or union types
@@ -4884,6 +4888,8 @@ fn foo(x: fn(a, b: number(mm), c: d): number(Angle)): fn { return 0 }
 type fn
 type foo = fn
 type foo = fn(a: string, b: { f: fn(): any })
+type foo = fn(a: string, b: {})
+type foo = fn(a: string, b: { })
 type foo = fn([fn])
 type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     "#;
