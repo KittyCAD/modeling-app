@@ -273,7 +273,7 @@ export function createSettings() {
         hideOnPlatform: 'desktop',
       }),
       projectDirectory: new Setting<string>({
-        defaultValue: '',
+        defaultValue: '', // gets set async in settingsUtils.ts
         description: 'The directory to save and load projects from',
         hideOnLevel: 'project',
         hideOnPlatform: 'web',
