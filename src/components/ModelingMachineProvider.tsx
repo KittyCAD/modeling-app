@@ -75,6 +75,7 @@ import {
   MAKE_TOAST_MESSAGES,
   EXECUTION_TYPE_MOCK,
   FILE_EXT,
+  PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
@@ -1749,6 +1750,7 @@ export const ModelingMachineProvider = ({
               execStateFileNamesIndex: 0,
             },
           ]
+          // Active file you are currently in
           const execStateNameToIndexMap: { [fileName: string]: number } = {}
           Object.entries(kclManager.execState.filenames).forEach(
             ([index, val]) => {
@@ -1759,7 +1761,7 @@ export const ModelingMachineProvider = ({
           )
           let basePath = ''
           if (isDesktop() && context?.project?.children) {
-            basePath = context?.selectedDirectory?.path
+            basePath = context?.project?.path
             const filePromises: Promise<FileMeta | null>[] = []
             let uploadSize = 0
             const recursivelyPushFilePromises = (files: FileEntry[]) => {
@@ -1826,6 +1828,15 @@ export const ModelingMachineProvider = ({
               )
             }
           }
+          let filePath = file?.path
+          if (filePath) {
+            filePath = window.electron.path.relative(
+              basePath,
+              filePath
+            )
+          } else {
+            filePath = PROJECT_ENTRYPOINT
+          }
           return await promptToEditFlow({
             projectFiles,
             prompt: input.prompt,
@@ -1833,6 +1844,7 @@ export const ModelingMachineProvider = ({
             token,
             artifactGraph: kclManager.artifactGraph,
             projectName: context.project.name,
+            filePath
           })
         }),
       },

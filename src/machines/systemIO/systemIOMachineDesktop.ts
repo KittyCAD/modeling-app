@@ -370,5 +370,31 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
       }
     ),
+    [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          files: RequestedKCLFile[]
+          rootContext: AppMachineContext
+          requestedProjectName: string
+          override?: boolean
+          requestedFileNameWithExtension: string
+        }
+      }) => {
+        const message = await sharedBulkCreateWorkflow({
+          input: {
+            ...input,
+            override: input.override,
+          },
+        })
+        return {
+          ...message,
+          projectName: input.requestedProjectName,
+          fileName: input.requestedFileNameWithExtension || '',
+        }
+      }
+    ),
   },
 })

@@ -101,6 +101,15 @@ export const systemIOMachine = setup({
             override?: boolean
             requestedSubRoute?: string
           }
+      }
+      | {
+          type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile
+          data: {
+            files: RequestedKCLFile[]
+            requestedProjectName: string
+            requestedFileNameWithExtension: string
+            override?: boolean
+          }
         }
       | {
           type: SystemIOMachineEvents.importFileFromURL
@@ -339,6 +348,25 @@ export const systemIOMachine = setup({
         return { message: '', fileName: '', projectName: '', subRoute: '' }
       }
     ),
+    [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          files: RequestedKCLFile[]
+          rootContext: AppMachineContext
+          requestedProjectName: string
+          requestedFileNameWithExtension: string
+        }
+      }): Promise<{
+        message: string
+        fileName: string
+        projectName: string
+      }> => {
+        return { message: '', fileName: '', projectName: '' }
+      }
+    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -413,6 +441,10 @@ export const systemIOMachine = setup({
         [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject]: {
           target:
             SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
+        },
+        [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile]: {
+          target:
+            SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
         },
       },
     },
@@ -671,6 +703,50 @@ export const systemIOMachine = setup({
                 return {
                   name: event.output.projectName,
                   subRoute: event.output.subRoute,
+                }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile]: {
+      invoke: {
+        id: SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile,
+        src: SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile,
+        input: ({ context, event, self }) => {
+          assertEvent(
+            event,
+            SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile
+          )
+          return {
+            context,
+            files: event.data.files,
+            rootContext: self.system.get('root').getSnapshot().context,
+            requestedProjectName: event.data.requestedProjectName,
+            override: event.data.override,
+            requestedFileNameWithExtension: event.data.requestedFileNameWithExtension
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              requestedFileName: ({ event }) => {
+                assertEvent(event, SystemIOMachineEvents.done_bulkCreateKCLFilesAndNavigateToFile)
+                // Gotcha: file could have an ending of .kcl...
+                const file = event.output.fileName.endsWith('.kcl')
+                  ? event.output.fileName
+                  : event.output.fileName + '.kcl'
+                console.log('FILE PATH SETTING', file)
+                return {
+                  project: event.output.projectName,
+                  file,
                 }
               },
             }),

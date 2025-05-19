@@ -588,18 +588,32 @@ export function ToastPromptToEditCadSuccess({
 export const writeOverFilesAndExecute = async ({
   requestedFiles,
   projectName,
+  filePath
 }: {
   requestedFiles: RequestedKCLFile[]
   projectName: string
+  filePath?: string | undefined
 }) => {
-  systemIOActor.send({
-    type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
-    data: {
-      files: requestedFiles,
-      requestedProjectName: projectName,
-      override: true,
-    },
-  })
+  if (filePath) {
+    systemIOActor.send({
+      type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+      data: {
+        files: requestedFiles,
+        requestedProjectName: projectName,
+        requestedFileNameWithExtension: filePath,
+        override: true,
+      },
+    })
+  } else {
+    systemIOActor.send({
+      type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
+      data: {
+        files: requestedFiles,
+        requestedProjectName: projectName,
+        override: true,
+      },
+    })
+  }
 
   // to await the result of the send event above
   await waitForIdleState({ systemIOActor })

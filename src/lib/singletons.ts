@@ -245,3 +245,6 @@ commandBarActor.send({
     ],
   },
 })
+
+
+window.dog = systemIOActor
