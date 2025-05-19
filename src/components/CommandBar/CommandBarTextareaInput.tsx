@@ -86,6 +86,8 @@ function CommandBarTextareaInput({
               formRef.current?.dispatchEvent(
                 new Event('submit', { bubbles: true })
               )
+            } else if (event.key === 'Escape') {
+              commandBarActor.send({ type: 'Close' })
             }
           }}
           autoFocus

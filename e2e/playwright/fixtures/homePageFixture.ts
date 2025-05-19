@@ -26,6 +26,7 @@ export class HomePageFixture {
   sortByNameBtn!: Locator
   appHeader!: Locator
   tutorialBtn!: Locator
+  textToCadBtn!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -47,6 +48,7 @@ export class HomePageFixture {
     this.sortByNameBtn = this.page.getByTestId('home-sort-by-name')
     this.appHeader = this.page.getByTestId('app-header')
     this.tutorialBtn = this.page.getByTestId('home-tutorial-button')
+    this.textToCadBtn = this.page.getByTestId('home-text-to-cad')
   }
 
   private _serialiseSortBy = async (): Promise<
