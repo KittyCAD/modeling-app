@@ -153,13 +153,6 @@ impl ModulePath {
         }
     }
 
-    pub(crate) fn std_path(&self) -> Option<String> {
-        match self {
-            ModulePath::Std { value: p } => Some(p.clone()),
-            _ => None,
-        }
-    }
-
     pub(crate) async fn source(&self, fs: &FileManager, source_range: SourceRange) -> Result<ModuleSource, KclError> {
         match self {
             ModulePath::Local { value: p } => Ok(ModuleSource {
@@ -181,24 +174,46 @@ impl ModulePath {
         }
     }
 
-    pub(crate) fn from_import_path(path: &ImportPath, project_directory: &Option<TypedPath>) -> Self {
+    pub(crate) fn from_import_path(
+        path: &ImportPath,
+        project_directory: &Option<TypedPath>,
+        import_from: &ModulePath,
+    ) -> Self {
         match path {
             ImportPath::Kcl { filename: path } | ImportPath::Foreign { path } => {
-                let resolved_path = if let Some(project_dir) = project_directory {
-                    project_dir.join_typed(path)
-                } else {
-                    path.clone()
+                let resolved_path = match import_from {
+                    ModulePath::Main => {
+                        if let Some(project_dir) = project_directory {
+                            project_dir.join_typed(path)
+                        } else {
+                            path.clone()
+                        }
+                    }
+                    ModulePath::Local { value } => {
+                        let import_from_dir = value.parent();
+                        let base = import_from_dir.as_ref().or(project_directory.as_ref());
+                        if let Some(dir) = base {
+                            dir.join_typed(path)
+                        } else {
+                            path.clone()
+                        }
+                    }
+                    // We shouldn't be importing a non-std KCL file from std.
+                    ModulePath::Std { .. } => unreachable!(),
                 };
+
                 ModulePath::Local { value: resolved_path }
             }
-            ImportPath::Std { path } => {
-                // For now we only support importing from singly-nested modules inside std.
-                assert_eq!(path.len(), 2);
-                assert_eq!(&path[0], "std");
-
-                ModulePath::Std { value: path[1].clone() }
-            }
+            ImportPath::Std { path } => Self::from_std_import_path(path),
         }
+    }
+
+    pub(crate) fn from_std_import_path(path: &[String]) -> Self {
+        // For now we only support importing from singly-nested modules inside std.
+        assert_eq!(path.len(), 2);
+        assert_eq!(&path[0], "std");
+
+        ModulePath::Std { value: path[1].clone() }
     }
 }
 
