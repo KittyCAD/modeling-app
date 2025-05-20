@@ -362,25 +362,14 @@ export function ToastTextToCadSuccess({
                 // Delete the file from the project
 
                 if (projectName && fileName) {
-                  // You are in the new workflow for text to cad at the global application level
-                  if (isProjectNew) {
-                    // Delete the entire project if it was newly created from text to CAD
-                    systemIOActor.send({
-                      type: SystemIOMachineEvents.deleteProject,
-                      data: {
-                        requestedProjectName: projectName,
-                      },
-                    })
-                  } else {
-                    // Only delete the file if the project was preexisting
-                    systemIOActor.send({
-                      type: SystemIOMachineEvents.deleteKCLFile,
-                      data: {
-                        requestedProjectName: projectName,
-                        requestedFileName: fileName,
-                      },
-                    })
-                  }
+                  // Delete the entire project if it was newly created from text to CAD
+                  // or it deletes the folder when inside the modeling page
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.deleteProject,
+                    data: {
+                      requestedProjectName: projectName,
+                    },
+                  })
                 }
               }
 

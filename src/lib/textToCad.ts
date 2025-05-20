@@ -6,9 +6,9 @@ import {
   ToastTextToCadError,
   ToastTextToCadSuccess,
 } from '@src/components/ToastTextToCad'
-import { FILE_EXT, PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
-import { getNextFileName } from '@src/lib/desktopFS'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { kclManager, systemIOActor } from '@src/lib/singletons'
 import {
@@ -17,6 +17,8 @@ import {
 } from '@src/machines/systemIO/utils'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
+import { joinOSPaths } from '@src/lib/paths'
 
 export async function submitTextToCadPrompt(
   prompt: string,
@@ -173,7 +175,8 @@ export async function submitAndAwaitTextToKclSystemIO({
     }
   )
 
-  let newFileName = ''
+  let newFileName = PROJECT_ENTRYPOINT
+  let uniqueProjectName = ''
 
   const textToCadOutputCreated = await textToCadComplete
     .catch((e) => {
@@ -197,30 +200,25 @@ export async function submitAndAwaitTextToKclSystemIO({
 
       const TRUNCATED_PROMPT_LENGTH = 24
       // Only add the prompt name if it is a preexisting project
-      newFileName = `${value.prompt
+      const subDirectoryAsPromptName = `${value.prompt
         .slice(0, TRUNCATED_PROMPT_LENGTH)
         .replace(/\s/gi, '-')
         .replace(/\W/gi, '-')
-        .toLowerCase()}${FILE_EXT}`
-
-      // If the project is new generate a main.kcl
-      if (isProjectNew) {
-        newFileName = PROJECT_ENTRYPOINT
-      }
+        .toLowerCase()}`
 
       if (isDesktop()) {
-        // We have to preemptively run our unique file name logic,
-        // so that we can pass the unique file name to the toast,
-        // and by extension the file-deletion-on-reject logic.
-        newFileName = getNextFileName({
-          entryName: newFileName,
-          baseDir: projectName,
-        }).name
-
+        const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot({
+          projectFolderName: projectName,
+        })
+        const uniqueSubDirectoryName = getUniqueProjectName(
+          subDirectoryAsPromptName,
+          firstLevelDirectories
+        )
+        uniqueProjectName = joinOSPaths(projectName, uniqueSubDirectoryName)
         systemIOActor.send({
           type: SystemIOMachineEvents.createKCLFile,
           data: {
-            requestedProjectName: projectName,
+            requestedProjectName: uniqueProjectName,
             requestedCode: value.code,
             requestedFileNameWithExtension: newFileName,
           },
@@ -251,7 +249,7 @@ export async function submitAndAwaitTextToKclSystemIO({
         toastId,
         data: textToCadOutputCreated,
         token,
-        projectName: projectName,
+        projectName: uniqueProjectName,
         fileName: newFileName,
         navigate,
         isProjectNew,

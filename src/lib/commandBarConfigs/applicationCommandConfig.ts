@@ -10,7 +10,7 @@ import {
   kclSamplesManifestWithNoMultipleFiles,
 } from '@src/lib/kclSamples'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { IS_ML_EXPERIMENTAL, PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
@@ -19,7 +19,6 @@ import {
   joinOSPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
-import { FILE_EXT } from '@src/lib/constants'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 
 function onSubmitKCLSampleCreation({
