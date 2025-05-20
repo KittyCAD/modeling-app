@@ -592,7 +592,10 @@ export const modelingMachine = setup({
     input: {} as ModelingMachineContext,
   },
   guards: {
-    'Selection is on face': ({ context: { selectionRanges }, event }) => {
+    'Selection is on face': ({
+      context: { selectionRanges },
+      event,
+    }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
       if (artifactIsPlaneWithPaths(selectionRanges)) {
@@ -620,7 +623,7 @@ export const modelingMachine = setup({
     },
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
-    'is-error-free': () => {
+    'is-error-free': (): boolean => {
       return kclManager.errors.length === 0 && !kclManager.hasErrors()
     },
     'no kcl errors': () => {
@@ -2059,7 +2062,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges: Selections
         }
-      }) => {
+      }): Promise<ModelingMachineContext['sketchDetails']> => {
         const artifact = selectionRanges.graphSelections[0].artifact
         const plane = getPlaneFromArtifact(artifact, kclManager.artifactGraph)
         if (err(plane)) return Promise.reject(plane)
@@ -2170,18 +2173,13 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: {
-          selectionRanges: Selections
-          sketchDetails: SketchDetails
-          data: {
-            namedValue: KclCommandValue
-            currentValue: {
-              pathToNode: PathToNode
-              valueText: string
-            }
-          }
+        input: Pick<
+          ModelingMachineContext,
+          'sketchDetails' | 'selectionRanges'
+        > & {
+          data?: ModelingCommandSchema['Constrain with named value']
         }
-      }) => {
+      }): Promise<SetSelections> => {
         const { selectionRanges, sketchDetails, data } = input
         if (!sketchDetails) {
           return Promise.reject(new Error('No sketch details'))

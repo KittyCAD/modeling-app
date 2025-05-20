@@ -115,7 +115,7 @@ describe('modelingMachine - XState', () => {
   })
 
   describe('when in sketch mode', () => {
-    it.only('should transition to sketch state when entering sketch mode', async () => {
+    it('should transition to sketch state when entering sketch mode', async () => {
       const code = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [2263.04, -2721.2])
   |> line(end = [16.27, 73.81])
