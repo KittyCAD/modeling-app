@@ -14,8 +14,13 @@ import { IS_ML_EXPERIMENTAL, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
-import { getStringAfterLastSeparator, webSafePathSplit } from '@src/lib/paths'
+import {
+  getStringAfterLastSeparator,
+  joinOSPaths,
+  webSafePathSplit,
+} from '@src/lib/paths'
 import { FILE_EXT } from '@src/lib/constants'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -87,6 +92,26 @@ function onSubmitKCLSampleCreation({
           },
         })
       } else {
+        /**
+         * When adding assemblies to an existing project create the assembly into a unique sub directory
+         */
+        if (!isProjectNew) {
+          requestedFiles.forEach((requestedFile) => {
+            const subDirectoryName = projectPathPart
+            const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot({
+              projectFolderName: requestedFile.requestedProjectName,
+            })
+            const uniqueSubDirectoryName = getUniqueProjectName(
+              subDirectoryName,
+              firstLevelDirectories
+            )
+            requestedFile.requestedProjectName = joinOSPaths(
+              requestedFile.requestedProjectName,
+              uniqueSubDirectoryName
+            )
+          })
+        }
+
         /**
          * Bulk create the assembly and navigate to the project
          */
