@@ -156,6 +156,7 @@ jobs:
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: snapshots
           TARGET: web
 
       - name: Update snapshots
@@ -167,6 +168,7 @@ jobs:
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: snapshots
           TARGET: web
 
       - uses: actions/upload-artifact@v4
