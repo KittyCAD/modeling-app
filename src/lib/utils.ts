@@ -647,7 +647,6 @@ export async function engineViewIsometricWithoutGeometryPresent({
     eye_offset: MAGIC_ENGINE_EYE_OFFSET,
     fov_y: 45,
     ortho_scale_factor: 1.4063792,
-    // gotcha: the current value if orthographic won't be written to disk! its default!
     is_ortho: cameraProjection !== 'perspective',
     ortho_scale_enabled: cameraProjection !== 'perspective',
     world_coord_system: 'right_handed_up_z',
