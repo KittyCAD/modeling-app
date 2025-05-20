@@ -156,8 +156,10 @@ test.describe('Testing loading external models', () => {
 
       await test.step(`Ensure we made and opened a new file`, async () => {
         await editor.expectEditor.toContain('// ' + sampleOne.title)
-        await expect(newlyCreatedFile(sampleOne.folderName)).toBeVisible()
-        await expect(projectMenuButton).toContainText(sampleOne.file)
+        await expect(
+          page.getByTestId('file-tree-item').getByText(sampleOne.folderName)
+        ).toBeVisible()
+        await expect(projectMenuButton).toContainText('main.kcl')
       })
 
       await test.step(`Load a KCL sample with the command palette`, async () => {
@@ -171,8 +173,10 @@ test.describe('Testing loading external models', () => {
 
       await test.step(`Ensure we made and opened a new file with a unique name`, async () => {
         await editor.expectEditor.toContain('// ' + sampleOne.title)
-        await expect(newlyCreatedFile(sampleOne.folderName1)).toBeVisible()
-        await expect(projectMenuButton).toContainText(sampleOne.file1)
+        await expect(
+          page.getByTestId('file-tree-item').getByText(sampleOne.folderName1)
+        ).toBeVisible()
+        await expect(projectMenuButton).toContainText('main.kcl')
       })
     }
   )
