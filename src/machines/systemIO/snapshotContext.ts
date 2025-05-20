@@ -39,12 +39,10 @@ export const getAllSubDirectoriesAtProjectRoot = ({
     return folder.name === projectFolderName
   })
 
-  console.log(projectFolder)
   // Find the subdirectories
   if (projectFolder) {
     // 1st level
     const children = projectFolder.children
-    console.log(children)
     if (children) {
       children.forEach((childFileOrDirectory) => {
         // 2nd level
