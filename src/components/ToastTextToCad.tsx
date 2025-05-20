@@ -371,9 +371,7 @@ export function ToastTextToCadSuccess({
                       requestedProjectName: rootProjectName,
                     },
                   })
-                }
-
-                if (projectName && fileName) {
+                } else if (projectName && fileName) {
                   // deletes the folder when inside the modeling page
                   // The TTC Create will make a subdir, delete that dir with the main.kcl as well
                   systemIOActor.send({
