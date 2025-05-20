@@ -1811,14 +1811,25 @@ impl ImportStatement {
 
         match &self.path {
             ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => {
-                let name = s.file_name().map(|f| f.to_string());
+                let name = s.to_string_lossy();
+                if name.ends_with("/main.kcl") || name.ends_with("\\main.kcl") {
+                    let name = &name[..name.len() - 9];
+                    let start = name.rfind(['/', '\\']).map(|s| s + 1).unwrap_or(0);
+                    return Some(name[start..].to_owned());
+                }
+
+                let name = s.file_name().map(|f| f.to_string())?;
+                if name.contains('\\') || name.contains('/') {
+                    return None;
+                }
+
                 // Remove the extension if it exists.
                 let extension = s.extension();
-                if let Some(extension) = extension {
-                    name.map(|n| n.trim_end_matches(extension).trim_end_matches('.').to_string())
+                Some(if let Some(extension) = extension {
+                    name.trim_end_matches(extension).trim_end_matches('.').to_string()
                 } else {
                     name
-                }
+                })
             }
             ImportPath::Std { path } => path.last().cloned(),
         }
@@ -4329,5 +4340,21 @@ startSketchOn(XY)
 5
 "#
         );
+    }
+
+    #[test]
+    fn module_name() {
+        #[track_caller]
+        fn assert_mod_name(stmt: &str, name: &str) {
+            let tokens = crate::parsing::token::lex(stmt, ModuleId::default()).unwrap();
+            let stmt = crate::parsing::parser::import_stmt(&mut tokens.as_slice()).unwrap();
+            assert_eq!(stmt.module_name().unwrap(), name);
+        }
+
+        assert_mod_name("import 'foo.kcl'", "foo");
+        assert_mod_name("import 'foo.kcl' as bar", "bar");
+        assert_mod_name("import 'main.kcl'", "main");
+        assert_mod_name("import 'foo/main.kcl'", "foo");
+        assert_mod_name("import 'foo\\bar\\main.kcl'", "bar");
     }
 }

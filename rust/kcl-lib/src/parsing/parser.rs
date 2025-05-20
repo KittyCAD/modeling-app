@@ -1729,7 +1729,7 @@ fn glob(i: &mut TokenSlice) -> PResult<Token> {
         .parse_next(i)
 }
 
-fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
+pub(super) fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
     let (visibility, visibility_token) = opt(terminated(item_visibility, whitespace))
         .parse_next(i)?
         .map_or((ItemVisibility::Default, None), |pair| (pair.0, Some(pair.1)));
@@ -1867,7 +1867,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
                     path_range,
-                    "import path may only contain alphanumeric characters, underscore, hyphen, and period. KCL files in other directories are not yet supported.",
+                    "import path may only contain alphanumeric characters, `_`, `-`, `.`, `/`, and `\\`.",
                 )
                 .into(),
             ));
@@ -1891,6 +1891,15 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
                     "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
                 )
                 .into(),
+            ));
+        }
+
+        if (path_string.contains('/') || path_string.contains('\\'))
+            && !(path_string.ends_with("/main.kcl") || path_string.ends_with("\\main.kcl"))
+        {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(path_range, "import path to a subdirectory must only refer to main.kcl.")
+                    .into(),
             ));
         }
 
@@ -4569,8 +4578,13 @@ e
         );
         assert_err(
             r#"import cube from "C:\cube.kcl""#,
-            "import path may only contain alphanumeric characters, underscore, hyphen, and period. KCL files in other directories are not yet supported.",
+            "import path may only contain alphanumeric characters, `_`, `-`, `.`, `/`, and `\\`.",
             [17, 30],
+        );
+        assert_err(
+            r#"import cube from "cube/cube.kcl""#,
+            "import path to a subdirectory must only refer to main.kcl.",
+            [17, 32],
         );
         assert_err(
             r#"import * as foo from "dsfs""#,
