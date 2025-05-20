@@ -1131,6 +1131,8 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(100)
 
     await page.getByText('startProfile(at = [4.61, -14.01])').click()
+    // Wait for the selection to register (TODO: we need a definitive way to wait for this)
+    await page.waitForTimeout(200)
     await toolbar.extrudeButton.click()
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
