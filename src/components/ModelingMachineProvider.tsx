@@ -12,12 +12,8 @@ import { useLoaderData } from 'react-router-dom'
 import type { Actor, ContextFrom, Prop, SnapshotFrom, StateFrom } from 'xstate'
 import { assign, fromPromise } from 'xstate'
 
-import type {
-  OutputFormat3d,
-  Point3d,
-} from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
@@ -38,8 +34,6 @@ import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
 import { useKclContext } from '@src/lang/KclProvider'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
-  insertNamedConstant,
-  replaceValueAtNodePath,
   sketchOnExtrudedFace,
   sketchOnOffsetPlane,
   splitPipedProfile,
@@ -50,12 +44,6 @@ import {
   getNodeFromPath,
   traverse,
 } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import {
-  getFaceCodeRef,
-  getPathsFromArtifact,
-  getPlaneFromArtifact,
-} from '@src/lang/std/artifactGraph'
 import {
   EngineConnectionStateType,
   EngineConnectionEvents,
@@ -96,14 +84,12 @@ import {
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { updateSelections } from '@src/lib/selections'
-import { crossProduct, updateSketchDetailsNodePaths } from '@src/lang/util'
+import { updateSketchDetailsNodePaths } from '@src/lang/util'
 import {
   modelingMachineCommandConfig,
   type ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type {
-  KclValue,
-  PathToNode,
   PipeExpression,
   Program,
   VariableDeclaration,

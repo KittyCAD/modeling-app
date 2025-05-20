@@ -148,12 +148,9 @@ import {
   isCursorInSketchCommandRange,
   updateSketchDetailsNodePaths,
 } from '@src/lang/util'
-import { kclEditorActor } from './kclEditorMachine'
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
-import type {
-  OutputFormat3d,
-  Point3d,
-} from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 
@@ -1997,11 +1994,6 @@ export const modelingMachine = setup({
         return {} as ModelingMachineContext['sketchDetails']
       }
     ),
-    'animate-to-sketch': fromPromise(
-      async (_: { input: Pick<ModelingMachineContext, 'selectionRanges'> }) => {
-        return {} as ModelingMachineContext['sketchDetails']
-      }
-    ),
     'Get horizontal info': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'sketchDetails' | 'selectionRanges'>
@@ -2022,7 +2014,14 @@ export const modelingMachine = setup({
       }
     ),
     'setup-client-side-sketch-segments': fromPromise(
-      async ({ input: { sketchDetails, selectionRanges } }) => {
+      async ({
+        input: { sketchDetails, selectionRanges },
+      }: {
+        input: {
+          sketchDetails: SketchDetails
+          selectionRanges: Selections
+        }
+      }) => {
         if (!sketchDetails) return
         if (!sketchDetails.sketchEntryNodePath?.length) return
         sceneInfra.resetMouseListeners()
@@ -2053,233 +2052,257 @@ export const modelingMachine = setup({
         return undefined
       }
     ),
-    'animate-to-sketch': fromPromise(async ({ input: { selectionRanges } }) => {
-      const artifact = selectionRanges.graphSelections[0].artifact
-      const plane = getPlaneFromArtifact(artifact, kclManager.artifactGraph)
-      if (err(plane)) return Promise.reject(plane)
-      // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
-      // but still works if the user selected a plane/face by defaulting to the first path
-      const mainPath =
-        artifact?.type === 'segment' || artifact?.type === 'solid2d'
-          ? artifact?.pathId
-          : plane?.pathIds[0]
-      let sketch: KclValue | null = null
-      let planeVar: Plane | null = null
-
-      for (const variable of Object.values(kclManager.execState.variables)) {
-        // find programMemory that matches path artifact
-        if (
-          variable?.type === 'Sketch' &&
-          variable.value.artifactId === mainPath
-        ) {
-          sketch = variable
-          break
+    'animate-to-sketch': fromPromise(
+      async ({
+        input: { selectionRanges },
+      }: {
+        input: {
+          selectionRanges: Selections
         }
-        if (
-          // if the variable is an sweep, check if the underlying sketch matches the artifact
-          variable?.type === 'Solid' &&
-          variable.value.sketch.on.type === 'plane' &&
-          variable.value.sketch.artifactId === mainPath
-        ) {
-          sketch = {
-            type: 'Sketch',
-            value: variable.value.sketch,
+      }) => {
+        const artifact = selectionRanges.graphSelections[0].artifact
+        const plane = getPlaneFromArtifact(artifact, kclManager.artifactGraph)
+        if (err(plane)) return Promise.reject(plane)
+        // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
+        // but still works if the user selected a plane/face by defaulting to the first path
+        const mainPath =
+          artifact?.type === 'segment' || artifact?.type === 'solid2d'
+            ? artifact?.pathId
+            : plane?.pathIds[0]
+        let sketch: KclValue | null = null
+        let planeVar: Plane | null = null
+
+        for (const variable of Object.values(kclManager.execState.variables)) {
+          // find programMemory that matches path artifact
+          if (
+            variable?.type === 'Sketch' &&
+            variable.value.artifactId === mainPath
+          ) {
+            sketch = variable
+            break
           }
-          break
+          if (
+            // if the variable is an sweep, check if the underlying sketch matches the artifact
+            variable?.type === 'Solid' &&
+            variable.value.sketch.on.type === 'plane' &&
+            variable.value.sketch.artifactId === mainPath
+          ) {
+            sketch = {
+              type: 'Sketch',
+              value: variable.value.sketch,
+            }
+            break
+          }
+          if (variable?.type === 'Plane' && plane.id === variable.value.id) {
+            planeVar = variable.value
+          }
         }
-        if (variable?.type === 'Plane' && plane.id === variable.value.id) {
-          planeVar = variable.value
-        }
-      }
 
-      if (!sketch || sketch.type !== 'Sketch') {
-        if (artifact?.type !== 'plane')
+        if (!sketch || sketch.type !== 'Sketch') {
+          if (artifact?.type !== 'plane')
+            return Promise.reject(new Error('No sketch'))
+          const planeCodeRef = getFaceCodeRef(artifact)
+          if (planeVar && planeCodeRef) {
+            const toTuple = (point: Point3d): [number, number, number] => [
+              point.x,
+              point.y,
+              point.z,
+            ]
+            const planPath = getNodePathFromSourceRange(
+              kclManager.ast,
+              planeCodeRef.range
+            )
+            await letEngineAnimateAndSyncCamAfter(
+              engineCommandManager,
+              artifact.id
+            )
+            const normal = crossProduct(planeVar.xAxis, planeVar.yAxis)
+            return {
+              sketchEntryNodePath: [],
+              planeNodePath: planPath,
+              sketchNodePaths: [],
+              zAxis: toTuple(normal),
+              yAxis: toTuple(planeVar.yAxis),
+              origin: toTuple(planeVar.origin),
+            }
+          }
           return Promise.reject(new Error('No sketch'))
-        const planeCodeRef = getFaceCodeRef(artifact)
-        if (planeVar && planeCodeRef) {
-          const toTuple = (point: Point3d): [number, number, number] => [
-            point.x,
-            point.y,
-            point.z,
-          ]
-          const planPath = getNodePathFromSourceRange(
-            kclManager.ast,
-            planeCodeRef.range
-          )
-          await letEngineAnimateAndSyncCamAfter(
-            engineCommandManager,
-            artifact.id
-          )
-          const normal = crossProduct(planeVar.xAxis, planeVar.yAxis)
-          return {
-            sketchEntryNodePath: [],
-            planeNodePath: planPath,
-            sketchNodePaths: [],
-            zAxis: toTuple(normal),
-            yAxis: toTuple(planeVar.yAxis),
-            origin: toTuple(planeVar.origin),
+        }
+        const info = await sceneEntitiesManager.getSketchOrientationDetails(
+          sketch.value
+        )
+        await letEngineAnimateAndSyncCamAfter(
+          engineCommandManager,
+          info?.sketchDetails?.faceId || ''
+        )
+
+        const sketchArtifact = kclManager.artifactGraph.get(mainPath)
+        if (sketchArtifact?.type !== 'path')
+          return Promise.reject(new Error('No sketch artifact'))
+        const sketchPaths = getPathsFromArtifact({
+          artifact: kclManager.artifactGraph.get(plane.id),
+          sketchPathToNode: sketchArtifact?.codeRef?.pathToNode,
+          artifactGraph: kclManager.artifactGraph,
+          ast: kclManager.ast,
+        })
+        if (err(sketchPaths)) return Promise.reject(sketchPaths)
+        let codeRef = getFaceCodeRef(plane)
+        if (!codeRef) return Promise.reject(new Error('No plane codeRef'))
+        // codeRef.pathToNode is not always populated correctly
+        const planeNodePath = getNodePathFromSourceRange(
+          kclManager.ast,
+          codeRef.range
+        )
+        return {
+          sketchEntryNodePath: sketchArtifact.codeRef.pathToNode || [],
+          sketchNodePaths: sketchPaths,
+          planeNodePath,
+          zAxis: info.sketchDetails.zAxis || null,
+          yAxis: info.sketchDetails.yAxis || null,
+          origin: info.sketchDetails.origin.map(
+            (a) => a / sceneInfra._baseUnitMultiplier
+          ) as [number, number, number],
+          animateTargetId: info?.sketchDetails?.faceId || '',
+        }
+      }
+    ),
+    'Apply named value constraint': fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          selectionRanges: Selections
+          sketchDetails: SketchDetails
+          data: {
+            namedValue: KclCommandValue
+            currentValue: {
+              pathToNode: PathToNode
+              valueText: string
+            }
           }
         }
-        return Promise.reject(new Error('No sketch'))
-      }
-      const info = await sceneEntitiesManager.getSketchOrientationDetails(
-        sketch.value
-      )
-      await letEngineAnimateAndSyncCamAfter(
-        engineCommandManager,
-        info?.sketchDetails?.faceId || ''
-      )
-
-      const sketchArtifact = kclManager.artifactGraph.get(mainPath)
-      if (sketchArtifact?.type !== 'path')
-        return Promise.reject(new Error('No sketch artifact'))
-      const sketchPaths = getPathsFromArtifact({
-        artifact: kclManager.artifactGraph.get(plane.id),
-        sketchPathToNode: sketchArtifact?.codeRef?.pathToNode,
-        artifactGraph: kclManager.artifactGraph,
-        ast: kclManager.ast,
-      })
-      if (err(sketchPaths)) return Promise.reject(sketchPaths)
-      let codeRef = getFaceCodeRef(plane)
-      if (!codeRef) return Promise.reject(new Error('No plane codeRef'))
-      // codeRef.pathToNode is not always populated correctly
-      const planeNodePath = getNodePathFromSourceRange(
-        kclManager.ast,
-        codeRef.range
-      )
-      return {
-        sketchEntryNodePath: sketchArtifact.codeRef.pathToNode || [],
-        sketchNodePaths: sketchPaths,
-        planeNodePath,
-        zAxis: info.sketchDetails.zAxis || null,
-        yAxis: info.sketchDetails.yAxis || null,
-        origin: info.sketchDetails.origin.map(
-          (a) => a / sceneInfra._baseUnitMultiplier
-        ) as [number, number, number],
-        animateTargetId: info?.sketchDetails?.faceId || '',
-      }
-    }),
-    'Apply named value constraint': fromPromise(async ({ input }) => {
-      const { selectionRanges, sketchDetails, data } = input
-      if (!sketchDetails) {
-        return Promise.reject(new Error('No sketch details'))
-      }
-      if (!data) {
-        return Promise.reject(new Error('No data from command flow'))
-      }
-      let pResult = parse(recast(kclManager.ast))
-      if (trap(pResult) || !resultIsOk(pResult))
-        return Promise.reject(new Error('Unexpected compilation error'))
-      let parsed = pResult.program
-
-      let result: {
-        modifiedAst: Node<Program>
-        pathToReplaced: PathToNode | null
-        exprInsertIndex: number
-      } = {
-        modifiedAst: parsed,
-        pathToReplaced: null,
-        exprInsertIndex: -1,
-      }
-      // If the user provided a constant name,
-      // we need to insert the named constant
-      // and then replace the node with the constant's name.
-      if ('variableName' in data.namedValue) {
-        const astAfterReplacement = replaceValueAtNodePath({
-          ast: parsed,
-          pathToNode: data.currentValue.pathToNode,
-          newExpressionString: data.namedValue.variableName,
-        })
-        if (trap(astAfterReplacement)) {
-          return Promise.reject(astAfterReplacement)
+      }) => {
+        const { selectionRanges, sketchDetails, data } = input
+        if (!sketchDetails) {
+          return Promise.reject(new Error('No sketch details'))
         }
-        const parseResultAfterInsertion = parse(
-          recast(
-            insertNamedConstant({
-              node: astAfterReplacement.modifiedAst,
-              newExpression: data.namedValue,
-            })
+        if (!data) {
+          return Promise.reject(new Error('No data from command flow'))
+        }
+        let pResult = parse(recast(kclManager.ast))
+        if (trap(pResult) || !resultIsOk(pResult))
+          return Promise.reject(new Error('Unexpected compilation error'))
+        let parsed = pResult.program
+
+        let result: {
+          modifiedAst: Node<Program>
+          pathToReplaced: PathToNode | null
+          exprInsertIndex: number
+        } = {
+          modifiedAst: parsed,
+          pathToReplaced: null,
+          exprInsertIndex: -1,
+        }
+        // If the user provided a constant name,
+        // we need to insert the named constant
+        // and then replace the node with the constant's name.
+        if ('variableName' in data.namedValue) {
+          const astAfterReplacement = replaceValueAtNodePath({
+            ast: parsed,
+            pathToNode: data.currentValue.pathToNode,
+            newExpressionString: data.namedValue.variableName,
+          })
+          if (trap(astAfterReplacement)) {
+            return Promise.reject(astAfterReplacement)
+          }
+          const parseResultAfterInsertion = parse(
+            recast(
+              insertNamedConstant({
+                node: astAfterReplacement.modifiedAst,
+                newExpression: data.namedValue,
+              })
+            )
           )
-        )
-        result.exprInsertIndex = data.namedValue.insertIndex
+          result.exprInsertIndex = data.namedValue.insertIndex
 
-        if (
-          trap(parseResultAfterInsertion) ||
-          !resultIsOk(parseResultAfterInsertion)
-        )
-          return Promise.reject(parseResultAfterInsertion)
-        result = {
-          modifiedAst: parseResultAfterInsertion.program,
-          pathToReplaced: astAfterReplacement.pathToReplaced,
+          if (
+            trap(parseResultAfterInsertion) ||
+            !resultIsOk(parseResultAfterInsertion)
+          )
+            return Promise.reject(parseResultAfterInsertion)
+          result = {
+            modifiedAst: parseResultAfterInsertion.program,
+            pathToReplaced: astAfterReplacement.pathToReplaced,
+            exprInsertIndex: result.exprInsertIndex,
+          }
+        } else if ('valueText' in data.namedValue) {
+          // If they didn't provide a constant name,
+          // just replace the node with the value.
+          const astAfterReplacement = replaceValueAtNodePath({
+            ast: parsed,
+            pathToNode: data.currentValue.pathToNode,
+            newExpressionString: data.namedValue.valueText,
+          })
+          if (trap(astAfterReplacement)) {
+            return Promise.reject(astAfterReplacement)
+          }
+          // The `replacer` function returns a pathToNode that assumes
+          // an identifier is also being inserted into the AST, creating an off-by-one error.
+          // This corrects that error, but TODO we should fix this upstream
+          // to avoid this kind of error in the future.
+          astAfterReplacement.pathToReplaced[1][0] =
+            (astAfterReplacement.pathToReplaced[1][0] as number) - 1
+          result = astAfterReplacement
+        }
+
+        pResult = parse(recast(result.modifiedAst))
+        if (trap(pResult) || !resultIsOk(pResult))
+          return Promise.reject(new Error('Unexpected compilation error'))
+        parsed = pResult.program
+
+        if (trap(parsed)) return Promise.reject(parsed)
+        if (!result.pathToReplaced)
+          return Promise.reject(new Error('No path to replaced node'))
+
+        const {
+          updatedSketchEntryNodePath,
+          updatedSketchNodePaths,
+          updatedPlaneNodePath,
+        } = updateSketchDetailsNodePaths({
+          sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
+          sketchNodePaths: sketchDetails.sketchNodePaths,
+          planeNodePath: sketchDetails.planeNodePath,
           exprInsertIndex: result.exprInsertIndex,
-        }
-      } else if ('valueText' in data.namedValue) {
-        // If they didn't provide a constant name,
-        // just replace the node with the value.
-        const astAfterReplacement = replaceValueAtNodePath({
-          ast: parsed,
-          pathToNode: data.currentValue.pathToNode,
-          newExpressionString: data.namedValue.valueText,
         })
-        if (trap(astAfterReplacement)) {
-          return Promise.reject(astAfterReplacement)
+
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
+          updatedSketchEntryNodePath,
+          updatedSketchNodePaths,
+          updatedPlaneNodePath,
+          parsed,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        if (err(updatedAst)) return Promise.reject(updatedAst)
+
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
+        const selection = updateSelections(
+          { 0: result.pathToReplaced },
+          selectionRanges,
+          updatedAst.newAst
+        )
+        if (err(selection)) return Promise.reject(selection)
+        return {
+          selectionType: 'completeSelection',
+          selection,
+          updatedSketchEntryNodePath,
+          updatedSketchNodePaths,
+          updatedPlaneNodePath,
         }
-        // The `replacer` function returns a pathToNode that assumes
-        // an identifier is also being inserted into the AST, creating an off-by-one error.
-        // This corrects that error, but TODO we should fix this upstream
-        // to avoid this kind of error in the future.
-        astAfterReplacement.pathToReplaced[1][0] =
-          (astAfterReplacement.pathToReplaced[1][0] as number) - 1
-        result = astAfterReplacement
       }
-
-      pResult = parse(recast(result.modifiedAst))
-      if (trap(pResult) || !resultIsOk(pResult))
-        return Promise.reject(new Error('Unexpected compilation error'))
-      parsed = pResult.program
-
-      if (trap(parsed)) return Promise.reject(parsed)
-      if (!result.pathToReplaced)
-        return Promise.reject(new Error('No path to replaced node'))
-
-      const {
-        updatedSketchEntryNodePath,
-        updatedSketchNodePaths,
-        updatedPlaneNodePath,
-      } = updateSketchDetailsNodePaths({
-        sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
-        sketchNodePaths: sketchDetails.sketchNodePaths,
-        planeNodePath: sketchDetails.planeNodePath,
-        exprInsertIndex: result.exprInsertIndex,
-      })
-
-      const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-        updatedSketchEntryNodePath,
-        updatedSketchNodePaths,
-        updatedPlaneNodePath,
-        parsed,
-        sketchDetails.zAxis,
-        sketchDetails.yAxis,
-        sketchDetails.origin
-      )
-      if (err(updatedAst)) return Promise.reject(updatedAst)
-
-      await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
-
-      const selection = updateSelections(
-        { 0: result.pathToReplaced },
-        selectionRanges,
-        updatedAst.newAst
-      )
-      if (err(selection)) return Promise.reject(selection)
-      return {
-        selectionType: 'completeSelection',
-        selection,
-        updatedSketchEntryNodePath,
-        updatedSketchNodePaths,
-        updatedPlaneNodePath,
-      }
-    }),
+    ),
     'set-up-draft-circle': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'sketchDetails'> & {
@@ -2332,13 +2355,6 @@ export const modelingMachine = setup({
         }
       }) => {
         return {} as SketchDetailsUpdate
-      }
-    ),
-    'setup-client-side-sketch-segments': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails' | 'selectionRanges'>
-      }) => {
-        return undefined
       }
     ),
     'split-sketch-pipe-if-needed': fromPromise(
