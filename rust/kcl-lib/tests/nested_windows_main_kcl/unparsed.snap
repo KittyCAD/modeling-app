@@ -2,6 +2,6 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing nested_windows_main_kcl.kcl
 ---
-import "nested/foo/bar/main.kcl" as bar
+import "nested/foo/bar/main.kcl"
 
 bar
