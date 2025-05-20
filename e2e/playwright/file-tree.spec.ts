@@ -240,7 +240,7 @@ test.describe('when using the file tree to', () => {
 
   test(
     `create new folders and that doesn't trigger a navigation`,
-    { tag: '@electron' },
+    { tag: ['@electron', '@macos', '@windows'] },
     async ({ page, homePage, scene, toolbar, cmdBar }) => {
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
