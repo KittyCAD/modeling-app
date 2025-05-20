@@ -73,6 +73,10 @@ const sharedBulkCreateWorkflow = async ({
           baseDir,
         }).name
 
+    console.log('why?')
+    console.log('override', input.override)
+    console.log('override', newProjectName)
+    console.log('override', fileName)
     // Create the project around the file if newProject
     await createNewProjectDirectory(
       newProjectName,
@@ -366,6 +370,34 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         return {
           ...message,
           projectName: input.requestedProjectName,
+          subRoute: input.requestedSubRoute || '',
+        }
+      }
+    ),
+    [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          files: RequestedKCLFile[]
+          rootContext: AppMachineContext
+          requestedProjectName: string
+          override?: boolean
+          requestedFileNameWithExtension: string
+          requestedSubRoute?: string
+        }
+      }) => {
+        const message = await sharedBulkCreateWorkflow({
+          input: {
+            ...input,
+            override: input.override,
+          },
+        })
+        return {
+          ...message,
+          projectName: input.requestedProjectName,
+          fileName: input.requestedFileNameWithExtension || '',
           subRoute: input.requestedSubRoute || '',
         }
       }
