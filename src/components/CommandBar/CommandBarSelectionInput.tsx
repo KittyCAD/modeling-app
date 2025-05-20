@@ -55,7 +55,6 @@ function CommandBarSelectionInput({
   const commandBarState = useCommandBarState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const [hasClearedSelection, setHasClearedSelection] = useState(false)
-  const [hasSelectionBeenSetHere, setHasSelectionBeenSetHere] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(selection)
@@ -71,7 +70,6 @@ function CommandBarSelectionInput({
 
   useEffect(() => {
     inputRef.current?.focus()
-    setHasSelectionBeenSetHere(true)
   }, [selection, inputRef])
 
   // Show the default planes if the selection type is 'plane'
@@ -109,7 +107,6 @@ function CommandBarSelectionInput({
 
   function handleChange() {
     inputRef.current?.focus()
-    setHasSelectionBeenSetHere(true)
   }
 
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
@@ -142,8 +139,8 @@ function CommandBarSelectionInput({
         data: {
           selectionType: 'singleCodeCursor',
         },
-      })
-    setHasClearedSelection(true)
+      }) &&
+      setHasClearedSelection(true)
   }, [arg])
 
   // Watch for outside teardowns of this component
@@ -161,13 +158,12 @@ function CommandBarSelectionInput({
       if (
         !(arg.clearSelectionFirst && !hasClearedSelection) &&
         canSubmitSelection &&
-        hasSelectionBeenSetHere &&
         resolvedSelection
       ) {
         onSubmit(resolvedSelection)
       }
     }
-  }, [hasClearedSelection, hasSelectionBeenSetHere])
+  }, [hasClearedSelection])
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
