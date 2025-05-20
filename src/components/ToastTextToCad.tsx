@@ -159,6 +159,7 @@ export function ToastTextToCadSuccess({
   projectName,
   fileName,
   isProjectNew,
+  rootProjectName,
 }: {
   toastId: string
   data: TextToCad_type & { fileName: string }
@@ -170,6 +171,7 @@ export function ToastTextToCadSuccess({
   projectName: string
   fileName: string
   isProjectNew: boolean
+  rootProjectName: string
 }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -361,26 +363,23 @@ export function ToastTextToCadSuccess({
               if (isDesktop()) {
                 // Delete the file from the project
 
-                if (projectName && fileName) {
-                  // You are in the new workflow for text to cad at the global application level
-                  if (isProjectNew) {
-                    // Delete the entire project if it was newly created from text to CAD
-                    systemIOActor.send({
-                      type: SystemIOMachineEvents.deleteProject,
-                      data: {
-                        requestedProjectName: projectName,
-                      },
-                    })
-                  } else {
-                    // Only delete the file if the project was preexisting
-                    systemIOActor.send({
-                      type: SystemIOMachineEvents.deleteKCLFile,
-                      data: {
-                        requestedProjectName: projectName,
-                        requestedFileName: fileName,
-                      },
-                    })
-                  }
+                if (isProjectNew) {
+                  // Delete the entire project if it was newly created from text to CAD
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.deleteProject,
+                    data: {
+                      requestedProjectName: rootProjectName,
+                    },
+                  })
+                } else if (projectName && fileName) {
+                  // deletes the folder when inside the modeling page
+                  // The TTC Create will make a subdir, delete that dir with the main.kcl as well
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.deleteProject,
+                    data: {
+                      requestedProjectName: projectName,
+                    },
+                  })
                 }
               }
 
