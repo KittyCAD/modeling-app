@@ -24,7 +24,7 @@
 ///   |> line(end = [0, 30])
 ///   |> line(end = [-30, 0])
 ///   |> close()
-///   |> subtract2d(tool = circle(center = [0, 15], radius = 5))
+///   |> subtract2d(tool = circle(center = [0, 15], diameter = 10))
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
@@ -34,8 +34,10 @@ export fn circle(
   @sketch_or_surface: Sketch | Plane | Face,
   /// The center of the circle.
   center: Point2d,
-  /// The radius of the circle.
-  radius: number(Length),
+  /// The radius of the circle. Incompatible with `diameter`.
+  radius?: number(Length),
+  /// The diameter of the circle. Incompatible with `radius`.
+  diameter?: number(Length),
   /// Create a new tag which refers to this circle.
   tag?: tag,
 ): Sketch {}
