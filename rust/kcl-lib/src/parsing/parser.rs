@@ -35,7 +35,7 @@ use crate::{
         token::{Token, TokenSlice, TokenType},
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
-    SourceRange, IMPORT_FILE_EXTENSIONS,
+    SourceRange, TypedPath, IMPORT_FILE_EXTENSIONS,
 };
 
 thread_local! {
@@ -1862,7 +1862,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
     let path = if path_string.ends_with(".kcl") {
         if path_string
             .chars()
-            .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
+            .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.' && c != '/' && c != '\\')
         {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
@@ -1873,7 +1873,30 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             ));
         }
 
-        ImportPath::Kcl { filename: path_string }
+        if path_string.starts_with("..") {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    path_range,
+                    "import path may not start with '..'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+                )
+                .into(),
+            ));
+        }
+
+        // Make sure they are not using an absolute path.
+        if path_string.starts_with('/') || path_string.starts_with('\\') {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    path_range,
+                    "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+                )
+                .into(),
+            ));
+        }
+
+        ImportPath::Kcl {
+            filename: TypedPath::new(&path_string),
+        }
     } else if path_string.starts_with("std::") {
         ParseContext::warn(CompilationError::err(
             path_range,
@@ -1910,7 +1933,9 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
                 format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
             ))
         }
-        ImportPath::Foreign { path: path_string }
+        ImportPath::Foreign {
+            path: TypedPath::new(&path_string),
+        }
     } else {
         return Err(ErrMode::Cut(
             CompilationError::fatal(
@@ -4534,6 +4559,16 @@ e
     fn bad_imports() {
         assert_err(
             r#"import cube from "../cube.kcl""#,
+            "import path may not start with '..'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            [17, 30],
+        );
+        assert_err(
+            r#"import cube from "/cube.kcl""#,
+            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            [17, 28],
+        );
+        assert_err(
+            r#"import cube from "C:\cube.kcl""#,
             "import path may only contain alphanumeric characters, underscore, hyphen, and period. KCL files in other directories are not yet supported.",
             [17, 30],
         );

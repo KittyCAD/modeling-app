@@ -185,9 +185,9 @@ impl ModulePath {
         match path {
             ImportPath::Kcl { filename: path } | ImportPath::Foreign { path } => {
                 let resolved_path = if let Some(project_dir) = project_directory {
-                    project_dir.join(path)
+                    project_dir.join_typed(path)
                 } else {
-                    TypedPath::from(path)
+                    path.clone()
                 };
                 ModulePath::Local { value: resolved_path }
             }
