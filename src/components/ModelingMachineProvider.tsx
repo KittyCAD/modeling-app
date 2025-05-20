@@ -1280,7 +1280,7 @@ export const ModelingMachineProvider = ({
           }
           let filePath = file?.path
           // When prompt to edit finishes, try to route to the file they were in otherwise go to main.kcl
-          if (filePath) {
+          if (filePath && isDesktop()) {
             filePath = window.electron.path.relative(basePath, filePath)
           } else {
             filePath = PROJECT_ENTRYPOINT
