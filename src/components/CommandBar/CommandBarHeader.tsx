@@ -94,7 +94,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                 {selectedCommand.displayName || selectedCommand.name}
               </span>
               {selectedCommand.status === 'experimental' ? (
-                <span className="text-ml-black text-xs bg-ml-green rounded-full ml-2 px-2 py-1">
+                <span className="uppercase text-xs rounded-full ml-2 px-2 py-1 border border-ml-green dark:text-ml-green">
                   experimental
                 </span>
               ) : (
