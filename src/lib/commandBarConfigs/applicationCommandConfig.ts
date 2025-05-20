@@ -74,24 +74,6 @@ function onSubmitKCLSampleCreation({
         })
       }
 
-      if (requestedFiles.length === 1) {
-        /**
-         * Navigates to the single file that could be renamed on disk for duplicates
-         */
-        const folderNameBecomesKCLFileName = projectPathPart + FILE_EXT
-        // If the project is new create the single file as main.kcl
-        const requestedFileNameWithExtension = isProjectNew
-          ? PROJECT_ENTRYPOINT
-          : folderNameBecomesKCLFileName
-        systemIOActor.send({
-          type: SystemIOMachineEvents.importFileFromURL,
-          data: {
-            requestedProjectName: requestedFiles[0].requestedProjectName,
-            requestedFileNameWithExtension: requestedFileNameWithExtension,
-            requestedCode: requestedFiles[0].requestedCode,
-          },
-        })
-      } else {
         /**
          * When adding assemblies to an existing project create the assembly into a unique sub directory
          */
@@ -111,6 +93,17 @@ function onSubmitKCLSampleCreation({
             )
           })
         }
+
+      if (requestedFiles.length === 1) {
+        systemIOActor.send({
+          type: SystemIOMachineEvents.importFileFromURL,
+          data: {
+            requestedProjectName: requestedFiles[0].requestedProjectName,
+            requestedFileNameWithExtension: requestedFiles[0].requestedFileName,
+            requestedCode: requestedFiles[0].requestedCode,
+          },
+        })
+      } else {
 
         /**
          * Bulk create the assembly and navigate to the project
