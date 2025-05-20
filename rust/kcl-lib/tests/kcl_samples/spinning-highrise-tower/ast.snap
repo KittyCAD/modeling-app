@@ -1997,7 +1997,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "goundSize",
+            "name": "groundSize",
             "start": 0,
             "type": "Identifier"
           },
@@ -2138,7 +2138,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "name": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "goundSize",
+                        "name": "groundSize",
                         "start": 0,
                         "type": "Identifier"
                       },

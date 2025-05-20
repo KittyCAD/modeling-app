@@ -1855,7 +1855,11 @@ sketch002 = startSketchOn(XZ)
           },
           stage: 'review',
         })
-        await cmdBar.progressCmdBar()
+        // Confirm we can submit from the review step with just `Enter`
+        await cmdBar.progressCmdBar(true)
+        await cmdBar.expectState({
+          stage: 'commandBarClosed',
+        })
       })
 
       await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
@@ -1995,7 +1999,7 @@ profile001 = ${circleCode}`
         },
         stage: 'review',
       })
-      await cmdBar.progressCmdBar()
+      await cmdBar.progressCmdBar(true)
       await editor.expectEditor.toContain(sweepDeclaration)
     })
 

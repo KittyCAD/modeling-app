@@ -9,6 +9,7 @@ use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::Serialize;
 
+pub use crate::execution::fn_call::Args;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -26,8 +27,6 @@ use crate::{
     },
     ModuleId,
 };
-
-pub use crate::execution::fn_call::Args;
 
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`";
@@ -122,14 +121,14 @@ impl Args {
         }
 
         T::from_kcl_val(&arg.value).map(Some).ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                source_ranges: vec![self.source_range],
-                message: format!(
+            KclError::Type(KclErrorDetails::new(
+                format!(
                     "The arg {label} was given, but it was the wrong type. It should be type {} but it was {}",
                     tynm::type_name::<T>(),
                     arg.value.human_friendly_type(),
                 ),
-            })
+                vec![self.source_range],
+            ))
         })
     }
 
@@ -155,10 +154,10 @@ impl Args {
         T: FromKclValue<'a>,
     {
         self.get_kw_arg_opt(label)?.ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails {
-                source_ranges: vec![self.source_range],
-                message: format!("This function requires a keyword argument '{label}'"),
-            })
+            KclError::Semantic(KclErrorDetails::new(
+                format!("This function requires a keyword argument '{label}'"),
+                vec![self.source_range],
+            ))
         })
     }
 
@@ -172,10 +171,10 @@ impl Args {
         T: for<'a> FromKclValue<'a>,
     {
         let Some(arg) = self.kw_args.labeled.get(label) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                source_ranges: vec![self.source_range],
-                message: format!("This function requires a keyword argument '{label}'"),
-            }));
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                format!("This function requires a keyword argument '{label}'"),
+                vec![self.source_range],
+            )));
         };
 
         let arg = arg.value.coerce(ty, exec_state).map_err(|_| {
@@ -206,10 +205,7 @@ impl Args {
             if message.contains("one or more Solids or imported geometry but it's actually of type Sketch") {
                 message = format!("{message}. {ERROR_STRING_SKETCH_TO_SOLID_HELPER}");
             }
-            KclError::Semantic(KclErrorDetails {
-                source_ranges: arg.source_ranges(),
-                message,
-            })
+            KclError::Semantic(KclErrorDetails::new(message, arg.source_ranges()))
         })?;
 
         // TODO unnecessary cloning
@@ -223,21 +219,21 @@ impl Args {
         T: FromKclValue<'a>,
     {
         let Some(arg) = self.kw_args.labeled.get(label) else {
-            let err = KclError::Semantic(KclErrorDetails {
-                source_ranges: vec![self.source_range],
-                message: format!("This function requires a keyword argument '{label}'"),
-            });
+            let err = KclError::Semantic(KclErrorDetails::new(
+                format!("This function requires a keyword argument '{label}'"),
+                vec![self.source_range],
+            ));
             return Err(err);
         };
         let Some(array) = arg.value.as_array() else {
-            let err = KclError::Semantic(KclErrorDetails {
-                source_ranges: vec![arg.source_range],
-                message: format!(
+            let err = KclError::Semantic(KclErrorDetails::new(
+                format!(
                     "Expected an array of {} but found {}",
                     tynm::type_name::<T>(),
                     arg.value.human_friendly_type()
                 ),
-            });
+                vec![arg.source_range],
+            ));
             return Err(err);
         };
         array
@@ -245,14 +241,14 @@ impl Args {
             .map(|item| {
                 let source = SourceRange::from(item);
                 let val = FromKclValue::from_kcl_val(item).ok_or_else(|| {
-                    KclError::Semantic(KclErrorDetails {
-                        source_ranges: arg.source_ranges(),
-                        message: format!(
+                    KclError::Semantic(KclErrorDetails::new(
+                        format!(
                             "Expected a {} but found {}",
                             tynm::type_name::<T>(),
                             arg.value.human_friendly_type()
                         ),
-                    })
+                        arg.source_ranges(),
+                    ))
                 })?;
                 Ok((val, source))
             })
@@ -267,19 +263,19 @@ impl Args {
     {
         let arg = self
             .unlabeled_kw_arg_unconverted()
-            .ok_or(KclError::Semantic(KclErrorDetails {
-                source_ranges: vec![self.source_range],
-                message: format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
-            }))?;
+            .ok_or(KclError::Semantic(KclErrorDetails::new(
+                format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
+                vec![self.source_range],
+            )))?;
 
         T::from_kcl_val(&arg.value).ok_or_else(|| {
             let expected_type_name = tynm::type_name::<T>();
             let actual_type_name = arg.value.human_friendly_type();
             let message = format!("This function expected the input argument to be of type {expected_type_name} but it's actually of type {actual_type_name}");
-            KclError::Semantic(KclErrorDetails {
-                source_ranges: arg.source_ranges(),
+            KclError::Semantic(KclErrorDetails::new(
                 message,
-            })
+                arg.source_ranges(),
+            ))
         })
     }
 
@@ -296,10 +292,10 @@ impl Args {
     {
         let arg = self
             .unlabeled_kw_arg_unconverted()
-            .ok_or(KclError::Semantic(KclErrorDetails {
-                source_ranges: vec![self.source_range],
-                message: format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
-            }))?;
+            .ok_or(KclError::Semantic(KclErrorDetails::new(
+                format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
+                vec![self.source_range],
+            )))?;
 
         let arg = arg.value.coerce(ty, exec_state).map_err(|_| {
             let actual_type = arg.value.principal_type();
@@ -330,17 +326,14 @@ impl Args {
             if message.contains("one or more Solids or imported geometry but it's actually of type Sketch") {
                 message = format!("{message}. {ERROR_STRING_SKETCH_TO_SOLID_HELPER}");
             }
-            KclError::Semantic(KclErrorDetails {
-                source_ranges: arg.source_ranges(),
-                message,
-            })
+            KclError::Semantic(KclErrorDetails::new(message, arg.source_ranges()))
         })?;
 
         T::from_kcl_val(&arg).ok_or_else(|| {
-            KclError::Internal(KclErrorDetails {
-                source_ranges: vec![self.source_range],
-                message: "Mismatch between type coercion and value extraction (this isn't your fault).\nTo assist in bug-reporting, expected type: {ty:?}; actual value: {arg:?}".to_owned(),
-           })
+            KclError::Internal(KclErrorDetails::new(
+                "Mismatch between type coercion and value extraction (this isn't your fault).\nTo assist in bug-reporting, expected type: {ty:?}; actual value: {arg:?}".to_owned(),
+                vec![self.source_range],
+           ))
         })
     }
 
@@ -383,17 +376,17 @@ impl Args {
             exec_state.stack().get_from_call_stack(&tag.value, self.source_range)?
         {
             let info = t.get_info(epoch).ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Tag `{}` does not have engine info", tag.value),
-                    source_ranges: vec![self.source_range],
-                })
+                KclError::Type(KclErrorDetails::new(
+                    format!("Tag `{}` does not have engine info", tag.value),
+                    vec![self.source_range],
+                ))
             })?;
             Ok(info)
         } else {
-            Err(KclError::Type(KclErrorDetails {
-                message: format!("Tag `{}` does not exist", tag.value),
-                source_ranges: vec![self.source_range],
-            }))
+            Err(KclError::Type(KclErrorDetails::new(
+                format!("Tag `{}` does not exist", tag.value),
+                vec![self.source_range],
+            )))
         }
     }
 
@@ -522,19 +515,19 @@ impl Args {
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
         if tag.value.is_empty() {
-            return Err(KclError::Type(KclErrorDetails {
-                message: "Expected a non-empty tag for the face".to_string(),
-                source_ranges: vec![self.source_range],
-            }));
+            return Err(KclError::Type(KclErrorDetails::new(
+                "Expected a non-empty tag for the face".to_string(),
+                vec![self.source_range],
+            )));
         }
 
         let engine_info = self.get_tag_engine_info_check_surface(exec_state, tag)?;
 
         let surface = engine_info.surface.as_ref().ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Tag `{}` does not have a surface", tag.value),
-                source_ranges: vec![self.source_range],
-            })
+            KclError::Type(KclErrorDetails::new(
+                format!("Tag `{}` does not have a surface", tag.value),
+                vec![self.source_range],
+            ))
         })?;
 
         if let Some(face_from_surface) = match surface {
@@ -550,10 +543,10 @@ impl Args {
                 }
             }
             // The must be planar check must be called before the arc check.
-            ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails {
-                message: format!("Tag `{}` is a non-planar surface", tag.value),
-                source_ranges: vec![self.source_range],
-            }))),
+            ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails::new(
+                format!("Tag `{}` is a non-planar surface", tag.value),
+                vec![self.source_range],
+            )))),
             ExtrudeSurface::ExtrudeArc(extrude_arc) => {
                 if let Some(arc_tag) = &extrude_arc.tag {
                     if arc_tag.name == tag.value {
@@ -577,10 +570,10 @@ impl Args {
                 }
             }
             // The must be planar check must be called before the fillet check.
-            ExtrudeSurface::Fillet(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails {
-                message: format!("Tag `{}` is a non-planar surface", tag.value),
-                source_ranges: vec![self.source_range],
-            }))),
+            ExtrudeSurface::Fillet(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails::new(
+                format!("Tag `{}` is a non-planar surface", tag.value),
+                vec![self.source_range],
+            )))),
             ExtrudeSurface::Fillet(fillet) => {
                 if let Some(fillet_tag) = &fillet.tag {
                     if fillet_tag.name == tag.value {
@@ -597,10 +590,10 @@ impl Args {
         }
 
         // If we still haven't found the face, return an error.
-        Err(KclError::Type(KclErrorDetails {
-            message: format!("Expected a face with the tag `{}`", tag.value),
-            source_ranges: vec![self.source_range],
-        }))
+        Err(KclError::Type(KclErrorDetails::new(
+            format!("Expected a face with the tag `{}`", tag.value),
+            vec![self.source_range],
+        )))
     }
 }
 
@@ -622,20 +615,20 @@ where
 {
     fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
         let Some(arg) = args.args.get(i) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected an argument at index {i}"),
-                source_ranges: vec![args.source_range],
-            }));
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                format!("Expected an argument at index {i}"),
+                vec![args.source_range],
+            )));
         };
         let Some(val) = T::from_kcl_val(&arg.value) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!(
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                format!(
                     "Argument at index {i} was supposed to be type {} but found {}",
                     tynm::type_name::<T>(),
                     arg.value.human_friendly_type(),
                 ),
-                source_ranges: arg.source_ranges(),
-            }));
+                arg.source_ranges(),
+            )));
         };
         Ok(val)
     }
@@ -651,14 +644,14 @@ where
             return Ok(None);
         }
         let Some(val) = T::from_kcl_val(&arg.value) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!(
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                format!(
                     "Argument at index {i} was supposed to be type Option<{}> but found {}",
                     tynm::type_name::<T>(),
                     arg.value.human_friendly_type()
                 ),
-                source_ranges: arg.source_ranges(),
-            }));
+                arg.source_ranges(),
+            )));
         };
         Ok(Some(val))
     }

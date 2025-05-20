@@ -34,7 +34,7 @@ use crate::{
     },
     parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
     source_range::SourceRange,
-    ModuleId,
+    ModuleId, TypedPath,
 };
 
 mod condition;
@@ -1741,8 +1741,8 @@ impl ImportSelector {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum ImportPath {
-    Kcl { filename: String },
-    Foreign { path: String },
+    Kcl { filename: TypedPath },
+    Foreign { path: TypedPath },
     Std { path: Vec<String> },
 }
 
@@ -1811,16 +1811,25 @@ impl ImportStatement {
 
         match &self.path {
             ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => {
-                let mut parts = s.split('.');
-                let path = parts.next()?;
-                let _ext = parts.next()?;
-                let rest = parts.next();
+                let name = s.to_string_lossy();
+                if name.ends_with("/main.kcl") || name.ends_with("\\main.kcl") {
+                    let name = &name[..name.len() - 9];
+                    let start = name.rfind(['/', '\\']).map(|s| s + 1).unwrap_or(0);
+                    return Some(name[start..].to_owned());
+                }
 
-                if rest.is_some() {
+                let name = s.file_name().map(|f| f.to_string())?;
+                if name.contains('\\') || name.contains('/') {
                     return None;
                 }
 
-                path.rsplit(&['/', '\\']).next().map(str::to_owned)
+                // Remove the extension if it exists.
+                let extension = s.extension();
+                Some(if let Some(extension) = extension {
+                    name.trim_end_matches(extension).trim_end_matches('.').to_string()
+                } else {
+                    name
+                })
             }
             ImportPath::Std { path } => path.last().cloned(),
         }
@@ -3315,7 +3324,7 @@ pub enum Type {
     },
     // An object type.
     Object {
-        properties: Vec<Parameter>,
+        properties: Vec<(Node<Identifier>, Node<Type>)>,
     },
 }
 
@@ -3348,10 +3357,8 @@ impl fmt::Display for Type {
                     } else {
                         write!(f, ",")?;
                     }
-                    write!(f, " {}:", p.identifier.name)?;
-                    if let Some(ty) = &p.type_ {
-                        write!(f, " {}", ty.inner)?;
-                    }
+                    write!(f, " {}:", p.0.name)?;
+                    write!(f, " {}", p.1)?;
                 }
                 write!(f, " }}")
             }
@@ -3988,7 +3995,7 @@ cylinder = startSketchOn(-XZ)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_type_args_object_on_functions() {
-        let some_program_string = r#"fn thing(arg0: [number], arg1: {thing: number, things: [string], more?: string}, tag?: string) {
+        let some_program_string = r#"fn thing(arg0: [number], arg1: {thing: number, things: [string], more: string}, tag?: string) {
     return arg0
 }"#;
         let module_id = ModuleId::default();
@@ -4015,8 +4022,8 @@ cylinder = startSketchOn(-XZ)
             params[1].type_.as_ref().unwrap().inner,
             Type::Object {
                 properties: vec![
-                    Parameter {
-                        identifier: Node::new(
+                    (
+                        Node::new(
                             Identifier {
                                 name: "thing".to_owned(),
                                 digest: None,
@@ -4025,18 +4032,15 @@ cylinder = startSketchOn(-XZ)
                             37,
                             module_id,
                         ),
-                        type_: Some(Node::new(
+                        Node::new(
                             Type::Primitive(PrimitiveType::Number(NumericSuffix::None)),
                             39,
                             45,
                             module_id
-                        )),
-                        default_value: None,
-                        labeled: true,
-                        digest: None,
-                    },
-                    Parameter {
-                        identifier: Node::new(
+                        ),
+                    ),
+                    (
+                        Node::new(
                             Identifier {
                                 name: "things".to_owned(),
                                 digest: None,
@@ -4045,7 +4049,7 @@ cylinder = startSketchOn(-XZ)
                             53,
                             module_id,
                         ),
-                        type_: Some(Node::new(
+                        Node::new(
                             Type::Array {
                                 ty: Box::new(Type::Primitive(PrimitiveType::String)),
                                 len: ArrayLen::None
@@ -4053,13 +4057,10 @@ cylinder = startSketchOn(-XZ)
                             56,
                             62,
                             module_id
-                        )),
-                        default_value: None,
-                        labeled: true,
-                        digest: None
-                    },
-                    Parameter {
-                        identifier: Node::new(
+                        )
+                    ),
+                    (
+                        Node::new(
                             Identifier {
                                 name: "more".to_owned(),
                                 digest: None
@@ -4068,11 +4069,8 @@ cylinder = startSketchOn(-XZ)
                             69,
                             module_id,
                         ),
-                        type_: Some(Node::new(Type::Primitive(PrimitiveType::String), 72, 78, module_id)),
-                        labeled: true,
-                        default_value: Some(DefaultParamVal::none()),
-                        digest: None
-                    }
+                        Node::new(Type::Primitive(PrimitiveType::String), 71, 77, module_id),
+                    )
                 ]
             }
         );
@@ -4342,5 +4340,21 @@ startSketchOn(XY)
 5
 "#
         );
+    }
+
+    #[test]
+    fn module_name() {
+        #[track_caller]
+        fn assert_mod_name(stmt: &str, name: &str) {
+            let tokens = crate::parsing::token::lex(stmt, ModuleId::default()).unwrap();
+            let stmt = crate::parsing::parser::import_stmt(&mut tokens.as_slice()).unwrap();
+            assert_eq!(stmt.module_name().unwrap(), name);
+        }
+
+        assert_mod_name("import 'foo.kcl'", "foo");
+        assert_mod_name("import 'foo.kcl' as bar", "bar");
+        assert_mod_name("import 'main.kcl'", "main");
+        assert_mod_name("import 'foo/main.kcl'", "foo");
+        assert_mod_name("import 'foo\\bar\\main.kcl'", "bar");
     }
 }

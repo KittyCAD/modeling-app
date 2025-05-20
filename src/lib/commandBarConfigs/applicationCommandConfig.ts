@@ -150,6 +150,7 @@ export function createApplicationCommands({
         required: (commandsContext) =>
           isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'existingProject',
+        defaultValue: isDesktop() ? undefined : 'browser',
         skip: true,
         options: (_, _context) => {
           const { folders } = systemIOActor.getSnapshot().context

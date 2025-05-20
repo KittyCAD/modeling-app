@@ -439,12 +439,7 @@ impl EngineManager for EngineConnection {
                 request_sent: tx,
             })
             .await
-            .map_err(|e| {
-                KclError::Engine(KclErrorDetails {
-                    message: format!("Failed to send debug: {}", e),
-                    source_ranges: vec![],
-                })
-            })?;
+            .map_err(|e| KclError::Engine(KclErrorDetails::new(format!("Failed to send debug: {}", e), vec![])))?;
 
         let _ = rx.await;
         Ok(())
@@ -479,25 +474,25 @@ impl EngineManager for EngineConnection {
             })
             .await
             .map_err(|e| {
-                KclError::Engine(KclErrorDetails {
-                    message: format!("Failed to send modeling command: {}", e),
-                    source_ranges: vec![source_range],
-                })
+                KclError::Engine(KclErrorDetails::new(
+                    format!("Failed to send modeling command: {}", e),
+                    vec![source_range],
+                ))
             })?;
 
         // Wait for the request to be sent.
         rx.await
             .map_err(|e| {
-                KclError::Engine(KclErrorDetails {
-                    message: format!("could not send request to the engine actor: {e}"),
-                    source_ranges: vec![source_range],
-                })
+                KclError::Engine(KclErrorDetails::new(
+                    format!("could not send request to the engine actor: {e}"),
+                    vec![source_range],
+                ))
             })?
             .map_err(|e| {
-                KclError::Engine(KclErrorDetails {
-                    message: format!("could not send request to the engine: {e}"),
-                    source_ranges: vec![source_range],
-                })
+                KclError::Engine(KclErrorDetails::new(
+                    format!("could not send request to the engine: {e}"),
+                    vec![source_range],
+                ))
             })?;
 
         Ok(())
@@ -521,15 +516,15 @@ impl EngineManager for EngineConnection {
                 // Check if we have any pending errors.
                 let pe = self.pending_errors.read().await;
                 if !pe.is_empty() {
-                    return Err(KclError::Engine(KclErrorDetails {
-                        message: pe.join(", ").to_string(),
-                        source_ranges: vec![source_range],
-                    }));
+                    return Err(KclError::Engine(KclErrorDetails::new(
+                        pe.join(", ").to_string(),
+                        vec![source_range],
+                    )));
                 } else {
-                    return Err(KclError::Engine(KclErrorDetails {
-                        message: "Modeling command failed: websocket closed early".to_string(),
-                        source_ranges: vec![source_range],
-                    }));
+                    return Err(KclError::Engine(KclErrorDetails::new(
+                        "Modeling command failed: websocket closed early".to_string(),
+                        vec![source_range],
+                    )));
                 }
             }
 
@@ -548,10 +543,10 @@ impl EngineManager for EngineConnection {
             }
         }
 
-        Err(KclError::Engine(KclErrorDetails {
-            message: format!("Modeling command timed out `{}`", id),
-            source_ranges: vec![source_range],
-        }))
+        Err(KclError::Engine(KclErrorDetails::new(
+            format!("Modeling command timed out `{}`", id),
+            vec![source_range],
+        )))
     }
 
     async fn get_session_data(&self) -> Option<ModelingSessionData> {

@@ -143,7 +143,7 @@ jobs:
       - name: Install browsers
         run: npm run playwright install --with-deps
 
-      - name: Capture snapshots
+      - name: Test snapshots
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
@@ -156,6 +156,19 @@ jobs:
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: snapshots
+          TARGET: web
+
+      - name: Update snapshots
+        if: always()
+        run: npm run test:snapshots -- --last-failed --update-snapshots
+        env:
+          token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: snapshots
           TARGET: web
 
       - uses: actions/upload-artifact@v4
@@ -173,7 +186,7 @@ jobs:
         id: git-check
         run: |
             git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
-            if git status | grep -q "Changes to be committed"
+            if git status | grep --quiet "Changes to be committed"
             then echo "modified=true" >> $GITHUB_OUTPUT
             else echo "modified=false" >> $GITHUB_OUTPUT
             fi

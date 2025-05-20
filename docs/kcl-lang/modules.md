@@ -27,9 +27,6 @@ import increment from "util.kcl"
 answer = increment(41)
 ```
 
-Imported files _must_ be in the same project so that units are uniform across
-modules. This means that it must be in the same directory.
-
 Import statements must be at the top-level of a file. It is not allowed to have
 an `import` statement inside a function or in the body of an if‑else.
 
@@ -57,6 +54,9 @@ Imported symbols can be renamed for convenience or to avoid name collisions.
 ```norun
 import increment as inc, decrement as dec from "util.kcl"
 ```
+
+You can import files from the current directory or from subdirectories, but if importing from a
+subdirectory you can only import `main.kcl`.
 
 ---
 
@@ -228,6 +228,19 @@ on the last statement. It's simply another way of doing the same thing.
 The final statement is what's important because it's the return value of the
 entire module. The module is expected to return a single object that can be used
 as a variable by the file that imports it.
+
+The name of the file or subdirectory is used as the name of the variable within the importing program.
+If you want to use a different name, you can do so by using the `as` keyword:
+
+```kcl,norun
+import "cube.kcl"                // Introduces a new variable called `cube`.
+import "cube.kcl" as block       // Introduces a new variable called `block`.
+import "cube/main.kcl"           // Introduces a new variable called `cube`.
+import "cube/main.kcl" as block  // Introduces a new variable called `block`.
+```
+
+If the filename includes hyphens (`-`) or starts with an underscore (`_`), then you must specify a
+variable name.
 
 ---
 

@@ -11,11 +11,13 @@ use kcmc::{
 };
 use kittycad_modeling_cmds as kcmc;
 
-use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, KclValue, SolidOrSketchOrImportedGeometry},
-    std::Args,
+    execution::{
+        types::{PrimitiveType, RuntimeType},
+        ExecState, KclValue, SolidOrSketchOrImportedGeometry,
+    },
+    std::{args::TyF64, axis_or_reference::Axis3dOrPoint3d, Args},
 };
 
 /// Scale a solid or a sketch.
@@ -36,10 +38,10 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     // Ensure at least one scale value is provided.
     if scale_x.is_none() && scale_y.is_none() && scale_z.is_none() {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Expected `x`, `y`, or `z` to be provided.".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            "Expected `x`, `y`, or `z` to be provided.".to_string(),
+            vec![args.source_range],
+        )));
     }
 
     let objects = inner_scale(
@@ -219,10 +221,10 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 
     // Ensure at least one translation value is provided.
     if translate_x.is_none() && translate_y.is_none() && translate_z.is_none() {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Expected `x`, `y`, or `z` to be provided.".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            "Expected `x`, `y`, or `z` to be provided.".to_string(),
+            vec![args.source_range],
+        )));
     }
 
     let objects = inner_translate(objects, translate_x, translate_y, translate_z, global, exec_state, args).await?;
@@ -446,88 +448,96 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let roll: Option<TyF64> = args.get_kw_arg_opt_typed("roll", &RuntimeType::degrees(), exec_state)?;
     let pitch: Option<TyF64> = args.get_kw_arg_opt_typed("pitch", &RuntimeType::degrees(), exec_state)?;
     let yaw: Option<TyF64> = args.get_kw_arg_opt_typed("yaw", &RuntimeType::degrees(), exec_state)?;
-    let axis: Option<[TyF64; 3]> = args.get_kw_arg_opt_typed("axis", &RuntimeType::point3d(), exec_state)?;
+    let axis: Option<Axis3dOrPoint3d> = args.get_kw_arg_opt_typed(
+        "axis",
+        &RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Axis3d),
+            RuntimeType::point3d(),
+        ]),
+        exec_state,
+    )?;
+    let axis = axis.map(|a| a.to_point3d());
     let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::degrees(), exec_state)?;
     let global = args.get_kw_arg_opt("global")?;
 
     // Check if no rotation values are provided.
     if roll.is_none() && pitch.is_none() && yaw.is_none() && axis.is_none() && angle.is_none() {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Expected `roll`, `pitch`, and `yaw` or `axis` and `angle` to be provided.".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            "Expected `roll`, `pitch`, and `yaw` or `axis` and `angle` to be provided.".to_string(),
+            vec![args.source_range],
+        )));
     }
 
     // If they give us a roll, pitch, or yaw, they must give us at least one of them.
     if roll.is_some() || pitch.is_some() || yaw.is_some() {
         // Ensure they didn't also provide an axis or angle.
         if axis.is_some() || angle.is_some() {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected `axis` and `angle` to not be provided when `roll`, `pitch`, and `yaw` are provided."
-                    .to_string(),
-                source_ranges: vec![args.source_range],
-            }));
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                "Expected `axis` and `angle` to not be provided when `roll`, `pitch`, and `yaw` are provided."
+                    .to_owned(),
+                vec![args.source_range],
+            )));
         }
     }
 
     // If they give us an axis or angle, they must give us both.
     if axis.is_some() || angle.is_some() {
         if axis.is_none() {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected `axis` to be provided when `angle` is provided.".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                "Expected `axis` to be provided when `angle` is provided.".to_string(),
+                vec![args.source_range],
+            )));
         }
         if angle.is_none() {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected `angle` to be provided when `axis` is provided.".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                "Expected `angle` to be provided when `axis` is provided.".to_string(),
+                vec![args.source_range],
+            )));
         }
 
         // Ensure they didn't also provide a roll, pitch, or yaw.
         if roll.is_some() || pitch.is_some() || yaw.is_some() {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected `roll`, `pitch`, and `yaw` to not be provided when `axis` and `angle` are provided."
-                    .to_string(),
-                source_ranges: vec![args.source_range],
-            }));
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                "Expected `roll`, `pitch`, and `yaw` to not be provided when `axis` and `angle` are provided."
+                    .to_owned(),
+                vec![args.source_range],
+            )));
         }
     }
 
     // Validate the roll, pitch, and yaw values.
     if let Some(roll) = &roll {
         if !(-360.0..=360.0).contains(&roll.n) {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected roll to be between -360 and 360, found `{}`", roll.n),
-                source_ranges: vec![args.source_range],
-            }));
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                format!("Expected roll to be between -360 and 360, found `{}`", roll.n),
+                vec![args.source_range],
+            )));
         }
     }
     if let Some(pitch) = &pitch {
         if !(-360.0..=360.0).contains(&pitch.n) {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected pitch to be between -360 and 360, found `{}`", pitch.n),
-                source_ranges: vec![args.source_range],
-            }));
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                format!("Expected pitch to be between -360 and 360, found `{}`", pitch.n),
+                vec![args.source_range],
+            )));
         }
     }
     if let Some(yaw) = &yaw {
         if !(-360.0..=360.0).contains(&yaw.n) {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected yaw to be between -360 and 360, found `{}`", yaw.n),
-                source_ranges: vec![args.source_range],
-            }));
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                format!("Expected yaw to be between -360 and 360, found `{}`", yaw.n),
+                vec![args.source_range],
+            )));
         }
     }
 
     // Validate the axis and angle values.
     if let Some(angle) = &angle {
         if !(-360.0..=360.0).contains(&angle.n) {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected angle to be between -360 and 360, found `{}`", angle.n),
-                source_ranges: vec![args.source_range],
-            }));
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                format!("Expected angle to be between -360 and 360, found `{}`", angle.n),
+                vec![args.source_range],
+            )));
         }
     }
 
@@ -642,7 +652,51 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 ///
 /// ```no_run
-/// // Rotate a pipe about an axis with an angle.
+/// // Rotate a pipe about a named axis with an angle.
+///
+/// // Create a path for the sweep.
+/// sweepPath = startSketchOn(XZ)
+///     |> startProfile(at = [0.05, 0.05])
+///     |> line(end = [0, 7])
+///     |> tangentialArc(angle = 90, radius = 5)
+///     |> line(end = [-3, 0])
+///     |> tangentialArc(angle = -90, radius = 5)
+///     |> line(end = [0, 7])
+///
+/// // Create a hole for the pipe.
+/// pipeHole = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 1.5,
+///    )
+///
+/// sweepSketch = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 2,
+///         )              
+///     |> subtract2d(tool = pipeHole)
+///     |> sweep(path = sweepPath)   
+///     |> rotate(
+///     axis =  Z,
+///     angle = 90,
+///     )
+/// ```
+///
+/// ```no_run
+/// // Rotate an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
+///     |> rotate(
+///     axis =  [0, 0, 1.0],
+///     angle = 9,
+///     )
+/// ```
+///
+/// ```no_run
+/// // Rotate a pipe about a raw axis with an angle.
 ///
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn(XZ)
@@ -670,18 +724,6 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> rotate(
 ///     axis =  [0, 0, 1.0],
 ///     angle = 90,
-///     )
-/// ```
-///
-/// ```no_run
-/// // Rotate an imported model.
-///
-/// import "tests/inputs/cube.sldprt" as cube
-///
-/// cube
-///     |> rotate(
-///     axis =  [0, 0, 1.0],
-///     angle = 9,
 ///     )
 /// ```
 ///

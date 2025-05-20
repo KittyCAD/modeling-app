@@ -87,10 +87,10 @@ async fn inner_get_opposite_edge(
         modeling_response: OkModelingCmdResponse::Solid3dGetOppositeEdge(opposite_edge),
     } = &resp
     else {
-        return Err(KclError::Engine(KclErrorDetails {
-            message: format!("mcmd::Solid3dGetOppositeEdge response was not as expected: {:?}", resp),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Engine(KclErrorDetails::new(
+            format!("mcmd::Solid3dGetOppositeEdge response was not as expected: {:?}", resp),
+            vec![args.source_range],
+        )));
     };
 
     Ok(opposite_edge.edge)
@@ -172,20 +172,20 @@ async fn inner_get_next_adjacent_edge(
         modeling_response: OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(adjacent_edge),
     } = &resp
     else {
-        return Err(KclError::Engine(KclErrorDetails {
-            message: format!(
+        return Err(KclError::Engine(KclErrorDetails::new(
+            format!(
                 "mcmd::Solid3dGetNextAdjacentEdge response was not as expected: {:?}",
                 resp
             ),
-            source_ranges: vec![args.source_range],
-        }));
+            vec![args.source_range],
+        )));
     };
 
     adjacent_edge.edge.ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("No edge found next adjacent to tag: `{}`", edge.value),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("No edge found next adjacent to tag: `{}`", edge.value),
+            vec![args.source_range],
+        ))
     })
 }
 
@@ -264,20 +264,20 @@ async fn inner_get_previous_adjacent_edge(
         modeling_response: OkModelingCmdResponse::Solid3dGetPrevAdjacentEdge(adjacent_edge),
     } = &resp
     else {
-        return Err(KclError::Engine(KclErrorDetails {
-            message: format!(
+        return Err(KclError::Engine(KclErrorDetails::new(
+            format!(
                 "mcmd::Solid3dGetPrevAdjacentEdge response was not as expected: {:?}",
                 resp
             ),
-            source_ranges: vec![args.source_range],
-        }));
+            vec![args.source_range],
+        )));
     };
 
     adjacent_edge.edge.ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("No edge found previous adjacent to tag: `{}`", edge.value),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("No edge found previous adjacent to tag: `{}`", edge.value),
+            vec![args.source_range],
+        ))
     })
 }
 
@@ -336,10 +336,10 @@ async fn inner_get_common_edge(
     }
 
     if faces.len() != 2 {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "getCommonEdge requires exactly two tags for faces".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Type(KclErrorDetails::new(
+            "getCommonEdge requires exactly two tags for faces".to_string(),
+            vec![args.source_range],
+        )));
     }
     let first_face_id = args.get_adjacent_face_to_tag(exec_state, &faces[0], false).await?;
     let second_face_id = args.get_adjacent_face_to_tag(exec_state, &faces[1], false).await?;
@@ -348,10 +348,10 @@ async fn inner_get_common_edge(
     let second_tagged_path = args.get_tag_engine_info(exec_state, &faces[1])?;
 
     if first_tagged_path.sketch != second_tagged_path.sketch {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "getCommonEdge requires the faces to be in the same original sketch".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Type(KclErrorDetails::new(
+            "getCommonEdge requires the faces to be in the same original sketch".to_string(),
+            vec![args.source_range],
+        )));
     }
 
     // Flush the batch for our fillets/chamfers if there are any.
@@ -377,19 +377,19 @@ async fn inner_get_common_edge(
         modeling_response: OkModelingCmdResponse::Solid3dGetCommonEdge(common_edge),
     } = &resp
     else {
-        return Err(KclError::Engine(KclErrorDetails {
-            message: format!("mcmd::Solid3dGetCommonEdge response was not as expected: {:?}", resp),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Engine(KclErrorDetails::new(
+            format!("mcmd::Solid3dGetCommonEdge response was not as expected: {:?}", resp),
+            vec![args.source_range],
+        )));
     };
 
     common_edge.edge.ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!(
+        KclError::Type(KclErrorDetails::new(
+            format!(
                 "No common edge was found between `{}` and `{}`",
                 faces[0].value, faces[1].value
             ),
-            source_ranges: vec![args.source_range],
-        })
+            vec![args.source_range],
+        ))
     })
 }

@@ -12,10 +12,10 @@ use crate::{
 
 async fn _assert(value: bool, message: &str, args: &Args) -> Result<(), KclError> {
     if !value {
-        return Err(KclError::Type(KclErrorDetails {
-            message: format!("assert failed: {}", message),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Type(KclErrorDetails::new(
+            format!("assert failed: {}", message),
+            vec![args.source_range],
+        )));
     }
     Ok(())
 }
@@ -111,19 +111,18 @@ async fn inner_assert(
     .iter()
     .all(|cond| cond.is_none());
     if no_condition_given {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "You must provide at least one condition in this assert (for example, isEqualTo)".to_owned(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Type(KclErrorDetails::new(
+            "You must provide at least one condition in this assert (for example, isEqualTo)".to_owned(),
+            vec![args.source_range],
+        )));
     }
 
     if tolerance.is_some() && is_equal_to.is_none() {
-        return Err(KclError::Type(KclErrorDetails {
-            message:
-                "The `tolerance` arg is only used with `isEqualTo`. Either remove `tolerance` or add an `isEqualTo` arg."
-                    .to_owned(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Type(KclErrorDetails::new(
+            "The `tolerance` arg is only used with `isEqualTo`. Either remove `tolerance` or add an `isEqualTo` arg."
+                .to_owned(),
+            vec![args.source_range],
+        )));
     }
 
     let suffix = if let Some(err_string) = error {

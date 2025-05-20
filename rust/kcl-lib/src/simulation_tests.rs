@@ -996,6 +996,27 @@ mod import_cycle1 {
         super::execute(TEST_NAME, false).await
     }
 }
+mod import_only_at_top_level {
+    const TEST_NAME: &str = "import_only_at_top_level";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
 mod import_function_not_sketch {
     const TEST_NAME: &str = "import_function_not_sketch";
 
@@ -1145,6 +1166,27 @@ mod import_side_effect {
 }
 mod import_foreign {
     const TEST_NAME: &str = "import_foreign";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod export_var_only_at_top_level {
+    const TEST_NAME: &str = "export_var_only_at_top_level";
 
     /// Test parsing KCL.
     #[test]
@@ -3188,7 +3230,6 @@ mod revolve_colinear {
 
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
-    #[ignore] // until https://github.com/KittyCAD/engine/pull/3417 lands
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }
@@ -3258,6 +3299,48 @@ mod subtract_regression09 {
 }
 mod subtract_regression10 {
     const TEST_NAME: &str = "subtract_regression10";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod nested_main_kcl {
+    const TEST_NAME: &str = "nested_main_kcl";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod nested_windows_main_kcl {
+    const TEST_NAME: &str = "nested_windows_main_kcl";
 
     /// Test parsing KCL.
     #[test]
