@@ -11,7 +11,8 @@ layout: manual
 circle(
   @sketch_or_surface: Sketch | Plane | Face,
   center: Point2d,
-  radius: number(Length),
+  radius?: number(Length),
+  diameter?: number(Length),
   tag?: tag,
 ): Sketch
 ```
@@ -25,7 +26,8 @@ the provided (x, y) origin point.
 |----------|------|-------------|----------|
 | `sketch_or_surface` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Face`](/docs/kcl-std/types/std-types-Face) | Sketch to extend, or plane or surface to sketch on. | Yes |
 | `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center of the circle. | Yes |
-| `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The radius of the circle. | Yes |
+| `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The radius of the circle. Incompatible with `diameter`. | No |
+| `diameter` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The diameter of the circle. Incompatible with `radius`. | No |
 | [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this circle. | No |
 
 ### Returns
@@ -51,7 +53,7 @@ exampleSketch = startSketchOn(XZ)
   |> line(end = [0, 30])
   |> line(end = [-30, 0])
   |> close()
-  |> subtract2d(tool = circle(center = [0, 15], radius = 5))
+  |> subtract2d(tool = circle(center = [0, 15], diameter = 10))
 
 example = extrude(exampleSketch, length = 5)
 ```

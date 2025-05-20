@@ -44,10 +44,11 @@ pub enum SketchOrSurface {
 pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_or_surface = args.get_unlabeled_kw_arg("sketchOrSurface")?;
     let center = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
-    let radius: TyF64 = args.get_kw_arg_typed("radius", &RuntimeType::length(), exec_state)?;
+    let radius: Option<TyF64> = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;
+    let diameter: Option<TyF64> = args.get_kw_arg_opt_typed("diameter", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let sketch = inner_circle(sketch_or_surface, center, radius, tag, exec_state, args).await?;
+    let sketch = inner_circle(sketch_or_surface, center, radius, diameter, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -56,7 +57,8 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 async fn inner_circle(
     sketch_or_surface: SketchOrSurface,
     center: [TyF64; 2],
-    radius: TyF64,
+    radius: Option<TyF64>,
+    diameter: Option<TyF64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -68,6 +70,25 @@ async fn inner_circle(
     let (center_u, ty) = untype_point(center.clone());
     let units = ty.expect_length();
 
+    let radius = match (radius, diameter) {
+        (Some(radius), None) => radius,
+        (None, Some(mut diameter)) => {
+            diameter.n /= 2.0;
+            diameter
+        }
+        (None, None) => {
+            return Err(KclError::Type(KclErrorDetails::new(
+                "This function needs either `diameter` or `radius`".to_string(),
+                vec![args.source_range],
+            )))
+        }
+        (Some(_), Some(_)) => {
+            return Err(KclError::Type(KclErrorDetails::new(
+                "You cannot specify both `diameter` and `radius`, please remove one".to_string(),
+                vec![args.source_range],
+            )))
+        }
+    };
     let from = [center_u[0] + radius.to_length_units(units), center_u[1]];
     let from_t = [TyF64::new(from[0], ty.clone()), TyF64::new(from[1], ty)];
 
