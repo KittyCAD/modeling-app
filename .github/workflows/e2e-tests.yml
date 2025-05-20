@@ -159,6 +159,7 @@ jobs:
           TARGET: web
 
       - name: Update snapshots
+        if: always()
         run: npm run test:snapshots -- --last-failed --update-snapshots
         env:
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
