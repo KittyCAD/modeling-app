@@ -1278,12 +1278,12 @@ export const ModelingMachineProvider = ({
               )
             }
           }
-          let filePath = file?.path
-          // When prompt to edit finishes, try to route to the file they were in otherwise go to main.kcl
-          if (filePath && isDesktop()) {
-            filePath = window.electron.path.relative(basePath, filePath)
-          } else {
-            filePath = PROJECT_ENTRYPOINT
+          // route to main.kcl by default for web and desktop
+          let filePath: string = PROJECT_ENTRYPOINT
+          const possibleFileName = file?.path
+          if (possibleFileName && isDesktop()) {
+            // When prompt to edit finishes, try to route to the file they were in otherwise go to main.kcl
+            filePath = window.electron.path.relative(basePath, possibleFileName)
           }
           return await promptToEditFlow({
             projectFiles,
