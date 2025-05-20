@@ -34,7 +34,7 @@ use crate::{
     },
     parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
     source_range::SourceRange,
-    ModuleId,
+    ModuleId, TypedPath,
 };
 
 mod condition;
@@ -1741,8 +1741,8 @@ impl ImportSelector {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum ImportPath {
-    Kcl { filename: String },
-    Foreign { path: String },
+    Kcl { filename: TypedPath },
+    Foreign { path: TypedPath },
     Std { path: Vec<String> },
 }
 
@@ -1811,16 +1811,14 @@ impl ImportStatement {
 
         match &self.path {
             ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => {
-                let mut parts = s.split('.');
-                let path = parts.next()?;
-                let _ext = parts.next()?;
-                let rest = parts.next();
-
-                if rest.is_some() {
-                    return None;
+                let name = s.file_name().map(|f| f.to_string());
+                // Remove the extension if it exists.
+                let extension = s.extension();
+                if let Some(extension) = extension {
+                    name.map(|n| n.trim_end_matches(extension).trim_end_matches('.').to_string())
+                } else {
+                    name
                 }
-
-                path.rsplit(&['/', '\\']).next().map(str::to_owned)
             }
             ImportPath::Std { path } => path.last().cloned(),
         }

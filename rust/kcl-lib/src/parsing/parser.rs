@@ -35,7 +35,7 @@ use crate::{
         token::{Token, TokenSlice, TokenType},
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
-    SourceRange, IMPORT_FILE_EXTENSIONS,
+    SourceRange, TypedPath, IMPORT_FILE_EXTENSIONS,
 };
 
 thread_local! {
@@ -1894,7 +1894,9 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             ));
         }
 
-        ImportPath::Kcl { filename: path_string }
+        ImportPath::Kcl {
+            filename: TypedPath::new(&path_string),
+        }
     } else if path_string.starts_with("std::") {
         ParseContext::warn(CompilationError::err(
             path_range,
@@ -1931,7 +1933,9 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
                 format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
             ))
         }
-        ImportPath::Foreign { path: path_string }
+        ImportPath::Foreign {
+            path: TypedPath::new(&path_string),
+        }
     } else {
         return Err(ErrMode::Cut(
             CompilationError::fatal(
