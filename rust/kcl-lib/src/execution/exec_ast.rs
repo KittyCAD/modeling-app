@@ -143,7 +143,7 @@ impl ExecutorContext {
                         &import_stmt.path,
                         &self.settings.project_directory,
                         &exec_state.mod_local.path,
-                    );
+                    )?;
                     let module_id = self
                         .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
                         .await?;

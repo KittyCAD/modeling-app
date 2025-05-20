@@ -139,7 +139,7 @@ pub(crate) fn import_dependencies(
     ) -> Result<(), KclError> {
         if let Node::ImportStatement(is) = node {
             // We only care about Kcl and Foreign imports for now.
-            let resolved_path = ModulePath::from_import_path(&is.path, &ctx.settings.project_directory, import_from);
+            let resolved_path = ModulePath::from_import_path(&is.path, &ctx.settings.project_directory, import_from)?;
             match &is.path {
                 ImportPath::Kcl { filename } => {
                     // We need to lock the mutex to push the dependency.

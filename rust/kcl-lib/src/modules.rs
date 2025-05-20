@@ -178,7 +178,7 @@ impl ModulePath {
         path: &ImportPath,
         project_directory: &Option<TypedPath>,
         import_from: &ModulePath,
-    ) -> Self {
+    ) -> Result<Self, KclError> {
         match path {
             ImportPath::Kcl { filename: path } | ImportPath::Foreign { path } => {
                 let resolved_path = match import_from {
@@ -198,22 +198,32 @@ impl ModulePath {
                             path.clone()
                         }
                     }
-                    // We shouldn't be importing a non-std KCL file from std.
-                    ModulePath::Std { .. } => unreachable!(),
+                    ModulePath::Std { .. } => {
+                        let message = format!("Cannot import a non-std KCL file from std: {path}.");
+                        if cfg!(debug_assertions) {
+                            panic!("{}", message.clone());
+                        }
+                        return Err(KclError::Internal(KclErrorDetails::new(message, vec![])));
+                    }
                 };
 
-                ModulePath::Local { value: resolved_path }
+                Ok(ModulePath::Local { value: resolved_path })
             }
             ImportPath::Std { path } => Self::from_std_import_path(path),
         }
     }
 
-    pub(crate) fn from_std_import_path(path: &[String]) -> Self {
+    pub(crate) fn from_std_import_path(path: &[String]) -> Result<Self, KclError> {
         // For now we only support importing from singly-nested modules inside std.
-        assert_eq!(path.len(), 2);
-        assert_eq!(&path[0], "std");
+        if path.len() != 2 || path[0] != "std" {
+            let message = format!("Invalid std import path: {path:?}.");
+            if cfg!(debug_assertions) {
+                panic!("{}", message.clone());
+            }
+            return Err(KclError::Internal(KclErrorDetails::new(message, vec![])));
+        }
 
-        ModulePath::Std { value: path[1].clone() }
+        Ok(ModulePath::Std { value: path[1].clone() })
     }
 }
 

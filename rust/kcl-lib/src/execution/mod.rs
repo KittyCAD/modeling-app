@@ -1213,7 +1213,7 @@ impl ExecutorContext {
     async fn eval_prelude(&self, exec_state: &mut ExecState, source_range: SourceRange) -> Result<(), KclError> {
         if exec_state.stack().memory.requires_std() {
             let path = vec!["std".to_owned(), "prelude".to_owned()];
-            let resolved_path = ModulePath::from_std_import_path(&path);
+            let resolved_path = ModulePath::from_std_import_path(&path)?;
             let id = self
                 .open_module(&ImportPath::Std { path }, &[], &resolved_path, exec_state, source_range)
                 .await?;
