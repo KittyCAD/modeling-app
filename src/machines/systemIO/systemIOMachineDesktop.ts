@@ -73,10 +73,6 @@ const sharedBulkCreateWorkflow = async ({
           baseDir,
         }).name
 
-    console.log('why?')
-    console.log('override', input.override)
-    console.log('override', newProjectName)
-    console.log('override', fileName)
     // Create the project around the file if newProject
     await createNewProjectDirectory(
       newProjectName,
