@@ -10,12 +10,16 @@ import {
   kclSamplesManifestWithNoMultipleFiles,
 } from '@src/lib/kclSamples'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { IS_ML_EXPERIMENTAL, PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
-import { getStringAfterLastSeparator, webSafePathSplit } from '@src/lib/paths'
-import { FILE_EXT } from '@src/lib/constants'
+import {
+  getStringAfterLastSeparator,
+  joinOSPaths,
+  webSafePathSplit,
+} from '@src/lib/paths'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -69,20 +73,32 @@ function onSubmitKCLSampleCreation({
         })
       }
 
+      /**
+       * When adding assemblies to an existing project create the assembly into a unique sub directory
+       */
+      if (!isProjectNew) {
+        requestedFiles.forEach((requestedFile) => {
+          const subDirectoryName = projectPathPart
+          const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot({
+            projectFolderName: requestedFile.requestedProjectName,
+          })
+          const uniqueSubDirectoryName = getUniqueProjectName(
+            subDirectoryName,
+            firstLevelDirectories
+          )
+          requestedFile.requestedProjectName = joinOSPaths(
+            requestedFile.requestedProjectName,
+            uniqueSubDirectoryName
+          )
+        })
+      }
+
       if (requestedFiles.length === 1) {
-        /**
-         * Navigates to the single file that could be renamed on disk for duplicates
-         */
-        const folderNameBecomesKCLFileName = projectPathPart + FILE_EXT
-        // If the project is new create the single file as main.kcl
-        const requestedFileNameWithExtension = isProjectNew
-          ? PROJECT_ENTRYPOINT
-          : folderNameBecomesKCLFileName
         systemIOActor.send({
           type: SystemIOMachineEvents.importFileFromURL,
           data: {
             requestedProjectName: requestedFiles[0].requestedProjectName,
-            requestedFileNameWithExtension: requestedFileNameWithExtension,
+            requestedFileNameWithExtension: requestedFiles[0].requestedFileName,
             requestedCode: requestedFiles[0].requestedCode,
           },
         })
@@ -278,10 +294,9 @@ export function createApplicationCommands({
           return value
         },
         options: ({ argumentsToSubmit }) => {
-          const samples =
-            isDesktop() && argumentsToSubmit.method !== 'existingProject'
-              ? everyKclSample
-              : kclSamplesManifestWithNoMultipleFiles
+          const samples = isDesktop()
+            ? everyKclSample
+            : kclSamplesManifestWithNoMultipleFiles
           return samples.map((sample) => {
             return {
               value: sample.pathFromProjectDirectoryToFirstFile,
@@ -296,17 +311,10 @@ export function createApplicationCommands({
         skip: true,
         options: ({ argumentsToSubmit }, _) => {
           if (isDesktop() && typeof argumentsToSubmit.sample === 'string') {
-            const kclSample = findKclSample(argumentsToSubmit.sample)
-            if (kclSample && kclSample.files.length > 1) {
-              return [
-                { name: 'New project', value: 'newProject', isCurrent: true },
-              ]
-            } else {
-              return [
-                { name: 'New project', value: 'newProject', isCurrent: true },
-                { name: 'Existing project', value: 'existingProject' },
-              ]
-            }
+            return [
+              { name: 'New project', value: 'newProject', isCurrent: true },
+              { name: 'Existing project', value: 'existingProject' },
+            ]
           } else {
             return [{ name: 'Overwrite', value: 'existingProject' }]
           }
