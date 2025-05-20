@@ -454,7 +454,7 @@ export const FileMachineProvider = ({
         }
 
         if (v.children) {
-          children.splice(0, 0, ...v.children)
+          children.push(...v.children)
           continue
         }
 
