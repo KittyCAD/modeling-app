@@ -71,6 +71,7 @@ function CommandBarSelectionInput({
 
   useEffect(() => {
     inputRef.current?.focus()
+    setHasSelectionBeenSetHere(true)
   }, [selection, inputRef])
 
   // Show the default planes if the selection type is 'plane'
