@@ -9,6 +9,8 @@ import {
   orthoScale,
   quaternionFromUpNForward,
 } from '@src/clientSideScene/helpers'
+import type { Setting } from '@src/lib/settings/initialSettings'
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import { DRAFT_DASHED_LINE } from '@src/clientSideScene/sceneConstants'
 import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
@@ -299,6 +301,7 @@ export type SegmentOverlayPayload =
 export interface Store {
   videoElement?: HTMLVideoElement
   openPanes: SidebarType[]
+  cameraProjection?: Setting<CameraProjectionType>
 }
 
 export type SketchTool =
@@ -1600,6 +1603,45 @@ export const modelingMachine = setup({
   },
   // end actions
   actors: {
+    sketchExit: fromPromise(
+      async (args: { input: { context: { store: Store } } }) => {
+        const store = args.input.context.store
+
+        // When cancelling the sketch mode we should disable sketch mode within the engine.
+        await engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'sketch_mode_disable' },
+        })
+
+        sceneInfra.camControls.syncDirection = 'clientToEngine'
+
+        if (store.cameraProjection?.current === 'perspective') {
+          await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+        }
+
+        sceneInfra.camControls.syncDirection = 'engineToClient'
+
+        // TODO: Re-evaluate if this pause/play logic is needed.
+        store.videoElement?.pause()
+
+        await kclManager
+          .executeCode()
+          .then(() => {
+            if (engineCommandManager.idleMode) return
+
+            store.videoElement?.play().catch((e: Error) => {
+              console.warn('Video playing was prevented', e)
+            })
+          })
+          .catch(reportRejection)
+
+        sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+        sceneEntitiesManager.removeSketchGrid()
+        sceneInfra.camControls.syncDirection = 'engineToClient'
+        sceneEntitiesManager.resetOverlays()
+      }
+    ),
     /* Below are all the do-constrain sketch actors,
      * which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
     'do-constrain-remove-constraint': fromPromise(
