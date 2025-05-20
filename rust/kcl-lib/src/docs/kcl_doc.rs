@@ -631,6 +631,8 @@ impl FnData {
             return "clone(${0:part001})".to_owned();
         } else if self.name == "hole" {
             return "hole(${0:holeSketch}, ${1:%})".to_owned();
+        } else if self.name == "circle" {
+            return "circle(center = [${0:3.14}, ${1:3.14}], diameter = ${2:3.14})".to_owned();
         }
         let mut args = Vec::new();
         let mut index = 0;
