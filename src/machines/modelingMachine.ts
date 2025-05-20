@@ -333,7 +333,6 @@ export type ModelingMachineEvent =
     }
   | { type: 'Sketch no face' }
   | { type: 'Cancel'; cleanup?: () => void }
-  | { type: 'CancelSketch' }
   | {
       type: 'Add start point' | 'Continue existing profile'
       data: {
@@ -856,10 +855,6 @@ export const modelingMachine = setup({
         sketchDetails: event.output,
       }
     }),
-    'tear down client sketch': () => {
-      sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-    },
-    'remove sketch grid': () => sceneEntitiesManager.removeSketchGrid(),
     'set up draft line': assign(({ context: { sketchDetails }, event }) => {
       if (!sketchDetails) return {}
       if (event.type !== 'Add start point') return {}
@@ -1200,9 +1195,6 @@ export const modelingMachine = setup({
     'clientToEngine cam sync direction': () => {
       sceneInfra.camControls.syncDirection = 'clientToEngine'
     },
-    'engineToClient cam sync direction': () => {
-      sceneInfra.camControls.syncDirection = 'engineToClient'
-    },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': () => {
       kclManager.setSelectionFilter(['face', 'object'])
@@ -1223,7 +1215,6 @@ export const modelingMachine = setup({
         return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
       })
     },
-    'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
     'Set context': assign({
       store: ({ context: { store }, event }) => {
         if (event.type !== 'Set context') return store
@@ -1542,7 +1533,6 @@ export const modelingMachine = setup({
     'Center camera on selection': () => {},
     'Submit to Text-to-CAD API': () => {},
     'Set sketchDetails': () => {},
-    'sketch exit execute': () => {},
     'debug-action': (data) => {
       console.log('re-eval debug-action', data)
     },
@@ -4194,7 +4184,13 @@ export const modelingMachine = setup({
         },
 
         'undo startSketchOn': {
-          invoke: {
+          invoke: [
+          {
+            id: 'sketchExit',
+            src: 'sketchExit',
+            input: ({ context }) => ({ context }),
+          },
+          {
             src: 'AST-undo-startSketchOn',
             id: 'AST-undo-startSketchOn',
             input: ({ context: { sketchDetails } }) => ({ sketchDetails }),
@@ -4209,7 +4205,8 @@ export const modelingMachine = setup({
               target: '#Modeling.idle',
               reenter: true,
             },
-          },
+          }
+          ],
         },
 
         'Rectangle tool': {
@@ -4927,7 +4924,6 @@ export const modelingMachine = setup({
 
       on: {
         Cancel: '.undo startSketchOn',
-        CancelSketch: '.SketchIdle',
 
         'Delete segment': {
           reenter: false,
@@ -4941,11 +4937,6 @@ export const modelingMachine = setup({
       },
 
       exit: [
-        'sketch exit execute',
-        'tear down client sketch',
-        'remove sketch grid',
-        'engineToClient cam sync direction',
-        'Reset Segment Overlays',
         'enable copilot',
       ],
 
