@@ -4185,27 +4185,27 @@ export const modelingMachine = setup({
 
         'undo startSketchOn': {
           invoke: [
-          {
-            id: 'sketchExit',
-            src: 'sketchExit',
-            input: ({ context }) => ({ context }),
-          },
-          {
-            src: 'AST-undo-startSketchOn',
-            id: 'AST-undo-startSketchOn',
-            input: ({ context: { sketchDetails } }) => ({ sketchDetails }),
-
-            onDone: {
-              target: '#Modeling.idle',
-              actions: 'enter modeling mode',
-              reenter: true,
+            {
+              id: 'sketchExit',
+              src: 'sketchExit',
+              input: ({ context }) => ({ context }),
             },
+            {
+              src: 'AST-undo-startSketchOn',
+              id: 'AST-undo-startSketchOn',
+              input: ({ context: { sketchDetails } }) => ({ sketchDetails }),
 
-            onError: {
-              target: '#Modeling.idle',
-              reenter: true,
+              onDone: {
+                target: '#Modeling.idle',
+                actions: 'enter modeling mode',
+                reenter: true,
+              },
+
+              onError: {
+                target: '#Modeling.idle',
+                reenter: true,
+              },
             },
-          }
           ],
         },
 
@@ -4936,9 +4936,7 @@ export const modelingMachine = setup({
         },
       },
 
-      exit: [
-        'enable copilot',
-      ],
+      exit: ['enable copilot'],
 
       entry: ['add axis n grid', 'clientToEngine cam sync direction'],
     },

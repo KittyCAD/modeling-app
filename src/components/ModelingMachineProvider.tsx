@@ -274,41 +274,47 @@ export const ModelingMachineProvider = ({
           !kclManager.hasErrors() && kclManager.ast.body.length > 0,
       },
       actors: {
-        sketchExit: fromPromise(async ({ input: { context: { store } }}) => {
-          // When cancelling the sketch mode we should disable sketch mode within the engine.
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'sketch_mode_disable' },
-          })
-
-          sceneInfra.camControls.syncDirection = 'clientToEngine'
-
-          if (cameraProjection.current === 'perspective') {
-            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
-          }
-
-          sceneInfra.camControls.syncDirection = 'engineToClient'
-
-          // TODO: Re-evaluate if this pause/play logic is needed.
-          store.videoElement?.pause()
-
-          await kclManager
-            .executeCode()
-            .then(() => {
-              if (engineCommandManager.idleMode) return
-
-              store.videoElement?.play().catch((e) => {
-                console.warn('Video playing was prevented', e)
-              })
+        sketchExit: fromPromise(
+          async ({
+            input: {
+              context: { store },
+            },
+          }) => {
+            // When cancelling the sketch mode we should disable sketch mode within the engine.
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: { type: 'sketch_mode_disable' },
             })
-            .catch(reportRejection)
 
-          sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-          sceneEntitiesManager.removeSketchGrid()
-          sceneInfra.camControls.syncDirection = 'engineToClient'
-          sceneEntitiesManager.resetOverlays()
-        }),
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+
+            if (cameraProjection.current === 'perspective') {
+              await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            }
+
+            sceneInfra.camControls.syncDirection = 'engineToClient'
+
+            // TODO: Re-evaluate if this pause/play logic is needed.
+            store.videoElement?.pause()
+
+            await kclManager
+              .executeCode()
+              .then(() => {
+                if (engineCommandManager.idleMode) return
+
+                store.videoElement?.play().catch((e) => {
+                  console.warn('Video playing was prevented', e)
+                })
+              })
+              .catch(reportRejection)
+
+            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+            sceneEntitiesManager.removeSketchGrid()
+            sceneInfra.camControls.syncDirection = 'engineToClient'
+            sceneEntitiesManager.resetOverlays()
+          }
+        ),
         exportFromEngine: fromPromise(
           async ({ input }: { input?: ModelingCommandSchema['Export'] }) => {
             if (kclManager.hasErrors() || kclManager.ast.body.length === 0) {
