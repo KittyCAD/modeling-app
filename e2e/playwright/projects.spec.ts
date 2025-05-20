@@ -2084,7 +2084,7 @@ test(
         path.join(nestedDir, 'main.kcl')
       )
       await fsp.writeFile(
-        path.join(nestedDir, 'main.kcl'),
+        path.join(bracketDir, 'main.kcl'),
         `import 'nested\\main.kcl' as thing
 
 thing`
