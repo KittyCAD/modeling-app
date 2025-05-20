@@ -4,18 +4,25 @@ import {
 } from '@src/machines/modelingMachine'
 import { createActor } from 'xstate'
 import { vi } from 'vitest'
-import { assertParse } from '@src/lang/wasm'
+import { assertParse, type CallExpressionKw } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import {
+  codeManager,
   engineCommandManager,
   kclManager,
-  sceneEntitiesManager,
 } from '@src/lib/singletons'
 import { VITE_KC_DEV_TOKEN } from '@src/env'
+import { line } from '@src/lang/std/sketch'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { err } from '@src/lib/trap'
+import {
+  createIdentifier,
+  createLiteral,
+  createVariableDeclaration,
+} from '@src/lang/create'
 
 // Store original method to restore in afterAll
-const originalSetupNoPointsListener = sceneEntitiesManager.setupNoPointsListener
-const originalCreateSketchAxis = sceneEntitiesManager.createSketchAxis
 
 beforeAll(async () => {
   await initPromise
@@ -33,22 +40,10 @@ beforeAll(async () => {
       },
     })
   })
-
-  // Replace the method directly rather than using spyOn
-  sceneEntitiesManager.setupNoPointsListener = function () {
-    console.log('Mock setupNoPointsListener called')
-    return { destroy: vi.fn() }
-  }
-  sceneEntitiesManager.createSketchAxis = function () {
-    console.log('Mock createSketchAxis called')
-    return { destroy: vi.fn() }
-  }
 }, 30_000)
 
 afterAll(() => {
   // Restore the original method
-  sceneEntitiesManager.setupNoPointsListener = originalSetupNoPointsListener
-  sceneEntitiesManager.createSketchAxis = originalCreateSketchAxis
 
   engineCommandManager.tearDown()
 })
@@ -180,8 +175,71 @@ profile001 = startProfile(sketch001, at = [2263.04, -2721.2])
 
       // After the condition is met, do the actual assertion
       expect(actor.getSnapshot().value).toEqual({
-        Sketch: { 'Line tool': 'Init' },
+        Sketch: { SketchIdle: 'scene drawn' },
       })
+
+      const getConstraintInfo = line.getConstraintInfo
+      const callExp = getNodeFromPath<Node<CallExpressionKw>>(
+        kclManager.ast,
+        artifact.codeRef.pathToNode,
+        'CallExpressionKw'
+      )
+      if (err(callExp)) {
+        throw new Error('Failed to get CallExpressionKw node')
+      }
+      const constraintInfo = getConstraintInfo(
+        callExp.node,
+        codeManager.code,
+        artifact.codeRef.pathToNode
+      )
+      const first = constraintInfo[0]
+
+      // Now that we're in sketchIdle state, test the "Constrain with named value" event
+      actor.send({
+        type: 'Constrain with named value',
+        data: {
+          currentValue: {
+            valueText: first.value,
+            pathToNode: first.pathToNode,
+            variableName: 'test_variable',
+          },
+          // Use type assertion to mock the complex type
+          namedValue: {
+            valueText: '20',
+            variableName: 'test_variable',
+            insertIndex: 0,
+            valueCalculated: '20',
+            variableDeclarationAst: createVariableDeclaration(
+              'test_variable',
+              createLiteral('20')
+            ),
+            variableIdentifierAst: createIdentifier('test_variable') as any,
+            valueAst: createLiteral('20'),
+          },
+        },
+      })
+
+      // Wait for the state to change in response to the constraint
+      await waitForCondition(() => {
+        const snapshot = actor.getSnapshot()
+        // Check if we've transitioned to a different state
+        return (
+          JSON.stringify(snapshot.value) !==
+          JSON.stringify({
+            Sketch: { SketchIdle: 'set up segments' },
+          })
+        )
+      }, 5000)
+
+      await waitForCondition(() => {
+        const snapshot = actor.getSnapshot()
+        // Check if we've transitioned to a different state
+        return (
+          JSON.stringify(snapshot.value) !==
+          JSON.stringify({ Sketch: 'Converting to named value' })
+        )
+      }, 5000)
+      expect(codeManager.code).toContain('line(end = [test_variable,')
     }, 10_000)
   })
 })
