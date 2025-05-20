@@ -12,8 +12,6 @@ export const defaultProjectFolderNameSnapshot = () => {
   return defaultProjectFolderName
 }
 
-// assumes /file/<encodedURIComponent>
-// e.g '/file/%2Fhome%2Fkevin-nadro%2FDocuments%2Fzoo-modeling-app-projects%2Fbracket-1%2Fbracket.kcl'
 /**
  * From the application project directory go down to a project folder and list all the folders at that directory level
  * application project directory: /home/documents/zoo-modeling-app-projects/
