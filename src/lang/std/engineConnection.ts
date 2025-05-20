@@ -998,7 +998,7 @@ class EngineConnection extends EventTarget {
           if (!message.success) {
             const errorsString = message?.errors
               ?.map((error) => {
-                return `  - ${error.error_code}: ${error.message}`
+                return `  - ${error?.error_code || 'Unknown error'}: ${error?.message || 'Unknown message'}`
               })
               .join('\n')
             if (message.request_id) {
@@ -1016,7 +1016,7 @@ class EngineConnection extends EventTarget {
             }
 
             const firstError = message?.errors[0]
-            if (firstError.error_code === 'auth_token_invalid') {
+            if (firstError?.error_code === 'auth_token_invalid') {
               this.state = {
                 type: EngineConnectionStateType.Disconnecting,
                 value: {
@@ -1030,7 +1030,7 @@ class EngineConnection extends EventTarget {
               this.disconnectAll()
             }
 
-            if (firstError.error_code === 'internal_api') {
+            if (firstError?.error_code === 'internal_api') {
               this.state = {
                 type: EngineConnectionStateType.Disconnecting,
                 value: {
