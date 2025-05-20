@@ -89,76 +89,76 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         }
       },
     },
-    {
-      name: 'Insert',
-      description: 'Insert from a file in the current project directory',
-      icon: 'import',
-      groupId: 'code',
-      hide: 'web',
-      needsReview: true,
-      args: {
-        path: {
-          inputType: 'options',
-          required: true,
-          options: commandProps.specialPropsForInsertCommand.providedOptions,
-          validation: async ({ data }) => {
-            const importExists = kclManager.ast.body.find(
-              (n) =>
-                n.type === 'ImportStatement' &&
-                ((n.path.type === 'Kcl' && n.path.filename === data.path) ||
-                  (n.path.type === 'Foreign' && n.path.path === data.path))
-            )
-            if (importExists) {
-              return 'This file is already imported, use the Clone command instead.'
-              // TODO: see if we can transition to the clone command, see #6515
-            }
+    // {
+    //   name: 'Insert',
+    //   description: 'Insert from a file in the current project directory',
+    //   icon: 'import',
+    //   groupId: 'code',
+    //   hide: 'web',
+    //   needsReview: true,
+    //   args: {
+    //     path: {
+    //       inputType: 'options',
+    //       required: true,
+    //       options: commandProps.specialPropsForInsertCommand.providedOptions,
+    //       validation: async ({ data }) => {
+    //         const importExists = kclManager.ast.body.find(
+    //           (n) =>
+    //             n.type === 'ImportStatement' &&
+    //             ((n.path.type === 'Kcl' && n.path.filename === data.path) ||
+    //               (n.path.type === 'Foreign' && n.path.path === data.path))
+    //         )
+    //         if (importExists) {
+    //           return 'This file is already imported, use the Clone command instead.'
+    //           // TODO: see if we can transition to the clone command, see #6515
+    //         }
 
-            return true
-          },
-        },
-        localName: {
-          inputType: 'string',
-          required: true,
-          defaultValue: (context: CommandBarContext) => {
-            if (!context.argumentsToSubmit['path']) {
-              return
-            }
+    //         return true
+    //       },
+    //     },
+    //     localName: {
+    //       inputType: 'string',
+    //       required: true,
+    //       defaultValue: (context: CommandBarContext) => {
+    //         if (!context.argumentsToSubmit['path']) {
+    //           return
+    //         }
 
-            const path = context.argumentsToSubmit['path'] as string
-            return getPathFilenameInVariableCase(path)
-          },
-          validation: async ({ data }) => {
-            const variableExists = kclManager.variables[data.localName]
-            if (variableExists) {
-              return 'This variable name is already in use.'
-            }
+    //         const path = context.argumentsToSubmit['path'] as string
+    //         return getPathFilenameInVariableCase(path)
+    //       },
+    //       validation: async ({ data }) => {
+    //         const variableExists = kclManager.variables[data.localName]
+    //         if (variableExists) {
+    //           return 'This variable name is already in use.'
+    //         }
 
-            return true
-          },
-        },
-      },
-      onSubmit: (data) => {
-        if (!data) {
-          return new Error('No input provided')
-        }
+    //         return true
+    //       },
+    //     },
+    //   },
+    //   onSubmit: (data) => {
+    //     if (!data) {
+    //       return new Error('No input provided')
+    //     }
 
-        const ast = kclManager.ast
-        const { path, localName } = data
-        const { modifiedAst, pathToNode } = addModuleImport({
-          ast,
-          path,
-          localName,
-        })
-        updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          { kclManager, editorManager, codeManager },
-          {
-            focusPath: [pathToNode],
-          }
-        ).catch(reportRejection)
-      },
-    },
+    //     const ast = kclManager.ast
+    //     const { path, localName } = data
+    //     const { modifiedAst, pathToNode } = addModuleImport({
+    //       ast,
+    //       path,
+    //       localName,
+    //     })
+    //     updateModelingState(
+    //       modifiedAst,
+    //       EXECUTION_TYPE_REAL,
+    //       { kclManager, editorManager, codeManager },
+    //       {
+    //         focusPath: [pathToNode],
+    //       }
+    //     ).catch(reportRejection)
+    //   },
+    // },
     {
       name: 'format-code',
       displayName: 'Format Code',

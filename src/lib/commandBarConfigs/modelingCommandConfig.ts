@@ -28,6 +28,7 @@ import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { SketchTool, modelingMachine } from '@src/machines/modelingMachine'
+import { isDesktop } from '../isDesktop'
 
 type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
@@ -158,6 +159,10 @@ export type ModelingCommandSchema = {
   Appearance: {
     nodeToEdit?: PathToNode
     color: string
+  }
+  Insert: {
+    path: string
+    localName: string
   }
   Translate: {
     nodeToEdit?: PathToNode
@@ -1010,6 +1015,74 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       // Add more fields
     },
+  },
+  Insert: {
+    description: 'Insert from a file in the current project directory',
+    icon: 'import',
+    hide: 'web',
+    needsReview: true,
+    args: {
+      path: {
+        inputType: 'options',
+        required: true,
+        // options
+        validation: async ({ data }) => {
+          const importExists = kclManager.ast.body.find(
+            (n) =>
+              n.type === 'ImportStatement' &&
+              ((n.path.type === 'Kcl' && n.path.filename === data.path) ||
+                (n.path.type === 'Foreign' && n.path.path === data.path))
+          )
+          if (importExists) {
+            return 'This file is already imported, use the Clone command instead.'
+            // TODO: see if we can transition to the clone command, see #6515
+          }
+
+          return true
+        },
+      },
+      localName: {
+        inputType: 'string',
+        required: true,
+        defaultValue: (context: CommandBarContext) => {
+          if (!context.argumentsToSubmit['path']) {
+            return
+          }
+
+          const path = context.argumentsToSubmit['path'] as string
+          return getPathFilenameInVariableCase(path)
+        },
+        validation: async ({ data }) => {
+          const variableExists = kclManager.variables[data.localName]
+          if (variableExists) {
+            return 'This variable name is already in use.'
+          }
+
+          return true
+        },
+      },
+    },
+    // onSubmit: (data) => {
+    //   if (!data) {
+    //     return new Error('No input provided')
+    //   }
+
+    //   const ast = kclManager.ast
+    //   const { path, localName } = data
+    //   const { modifiedAst, pathToNode } = addModuleImport({
+    //     ast,
+    //     path,
+    //     localName,
+    //   })
+    //   updateModelingState(
+    //     modifiedAst,
+    //     EXECUTION_TYPE_REAL,
+    //     { kclManager, editorManager, codeManager },
+    //     {
+    //       focusPath: [pathToNode],
+    //     }
+    //   ).catch(reportRejection)
+    // },
   },
   Translate: {
     description: 'Set translation on solid or sketch.',

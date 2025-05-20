@@ -47,6 +47,7 @@ import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   addClone,
   addHelix,
+  addModuleImport,
   addOffsetPlane,
   addShell,
   insertNamedConstant,
@@ -381,6 +382,7 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['Delete selection']
     }
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
+  | { type: 'Insert'; data: ModelingCommandSchema['Insert'] }
   | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
@@ -2736,6 +2738,34 @@ export const modelingMachine = setup({
         )
       }
     ),
+    insertAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Insert'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const ast = kclManager.ast
+        const { path, localName } = input
+        const { modifiedAst, pathToNode } = addModuleImport({
+          ast,
+          path,
+          localName,
+        })
+
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          { kclManager, editorManager, codeManager },
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
     translateAstMod: fromPromise(
       async ({
         input,
@@ -3265,6 +3295,12 @@ export const modelingMachine = setup({
 
         Appearance: {
           target: 'Applying appearance',
+          reenter: true,
+          guard: 'no kcl errors',
+        },
+
+        Insert: {
+          target: 'Applying insert',
           reenter: true,
           guard: 'no kcl errors',
         },
@@ -4728,6 +4764,22 @@ export const modelingMachine = setup({
         id: 'appearanceAstMod',
         input: ({ event }) => {
           if (event.type !== 'Appearance') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying insert': {
+      invoke: {
+        src: 'insertAstMod',
+        id: 'insertAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Insert') return undefined
           return event.data
         },
         onDone: ['idle'],
