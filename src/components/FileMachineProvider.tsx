@@ -441,39 +441,46 @@ export const FileMachineProvider = ({
   )
   useMenuListener(cb)
 
-  const kclCommandMemo = useMemo(
-    () =>
-      kclCommands({
-        authToken: token ?? '',
-        projectData,
-        settings: {
-          defaultUnit:
-            settings.modeling.defaultUnit.current ??
-            DEFAULT_DEFAULT_LENGTH_UNIT,
-        },
-        specialPropsForInsertCommand: {
-          providedOptions: (isDesktop() && project?.children
-            ? project.children
-            : []
-          ).flatMap((v) => {
-            // TODO: add support for full tree traversal when KCL support subdir imports
-            const relativeFilePath = v.path.replace(
-              project?.path + window.electron.sep,
-              ''
-            )
-            const isDirectory = v.children
-            const isCurrentFile = v.path === file?.path
-            return isDirectory || isCurrentFile
-              ? []
-              : {
-                  name: relativeFilePath,
-                  value: relativeFilePath,
-                }
-          }),
-        },
-      }),
-    [codeManager, kclManager, send, project, file]
-  )
+  const kclCommandMemo = useMemo(() => {
+    const providedOptions = []
+    if (isDesktop() && project?.children && file?.path) {
+      const projectPath = project.path
+      const filePath = file.path
+      let children = project.children
+      while (children.length > 0) {
+        const v = children.pop()
+        if (!v) {
+          continue
+        }
+
+        if (v.children) {
+          children.splice(0, 0, ...v.children)
+          continue
+        }
+
+        const relativeFilePath = v.path.replace(
+          projectPath + window.electron.sep,
+          ''
+        )
+        const isCurrentFile = v.path === filePath
+        if (!isCurrentFile) {
+          providedOptions.push({
+            name: relativeFilePath,
+            value: relativeFilePath,
+          })
+        }
+      }
+    }
+    return kclCommands({
+      authToken: token ?? '',
+      projectData,
+      settings: {
+        defaultUnit:
+          settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,
+      },
+      specialPropsForInsertCommand: { providedOptions },
+    })
+  }, [codeManager, kclManager, send, project, file])
 
   useEffect(() => {
     commandBarActor.send({
