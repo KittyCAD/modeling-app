@@ -654,7 +654,12 @@ export const useFileTreeOperations = () => {
 
     send({
       type: 'Create file',
-      data: { name: args.name, makeDir: true, shouldSetToRename: false },
+      data: {
+        name: args.name,
+        makeDir: true,
+        silent: true,
+        shouldSetToRename: false,
+      },
     })
   }
 
