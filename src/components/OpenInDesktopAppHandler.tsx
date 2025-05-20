@@ -12,7 +12,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { Themes, darkModeMatcher, setThemeClass } from '@src/lib/theme'
 import toast from 'react-hot-toast'
 import { platform } from '@src/lib/utils'
-import { Logo } from './Logo'
+import { Logo } from '@src/components/Logo'
 import { useEffect } from 'react'
 
 /**
