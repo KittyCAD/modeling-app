@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Result of unparsing tests/nested_main_kcl/nested/foo/bar/main.kcl
+description: Result of unparsing tests/nested_windows_main_kcl/nested/foo/bar/main.kcl
 ---
 // A donut shape.
 startSketchOn(XY)
