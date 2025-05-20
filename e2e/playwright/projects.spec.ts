@@ -2067,7 +2067,7 @@ test(
 
 test(
   'nested dir import works on windows',
-  { tag: '@electron @windows @snapshot' },
+  { tag: ['@electron', '@windows'] },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     // Skip if on non-windows
     if (process.platform !== 'win32') {
