@@ -10,6 +10,60 @@ test.describe('Import UI tests', () => {
       await context.folderSetupFn(async (dir) => {
         const projectDir = path.join(dir, 'import-test')
         await fsp.mkdir(projectDir, { recursive: true })
+        await test.step('opening broken code file should clear the scene and show the error', async () => {
+          await test.step('opening broken code file should clear the scene and show the error', async () => {
+            // open the file pane.
+            await page.getByTestId('files-pane-button').click()
+
+            // Open the other file.
+            const file = page.getByRole('button', {
+              name: 'broken-code-test.kcl',
+            })
+            await expect(file).toBeVisible()
+
+            await file.click()
+
+            // error in guter
+            await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+            // error text on hover
+            await page.hover('.cm-lint-marker-error')
+            const crypticErrorText = `The arg tag was given, but it was the wrong type`
+            await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+
+            // black pixel means the scene has been cleared.
+            await expect
+              .poll(() => u.getGreatestPixDiff(pointOnModel, [30, 30, 30]), {
+                timeout: 10_000,
+              })
+              .toBeLessThan(15)
+          })
+          // open the file pane.
+          await page.getByTestId('files-pane-button').click()
+
+          // Open the other file.
+          const file = page.getByRole('button', {
+            name: 'broken-code-test.kcl',
+          })
+          await expect(file).toBeVisible()
+
+          await file.click()
+
+          // error in guter
+          await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+          // error text on hover
+          await page.hover('.cm-lint-marker-error')
+          const crypticErrorText = `The arg tag was given, but it was the wrong type`
+          await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+
+          // black pixel means the scene has been cleared.
+          await expect
+            .poll(() => u.getGreatestPixDiff(pointOnModel, [30, 30, 30]), {
+              timeout: 10_000,
+            })
+            .toBeLessThan(15)
+        })
 
         // Create the imported file
         await fsp.writeFile(

@@ -2069,6 +2069,10 @@ test(
   'nested dir import works on windows',
   { tag: '@electron @windows @snapshot' },
   async ({ scene, cmdBar, context, page }, testInfo) => {
+    // Skip if on non-windows
+    if (process.platform !== 'win32') {
+      test.skip()
+    }
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
