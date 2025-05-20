@@ -12,6 +12,7 @@ import type {
   CameraViewState_type,
   UnitLength_type,
 } from '@kittycad/lib/dist/types/src/models'
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 
 export const uuidv4 = v4
 
@@ -622,9 +623,11 @@ export async function engineViewIsometricWithGeometryPresent({
 export async function engineViewIsometricWithoutGeometryPresent({
   engineCommandManager,
   unit,
+  cameraProjection,
 }: {
   engineCommandManager: EngineCommandManager
   unit?: UnitLength_type
+  cameraProjection: CameraProjectionType
 }) {
   // If you load an empty scene with any file unit it will have an eye offset of this
   const MAGIC_ENGINE_EYE_OFFSET = 1378.0057
@@ -644,8 +647,9 @@ export async function engineViewIsometricWithoutGeometryPresent({
     eye_offset: MAGIC_ENGINE_EYE_OFFSET,
     fov_y: 45,
     ortho_scale_factor: 1.4063792,
-    is_ortho: true,
-    ortho_scale_enabled: true,
+    // gotcha: the current value if orthographic won't be written to disk! its default!
+    is_ortho: cameraProjection !== 'perspective',
+    ortho_scale_enabled: cameraProjection !== 'perspective',
     world_coord_system: 'right_handed_up_z',
   }
   await engineCommandManager.sendSceneCommand({
