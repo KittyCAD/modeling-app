@@ -1,0 +1,30 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing import_only_at_top_level.kcl
+---
+KCL Semantic error
+
+  × semantic: Imports are only supported at the top-level of a file.
+   ╭─[2:3]
+ 1 │ fn main() {
+ 2 │   import "empty.kcl"
+   ·   ─────────┬────────
+   ·            ╰── tests/import_only_at_top_level/input.kcl
+ 3 │   return 0
+   ╰────
+   ╭─[6:1]
+ 5 │ 
+ 6 │ main()
+   · ───┬──
+   ·    ╰── tests/import_only_at_top_level/input.kcl
+   ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: Imports are only supported at the top-level of a file.
+         ╭─[2:3]
+       1 │ fn main() {
+       2 │   import "empty.kcl"
+         ·   ─────────┬────────
+         ·            ╰── tests/import_only_at_top_level/input.kcl
+       3 │   return 0
+         ╰────

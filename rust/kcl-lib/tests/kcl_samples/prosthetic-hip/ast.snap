@@ -1772,266 +1772,6 @@ description: Result of parsing prosthetic-hip.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "plane003",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "commentStart": 0,
-            "end": 0,
-            "properties": [
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "origin",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "p3Z",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    }
-                  ],
-                  "end": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "xAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "cos",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "p3A",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "sin",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "p3A",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    }
-                  ],
-                  "end": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "yAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "1.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 1.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    }
-                  ],
-                  "end": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              }
-            ],
-            "start": 0,
-            "type": "ObjectExpression",
-            "type": "ObjectExpression"
-          },
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
             "name": "l3",
             "start": 0,
             "type": "Identifier"
@@ -2132,7 +1872,7 @@ description: Result of parsing prosthetic-hip.kcl
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "plane003",
+                    "name": "XY",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -2811,20 +2551,130 @@ description: Result of parsing prosthetic-hip.kcl
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "z",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "p3Z",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "translate",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "pitch",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "p3A",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "operator": "-",
+                      "start": 0,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "rotate",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
             "commentStart": 0,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
-                "8": [
+                "10": [
                   {
                     "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
-                      "type": "newLineBlockComment",
+                      "type": "blockComment",
                       "value": "Draw the fourth profile for the lofted femur",
                       "style": "line"
                     }
@@ -2902,266 +2752,6 @@ description: Result of parsing prosthetic-hip.kcl
               "value": 36.5,
               "suffix": "None"
             }
-          },
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "name": "plane004",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "commentStart": 0,
-            "end": 0,
-            "properties": [
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "origin",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "p4Z",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    }
-                  ],
-                  "end": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "xAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "cos",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "p4A",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "sin",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "p4A",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    }
-                  ],
-                  "end": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "yAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "1.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 1.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    }
-                  ],
-                  "end": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              }
-            ],
-            "start": 0,
-            "type": "ObjectExpression",
-            "type": "ObjectExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -3280,7 +2870,7 @@ description: Result of parsing prosthetic-hip.kcl
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "plane004",
+                    "name": "XY",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -3959,20 +3549,130 @@ description: Result of parsing prosthetic-hip.kcl
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "z",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "p4Z",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "translate",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "pitch",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "p4A",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "operator": "-",
+                      "start": 0,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "rotate",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
             "commentStart": 0,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
-                "8": [
+                "10": [
                   {
                     "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
-                      "type": "newLineBlockComment",
+                      "type": "blockComment",
                       "value": "Draw the first profile for the femoral stem",
                       "style": "line"
                     }
@@ -4050,266 +3750,6 @@ description: Result of parsing prosthetic-hip.kcl
               "value": 36.5,
               "suffix": "None"
             }
-          },
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "name": "plane005",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "commentStart": 0,
-            "end": 0,
-            "properties": [
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "origin",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "p5Z",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    }
-                  ],
-                  "end": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "xAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "cos",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "p5A",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "sin",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "p5A",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    }
-                  ],
-                  "end": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "yAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "1.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 1.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    }
-                  ],
-                  "end": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              }
-            ],
-            "start": 0,
-            "type": "ObjectExpression",
-            "type": "ObjectExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -4428,7 +3868,7 @@ description: Result of parsing prosthetic-hip.kcl
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "plane005",
+                    "name": "XY",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -5107,20 +4547,130 @@ description: Result of parsing prosthetic-hip.kcl
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "z",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "p5Z",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "translate",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "pitch",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "p5A",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "operator": "-",
+                      "start": 0,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "rotate",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
             "commentStart": 0,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
-                "8": [
+                "10": [
                   {
                     "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
-                      "type": "newLineBlockComment",
+                      "type": "blockComment",
                       "value": "Draw the second profile for the femoral stem",
                       "style": "line"
                     }
@@ -5198,266 +4748,6 @@ description: Result of parsing prosthetic-hip.kcl
               "value": 36.5,
               "suffix": "None"
             }
-          },
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "name": "plane006",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "commentStart": 0,
-            "end": 0,
-            "properties": [
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "origin",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "p6Z",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    }
-                  ],
-                  "end": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "xAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "cos",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "p6A",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "sin",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "p6A",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    }
-                  ],
-                  "end": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "yAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "1.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 1.0,
-                        "suffix": "None"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "raw": "0.0",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "None"
-                      }
-                    }
-                  ],
-                  "end": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              }
-            ],
-            "start": 0,
-            "type": "ObjectExpression",
-            "type": "ObjectExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -5576,7 +4866,7 @@ description: Result of parsing prosthetic-hip.kcl
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "plane006",
+                    "name": "XY",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -6255,92 +5545,6 @@ description: Result of parsing prosthetic-hip.kcl
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
-              }
-            ],
-            "commentStart": 0,
-            "end": 0,
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "8": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "newLineBlockComment",
-                      "value": "Draw the third profile for the femoral stem",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "startNodes": []
-            },
-            "start": 0,
-            "type": "PipeExpression",
-            "type": "PipeExpression"
-          },
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "name": "stemTab",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "body": [
-              {
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": "clone",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": "stemLoftProfile6",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
               },
               {
                 "arguments": [
@@ -6349,21 +5553,25 @@ description: Result of parsing prosthetic-hip.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "length",
+                      "name": "z",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "6",
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "p6Z",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 6.0,
-                        "suffix": "None"
-                      }
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
@@ -6374,7 +5582,7 @@ description: Result of parsing prosthetic-hip.kcl
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "extrude",
+                    "name": "translate",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -6387,27 +5595,80 @@ description: Result of parsing prosthetic-hip.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "pitch",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "p6A",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "operator": "-",
+                      "start": 0,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "rotate",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
             "commentStart": 0,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
-                "1": [
+                "10": [
                   {
                     "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
-                      "type": "newLineBlockComment",
+                      "type": "blockComment",
                       "value": "Loft the femur using all profiles in sequence",
                       "style": "line"
                     }
@@ -6636,20 +5897,42 @@ description: Result of parsing prosthetic-hip.kcl
                   "type": "Name"
                 },
                 {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": {
+                  "callee": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
-                    "name": "stemLoftProfile6",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "clone",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name"
                   },
-                  "path": [],
+                  "commentStart": 0,
+                  "end": 0,
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "stemLoftProfile6",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  }
                 }
               ],
               "end": 0,
@@ -6664,9 +5947,121 @@ description: Result of parsing prosthetic-hip.kcl
         "end": 0,
         "kind": "const",
         "preComments": [
-          "",
-          "",
           "// Loft the femoral stem"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "stemTab",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "stemLoftProfile6",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "6",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 6.0,
+                        "suffix": "None"
+                      }
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "commentStart": 0,
+            "end": 0,
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "1": [
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "blockComment",
+                      "value": "Revolve a hollow socket to represent the femoral head",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "startNodes": []
+            },
+            "start": 0,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "// Draw the third profile for the femoral stem"
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -7505,11 +6900,6 @@ description: Result of parsing prosthetic-hip.kcl
         },
         "end": 0,
         "kind": "const",
-        "preComments": [
-          "",
-          "",
-          "// Revolve a hollow socket to represent the femoral head"
-        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -9129,19 +8519,7 @@ description: Result of parsing prosthetic-hip.kcl
       }
     ],
     "nonCodeMeta": {
-      "nonCodeNodes": {
-        "30": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ]
-      },
+      "nonCodeNodes": {},
       "startNodes": [
         {
           "commentStart": 0,

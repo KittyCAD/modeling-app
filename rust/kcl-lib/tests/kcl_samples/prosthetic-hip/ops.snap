@@ -64,131 +64,8 @@ description: Operations executed prosthetic-hip.kcl
     "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
-        "type": "Object",
-        "value": {
-          "origin": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 110.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          },
-          "xAxis": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.9063077870366499,
-                "ty": {
-                  "type": "Known",
-                  "type": "Count"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.42261826174069944,
-                "ty": {
-                  "type": "Known",
-                  "type": "Count"
-                }
-              }
-            ]
-          },
-          "yAxis": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          }
-        }
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     },
@@ -200,131 +77,8 @@ description: Operations executed prosthetic-hip.kcl
     "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
-        "type": "Object",
-        "value": {
-          "origin": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 130.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          },
-          "xAxis": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.8038568606172173,
-                "ty": {
-                  "type": "Known",
-                  "type": "Count"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.5948227867513413,
-                "ty": {
-                  "type": "Known",
-                  "type": "Count"
-                }
-              }
-            ]
-          },
-          "yAxis": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          }
-        }
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     },
@@ -336,131 +90,8 @@ description: Operations executed prosthetic-hip.kcl
     "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
-        "type": "Object",
-        "value": {
-          "origin": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 140.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          },
-          "xAxis": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.8038568606172173,
-                "ty": {
-                  "type": "Known",
-                  "type": "Count"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.5948227867513413,
-                "ty": {
-                  "type": "Known",
-                  "type": "Count"
-                }
-              }
-            ]
-          },
-          "yAxis": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          }
-        }
+        "type": "Plane",
+        "artifact_id": "[uuid]"
       },
       "sourceRange": []
     },
@@ -472,130 +103,92 @@ description: Operations executed prosthetic-hip.kcl
     "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
-        "type": "Object",
-        "value": {
-          "origin": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 145.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "loft",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
-          "xAxis": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.8038568606172173,
-                "ty": {
-                  "type": "Known",
-                  "type": "Count"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.5948227867513413,
-                "ty": {
-                  "type": "Known",
-                  "type": "Count"
-                }
-              }
-            ]
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
-          "yAxis": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
+        ]
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "loft",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "clone",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
         }
       },
       "sourceRange": []
@@ -648,91 +241,6 @@ description: Operations executed prosthetic-hip.kcl
         "sourceRange": []
       }
     },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "loft",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "loft",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "clone",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
     "sourceRange": []
   },
   {
