@@ -1134,6 +1134,7 @@ sketch001 = startSketchOn(XZ)
     // Wait for the selection to register (TODO: we need a definitive way to wait for this)
     await page.waitForTimeout(200)
     await toolbar.extrudeButton.click()
+    await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'arguments',
       currentArgKey: 'length',
@@ -1355,9 +1356,7 @@ sketch001 = startSketchOn(XZ)
       const u = await getUtils(page)
       const projectLink = page.getByRole('link', { name: 'cube' })
       const gizmo = page.locator('[aria-label*=gizmo]')
-      const resetCameraButton = page.getByRole('button', {
-        name: 'Reset view',
-      })
+      const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
       const locationToHaveColor = async (
         position: { x: number; y: number },
         color: [number, number, number]
