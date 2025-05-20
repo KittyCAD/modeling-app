@@ -755,7 +755,7 @@ fn apply_ascription(
         };
         KclError::Semantic(KclErrorDetails::new(
             format!(
-                "could not coerce {} value to type {ty}{suggestion}",
+                "could not coerce value of type {} to type {ty}{suggestion}",
                 value.human_friendly_type()
             ),
             vec![source_range],
@@ -1648,7 +1648,7 @@ a = 42: string
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce number(default units) value to type string"),
+                .contains("could not coerce value of type number(default units) to type string"),
             "Expected error but found {err:?}"
         );
 
@@ -1659,7 +1659,7 @@ a = 42: Plane
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce number(default units) value to type Plane"),
+                .contains("could not coerce value of type number(default units) to type Plane"),
             "Expected error but found {err:?}"
         );
 
@@ -1669,8 +1669,9 @@ arr = [0]: [string]
         let result = parse_execute(program).await;
         let err = result.unwrap_err();
         assert!(
-            err.to_string()
-                .contains("could not coerce [number(default units); 1] value to type [string]"),
+            err.to_string().contains(
+                "could not coerce value of type array of number(default units) with 1 value to type [string]"
+            ),
             "Expected error but found {err:?}"
         );
 
@@ -1681,7 +1682,7 @@ mixedArr = [0, "a"]: [number(mm)]
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce [number(default units), string; 2] value to type [number(mm)]"),
+                .contains("could not coerce value of type array of number(default units), string with 2 values to type [number(mm)]"),
             "Expected error but found {err:?}"
         );
     }

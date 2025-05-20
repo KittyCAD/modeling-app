@@ -297,13 +297,14 @@ impl KclValue {
                         let max = 3;
                         let len = elements.len();
                         let ellipsis = if len > max { ", ..." } else { "" };
+                        let element_label = if len == 1 { "value" } else { "values" };
                         let element_tys = elements
                             .iter()
                             .take(max)
                             .map(|elem| elem.inner_human_friendly_type(max_depth - 1))
                             .collect::<Vec<_>>()
                             .join(", ");
-                        return format!("[{element_tys}{ellipsis}; {len}]");
+                        return format!("array of {element_tys}{ellipsis} with {len} {element_label}");
                     }
                 }
             }
@@ -697,13 +698,22 @@ mod tests {
         };
         assert_eq!(mm.human_friendly_type(), "number(mm)".to_string());
 
+        let array1_mm = KclValue::HomArray {
+            value: vec![mm.clone()],
+            ty: RuntimeType::any(),
+        };
+        assert_eq!(
+            array1_mm.human_friendly_type(),
+            "array of number(mm) with 1 value".to_string()
+        );
+
         let array2_mm = KclValue::HomArray {
             value: vec![mm.clone(), mm.clone()],
             ty: RuntimeType::any(),
         };
         assert_eq!(
             array2_mm.human_friendly_type(),
-            "[number(mm), number(mm); 2]".to_string()
+            "array of number(mm), number(mm) with 2 values".to_string()
         );
 
         let array3_mm = KclValue::HomArray {
@@ -712,7 +722,7 @@ mod tests {
         };
         assert_eq!(
             array3_mm.human_friendly_type(),
-            "[number(mm), number(mm), number(mm); 3]".to_string()
+            "array of number(mm), number(mm), number(mm) with 3 values".to_string()
         );
 
         let inches = KclValue::Number {
@@ -726,7 +736,7 @@ mod tests {
         };
         assert_eq!(
             array4.human_friendly_type(),
-            "[number(mm), number(mm), number(in), ...; 4]".to_string()
+            "array of number(mm), number(mm), number(in), ... with 4 values".to_string()
         );
 
         let empty_array = KclValue::HomArray {
@@ -739,6 +749,9 @@ mod tests {
             value: vec![array2_mm.clone()],
             ty: RuntimeType::any(),
         };
-        assert_eq!(array_nested.human_friendly_type(), "[[any; 2]; 1]".to_string());
+        assert_eq!(
+            array_nested.human_friendly_type(),
+            "array of [any; 2] with 1 value".to_string()
+        );
     }
 }
