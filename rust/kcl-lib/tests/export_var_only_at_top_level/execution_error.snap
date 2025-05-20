@@ -1,0 +1,15 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing export_only_at_top_level.kcl
+---
+KCL Semantic error
+
+  × semantic: Exports are only supported at the top-level of a file. Remove
+  │ `export` or move it to the top-level.
+   ╭─[2:3]
+ 1 │ fn main() {
+ 2 │   export x = 2
+   ·   ──────┬─────
+   ·         ╰── main
+ 3 │   return 0
+   ╰────
