@@ -53,8 +53,6 @@ impl TypedPath {
         }
         #[cfg(not(target_arch = "wasm32"))]
         {
-            println!("normalise_import: {}", path);
-            println!("normalise_import: {:?}", normalise_import(path));
             TypedPath(normalise_import(path))
         }
     }
