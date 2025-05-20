@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react'
+import type React from 'react'
+import { useMemo, useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { ActionButton } from '@src/components/ActionButton'
@@ -121,6 +122,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                     data-is-current-arg={
                       argName === currentArgument?.name ? 'true' : 'false'
                     }
+                    type="button"
                     disabled={!isReviewing && currentArgument?.name === argName}
                     onClick={() => {
                       commandBarActor.send({
@@ -244,13 +246,20 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
 
 type ButtonProps = { bgClassName?: string; iconClassName?: string }
 function ReviewingButton({ bgClassName, iconClassName }: ButtonProps) {
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    if (buttonRef.current) {
+      buttonRef.current.focus()
+    }
+  }, [])
   return (
     <ActionButton
       Element="button"
-      autoFocus
+      ref={buttonRef}
       type="submit"
       form="review-form"
-      className="w-fit !p-0 rounded-sm hover:shadow"
+      className="w-fit !p-0 rounded-sm hover:shadow focus:outline-current"
+      tabIndex={0}
       data-testid="command-bar-submit"
       iconStart={{
         icon: 'checkmark',
@@ -269,7 +278,8 @@ function GatheringArgsButton({ bgClassName, iconClassName }: ButtonProps) {
       Element="button"
       type="submit"
       form="arg-form"
-      className="w-fit !p-0 rounded-sm hover:shadow"
+      className="w-fit !p-0 rounded-sm hover:shadow focus:outline-current"
+      tabIndex={0}
       data-testid="command-bar-continue"
       iconStart={{
         icon: 'arrowRight',
