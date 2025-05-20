@@ -74,25 +74,25 @@ function onSubmitKCLSampleCreation({
         })
       }
 
-        /**
-         * When adding assemblies to an existing project create the assembly into a unique sub directory
-         */
-        if (!isProjectNew) {
-          requestedFiles.forEach((requestedFile) => {
-            const subDirectoryName = projectPathPart
-            const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot({
-              projectFolderName: requestedFile.requestedProjectName,
-            })
-            const uniqueSubDirectoryName = getUniqueProjectName(
-              subDirectoryName,
-              firstLevelDirectories
-            )
-            requestedFile.requestedProjectName = joinOSPaths(
-              requestedFile.requestedProjectName,
-              uniqueSubDirectoryName
-            )
+      /**
+       * When adding assemblies to an existing project create the assembly into a unique sub directory
+       */
+      if (!isProjectNew) {
+        requestedFiles.forEach((requestedFile) => {
+          const subDirectoryName = projectPathPart
+          const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot({
+            projectFolderName: requestedFile.requestedProjectName,
           })
-        }
+          const uniqueSubDirectoryName = getUniqueProjectName(
+            subDirectoryName,
+            firstLevelDirectories
+          )
+          requestedFile.requestedProjectName = joinOSPaths(
+            requestedFile.requestedProjectName,
+            uniqueSubDirectoryName
+          )
+        })
+      }
 
       if (requestedFiles.length === 1) {
         systemIOActor.send({
@@ -104,7 +104,6 @@ function onSubmitKCLSampleCreation({
           },
         })
       } else {
-
         /**
          * Bulk create the assembly and navigate to the project
          */
