@@ -159,6 +159,7 @@ export function ToastTextToCadSuccess({
   projectName,
   fileName,
   isProjectNew,
+  rootProjectName,
 }: {
   toastId: string
   data: TextToCad_type & { fileName: string }
@@ -170,6 +171,7 @@ export function ToastTextToCadSuccess({
   projectName: string
   fileName: string
   isProjectNew: boolean
+  rootProjectName: string
 }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -361,9 +363,19 @@ export function ToastTextToCadSuccess({
               if (isDesktop()) {
                 // Delete the file from the project
 
-                if (projectName && fileName) {
+                if (isProjectNew) {
                   // Delete the entire project if it was newly created from text to CAD
-                  // or it deletes the folder when inside the modeling page
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.deleteProject,
+                    data: {
+                      requestedProjectName: rootProjectName,
+                    },
+                  })
+                }
+
+                if (projectName && fileName) {
+                  // deletes the folder when inside the modeling page
+                  // The TTC Create will make a subdir, delete that dir with the main.kcl as well
                   systemIOActor.send({
                     type: SystemIOMachineEvents.deleteProject,
                     data: {

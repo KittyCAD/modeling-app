@@ -249,11 +249,14 @@ export async function submitAndAwaitTextToKclSystemIO({
         toastId,
         data: textToCadOutputCreated,
         token,
+        // This can be a subdir within the rootProjectName
         projectName: uniqueProjectName,
         fileName: newFileName,
         navigate,
         isProjectNew,
         settings,
+        // This is always the root project name, no subdir
+        rootProjectName: projectName,
       }),
     {
       id: toastId,
