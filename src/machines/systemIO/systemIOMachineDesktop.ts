@@ -4,403 +4,400 @@ import {
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
-} from '@src/lib/desktop'
+} from "@src/lib/desktop";
 import {
   doesProjectNameNeedInterpolated,
   getNextFileName,
   getNextProjectIndex,
   getUniqueProjectName,
   interpolateProjectNameWithIndex,
-} from '@src/lib/desktopFS'
-import type { Project } from '@src/lib/project'
-import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+} from "@src/lib/desktopFS";
+import type { Project } from "@src/lib/project";
+import { systemIOMachine } from "@src/machines/systemIO/systemIOMachine";
 import type {
   RequestedKCLFile,
   SystemIOContext,
-} from '@src/machines/systemIO/utils'
+} from "@src/machines/systemIO/utils";
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
-} from '@src/machines/systemIO/utils'
-import { fromPromise } from 'xstate'
-import type { AppMachineContext } from '@src/lib/types'
+} from "@src/machines/systemIO/utils";
+import { fromPromise } from "xstate";
+import type { AppMachineContext } from "@src/lib/types";
 
 const sharedBulkCreateWorkflow = async ({
   input,
 }: {
   input: {
-    context: SystemIOContext
-    files: RequestedKCLFile[]
-    rootContext: AppMachineContext
-    override?: boolean
-  }
+    context: SystemIOContext;
+    files: RequestedKCLFile[];
+    rootContext: AppMachineContext;
+    override?: boolean;
+  };
 }) => {
-  const configuration = await readAppSettingsFile()
+  const configuration = await readAppSettingsFile();
   for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
-    const file = input.files[fileIndex]
-    const requestedProjectName = file.requestedProjectName
-    const requestedFileName = file.requestedFileName
-    const requestedCode = file.requestedCode
-    const folders = input.context.folders
+    const file = input.files[fileIndex];
+    const requestedProjectName = file.requestedProjectName;
+    const requestedFileName = file.requestedFileName;
+    const requestedCode = file.requestedCode;
+    const folders = input.context.folders;
 
-    let newProjectName = requestedProjectName
+    let newProjectName = requestedProjectName;
 
     if (!newProjectName) {
       newProjectName = getUniqueProjectName(
         input.context.defaultProjectFolderName,
-        input.context.folders
-      )
+        input.context.folders,
+      );
     }
 
-    const needsInterpolated = doesProjectNameNeedInterpolated(newProjectName)
+    const needsInterpolated = doesProjectNameNeedInterpolated(newProjectName);
     if (needsInterpolated) {
-      const nextIndex = getNextProjectIndex(newProjectName, folders)
+      const nextIndex = getNextProjectIndex(newProjectName, folders);
       newProjectName = interpolateProjectNameWithIndex(
         newProjectName,
-        nextIndex
-      )
+        nextIndex,
+      );
     }
 
     const baseDir = window.electron.join(
       input.context.projectDirectoryPath,
-      newProjectName
-    )
+      newProjectName,
+    );
     // If override is true, use the requested filename directly
     const fileName = input.override
       ? requestedFileName
       : getNextFileName({
           entryName: requestedFileName,
           baseDir,
-        }).name
+        }).name;
 
-    console.log('why?')
-    console.log('override', input.override)
-    console.log('override', newProjectName)
-    console.log('override', fileName)
     // Create the project around the file if newProject
     await createNewProjectDirectory(
       newProjectName,
       requestedCode,
       configuration,
-      fileName
-    )
+      fileName,
+    );
   }
-  const numberOfFiles = input.files.length
-  const fileText = numberOfFiles > 1 ? 'files' : 'file'
+  const numberOfFiles = input.files.length;
+  const fileText = numberOfFiles > 1 ? "files" : "file";
   const message = input.override
     ? `Successfully overwrote ${numberOfFiles} ${fileText}`
-    : `Successfully created ${numberOfFiles} ${fileText}`
+    : `Successfully created ${numberOfFiles} ${fileText}`;
   return {
     message,
-    fileName: '',
-    projectName: '',
-    subRoute: 'subRoute' in input ? input.subRoute : '',
-  }
-}
+    fileName: "",
+    projectName: "",
+    subRoute: "subRoute" in input ? input.subRoute : "",
+  };
+};
 
 export const systemIOMachineDesktop = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
       async ({ input: context }: { input: SystemIOContext }) => {
-        const projects = []
-        const projectDirectoryPath = context.projectDirectoryPath
+        const projects = [];
+        const projectDirectoryPath = context.projectDirectoryPath;
         if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
-          return []
+          return [];
         }
-        await mkdirOrNOOP(projectDirectoryPath)
+        await mkdirOrNOOP(projectDirectoryPath);
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-        const entries = await window.electron.readdir(projectDirectoryPath)
+        const entries = await window.electron.readdir(projectDirectoryPath);
         const { value: canReadWriteProjectDirectory } =
-          await window.electron.canReadWriteDirectory(projectDirectoryPath)
+          await window.electron.canReadWriteDirectory(projectDirectoryPath);
 
         for (let entry of entries) {
           // Skip directories that start with a dot
-          if (entry.startsWith('.')) {
-            continue
+          if (entry.startsWith(".")) {
+            continue;
           }
           const projectPath = window.electron.path.join(
             projectDirectoryPath,
-            entry
-          )
+            entry,
+          );
 
           // if it's not a directory ignore.
           // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
-          const isDirectory = await window.electron.statIsDirectory(projectPath)
+          const isDirectory =
+            await window.electron.statIsDirectory(projectPath);
           if (!isDirectory) {
-            continue
+            continue;
           }
-          const project: Project = await getProjectInfo(projectPath)
+          const project: Project = await getProjectInfo(projectPath);
           if (
             project.kcl_file_count === 0 &&
             project.readWriteAccess &&
             canReadWriteProjectDirectory
           ) {
-            continue
+            continue;
           }
-          projects.push(project)
+          projects.push(project);
         }
-        return projects
-      }
+        return projects;
+      },
     ),
     [SystemIOMachineActors.createProject]: fromPromise(
       async ({
         input,
       }: {
-        input: { context: SystemIOContext; requestedProjectName: string }
+        input: { context: SystemIOContext; requestedProjectName: string };
       }) => {
-        const folders = input.context.folders
-        const requestedProjectName = input.requestedProjectName
-        const uniqueName = getUniqueProjectName(requestedProjectName, folders)
-        await createNewProjectDirectory(uniqueName)
+        const folders = input.context.folders;
+        const requestedProjectName = input.requestedProjectName;
+        const uniqueName = getUniqueProjectName(requestedProjectName, folders);
+        await createNewProjectDirectory(uniqueName);
         return {
           message: `Successfully created "${uniqueName}"`,
           name: uniqueName,
-        }
-      }
+        };
+      },
     ),
     [SystemIOMachineActors.renameProject]: fromPromise(
       async ({
         input,
       }: {
         input: {
-          context: SystemIOContext
-          requestedProjectName: string
-          projectName: string
-        }
+          context: SystemIOContext;
+          requestedProjectName: string;
+          projectName: string;
+        };
       }) => {
-        const folders = input.context.folders
-        const requestedProjectName = input.requestedProjectName
-        const projectName = input.projectName
-        let newProjectName: string = requestedProjectName
+        const folders = input.context.folders;
+        const requestedProjectName = input.requestedProjectName;
+        const projectName = input.projectName;
+        let newProjectName: string = requestedProjectName;
         if (doesProjectNameNeedInterpolated(requestedProjectName)) {
-          const nextIndex = getNextProjectIndex(requestedProjectName, folders)
+          const nextIndex = getNextProjectIndex(requestedProjectName, folders);
           newProjectName = interpolateProjectNameWithIndex(
             requestedProjectName,
-            nextIndex
-          )
+            nextIndex,
+          );
         }
 
         // Toast an error if the project name is taken
         if (folders.find((p) => p.name === newProjectName)) {
           return Promise.reject(
-            new Error(`Project with name "${newProjectName}" already exists`)
-          )
+            new Error(`Project with name "${newProjectName}" already exists`),
+          );
         }
 
         await renameProjectDirectory(
           window.electron.path.join(
             input.context.projectDirectoryPath,
-            projectName
+            projectName,
           ),
-          newProjectName
-        )
+          newProjectName,
+        );
 
         return {
           message: `Successfully renamed "${projectName}" to "${newProjectName}"`,
           oldName: projectName,
           newName: newProjectName,
-        }
-      }
+        };
+      },
     ),
     [SystemIOMachineActors.deleteProject]: fromPromise(
       async ({
         input,
       }: {
-        input: { context: SystemIOContext; requestedProjectName: string }
+        input: { context: SystemIOContext; requestedProjectName: string };
       }) => {
         await window.electron.rm(
           window.electron.path.join(
             input.context.projectDirectoryPath,
-            input.requestedProjectName
+            input.requestedProjectName,
           ),
           {
             recursive: true,
-          }
-        )
+          },
+        );
 
         return {
           message: `Successfully deleted "${input.requestedProjectName}"`,
           name: input.requestedProjectName,
-        }
-      }
+        };
+      },
     ),
     [SystemIOMachineActors.createKCLFile]: fromPromise(
       async ({
         input,
       }: {
         input: {
-          context: SystemIOContext
-          requestedProjectName: string
-          requestedFileNameWithExtension: string
-          requestedCode: string
-          rootContext: AppMachineContext
-          requestedSubRoute?: string
-        }
+          context: SystemIOContext;
+          requestedProjectName: string;
+          requestedFileNameWithExtension: string;
+          requestedCode: string;
+          rootContext: AppMachineContext;
+          requestedSubRoute?: string;
+        };
       }) => {
-        const requestedProjectName = input.requestedProjectName
+        const requestedProjectName = input.requestedProjectName;
         const requestedFileNameWithExtension =
-          input.requestedFileNameWithExtension
-        const requestedCode = input.requestedCode
-        const folders = input.context.folders
+          input.requestedFileNameWithExtension;
+        const requestedCode = input.requestedCode;
+        const folders = input.context.folders;
 
-        let newProjectName = requestedProjectName
+        let newProjectName = requestedProjectName;
 
         if (!newProjectName) {
           newProjectName = getUniqueProjectName(
             input.context.defaultProjectFolderName,
-            input.context.folders
-          )
+            input.context.folders,
+          );
         }
 
         const needsInterpolated =
-          doesProjectNameNeedInterpolated(newProjectName)
+          doesProjectNameNeedInterpolated(newProjectName);
         if (needsInterpolated) {
-          const nextIndex = getNextProjectIndex(newProjectName, folders)
+          const nextIndex = getNextProjectIndex(newProjectName, folders);
           newProjectName = interpolateProjectNameWithIndex(
             newProjectName,
-            nextIndex
-          )
+            nextIndex,
+          );
         }
 
         const baseDir = window.electron.join(
           input.context.projectDirectoryPath,
-          newProjectName
-        )
+          newProjectName,
+        );
         const { name: newFileName } = getNextFileName({
           entryName: requestedFileNameWithExtension,
           baseDir,
-        })
+        });
 
-        const configuration = await readAppSettingsFile()
+        const configuration = await readAppSettingsFile();
 
         // Create the project around the file if newProject
         await createNewProjectDirectory(
           newProjectName,
           requestedCode,
           configuration,
-          newFileName
-        )
+          newFileName,
+        );
 
         return {
-          message: 'File created successfully',
+          message: "File created successfully",
           fileName: newFileName,
           projectName: newProjectName,
-          subRoute: input.requestedSubRoute || '',
-        }
-      }
+          subRoute: input.requestedSubRoute || "",
+        };
+      },
     ),
     [SystemIOMachineActors.checkReadWrite]: fromPromise(
       async ({
         input,
       }: {
         input: {
-          context: SystemIOContext
-          requestedProjectDirectoryPath: string
-        }
+          context: SystemIOContext;
+          requestedProjectDirectoryPath: string;
+        };
       }) => {
-        const requestProjectDirectoryPath = input.requestedProjectDirectoryPath
+        const requestProjectDirectoryPath = input.requestedProjectDirectoryPath;
         if (!requestProjectDirectoryPath) {
-          return { value: true, error: undefined }
+          return { value: true, error: undefined };
         }
         const result = await window.electron.canReadWriteDirectory(
-          requestProjectDirectoryPath
-        )
-        return result
-      }
+          requestProjectDirectoryPath,
+        );
+        return result;
+      },
     ),
     [SystemIOMachineActors.deleteKCLFile]: fromPromise(
       async ({
         input,
       }: {
         input: {
-          context: SystemIOContext
-          requestedProjectName: string
-          requestedFileName: string
-        }
+          context: SystemIOContext;
+          requestedProjectName: string;
+          requestedFileName: string;
+        };
       }) => {
         const path = window.electron.path.join(
           input.context.projectDirectoryPath,
           input.requestedProjectName,
-          input.requestedFileName
-        )
-        await window.electron.rm(path)
+          input.requestedFileName,
+        );
+        await window.electron.rm(path);
         return {
-          message: 'File deleted successfully',
+          message: "File deleted successfully",
           projectName: input.requestedProjectName,
           fileName: input.requestedFileName,
-        }
-      }
+        };
+      },
     ),
     [SystemIOMachineActors.bulkCreateKCLFiles]: fromPromise(
       async ({
         input,
       }: {
         input: {
-          context: SystemIOContext
-          files: RequestedKCLFile[]
-          rootContext: AppMachineContext
-        }
+          context: SystemIOContext;
+          files: RequestedKCLFile[];
+          rootContext: AppMachineContext;
+        };
       }) => {
-        const message = await sharedBulkCreateWorkflow({ input })
+        const message = await sharedBulkCreateWorkflow({ input });
         return {
           ...message,
-          subRoute: '',
-        }
-      }
+          subRoute: "",
+        };
+      },
     ),
     [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToProject]: fromPromise(
       async ({
         input,
       }: {
         input: {
-          context: SystemIOContext
-          files: RequestedKCLFile[]
-          rootContext: AppMachineContext
-          requestedProjectName: string
-          override?: boolean
-          requestedSubRoute?: string
-        }
+          context: SystemIOContext;
+          files: RequestedKCLFile[];
+          rootContext: AppMachineContext;
+          requestedProjectName: string;
+          override?: boolean;
+          requestedSubRoute?: string;
+        };
       }) => {
         const message = await sharedBulkCreateWorkflow({
           input: {
             ...input,
             override: input.override,
           },
-        })
+        });
         return {
           ...message,
           projectName: input.requestedProjectName,
-          subRoute: input.requestedSubRoute || '',
-        }
-      }
+          subRoute: input.requestedSubRoute || "",
+        };
+      },
     ),
     [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile]: fromPromise(
       async ({
         input,
       }: {
         input: {
-          context: SystemIOContext
-          files: RequestedKCLFile[]
-          rootContext: AppMachineContext
-          requestedProjectName: string
-          override?: boolean
-          requestedFileNameWithExtension: string
-          requestedSubRoute?: string
-        }
+          context: SystemIOContext;
+          files: RequestedKCLFile[];
+          rootContext: AppMachineContext;
+          requestedProjectName: string;
+          override?: boolean;
+          requestedFileNameWithExtension: string;
+          requestedSubRoute?: string;
+        };
       }) => {
         const message = await sharedBulkCreateWorkflow({
           input: {
             ...input,
             override: input.override,
           },
-        })
+        });
         return {
           ...message,
           projectName: input.requestedProjectName,
-          fileName: input.requestedFileNameWithExtension || '',
-          subRoute: input.requestedSubRoute || '',
-        }
-      }
+          fileName: input.requestedFileNameWithExtension || "",
+          subRoute: input.requestedSubRoute || "",
+        };
+      },
     ),
   },
-})
+});
