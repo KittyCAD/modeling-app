@@ -489,9 +489,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             commandContext.argumentsToSubmit.axisOrEdge as string
           ),
         inputType: 'options',
+        displayName: 'Sketch Axis',
         options: [
-          { name: 'X Axis (relative to sketch)', isCurrent: true, value: 'X' },
-          { name: 'Y Axis (relative to sketch)', isCurrent: false, value: 'Y' },
+          { name: 'X Axis', isCurrent: true, value: 'X' },
+          { name: 'Y Axis', isCurrent: false, value: 'Y' },
         ],
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
