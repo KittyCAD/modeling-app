@@ -21,7 +21,7 @@ plateSketch = startSketchOn(XY)
   |> close()
   |> subtract2d(tool = circle(center = [0, 0], radius = bearingOuterDiameter / 2))
 plateBody = extrude(plateSketch, length = stockThickness)
-  |> appearance(%, color = "#1e62eb")
+  |> appearance(color = "#1e62eb")
   |> fillet(
        radius = boltDiameter * 1 / 3,
        tags = [

@@ -11,13 +11,13 @@ import pipeInnerDiameter, pipeOuterDiameter, pipeLength from "parameters.kcl"
 export fn pipe() {
   // Create the pipe base
   pipeBase = startSketchOn(XZ)
-    |> circle(%, center = [0, 0], radius = pipeOuterDiameter / 2)
-    |> extrude(%, length = pipeLength)
+    |> circle(center = [0, 0], radius = pipeOuterDiameter / 2)
+    |> extrude(length = pipeLength)
 
   // Extrude a hole through the length of the pipe
   pipe = startSketchOn(pipeBase, face = END)
     |> circle(center = [0, 0], radius = pipeInnerDiameter / 2)
-    |> extrude(%, length = -pipeLength)
+    |> extrude(length = -pipeLength)
     |> appearance(color = "#a24ed0")
   return pipe
 }

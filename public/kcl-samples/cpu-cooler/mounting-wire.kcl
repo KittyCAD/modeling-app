@@ -38,10 +38,10 @@ lowerArm = startSketchOn(offsetPlane(XZ, offset = fanSize / 2 + 2))
 // Create the profile of the mounting wire and sweep along the XZ path
 wireProfile = startSketchOn(offsetPlane(XY, offset = 40 + fanSize / 2))
 sweepUpperArm = circle(wireProfile, center = [-12, -fanSize / 2 - 2], radius = 1)
-  |> sweep(%, path = upperArm)
+  |> sweep(path = upperArm)
 
 sweepLowerArm = circle(wireProfile, center = [-12, -fanSize / 2 - 2], radius = 1)
-  |> sweep(%, path = lowerArm)
+  |> sweep(path = lowerArm)
 
 // Draw the XY components of the mounting wire path
 upperHook = startSketchOn(offsetPlane(XY, offset = segEndY(seg07)))
@@ -64,10 +64,10 @@ lowerHook = startSketchOn(offsetPlane(XY, offset = segEndY(seg08)))
 // Sweep the wire profile around the hook-shaped segments of the mounting wire
 hookProfile = startSketchOn(offsetPlane(YZ, offset = segEndX(seg07)))
 sweepUpperHook = circle(hookProfile, center = [-fanSize / 2 - 2, segEndY(seg07)], radius = 1)
-  |> sweep(%, path = upperHook)
+  |> sweep(path = upperHook)
 
 sweepLowerHook = circle(hookProfile, center = [-fanSize / 2 - 2, segEndY(seg08)], radius = 1)
-  |> sweep(%, path = lowerHook)
+  |> sweep(path = lowerHook)
 
 // Union each piece of the wire into a single continuous sweep
 [

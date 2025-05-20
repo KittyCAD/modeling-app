@@ -51,7 +51,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   23["Sweep Extrusion<br>[1711, 1744, 0]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-  24["Sweep Extrusion<br>[1891, 1966, 0]"]
+  24["Sweep Extrusion<br>[1891, 1963, 0]"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   25[Wall]
     %% face_code_ref=Missing NodePath

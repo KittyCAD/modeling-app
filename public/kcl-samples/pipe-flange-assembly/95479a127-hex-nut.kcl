@@ -26,8 +26,8 @@ export fn hexNut() {
   // Create the hole in the center of the hex nut
   hexNut = startSketchOn(hexNutBase, face = END)
     |> circle(center = [0, 0], radius = hexNutDiameter / 2)
-    |> extrude(%, length = -hexNutThickness)
-    |> appearance(%, color = "#4edfd5")
+    |> extrude(length = -hexNutThickness)
+    |> appearance(color = "#4edfd5")
 
   return hexNut
 }

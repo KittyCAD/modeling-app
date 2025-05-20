@@ -112,7 +112,7 @@ stemLoftProfile6 = startSketchOn(plane006)
 
 // Draw the third profile for the femoral stem
 stemTab = clone(stemLoftProfile6)
-  |> extrude(%, length = 6)
+  |> extrude(length = 6)
 
 // Loft the femur using all profiles in sequence
 
