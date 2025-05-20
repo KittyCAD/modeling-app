@@ -81,7 +81,7 @@ test.describe('Point-and-click assemblies tests', () => {
             ),
             fsp.copyFile(
               executorInputPath('cylinder.kcl'),
-              path.join(nestedProjDir, 'file.kcl')
+              path.join(nestedProjDir, 'main.kcl')
             ),
             fsp.copyFile(
               executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
@@ -178,8 +178,8 @@ test.describe('Point-and-click assemblies tests', () => {
 
       await test.step('Insert a nested kcl part', async () => {
         await insertPartIntoAssembly(
-          'nested/twice/file.kcl',
-          'file',
+          'nested/twice/main.kcl',
+          'main',
           toolbar,
           cmdBar,
           page
@@ -188,7 +188,7 @@ test.describe('Point-and-click assemblies tests', () => {
         await page.waitForTimeout(10000)
         await editor.expectEditor.toContain(
           `
-          import "nested/twice/file.kcl" as file 
+          import "nested/twice/main.kcl" as main 
           `,
           { shouldNormalise: true }
         )
