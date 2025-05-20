@@ -111,6 +111,8 @@ const useTextareaAutoGrow = (ref: RefObject<HTMLTextAreaElement>) => {
     }
 
     if (ref.current === null) return
+    // Run initially to set all this stuff at the start
+    listener()
     ref.current.addEventListener('input', listener)
 
     return () => {
