@@ -281,7 +281,14 @@ impl ExecutorContext {
 
                     // Track exports.
                     if let ItemVisibility::Export = variable_declaration.visibility {
-                        exec_state.mod_local.module_exports.push(var_name);
+                        if matches!(body_type, BodyType::Root) {
+                            exec_state.mod_local.module_exports.push(var_name);
+                        } else {
+                            exec_state.err(CompilationError::err(
+                                variable_declaration.as_source_range(),
+                                "Exports are only supported at the top-level of a file. Remove `export` or move it to the top-level.",
+                            ));
+                        }
                     }
                     // Variable declaration can be the return value of a module.
                     last_expr = matches!(body_type, BodyType::Root).then_some(value);
