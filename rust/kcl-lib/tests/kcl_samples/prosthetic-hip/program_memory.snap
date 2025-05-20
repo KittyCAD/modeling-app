@@ -556,9 +556,9 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -8.0
             ],
             "tag": {
-              "commentStart": 2056,
-              "end": 2062,
-              "start": 2056,
+              "commentStart": 1889,
+              "end": 1895,
+              "start": 1889,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -707,17 +707,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 130.0,
+            "z": 0.0,
             "units": {
               "type": "Mm"
             }
           },
           "type": "plane",
-          "value": "Custom",
+          "value": "XY",
           "xAxis": {
-            "x": 0.8038568606172174,
+            "x": 1.0,
             "y": 0.0,
-            "z": 0.5948227867513414,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -1233,514 +1233,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
       },
       "angle": {
         "type": "Degrees"
-      }
-    }
-  },
-  "plane003": {
-    "type": "Object",
-    "value": {
-      "origin": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 110.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      },
-      "xAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.9063,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.4226,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          }
-        ]
-      },
-      "yAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      }
-    }
-  },
-  "plane004": {
-    "type": "Object",
-    "value": {
-      "origin": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 130.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      },
-      "xAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.8039,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.5948,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          }
-        ]
-      },
-      "yAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      }
-    }
-  },
-  "plane005": {
-    "type": "Object",
-    "value": {
-      "origin": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 140.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      },
-      "xAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.8039,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.5948,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          }
-        ]
-      },
-      "yAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      }
-    }
-  },
-  "plane006": {
-    "type": "Object",
-    "value": {
-      "origin": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 145.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      },
-      "xAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.8039,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.5948,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          }
-        ]
-      },
-      "yAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
       }
     }
   },
@@ -2573,9 +2065,9 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -16.0
           ],
           "tag": {
-            "commentStart": 1467,
-            "end": 1473,
-            "start": 1467,
+            "commentStart": 1359,
+            "end": 1365,
+            "start": 1359,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2724,17 +2216,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 110.0,
+          "z": 0.0,
           "units": {
             "type": "Mm"
           }
         },
         "type": "plane",
-        "value": "Custom",
+        "value": "XY",
         "xAxis": {
-          "x": 0.9063077870366499,
+          "x": 1.0,
           "y": 0.0,
-          "z": 0.42261826174069944,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -2795,9 +2287,9 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -8.0
           ],
           "tag": {
-            "commentStart": 2056,
-            "end": 2062,
-            "start": 2056,
+            "commentStart": 1889,
+            "end": 1895,
+            "start": 1889,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2946,17 +2438,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 130.0,
+          "z": 0.0,
           "units": {
             "type": "Mm"
           }
         },
         "type": "plane",
-        "value": "Custom",
+        "value": "XY",
         "xAxis": {
-          "x": 0.8038568606172174,
+          "x": 1.0,
           "y": 0.0,
-          "z": 0.5948227867513414,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -3017,9 +2509,9 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.8
           ],
           "tag": {
-            "commentStart": 2649,
-            "end": 2655,
-            "start": 2649,
+            "commentStart": 2423,
+            "end": 2429,
+            "start": 2423,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -3168,17 +2660,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 140.0,
+          "z": 0.0,
           "units": {
             "type": "Mm"
           }
         },
         "type": "plane",
-        "value": "Custom",
+        "value": "XY",
         "xAxis": {
-          "x": 0.8038568606172174,
+          "x": 1.0,
           "y": 0.0,
-          "z": 0.5948227867513414,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -3239,9 +2731,9 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.5
           ],
           "tag": {
-            "commentStart": 3239,
-            "end": 3245,
-            "start": 3239,
+            "commentStart": 2954,
+            "end": 2960,
+            "start": 2954,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -3390,17 +2882,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 145.0,
+          "z": 0.0,
           "units": {
             "type": "Mm"
           }
         },
         "type": "plane",
-        "value": "Custom",
+        "value": "XY",
         "xAxis": {
-          "x": 0.8038568606172174,
+          "x": 1.0,
           "y": 0.0,
-          "z": 0.5948227867513414,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -3457,9 +2949,9 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3239,
-            "end": 3245,
-            "start": 3239,
+            "commentStart": 2954,
+            "end": 2960,
+            "start": 2954,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -3515,9 +3007,9 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -0.5
             ],
             "tag": {
-              "commentStart": 3239,
-              "end": 3245,
-              "start": 3239,
+              "commentStart": 2954,
+              "end": 2960,
+              "start": 2954,
               "type": "TagDeclarator",
               "value": "seg06"
             },
@@ -3666,17 +3158,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 145.0,
+            "z": 0.0,
             "units": {
               "type": "Mm"
             }
           },
           "type": "plane",
-          "value": "Custom",
+          "value": "XY",
           "xAxis": {
-            "x": 0.8038568606172174,
+            "x": 1.0,
             "y": 0.0,
-            "z": 0.5948227867513414,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
