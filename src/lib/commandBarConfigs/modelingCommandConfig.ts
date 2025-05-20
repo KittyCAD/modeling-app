@@ -478,7 +478,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         defaultValue: 'Axis',
         options: [
-          { name: 'Axis', isCurrent: true, value: 'Axis' },
+          { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
           { name: 'Edge', isCurrent: false, value: 'Edge' },
         ],
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -490,8 +490,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ),
         inputType: 'options',
         options: [
-          { name: 'X Axis', isCurrent: true, value: 'X' },
-          { name: 'Y Axis', isCurrent: false, value: 'Y' },
+          { name: 'X Axis (relative to sketch)', isCurrent: true, value: 'X' },
+          { name: 'Y Axis (relative to sketch)', isCurrent: false, value: 'Y' },
         ],
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
