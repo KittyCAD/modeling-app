@@ -26,7 +26,7 @@ use crate::{
         args::{Args, TyF64},
         utils::{
             arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
-            intersection_with_parallel_line, point_to_len_unit, point_to_mm, untype_point, untyped_point_to_mm,
+            intersection_with_parallel_line, point_to_len_unit, point_to_mm, untyped_point_to_mm,
             TangentialArcInfoInput,
         },
     },
@@ -1396,12 +1396,14 @@ pub(crate) async fn inner_start_profile(
     ])
     .await?;
 
-    let (to, ty) = untype_point(at);
+    // Convert to the units of the module.  This is what the frontend expects.
+    let units = exec_state.length_unit();
+    let to = point_to_len_unit(at, units);
     let current_path = BasePath {
         from: to,
         to,
         tag: tag.clone(),
-        units: ty.expect_length(),
+        units,
         geo_meta: GeoMeta {
             id: move_pen_id,
             metadata: args.source_range.into(),
@@ -1414,7 +1416,7 @@ pub(crate) async fn inner_start_profile(
         artifact_id: path_id.into(),
         on: sketch_surface.clone(),
         paths: vec![],
-        units: ty.expect_length(),
+        units,
         mirror: Default::default(),
         meta: vec![args.source_range.into()],
         tags: if let Some(tag) = &tag {
