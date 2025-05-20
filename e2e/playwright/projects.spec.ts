@@ -2064,3 +2064,59 @@ test(
     })
   }
 )
+
+test(
+  'nested dir import works on windows',
+  { tag: ['@electron', '@windows'] },
+  async ({ scene, cmdBar, context, page }, testInfo) => {
+    // Skip if on non-windows
+    if (process.platform !== 'win32') {
+      test.skip()
+    }
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, 'bracket')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      const nestedDir = path.join(bracketDir, 'nested')
+      await fsp.mkdir(nestedDir, { recursive: true })
+
+      await fsp.copyFile(
+        executorInputPath('cylinder-inches.kcl'),
+        path.join(nestedDir, 'main.kcl')
+      )
+      await fsp.writeFile(
+        path.join(bracketDir, 'main.kcl'),
+        `import 'nested\\main.kcl' as thing
+
+thing`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    const u = await getUtils(page)
+
+    const pointOnModel = { x: 630, y: 280 }
+
+    await test.step('Opening the bracket project should load the stream', async () => {
+      // expect to see the text bracket
+      await expect(page.getByText('bracket')).toBeVisible()
+
+      await page.getByText('bracket').click()
+
+      await scene.settled(cmdBar)
+
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeEnabled({
+        timeout: 20_000,
+      })
+
+      // gray at this pixel means the stream has loaded in the most
+      // user way we can verify it (pixel color)
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [125, 125, 125]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(15)
+    })
+  }
+)

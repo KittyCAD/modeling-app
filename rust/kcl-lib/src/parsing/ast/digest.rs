@@ -212,8 +212,9 @@ impl Type {
             Type::Object { properties } => {
                 hasher.update(b"FnArgType::Object");
                 hasher.update(properties.len().to_ne_bytes());
-                for prop in properties.iter_mut() {
-                    hasher.update(prop.compute_digest());
+                for (id, ty) in properties.iter_mut() {
+                    hasher.update(id.compute_digest());
+                    hasher.update(ty.compute_digest());
                 }
             }
         }

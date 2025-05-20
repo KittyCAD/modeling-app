@@ -35,7 +35,7 @@ use crate::{
         token::{Token, TokenSlice, TokenType},
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
-    SourceRange, IMPORT_FILE_EXTENSIONS,
+    SourceRange, TypedPath, IMPORT_FILE_EXTENSIONS,
 };
 
 thread_local! {
@@ -436,7 +436,7 @@ fn pipe_expression(i: &mut TokenSlice) -> PResult<Node<PipeExpression>> {
     ))
 }
 
-fn bool_value(i: &mut TokenSlice) -> PResult<BoxNode<Literal>> {
+fn bool_value(i: &mut TokenSlice) -> PResult<Node<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Keyword if token.value == "true" => Ok((true, token)),
@@ -448,7 +448,7 @@ fn bool_value(i: &mut TokenSlice) -> PResult<BoxNode<Literal>> {
         })
         .context(expected("a boolean literal (either true or false)"))
         .parse_next(i)?;
-    Ok(Box::new(Node::new(
+    Ok(Node::new(
         Literal {
             value: LiteralValue::Bool(value),
             raw: value.to_string(),
@@ -457,11 +457,11 @@ fn bool_value(i: &mut TokenSlice) -> PResult<BoxNode<Literal>> {
         token.start,
         token.end,
         token.module_id,
-    )))
+    ))
 }
 
 fn literal(i: &mut TokenSlice) -> PResult<BoxNode<Literal>> {
-    alt((string_literal, unsigned_number_literal))
+    alt((string_literal, unsigned_number_literal, bool_value))
         .map(Box::new)
         .context(expected("a KCL literal, like 'myPart' or 3"))
         .parse_next(i)
@@ -1862,7 +1862,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
     let path = if path_string.ends_with(".kcl") {
         if path_string
             .chars()
-            .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
+            .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.' && c != '/' && c != '\\')
         {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
@@ -1873,7 +1873,30 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             ));
         }
 
-        ImportPath::Kcl { filename: path_string }
+        if path_string.starts_with("..") {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    path_range,
+                    "import path may not start with '..'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+                )
+                .into(),
+            ));
+        }
+
+        // Make sure they are not using an absolute path.
+        if path_string.starts_with('/') || path_string.starts_with('\\') {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    path_range,
+                    "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+                )
+                .into(),
+            ));
+        }
+
+        ImportPath::Kcl {
+            filename: TypedPath::new(&path_string),
+        }
     } else if path_string.starts_with("std::") {
         ParseContext::warn(CompilationError::err(
             path_range,
@@ -1910,7 +1933,9 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
                 format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
             ))
         }
-        ImportPath::Foreign { path: path_string }
+        ImportPath::Foreign {
+            path: TypedPath::new(&path_string),
+        }
     } else {
         return Err(ErrMode::Cut(
             CompilationError::fatal(
@@ -2051,7 +2076,7 @@ fn unnecessarily_bracketed(i: &mut TokenSlice) -> PResult<Expr> {
 fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> PResult<Expr> {
     alt((
         member_expression.map(Box::new).map(Expr::MemberExpression),
-        bool_value.map(Expr::Literal),
+        bool_value.map(Box::new).map(Expr::Literal),
         tag.map(Box::new).map(Expr::TagDeclarator),
         literal.map(Expr::Literal),
         fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
@@ -2070,7 +2095,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> PResult<Expr> {
 fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
     let mut expr = alt((
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
-        bool_value.map(Expr::Literal),
+        bool_value.map(Box::new).map(Expr::Literal),
         member_expression.map(Box::new).map(Expr::MemberExpression),
         literal.map(Expr::Literal),
         fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
@@ -2780,27 +2805,31 @@ fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
         .parse_next(i)
 }
 
+fn record_ty_field(i: &mut TokenSlice) -> PResult<(Node<Identifier>, Node<Type>)> {
+    (identifier, colon, opt(whitespace), type_)
+        .map(|(id, _, _, ty)| (id, ty))
+        .parse_next(i)
+}
+
 /// Parse a type in various positions.
 fn type_(i: &mut TokenSlice) -> PResult<Node<Type>> {
     let type_ = alt((
         // Object types
-        // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
-        (open_brace, parameters, close_brace).try_map(|(open, params, close)| {
-            for p in &params {
-                if p.type_.is_none() {
-                    return Err(CompilationError::fatal(
-                        p.identifier.as_source_range(),
-                        "Missing type for field in record type",
-                    ));
-                }
-            }
-            Ok(Node::new(
-                Type::Object { properties: params },
-                open.start,
-                close.end,
-                open.module_id,
-            ))
-        }),
+        (
+            open_brace,
+            opt(whitespace),
+            separated(0.., record_ty_field, comma_sep),
+            opt(whitespace),
+            close_brace,
+        )
+            .try_map(|(open, _, params, _, close)| {
+                Ok(Node::new(
+                    Type::Object { properties: params },
+                    open.start,
+                    close.end,
+                    open.module_id,
+                ))
+            }),
         // Array types
         array_type,
         // Primitive or union types
@@ -4530,6 +4559,16 @@ e
     fn bad_imports() {
         assert_err(
             r#"import cube from "../cube.kcl""#,
+            "import path may not start with '..'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            [17, 30],
+        );
+        assert_err(
+            r#"import cube from "/cube.kcl""#,
+            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            [17, 28],
+        );
+        assert_err(
+            r#"import cube from "C:\cube.kcl""#,
             "import path may only contain alphanumeric characters, underscore, hyphen, and period. KCL files in other directories are not yet supported.",
             [17, 30],
         );
@@ -4866,6 +4905,15 @@ let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
     |> line(%, tag = $var01)"#;
         assert_no_err(some_program_string);
     }
+
+    #[test]
+    fn test_parse_param_bool_default() {
+        let some_program_string = r#"fn patternTransform(
+  use_original?: boolean = false,
+) {}"#;
+        assert_no_err(some_program_string);
+    }
+
     #[test]
     fn parse_function_types() {
         let code = r#"foo = x: fn
@@ -4875,6 +4923,8 @@ fn foo(x: fn(a, b: number(mm), c: d): number(Angle)): fn { return 0 }
 type fn
 type foo = fn
 type foo = fn(a: string, b: { f: fn(): any })
+type foo = fn(a: string, b: {})
+type foo = fn(a: string, b: { })
 type foo = fn([fn])
 type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     "#;
