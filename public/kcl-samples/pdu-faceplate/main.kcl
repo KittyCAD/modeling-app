@@ -72,25 +72,25 @@ leftSpacerShape = boxModuleFn(width = leftSpacerWidth)
 
 // Module for power switch including front plate and red rocker button
 switchPosition = leftSpacerPosition + leftSpacerWidth / 2 + moduleWidth / 2
-swtichWidth = moduleWidth
+switchWidth = moduleWidth
 
 // Switch Body
 switchBody = boxModuleFn(width = moduleWidth)
 
 // Switch Plate
-swtichPlateWidth = 20
+switchPlateWidth = 20
 switchPlateHeight = 30
 switchPlateThickness = 3
 switchPlateShape = startSketchOn(switchBody, face = END)
   |> startProfile(
        %,
        at = [
-         -swtichPlateWidth / 2,
+         -switchPlateWidth / 2,
          -switchPlateHeight / 2
        ],
      )
   |> yLine(length = switchPlateHeight)
-  |> xLine(length = swtichPlateWidth)
+  |> xLine(length = switchPlateWidth)
   |> yLine(length = -switchPlateHeight)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -104,8 +104,8 @@ switchPlateBody = extrude(switchPlateShape, length = switchPlateThickness)
 
 // Switch Button
 switchButtonHeight = 26
-swtichButtonWidth = 15
-switchButtonShape = startSketchOn(offsetPlane(-YZ, offset = -swtichButtonWidth / 2))
+switchButtonWidth = 15
+switchButtonShape = startSketchOn(offsetPlane(-YZ, offset = -switchButtonWidth / 2))
   |> startProfile(
        %,
        at = [
@@ -121,7 +121,7 @@ switchButtonShape = startSketchOn(offsetPlane(-YZ, offset = -swtichButtonWidth /
      ])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-switchButtonBody = extrude(switchButtonShape, length = swtichButtonWidth)
+switchButtonBody = extrude(switchButtonShape, length = switchButtonWidth)
   |> translate(
        %,
        x = switchPosition,
@@ -132,7 +132,7 @@ switchButtonBody = extrude(switchButtonShape, length = swtichButtonWidth)
 
 // Spacer between switch and plug modules for layout alignment
 secondSpacerWidth = moduleWidth / 2
-secondSpacerPosition = switchPosition + swtichWidth / 2 + secondSpacerWidth / 2
+secondSpacerPosition = switchPosition + switchWidth / 2 + secondSpacerWidth / 2
 secondSpacerBody = boxModuleFn(width = secondSpacerWidth)
   |> translate(
        %,

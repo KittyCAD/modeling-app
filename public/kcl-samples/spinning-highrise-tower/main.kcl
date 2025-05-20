@@ -53,8 +53,8 @@ baseSlab = boxFn(plane = XY, width = slabWidth, height = -baseThickness)
   |> appearance(%, color = "#dbd7d2")
 
 // Create ground platform beneath the base
-goundSize = 50
-groundBody = boxFn(plane = offsetPlane(XY, offset = -baseThickness), width = goundSize, height = -5)
+groundSize = 50
+groundBody = boxFn(plane = offsetPlane(XY, offset = -baseThickness), width = groundSize, height = -5)
   |> appearance(%, color = "#3a3631")
 
 // Create a single slab with handrail height to be reused with pattern

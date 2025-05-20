@@ -17406,6 +17406,19 @@ description: Variables in memory after executing pdu-faceplate.kcl
       }
     }
   },
+  "switchButtonWidth": {
+    "type": "Number",
+    "value": 15.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
   "switchPlateBody": {
     "type": "Solid",
     "value": {
@@ -18170,6 +18183,19 @@ description: Variables in memory after executing pdu-faceplate.kcl
       }
     }
   },
+  "switchPlateWidth": {
+    "type": "Number",
+    "value": 20.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
   "switchPosition": {
     "type": "Number",
     "value": -158.4,
@@ -18183,33 +18209,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
       }
     }
   },
-  "swtichButtonWidth": {
-    "type": "Number",
-    "value": 15.0,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "swtichPlateWidth": {
-    "type": "Number",
-    "value": 20.0,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "swtichWidth": {
+  "switchWidth": {
     "type": "Number",
     "value": 40.45,
     "ty": {
