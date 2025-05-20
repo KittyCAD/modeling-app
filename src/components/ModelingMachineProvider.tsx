@@ -46,10 +46,8 @@ import {
   startSketchOnDefault,
 } from '@src/lang/modifyAst'
 import {
-  artifactIsPlaneWithPaths,
   doesSketchPipeNeedSplitting,
   getNodeFromPath,
-  isCursorInFunctionDefinition,
   traverse,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -66,7 +64,6 @@ import { err, reportRejection, trap, reject } from '@src/lib/trap'
 import { isNonNullable, platform, uuidv4 } from '@src/lib/utils'
 import { promptToEditFlow } from '@src/lib/promptToEdit'
 import type { FileMeta } from '@src/lib/types'
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import { commandBarActor } from '@src/lib/singletons'
 import { useToken, useSettings } from '@src/lib/singletons'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -98,16 +95,8 @@ import {
 } from '@src/lib/singletons'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
-import {
-  handleSelectionBatch,
-  updateSelections,
-  type Selections,
-} from '@src/lib/selections'
-import {
-  crossProduct,
-  isCursorInSketchCommandRange,
-  updateSketchDetailsNodePaths,
-} from '@src/lang/util'
+import { updateSelections } from '@src/lib/selections'
+import { crossProduct, updateSketchDetailsNodePaths } from '@src/lang/util'
 import {
   modelingMachineCommandConfig,
   type ModelingCommandSchema,
@@ -320,229 +309,6 @@ export const ModelingMachineProvider = ({
             },
           }
         }),
-        'Set selection': assign(
-          ({ context: { selectionRanges, sketchDetails }, event }) => {
-            // this was needed for ts after adding 'Set selection' action to on done modal events
-            const setSelections =
-              ('data' in event &&
-                event.data &&
-                'selectionType' in event.data &&
-                event.data) ||
-              ('output' in event &&
-                event.output &&
-                'selectionType' in event.output &&
-                event.output) ||
-              null
-            if (!setSelections) return {}
-
-            let selections: Selections = {
-              graphSelections: [],
-              otherSelections: [],
-            }
-            if (setSelections.selectionType === 'singleCodeCursor') {
-              if (!setSelections.selection && editorManager.isShiftDown) {
-                // if the user is holding shift, but they didn't select anything
-                // don't nuke their other selections (frustrating to have one bad click ruin your
-                // whole selection)
-                selections = {
-                  graphSelections: selectionRanges.graphSelections,
-                  otherSelections: selectionRanges.otherSelections,
-                }
-              } else if (
-                !setSelections.selection &&
-                !editorManager.isShiftDown
-              ) {
-                selections = {
-                  graphSelections: [],
-                  otherSelections: [],
-                }
-              } else if (
-                setSelections.selection &&
-                !editorManager.isShiftDown
-              ) {
-                selections = {
-                  graphSelections: [setSelections.selection],
-                  otherSelections: [],
-                }
-              } else if (setSelections.selection && editorManager.isShiftDown) {
-                // selecting and deselecting multiple objects
-
-                /**
-                 * There are two scenarios:
-                 * 1. General case:
-                 *    When selecting and deselecting edges,
-                 *    faces or segment (during sketch edit)
-                 *    we use its artifact ID to identify the selection
-                 * 2. Initial sketch setup:
-                 *    The artifact is not yet created
-                 *    so we use the codeRef.range
-                 */
-
-                let updatedSelections: typeof selectionRanges.graphSelections
-
-                // 1. General case: Artifact exists, use its ID
-                if (setSelections.selection.artifact?.id) {
-                  // check if already selected
-                  const alreadySelected = selectionRanges.graphSelections.some(
-                    (selection) =>
-                      selection.artifact?.id ===
-                      setSelections.selection?.artifact?.id
-                  )
-                  if (
-                    alreadySelected &&
-                    setSelections.selection?.artifact?.id
-                  ) {
-                    // remove it
-                    updatedSelections = selectionRanges.graphSelections.filter(
-                      (selection) =>
-                        selection.artifact?.id !==
-                        setSelections.selection?.artifact?.id
-                    )
-                  } else {
-                    // add it
-                    updatedSelections = [
-                      ...selectionRanges.graphSelections,
-                      setSelections.selection,
-                    ]
-                  }
-                } else {
-                  // 2. Initial sketch setup: Artifact not yet created – use codeRef.range
-                  const selectionRange = JSON.stringify(
-                    setSelections.selection?.codeRef?.range
-                  )
-
-                  // check if already selected
-                  const alreadySelected = selectionRanges.graphSelections.some(
-                    (selection) => {
-                      const existingRange = JSON.stringify(
-                        selection.codeRef?.range
-                      )
-                      return existingRange === selectionRange
-                    }
-                  )
-
-                  if (
-                    alreadySelected &&
-                    setSelections.selection?.codeRef?.range
-                  ) {
-                    // remove it
-                    updatedSelections = selectionRanges.graphSelections.filter(
-                      (selection) =>
-                        JSON.stringify(selection.codeRef?.range) !==
-                        selectionRange
-                    )
-                  } else {
-                    // add it
-                    updatedSelections = [
-                      ...selectionRanges.graphSelections,
-                      setSelections.selection,
-                    ]
-                  }
-                }
-
-                selections = {
-                  graphSelections: updatedSelections,
-                  otherSelections: selectionRanges.otherSelections,
-                }
-              }
-
-              const {
-                engineEvents,
-                codeMirrorSelection,
-                updateSceneObjectColors,
-              } = handleSelectionBatch({
-                selections,
-              })
-              if (codeMirrorSelection) {
-                kclEditorActor.send({
-                  type: 'setLastSelectionEvent',
-                  data: {
-                    codeMirrorSelection,
-                    scrollIntoView: setSelections.scrollIntoView ?? false,
-                  },
-                })
-              }
-
-              // If there are engine commands that need sent off, send them
-              // TODO: This should be handled outside of an action as its own
-              // actor, so that the system state is more controlled.
-              engineEvents &&
-                engineEvents.forEach((event) => {
-                  engineCommandManager
-                    .sendSceneCommand(event)
-                    .catch(reportRejection)
-                })
-              updateSceneObjectColors()
-
-              return {
-                selectionRanges: selections,
-              }
-            }
-
-            if (setSelections.selectionType === 'mirrorCodeMirrorSelections') {
-              return {
-                selectionRanges: setSelections.selection,
-              }
-            }
-
-            if (
-              setSelections.selectionType === 'axisSelection' ||
-              setSelections.selectionType === 'defaultPlaneSelection'
-            ) {
-              if (editorManager.isShiftDown) {
-                selections = {
-                  graphSelections: selectionRanges.graphSelections,
-                  otherSelections: [setSelections.selection],
-                }
-              } else {
-                selections = {
-                  graphSelections: [],
-                  otherSelections: [setSelections.selection],
-                }
-              }
-              return {
-                selectionRanges: selections,
-              }
-            }
-
-            if (setSelections.selectionType === 'completeSelection') {
-              const codeMirrorSelection = editorManager.createEditorSelection(
-                setSelections.selection
-              )
-              kclEditorActor.send({
-                type: 'setLastSelectionEvent',
-                data: {
-                  codeMirrorSelection,
-                  scrollIntoView: false,
-                },
-              })
-              if (!sketchDetails)
-                return {
-                  selectionRanges: setSelections.selection,
-                }
-              return {
-                selectionRanges: setSelections.selection,
-                sketchDetails: {
-                  ...sketchDetails,
-                  sketchEntryNodePath:
-                    setSelections.updatedSketchEntryNodePath ||
-                    sketchDetails?.sketchEntryNodePath ||
-                    [],
-                  sketchNodePaths:
-                    setSelections.updatedSketchNodePaths ||
-                    sketchDetails?.sketchNodePaths ||
-                    [],
-                  planeNodePath:
-                    setSelections.updatedPlaneNodePath ||
-                    sketchDetails?.planeNodePath ||
-                    [],
-                },
-              }
-            }
-
-            return {}
-          }
-        ),
       },
       guards: {
         'has valid selection for deletion': ({
@@ -554,32 +320,6 @@ export const ModelingMachineProvider = ({
         },
         'is-error-free': () => {
           return kclManager.errors.length === 0 && !kclManager.hasErrors()
-        },
-        'Selection is on face': ({ context: { selectionRanges }, event }) => {
-          if (event.type !== 'Enter sketch') return false
-          if (event.data?.forceNewSketch) return false
-          if (artifactIsPlaneWithPaths(selectionRanges)) {
-            return true
-          } else if (selectionRanges.graphSelections[0]?.artifact) {
-            // See if the selection is "close enough" to be coerced to the plane later
-            const maybePlane = getPlaneFromArtifact(
-              selectionRanges.graphSelections[0].artifact,
-              kclManager.artifactGraph
-            )
-            return !err(maybePlane)
-          }
-          if (
-            isCursorInFunctionDefinition(
-              kclManager.ast,
-              selectionRanges.graphSelections[0]
-            )
-          ) {
-            return false
-          }
-          return !!isCursorInSketchCommandRange(
-            kclManager.artifactGraph,
-            selectionRanges
-          )
         },
         'Has exportable geometry': () =>
           !kclManager.hasErrors() && kclManager.ast.body.length > 0,
