@@ -557,6 +557,14 @@ export async function getUtils(page: Page, test_?: typeof test) {
       })
     },
 
+    createNewFolder: async (name: string) => {
+      return test?.step(`Create a folder named ${name}`, async () => {
+        await page.getByTestId('create-folder-button').click()
+        await page.getByTestId('tree-input-field').fill(name)
+        await page.keyboard.press('Enter')
+      })
+    },
+
     cloneFile: async (name: string) => {
       return test?.step(`Cloning file '${name}'`, async () => {
         await page

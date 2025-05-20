@@ -239,6 +239,26 @@ test.describe('when using the file tree to', () => {
   )
 
   test(
+    `create new folders and that doesn't trigger a navigation`,
+    { tag: ['@electron', '@macos', '@windows'] },
+    async ({ page, homePage, scene, toolbar, cmdBar }) => {
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await toolbar.openPane('files')
+      const { createNewFolder } = await getUtils(page, test)
+
+      await createNewFolder('folder')
+
+      await createNewFolder('folder.kcl')
+
+      await test.step(`Postcondition: folders are created and we didn't navigate`, async () => {
+        await toolbar.expectFileTreeState(['folder', 'folder.kcl', 'main.kcl'])
+        await expect(toolbar.fileName).toHaveText('main.kcl')
+      })
+    }
+  )
+
+  test(
     'deleting all files recreates a default main.kcl with no code',
     { tag: '@electron' },
     async ({ page }, testInfo) => {
