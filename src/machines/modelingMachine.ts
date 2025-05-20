@@ -2021,7 +2021,7 @@ export const modelingMachine = setup({
         input: { sketchDetails, selectionRanges },
       }: {
         input: {
-          sketchDetails: SketchDetails
+          sketchDetails: SketchDetails | null
           selectionRanges: Selections
         }
       }) => {
