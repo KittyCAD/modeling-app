@@ -176,7 +176,7 @@ export async function submitAndAwaitTextToKclSystemIO({
   )
 
   let newFileName = PROJECT_ENTRYPOINT
-  let uniqueProjectName = ''
+  let uniqueProjectName = projectName
 
   const textToCadOutputCreated = await textToCadComplete
     .catch((e) => {
@@ -207,14 +207,17 @@ export async function submitAndAwaitTextToKclSystemIO({
         .toLowerCase()}`
 
       if (isDesktop()) {
-        const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot({
-          projectFolderName: projectName,
-        })
-        const uniqueSubDirectoryName = getUniqueProjectName(
-          subDirectoryAsPromptName,
-          firstLevelDirectories
-        )
-        uniqueProjectName = joinOSPaths(projectName, uniqueSubDirectoryName)
+        if (!isProjectNew) {
+          // If the project is new, use a sub dir
+          const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot({
+            projectFolderName: projectName,
+          })
+          const uniqueSubDirectoryName = getUniqueProjectName(
+            subDirectoryAsPromptName,
+            firstLevelDirectories
+          )
+          uniqueProjectName = joinOSPaths(projectName, uniqueSubDirectoryName)
+        }
         systemIOActor.send({
           type: SystemIOMachineEvents.createKCLFile,
           data: {
