@@ -4,7 +4,8 @@ description: Error from executing error_with_point_shows_numeric_units.kcl
 ---
 KCL Semantic error
 
-  × semantic: center requires a value with type `Point2d`, but found [any; 2]
+  × semantic: center requires a value with type `Point2d`, but found
+  │ [number(Count), number(Count); 2]
    ╭─[2:6]
  1 │      startSketchOn(XZ)
  2 │ ╭──▶   |> circle(center = [
@@ -17,7 +18,7 @@ KCL Semantic error
   ╰─▶ KCL Semantic error
       
         × semantic: center requires a value with type `Point2d`, but found
-        │ [any; 2]
+        │ [number(Count), number(Count); 2]
          ╭─[2:22]
        1 │     startSketchOn(XZ)
        2 │ ╭─▶   |> circle(center = [

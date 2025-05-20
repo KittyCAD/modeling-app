@@ -1670,7 +1670,7 @@ arr = [0]: [string]
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce [any; 1] value to type [string]"),
+                .contains("could not coerce [number(default units); 1] value to type [string]"),
             "Expected error but found {err:?}"
         );
 
@@ -1681,7 +1681,7 @@ mixedArr = [0, "a"]: [number(mm)]
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce [any; 2] value to type [number(mm)]"),
+                .contains("could not coerce [number(default units), string; 2] value to type [number(mm)]"),
             "Expected error but found {err:?}"
         );
     }

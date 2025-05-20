@@ -281,8 +281,33 @@ impl KclValue {
     /// Human readable type name used in error messages.  Should not be relied
     /// on for program logic.
     pub(crate) fn human_friendly_type(&self) -> String {
-        if let Some(t) = self.principal_type() {
-            return t.to_string();
+        self.inner_human_friendly_type(1)
+    }
+
+    fn inner_human_friendly_type(&self, max_depth: usize) -> String {
+        if let Some(pt) = self.principal_type() {
+            if max_depth > 0 {
+                // The principal type of an array uses the array's element type,
+                // which is oftentimes `any`, and that's not a helpful message. So
+                // we show the actual elements.
+                if let Some(elements) = self.as_array() {
+                    // If it's empty, we want to show the type of the array.
+                    if !elements.is_empty() {
+                        // A max of 3 is good because it's common to use 3D points.
+                        let max = 3;
+                        let len = elements.len();
+                        let ellipsis = if len > max { ", ..." } else { "" };
+                        let element_tys = elements
+                            .iter()
+                            .take(max)
+                            .map(|elem| elem.inner_human_friendly_type(max_depth - 1))
+                            .collect::<Vec<_>>()
+                            .join(", ");
+                        return format!("[{element_tys}{ellipsis}; {len}]");
+                    }
+                }
+            }
+            return pt.to_string();
         }
         match self {
             KclValue::Uuid { .. } => "Unique ID (uuid)",
@@ -642,5 +667,78 @@ impl From<GeometryWithImportedGeometry> for KclValue {
             GeometryWithImportedGeometry::Solid(x) => Self::Solid { value: Box::new(x) },
             GeometryWithImportedGeometry::ImportedGeometry(x) => Self::ImportedGeometry(*x),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_human_friendly_type() {
+        let len = KclValue::Number {
+            value: 1.0,
+            ty: NumericType::Known(UnitType::Length(UnitLen::Unknown)),
+            meta: vec![],
+        };
+        assert_eq!(len.human_friendly_type(), "number(Length)".to_string());
+
+        let unknown = KclValue::Number {
+            value: 1.0,
+            ty: NumericType::Unknown,
+            meta: vec![],
+        };
+        assert_eq!(unknown.human_friendly_type(), "number(unknown units)".to_string());
+
+        let mm = KclValue::Number {
+            value: 1.0,
+            ty: NumericType::Known(UnitType::Length(UnitLen::Mm)),
+            meta: vec![],
+        };
+        assert_eq!(mm.human_friendly_type(), "number(mm)".to_string());
+
+        let array2_mm = KclValue::HomArray {
+            value: vec![mm.clone(), mm.clone()],
+            ty: RuntimeType::any(),
+        };
+        assert_eq!(
+            array2_mm.human_friendly_type(),
+            "[number(mm), number(mm); 2]".to_string()
+        );
+
+        let array3_mm = KclValue::HomArray {
+            value: vec![mm.clone(), mm.clone(), mm.clone()],
+            ty: RuntimeType::any(),
+        };
+        assert_eq!(
+            array3_mm.human_friendly_type(),
+            "[number(mm), number(mm), number(mm); 3]".to_string()
+        );
+
+        let inches = KclValue::Number {
+            value: 1.0,
+            ty: NumericType::Known(UnitType::Length(UnitLen::Inches)),
+            meta: vec![],
+        };
+        let array4 = KclValue::HomArray {
+            value: vec![mm.clone(), mm.clone(), inches.clone(), mm.clone()],
+            ty: RuntimeType::any(),
+        };
+        assert_eq!(
+            array4.human_friendly_type(),
+            "[number(mm), number(mm), number(in), ...; 4]".to_string()
+        );
+
+        let empty_array = KclValue::HomArray {
+            value: vec![],
+            ty: RuntimeType::any(),
+        };
+        assert_eq!(empty_array.human_friendly_type(), "[any; 0]".to_string());
+
+        let array_nested = KclValue::HomArray {
+            value: vec![array2_mm.clone()],
+            ty: RuntimeType::any(),
+        };
+        assert_eq!(array_nested.human_friendly_type(), "[[any; 2]; 1]".to_string());
     }
 }
