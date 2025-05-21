@@ -1001,7 +1001,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-        |> startProfile(%, at = [3.14, 12])
+        |> startProfile(%, at = [0, 12])
         |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
       )
 
@@ -1076,7 +1076,7 @@ sketch001 = startSketchOn(XZ)
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-        |> startProfile(%, at = [3.14, 12])
+        |> startProfile(%, at = [0, 12])
         |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
       )
     })
