@@ -1322,7 +1322,7 @@ pub async fn start_profile(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     unlabeled_first = true,
     args = {
         sketch_surface = { docs = "What to start the profile on" },
-        at = { docs = "Where to start the profile. An absolute point.", snippet_value = "[0, 0]" },
+        at = { docs = "Where to start the profile. An absolute point.", snippet_value_array = ["0", "0"] },
         tag = { docs = "Tag this first starting point" },
     },
     tags = ["sketch"]

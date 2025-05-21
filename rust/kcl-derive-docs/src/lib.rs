@@ -51,6 +51,10 @@ struct ArgMetadata {
     /// The snippet should suggest this value for the arg.
     #[serde(default)]
     snippet_value: Option<String>,
+
+    /// The snippet should suggest this value for the arg.
+    #[serde(default)]
+    snippet_value_array: Option<Vec<String>>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -343,6 +347,10 @@ fn do_stdlib_inner(
         let description = arg_meta.docs.clone();
         let include_in_snippet = required || arg_meta.include_in_snippet;
         let snippet_value = arg_meta.snippet_value.clone();
+        let snippet_value_array = arg_meta.snippet_value_array.clone();
+        if snippet_value.is_some() && snippet_value_array.is_some() {
+            errors.push(Error::new_spanned(arg, format!("arg {arg_name} has set both snippet_value and snippet_value array, but at most one of these may be set. Please delete one of them.")));
+        }
         let label_required = !(i == 0 && metadata.unlabeled_first);
         let camel_case_arg_name = to_camel_case(&arg_name);
         if ty_string != "ExecState" && ty_string != "Args" {
@@ -367,10 +375,22 @@ fn do_stdlib_inner(
                     snippet_value: None,
                 }
             };
+            let q2 = if let Some(snippet_value_array) = snippet_value_array {
+                quote! {
+                    snippet_value_array: Some(vec![
+                        #(#snippet_value_array.to_owned()),*
+                    ]),
+                }
+            } else {
+                quote! {
+                    snippet_value_array: None,
+                }
+            };
             arg_types.push(quote! {
                 #docs_crate::StdLibFnArg {
                 #q0
                 #q1
+                #q2
                 }
             });
         }
@@ -435,6 +455,7 @@ fn do_stdlib_inner(
                 description: String::new(),
                 include_in_snippet: true,
                 snippet_value: None,
+                snippet_value_array: None,
             })
         }
     } else {
