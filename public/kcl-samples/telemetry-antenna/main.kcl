@@ -1,4 +1,4 @@
-// Telemetry antenna plate
+// Aircraft telemetry antenna plate
 // Consists of a circular base plate 3 inches in diameter and 0.08 inches thick, with a tapered monopole antenna mounted at the top with a base diameter of 0.65 inches and height of 1.36 inches. Also consists of a mounting base and connector at the bottom of the plate. The plate also has 6 countersunk holes at a defined pitch circle diameter.
 
 // Set units
@@ -11,7 +11,6 @@ antennaBaseDia = 0.65
 antennaAngle = 95
 antennaHeight = 1.36
 seatingDia = 0.625
-offsetFromAxis = 0.0001 // minor offset of 0.0001 inches as revolving around na axis fails
 totalHeight = 2.14
 
 boltDiameter = .196
@@ -24,7 +23,7 @@ profile001 = startProfile(sketch001, at = [plateDia / 2, 0])
   |> xLine(length = -(plateDia - antennaBaseDia) / 2, tag = $seg03)
   |> angledLine(angle = antennaAngle, length = 1.1, tag = $seg01)
   |> tangentialArc(endAbsolute = [0.025, antennaHeight])
-  |> xLine(endAbsolute = offsetFromAxis, tag = $seg02)
+  |> xLine(endAbsolute = 0, tag = $seg02)
   |> yLine(length = -totalHeight)
   |> xLine(length = .25)
   |> yLine(length = .05)
