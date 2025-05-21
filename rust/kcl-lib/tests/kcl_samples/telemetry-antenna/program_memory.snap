@@ -29,76 +29,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
       }
     }
   },
-  "antennaHeight": {
-    "type": "Number",
-    "value": 1.36,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "boltDiameter": {
-    "type": "Number",
-    "value": 0.196,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "boltPitchCircleDiameter": {
-    "type": "Number",
-    "value": 2.5,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "countersink": {
-    "type": "Function",
-    "value": null
-  },
-  "plateDia": {
-    "type": "Number",
-    "value": 3.0,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "plateThickness": {
-    "type": "Number",
-    "value": 0.08,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "profile001": {
+  "antennaCrossSectionProfile": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -133,9 +64,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
             0.08
           ],
           "tag": {
-            "commentStart": 894,
-            "end": 900,
-            "start": 894,
+            "commentStart": 942,
+            "end": 948,
+            "start": 942,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -158,9 +89,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
             0.08
           ],
           "tag": {
-            "commentStart": 960,
-            "end": 966,
-            "start": 960,
+            "commentStart": 1008,
+            "end": 1014,
+            "start": 1008,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -207,9 +138,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
             1.36
           ],
           "tag": {
-            "commentStart": 1059,
-            "end": 1065,
-            "start": 1059,
+            "commentStart": 1107,
+            "end": 1113,
+            "start": 1107,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -558,20 +489,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
       }
     }
   },
-  "r": {
-    "type": "Number",
-    "value": 1.25,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "revolve001": {
+  "antennaCrossSectionRevolve": {
     "type": "Solid",
     "value": {
       "type": "Solid",
@@ -590,9 +508,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 894,
-            "end": 900,
-            "start": 894,
+            "commentStart": 942,
+            "end": 948,
+            "start": 942,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -603,9 +521,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 960,
-            "end": 966,
-            "start": 960,
+            "commentStart": 1008,
+            "end": 1014,
+            "start": 1008,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -623,9 +541,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1059,
-            "end": 1065,
-            "start": 1059,
+            "commentStart": 1107,
+            "end": 1113,
+            "start": 1107,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -756,9 +674,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
               0.08
             ],
             "tag": {
-              "commentStart": 894,
-              "end": 900,
-              "start": 894,
+              "commentStart": 942,
+              "end": 948,
+              "start": 942,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -781,9 +699,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
               0.08
             ],
             "tag": {
-              "commentStart": 960,
-              "end": 966,
-              "start": 960,
+              "commentStart": 1008,
+              "end": 1014,
+              "start": 1008,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -830,9 +748,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
               1.36
             ],
             "tag": {
-              "commentStart": 1059,
-              "end": 1065,
-              "start": 1059,
+              "commentStart": 1107,
+              "end": 1113,
+              "start": 1107,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -1189,35 +1107,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
       "sectional": false
     }
   },
-  "seatingDia": {
-    "type": "Number",
-    "value": 0.625,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "seg01": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "seg01"
-  },
-  "seg02": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "seg02"
-  },
-  "seg03": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "seg03"
-  },
-  "sketch001": {
+  "antennaCrossSectionSketch": {
     "type": "Plane",
     "value": {
       "artifactId": "[uuid]",
@@ -1248,6 +1138,116 @@ description: Variables in memory after executing telemetry-antenna.kcl
         }
       }
     }
+  },
+  "antennaHeight": {
+    "type": "Number",
+    "value": 1.36,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "boltDiameter": {
+    "type": "Number",
+    "value": 0.196,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "boltPitchCircleDiameter": {
+    "type": "Number",
+    "value": 2.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "countersink": {
+    "type": "Function",
+    "value": null
+  },
+  "plateDia": {
+    "type": "Number",
+    "value": 3.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "plateThickness": {
+    "type": "Number",
+    "value": 0.08,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "r": {
+    "type": "Number",
+    "value": 1.25,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "seatingDia": {
+    "type": "Number",
+    "value": 0.625,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "seg01": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg01"
+  },
+  "seg02": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg02"
+  },
+  "seg03": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg03"
   },
   "totalHeight": {
     "type": "Number",
