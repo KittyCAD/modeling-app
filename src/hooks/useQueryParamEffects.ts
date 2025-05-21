@@ -97,12 +97,15 @@ export function useQueryParamEffects() {
       console.error('KCL sample not found for path:', samplePath)
       cleanupQueryParams()
       return
+
     } else if (kclSample.files.length > 1) {
       console.error(
         'KCL sample has multiple files, only the first one will be used'
       )
+      cleanupQueryParams()
       return
     }
+
 
     // Get the first part of the path (project directory)
     const pathParts = webSafePathSplit(samplePath)
