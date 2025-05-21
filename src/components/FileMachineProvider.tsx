@@ -465,8 +465,8 @@ export const FileMachineProvider = ({
         const isCurrentFile = v.path === filePath
         if (!isCurrentFile) {
           providedOptions.push({
-            name: relativeFilePath,
-            value: relativeFilePath,
+            name: relativeFilePath.replaceAll(window.electron.sep, '/'),
+            value: relativeFilePath.replaceAll(window.electron.sep, '/'),
           })
         }
       }
