@@ -313,7 +313,7 @@ description: Result of parsing telemetry-antenna.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "sketch001",
+            "name": "antennaCrossSectionSketch",
             "start": 0,
             "type": "Identifier"
           },
@@ -377,7 +377,7 @@ description: Result of parsing telemetry-antenna.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "profile001",
+            "name": "antennaCrossSectionProfile",
             "start": 0,
             "type": "Identifier"
           },
@@ -480,7 +480,7 @@ description: Result of parsing telemetry-antenna.kcl
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "sketch001",
+                    "name": "antennaCrossSectionSketch",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -1654,7 +1654,7 @@ description: Result of parsing telemetry-antenna.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "revolve001",
+            "name": "antennaCrossSectionRevolve",
             "start": 0,
             "type": "Identifier"
           },
@@ -1736,7 +1736,7 @@ description: Result of parsing telemetry-antenna.kcl
               "name": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "profile001",
+                "name": "antennaCrossSectionProfile",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -1831,7 +1831,7 @@ description: Result of parsing telemetry-antenna.kcl
                           "name": {
                             "commentStart": 0,
                             "end": 0,
-                            "name": "revolve001",
+                            "name": "antennaCrossSectionRevolve",
                             "start": 0,
                             "type": "Identifier"
                           },
