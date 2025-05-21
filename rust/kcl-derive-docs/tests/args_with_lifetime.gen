@@ -108,6 +108,7 @@ impl crate::docs::StdLibFn for SomeFn {
             description: "Arg for the function".to_string(),
             include_in_snippet: true,
             snippet_value: None,
+            snippet_value_array: None,
         }]
     }
 
@@ -125,6 +126,7 @@ impl crate::docs::StdLibFn for SomeFn {
             description: String::new(),
             include_in_snippet: true,
             snippet_value: None,
+            snippet_value_array: None,
         })
     }
 

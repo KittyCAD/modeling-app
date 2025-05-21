@@ -117,6 +117,7 @@ impl crate::docs::StdLibFn for Import {
             description: String::new(),
             include_in_snippet: true,
             snippet_value: None,
+            snippet_value_array: None,
         })
     }
 
