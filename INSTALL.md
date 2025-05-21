@@ -4,7 +4,7 @@ Compared to other CAD software, getting Zoo Design Studio up and running is quic
 
 ## Windows
 
-1. Download the [Zoo Design Studio installer](https://zoo.dev/design-studio) for Windows and for your processor type.
+1. Download the [Zoo Design Studio installer](https://zoo.dev/design-studio/download) for Windows and for your processor type.
 
 2. Once downloaded, run the installer `Zoo Design Studio-{version}-{arch}-win.exe` which should take a few seconds.
 
@@ -12,7 +12,7 @@ Compared to other CAD software, getting Zoo Design Studio up and running is quic
 
 ## macOS
 
-1. Download the [Zoo Design Studio installer](https://zoo.dev/design-studio) for macOS and for your processor type.
+1. Download the [Zoo Design Studio installer](https://zoo.dev/design-studio/download) for macOS and for your processor type.
 
 2. Once downloaded, open the disk image `Zoo Design Studio-{version}-{arch}-mac.dmg` and drag the applications to your `Applications` directory.
 
@@ -21,7 +21,7 @@ Compared to other CAD software, getting Zoo Design Studio up and running is quic
 
 ## Linux
 
-1. Download the [Zoo Design Studio installer](https://zoo.dev/design-studio) for Linux and for your processor type.
+1. Download the [Zoo Design Studio installer](https://zoo.dev/design-studio/download) for Linux and for your processor type.
 
 2. Install the dependencies needed to run the [AppImage format](https://appimage.org/).
     -  On Ubuntu, install the FUSE library with these commands in a terminal.
