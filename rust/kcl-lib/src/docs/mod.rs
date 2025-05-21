@@ -172,6 +172,9 @@ impl StdLibFnArg {
         } else {
             ""
         };
+        if let Some(val) = &self.snippet_value {
+            return Ok(Some((index, format!("{label}${{{}:{}}}", index, val))));
+        }
         if (self.type_ == "Sketch"
             || self.type_ == "[Sketch]"
             || self.type_ == "Geometry"
@@ -993,6 +996,13 @@ mod tests {
         let start_sketch_on_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::StartSketchOn);
         let snippet = start_sketch_on_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(snippet, r#"startSketchOn(${0:XY})"#);
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_start_profile() {
+        let start_sketch_on_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::StartProfile);
+        let snippet = start_sketch_on_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"startProfile(${0:%}, at = ${1:[0, 0]})"#);
     }
 
     #[test]
