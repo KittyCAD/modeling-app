@@ -428,21 +428,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         id: 'ai',
         array: [
           {
-            id: 'prompt-to-edit',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Prompt-to-edit', groupId: 'modeling' },
-              }),
-            icon: 'sparkles',
-            iconColor: '#29FFA4',
-            alwaysDark: true,
-            status: IS_ML_EXPERIMENTAL ? 'experimental' : 'available',
-            title: 'Modify with Zoo Text-to-CAD',
-            description: 'Edit geometry with AI / ML.',
-            links: [],
-          },
-          {
             id: 'text-to-cad',
             onClick: () => {
               const currentProject =
@@ -471,6 +456,21 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 url: 'https://zoo.dev/docs/api/ml/generate-a-cad-model-from-text',
               },
             ],
+          },
+          {
+            id: 'prompt-to-edit',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Prompt-to-edit', groupId: 'modeling' },
+              }),
+            icon: 'sparkles',
+            iconColor: '#29FFA4',
+            alwaysDark: true,
+            status: IS_ML_EXPERIMENTAL ? 'experimental' : 'available',
+            title: 'Modify with Zoo Text-to-CAD',
+            description: 'Edit geometry with AI / ML.',
+            links: [],
           },
         ],
       },
