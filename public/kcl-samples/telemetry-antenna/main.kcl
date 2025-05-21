@@ -1,0 +1,64 @@
+// Telemetry antenna plate
+// Consists of a circular base plate 3 inches in diameter and 0.08 inches thick, with a tapered monopole antenna mounted at the top with a base diameter of 0.65 inches and height of 1.36 inches. Also consists of a mounting base and connector at the bottom of the plate. The plate also has 6 countersunk holes at a defined pitch circle diameter.
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+plateThickness = 0.08
+plateDia = 3
+antennaBaseDia = 0.65
+antennaAngle = 95
+antennaHeight = 1.36
+seatingDia = 0.625
+offsetFromAxis = 0.0001 // minor offset of 0.0001 inches as revolving around na axis fails
+totalHeight = 2.14
+
+boltDiameter = .196
+boltPitchCircleDiameter = 2.5
+
+// 2D cross-sectional profile of the part that will later be revolved
+sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [plateDia / 2, 0])
+  |> yLine(length = plateThickness)
+  |> xLine(length = -(plateDia - antennaBaseDia) / 2, tag = $seg03)
+  |> angledLine(angle = antennaAngle, length = 1.1, tag = $seg01)
+  |> tangentialArc(endAbsolute = [0.025, antennaHeight])
+  |> xLine(endAbsolute = offsetFromAxis, tag = $seg02)
+  |> yLine(length = -totalHeight)
+  |> xLine(length = .25)
+  |> yLine(length = .05)
+  |> angledLine(angle = 45, length = 0.025)
+  |> yLine(length = .125)
+  |> angledLine(angle = 135, length = 0.025)
+  |> yLine(length = .125)
+  |> xLine(length = .025)
+  |> yLine(length = .025)
+  |> xLine(endAbsolute = seatingDia / 2)
+  |> yLine(endAbsolute = -0.25)
+  |> xLine(endAbsolute = 0.6)
+  |> yLine(endAbsolute = 0)
+  |> close()
+
+// Revolution about y-axis of earlier profile
+revolve001 = revolve(profile001, angle = 360, axis = Y)
+
+// Function to create a countersunk hole
+fn countersink(@holePosition) {
+  startSketchOn(revolve001, face = seg03)
+    |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
+    |> extrude(length = -plateThickness)
+    |> chamfer(length = 0.04, tags = [hole01])
+  return {  }
+}
+
+// PCD converted to radius for positioning the holes
+r = boltPitchCircleDiameter / 2
+
+// 6 countersunk holes using the countersink function
+countersink([r, 0]) // 0 °
+countersink([r * 0.5, r * 0.8660254]) // 60 °
+countersink([-r * 0.5, r * 0.8660254]) // 120 °
+countersink([-r, 0]) // 180 °
+countersink([-r * 0.5, -r * 0.8660254]) // 240 °
+countersink([r * 0.5, -r * 0.8660254]) // 300 °
