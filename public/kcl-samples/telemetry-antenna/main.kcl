@@ -17,8 +17,8 @@ boltDiameter = .196
 boltPitchCircleDiameter = 2.5
 
 // 2D cross-sectional profile of the part that will later be revolved
-sketch001 = startSketchOn(YZ)
-profile001 = startProfile(sketch001, at = [plateDia / 2, 0])
+antennaCrossSectionSketch = startSketchOn(YZ)
+antennaCrossSectionProfile = startProfile(antennaCrossSectionSketch, at = [plateDia / 2, 0])
   |> yLine(length = plateThickness)
   |> xLine(length = -(plateDia - antennaBaseDia) / 2, tag = $seg03)
   |> angledLine(angle = antennaAngle, length = 1.1, tag = $seg01)
@@ -40,11 +40,11 @@ profile001 = startProfile(sketch001, at = [plateDia / 2, 0])
   |> close()
 
 // Revolution about y-axis of earlier profile
-revolve001 = revolve(profile001, angle = 360, axis = Y)
+antennaCrossSectionRevolve = revolve(antennaCrossSectionProfile, angle = 360, axis = Y)
 
 // Function to create a countersunk hole
 fn countersink(@holePosition) {
-  startSketchOn(revolve001, face = seg03)
+  startSketchOn(antennaCrossSectionRevolve, face = seg03)
     |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
     |> extrude(length = -plateThickness)
     |> chamfer(length = 0.04, tags = [hole01])
