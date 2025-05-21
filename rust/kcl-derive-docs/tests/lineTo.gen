@@ -108,8 +108,9 @@ impl crate::docs::StdLibFn for LineTo {
                 schema: generator.root_schema_for::<LineToData>(),
                 required: true,
                 label_required: true,
-                description: String::new().to_string(),
-                include_in_snippet: true,
+                description: "the sketch you're adding the line to".to_string(),
+                include_in_snippet: false,
+                snippet_value: None,
             },
             crate::docs::StdLibFnArg {
                 name: "sketch".to_string(),
@@ -118,7 +119,8 @@ impl crate::docs::StdLibFn for LineTo {
                 required: true,
                 label_required: true,
                 description: "the sketch you're adding the line to".to_string(),
-                include_in_snippet: true,
+                include_in_snippet: false,
+                snippet_value: None,
             },
         ]
     }
@@ -136,6 +138,7 @@ impl crate::docs::StdLibFn for LineTo {
             label_required: true,
             description: String::new(),
             include_in_snippet: true,
+            snippet_value: None,
         })
     }
 

@@ -115,6 +115,7 @@ impl crate::docs::StdLibFn for SomeFunction {
             label_required: true,
             description: String::new(),
             include_in_snippet: true,
+            snippet_value: None,
         })
     }
 

@@ -47,6 +47,10 @@ struct ArgMetadata {
     /// Does not do anything if the argument is already required.
     #[serde(default)]
     include_in_snippet: bool,
+
+    /// The snippet should suggest this value for the arg.
+    #[serde(default)]
+    snippet_value: Option<String>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -338,14 +342,14 @@ fn do_stdlib_inner(
         };
         let description = arg_meta.docs.clone();
         let include_in_snippet = arg_meta.include_in_snippet;
+        let snippet_value = arg_meta.snippet_value.clone();
         let label_required = !(i == 0 && metadata.unlabeled_first);
         let camel_case_arg_name = to_camel_case(&arg_name);
         if ty_string != "ExecState" && ty_string != "Args" {
             let schema = quote! {
                 generator.root_schema_for::<#ty_ident>()
             };
-            arg_types.push(quote! {
-                #docs_crate::StdLibFnArg {
+            let q0 = quote! {
                     name: #camel_case_arg_name.to_string(),
                     type_: #ty_string.to_string(),
                     schema: #schema,
@@ -353,6 +357,20 @@ fn do_stdlib_inner(
                     label_required: #label_required,
                     description: #description.to_string(),
                     include_in_snippet: #include_in_snippet,
+            };
+            let q1 = if let Some(snippet_value) = snippet_value {
+                quote! {
+                    snippet_value: Some(#snippet_value.to_owned()),
+                }
+            } else {
+                quote! {
+                    snippet_value: None,
+                }
+            };
+            arg_types.push(quote! {
+                #docs_crate::StdLibFnArg {
+                #q0
+                #q1
                 }
             });
         }
@@ -416,6 +434,7 @@ fn do_stdlib_inner(
                 label_required: true,
                 description: String::new(),
                 include_in_snippet: true,
+                snippet_value: None,
             })
         }
     } else {

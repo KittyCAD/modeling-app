@@ -40,6 +40,9 @@ fn test_args_with_refs() {
     let (item, mut errors) = do_stdlib(
         quote! {
             name = "someFn",
+            args = {
+                data = { docs = "The data for this function"},
+            },
         },
         quote! {
             /// Docs
@@ -65,6 +68,9 @@ fn test_args_with_lifetime() {
     let (item, mut errors) = do_stdlib(
         quote! {
             name = "someFn",
+            args = {
+                data = { docs = "Arg for the function" },
+            }
         },
         quote! {
             /// Docs
@@ -117,7 +123,8 @@ fn test_stdlib_line_to() {
         quote! {
             name = "lineTo",
             args = {
-                sketch = { docs = "the sketch you're adding the line to" }
+                data = { docs = "the sketch you're adding the line to" },
+                sketch = { docs = "the sketch you're adding the line to" },
             }
         },
         quote! {
