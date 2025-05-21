@@ -3,7 +3,7 @@ import type { Models } from '@kittycad/lib/dist/types/src'
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 export const APP_NAME = 'Design Studio'
-export const APP_DOWNLOAD_PATH = 'modeling-app/download'
+export const APP_DOWNLOAD_PATH = 'design-studio'
 /** Search string in new project names to increment as an index */
 export const INDEX_IDENTIFIER = '$n'
 /** The maximum number of 0's to pad a default project name's index with */
