@@ -1045,7 +1045,10 @@ mod tests {
             panic!();
         };
         let snippet = circle_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"circle(center = [${0:0}, ${1:0}], diameter = ${2:3.14})"#);
+        assert_eq!(
+            snippet, r#"circle(center = [${0:0}, ${1:0}], diameter = ${2:3.14})"#,
+            "actual = left, expected = right"
+        );
     }
 
     #[test]

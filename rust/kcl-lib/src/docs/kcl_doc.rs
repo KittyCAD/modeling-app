@@ -10,7 +10,9 @@ use tower_lsp::lsp_types::{
 use crate::{
     execution::annotations,
     parsing::{
-        ast::types::{Annotation, ImportSelector, ItemVisibility, Node, NonCodeValue, VariableKind},
+        ast::types::{
+            Annotation, Expr, ImportSelector, ItemVisibility, LiteralValue, Node, NonCodeValue, VariableKind,
+        },
         token::NumericSuffix,
     },
     ModuleId,
@@ -620,8 +622,6 @@ impl FnData {
             return "clone(${0:part001})".to_owned();
         } else if self.name == "hole" {
             return "hole(${0:holeSketch}, ${1:%})".to_owned();
-        } else if self.name == "circle" {
-            return "circle(center = [${0:3.14}, ${1:3.14}], diameter = ${2:3.14})".to_owned();
         }
         let mut args = Vec::new();
         let mut index = 0;
@@ -685,6 +685,8 @@ pub struct ArgData {
     /// This is helpful if the type is really basic, like "number" -- that won't tell the user much about
     /// how this argument is meant to be used.
     pub docs: Option<String>,
+    /// If given, LSP should use these as completion items.
+    pub snippet_array: Option<Vec<String>>,
 }
 
 impl fmt::Display for ArgData {
@@ -712,6 +714,7 @@ pub enum ArgKind {
 impl ArgData {
     fn from_ast(arg: &crate::parsing::ast::types::Parameter) -> Self {
         let mut result = ArgData {
+            snippet_array: Default::default(),
             name: arg.identifier.name.clone(),
             ty: arg.type_.as_ref().map(|t| t.to_string()),
             docs: None,
@@ -740,6 +743,24 @@ impl ArgData {
                                 p.value
                             );
                         }
+                    } else if p.key.name == "snippet_array" {
+                        let Expr::ArrayExpression(arr) = &p.value else {
+                            panic!(
+                                "Invalid value for `snippet_array`, expected array literal, found {:?}",
+                                p.value
+                            );
+                        };
+                        let mut items = Vec::new();
+                        for s in &arr.elements {
+                            let Expr::Literal(lit) = s else {
+                                panic!("Invalid value in `snippet_array`, all items must be string literals but found {:?}", s);
+                            };
+                            let LiteralValue::String(litstr) = &lit.inner.value else {
+                                panic!("Invalid value in `snippet_array`, all items must be string literals but found {:?}", s);
+                            };
+                            items.push(litstr.to_owned());
+                        }
+                        result.snippet_array = Some(items);
                     }
                 }
             }
@@ -761,6 +782,19 @@ impl ArgData {
         } else {
             format!("{} = ", self.name)
         };
+        if let Some(vals) = &self.snippet_array {
+            let mut snippet = label.to_owned();
+            snippet.push('[');
+            let n = vals.len();
+            for (i, val) in vals.iter().enumerate() {
+                snippet.push_str(&format!("${{{}:{}}}", index + i, val));
+                if i != n - 1 {
+                    snippet.push_str(", ");
+                }
+            }
+            snippet.push(']');
+            return Some((index + n - 1, snippet));
+        }
         match self.ty.as_deref() {
             Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{}:3.14}}"#, index))),
             Some("Point2d") => Some((
