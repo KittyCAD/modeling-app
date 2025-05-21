@@ -1,7 +1,6 @@
 // Telemetry antenna plate
 // Consists of a circular base plate 3 inches in diameter and 0.08 inches thick, with a tapered monopole antenna mounted at the top with a base diameter of 0.65 inches and height of 1.36 inches. Also consists of a mounting base and connector at the bottom of the plate. The plate also has 6 countersunk holes at a defined pitch circle diameter.
 
-
 // Set units
 @settings(defaultLengthUnit = in)
 
@@ -12,7 +11,7 @@ antennaBaseDia = 0.65
 antennaAngle = 95
 antennaHeight = 1.36
 seatingDia = 0.625
-offsetFromAxis = 0.0001  //minor offset of 0.0001 inches as revolving around na axis fails
+offsetFromAxis = 0.0001 // minor offset of 0.0001 inches as revolving around na axis fails
 totalHeight = 2.14
 
 boltDiameter = .196
@@ -48,7 +47,7 @@ revolve001 = revolve(profile001, angle = 360, axis = Y)
 fn countersink(@holePosition) {
   startSketchOn(revolve001, face = seg03)
     |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
-    |> extrude(length = -(plateThickness))
+    |> extrude(length = -plateThickness)
     |> chamfer(length = 0.04, tags = [hole01])
   return {  }
 }
@@ -56,10 +55,10 @@ fn countersink(@holePosition) {
 // PCD converted to radius for positioning the holes
 r = boltPitchCircleDiameter / 2
 
-// 6 countersunk holes using the countersink function 
-countersink([ r,              0 ])             // 0 °
-countersink([ r*0.5,          r*0.8660254 ])   // 60 °
-countersink([ -r*0.5,         r*0.8660254 ])   // 120 °
-countersink([ -r,             0 ])             // 180 °
-countersink([ -r*0.5,        -r*0.8660254 ])   // 240 °
-countersink([ r*0.5,         -r*0.8660254 ])   // 300 °
+// 6 countersunk holes using the countersink function
+countersink([r, 0]) // 0 °
+countersink([r * 0.5, r * 0.8660254]) // 60 °
+countersink([-r * 0.5, r * 0.8660254]) // 120 °
+countersink([-r, 0]) // 180 °
+countersink([-r * 0.5, -r * 0.8660254]) // 240 °
+countersink([r * 0.5, -r * 0.8660254]) // 300 °
