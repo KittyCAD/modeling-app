@@ -49,7 +49,6 @@ pub async fn assert(_exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 #[stdlib{
     name = "assertIs",
-    keywords = true,
     unlabeled_first = true,
     args = {
         actual = { docs = "Value to check. If this is the boolean value true, assert passes. Otherwise it fails." },
@@ -75,7 +74,6 @@ async fn inner_assert_is(actual: bool, error: Option<String>, args: &Args) -> Re
 /// ```
 #[stdlib {
     name = "assert",
-    keywords = true,
     unlabeled_first = true,
     args = {
         actual = { docs = "Value to check. It will be compared with one of the comparison arguments." },

@@ -578,7 +578,6 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 /// ```
 #[stdlib {
     name = "patternLinear2d",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketches = { docs = "The sketch(es) to duplicate" },
@@ -742,7 +741,6 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 #[stdlib {
     name = "patternLinear3d",
     feature_tree_operation = true,
-    keywords = true,
     unlabeled_first = true,
     args = {
         solids = { docs = "The solid(s) to duplicate" },
@@ -939,7 +937,6 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 /// ```
 #[stdlib {
     name = "patternCircular2d",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch_set = { docs = "Which sketch(es) to pattern" },
@@ -1081,7 +1078,6 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 #[stdlib {
     name = "patternCircular3d",
     feature_tree_operation = true,
-    keywords = true,
     unlabeled_first = true,
     args = {
         solids = { docs = "Which solid(s) to pattern" },

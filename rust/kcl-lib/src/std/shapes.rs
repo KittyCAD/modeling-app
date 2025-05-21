@@ -167,7 +167,6 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
 /// ```
 #[stdlib {
     name = "circleThreePoint",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch_surface_or_group = {docs = "Plane or surface to sketch on."},
@@ -324,7 +323,6 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 #[stdlib {
     name = "polygon",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch_surface_or_group = { docs = "Plane or surface to sketch on" },
