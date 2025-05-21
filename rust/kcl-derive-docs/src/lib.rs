@@ -318,6 +318,10 @@ fn do_stdlib_inner(
         }
         .trim_start_matches('_')
         .to_string();
+        // These aren't really KCL args, they're just state that each stdlib function's impl needs.
+        if arg_name == "exec_state" || arg_name == "args" {
+            continue;
+        }
 
         let ty = match arg {
             syn::FnArg::Receiver(pat) => pat.ty.as_ref().into_token_stream(),
@@ -328,19 +332,12 @@ fn do_stdlib_inner(
 
         let ty_string = rust_type_to_openapi_type(&ty_string);
         let required = !ty_ident.to_string().starts_with("Option <");
-        let arg_meta = metadata.args.get(&arg_name);
-        let description = if let Some(s) = arg_meta.map(|arg| &arg.docs) {
-            quote! { #s }
-        } else if metadata.keywords && ty_string != "Args" && ty_string != "ExecState" {
-            errors.push(Error::new_spanned(
-                &arg,
-                "Argument was not documented in the args block",
-            ));
+        let Some(arg_meta) = metadata.args.get(&arg_name) else {
+            errors.push(Error::new_spanned(arg, format!("arg {arg_name} not found")));
             continue;
-        } else {
-            quote! { String::new() }
         };
-        let include_in_snippet = required || arg_meta.map(|arg| arg.include_in_snippet).unwrap_or_default();
+        let description = arg_meta.docs.clone();
+        let include_in_snippet = arg_meta.include_in_snippet;
         let label_required = !(i == 0 && metadata.unlabeled_first);
         let camel_case_arg_name = to_camel_case(&arg_name);
         if ty_string != "ExecState" && ty_string != "Args" {
