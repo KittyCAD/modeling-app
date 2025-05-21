@@ -59,7 +59,7 @@ const SignIn = () => {
   const signInDesktop = async () => {
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await window.electron
-      .startDeviceFlow(VITE_KC_API_BASE_URL)
+      .startDeviceFlow(VITE_KC_API_BASE_URL + location.search)
       .catch(reportError)
     if (!userCodeToDisplay) {
       console.error('No user code received while trying to log in')
