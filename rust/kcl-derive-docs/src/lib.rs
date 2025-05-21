@@ -82,11 +82,6 @@ struct StdlibMetadata {
     #[serde(default)]
     feature_tree_operation: bool,
 
-    /// If true, expects keyword arguments.
-    /// If false, expects positional arguments.
-    #[serde(default)]
-    keywords: bool,
-
     /// If true, the first argument is unlabeled.
     /// If false, all arguments require labels.
     #[serde(default)]
@@ -287,12 +282,6 @@ fn do_stdlib_inner(
     };
 
     let feature_tree_operation = if metadata.feature_tree_operation {
-        quote! { true }
-    } else {
-        quote! { false }
-    };
-
-    let uses_keyword_arguments = if metadata.keywords {
         quote! { true }
     } else {
         quote! { false }
@@ -520,10 +509,6 @@ fn do_stdlib_inner(
 
             fn tags(&self) -> Vec<String> {
                 vec![#(#tags),*]
-            }
-
-            fn keyword_arguments(&self) -> bool {
-                #uses_keyword_arguments
             }
 
             fn args(&self, inline_subschemas: bool) -> Vec<#docs_crate::StdLibFnArg> {

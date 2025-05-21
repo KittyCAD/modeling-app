@@ -148,7 +148,6 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 #[stdlib {
     name = "extrude",
     feature_tree_operation = true,
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketches = { docs = "Which sketch or sketches should be extruded"},

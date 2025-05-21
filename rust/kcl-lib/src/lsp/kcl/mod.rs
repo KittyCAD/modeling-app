@@ -1686,31 +1686,29 @@ pub fn get_arg_maps_from_stdlib(
     let combined = stdlib.combined();
 
     for internal_fn in combined.values() {
-        if internal_fn.keyword_arguments() {
-            let arg_map: HashMap<String, String> = internal_fn
-                .args(false)
-                .into_iter()
-                .map(|data| {
-                    let mut tip = "```\n".to_owned();
-                    tip.push_str(&data.name.clone());
-                    if !data.required {
-                        tip.push('?');
-                    }
-                    if !data.type_.is_empty() {
-                        tip.push_str(": ");
-                        tip.push_str(&data.type_);
-                    }
-                    tip.push_str("\n```");
-                    if !data.description.is_empty() {
-                        tip.push_str("\n\n");
-                        tip.push_str(&data.description);
-                    }
-                    (data.name, tip)
-                })
-                .collect();
-            if !arg_map.is_empty() {
-                result.insert(internal_fn.name(), arg_map);
-            }
+        let arg_map: HashMap<String, String> = internal_fn
+            .args(false)
+            .into_iter()
+            .map(|data| {
+                let mut tip = "```\n".to_owned();
+                tip.push_str(&data.name.clone());
+                if !data.required {
+                    tip.push('?');
+                }
+                if !data.type_.is_empty() {
+                    tip.push_str(": ");
+                    tip.push_str(&data.type_);
+                }
+                tip.push_str("\n```");
+                if !data.description.is_empty() {
+                    tip.push_str("\n\n");
+                    tip.push_str(&data.description);
+                }
+                (data.name, tip)
+            })
+            .collect();
+        if !arg_map.is_empty() {
+            result.insert(internal_fn.name(), arg_map);
         }
     }
 
