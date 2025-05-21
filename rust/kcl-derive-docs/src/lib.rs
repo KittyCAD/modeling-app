@@ -47,6 +47,14 @@ struct ArgMetadata {
     /// Does not do anything if the argument is already required.
     #[serde(default)]
     include_in_snippet: bool,
+
+    /// The snippet should suggest this value for the arg.
+    #[serde(default)]
+    snippet_value: Option<String>,
+
+    /// The snippet should suggest this value for the arg.
+    #[serde(default)]
+    snippet_value_array: Option<Vec<String>>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -307,6 +315,10 @@ fn do_stdlib_inner(
         }
         .trim_start_matches('_')
         .to_string();
+        // These aren't really KCL args, they're just state that each stdlib function's impl needs.
+        if arg_name == "exec_state" || arg_name == "args" {
+            continue;
+        }
 
         let ty = match arg {
             syn::FnArg::Receiver(pat) => pat.ty.as_ref().into_token_stream(),
@@ -317,27 +329,24 @@ fn do_stdlib_inner(
 
         let ty_string = rust_type_to_openapi_type(&ty_string);
         let required = !ty_ident.to_string().starts_with("Option <");
-        let arg_meta = metadata.args.get(&arg_name);
-        let description = if let Some(s) = arg_meta.map(|arg| &arg.docs) {
-            quote! { #s }
-        } else if ty_string != "Args" && ty_string != "ExecState" {
-            errors.push(Error::new_spanned(
-                &arg,
-                "Argument was not documented in the args block",
-            ));
+        let Some(arg_meta) = metadata.args.get(&arg_name) else {
+            errors.push(Error::new_spanned(arg, format!("arg {arg_name} not found")));
             continue;
-        } else {
-            quote! { String::new() }
         };
-        let include_in_snippet = required || arg_meta.map(|arg| arg.include_in_snippet).unwrap_or_default();
+        let description = arg_meta.docs.clone();
+        let include_in_snippet = required || arg_meta.include_in_snippet;
+        let snippet_value = arg_meta.snippet_value.clone();
+        let snippet_value_array = arg_meta.snippet_value_array.clone();
+        if snippet_value.is_some() && snippet_value_array.is_some() {
+            errors.push(Error::new_spanned(arg, format!("arg {arg_name} has set both snippet_value and snippet_value array, but at most one of these may be set. Please delete one of them.")));
+        }
         let label_required = !(i == 0 && metadata.unlabeled_first);
         let camel_case_arg_name = to_camel_case(&arg_name);
         if ty_string != "ExecState" && ty_string != "Args" {
             let schema = quote! {
                 generator.root_schema_for::<#ty_ident>()
             };
-            arg_types.push(quote! {
-                #docs_crate::StdLibFnArg {
+            let q0 = quote! {
                     name: #camel_case_arg_name.to_string(),
                     type_: #ty_string.to_string(),
                     schema: #schema,
@@ -345,6 +354,32 @@ fn do_stdlib_inner(
                     label_required: #label_required,
                     description: #description.to_string(),
                     include_in_snippet: #include_in_snippet,
+            };
+            let q1 = if let Some(snippet_value) = snippet_value {
+                quote! {
+                    snippet_value: Some(#snippet_value.to_owned()),
+                }
+            } else {
+                quote! {
+                    snippet_value: None,
+                }
+            };
+            let q2 = if let Some(snippet_value_array) = snippet_value_array {
+                quote! {
+                    snippet_value_array: Some(vec![
+                        #(#snippet_value_array.to_owned()),*
+                    ]),
+                }
+            } else {
+                quote! {
+                    snippet_value_array: None,
+                }
+            };
+            arg_types.push(quote! {
+                #docs_crate::StdLibFnArg {
+                #q0
+                #q1
+                #q2
                 }
             });
         }
@@ -408,6 +443,8 @@ fn do_stdlib_inner(
                 label_required: true,
                 description: String::new(),
                 include_in_snippet: true,
+                snippet_value: None,
+                snippet_value_array: None,
             })
         }
     } else {
