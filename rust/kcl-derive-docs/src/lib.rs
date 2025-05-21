@@ -2,16 +2,16 @@
 // automated enforcement.
 #![allow(clippy::style)]
 
+mod example_tests;
 #[cfg(test)]
 mod tests;
 mod unbox;
 
-use std::{collections::HashMap, fs};
+use std::collections::HashMap;
 
 use convert_case::Casing;
 use inflector::{cases::camelcase::to_camel_case, Inflector};
 use once_cell::sync::Lazy;
-use proc_macro2::Span;
 use quote::{format_ident, quote, quote_spanned, ToTokens};
 use regex::Regex;
 use serde::Deserialize;
@@ -28,8 +28,13 @@ pub fn stdlib(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> p
 }
 
 #[proc_macro_attribute]
-pub fn for_each_std_mod(_attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    do_for_each_std_mod(item.into()).into()
+pub fn for_each_example_test(_attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    example_tests::do_for_each_example_test(item.into()).into()
+}
+
+#[proc_macro_attribute]
+pub fn for_all_example_test(_attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    example_tests::do_for_all_example_test(item.into()).into()
 }
 
 /// Describes an argument of a stdlib function.
@@ -90,34 +95,6 @@ fn do_stdlib(
 ) -> Result<(proc_macro2::TokenStream, Vec<Error>), Error> {
     let metadata = from_tokenstream(&attr)?;
     do_stdlib_inner(metadata, attr, item)
-}
-
-fn do_for_each_std_mod(item: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
-    let item: syn::ItemFn = syn::parse2(item.clone()).unwrap();
-    let mut result = proc_macro2::TokenStream::new();
-    for name in fs::read_dir("kcl-lib/std").unwrap().filter_map(|e| {
-        let e = e.unwrap();
-        let filename = e.file_name();
-        filename.to_str().unwrap().strip_suffix(".kcl").map(str::to_owned)
-    }) {
-        for i in 0..10_usize {
-            let mut item = item.clone();
-            item.sig.ident = syn::Ident::new(&format!("{}_{}_shard_{i}", item.sig.ident, name), Span::call_site());
-            let stmts = &item.block.stmts;
-            let block = quote! {
-                {
-                    const STD_MOD_NAME: &str = #name;
-                    const SHARD: usize = #i;
-                    const SHARD_COUNT: usize = 10;
-                    #(#stmts)*
-                }
-            };
-            item.block = Box::new(syn::parse2(block).unwrap());
-            result.extend(Some(item.into_token_stream()));
-        }
-    }
-
-    result
 }
 
 fn do_output(res: Result<(proc_macro2::TokenStream, Vec<Error>), Error>) -> proc_macro::TokenStream {
