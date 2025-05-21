@@ -105,8 +105,10 @@ impl crate::docs::StdLibFn for SomeFn {
             schema: generator.root_schema_for::<Foo>(),
             required: true,
             label_required: true,
-            description: String::new().to_string(),
+            description: "Arg for the function".to_string(),
             include_in_snippet: true,
+            snippet_value: None,
+            snippet_value_array: None,
         }]
     }
 
@@ -123,6 +125,8 @@ impl crate::docs::StdLibFn for SomeFn {
             label_required: true,
             description: String::new(),
             include_in_snippet: true,
+            snippet_value: None,
+            snippet_value_array: None,
         })
     }
 

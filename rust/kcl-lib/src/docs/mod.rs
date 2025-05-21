@@ -111,6 +111,13 @@ pub struct StdLibFnArg {
     /// Include this in completion snippets?
     #[serde(default, skip_serializing_if = "is_false")]
     pub include_in_snippet: bool,
+    /// Snippet should suggest this value for the argument.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snippet_value: Option<String>,
+    /// Snippet should suggest this value for the argument.
+    /// The suggested value should be an array, with these elements.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snippet_value_array: Option<Vec<String>>,
     /// Additional information that could be used instead of the type's description.
     /// This is helpful if the type is really basic, like "u32" -- that won't tell the user much about
     /// how this argument is meant to be used.
@@ -165,6 +172,21 @@ impl StdLibFnArg {
         } else {
             ""
         };
+        if let Some(vals) = &self.snippet_value_array {
+            let mut snippet = label.to_owned();
+            snippet.push('[');
+            for (i, val) in vals.iter().enumerate() {
+                snippet.push_str(&format!("${{{}:{}}}", index + i, val));
+                if i != vals.len() - 1 {
+                    snippet.push_str(", ");
+                }
+            }
+            snippet.push(']');
+            return Ok(Some((index + vals.len(), snippet)));
+        }
+        if let Some(val) = &self.snippet_value {
+            return Ok(Some((index, format!("{label}${{{}:{}}}", index, val))));
+        }
         if (self.type_ == "Sketch"
             || self.type_ == "[Sketch]"
             || self.type_ == "Geometry"
@@ -986,6 +1008,13 @@ mod tests {
         let start_sketch_on_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::StartSketchOn);
         let snippet = start_sketch_on_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(snippet, r#"startSketchOn(${0:XY})"#);
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_start_profile() {
+        let start_sketch_on_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::StartProfile);
+        let snippet = start_sketch_on_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"startProfile(${0:%}, at = [${1:0}, ${2:0}])"#);
     }
 
     #[test]

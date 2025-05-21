@@ -100,15 +100,7 @@ impl crate::docs::StdLibFn for Show {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        vec![crate::docs::StdLibFnArg {
-            name: "args".to_string(),
-            type_: "[number]".to_string(),
-            schema: generator.root_schema_for::<Vec<f64>>(),
-            required: true,
-            label_required: true,
-            description: String::new().to_string(),
-            include_in_snippet: true,
-        }]
+        vec![]
     }
 
     fn return_value(&self, inline_subschemas: bool) -> Option<crate::docs::StdLibFnArg> {
@@ -124,6 +116,8 @@ impl crate::docs::StdLibFn for Show {
             label_required: true,
             description: String::new(),
             include_in_snippet: true,
+            snippet_value: None,
+            snippet_value_array: None,
         })
     }
 
