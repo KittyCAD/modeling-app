@@ -106,7 +106,7 @@ impl crate::docs::StdLibFn for SomeFn {
             required: true,
             label_required: true,
             description: "Arg for the function".to_string(),
-            include_in_snippet: false,
+            include_in_snippet: true,
             snippet_value: None,
         }]
     }

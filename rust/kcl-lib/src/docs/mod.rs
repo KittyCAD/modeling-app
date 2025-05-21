@@ -112,7 +112,7 @@ pub struct StdLibFnArg {
     #[serde(default, skip_serializing_if = "is_false")]
     pub include_in_snippet: bool,
     /// Snippet should suggest this value for the argument.
-    #[serde(default, skip_serializing_if = "is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub snippet_value: Option<String>,
     /// Additional information that could be used instead of the type's description.
     /// This is helpful if the type is really basic, like "u32" -- that won't tell the user much about
@@ -150,10 +150,6 @@ fn its_true() -> bool {
 
 fn is_false(b: &bool) -> bool {
     !b
-}
-
-fn is_none<T>(o: &Option<T>) -> bool {
-    o.is_none()
 }
 
 impl StdLibFnArg {
