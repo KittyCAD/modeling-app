@@ -13,7 +13,7 @@ import {
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
-import { commandBarActor } from '@src/lib/singletons'
+import { commandBarActor, useAuthState } from '@src/lib/singletons'
 import { showCodeReplaceToast } from '@src/components/CodeReplaceToast'
 import { findKclSample } from '@src/lib/kclSamples'
 import { webSafePathSplit } from '@src/lib/paths'
@@ -34,6 +34,7 @@ export type CreateFileSchemaMethodOptional = Omit<
  * "?cmd=<some-command-name>&groupId=<some-group-id>"
  */
 export function useQueryParamEffects() {
+  const authState = useAuthState()
   const [searchParams, setSearchParams] = useSearchParams()
   const shouldInvokeCreateFile = searchParams.has(CREATE_FILE_URL_PARAM)
   const shouldInvokeGenericCmd =
@@ -44,7 +45,7 @@ export function useQueryParamEffects() {
    * Watches for legacy `?create-file` hook, which share links currently use.
    */
   useEffect(() => {
-    if (shouldInvokeCreateFile) {
+    if (shouldInvokeCreateFile && authState.matches('loggedIn')) {
       const argDefaultValues = buildCreateFileCommandArgs(searchParams)
       commandBarActor.send({
         type: 'Find and select command',
@@ -59,14 +60,14 @@ export function useQueryParamEffects() {
       searchParams.delete(CREATE_FILE_URL_PARAM)
       setSearchParams(searchParams)
     }
-  }, [shouldInvokeCreateFile, setSearchParams])
+  }, [shouldInvokeCreateFile, setSearchParams, authState])
 
   /**
    * Generic commands are triggered by query parameters
    * with the pattern: `?cmd=<command-name>&groupId=<group-id>`
    */
   useEffect(() => {
-    if (!shouldInvokeGenericCmd) return
+    if (!shouldInvokeGenericCmd || !authState.matches('loggedIn')) return
 
     const commandData = buildGenericCommandArgs(searchParams)
     if (!commandData) return
@@ -166,7 +167,7 @@ export function useQueryParamEffects() {
       }
       setSearchParams(searchParams)
     }
-  }, [shouldInvokeGenericCmd, setSearchParams])
+  }, [shouldInvokeGenericCmd, setSearchParams, authState])
 }
 
 function buildCreateFileCommandArgs(searchParams: URLSearchParams) {
