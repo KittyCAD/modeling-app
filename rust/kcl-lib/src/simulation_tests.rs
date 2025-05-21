@@ -28,6 +28,7 @@ struct Test {
     output_dir: PathBuf,
     /// True to skip asserting the artifact graph and only write it. The default
     /// is false and to assert it.
+    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     skip_assert_artifact_graph: bool,
 }
 
