@@ -344,7 +344,7 @@ fn array_to_point3d(
     source_ranges: Vec<SourceRange>,
     exec_state: &mut ExecState,
 ) -> Result<[TyF64; 3], KclError> {
-    val.coerce(&RuntimeType::point3d(), exec_state)
+    val.coerce(&RuntimeType::point3d(), true, exec_state)
         .map_err(|e| {
             KclError::Semantic(KclErrorDetails::new(
                 format!(
@@ -364,7 +364,7 @@ fn array_to_point2d(
     source_ranges: Vec<SourceRange>,
     exec_state: &mut ExecState,
 ) -> Result<[TyF64; 2], KclError> {
-    val.coerce(&RuntimeType::point2d(), exec_state)
+    val.coerce(&RuntimeType::point2d(), true, exec_state)
         .map_err(|e| {
             KclError::Semantic(KclErrorDetails::new(
                 format!(

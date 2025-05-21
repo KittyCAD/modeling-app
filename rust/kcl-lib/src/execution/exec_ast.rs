@@ -733,23 +733,7 @@ fn apply_ascription(
     let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
         .map_err(|e| KclError::Semantic(e.into()))?;
 
-    let mut value = value.clone();
-
-    // If the number has unknown units but the user is explicitly specifying them, treat the value as having had it's units erased,
-    // rather than forcing the user to explicitly erase them.
-    if let KclValue::Number { value: n, meta, .. } = &value {
-        if let RuntimeType::Primitive(PrimitiveType::Number(num)) = &ty {
-            if num.is_fully_specified() {
-                value = KclValue::Number {
-                    ty: NumericType::Any,
-                    value: *n,
-                    meta: meta.clone(),
-                };
-            }
-        }
-    }
-
-    value.coerce(&ty, exec_state).map_err(|_| {
+    value.coerce(&ty, false, exec_state).map_err(|_| {
         let suggestion = if ty == RuntimeType::length() {
             ", you might try coercing to a fully specified numeric type such as `number(mm)`"
         } else if ty == RuntimeType::angle() {
@@ -1635,8 +1619,8 @@ arr1 = [42]: [number(cm)]
             assert_eq!(*ty, RuntimeType::known_length(UnitLen::Cm));
             // Compare, ignoring meta.
             if let KclValue::Number { value, ty, .. } = &value[0] {
-                // Converted from mm to cm.
-                assert_eq!(*value, 4.2);
+                // It should not convert units.
+                assert_eq!(*value, 42.0);
                 assert_eq!(*ty, NumericType::Known(UnitType::Length(UnitLen::Cm)));
             } else {
                 panic!("Expected a number; found {:?}", value[0]);
