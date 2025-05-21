@@ -13,6 +13,7 @@ bezierCurve(
   control1: Point2d,
   control2: Point2d,
   end: Point2d,
+  absolute?: bool,
   tag?: TagDeclarator,
 ): Sketch
 ```
@@ -24,9 +25,10 @@ bezierCurve(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
-| `control1` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | First control point for the cubic | Yes |
-| `control2` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Second control point for the cubic | Yes |
-| `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | How far away (along the X and Y axes) should this line go? | Yes |
+| `control1` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | First control point for the cubic. Interpreted as relative or absolute based on the 'absolute' parameter. | Yes |
+| `control2` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Second control point for the cubic. Interpreted as relative or absolute based on the 'absolute' parameter. | Yes |
+| `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | End point of the curve. Interpreted as relative or absolute based on the 'absolute' parameter. | Yes |
+| `absolute` | [`bool`](/docs/kcl-std/types/std-types-bool) | Optional. If true, 'end', 'control1', and 'control2' are treated as absolute coordinates. Defaults to false (relative coordinates). | No |
 | [`tag`](/docs/kcl-std/types/std-types-tag) | [`TagDeclarator`](/docs/kcl-lang/types#TagDeclarator) | Create a new tag which refers to this line | No |
 
 ### Returns
@@ -40,7 +42,7 @@ bezierCurve(
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 10])
-  |> bezierCurve(control1 = [5, 0], control2 = [5, 10], end = [10, 10])
+  |> bezierCurve(control1 = [5, 0], control2 = [5, 10], end = [10, 10]) // Relative by default. Use 'absolute = true' for absolute coordinates.
   |> line(endAbsolute = [10, 0])
   |> close()
 

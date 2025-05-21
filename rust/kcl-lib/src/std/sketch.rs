@@ -2172,8 +2172,10 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
     let control1: [TyF64; 2] = args.get_kw_arg_typed("control1", &RuntimeType::point2d(), exec_state)?;
     let control2: [TyF64; 2] = args.get_kw_arg_typed("control2", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag")?;
+    let absolute: Option<bool> = args.get_kw_arg_opt_typed("absolute", &RuntimeType::Primitive(PrimitiveType::Boolean), exec_state)?;
 
-    let new_sketch = inner_bezier_curve(sketch, control1, control2, end, tag, exec_state, args).await?;
+    // Pass args.clone() for metadata, but other params are now explicit.
+    let new_sketch = inner_bezier_curve(sketch, control1, control2, end, absolute, tag, exec_state, args.clone()).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -2191,7 +2193,7 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///        control1 = [5, 0],
 ///        control2 = [5, 10],
 ///        end = [10, 10],
-///      )
+///      ) // Relative by default. Use 'absolute = true' for absolute coordinates.
 ///   |> line(endAbsolute = [10, 0])
 ///   |> close()
 ///
@@ -2203,51 +2205,73 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?"},
-        end = { docs = "How far away (along the X and Y axes) should this line go?" },
-        control1 = { docs = "First control point for the cubic" },
-        control2 = { docs = "Second control point for the cubic" },
+        end = { docs = "End point of the curve. Interpreted as relative or absolute based on the 'absolute' parameter." },
+        control1 = { docs = "First control point for the cubic. Interpreted as relative or absolute based on the 'absolute' parameter." },
+        control2 = { docs = "Second control point for the cubic. Interpreted as relative or absolute based on the 'absolute' parameter." },
         tag = { docs = "Create a new tag which refers to this line"},
+        absolute = { docs = "Optional. If true, 'end', 'control1', and 'control2' are treated as absolute coordinates. Defaults to false (relative coordinates)." }
     },
     tags = ["sketch"]
 }]
 async fn inner_bezier_curve(
     sketch: Sketch,
-    control1: [TyF64; 2],
-    control2: [TyF64; 2],
-    end: [TyF64; 2],
+    control1: [TyF64; 2], // These are KCL inputs
+    control2: [TyF64; 2], // These are KCL inputs
+    end: [TyF64; 2],      // This is KCL input
+    absolute: Option<bool>, // Added 'absolute' as a direct parameter
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
-    args: Args,
+    args: Args, // Still needed for metadata (args.source_range)
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
-
-    let relative = true;
-    let delta = end.clone();
-    let to = [
-        from.x + end[0].to_length_units(from.units),
-        from.y + end[1].to_length_units(from.units),
-    ];
-
     let id = exec_state.next_uuid();
 
+    // Use the 'absolute' parameter directly.
+    // Defaults to false if not provided by the user (None case for Option<bool>).
+    let use_absolute_coords: bool = absolute.unwrap_or(false);
+
+    // Determine the 'relative' flag for the engine command.
+    // If KCL uses absolute, engine relative is false. If KCL uses relative, engine relative is true.
+    let engine_relative_flag = !use_absolute_coords;
+
+    // The control1, control2, and end points passed to point_to_mm are the direct KCL TyF64 values.
+    // We clone them here to avoid moving the values, as 'end' is used later.
+    // The engine will interpret these based on the `engine_relative_flag`.
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
             segment: PathSegment::Bezier {
-                control1: KPoint2d::from(point_to_mm(control1)).with_z(0.0).map(LengthUnit),
-                control2: KPoint2d::from(point_to_mm(control2)).with_z(0.0).map(LengthUnit),
-                end: KPoint2d::from(point_to_mm(delta)).with_z(0.0).map(LengthUnit),
-                relative,
+                control1: KPoint2d::from(point_to_mm(control1.clone())).with_z(0.0).map(LengthUnit),
+                control2: KPoint2d::from(point_to_mm(control2.clone())).with_z(0.0).map(LengthUnit),
+                end: KPoint2d::from(point_to_mm(end.clone())).with_z(0.0).map(LengthUnit),
+                relative: engine_relative_flag,
             },
         }),
     )
     .await?;
 
+    // Calculate the absolute end point (`to_abs_coords`) for the Sketch's internal Path data.
+    // This part correctly determines the final pen position on the sketch plane.
+    let to_abs_coords: [f64; 2];
+    if use_absolute_coords {
+        // KCL 'end' was absolute. Convert its TyF64 value to f64 in sketch.units.
+        to_abs_coords = [
+            end[0].to_length_units(sketch.units),
+            end[1].to_length_units(sketch.units),
+        ];
+    } else {
+        // KCL 'end' was relative. Convert its TyF64 offset to f64 in from.units and add to current pen position.
+        to_abs_coords = [
+            from.x + end[0].to_length_units(from.units),
+            from.y + end[1].to_length_units(from.units),
+        ];
+    }
+
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.ignore_units(),
-            to,
+            to: to_abs_coords, // This is the calculated absolute end point in sketch units.
             tag: tag.clone(),
             units: sketch.units,
             geo_meta: GeoMeta {
@@ -2258,8 +2282,8 @@ async fn inner_bezier_curve(
     };
 
     let mut new_sketch = sketch.clone();
-    if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+    if let Some(tag_node) = &tag {
+        new_sketch.add_tag(tag_node, &current_path, exec_state);
     }
 
     new_sketch.paths.push(current_path);
