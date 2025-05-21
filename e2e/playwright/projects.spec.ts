@@ -11,6 +11,7 @@ import {
   getPlaywrightDownloadDir,
   getUtils,
   isOutOfViewInScrollContainer,
+  runningOnWindows,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -1979,7 +1980,6 @@ test(
   }
 )
 
-// Flaky
 test(
   'Original project name persist after onboarding',
   { tag: '@electron' },
@@ -2066,13 +2066,9 @@ test(
 )
 
 test(
-  'nested dir import works on windows',
-  { tag: ['@electron', '@windows'] },
-  async ({ scene, cmdBar, context, page }, testInfo) => {
-    // Skip if on non-windows
-    if (process.platform !== 'win32') {
-      test.skip()
-    }
+  'import from nested directory',
+  { tag: ['@electron', '@windows', '@macos'] },
+  async ({ scene, cmdBar, context, page }) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -2085,9 +2081,9 @@ test(
       )
       await fsp.writeFile(
         path.join(bracketDir, 'main.kcl'),
-        `import 'nested\\main.kcl' as thing
-
-thing`
+        runningOnWindows()
+          ? `import 'nested\\main.kcl' as thing\n\nthing`
+          : `import 'nested/main.kcl' as thing\n\nthing`
       )
     })
 

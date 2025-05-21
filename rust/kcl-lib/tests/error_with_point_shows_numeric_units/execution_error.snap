@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing error_with_point_shows_numeric_units.kcl
+---
+KCL Semantic error
+
+  × semantic: center requires a value with type `Point2d`, but found array of
+  │ number(Count), number(Count) with 2 values
+   ╭─[2:6]
+ 1 │      startSketchOn(XZ)
+ 2 │ ╭──▶   |> circle(center = [
+ 3 │ ││       sin(66.6deg),
+ 4 │ ││       cos(66.6deg)
+ 5 │ ├──▶   ], radius = 1)
+   · ╰───── tests/error_with_point_shows_numeric_units/input.kcl
+   · ╰───── tests/error_with_point_shows_numeric_units/input.kcl
+   ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: center requires a value with type `Point2d`, but found
+        │ array of number(Count), number(Count) with 2 values
+         ╭─[2:22]
+       1 │     startSketchOn(XZ)
+       2 │ ╭─▶   |> circle(center = [
+       3 │ │       sin(66.6deg),
+       4 │ │       cos(66.6deg)
+       5 │ ├─▶   ], radius = 1)
+         · ╰──── tests/error_with_point_shows_numeric_units/input.kcl
+         ╰────

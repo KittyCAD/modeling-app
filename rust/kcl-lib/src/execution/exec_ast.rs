@@ -86,7 +86,7 @@ impl ExecutorContext {
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
-        let mut local_state = ModuleState::new(path.std_path(), exec_state.stack().memory.clone(), Some(module_id));
+        let mut local_state = ModuleState::new(path.clone(), exec_state.stack().memory.clone(), Some(module_id));
         if !preserve_mem {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         }
@@ -139,8 +139,13 @@ impl ExecutorContext {
 
                     let source_range = SourceRange::from(import_stmt);
                     let attrs = &import_stmt.outer_attrs;
+                    let module_path = ModulePath::from_import_path(
+                        &import_stmt.path,
+                        &self.settings.project_directory,
+                        &exec_state.mod_local.path,
+                    )?;
                     let module_id = self
-                        .open_module(&import_stmt.path, attrs, exec_state, source_range)
+                        .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
                         .await?;
 
                     match &import_stmt.selector {
@@ -281,7 +286,14 @@ impl ExecutorContext {
 
                     // Track exports.
                     if let ItemVisibility::Export = variable_declaration.visibility {
-                        exec_state.mod_local.module_exports.push(var_name);
+                        if matches!(body_type, BodyType::Root) {
+                            exec_state.mod_local.module_exports.push(var_name);
+                        } else {
+                            exec_state.err(CompilationError::err(
+                                variable_declaration.as_source_range(),
+                                "Exports are only supported at the top-level of a file. Remove `export` or move it to the top-level.",
+                            ));
+                        }
                     }
                     // Variable declaration can be the return value of a module.
                     last_expr = matches!(body_type, BodyType::Root).then_some(value);
@@ -291,9 +303,9 @@ impl ExecutorContext {
                     let impl_kind = annotations::get_impl(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
                     match impl_kind {
                         annotations::Impl::Rust => {
-                            let std_path = match &exec_state.mod_local.std_path {
-                                Some(p) => p,
-                                None => {
+                            let std_path = match &exec_state.mod_local.path {
+                                ModulePath::Std { value } => value,
+                                ModulePath::Local { .. } | ModulePath::Main => {
                                     return Err(KclError::Semantic(KclErrorDetails::new(
                                         "User-defined types are not yet supported.".to_owned(),
                                         vec![metadata.source_range],
@@ -413,16 +425,15 @@ impl ExecutorContext {
         &self,
         path: &ImportPath,
         attrs: &[Node<Annotation>],
+        resolved_path: &ModulePath,
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<ModuleId, KclError> {
-        let resolved_path = ModulePath::from_import_path(path, &self.settings.project_directory);
-
         match path {
             ImportPath::Kcl { .. } => {
-                exec_state.global.mod_loader.cycle_check(&resolved_path, source_range)?;
+                exec_state.global.mod_loader.cycle_check(resolved_path, source_range)?;
 
-                if let Some(id) = exec_state.id_for_module(&resolved_path) {
+                if let Some(id) = exec_state.id_for_module(resolved_path) {
                     return Ok(id);
                 }
 
@@ -433,12 +444,12 @@ impl ExecutorContext {
                 exec_state.add_id_to_source(id, source.clone());
                 // TODO handle parsing errors properly
                 let parsed = crate::parsing::parse_str(&source.source, id).parse_errs_as_err()?;
-                exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed, None));
+                exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
 
                 Ok(id)
             }
             ImportPath::Foreign { .. } => {
-                if let Some(id) = exec_state.id_for_module(&resolved_path) {
+                if let Some(id) = exec_state.id_for_module(resolved_path) {
                     return Ok(id);
                 }
 
@@ -448,11 +459,11 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let format = super::import::format_from_annotations(attrs, path, source_range)?;
                 let geom = super::import::import_foreign(path, format, exec_state, self, source_range).await?;
-                exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom, None));
+                exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Foreign(geom, None));
                 Ok(id)
             }
             ImportPath::Std { .. } => {
-                if let Some(id) = exec_state.id_for_module(&resolved_path) {
+                if let Some(id) = exec_state.id_for_module(resolved_path) {
                     return Ok(id);
                 }
 
@@ -464,7 +475,7 @@ impl ExecutorContext {
                 let parsed = crate::parsing::parse_str(&source.source, id)
                     .parse_errs_as_err()
                     .unwrap();
-                exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed, None));
+                exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
                 Ok(id)
             }
         }
@@ -625,7 +636,7 @@ impl ExecutorContext {
                     .unwrap_or(false);
 
                 if rust_impl {
-                    if let Some(std_path) = &exec_state.mod_local.std_path {
+                    if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
                         KclValue::Function {
                             value: FunctionSource::Std {
@@ -748,7 +759,7 @@ fn apply_ascription(
         };
         KclError::Semantic(KclErrorDetails::new(
             format!(
-                "could not coerce {} value to type {ty}{suggestion}",
+                "could not coerce value of type {} to type {ty}{suggestion}",
                 value.human_friendly_type()
             ),
             vec![source_range],
@@ -1641,7 +1652,7 @@ a = 42: string
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce number(default units) value to type string"),
+                .contains("could not coerce value of type number(default units) to type string"),
             "Expected error but found {err:?}"
         );
 
@@ -1652,7 +1663,7 @@ a = 42: Plane
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce number(default units) value to type Plane"),
+                .contains("could not coerce value of type number(default units) to type Plane"),
             "Expected error but found {err:?}"
         );
 
@@ -1662,8 +1673,9 @@ arr = [0]: [string]
         let result = parse_execute(program).await;
         let err = result.unwrap_err();
         assert!(
-            err.to_string()
-                .contains("could not coerce [any; 1] value to type [string]"),
+            err.to_string().contains(
+                "could not coerce value of type array of number(default units) with 1 value to type [string]"
+            ),
             "Expected error but found {err:?}"
         );
 
@@ -1674,7 +1686,7 @@ mixedArr = [0, "a"]: [number(mm)]
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce [any; 2] value to type [number(mm)]"),
+                .contains("could not coerce value of type array of number(default units), string with 2 values to type [number(mm)]"),
             "Expected error but found {err:?}"
         );
     }

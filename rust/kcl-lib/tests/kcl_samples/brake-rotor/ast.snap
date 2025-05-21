@@ -7130,6 +7130,17 @@ description: Result of parsing brake-rotor.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
+            "value": "Brake Rotor",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
             "value": "A 320mm vented brake disc (rotor), with straight vanes, 30mm thick. The disc bell should accommodate 5 M12 wheel studs on a 114.3mm pitch circle diameter.",
             "style": "line"
           }

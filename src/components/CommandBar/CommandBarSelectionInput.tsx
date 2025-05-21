@@ -139,8 +139,8 @@ function CommandBarSelectionInput({
         data: {
           selectionType: 'singleCodeCursor',
         },
-      })
-    setHasClearedSelection(true)
+      }) &&
+      setHasClearedSelection(true)
   }, [arg])
 
   // Watch for outside teardowns of this component

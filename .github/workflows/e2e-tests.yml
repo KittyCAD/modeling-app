@@ -143,11 +143,11 @@ jobs:
       - name: Install browsers
         run: npm run playwright install --with-deps
 
-      - name: Capture snapshots
+      - name: Test snapshots
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
-          command: npm run test:snapshots -- --update-snapshots
+          command: npm run test:snapshots
           timeout_minutes: 5
           max_attempts: 5
         env:
@@ -156,6 +156,19 @@ jobs:
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: snapshots
+          TARGET: web
+
+      - name: Update snapshots
+        if: always()
+        run: npm run test:snapshots -- --last-failed --update-snapshots
+        env:
+          token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: snapshots
           TARGET: web
 
       - uses: actions/upload-artifact@v4

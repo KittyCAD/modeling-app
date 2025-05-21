@@ -45,14 +45,15 @@ test.describe('Command bar tests', () => {
     await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
+      currentArgKey: 'sketches',
+      currentArgValue: '',
       headerArguments: {
-        Profiles: '1 profile',
+        Profiles: '',
         Length: '',
       },
-      highlightedHeaderArg: 'length',
+      highlightedHeaderArg: 'Profiles',
     })
+    await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',

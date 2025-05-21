@@ -6,6 +6,7 @@ if [ -z "${TAB_API_URL:-}" ] || [ -z "${TAB_API_KEY:-}" ]; then
 fi
 
 project="https://github.com/KittyCAD/modeling-app"
+suite="${CI_SUITE:-unit}"
 branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-}}"
 commit="${CI_COMMIT_SHA:-${GITHUB_SHA:-}}"
 
@@ -13,6 +14,7 @@ echo "Uploading batch results"
 curl --silent --request POST \
   --header "X-API-Key: ${TAB_API_KEY}" \
   --form "project=${project}" \
+  --form "suite=${suite}" \
   --form "branch=${branch}" \
   --form "commit=${commit}" \
   --form "tests=@test-results/junit.xml" \

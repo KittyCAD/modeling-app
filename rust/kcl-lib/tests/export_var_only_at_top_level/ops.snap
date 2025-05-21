@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed export_only_at_top_level.kcl
+---
+[]
