@@ -365,15 +365,13 @@ export function sketchFromKclValueOptional(
   obj: KclValue | undefined,
   varName: string | null
 ): Sketch | Reason {
-  const valueType = (obj?.value as any)?.type as string // TODO: clean this up
-  if (valueType === 'Sketch') return obj?.value as Sketch
-  if (valueType === 'Solid') return (obj?.value as any)?.sketch
   if (obj?.type === 'Sketch') return obj.value
   if (obj?.type === 'Solid') return obj.value.sketch
   if (!varName) {
     varName = 'a KCL value'
   }
-  const actualType = valueType ?? obj?.type
+
+  const actualType = obj?.type ?? 'unknown'
   if (actualType) {
     return new Reason(
       `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
