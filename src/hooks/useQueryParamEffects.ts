@@ -97,7 +97,6 @@ export function useQueryParamEffects() {
       console.error('KCL sample not found for path:', samplePath)
       cleanupQueryParams()
       return
-
     } else if (kclSample.files.length > 1) {
       console.error(
         'KCL sample has multiple files, only the first one will be used'
@@ -105,7 +104,6 @@ export function useQueryParamEffects() {
       cleanupQueryParams()
       return
     }
-
 
     // Get the first part of the path (project directory)
     const pathParts = webSafePathSplit(samplePath)
@@ -150,9 +148,7 @@ export function useQueryParamEffects() {
       // Delete all the query parameters that aren't reserved
       searchParams.delete(CMD_NAME_QUERY_PARAM)
       searchParams.delete(CMD_GROUP_QUERY_PARAM)
-      const keysToDelete = searchParams
-        .entries()
-        .toArray()
+      const keysToDelete = [...searchParams.entries()]
         // Filter out known keys
         .filter(([key]) => {
           const reservedKeys = [
@@ -197,8 +193,7 @@ function buildGenericCommandArgs(searchParams: URLSearchParams) {
     return
   }
 
-  const filteredParams = searchParams
-    .entries()
+  const filteredParams = [...searchParams.entries()]
     // Filter out known keys
     .filter(
       ([key]) =>
