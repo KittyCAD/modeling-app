@@ -24,9 +24,9 @@ export function DownloadAppToast({
             miss out!
           </p>
           {!navigator?.userAgent.includes('Chrome') && (
-            <p className="mt-6">
-              If you want to stay here on the web-app, we currently only support
-              Chrome. Please use{' '}
+            <p className="mt-2 text-sm font-semibold text-chalkboard-70 dark:text-chalkboard-30">
+              If you want to stay here on the web app, we prefer that you use
+              Chrome. You may use{' '}
               <a
                 href="https://www.google.com/chrome/"
                 rel="noopener noreferrer"
