@@ -26,6 +26,9 @@ struct Test {
     input_dir: PathBuf,
     /// Expected snapshot output files are in this directory.
     output_dir: PathBuf,
+    /// True to skip asserting the artifact graph and only write it. The default
+    /// is false and to assert it.
+    skip_assert_artifact_graph: bool,
 }
 
 pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
@@ -37,6 +40,7 @@ impl Test {
             entry_point: Path::new("tests").join(name).join("input.kcl"),
             input_dir: Path::new("tests").join(name),
             output_dir: Path::new("tests").join(name),
+            skip_assert_artifact_graph: false,
         }
     }
 
@@ -299,21 +303,28 @@ fn assert_common_snapshots(
         })
     }));
     let result3 = catch_unwind(AssertUnwindSafe(|| {
-        assert_snapshot(test, "Artifact graph flowchart", || {
-            let mut artifact_graph = artifact_graph.clone();
-            // Sort the map by artifact where we can.
-            artifact_graph.sort();
+        // If the user is explicitly writing, we always want to run so that they
+        // can save new expected output.  There's no way to reliably determine
+        // if insta will write, as far as I can tell, so we use our own
+        // environment variable.
+        let is_writing = matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"));
+        if !test.skip_assert_artifact_graph || is_writing {
+            assert_snapshot(test, "Artifact graph flowchart", || {
+                let mut artifact_graph = artifact_graph.clone();
+                // Sort the map by artifact where we can.
+                artifact_graph.sort();
 
-            let flowchart = artifact_graph
-                .to_mermaid_flowchart()
-                .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
-            // Change the snapshot suffix so that it is rendered as a Markdown file
-            // in GitHub.
-            // Ignore the cpu cooler for now because its being a little bitch.
-            if test.name != "cpu-cooler" {
-                insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
-            }
-        })
+                let flowchart = artifact_graph
+                    .to_mermaid_flowchart()
+                    .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
+                // Change the snapshot suffix so that it is rendered as a Markdown file
+                // in GitHub.
+                // Ignore the cpu cooler for now because its being a little bitch.
+                if test.name != "cpu-cooler" {
+                    insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
+                }
+            })
+        }
     }));
 
     result1.unwrap();
