@@ -384,6 +384,27 @@ mod any_type {
         super::execute(TEST_NAME, false).await
     }
 }
+mod error_with_point_shows_numeric_units {
+    const TEST_NAME: &str = "error_with_point_shows_numeric_units";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod artifact_graph_example_code1 {
     const TEST_NAME: &str = "artifact_graph_example_code1";
 
@@ -3341,6 +3362,27 @@ mod nested_main_kcl {
 }
 mod nested_windows_main_kcl {
     const TEST_NAME: &str = "nested_windows_main_kcl";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod nested_assembly {
+    const TEST_NAME: &str = "nested_assembly";
 
     /// Test parsing KCL.
     #[test]

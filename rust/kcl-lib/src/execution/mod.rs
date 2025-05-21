@@ -1044,6 +1044,7 @@ impl ExecutorContext {
 
         let root_imports = crate::walk::import_universe(
             self,
+            &ModulePath::Main,
             &ModuleRepr::Kcl(program.ast.clone(), None),
             &mut universe,
             exec_state,
@@ -1211,15 +1212,10 @@ impl ExecutorContext {
     /// SAFETY: the current thread must have sole access to the memory referenced in exec_state.
     async fn eval_prelude(&self, exec_state: &mut ExecState, source_range: SourceRange) -> Result<(), KclError> {
         if exec_state.stack().memory.requires_std() {
+            let path = vec!["std".to_owned(), "prelude".to_owned()];
+            let resolved_path = ModulePath::from_std_import_path(&path)?;
             let id = self
-                .open_module(
-                    &ImportPath::Std {
-                        path: vec!["std".to_owned(), "prelude".to_owned()],
-                    },
-                    &[],
-                    exec_state,
-                    source_range,
-                )
+                .open_module(&ImportPath::Std { path }, &[], &resolved_path, exec_state, source_range)
                 .await?;
             let (module_memory, _) = self.exec_module_for_items(id, exec_state, source_range).await?;
 

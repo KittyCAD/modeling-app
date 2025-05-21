@@ -85,14 +85,14 @@ pub(super) struct ModuleState {
     /// Settings specified from annotations.
     pub settings: MetaSettings,
     pub(super) explicit_length_units: bool,
-    pub(super) std_path: Option<String>,
+    pub(super) path: ModulePath,
 }
 
 impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
             global: GlobalState::new(&exec_context.settings),
-            mod_local: ModuleState::new(None, ProgramMemory::new(), Default::default()),
+            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default()),
             exec_context: Some(exec_context.clone()),
         }
     }
@@ -102,7 +102,7 @@ impl ExecState {
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::new(None, ProgramMemory::new(), Default::default()),
+            mod_local: ModuleState::new(self.mod_local.path.clone(), ProgramMemory::new(), Default::default()),
             exec_context: Some(exec_context.clone()),
         };
     }
@@ -337,14 +337,14 @@ impl GlobalState {
 }
 
 impl ModuleState {
-    pub(super) fn new(std_path: Option<String>, memory: Arc<ProgramMemory>, module_id: Option<ModuleId>) -> Self {
+    pub(super) fn new(path: ModulePath, memory: Arc<ProgramMemory>, module_id: Option<ModuleId>) -> Self {
         ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
             pipe_value: Default::default(),
             module_exports: Default::default(),
             explicit_length_units: false,
-            std_path,
+            path,
             settings: MetaSettings {
                 default_length_units: Default::default(),
                 default_angle_units: Default::default(),
