@@ -174,7 +174,7 @@ description: Artifact commands telemetry-antenna.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.0025,
+          "x": 0.0,
           "y": 34.544,
           "z": 0.0
         },
