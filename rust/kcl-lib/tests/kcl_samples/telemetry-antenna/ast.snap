@@ -214,39 +214,6 @@ description: Result of parsing telemetry-antenna.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "offsetFromAxis",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "commentStart": 0,
-            "end": 0,
-            "raw": "0.0001",
-            "start": 0,
-            "type": "Literal",
-            "type": "Literal",
-            "value": {
-              "value": 0.0001,
-              "suffix": "None"
-            }
-          },
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
             "name": "totalHeight",
             "start": 0,
             "type": "Identifier"
@@ -870,20 +837,16 @@ description: Result of parsing telemetry-antenna.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "offsetFromAxis",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
+                      "raw": "0",
                       "start": 0,
-                      "type": "Name",
-                      "type": "Name"
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
                     }
                   },
                   {
@@ -2892,7 +2855,7 @@ description: Result of parsing telemetry-antenna.kcl
           "type": "Identifier"
         },
         "preComments": [
-          "// Telemetry antenna plate",
+          "// Aircraft telemetry antenna plate",
           "// Consists of a circular base plate 3 inches in diameter and 0.08 inches thick, with a tapered monopole antenna mounted at the top with a base diameter of 0.65 inches and height of 1.36 inches. Also consists of a mounting base and connector at the bottom of the plate. The plate also has 6 countersunk holes at a defined pitch circle diameter.",
           "",
           "",
@@ -2942,24 +2905,11 @@ description: Result of parsing telemetry-antenna.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "inlineComment",
-              "value": "minor offset of 0.0001 inches as revolving around na axis fails",
-              "style": "line"
-            }
-          }
-        ],
-        "7": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
               "type": "newLine"
             }
           }
         ],
-        "15": [
+        "14": [
           {
             "commentStart": 0,
             "end": 0,
@@ -2972,7 +2922,7 @@ description: Result of parsing telemetry-antenna.kcl
             }
           }
         ],
-        "16": [
+        "15": [
           {
             "commentStart": 0,
             "end": 0,
@@ -2985,7 +2935,7 @@ description: Result of parsing telemetry-antenna.kcl
             }
           }
         ],
-        "17": [
+        "16": [
           {
             "commentStart": 0,
             "end": 0,
@@ -2998,7 +2948,7 @@ description: Result of parsing telemetry-antenna.kcl
             }
           }
         ],
-        "18": [
+        "17": [
           {
             "commentStart": 0,
             "end": 0,
@@ -3011,7 +2961,7 @@ description: Result of parsing telemetry-antenna.kcl
             }
           }
         ],
-        "19": [
+        "18": [
           {
             "commentStart": 0,
             "end": 0,
@@ -3024,7 +2974,7 @@ description: Result of parsing telemetry-antenna.kcl
             }
           }
         ],
-        "20": [
+        "19": [
           {
             "commentStart": 0,
             "end": 0,

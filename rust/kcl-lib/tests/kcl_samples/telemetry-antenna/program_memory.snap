@@ -72,19 +72,6 @@ description: Variables in memory after executing telemetry-antenna.kcl
     "type": "Function",
     "value": null
   },
-  "offsetFromAxis": {
-    "type": "Number",
-    "value": 0.0001,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
   "plateDia": {
     "type": "Number",
     "value": 3.0,
@@ -146,9 +133,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
             0.08
           ],
           "tag": {
-            "commentStart": 976,
-            "end": 982,
-            "start": 976,
+            "commentStart": 894,
+            "end": 900,
+            "start": 894,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -171,9 +158,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
             0.08
           ],
           "tag": {
-            "commentStart": 1042,
-            "end": 1048,
-            "start": 1042,
+            "commentStart": 960,
+            "end": 966,
+            "start": 960,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -220,14 +207,14 @@ description: Variables in memory after executing telemetry-antenna.kcl
             1.36
           ],
           "tag": {
-            "commentStart": 1154,
-            "end": 1160,
-            "start": 1154,
+            "commentStart": 1059,
+            "end": 1065,
+            "start": 1059,
             "type": "TagDeclarator",
             "value": "seg02"
           },
           "to": [
-            0.0001,
+            0.0,
             1.36
           ],
           "type": "ToPoint",
@@ -241,12 +228,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "sourceRange": []
           },
           "from": [
-            0.0001,
+            0.0,
             1.36
           ],
           "tag": null,
           "to": [
-            0.0001,
+            0.0,
             -0.78
           ],
           "type": "ToPoint",
@@ -260,12 +247,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "sourceRange": []
           },
           "from": [
-            0.0001,
+            0.0,
             -0.78
           ],
           "tag": null,
           "to": [
-            0.2501,
+            0.25,
             -0.78
           ],
           "type": "ToPoint",
@@ -279,12 +266,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "sourceRange": []
           },
           "from": [
-            0.2501,
+            0.25,
             -0.78
           ],
           "tag": null,
           "to": [
-            0.2501,
+            0.25,
             -0.73
           ],
           "type": "ToPoint",
@@ -298,12 +285,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "sourceRange": []
           },
           "from": [
-            0.2501,
+            0.25,
             -0.73
           ],
           "tag": null,
           "to": [
-            0.2678,
+            0.2677,
             -0.7123
           ],
           "type": "ToPoint",
@@ -317,12 +304,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "sourceRange": []
           },
           "from": [
-            0.2678,
+            0.2677,
             -0.7123
           ],
           "tag": null,
           "to": [
-            0.2678,
+            0.2677,
             -0.5873
           ],
           "type": "ToPoint",
@@ -336,12 +323,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "sourceRange": []
           },
           "from": [
-            0.2678,
+            0.2677,
             -0.5873
           ],
           "tag": null,
           "to": [
-            0.2501,
+            0.25,
             -0.5696
           ],
           "type": "ToPoint",
@@ -355,12 +342,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "sourceRange": []
           },
           "from": [
-            0.2501,
+            0.25,
             -0.5696
           ],
           "tag": null,
           "to": [
-            0.2501,
+            0.25,
             -0.4446
           ],
           "type": "ToPoint",
@@ -374,12 +361,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "sourceRange": []
           },
           "from": [
-            0.2501,
+            0.25,
             -0.4446
           ],
           "tag": null,
           "to": [
-            0.2751,
+            0.275,
             -0.4446
           ],
           "type": "ToPoint",
@@ -393,12 +380,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "sourceRange": []
           },
           "from": [
-            0.2751,
+            0.275,
             -0.4446
           ],
           "tag": null,
           "to": [
-            0.2751,
+            0.275,
             -0.4196
           ],
           "type": "ToPoint",
@@ -412,7 +399,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "sourceRange": []
           },
           "from": [
-            0.2751,
+            0.275,
             -0.4196
           ],
           "tag": null,
@@ -603,9 +590,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 976,
-            "end": 982,
-            "start": 976,
+            "commentStart": 894,
+            "end": 900,
+            "start": 894,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -616,9 +603,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1042,
-            "end": 1048,
-            "start": 1042,
+            "commentStart": 960,
+            "end": 966,
+            "start": 960,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -636,19 +623,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1154,
-            "end": 1160,
-            "start": 1154,
+            "commentStart": 1059,
+            "end": 1065,
+            "start": 1059,
             "type": "TagDeclarator",
             "value": "seg02"
           },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
           "type": "extrudePlane"
         },
         {
@@ -776,9 +756,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
               0.08
             ],
             "tag": {
-              "commentStart": 976,
-              "end": 982,
-              "start": 976,
+              "commentStart": 894,
+              "end": 900,
+              "start": 894,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -801,9 +781,9 @@ description: Variables in memory after executing telemetry-antenna.kcl
               0.08
             ],
             "tag": {
-              "commentStart": 1042,
-              "end": 1048,
-              "start": 1042,
+              "commentStart": 960,
+              "end": 966,
+              "start": 960,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -850,14 +830,14 @@ description: Variables in memory after executing telemetry-antenna.kcl
               1.36
             ],
             "tag": {
-              "commentStart": 1154,
-              "end": 1160,
-              "start": 1154,
+              "commentStart": 1059,
+              "end": 1065,
+              "start": 1059,
               "type": "TagDeclarator",
               "value": "seg02"
             },
             "to": [
-              0.0001,
+              0.0,
               1.36
             ],
             "type": "ToPoint",
@@ -871,12 +851,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "sourceRange": []
             },
             "from": [
-              0.0001,
+              0.0,
               1.36
             ],
             "tag": null,
             "to": [
-              0.0001,
+              0.0,
               -0.78
             ],
             "type": "ToPoint",
@@ -890,12 +870,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "sourceRange": []
             },
             "from": [
-              0.0001,
+              0.0,
               -0.78
             ],
             "tag": null,
             "to": [
-              0.2501,
+              0.25,
               -0.78
             ],
             "type": "ToPoint",
@@ -909,12 +889,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "sourceRange": []
             },
             "from": [
-              0.2501,
+              0.25,
               -0.78
             ],
             "tag": null,
             "to": [
-              0.2501,
+              0.25,
               -0.73
             ],
             "type": "ToPoint",
@@ -928,12 +908,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "sourceRange": []
             },
             "from": [
-              0.2501,
+              0.25,
               -0.73
             ],
             "tag": null,
             "to": [
-              0.2678,
+              0.2677,
               -0.7123
             ],
             "type": "ToPoint",
@@ -947,12 +927,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "sourceRange": []
             },
             "from": [
-              0.2678,
+              0.2677,
               -0.7123
             ],
             "tag": null,
             "to": [
-              0.2678,
+              0.2677,
               -0.5873
             ],
             "type": "ToPoint",
@@ -966,12 +946,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "sourceRange": []
             },
             "from": [
-              0.2678,
+              0.2677,
               -0.5873
             ],
             "tag": null,
             "to": [
-              0.2501,
+              0.25,
               -0.5696
             ],
             "type": "ToPoint",
@@ -985,12 +965,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "sourceRange": []
             },
             "from": [
-              0.2501,
+              0.25,
               -0.5696
             ],
             "tag": null,
             "to": [
-              0.2501,
+              0.25,
               -0.4446
             ],
             "type": "ToPoint",
@@ -1004,12 +984,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "sourceRange": []
             },
             "from": [
-              0.2501,
+              0.25,
               -0.4446
             ],
             "tag": null,
             "to": [
-              0.2751,
+              0.275,
               -0.4446
             ],
             "type": "ToPoint",
@@ -1023,12 +1003,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "sourceRange": []
             },
             "from": [
-              0.2751,
+              0.275,
               -0.4446
             ],
             "tag": null,
             "to": [
-              0.2751,
+              0.275,
               -0.4196
             ],
             "type": "ToPoint",
@@ -1042,7 +1022,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "sourceRange": []
             },
             "from": [
-              0.2751,
+              0.275,
               -0.4196
             ],
             "tag": null,
