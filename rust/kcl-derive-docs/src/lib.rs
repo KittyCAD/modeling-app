@@ -341,7 +341,7 @@ fn do_stdlib_inner(
             continue;
         };
         let description = arg_meta.docs.clone();
-        let include_in_snippet = arg_meta.include_in_snippet;
+        let include_in_snippet = required || arg_meta.include_in_snippet;
         let snippet_value = arg_meta.snippet_value.clone();
         let label_required = !(i == 0 && metadata.unlabeled_first);
         let camel_case_arg_name = to_camel_case(&arg_name);
