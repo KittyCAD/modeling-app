@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/nested_assembly/nested/foo/bar/main.kcl
+---
+import "imported.kcl" as imported
+
+imported

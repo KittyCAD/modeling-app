@@ -161,40 +161,6 @@ export const ModelingMachineProvider = ({
         'enable copilot': () => {
           editorManager.setCopilotEnabled(true)
         },
-        'sketch exit execute': ({ context: { store } }) => {
-          // TODO: Remove this async callback.  For some reason eslint wouldn't
-          // let me disable @typescript-eslint/no-misused-promises for the line.
-          ;(async () => {
-            // When cancelling the sketch mode we should disable sketch mode within the engine.
-            await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: { type: 'sketch_mode_disable' },
-            })
-
-            sceneInfra.camControls.syncDirection = 'clientToEngine'
-
-            if (cameraProjection.current === 'perspective') {
-              await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
-            }
-
-            sceneInfra.camControls.syncDirection = 'engineToClient'
-
-            // TODO: Re-evaluate if this pause/play logic is needed.
-            store.videoElement?.pause()
-
-            return kclManager
-              .executeCode()
-              .then(() => {
-                if (engineCommandManager.idleMode) return
-
-                store.videoElement?.play().catch((e) => {
-                  console.warn('Video playing was prevented', e)
-                })
-              })
-              .catch(reportRejection)
-          })().catch(reportRejection)
-        },
         'Set mouse state': assign(({ context, event }) => {
           if (event.type !== 'Set mouse state') return {}
           const nextSegmentHoverMap = () => {
@@ -1303,6 +1269,7 @@ export const ModelingMachineProvider = ({
         store: {
           ...modelingMachineDefaultContext.store,
           ...persistedContext,
+          cameraProjection,
         },
         machineManager,
       },

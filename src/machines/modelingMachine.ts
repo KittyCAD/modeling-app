@@ -9,6 +9,8 @@ import {
   orthoScale,
   quaternionFromUpNForward,
 } from '@src/clientSideScene/helpers'
+import type { Setting } from '@src/lib/settings/initialSettings'
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import { DRAFT_DASHED_LINE } from '@src/clientSideScene/sceneConstants'
 import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
@@ -299,6 +301,7 @@ export type SegmentOverlayPayload =
 export interface Store {
   videoElement?: HTMLVideoElement
   openPanes: SidebarType[]
+  cameraProjection?: Setting<CameraProjectionType>
 }
 
 export type SketchTool =
@@ -333,7 +336,6 @@ export type ModelingMachineEvent =
     }
   | { type: 'Sketch no face' }
   | { type: 'Cancel'; cleanup?: () => void }
-  | { type: 'CancelSketch' }
   | {
       type: 'Add start point' | 'Continue existing profile'
       data: {
@@ -856,10 +858,6 @@ export const modelingMachine = setup({
         sketchDetails: event.output,
       }
     }),
-    'tear down client sketch': () => {
-      sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-    },
-    'remove sketch grid': () => sceneEntitiesManager.removeSketchGrid(),
     'set up draft line': assign(({ context: { sketchDetails }, event }) => {
       if (!sketchDetails) return {}
       if (event.type !== 'Add start point') return {}
@@ -1200,9 +1198,6 @@ export const modelingMachine = setup({
     'clientToEngine cam sync direction': () => {
       sceneInfra.camControls.syncDirection = 'clientToEngine'
     },
-    'engineToClient cam sync direction': () => {
-      sceneInfra.camControls.syncDirection = 'engineToClient'
-    },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': () => {
       kclManager.setSelectionFilter(['face', 'object'])
@@ -1223,7 +1218,6 @@ export const modelingMachine = setup({
         return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
       })
     },
-    'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
     'Set context': assign({
       store: ({ context: { store }, event }) => {
         if (event.type !== 'Set context') return store
@@ -1542,7 +1536,6 @@ export const modelingMachine = setup({
     'Center camera on selection': () => {},
     'Submit to Text-to-CAD API': () => {},
     'Set sketchDetails': () => {},
-    'sketch exit execute': () => {},
     'debug-action': (data) => {
       console.log('re-eval debug-action', data)
     },
@@ -1610,6 +1603,45 @@ export const modelingMachine = setup({
   },
   // end actions
   actors: {
+    sketchExit: fromPromise(
+      async (args: { input: { context: { store: Store } } }) => {
+        const store = args.input.context.store
+
+        // When cancelling the sketch mode we should disable sketch mode within the engine.
+        await engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'sketch_mode_disable' },
+        })
+
+        sceneInfra.camControls.syncDirection = 'clientToEngine'
+
+        if (store.cameraProjection?.current === 'perspective') {
+          await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+        }
+
+        sceneInfra.camControls.syncDirection = 'engineToClient'
+
+        // TODO: Re-evaluate if this pause/play logic is needed.
+        store.videoElement?.pause()
+
+        await kclManager
+          .executeCode()
+          .then(() => {
+            if (engineCommandManager.idleMode) return
+
+            store.videoElement?.play().catch((e: Error) => {
+              console.warn('Video playing was prevented', e)
+            })
+          })
+          .catch(reportRejection)
+
+        sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+        sceneEntitiesManager.removeSketchGrid()
+        sceneInfra.camControls.syncDirection = 'engineToClient'
+        sceneEntitiesManager.resetOverlays()
+      }
+    ),
     /* Below are all the do-constrain sketch actors,
      * which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
     'do-constrain-remove-constraint': fromPromise(
@@ -4194,22 +4226,29 @@ export const modelingMachine = setup({
         },
 
         'undo startSketchOn': {
-          invoke: {
-            src: 'AST-undo-startSketchOn',
-            id: 'AST-undo-startSketchOn',
-            input: ({ context: { sketchDetails } }) => ({ sketchDetails }),
-
-            onDone: {
-              target: '#Modeling.idle',
-              actions: 'enter modeling mode',
-              reenter: true,
+          invoke: [
+            {
+              id: 'sketchExit',
+              src: 'sketchExit',
+              input: ({ context }) => ({ context }),
             },
+            {
+              src: 'AST-undo-startSketchOn',
+              id: 'AST-undo-startSketchOn',
+              input: ({ context: { sketchDetails } }) => ({ sketchDetails }),
 
-            onError: {
-              target: '#Modeling.idle',
-              reenter: true,
+              onDone: {
+                target: '#Modeling.idle',
+                actions: 'enter modeling mode',
+                reenter: true,
+              },
+
+              onError: {
+                target: '#Modeling.idle',
+                reenter: true,
+              },
             },
-          },
+          ],
         },
 
         'Rectangle tool': {
@@ -4927,7 +4966,6 @@ export const modelingMachine = setup({
 
       on: {
         Cancel: '.undo startSketchOn',
-        CancelSketch: '.SketchIdle',
 
         'Delete segment': {
           reenter: false,
@@ -4940,14 +4978,7 @@ export const modelingMachine = setup({
         },
       },
 
-      exit: [
-        'sketch exit execute',
-        'tear down client sketch',
-        'remove sketch grid',
-        'engineToClient cam sync direction',
-        'Reset Segment Overlays',
-        'enable copilot',
-      ],
+      exit: ['enable copilot'],
 
       entry: ['add axis n grid', 'clientToEngine cam sync direction'],
     },

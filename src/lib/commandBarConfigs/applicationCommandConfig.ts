@@ -333,6 +333,7 @@ export function createApplicationCommands({
           isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
+        defaultValue: isDesktop() ? undefined : 'browser',
         options: (_, _context) => {
           const { folders } = systemIOActor.getSnapshot().context
           const options: CommandArgumentOption<string>[] = []
