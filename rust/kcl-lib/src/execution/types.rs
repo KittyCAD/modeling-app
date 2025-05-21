@@ -1039,19 +1039,25 @@ impl KclValue {
     ///   - result.principal_type().unwrap().subtype(ty)
     ///
     /// If self.principal_type() == ty then result == self
-    pub fn coerce(&self, ty: &RuntimeType, exec_state: &mut ExecState) -> Result<KclValue, CoercionError> {
+    pub fn coerce(
+        &self,
+        ty: &RuntimeType,
+        convert_units: bool,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, CoercionError> {
         match ty {
-            RuntimeType::Primitive(ty) => self.coerce_to_primitive_type(ty, exec_state),
-            RuntimeType::Array(ty, len) => self.coerce_to_array_type(ty, *len, exec_state, false),
-            RuntimeType::Tuple(tys) => self.coerce_to_tuple_type(tys, exec_state),
-            RuntimeType::Union(tys) => self.coerce_to_union_type(tys, exec_state),
-            RuntimeType::Object(tys) => self.coerce_to_object_type(tys, exec_state),
+            RuntimeType::Primitive(ty) => self.coerce_to_primitive_type(ty, convert_units, exec_state),
+            RuntimeType::Array(ty, len) => self.coerce_to_array_type(ty, convert_units, *len, exec_state, false),
+            RuntimeType::Tuple(tys) => self.coerce_to_tuple_type(tys, convert_units, exec_state),
+            RuntimeType::Union(tys) => self.coerce_to_union_type(tys, convert_units, exec_state),
+            RuntimeType::Object(tys) => self.coerce_to_object_type(tys, convert_units, exec_state),
         }
     }
 
     fn coerce_to_primitive_type(
         &self,
         ty: &PrimitiveType,
+        convert_units: bool,
         exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
         let value = match self {
@@ -1060,7 +1066,29 @@ impl KclValue {
         };
         match ty {
             PrimitiveType::Any => Ok(value.clone()),
-            PrimitiveType::Number(ty) => ty.coerce(value),
+            PrimitiveType::Number(ty) => {
+                if convert_units {
+                    return ty.coerce(value);
+                }
+
+                // Instead of converting units, reinterpret the number as having
+                // different units.
+                //
+                // If the user is explicitly specifying units, treat the value
+                // as having had its units erased, rather than forcing the user
+                // to explicitly erase them.
+                if let KclValue::Number { value: n, meta, .. } = &value {
+                    if ty.is_fully_specified() {
+                        let value = KclValue::Number {
+                            ty: NumericType::Any,
+                            value: *n,
+                            meta: meta.clone(),
+                        };
+                        return ty.coerce(&value);
+                    }
+                }
+                ty.coerce(value)
+            }
             PrimitiveType::String => match value {
                 KclValue::String { .. } => Ok(value.clone()),
                 _ => Err(self.into()),
@@ -1153,10 +1181,22 @@ impl KclValue {
                     }
 
                     let origin = values.get("origin").ok_or(self.into()).and_then(|p| {
-                        p.coerce_to_array_type(&RuntimeType::length(), ArrayLen::Known(2), exec_state, true)
+                        p.coerce_to_array_type(
+                            &RuntimeType::length(),
+                            convert_units,
+                            ArrayLen::Known(2),
+                            exec_state,
+                            true,
+                        )
                     })?;
                     let direction = values.get("direction").ok_or(self.into()).and_then(|p| {
-                        p.coerce_to_array_type(&RuntimeType::length(), ArrayLen::Known(2), exec_state, true)
+                        p.coerce_to_array_type(
+                            &RuntimeType::length(),
+                            convert_units,
+                            ArrayLen::Known(2),
+                            exec_state,
+                            true,
+                        )
                     })?;
 
                     Ok(KclValue::Object {
@@ -1181,10 +1221,22 @@ impl KclValue {
                     }
 
                     let origin = values.get("origin").ok_or(self.into()).and_then(|p| {
-                        p.coerce_to_array_type(&RuntimeType::length(), ArrayLen::Known(3), exec_state, true)
+                        p.coerce_to_array_type(
+                            &RuntimeType::length(),
+                            convert_units,
+                            ArrayLen::Known(3),
+                            exec_state,
+                            true,
+                        )
                     })?;
                     let direction = values.get("direction").ok_or(self.into()).and_then(|p| {
-                        p.coerce_to_array_type(&RuntimeType::length(), ArrayLen::Known(3), exec_state, true)
+                        p.coerce_to_array_type(
+                            &RuntimeType::length(),
+                            convert_units,
+                            ArrayLen::Known(3),
+                            exec_state,
+                            true,
+                        )
                     })?;
 
                     Ok(KclValue::Object {
@@ -1221,6 +1273,7 @@ impl KclValue {
     fn coerce_to_array_type(
         &self,
         ty: &RuntimeType,
+        convert_units: bool,
         len: ArrayLen,
         exec_state: &mut ExecState,
         allow_shrink: bool,
@@ -1249,7 +1302,7 @@ impl KclValue {
                     let value_result = value
                         .iter()
                         .take(satisfied_len)
-                        .map(|v| v.coerce(ty, exec_state))
+                        .map(|v| v.coerce(ty, convert_units, exec_state))
                         .collect::<Result<Vec<_>, _>>();
 
                     if let Ok(value) = value_result {
@@ -1264,10 +1317,10 @@ impl KclValue {
                     if let KclValue::HomArray { value: inner_value, .. } = item {
                         // Flatten elements.
                         for item in inner_value {
-                            values.push(item.coerce(ty, exec_state)?);
+                            values.push(item.coerce(ty, convert_units, exec_state)?);
                         }
                     } else {
-                        values.push(item.coerce(ty, exec_state)?);
+                        values.push(item.coerce(ty, convert_units, exec_state)?);
                     }
                 }
 
@@ -1297,7 +1350,7 @@ impl KclValue {
                     .ok_or(CoercionError::from(self))?;
                 let value = value
                     .iter()
-                    .map(|item| item.coerce(ty, exec_state))
+                    .map(|item| item.coerce(ty, convert_units, exec_state))
                     .take(len)
                     .collect::<Result<Vec<_>, _>>()?;
 
@@ -1308,19 +1361,24 @@ impl KclValue {
                 ty: ty.clone(),
             }),
             _ if len.satisfied(1, false).is_some() => Ok(KclValue::HomArray {
-                value: vec![self.coerce(ty, exec_state)?],
+                value: vec![self.coerce(ty, convert_units, exec_state)?],
                 ty: ty.clone(),
             }),
             _ => Err(self.into()),
         }
     }
 
-    fn coerce_to_tuple_type(&self, tys: &[RuntimeType], exec_state: &mut ExecState) -> Result<KclValue, CoercionError> {
+    fn coerce_to_tuple_type(
+        &self,
+        tys: &[RuntimeType],
+        convert_units: bool,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, CoercionError> {
         match self {
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } if value.len() == tys.len() => {
                 let mut result = Vec::new();
                 for (i, t) in tys.iter().enumerate() {
-                    result.push(value[i].coerce(t, exec_state)?);
+                    result.push(value[i].coerce(t, convert_units, exec_state)?);
                 }
 
                 Ok(KclValue::Tuple {
@@ -1340,9 +1398,14 @@ impl KclValue {
         }
     }
 
-    fn coerce_to_union_type(&self, tys: &[RuntimeType], exec_state: &mut ExecState) -> Result<KclValue, CoercionError> {
+    fn coerce_to_union_type(
+        &self,
+        tys: &[RuntimeType],
+        convert_units: bool,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, CoercionError> {
         for t in tys {
-            if let Ok(v) = self.coerce(t, exec_state) {
+            if let Ok(v) = self.coerce(t, convert_units, exec_state) {
                 return Ok(v);
             }
         }
@@ -1353,6 +1416,7 @@ impl KclValue {
     fn coerce_to_object_type(
         &self,
         tys: &[(String, RuntimeType)],
+        _convert_units: bool,
         _exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
         match self {
@@ -1461,7 +1525,7 @@ mod test {
         exec_state: &mut ExecState,
     ) {
         let is_subtype = value == expected_value;
-        assert_eq!(&value.coerce(super_type, exec_state).unwrap(), expected_value);
+        assert_eq!(&value.coerce(super_type, true, exec_state).unwrap(), expected_value);
         assert_eq!(
             is_subtype,
             value.principal_type().is_some() && value.principal_type().unwrap().subtype(super_type),
@@ -1509,10 +1573,10 @@ mod test {
                     );
                     // Coercing an empty tuple or array to an array of length 1
                     // should fail.
-                    v.coerce(&aty1, &mut exec_state).unwrap_err();
+                    v.coerce(&aty1, true, &mut exec_state).unwrap_err();
                     // Coercing an empty tuple or array to an array that's
                     // non-empty should fail.
-                    v.coerce(&aty0, &mut exec_state).unwrap_err();
+                    v.coerce(&aty0, true, &mut exec_state).unwrap_err();
                 }
                 _ => {
                     assert_coerce_results(
@@ -1560,7 +1624,7 @@ mod test {
 
         for v in &values[1..] {
             // Not a subtype
-            v.coerce(&RuntimeType::Primitive(PrimitiveType::Boolean), &mut exec_state)
+            v.coerce(&RuntimeType::Primitive(PrimitiveType::Boolean), true, &mut exec_state)
                 .unwrap_err();
         }
     }
@@ -1595,8 +1659,8 @@ mod test {
             },
             &mut exec_state,
         );
-        none.coerce(&aty1, &mut exec_state).unwrap_err();
-        none.coerce(&aty1p, &mut exec_state).unwrap_err();
+        none.coerce(&aty1, true, &mut exec_state).unwrap_err();
+        none.coerce(&aty1p, true, &mut exec_state).unwrap_err();
 
         let tty = RuntimeType::Tuple(vec![]);
         let tty1 = RuntimeType::Tuple(vec![RuntimeType::solid()]);
@@ -1609,7 +1673,7 @@ mod test {
             },
             &mut exec_state,
         );
-        none.coerce(&tty1, &mut exec_state).unwrap_err();
+        none.coerce(&tty1, true, &mut exec_state).unwrap_err();
 
         let oty = RuntimeType::Object(vec![]);
         assert_coerce_results(
@@ -1678,7 +1742,7 @@ mod test {
         assert_coerce_results(&obj2, &ty0, &obj2, &mut exec_state);
 
         let ty1 = RuntimeType::Object(vec![("foo".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))]);
-        obj0.coerce(&ty1, &mut exec_state).unwrap_err();
+        obj0.coerce(&ty1, true, &mut exec_state).unwrap_err();
         assert_coerce_results(&obj1, &ty1, &obj1, &mut exec_state);
         assert_coerce_results(&obj2, &ty1, &obj2, &mut exec_state);
 
@@ -1690,19 +1754,19 @@ mod test {
             ),
             ("foo".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean)),
         ]);
-        obj0.coerce(&ty2, &mut exec_state).unwrap_err();
-        obj1.coerce(&ty2, &mut exec_state).unwrap_err();
+        obj0.coerce(&ty2, true, &mut exec_state).unwrap_err();
+        obj1.coerce(&ty2, true, &mut exec_state).unwrap_err();
         assert_coerce_results(&obj2, &ty2, &obj2, &mut exec_state);
 
         // field not present
         let tyq = RuntimeType::Object(vec![("qux".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))]);
-        obj0.coerce(&tyq, &mut exec_state).unwrap_err();
-        obj1.coerce(&tyq, &mut exec_state).unwrap_err();
-        obj2.coerce(&tyq, &mut exec_state).unwrap_err();
+        obj0.coerce(&tyq, true, &mut exec_state).unwrap_err();
+        obj1.coerce(&tyq, true, &mut exec_state).unwrap_err();
+        obj2.coerce(&tyq, true, &mut exec_state).unwrap_err();
 
         // field with different type
         let ty1 = RuntimeType::Object(vec![("bar".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))]);
-        obj2.coerce(&ty1, &mut exec_state).unwrap_err();
+        obj2.coerce(&ty1, true, &mut exec_state).unwrap_err();
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1780,8 +1844,8 @@ mod test {
         assert_coerce_results(&hom_arr, &tyh, &hom_arr, &mut exec_state);
         assert_coerce_results(&mixed1, &tym1, &mixed1, &mut exec_state);
         assert_coerce_results(&mixed2, &tym2, &mixed2, &mut exec_state);
-        mixed1.coerce(&tym2, &mut exec_state).unwrap_err();
-        mixed2.coerce(&tym1, &mut exec_state).unwrap_err();
+        mixed1.coerce(&tym2, true, &mut exec_state).unwrap_err();
+        mixed2.coerce(&tym1, true, &mut exec_state).unwrap_err();
 
         // Length subtyping
         let tyhn = RuntimeType::Array(
@@ -1798,15 +1862,15 @@ mod test {
         );
         assert_coerce_results(&hom_arr, &tyhn, &hom_arr, &mut exec_state);
         assert_coerce_results(&hom_arr, &tyh1, &hom_arr, &mut exec_state);
-        hom_arr.coerce(&tyh3, &mut exec_state).unwrap_err();
+        hom_arr.coerce(&tyh3, true, &mut exec_state).unwrap_err();
 
         let hom_arr0 = KclValue::HomArray {
             value: vec![],
             ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
         };
         assert_coerce_results(&hom_arr0, &tyhn, &hom_arr0, &mut exec_state);
-        hom_arr0.coerce(&tyh1, &mut exec_state).unwrap_err();
-        hom_arr0.coerce(&tyh3, &mut exec_state).unwrap_err();
+        hom_arr0.coerce(&tyh1, true, &mut exec_state).unwrap_err();
+        hom_arr0.coerce(&tyh3, true, &mut exec_state).unwrap_err();
 
         // Covariance
         // let tyh = RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any))), ArrayLen::Known(4));
@@ -1846,16 +1910,16 @@ mod test {
         assert_coerce_results(&mixed1, &tyhn, &hom_arr_2, &mut exec_state);
         assert_coerce_results(&mixed1, &tyh1, &hom_arr_2, &mut exec_state);
         assert_coerce_results(&mixed0, &tyhn, &hom_arr0, &mut exec_state);
-        mixed0.coerce(&tyh, &mut exec_state).unwrap_err();
-        mixed0.coerce(&tyh1, &mut exec_state).unwrap_err();
+        mixed0.coerce(&tyh, true, &mut exec_state).unwrap_err();
+        mixed0.coerce(&tyh1, true, &mut exec_state).unwrap_err();
 
         // Homogehous to mixed
         assert_coerce_results(&hom_arr_2, &tym1, &mixed1, &mut exec_state);
-        hom_arr.coerce(&tym1, &mut exec_state).unwrap_err();
-        hom_arr_2.coerce(&tym2, &mut exec_state).unwrap_err();
+        hom_arr.coerce(&tym1, true, &mut exec_state).unwrap_err();
+        hom_arr_2.coerce(&tym2, true, &mut exec_state).unwrap_err();
 
-        mixed0.coerce(&tym1, &mut exec_state).unwrap_err();
-        mixed0.coerce(&tym2, &mut exec_state).unwrap_err();
+        mixed0.coerce(&tym1, true, &mut exec_state).unwrap_err();
+        mixed0.coerce(&tym2, true, &mut exec_state).unwrap_err();
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1905,8 +1969,8 @@ mod test {
             RuntimeType::Primitive(PrimitiveType::Boolean),
             RuntimeType::Primitive(PrimitiveType::String),
         ]);
-        count.coerce(&tyb, &mut exec_state).unwrap_err();
-        count.coerce(&tyb2, &mut exec_state).unwrap_err();
+        count.coerce(&tyb, true, &mut exec_state).unwrap_err();
+        count.coerce(&tyb2, true, &mut exec_state).unwrap_err();
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2021,7 +2085,7 @@ mod test {
         assert_coerce_results(&a2d, &ty2d, &a2d, &mut exec_state);
         assert_coerce_results(&a3d, &ty3d, &a3d, &mut exec_state);
         assert_coerce_results(&a3d, &ty2d, &a2d, &mut exec_state);
-        a2d.coerce(&ty3d, &mut exec_state).unwrap_err();
+        a2d.coerce(&ty3d, true, &mut exec_state).unwrap_err();
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2084,6 +2148,7 @@ mod test {
                         angle: UnitAngle::default()
                     }
                     .into(),
+                    true,
                     &mut exec_state
                 )
                 .unwrap(),
@@ -2091,22 +2156,30 @@ mod test {
         );
 
         // No coercion
-        count.coerce(&NumericType::mm().into(), &mut exec_state).unwrap_err();
-        mm.coerce(&NumericType::count().into(), &mut exec_state).unwrap_err();
-        unknown.coerce(&NumericType::mm().into(), &mut exec_state).unwrap_err();
+        count
+            .coerce(&NumericType::mm().into(), true, &mut exec_state)
+            .unwrap_err();
+        mm.coerce(&NumericType::count().into(), true, &mut exec_state)
+            .unwrap_err();
         unknown
-            .coerce(&NumericType::default().into(), &mut exec_state)
+            .coerce(&NumericType::mm().into(), true, &mut exec_state)
+            .unwrap_err();
+        unknown
+            .coerce(&NumericType::default().into(), true, &mut exec_state)
             .unwrap_err();
 
-        count.coerce(&NumericType::Unknown.into(), &mut exec_state).unwrap_err();
-        mm.coerce(&NumericType::Unknown.into(), &mut exec_state).unwrap_err();
+        count
+            .coerce(&NumericType::Unknown.into(), true, &mut exec_state)
+            .unwrap_err();
+        mm.coerce(&NumericType::Unknown.into(), true, &mut exec_state)
+            .unwrap_err();
         default
-            .coerce(&NumericType::Unknown.into(), &mut exec_state)
+            .coerce(&NumericType::Unknown.into(), true, &mut exec_state)
             .unwrap_err();
 
         assert_eq!(
             inches
-                .coerce(&NumericType::mm().into(), &mut exec_state)
+                .coerce(&NumericType::mm().into(), true, &mut exec_state)
                 .unwrap()
                 .as_f64()
                 .unwrap()
@@ -2116,6 +2189,7 @@ mod test {
         assert_eq!(
             rads.coerce(
                 &NumericType::Known(UnitType::Angle(UnitAngle::Degrees)).into(),
+                true,
                 &mut exec_state
             )
             .unwrap()
@@ -2126,7 +2200,7 @@ mod test {
         );
         assert_eq!(
             inches
-                .coerce(&NumericType::default().into(), &mut exec_state)
+                .coerce(&NumericType::default().into(), true, &mut exec_state)
                 .unwrap()
                 .as_f64()
                 .unwrap()
@@ -2134,7 +2208,7 @@ mod test {
             1.0
         );
         assert_eq!(
-            rads.coerce(&NumericType::default().into(), &mut exec_state)
+            rads.coerce(&NumericType::default().into(), true, &mut exec_state)
                 .unwrap()
                 .as_f64()
                 .unwrap()
