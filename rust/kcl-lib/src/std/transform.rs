@@ -147,7 +147,6 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 #[stdlib {
     name = "scale",
     feature_tree_operation = false,
-    keywords = true,
     unlabeled_first = true,
     args = {
         objects = {docs = "The solid, sketch, or set of solids or sketches to scale."},
@@ -378,7 +377,6 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 #[stdlib {
     name = "translate",
     feature_tree_operation = false,
-    keywords = true,
     unlabeled_first = true,
     args = {
         objects = {docs = "The solid, sketch, or set of solids or sketches to move."},
@@ -782,7 +780,6 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 #[stdlib {
     name = "rotate",
     feature_tree_operation = false,
-    keywords = true,
     unlabeled_first = true,
     args = {
         objects = {docs = "The solid, sketch, or set of solids or sketches to rotate."},

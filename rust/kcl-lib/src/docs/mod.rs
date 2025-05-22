@@ -78,8 +78,6 @@ pub struct StdLibFnData {
     pub description: String,
     /// The tags of the function.
     pub tags: Vec<String>,
-    /// If this function uses keyword arguments, or positional arguments.
-    pub keyword_arguments: bool,
     /// The args of the function.
     pub args: Vec<StdLibFnArg>,
     /// The return value of the function.
@@ -111,6 +109,13 @@ pub struct StdLibFnArg {
     /// Include this in completion snippets?
     #[serde(default, skip_serializing_if = "is_false")]
     pub include_in_snippet: bool,
+    /// Snippet should suggest this value for the argument.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snippet_value: Option<String>,
+    /// Snippet should suggest this value for the argument.
+    /// The suggested value should be an array, with these elements.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snippet_value_array: Option<Vec<String>>,
     /// Additional information that could be used instead of the type's description.
     /// This is helpful if the type is really basic, like "u32" -- that won't tell the user much about
     /// how this argument is meant to be used.
@@ -165,6 +170,21 @@ impl StdLibFnArg {
         } else {
             ""
         };
+        if let Some(vals) = &self.snippet_value_array {
+            let mut snippet = label.to_owned();
+            snippet.push('[');
+            for (i, val) in vals.iter().enumerate() {
+                snippet.push_str(&format!("${{{}:{}}}", index + i, val));
+                if i != vals.len() - 1 {
+                    snippet.push_str(", ");
+                }
+            }
+            snippet.push(']');
+            return Ok(Some((index + vals.len(), snippet)));
+        }
+        if let Some(val) = &self.snippet_value {
+            return Ok(Some((index, format!("{label}${{{}:{}}}", index, val))));
+        }
         if (self.type_ == "Sketch"
             || self.type_ == "[Sketch]"
             || self.type_ == "Geometry"
@@ -450,9 +470,6 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     /// The description of the function.
     fn description(&self) -> String;
 
-    /// Does this use keyword arguments, or positional?
-    fn keyword_arguments(&self) -> bool;
-
     /// The tags of the function.
     fn tags(&self) -> Vec<String>;
 
@@ -487,7 +504,6 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             summary: self.summary(),
             description: self.description(),
             tags: self.tags(),
-            keyword_arguments: self.keyword_arguments(),
             args: self.args(false),
             return_value: self.return_value(false),
             unpublished: self.unpublished(),
@@ -571,7 +587,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
         } else if self.name() == "subtract2D" {
             return Ok("subtract2d(${0:%}, tool = ${1:%})".to_string());
         }
-        let in_keyword_fn = self.keyword_arguments();
+        let in_keyword_fn = true;
         let mut args = Vec::new();
         let mut index = 0;
         for arg in self.args(true).iter() {
@@ -989,13 +1005,20 @@ mod tests {
     }
 
     #[test]
+    fn get_autocomplete_snippet_start_profile() {
+        let start_sketch_on_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::StartProfile);
+        let snippet = start_sketch_on_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"startProfile(${0:%}, at = [${1:0}, ${2:0}])"#);
+    }
+
+    #[test]
     fn get_autocomplete_snippet_pattern_circular_3d() {
         // We test this one specifically because it has ints and floats and strings.
         let pattern_fn: Box<dyn StdLibFn> = Box::new(crate::std::patterns::PatternCircular3D);
         let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"patternCircular3d(${0:%}, instances = ${1:10}, axis = [${2:3.14}, ${3:3.14}, ${4:3.14}], center = [${5:3.14}, ${6:3.14}, ${7:3.14}])"#
+            r#"patternCircular3d(${0:%}, instances = ${1:10}, axis = [${2:3.14}, ${3:3.14}, ${4:3.14}], center = [${5:0}, ${6:0}, ${7:0}])"#
         );
     }
 
@@ -1017,8 +1040,8 @@ mod tests {
         };
         let snippet = circle_fn.to_autocomplete_snippet();
         assert_eq!(
-            snippet,
-            r#"circle(center = [${0:3.14}, ${1:3.14}], diameter = ${2:3.14})"#
+            snippet, r#"circle(center = [${0:0}, ${1:0}], diameter = ${2:3.14})"#,
+            "actual = left, expected = right"
         );
     }
 

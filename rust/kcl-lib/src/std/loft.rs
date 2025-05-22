@@ -121,7 +121,6 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 #[stdlib {
     name = "loft",
     feature_tree_operation = true,
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketches = {docs = "Which sketches to loft. Must include at least 2 sketches."},

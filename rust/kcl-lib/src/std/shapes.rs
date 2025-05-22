@@ -167,7 +167,6 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
 /// ```
 #[stdlib {
     name = "circleThreePoint",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch_surface_or_group = {docs = "Plane or surface to sketch on."},
@@ -324,13 +323,12 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 #[stdlib {
     name = "polygon",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch_surface_or_group = { docs = "Plane or surface to sketch on" },
         radius = { docs = "The radius of the polygon", include_in_snippet = true },
         num_sides = { docs = "The number of sides in the polygon", include_in_snippet = true },
-        center = { docs = "The center point of the polygon", include_in_snippet = true },
+        center = { docs = "The center point of the polygon", snippet_value_array = ["0", "0"] },
         inscribed = { docs = "Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius" },
     },
     tags = ["sketch"]

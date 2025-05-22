@@ -260,7 +260,6 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// ```
 #[stdlib {
     name = "appearance",
-    keywords = true,
     unlabeled_first = true,
     args = {
         solids = { docs = "The solid(s) whose appearance is being set" },

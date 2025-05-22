@@ -49,7 +49,6 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```
 #[stdlib {
     name = "segEnd",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -94,7 +93,6 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// ```
 #[stdlib {
     name = "segEndX",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -137,7 +135,6 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// ```
 #[stdlib {
     name = "segEndY",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -191,7 +188,6 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// ```
 #[stdlib {
     name = "segStart",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -236,7 +232,6 @@ pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 #[stdlib {
     name = "segStartX",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -279,7 +274,6 @@ pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 #[stdlib {
     name = "segStartY",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -322,7 +316,6 @@ pub async fn last_segment_x(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```
 #[stdlib {
     name = "lastSegX",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "The sketch whose line segment is being queried"},
@@ -369,7 +362,6 @@ pub async fn last_segment_y(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```
 #[stdlib {
     name = "lastSegY",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "The sketch whose line segment is being queried"},
@@ -419,7 +411,6 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```
 #[stdlib {
     name = "segLen",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -463,7 +454,6 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// ```
 #[stdlib {
     name = "segAng",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -565,7 +555,6 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```
 #[stdlib {
     name = "tangentToEnd",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},

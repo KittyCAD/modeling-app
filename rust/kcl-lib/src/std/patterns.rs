@@ -344,7 +344,7 @@ fn array_to_point3d(
     source_ranges: Vec<SourceRange>,
     exec_state: &mut ExecState,
 ) -> Result<[TyF64; 3], KclError> {
-    val.coerce(&RuntimeType::point3d(), exec_state)
+    val.coerce(&RuntimeType::point3d(), true, exec_state)
         .map_err(|e| {
             KclError::Semantic(KclErrorDetails::new(
                 format!(
@@ -364,7 +364,7 @@ fn array_to_point2d(
     source_ranges: Vec<SourceRange>,
     exec_state: &mut ExecState,
 ) -> Result<[TyF64; 2], KclError> {
-    val.coerce(&RuntimeType::point2d(), exec_state)
+    val.coerce(&RuntimeType::point2d(), true, exec_state)
         .map_err(|e| {
             KclError::Semantic(KclErrorDetails::new(
                 format!(
@@ -578,7 +578,6 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 /// ```
 #[stdlib {
     name = "patternLinear2d",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketches = { docs = "The sketch(es) to duplicate" },
@@ -742,7 +741,6 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 #[stdlib {
     name = "patternLinear3d",
     feature_tree_operation = true,
-    keywords = true,
     unlabeled_first = true,
     args = {
         solids = { docs = "The solid(s) to duplicate" },
@@ -939,12 +937,11 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 /// ```
 #[stdlib {
     name = "patternCircular2d",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch_set = { docs = "Which sketch(es) to pattern" },
         instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect."},
-        center = { docs = "The center about which to make the pattern. This is a 2D vector."},
+        center = { docs = "The center about which to make the pattern. This is a 2D vector.", snippet_value_array = ["0", "0"]},
         arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0. Defaults to 360."},
         rotate_duplicates= { docs = "Whether or not to rotate the duplicates as they are copied. Defaults to true."},
         use_original= { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
@@ -1081,13 +1078,12 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 #[stdlib {
     name = "patternCircular3d",
     feature_tree_operation = true,
-    keywords = true,
     unlabeled_first = true,
     args = {
         solids = { docs = "Which solid(s) to pattern" },
         instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect."},
         axis = { docs = "The axis around which to make the pattern. This is a 3D vector"},
-        center = { docs = "The center about which to make the pattern. This is a 3D vector."},
+        center = { docs = "The center about which to make the pattern. This is a 3D vector.", snippet_value_array = ["0", "0", "0"]},
         arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0. Defaults to 360."},
         rotate_duplicates = { docs = "Whether or not to rotate the duplicates as they are copied. Defaults to true."},
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},

@@ -160,7 +160,6 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 #[stdlib {
     name = "sweep",
     feature_tree_operation = true,
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketches = { docs = "The sketch or set of sketches that should be swept in space" },
