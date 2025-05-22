@@ -180,7 +180,7 @@ impl StdLibFnArg {
                 }
             }
             snippet.push(']');
-            return Ok(Some((index + vals.len(), snippet)));
+            return Ok(Some((index + vals.len() - 1, snippet)));
         }
         if let Some(val) = &self.snippet_value {
             return Ok(Some((index, format!("{label}${{{}:{}}}", index, val))));
@@ -1018,7 +1018,7 @@ mod tests {
         let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"patternCircular3d(${0:%}, instances = ${1:10}, axis = [${2:3.14}, ${3:3.14}, ${4:3.14}], center = [${5:0}, ${6:0}, ${7:0}])"#
+            r#"patternCircular3d(${0:%}, instances = ${1:10}, axis = [${2:1}, ${3:0}, ${4:0}], center = [${5:0}, ${6:0}, ${7:0}])"#
         );
     }
 
@@ -1071,7 +1071,7 @@ mod tests {
         let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"patternLinear2d(${0:%}, instances = ${1:10}, distance = ${2:3.14}, axis = [${3:3.14}, ${4:3.14}])"#
+            r#"patternLinear2d(${0:%}, instances = ${1:10}, distance = ${2:3.14}, axis = [${3:1}, ${4:0}])"#
         );
     }
 
