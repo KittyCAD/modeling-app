@@ -1018,7 +1018,7 @@ mod tests {
         let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"patternCircular3d(${0:%}, instances = ${1:10}, axis = [${2:3.14}, ${3:3.14}, ${4:3.14}], center = [${5:3.14}, ${6:3.14}, ${7:3.14}])"#
+            r#"patternCircular3d(${0:%}, instances = ${1:10}, axis = [${2:3.14}, ${3:3.14}, ${4:3.14}], center = [${5:0}, ${6:0}, ${7:0}])"#
         );
     }
 
