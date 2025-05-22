@@ -33,7 +33,7 @@ export fn circle(
   /// Sketch to extend, or plane or surface to sketch on.
   @sketch_or_surface: Sketch | Plane | Face,
   /// The center of the circle.
-  @(snippet_array = ["0", "0"])
+  @(snippetArray = ["0", "0"])
   center: Point2d,
   /// The radius of the circle. Incompatible with `diameter`.
   radius?: number(Length),

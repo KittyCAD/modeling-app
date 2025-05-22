@@ -743,20 +743,26 @@ impl ArgData {
                                 p.value
                             );
                         }
-                    } else if p.key.name == "snippet_array" {
+                    } else if p.key.name == "snippetArray" {
                         let Expr::ArrayExpression(arr) = &p.value else {
                             panic!(
-                                "Invalid value for `snippet_array`, expected array literal, found {:?}",
+                                "Invalid value for `snippetArray`, expected array literal, found {:?}",
                                 p.value
                             );
                         };
                         let mut items = Vec::new();
                         for s in &arr.elements {
                             let Expr::Literal(lit) = s else {
-                                panic!("Invalid value in `snippet_array`, all items must be string literals but found {:?}", s);
+                                panic!(
+                                    "Invalid value in `snippetArray`, all items must be string literals but found {:?}",
+                                    s
+                                );
                             };
                             let LiteralValue::String(litstr) = &lit.inner.value else {
-                                panic!("Invalid value in `snippet_array`, all items must be string literals but found {:?}", s);
+                                panic!(
+                                    "Invalid value in `snippetArray`, all items must be string literals but found {:?}",
+                                    s
+                                );
                             };
                             items.push(litstr.to_owned());
                         }
