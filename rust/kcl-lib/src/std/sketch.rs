@@ -2185,6 +2185,7 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// shape.
 ///
 /// ```no_run
+/// // Example using relative control points.
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 10])
@@ -2197,6 +2198,14 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 10)
+/// ```
+/// ```no_run
+/// // Example using absolute control points.
+/// startSketchOn(XY)
+///   |> startProfile(at = [300, 300])
+///   |> bezierCurve(control1Absolute = [600, 300], control2Absolute = [-300, -100], endAbsolute = [600, 600])
+///   |> close()
+///   |> extrude(length = 10)
 /// ```
 #[stdlib {
     name = "bezierCurve",
