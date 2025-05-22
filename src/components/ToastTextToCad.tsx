@@ -41,6 +41,13 @@ import {
 import { commandBarActor } from '@src/lib/singletons'
 import type { FileMeta } from '@src/lib/types'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
+import {
+  Marked,
+  type MarkedOptions,
+  escape,
+  unescape,
+} from '@ts-stack/markdown'
+import { SafeRenderer } from '@src/lib/markdown'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -99,13 +106,26 @@ export function ToastTextToCadError({
   projectName: string
   newProjectName: string
 }) {
+  const markedOptions: MarkedOptions = {
+    gfm: true,
+    breaks: true,
+    sanitize: true,
+    unescape,
+    escape,
+  }
   return (
     <div className="flex flex-col justify-between gap-6">
       <section>
         <h2>Text-to-CAD failed</h2>
-        <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-          {message}
-        </p>
+        <div
+          className="parsed-markdown mt-4 text-sm text-chalkboard-70 dark:text-chalkboard-30 max-h-60 overflow-y-auto whitespace-normal"
+          dangerouslySetInnerHTML={{
+            __html: Marked.parse(message, {
+              renderer: new SafeRenderer(markedOptions),
+              ...markedOptions,
+            }),
+          }}
+        />
       </section>
       <div className="flex justify-between gap-8">
         <ActionButton
