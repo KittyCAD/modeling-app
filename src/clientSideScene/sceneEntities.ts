@@ -382,10 +382,14 @@ export class SceneEntities {
     const xAxisMaterial = new MeshBasicMaterial({
       color: baseXColor,
       depthTest: false,
+      transparent: true,
+      opacity: 0.5,
     })
     const yAxisMaterial = new MeshBasicMaterial({
       color: baseYColor,
       depthTest: false,
+      transparent: true,
+      opacity: 0.5,
     })
     const xAxisMesh = new Mesh(xAxisGeometry, xAxisMaterial)
     const yAxisMesh = new Mesh(yAxisGeometry, yAxisMaterial)
