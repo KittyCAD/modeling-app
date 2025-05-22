@@ -131,7 +131,6 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        id: deps-install
         run: npm install
 
       - name: Cache browsers
@@ -207,7 +206,76 @@ jobs:
           git push
           git push origin ${{ github.head_ref }}
 
-  electron:
+  web:
+    name: test:e2e:web
+    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
+    needs: [prepare-wasm]
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - uses: actions/download-artifact@v4
+        name: prepared-wasm
+
+      - name: Copy prepared Wasm
+        run: |
+          ls -R prepared-wasm
+          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
+          mkdir rust/kcl-wasm-lib/pkg
+          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Cache browsers
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright/
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+
+      - name: Install browsers
+        run: npm run playwright install --with-deps
+
+      - name: Test web
+        uses: nick-fields/retry@v3.0.2
+        with:
+          shell: bash
+          command: npm run test:e2e:web
+          timeout_minutes: 5
+          max_attempts: 5
+        env:
+          token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:web
+          TARGET: web
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() && (success() || failure()) }}
+        with:
+          name: playwright-report-ubuntu-snapshot-${{ github.sha }}
+          path: playwright-report/
+          include-hidden-files: true
+          retention-days: 30
+          overwrite: true
+
+  desktop:
     needs: [prepare-wasm]
     timeout-minutes: 60
     env:

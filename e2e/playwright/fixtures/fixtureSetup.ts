@@ -394,7 +394,7 @@ const fixturesBasedOnProcessEnvPlatform = {
   },
 }
 
-if (process.env.PLATFORM === 'web') {
+if (process.env.TARGET === 'web') {
   Object.assign(fixturesBasedOnProcessEnvPlatform, fixturesForWeb)
 } else {
   Object.assign(fixturesBasedOnProcessEnvPlatform, fixturesForElectron)
