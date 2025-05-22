@@ -1602,7 +1602,7 @@ sketch001 = startSketchOn(XZ)
 
     await homePage.goToModelingScene()
 
-    // Wait for connection, this is espeically important for this test, because safeParse is invoked when
++    // Wait for connection, this is especially important for this test, because safeParse is invoked when
     // connection is established which would interfere with the test if it happened during later steps.
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
