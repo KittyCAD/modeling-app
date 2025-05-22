@@ -43,7 +43,7 @@ import {
   uuidv4,
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
-import { getSettings } from '@src/lib/singletons'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -125,6 +125,8 @@ export class CameraControls {
   interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
+  // TODO: proper dependency injection
+  getSettings: (() => SettingsType) | null = null
 
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
   _setting_allowOrbitInSketchMode = false
@@ -974,9 +976,13 @@ export class CameraControls {
    * Gotcha: This is not to be confused with Named Views, those have correct state.
    */
   overrideOldCameraStateToPreventDesync() {
+    if (!this.getSettings) {
+      return
+    }
+
     // Engine idle disconnection happened, we saved off the camera state
     // If the settings camera projection is different from the saved camera state we need to override it.
-    const settings = getSettings()
+    const settings = this.getSettings()
     const cameraProjection = settings.modeling.cameraProjection.current
     const isOrtho = cameraProjection === 'orthographic' ? true : false
 
