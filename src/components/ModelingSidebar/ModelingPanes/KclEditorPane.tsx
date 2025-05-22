@@ -210,12 +210,16 @@ export const KclEditorPane = () => {
             editorManager.setEditorView(_editorView)
             kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
 
-            // On first load of this component, ensure we show the current errors
-            // in the editor.
-            // Make sure we don't add them twice.
-            if (diagnosticCount(_editorView.state) === 0) {
-              kclManager.setDiagnosticsForCurrentErrors()
-            }
+            // Update diagnostics as they are cleared when the editor is unmounted.
+            // Without this, errors would not be shown when closing and reopening the editor.
+            kclManager.safeParse(codeManager.code).then(() => {
+              // On first load of this component, ensure we show the current errors
+              // in the editor.
+              // Make sure we don't add them twice.
+              if (diagnosticCount(_editorView.state) === 0) {
+                kclManager.setDiagnosticsForCurrentErrors()
+              }
+            })
           }}
         />
       </div>
