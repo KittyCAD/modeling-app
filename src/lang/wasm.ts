@@ -361,31 +361,24 @@ function rustArtifactGraphToMap(
   return map
 }
 
-// TODO: In the future, make the parameter be a KclValue.
 export function sketchFromKclValueOptional(
-  obj: any,
+  obj: KclValue | undefined,
   varName: string | null
 ): Sketch | Reason {
-  if (obj?.value?.type === 'Sketch') return obj.value
-  if (obj?.value?.type === 'Solid') return obj.value.sketch
   if (obj?.type === 'Sketch') return obj.value
   if (obj?.type === 'Solid') return obj.value.sketch
   if (!varName) {
     varName = 'a KCL value'
   }
-  const actualType = obj?.value?.type ?? obj?.type
-  if (actualType) {
-    return new Reason(
-      `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
-    )
-  } else {
-    return new Reason(`Expected ${varName} to be a sketch, but it wasn't.`)
-  }
+
+  const actualType = obj?.type ?? 'unknown'
+  return new Reason(
+    `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
+  )
 }
 
-// TODO: In the future, make the parameter be a KclValue.
 export function sketchFromKclValue(
-  obj: any,
+  obj: KclValue | undefined,
   varName: string | null
 ): Sketch | Error {
   const result = sketchFromKclValueOptional(obj, varName)
