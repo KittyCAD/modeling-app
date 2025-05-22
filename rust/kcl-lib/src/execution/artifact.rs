@@ -1308,7 +1308,13 @@ fn artifacts_to_update(
             let edge_id = if let Some(edge_id) = cmd.edge_id {
                 ArtifactId::new(edge_id)
             } else {
-                cmd.edge_ids.first().unwrap().into()
+                let Some(edge_id) = cmd.edge_ids.first() else {
+                    internal_error!(
+                        range,
+                        "Solid3dFilletEdge command has no edge ID: id={id:?}, cmd={cmd:?}"
+                    );
+                };
+                edge_id.into()
             };
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
