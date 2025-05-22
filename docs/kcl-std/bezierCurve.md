@@ -10,9 +10,12 @@ Draw a smooth, continuous, curved line segment from the current origin to the de
 ```kcl
 bezierCurve(
   @sketch: Sketch,
-  control1: Point2d,
-  control2: Point2d,
-  end: Point2d,
+  control1?: Point2d,
+  control2?: Point2d,
+  end?: Point2d,
+  control1Absolute?: Point2d,
+  control2Absolute?: Point2d,
+  endAbsolute?: Point2d,
   tag?: TagDeclarator,
 ): Sketch
 ```
@@ -24,9 +27,12 @@ bezierCurve(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
-| `control1` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | First control point for the cubic | Yes |
-| `control2` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Second control point for the cubic | Yes |
-| `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | How far away (along the X and Y axes) should this line go? | Yes |
+| `control1` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | First control point for the cubic | No |
+| `control2` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Second control point for the cubic | No |
+| `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | How far away (along the X and Y axes) should this line go? | No |
+| `control1Absolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | First control point for the cubic. Absolute point. | No |
+| `control2Absolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Second control point for the cubic. Absolute point. | No |
+| `endAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Coordinate on the plane at which this line should end. | No |
 | [`tag`](/docs/kcl-std/types/std-types-tag) | [`TagDeclarator`](/docs/kcl-lang/types#TagDeclarator) | Create a new tag which refers to this line | No |
 
 ### Returns
