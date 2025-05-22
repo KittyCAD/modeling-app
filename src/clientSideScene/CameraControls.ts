@@ -994,16 +994,10 @@ export class CameraControls {
           isOrtho
         )
       }
-      if (this.oldCameraState.ortho_scale_enabled !== isOrtho) {
-        console.log(
-          'oldCameraState ortho_scaled_enabled desynced',
-          this.oldCameraState.ortho_scale_enabled,
-          isOrtho
-        )
-      }
 
       this.oldCameraState.is_ortho = isOrtho
-      this.oldCameraState.ortho_scale_enabled = isOrtho
+      // Always keep this enabled!
+      this.oldCameraState.ortho_scale_enabled = true
     }
   }
 

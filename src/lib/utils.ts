@@ -648,7 +648,8 @@ export async function engineViewIsometricWithoutGeometryPresent({
     fov_y: 45,
     ortho_scale_factor: 1.4063792,
     is_ortho: cameraProjection !== 'perspective',
-    ortho_scale_enabled: cameraProjection !== 'perspective',
+    // always keep this enabled
+    ortho_scale_enabled: true,
     world_coord_system: 'right_handed_up_z',
   }
   await engineCommandManager.sendSceneCommand({
