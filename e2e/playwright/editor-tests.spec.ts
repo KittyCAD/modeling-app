@@ -1591,7 +1591,7 @@ sketch001 = startSketchOn(XZ)
     })
   })
 
-  test('syntax errors persist when reopening KCL pane', async ({
+  test('syntax errors still show when reopening KCL pane', async ({
     page,
     homePage,
     scene,
