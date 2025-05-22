@@ -20,6 +20,14 @@ use crate::{
 #[cfg(test)]
 mod mermaid_tests;
 
+macro_rules! internal_error {
+    ($msg:expr, $range:expr) => {{
+        let message = $msg;
+        debug_assert!(false, "{}", &message);
+        return Err(KclError::Internal(KclErrorDetails::new(message, vec![$range])));
+    }};
+}
+
 /// A command that may create or update artifacts on the TS side.  Because
 /// engine commands are batched, we don't have the response yet when these are
 /// created.
@@ -992,7 +1000,10 @@ fn artifacts_to_update(
             let path_id = ArtifactId::new(match cmd {
                 ModelingCmd::ClosePath(c) => c.path_id,
                 ModelingCmd::ExtendPath(e) => e.path.into(),
-                _ => unreachable!(),
+                _ => internal_error!(
+                    format!("Close or extend path command variant not handled: id={id:?}, cmd={cmd:?}"),
+                    range
+                ),
             });
             let mut return_arr = Vec::new();
             return_arr.push(Artifact::Segment(Segment {
@@ -1032,7 +1043,10 @@ fn artifacts_to_update(
                 ModelingCmd::Revolve(_) => SweepSubType::Revolve,
                 ModelingCmd::RevolveAboutEdge(_) => SweepSubType::RevolveAboutEdge,
                 ModelingCmd::Sweep(_) => SweepSubType::Sweep,
-                _ => unreachable!(),
+                _ => internal_error!(
+                    format!("Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}"),
+                    range
+                ),
             };
             let mut return_arr = Vec::new();
             let target = ArtifactId::from(target);
@@ -1366,7 +1380,10 @@ fn artifacts_to_update(
                     let solid_ids = union.solid_ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>();
                     (CompositeSolidSubType::Union, solid_ids, Vec::new())
                 }
-                _ => unreachable!(),
+                _ => internal_error!(
+                    format!("Boolean or composite command variant not handled: id={id:?}, cmd={cmd:?}"),
+                    range
+                ),
             };
 
             let mut new_solid_ids = vec![id];
