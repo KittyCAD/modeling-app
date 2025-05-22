@@ -372,13 +372,9 @@ export function sketchFromKclValueOptional(
   }
 
   const actualType = obj?.type ?? 'unknown'
-  if (actualType) {
-    return new Reason(
-      `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
-    )
-  } else {
-    return new Reason(`Expected ${varName} to be a sketch, but it wasn't.`)
-  }
+  return new Reason(
+    `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
+  )
 }
 
 export function sketchFromKclValue(
