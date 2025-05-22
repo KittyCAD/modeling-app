@@ -120,11 +120,10 @@ test-e2e: test-e2e-$(TARGET)
 
 .PHONY: test-e2e-web
 test-e2e-web: install build ## Run the web e2e tests
-	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
 ifdef E2E_GREP
-	npm run chrome:test -- --headed --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
+	npm run test:e2e:web -- --headed --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
 else
-	npm run chrome:test -- --headed --workers='100%'
+	npm run test:e2e:web -- --headed --workers='100%'
 endif
 
 .PHONY: test-e2e-desktop
