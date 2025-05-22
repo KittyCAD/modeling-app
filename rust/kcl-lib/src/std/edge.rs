@@ -53,7 +53,6 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
 /// ```
 #[stdlib {
     name = "getOppositeEdge",
-    keywords = true,
     unlabeled_first = true,
     args = {
         edge = { docs = "The tag of the edge you want to find the opposite edge of." },
@@ -137,7 +136,6 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
 /// ```
 #[stdlib {
     name = "getNextAdjacentEdge",
-    keywords = true,
     unlabeled_first = true,
     args = {
         edge = { docs = "The tag of the edge you want to find the next adjacent edge of." },
@@ -230,7 +228,6 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
 /// ```
 #[stdlib {
     name = "getPreviousAdjacentEdge",
-    keywords = true,
     unlabeled_first = true,
     args = {
         edge = { docs = "The tag of the edge you want to find the previous adjacent edge of." },
@@ -318,7 +315,6 @@ pub async fn get_common_edge(exec_state: &mut ExecState, args: Args) -> Result<K
 #[stdlib {
     name = "getCommonEdge",
     feature_tree_operation = false,
-    keywords = true,
     unlabeled_first = false,
     args = {
         faces = { docs = "The tags of the faces you want to find the common edge between" },

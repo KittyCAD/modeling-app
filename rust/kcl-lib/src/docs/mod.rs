@@ -78,8 +78,6 @@ pub struct StdLibFnData {
     pub description: String,
     /// The tags of the function.
     pub tags: Vec<String>,
-    /// If this function uses keyword arguments, or positional arguments.
-    pub keyword_arguments: bool,
     /// The args of the function.
     pub args: Vec<StdLibFnArg>,
     /// The return value of the function.
@@ -472,9 +470,6 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     /// The description of the function.
     fn description(&self) -> String;
 
-    /// Does this use keyword arguments, or positional?
-    fn keyword_arguments(&self) -> bool;
-
     /// The tags of the function.
     fn tags(&self) -> Vec<String>;
 
@@ -509,7 +504,6 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             summary: self.summary(),
             description: self.description(),
             tags: self.tags(),
-            keyword_arguments: self.keyword_arguments(),
             args: self.args(false),
             return_value: self.return_value(false),
             unpublished: self.unpublished(),
@@ -593,7 +587,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
         } else if self.name() == "subtract2D" {
             return Ok("subtract2d(${0:%}, tool = ${1:%})".to_string());
         }
-        let in_keyword_fn = self.keyword_arguments();
+        let in_keyword_fn = true;
         let mut args = Vec::new();
         let mut index = 0;
         for arg in self.args(true).iter() {

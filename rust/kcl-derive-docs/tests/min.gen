@@ -92,10 +92,6 @@ impl crate::docs::StdLibFn for Min {
         vec![]
     }
 
-    fn keyword_arguments(&self) -> bool {
-        false
-    }
-
     fn args(&self, inline_subschemas: bool) -> Vec<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;

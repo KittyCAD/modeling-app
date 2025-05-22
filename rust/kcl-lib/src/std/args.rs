@@ -177,7 +177,7 @@ impl Args {
             )));
         };
 
-        let arg = arg.value.coerce(ty, exec_state).map_err(|_| {
+        let arg = arg.value.coerce(ty, true, exec_state).map_err(|_| {
             let actual_type = arg.value.principal_type();
             let actual_type_name = actual_type
                 .as_ref()
@@ -297,7 +297,7 @@ impl Args {
                 vec![self.source_range],
             )))?;
 
-        let arg = arg.value.coerce(ty, exec_state).map_err(|_| {
+        let arg = arg.value.coerce(ty, true, exec_state).map_err(|_| {
             let actual_type = arg.value.principal_type();
             let actual_type_name = actual_type
                 .as_ref()

@@ -606,6 +606,7 @@ fn type_check_params_kw(
                         .value
                         .coerce(
                             &RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range).map_err(|e| KclError::Semantic(e.into()))?,
+                            true,
                             exec_state,
                         )
                         .map_err(|e| {
@@ -680,6 +681,7 @@ fn type_check_params_kw(
                 .coerce(
                     &RuntimeType::from_parsed(ty.clone(), exec_state, arg.1.source_range)
                         .map_err(|e| KclError::Semantic(e.into()))?,
+                    true,
                     exec_state,
                 )
                 .map_err(|_| {
@@ -797,7 +799,7 @@ fn coerce_result_type(
             if let RuntimeType::Array(inner, ArrayLen::NonEmpty) = &ty {
                 ty = RuntimeType::Union(vec![(**inner).clone(), ty]);
             }
-            let val = val.coerce(&ty, exec_state).map_err(|_| {
+            let val = val.coerce(&ty, true, exec_state).map_err(|_| {
                 KclError::Semantic(KclErrorDetails::new(
                     format!(
                         "This function requires its result to be of type `{}`, but found {}",

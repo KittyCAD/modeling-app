@@ -133,7 +133,6 @@ fn involute_curve(radius: f64, angle: f64) -> (f64, f64) {
 /// ```
 #[stdlib {
     name = "involuteCircular",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?"},
@@ -254,7 +253,6 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```
 #[stdlib {
     name = "line",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?"},
@@ -426,7 +424,6 @@ pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "xLine",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?"},
@@ -492,7 +489,6 @@ pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "yLine",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?"},
@@ -575,7 +571,6 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```
 #[stdlib {
     name = "angledLine",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?"},
@@ -874,7 +869,6 @@ pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args)
 /// ```
 #[stdlib {
     name = "angledLineThatIntersects",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?"},
@@ -1152,7 +1146,6 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 #[stdlib {
     name = "startSketchOn",
     feature_tree_operation = true,
-    keywords = true,
     unlabeled_first = true,
     args = {
         plane_or_solid = { docs = "The plane or solid to sketch on"},
@@ -1318,7 +1311,6 @@ pub async fn start_profile(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// ```
 #[stdlib {
     name = "startProfile",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch_surface = { docs = "What to start the profile on" },
@@ -1461,7 +1453,6 @@ pub async fn profile_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 #[stdlib {
     name = "profileStartX",
-    keywords = true,
     unlabeled_first = true,
     args = {
         profile = {docs = "Profile whose start is being used"},
@@ -1491,7 +1482,6 @@ pub async fn profile_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 #[stdlib {
     name = "profileStartY",
-    keywords = true,
     unlabeled_first = true,
     args = {
         profile = {docs = "Profile whose start is being used"},
@@ -1524,7 +1514,6 @@ pub async fn profile_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// ```
 #[stdlib {
     name = "profileStart",
-    keywords = true,
     unlabeled_first = true,
     args = {
         profile = {docs = "Profile whose start is being used"},
@@ -1569,7 +1558,6 @@ pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 #[stdlib {
     name = "close",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "The sketch you want to close"},
@@ -1679,7 +1667,6 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// ```
 #[stdlib {
     name = "arc",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?" },
@@ -1922,7 +1909,6 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```
 #[stdlib {
     name = "tangentialArc",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?"},
@@ -2199,7 +2185,6 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// ```
 #[stdlib {
     name = "bezierCurve",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?"},
@@ -2321,7 +2306,6 @@ pub async fn subtract_2d(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 #[stdlib {
     name = "subtract2d",
     feature_tree_operation = true,
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?" },
