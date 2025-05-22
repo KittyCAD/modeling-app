@@ -21,8 +21,8 @@ use crate::{
 mod mermaid_tests;
 
 macro_rules! internal_error {
-    ($msg:expr, $range:expr) => {{
-        let message = $msg;
+    ($range:expr, $($rest:tt)*) => {{
+        let message = format!($($rest)*);
         debug_assert!(false, "{}", &message);
         return Err(KclError::Internal(KclErrorDetails::new(message, vec![$range])));
     }};
@@ -1001,8 +1001,8 @@ fn artifacts_to_update(
                 ModelingCmd::ClosePath(c) => c.path_id,
                 ModelingCmd::ExtendPath(e) => e.path.into(),
                 _ => internal_error!(
-                    format!("Close or extend path command variant not handled: id={id:?}, cmd={cmd:?}"),
-                    range
+                    range,
+                    "Close or extend path command variant not handled: id={id:?}, cmd={cmd:?}"
                 ),
             });
             let mut return_arr = Vec::new();
@@ -1043,10 +1043,7 @@ fn artifacts_to_update(
                 ModelingCmd::Revolve(_) => SweepSubType::Revolve,
                 ModelingCmd::RevolveAboutEdge(_) => SweepSubType::RevolveAboutEdge,
                 ModelingCmd::Sweep(_) => SweepSubType::Sweep,
-                _ => internal_error!(
-                    format!("Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}"),
-                    range
-                ),
+                _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}",),
             };
             let mut return_arr = Vec::new();
             let target = ArtifactId::from(target);
@@ -1381,8 +1378,8 @@ fn artifacts_to_update(
                     (CompositeSolidSubType::Union, solid_ids, Vec::new())
                 }
                 _ => internal_error!(
-                    format!("Boolean or composite command variant not handled: id={id:?}, cmd={cmd:?}"),
-                    range
+                    range,
+                    "Boolean or composite command variant not handled: id={id:?}, cmd={cmd:?}"
                 ),
             };
 
