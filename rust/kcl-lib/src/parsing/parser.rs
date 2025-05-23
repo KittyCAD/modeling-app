@@ -886,7 +886,7 @@ fn array_end_start(i: &mut TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
     ignore_whitespace(i);
     let start_element = expression.parse_next(i)?;
     ignore_whitespace(i);
-    double_period.parse_next(i)?;
+    let end_inclusive = alt((end_inclusive_range.map(|_| true), end_exclusive_range.map(|_| false))).parse_next(i)?;
     ignore_whitespace(i);
     let end_element = expression.parse_next(i)?;
     ignore_whitespace(i);
@@ -895,7 +895,7 @@ fn array_end_start(i: &mut TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
         ArrayRangeExpression {
             start_element,
             end_element,
-            end_inclusive: true,
+            end_inclusive,
             digest: None,
         },
         start,
@@ -2705,9 +2705,28 @@ fn period(i: &mut TokenSlice) -> PResult<()> {
     Ok(())
 }
 
-fn double_period(i: &mut TokenSlice) -> PResult<Token> {
+fn end_inclusive_range(i: &mut TokenSlice) -> PResult<Token> {
     any.try_map(|token: Token| {
         if matches!(token.token_type, TokenType::DoublePeriod) {
+            Ok(token)
+        } else {
+            Err(CompilationError::fatal(
+                token.as_source_range(),
+                format!(
+                    "expected a '..' (double period) found {} which is {}",
+                    token.value.as_str(),
+                    token.token_type
+                ),
+            ))
+        }
+    })
+    .context(expected("the .. operator, used for array ranges like [0..10]"))
+    .parse_next(i)
+}
+
+fn end_exclusive_range(i: &mut TokenSlice) -> PResult<Token> {
+    any.try_map(|token: Token| {
+        if matches!(token.token_type, TokenType::DoublePeriodLessThan) {
             Ok(token)
         } else {
             Err(CompilationError::fatal(
@@ -5485,6 +5504,11 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
            )"#
     );
     snapshot_test!(kw_function_in_binary_op, r#"val = f(x = 1) + 1"#);
+    snapshot_test!(
+        array_ranges,
+        r#"incl = [1..10]
+        excl = [0..<10]"#
+    );
 }
 
 #[allow(unused)]

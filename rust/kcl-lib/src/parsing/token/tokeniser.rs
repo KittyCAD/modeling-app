@@ -87,7 +87,7 @@ pub(super) fn token(i: &mut Input<'_>) -> PResult<Token> {
         '0'..='9' => number,
         ';' => semi_colon,
         ':' => alt((double_colon, colon)),
-        '.' => alt((number, double_period, period)),
+        '.' => alt((number, double_period_less_than, double_period, period)),
         '#' => hash,
         '$' => dollar,
         '!' => alt((operator, bang)),
@@ -316,6 +316,16 @@ fn double_period(i: &mut Input<'_>) -> PResult<Token> {
         range,
         i.state.module_id,
         TokenType::DoublePeriod,
+        value.to_string(),
+    ))
+}
+
+fn double_period_less_than(i: &mut Input<'_>) -> PResult<Token> {
+    let (value, range) = "..<".with_span().parse_next(i)?;
+    Ok(Token::from_range(
+        range,
+        i.state.module_id,
+        TokenType::DoublePeriodLessThan,
         value.to_string(),
     ))
 }
