@@ -23,8 +23,6 @@ KCL samples conform to a set of style guidelines to ensure consistency and reada
 When you submit a PR to add or modify KCL samples, images will be generated and added to the repository automatically.
 
 ---
-#### [80-20-rail](80-20-rail/main.kcl) ([screenshot](screenshots/80-20-rail.png))
-[![80-20-rail](screenshots/80-20-rail.png)](80-20-rail/main.kcl)
 #### [axial-fan](axial-fan/main.kcl) ([screenshot](screenshots/axial-fan.png))
 [![axial-fan](screenshots/axial-fan.png)](axial-fan/main.kcl)
 #### [ball-bearing](ball-bearing/main.kcl) ([screenshot](screenshots/ball-bearing.png))
@@ -143,6 +141,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![spur-reduction-gearset](screenshots/spur-reduction-gearset.png)](spur-reduction-gearset/main.kcl)
 #### [surgical-drill-guide](surgical-drill-guide/main.kcl) ([screenshot](screenshots/surgical-drill-guide.png))
 [![surgical-drill-guide](screenshots/surgical-drill-guide.png)](surgical-drill-guide/main.kcl)
+#### [t-slot-rail](t-slot-rail/main.kcl) ([screenshot](screenshots/t-slot-rail.png))
+[![t-slot-rail](screenshots/t-slot-rail.png)](t-slot-rail/main.kcl)
 #### [telemetry-antenna](telemetry-antenna/main.kcl) ([screenshot](screenshots/telemetry-antenna.png))
 [![telemetry-antenna](screenshots/telemetry-antenna.png)](telemetry-antenna/main.kcl)
 #### [thermal-block-insert](thermal-block-insert/main.kcl) ([screenshot](screenshots/thermal-block-insert.png))

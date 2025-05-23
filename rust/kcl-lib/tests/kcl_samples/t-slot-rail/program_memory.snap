@@ -1,0 +1,62 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing t-slot-rail.kcl
+---
+{
+  "arcEnd": {
+    "type": "Number",
+    "value": 0.0275,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "holeDiameter": {
+    "type": "Number",
+    "value": 0.262,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "interiorRadius": {
+    "type": "Number",
+    "value": 0.01,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "railTslot": {
+    "type": "Function",
+    "value": null
+  },
+  "scoreDepth": {
+    "type": "Number",
+    "value": 0.018,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  }
+}
