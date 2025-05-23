@@ -126,7 +126,7 @@ Decide on a `v`-prefixed semver `VERSION` (eg. `v1.2.3`) with the team and tag t
 
 ```
 git tag $VERSION
-git push origin tag $VERSION
+git push origin $VERSION
 ```
 
 This will trigger the `build-apps` workflow, set the version, build & sign the apps, and generate release files.
