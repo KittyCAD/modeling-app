@@ -1,0 +1,38 @@
+/// Build a color from its red, green and blue components.
+/// These must be between 0 and 255.
+///
+/// ```
+/// startSketchOn(-XZ)
+///   |> circle(center = [0, 0], radius = 10)
+///   |> extrude(length = 4)
+///   |> appearance(color = appearance::rgb([50, 160, 160]))
+/// ```
+/// ```
+/// sideLen = 30
+/// n = 10
+/// 
+/// // The cubes become more green and less blue with each instance.
+/// fn cube(i, center) {
+///   g = 255 / n * i
+///   b = 255 / n * (n - i)
+///   return startSketchOn(XY)
+///     |> polygon(radius = sideLen / 2, numSides = 4, center = [center, 0])
+///     |> extrude(length = sideLen)
+///     |> appearance(color = appearance::rgb([0, g, b]), metalness = 80, roughness = 20)
+/// }
+/// 
+/// // Create n cubes, shifting each one over in a line.
+/// map(
+///   [0..n],
+///   f = fn(@i) {
+///     return cube(i, center = sideLen * i * 1.5)
+///   },
+/// )
+/// ```
+///
+@(impl = std_rust)
+export fn rgb(
+  /// The red, blue and green components of the color.
+  /// Must be between 0 and 255.
+  @rgb: [number(_); 3],
+): string {}

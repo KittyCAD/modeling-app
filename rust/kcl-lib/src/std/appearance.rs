@@ -10,12 +10,43 @@ use rgba_simple::Hex;
 use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, KclValue, SolidOrImportedGeometry},
+    execution::{
+        types::{ArrayLen, RuntimeType},
+        ExecState, KclValue, SolidOrImportedGeometry,
+    },
     std::Args,
 };
 
 lazy_static::lazy_static! {
     static ref HEX_REGEX: Regex = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();
+}
+
+/// Construct a color from its red, blue and green components.
+pub async fn rgb(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let rgb: [TyF64; 3] = args.get_unlabeled_kw_arg_typed(
+        "rgb",
+        &RuntimeType::Array(Box::new(RuntimeType::count()), ArrayLen::Known(3)),
+        exec_state,
+    )?;
+
+    // Make sure the color if set is valid.
+    if let Some(component) = rgb.iter().find(|component| component.n < 0.0 || component.n > 255.0) {
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            format!("Colors are given between 0 and 255, so {} is invalid", component.n),
+            vec![args.source_range],
+        )));
+    }
+
+    inner_rgb(rgb, exec_state, args).await
+}
+
+async fn inner_rgb(rgb: [TyF64; 3], _: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let [r, g, b] = rgb.map(|n| n.n.floor() as u32);
+    let s = format!("#{r:02x}{g:02x}{b:02x}");
+    Ok(KclValue::String {
+        value: s,
+        meta: args.into(),
+    })
 }
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
