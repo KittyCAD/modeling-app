@@ -122,12 +122,11 @@ https://github.com/KittyCAD/modeling-app/issues/new
 
 #### 2. Push a new tag
 
-Create a new tag and push it to the repo. The `semantic-release.sh` script will automatically bump the minor part, which we use the most. For instance going from `v0.27.0` to `v0.28.0`.
+Decide on a `v`-prefixed semver `VERSION` (eg. `v1.2.3`) with the team and tag the repo, eg. on latest main:
 
 ```
-VERSION=$(./scripts/semantic-release.sh)
 git tag $VERSION
-git push origin --tags
+git push origin tag $VERSION
 ```
 
 This will trigger the `build-apps` workflow, set the version, build & sign the apps, and generate release files.
