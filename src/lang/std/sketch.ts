@@ -975,6 +975,223 @@ export const yLine: SketchLineHelperKw = {
 export const tangentialArc: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to, from } = segmentInput
+    const _node = { ...node }
+    const getNode = getNodeFromPathCurry(_node, pathToNode)
+    const _node1 = getNode<PipeExpression | CallExpressionKw>('PipeExpression')
+    if (err(_node1)) return _node1
+    const { node: pipe } = _node1
+    const _node2 = getNodeFromPath<VariableDeclarator>(
+      _node,
+      pathToNode,
+      'VariableDeclarator'
+    )
+    if (err(_node2)) return _node2
+    const { node: varDec } = _node2
+
+    const toX = createLiteral(roundOff(to[0] - from[0], 2))
+    const toY = createLiteral(roundOff(to[1] - from[1], 2))
+
+    if (replaceExistingCallback && pipe.type !== 'CallExpressionKw') {
+      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      const result = replaceExistingCallback([
+        {
+          type: 'labeledArgArrayItem',
+          key: ARG_END,
+          index: 0,
+          argType: 'xRelative',
+          expr: toX,
+        },
+        {
+          type: 'labeledArgArrayItem',
+          key: ARG_END,
+          index: 1,
+          argType: 'yRelative',
+          expr: toY,
+        },
+      ])
+      if (err(result)) return result
+      const { callExp, valueUsedInTransform } = result
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
+    }
+    const newLine = createCallExpressionStdLibKw(
+      'tangentialArc',
+      null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+      [createLabeledArg(ARG_END, createArrayExpression([toX, toY]))]
+    )
+    if (pipe.type === 'PipeExpression') {
+      pipe.body = [...pipe.body, newLine]
+      return {
+        modifiedAst: _node,
+        pathToNode: [
+          ...pathToNode.slice(
+            0,
+            pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
+          ),
+          ['body', 'PipeExpression'],
+          [pipe.body.length - 1, 'CallExpressionKw'],
+        ],
+      }
+    } else {
+      varDec.init = createPipeExpression([varDec.init, newLine])
+    }
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to, from } = input
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
+    if (err(nodeMeta)) return nodeMeta
+    const { node: callExpression } = nodeMeta
+
+    if (callExpression.type !== 'CallExpressionKw') {
+      return new Error(
+        `Expected CallExpressionKw, but found ${callExpression.type}`
+      )
+    }
+
+    console.log('updateArgs', callExpression)
+    for (const arg of callExpression.arguments) {
+      if (arg.label?.name !== ARG_END && arg.label?.name !== ARG_TAG) {
+        console.debug(
+          'Trying to edit unsupported tangentialArc keyword arguments; skipping'
+        )
+        return {
+          modifiedAst: _node,
+          pathToNode,
+        }
+      }
+    }
+
+    const toArrExp = createArrayExpression([
+      createLiteral(roundOff(to[0] - from[0], 2)),
+      createLiteral(roundOff(to[1] - from[1], 2)),
+    ])
+
+    mutateKwArg(ARG_END, callExpression, toArrExp)
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
+  getConstraintInfo: (callExp: CallExpressionKw, code, pathToNode) => {
+    if (callExp.type !== 'CallExpressionKw') return []
+    if (callExp.callee.name.name !== 'tangentialArc') return []
+    const callee = callExp.callee
+    const pathToCallee: PathToNode = [
+      ...pathToNode,
+      ['callee', 'CallExpressionKw'],
+    ]
+    const endArg = findKwArgWithIndex(ARG_END, callExp)
+
+    const constraints: ConstrainInfo[] = [
+      constrainInfo(
+        'tangentialWithPrevious',
+        true,
+        callee.name.name,
+        'tangentialArc',
+        undefined,
+        topLevelRange(callee.start, callee.end),
+        pathToCallee
+      ),
+    ]
+    if (endArg) {
+      const { expr, argIndex } = endArg
+      const pathToArgs: PathToNode = [
+        ...pathToNode,
+        ['arguments', 'CallExpressionKw'],
+      ]
+      const pathToArg: PathToNode = [
+        ...pathToArgs,
+        [argIndex, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
+      ]
+      if (expr.type !== 'ArrayExpression' || expr.elements.length < 2) {
+        constraints.push({
+          stdLibFnName: 'tangentialArc',
+          type: 'xRelative',
+          isConstrained: isNotLiteralArrayOrStatic(expr),
+          sourceRange: topLevelRange(expr.start, expr.end),
+          pathToNode: pathToArg,
+          value: code.slice(expr.start, expr.end),
+          argPosition: {
+            type: 'labeledArgArrayItem',
+            index: 0,
+            key: ARG_END,
+          },
+        })
+        constraints.push({
+          stdLibFnName: 'tangentialArc',
+          type: 'yRelative',
+          isConstrained: isNotLiteralArrayOrStatic(expr),
+          sourceRange: topLevelRange(expr.start, expr.end),
+          pathToNode: pathToArg,
+          value: code.slice(expr.start, expr.end),
+          argPosition: {
+            type: 'labeledArgArrayItem',
+            index: 1,
+            key: ARG_END,
+          },
+        })
+        return constraints
+      }
+      const pathToX: PathToNode = [
+        ...pathToArg,
+        ['elements', 'ArrayExpression'],
+        [0, 'index'],
+      ]
+      const pathToY: PathToNode = [
+        ...pathToArg,
+        ['elements', 'ArrayExpression'],
+        [1, 'index'],
+      ]
+      const exprX = expr.elements[0]
+      const exprY = expr.elements[1]
+      constraints.push({
+        stdLibFnName: 'tangentialArc',
+        type: 'xRelative',
+        isConstrained: isNotLiteralArrayOrStatic(exprX),
+        sourceRange: topLevelRange(exprX.start, exprX.end),
+        pathToNode: pathToX,
+        value: code.slice(exprX.start, exprX.end),
+        argPosition: {
+          type: 'labeledArgArrayItem',
+          index: 0,
+          key: ARG_END,
+        },
+      })
+      constraints.push({
+        stdLibFnName: 'tangentialArc',
+        type: 'yRelative',
+        isConstrained: isNotLiteralArrayOrStatic(exprY),
+        sourceRange: topLevelRange(exprY.start, exprY.end),
+        pathToNode: pathToY,
+        value: code.slice(exprY.start, exprY.end),
+        argPosition: {
+          type: 'labeledArgArrayItem',
+          index: 1,
+          key: ARG_END,
+        },
+      })
+    }
+    return constraints
+  },
+}
+
+export const tangentialArcTo: SketchLineHelperKw = {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+    if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to } = segmentInput
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
@@ -1062,7 +1279,7 @@ export const tangentialArc: SketchLineHelperKw = {
     for (const arg of callExpression.arguments) {
       if (arg.label?.name !== ARG_END_ABSOLUTE && arg.label?.name !== ARG_TAG) {
         console.debug(
-          'Trying to edit unsupported tangentialArc keyword arguments; skipping'
+          'Trying to edit unsupported tangentialArcTo keyword arguments; skipping'
         )
         return {
           modifiedAst: _node,
@@ -3276,6 +3493,7 @@ export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
   angledLineToX,
   angledLineToY,
   tangentialArc,
+  tangentialArcTo,
   startProfile,
 } as const
 
@@ -3368,6 +3586,7 @@ export function fnNameToToolTipFromSegment(
     case 'circleThreePoint':
     case 'circle':
     case 'tangentialArc':
+    case 'tangentialArcTo':
     case 'angledLine':
     case 'startProfile':
       return fnName
@@ -3405,10 +3624,11 @@ export function fnNameToTooltip(
       return isAbsolute ? 'xLineTo' : 'xLine'
     case 'yLine':
       return isAbsolute ? 'yLineTo' : 'yLine'
+    case 'tangentialArc':
+      return isAbsolute ? 'tangentialArcTo' : 'tangentialArc'
     case 'angledLineThatIntersects':
     case 'circleThreePoint':
     case 'circle':
-    case 'tangentialArc':
     case 'startProfile':
       return fnName
     case 'angledLine': {
@@ -3449,6 +3669,7 @@ export function tooltipToFnName(tooltip: ToolTip): string | Error {
     case 'xLine':
     case 'yLine':
     case 'line':
+    case 'tangentialArc':
       return tooltip
     case 'lineTo':
       return 'line'
@@ -3456,6 +3677,8 @@ export function tooltipToFnName(tooltip: ToolTip): string | Error {
       return 'xLine'
     case 'yLineTo':
       return 'yLine'
+    case 'tangentialArcTo':
+      return 'tangentialArc'
     case 'angledLine':
     case 'angledLineToX':
     case 'angledLineToY':
