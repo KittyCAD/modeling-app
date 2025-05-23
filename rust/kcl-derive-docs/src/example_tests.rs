@@ -45,6 +45,7 @@ pub fn do_for_all_example_test(item: proc_macro2::TokenStream) -> proc_macro2::T
 pub const TEST_NAMES: &[&str] = &[
     "std-appearance-rgb-0",
     "std-appearance-rgb-1",
+    "std-appearance-rgb-2",
     "std-array-map-0",
     "std-array-map-1",
     "std-array-pop-0",

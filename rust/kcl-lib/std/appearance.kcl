@@ -29,6 +29,32 @@
 ///   },
 /// )
 /// ```
+/// ```
+/// sideLen = 30
+/// n = 6
+/// 
+/// fn cube(offset, i, red) {
+///   x = floor(i / n)
+///   y = rem(i, divisor = n)
+///   g = 255 / n * x
+///   b = 255 / n * y
+///   return startSketchOn(offsetPlane(XZ, offset))
+///     |> circle(diameter = sideLen, center = [sideLen * x * 1.5, sideLen * y * 1.5])
+///     |> extrude(length = sideLen)
+///     |> appearance(color = appearance::rgb([red, g, b]), metalness = 80, roughness = 40)
+/// }
+/// 
+/// fn grid(offset, red) {
+///   return map(
+///     [0 ..< n * n],
+///     f = fn(@i) {
+///       return cube(offset, i, red)
+///     },
+///   )
+/// }
+/// 
+/// grid(offset = 0, red = 0)
+/// ```
 ///
 @(impl = std_rust)
 export fn rgb(
