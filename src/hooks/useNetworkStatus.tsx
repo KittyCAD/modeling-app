@@ -102,9 +102,9 @@ export function useNetworkStatus() {
       nextOverallState = NetworkHealthState.Disconnected
     } else if (hasIssues || hasIssues === undefined) {
       nextOverallState = NetworkHealthState.Issue
-    } else if (pingEMA < THRESHOLD_GOOD) {
+    } else if (pingEMA && pingEMA < THRESHOLD_GOOD) {
       nextOverallState = NetworkHealthState.Ok
-    } else if (pingEMA > THRESHOLD_WEAK) {
+    } else if (pingEMA && pingEMA > THRESHOLD_WEAK) {
       nextOverallState = NetworkHealthState.Weak
     }
 
