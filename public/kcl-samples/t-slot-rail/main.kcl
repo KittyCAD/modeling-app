@@ -7,24 +7,21 @@
 fn railTslot(railHeight, railLength) {
   // Sketch one inner leg of the extruded rail
   railProfile = startSketchOn(XZ)
-    |> startProfile(at = [
-         railHeight / 2,
-         (1 - 0.356) / 2 * railHeight
-       ])
-    |> xLine(length = -0.12)
-    |> tangentialArc(angle = 45, radius = .09 * railHeight)
-    |> angledLine(angle = 45, endAbsoluteY = 0.113 * railHeight)
-    |> tangentialArc(angle = 135, radius = .015 * railHeight)
-    |> xLine(endAbsolute = (.5 - (.320 / 2) - .015) * railHeight)
-    |> tangentialArc(angle = -90, radius = .015 * railHeight)
-    |> yLine(endAbsolute = 0.015 * railHeight)
-    |> tangentialArc(angle = -90, radius = .015 * railHeight)
-    |> xLine(length = -0.03 * railHeight)
-    |> arc(angleStart = 0, angleEnd = 180, radius = 0.072 / 4 * railHeight)
-    |> xLine(length = -0.1 * railHeight)
-    |> arc(angleStart = 0, angleEnd = 180, radius = 0.072 / 4 * railHeight)
-    |> xLine(length = -0.03 * railHeight)
-    |> tangentialArc(endAbsolute = [0.0275 * railHeight, 0.0275 * railHeight])
+    |> startProfile(at = [0.5, (1 - 0.356) / 2])
+    |> xLine(length = -0.08)
+    |> tangentialArc(angle = 45, radius = .09)
+    |> angledLine(angle = 45, endAbsoluteY = 0.113)
+    |> tangentialArc(angle = 135, radius = 0.01)
+    |> xLine(endAbsolute = .5 - (.320 / 2) - 0.01)
+    |> tangentialArc(angle = -90, radius = 0.01)
+    |> yLine(endAbsolute = 00.01)
+    |> tangentialArc(angle = -90, radius = 0.01)
+    |> xLine(length = -0.03)
+    |> arc(angleStart = 0, angleEnd = 180, radius = 0.018)
+    |> xLine(length = -0.1)
+    |> arc(angleStart = 0, angleEnd = 180, radius = 0.018)
+    |> xLine(length = -0.03)
+    |> tangentialArc(endAbsolute = [0.0275, 0.0275])
 
     // Mirror the sketch about the diagonal to complete the leg. Then mirror across the center of the profile in the horizontal and vertical directions. Then close the sketch
     |> mirror2d(axis = {
@@ -33,16 +30,20 @@ fn railTslot(railHeight, railLength) {
        })
     |> mirror2d(axis = {
          direction = [1.0, 0.0],
-         origin = [0.0, 0.5 * railHeight]
+         origin = [0.0, 0.5]
        })
     |> mirror2d(axis = {
          direction = [0.0, 1.0],
-         origin = [0.5 * railHeight, 0.0]
+         origin = [0.5, 0.0]
        })
     |> close()
     // Sketch a dimensioned hole in the center of the profile
-    |> subtract2d(tool = circle(center = [.5 * railHeight, .5 * railHeight], radius = .205 * railHeight / 2))
+    |> subtract2d(tool = circle(center = [railHeight / 2, railHeight / 2], radius = .262 / 2))
+
+    // Scale the entire sketch by a factor of the rail height, then extrude
+    |> scale(x = railHeight, z = railHeight)
     |> extrude(length = -railLength)
+
   return railProfile
 }
 
