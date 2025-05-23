@@ -53,8 +53,8 @@ const overallConnectionStateColor: Record<NetworkHealthState, IconColorConfig> =
       bg: 'bg-succeed-10/30 dark:bg-succeed-80/50',
     },
     [NetworkHealthState.Weak]: {
-      icon: 'text-succeed-50 dark:text-succeed-50',
-      bg: 'bg-lime-300/70 dark:bg-lime-300/70',
+      icon: 'text-succeed-50 dark:text-succeed-30',
+      bg: 'bg-lime-300/70 dark:bg-lime-300/30',
     },
     [NetworkHealthState.Issue]: {
       icon: 'text-destroy-80 dark:text-destroy-10',

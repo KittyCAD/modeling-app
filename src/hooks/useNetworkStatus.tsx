@@ -48,7 +48,8 @@ export function useNetworkStatus() {
   const [overallState, setOverallState] = useState<NetworkHealthState>(
     NetworkHealthState.Disconnected
   )
-  const [ping, setPing] = useState<undefined | number>(undefined)
+  const [pingRaw, setPingRaw] = useState<undefined | number>(undefined)
+  const [pingEMA, setPingEMA] = useState<undefined | number>(undefined)
   const [hasCopied, setHasCopied] = useState<boolean>(false)
 
   const [error, setError] = useState<ErrorType | undefined>(undefined)
@@ -163,7 +164,7 @@ export function useNetworkStatus() {
 
   useEffect(() => {
     const onPingPongChange = ({ detail: state }: CustomEvent) => {
-      setPing(state)
+      setPingRaw(state)
     }
 
     const onConnectionStateChange = ({
