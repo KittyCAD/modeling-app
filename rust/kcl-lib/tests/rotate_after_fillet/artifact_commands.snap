@@ -198,30 +198,16 @@ description: Artifact commands rotate_after_fillet.kcl
       "object_id": "[uuid]",
       "edge_id": null,
       "edge_ids": [
+        "[uuid]",
         "[uuid]"
       ],
       "radius": 0.02,
       "tolerance": 0.0000001,
       "cut_type": "fillet",
       "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
+      "extra_face_ids": [
         "[uuid]"
-      ],
-      "radius": 0.02,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
+      ]
     }
   },
   {

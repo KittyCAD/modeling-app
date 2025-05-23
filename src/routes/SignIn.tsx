@@ -98,14 +98,16 @@ const SignIn = () => {
         style={
           isDesktop() ? ({ WebkitAppRegion: 'no-drag' } as CSSProperties) : {}
         }
-        className="body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto"
+        className="body-bg py-16 md:py-5 px-4 md:px-12 rounded-lg grid place-items-center overflow-y-auto"
       >
-        <div className="max-w-7xl grid gap-5 grid-cols-3 xl:grid-cols-4 xl:grid-rows-5">
-          <div className="col-span-2 xl:col-span-3 xl:row-span-3 max-w-3xl mr-8 mb-8">
-            <div className="flex items-baseline mb-8">
-              <Logo className="text-primary h-10 lg:h-12 xl:h-16 relative translate-y-1 mr-4 lg:mr-6 xl:mr-8" />
-              <h1 className="text-3xl lg:text-4xl xl:text-5xl">{APP_NAME}</h1>
-              <span className="px-3 py-1 text-base rounded-full bg-primary/10 text-primary self-start">
+        <div className="max-w-7xl flex flex-col md:grid gap-5 grid-cols-3 xl:grid-cols-4 xl:grid-rows-5">
+          <div className="md:col-span-2 xl:col-span-3 xl:row-span-3 max-w-3xl mr-8 mb-8">
+            <div className="flex flex-row items-baseline mb-8">
+              <Logo className="text-primary h-8 md:h-10 lg:h-12 xl:h-16 relative translate-y-1 mr-4 lg:mr-6 xl:mr-8" />
+              <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl">
+                {APP_NAME}
+              </h1>
+              <span className="px-2 md:px-3 py-1 text-xs md:text-base rounded-full bg-primary/10 text-primary self-start">
                 {IS_NIGHTLY ? 'nightly' : ''} v{APP_VERSION}
               </span>
             </div>
@@ -166,22 +168,31 @@ const SignIn = () => {
                 )}
               </div>
             ) : (
-              <Link
-                onClick={openExternalBrowserIfDesktop(signInUrl)}
-                to={signInUrl}
-                className={
-                  'w-fit m-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
-                  '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
-                }
-                data-testid="sign-in-button"
-              >
-                Sign in to get started
-                <CustomIcon name="arrowRight" className="w-6 h-6" />
-              </Link>
+              <>
+                <div className="flex md:hidden flex-col gap-2">
+                  <p className="text-base text-primary">
+                    This app is really best used on a desktop. We're working on
+                    simple touch controls for mobile, but in the meantime please
+                    visit using a larger device.
+                  </p>
+                </div>
+                <Link
+                  onClick={openExternalBrowserIfDesktop(signInUrl)}
+                  to={signInUrl}
+                  className={
+                    'w-fit m-0 mt-8 hidden md:flex gap-4 items-center px-3 py-1 ' +
+                    '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                  }
+                  data-testid="sign-in-button"
+                >
+                  Sign in to get started
+                  <CustomIcon name="arrowRight" className="w-6 h-6" />
+                </Link>
+              </>
             )}
           </div>
           <Link
-            className={`group relative xl:h-full xl:row-span-full col-start--1 xl:col-start-4 rounded-lg overflow-hidden grid place-items-center ${subtleBorder}`}
+            className={`group relative xl:h-full xl:row-span-full md:col-start--1 xl:col-start-4 rounded-lg overflow-hidden grid place-items-center ${subtleBorder}`}
             to={kclSampleUrl}
             onClick={openExternalBrowserIfDesktop(kclSampleUrl)}
             target="_blank"
@@ -214,7 +225,7 @@ const SignIn = () => {
               <CustomIcon name="arrowRight" className="w-6 h-6" />
             </div>
           </Link>
-          <div className="self-end h-min col-span-3 xl:row-span-2 grid grid-cols-2 gap-5">
+          <div className="self-end h-min md:col-span-3 xl:row-span-2 flex flex-col md:grid grid-cols-2 gap-5">
             <div className={cardArea}>
               <h2 className="text-xl xl:text-2xl">Built in the open</h2>
               <p className="text-xs my-4">
