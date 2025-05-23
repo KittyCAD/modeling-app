@@ -1590,4 +1590,38 @@ sketch001 = startSketchOn(XZ)
       await expect(page.getByTestId('center-rectangle')).toBeVisible()
     })
   })
+
+  test('syntax errors still show when reopening KCL pane', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+  }) => {
+    const u = await getUtils(page)
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await homePage.goToModelingScene()
+
+    // Wait for connection, this is especially important for this test, because safeParse is invoked when
+    // connection is established which would interfere with the test if it happened during later steps.
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    // Code with no error
+    await u.codeLocator.fill(`x = 7`)
+    await page.waitForTimeout(200) // allow some time for the error to show potentially
+    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+
+    // Code with error
+    await u.codeLocator.fill(`x 7`)
+    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(1)
+
+    // Close and reopen KCL code panel
+    await u.closeKclCodePanel()
+    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0) // error disappears on close
+    await u.openKclCodePanel()
+
+    // Verify error is still visible
+    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(1)
+  })
 })
