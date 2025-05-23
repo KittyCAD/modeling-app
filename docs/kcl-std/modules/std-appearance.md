@@ -12,5 +12,5 @@ layout: manual
 
 ## Functions and constants
 
-* [`appearance::rgb`](/docs/kcl-std/functions/std-appearance-rgb)
+* [`appearance::hexString`](/docs/kcl-std/functions/std-appearance-hexString)
 
