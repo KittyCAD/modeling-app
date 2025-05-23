@@ -24,7 +24,7 @@ fn railTslot(railHeight, railLength) {
     |> xLine(length = -0.1 * railHeight)
     |> arc(angleStart = 0, angleEnd = 180, radius = 0.072 / 4 * railHeight)
     |> xLine(length = -0.03 * railHeight)
-    |> tangentialArc(endAbsolute = [.04, .04])
+    |> tangentialArc(endAbsolute = [.04 * railHeight, .04 * railHeight])
 
     // Mirror the sketch about the diagonal to complete the leg. Then mirror across the center of the profile in the horizontal and vertical directions. Then close the sketch
     |> mirror2d(axis = {
