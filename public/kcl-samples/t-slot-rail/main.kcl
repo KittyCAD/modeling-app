@@ -14,7 +14,7 @@ fn railTslot(railHeight, railLength) {
     |> tangentialArc(angle = 135, radius = 0.01)
     |> xLine(endAbsolute = .5 - (.320 / 2) - 0.01)
     |> tangentialArc(angle = -90, radius = 0.01)
-    |> yLine(endAbsolute = 00.01)
++    |> yLine(endAbsolute = 0.01)
     |> tangentialArc(angle = -90, radius = 0.01)
     |> xLine(length = -0.03)
     |> arc(angleStart = 0, angleEnd = 180, radius = 0.018)
