@@ -22,6 +22,7 @@ export import * from "std::solid"
 export import * from "std::transform"
 export import "std::turns"
 export import "std::sweep"
+export import "std::appearance"
 
 /// An abstract 3d plane aligned with the X and Y axes. Its normal is the positive Z axis.
 export XY = {

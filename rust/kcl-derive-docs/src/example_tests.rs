@@ -42,7 +42,10 @@ pub fn do_for_all_example_test(item: proc_macro2::TokenStream) -> proc_macro2::T
     item.into_token_stream()
 }
 
-pub const TEST_NAMES: [&str; 93] = [
+pub const TEST_NAMES: &[&str] = &[
+    "std-appearance-hexString-0",
+    "std-appearance-hexString-1",
+    "std-appearance-hexString-2",
     "std-array-map-0",
     "std-array-map-1",
     "std-array-pop-0",

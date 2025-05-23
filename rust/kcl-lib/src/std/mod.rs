@@ -286,7 +286,13 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
             StdFnProps::default("std::sketch::patternTransform2d"),
         ),
-        _ => unreachable!(),
+        ("appearance", "hexString") => (
+            |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),
+            StdFnProps::default("std::appearance::hexString"),
+        ),
+        (module, fn_name) => {
+            panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
+        }
     }
 }
 
