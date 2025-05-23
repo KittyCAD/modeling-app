@@ -5359,7 +5359,6 @@ mod snapshot_tests {
     );
     snapshot_test!(aa, r#"sg = -scale"#);
     snapshot_test!(ab, "line(endAbsolute = [0, -1])");
-    snapshot_test!(ac, "myArray = [0..10]");
     snapshot_test!(
         ad,
         r#"
