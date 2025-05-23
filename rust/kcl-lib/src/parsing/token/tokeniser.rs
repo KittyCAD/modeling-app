@@ -75,7 +75,7 @@ impl State {
     }
 }
 
-pub(super) fn token(i: &mut Input<'_>) -> PResult<Token> {
+pub(super) fn token(i: &mut Input<'_>) -> ModalResult<Token> {
     match winnow::combinator::dispatch! {peek(any);
         '"' | '\'' => string,
         '/' => alt((line_comment, block_comment, operator)),
@@ -113,7 +113,7 @@ pub(super) fn token(i: &mut Input<'_>) -> PResult<Token> {
     }
 }
 
-fn block_comment(i: &mut Input<'_>) -> PResult<Token> {
+fn block_comment(i: &mut Input<'_>) -> ModalResult<Token> {
     let inner = ("/*", take_until(0.., "*/"), "*/").take();
     let (value, range) = inner.with_span().parse_next(i)?;
     Ok(Token::from_range(
@@ -124,7 +124,7 @@ fn block_comment(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn line_comment(i: &mut Input<'_>) -> PResult<Token> {
+fn line_comment(i: &mut Input<'_>) -> ModalResult<Token> {
     let inner = (r#"//"#, take_till(0.., ['\n', '\r'])).take();
     let (value, range) = inner.with_span().parse_next(i)?;
     Ok(Token::from_range(
@@ -135,7 +135,7 @@ fn line_comment(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn number(i: &mut Input<'_>) -> PResult<Token> {
+fn number(i: &mut Input<'_>) -> ModalResult<Token> {
     let number_parser = alt((
         // Digits before the decimal point.
         (digit1, opt(('.', digit1)), opt('_'), opt(alt(super::NUM_SUFFIXES))).map(|_| ()),
@@ -151,7 +151,7 @@ fn number(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn whitespace(i: &mut Input<'_>) -> PResult<Token> {
+fn whitespace(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = multispace1.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -161,13 +161,13 @@ fn whitespace(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn inner_word(i: &mut Input<'_>) -> PResult<()> {
+fn inner_word(i: &mut Input<'_>) -> ModalResult<()> {
     one_of(('a'..='z', 'A'..='Z', '_')).parse_next(i)?;
     repeat::<_, _, (), _, _>(0.., one_of(('a'..='z', 'A'..='Z', '0'..='9', '_'))).parse_next(i)?;
     Ok(())
 }
 
-fn word(i: &mut Input<'_>) -> PResult<Token> {
+fn word(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = inner_word.take().with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -177,7 +177,7 @@ fn word(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn operator(i: &mut Input<'_>) -> PResult<Token> {
+fn operator(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = alt((
         ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "^", "||", "&&", "|", "&",
     ))
@@ -191,7 +191,7 @@ fn operator(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn brace_start(i: &mut Input<'_>) -> PResult<Token> {
+fn brace_start(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = alt(('{', '(', '[')).with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -201,7 +201,7 @@ fn brace_start(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn brace_end(i: &mut Input<'_>) -> PResult<Token> {
+fn brace_end(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = alt(('}', ')', ']')).with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -211,7 +211,7 @@ fn brace_end(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn comma(i: &mut Input<'_>) -> PResult<Token> {
+fn comma(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = ','.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -221,7 +221,7 @@ fn comma(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn hash(i: &mut Input<'_>) -> PResult<Token> {
+fn hash(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = '#'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -231,7 +231,7 @@ fn hash(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn bang(i: &mut Input<'_>) -> PResult<Token> {
+fn bang(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = '!'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -241,7 +241,7 @@ fn bang(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn dollar(i: &mut Input<'_>) -> PResult<Token> {
+fn dollar(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = '$'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -251,7 +251,7 @@ fn dollar(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn question_mark(i: &mut Input<'_>) -> PResult<Token> {
+fn question_mark(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = '?'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -261,7 +261,7 @@ fn question_mark(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn at(i: &mut Input<'_>) -> PResult<Token> {
+fn at(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = '@'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -271,7 +271,7 @@ fn at(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn colon(i: &mut Input<'_>) -> PResult<Token> {
+fn colon(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = ':'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -281,7 +281,7 @@ fn colon(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn semi_colon(i: &mut Input<'_>) -> PResult<Token> {
+fn semi_colon(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = ';'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -291,7 +291,7 @@ fn semi_colon(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn double_colon(i: &mut Input<'_>) -> PResult<Token> {
+fn double_colon(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = "::".with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -300,7 +300,7 @@ fn double_colon(i: &mut Input<'_>) -> PResult<Token> {
         value.to_string(),
     ))
 }
-fn period(i: &mut Input<'_>) -> PResult<Token> {
+fn period(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = '.'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -310,7 +310,7 @@ fn period(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn double_period(i: &mut Input<'_>) -> PResult<Token> {
+fn double_period(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = "..".with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -320,7 +320,7 @@ fn double_period(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn double_period_less_than(i: &mut Input<'_>) -> PResult<Token> {
+fn double_period_less_than(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = "..<".with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -333,18 +333,18 @@ fn double_period_less_than(i: &mut Input<'_>) -> PResult<Token> {
 /// Zero or more of either:
 /// 1. Any character except " or \
 /// 2. Any character preceded by \
-fn inner_double_quote(i: &mut Input<'_>) -> PResult<()> {
+fn inner_double_quote(i: &mut Input<'_>) -> ModalResult<()> {
     repeat(0.., alt((none_of(('"', '\\')), preceded('\\', winnow::token::any)))).parse_next(i)
 }
 
 /// Zero or more of either:
 /// 1. Any character except ' or \
 /// 2. Any character preceded by \
-fn inner_single_quote(i: &mut Input<'_>) -> PResult<()> {
+fn inner_single_quote(i: &mut Input<'_>) -> ModalResult<()> {
     repeat(0.., alt((none_of(('\'', '\\')), preceded('\\', winnow::token::any)))).parse_next(i)
 }
 
-fn string(i: &mut Input<'_>) -> PResult<Token> {
+fn string(i: &mut Input<'_>) -> ModalResult<Token> {
     let single_quoted_string = ('\'', inner_single_quote.take(), '\'');
     let double_quoted_string = ('"', inner_double_quote.take(), '"');
     let either_quoted_string = alt((single_quoted_string.take(), double_quoted_string.take()));
@@ -357,7 +357,7 @@ fn string(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn import_keyword(i: &mut Input<'_>) -> PResult<Token> {
+fn import_keyword(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = "import".with_span().parse_next(i)?;
     let token_type = peek(alt((' '.map(|_| TokenType::Keyword), '('.map(|_| TokenType::Word)))).parse_next(i)?;
     Ok(Token::from_range(
@@ -368,7 +368,7 @@ fn import_keyword(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn unambiguous_keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
+fn unambiguous_keyword_type_or_word(i: &mut Input<'_>) -> ModalResult<Token> {
     let mut w = word.parse_next(i)?;
     if let Some(token_type) = RESERVED_WORDS.get(w.value.as_str()) {
         w.token_type = *token_type;
@@ -376,7 +376,7 @@ fn unambiguous_keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
     Ok(w)
 }
 
-fn keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
+fn keyword_type_or_word(i: &mut Input<'_>) -> ModalResult<Token> {
     alt((import_keyword, unambiguous_keyword_type_or_word)).parse_next(i)
 }
 
