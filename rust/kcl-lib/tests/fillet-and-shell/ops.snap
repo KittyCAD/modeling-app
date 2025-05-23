@@ -642,15 +642,10 @@ description: Operations executed fillet-and-shell.kcl
     "name": "shell",
     "unlabeledArg": {
       "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
       },
       "sourceRange": []
     },
