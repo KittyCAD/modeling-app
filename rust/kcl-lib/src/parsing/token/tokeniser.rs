@@ -103,8 +103,9 @@ pub(super) fn token(i: &mut Input<'_>) -> ModalResult<Token> {
                 return Err(x);
             }
 
+            let start = i.current_token_start();
             Ok(Token::from_range(
-                i.location()..i.location() + 1,
+                start..start + 1,
                 i.state.module_id,
                 TokenType::Unknown,
                 i.next_slice(1).to_string(),
@@ -403,7 +404,7 @@ mod tests {
     // Returns the token and whether any more input is remaining to tokenize.
     fn assert_parse_ok<'i, P, O, E>(mut p: P, s: &'i str) -> (O, bool)
     where
-        E: std::fmt::Debug,
+        E: std::fmt::Debug + std::fmt::Display,
         O: std::fmt::Debug,
         P: Parser<Input<'i>, O, E>,
     {

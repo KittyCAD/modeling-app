@@ -177,24 +177,19 @@ impl<I, C> winnow::error::ParserError<I> for ContextError<C>
 where
     I: Stream,
 {
-    #[inline]
-    fn from_error_kind(_input: &I, _kind: winnow::error::ErrorKind) -> Self {
+    /// Generally, `Self`
+    ///
+    /// Mostly used for [`ErrMode`]
+    type Inner = Self;
+
+    /// Creates an error from the input position
+    fn from_input(_input: &I) -> Self {
         Self::default()
     }
 
-    #[inline]
-    fn append(
-        self,
-        _input: &I,
-        _input_checkpoint: &<I as Stream>::Checkpoint,
-        _kind: winnow::error::ErrorKind,
-    ) -> Self {
-        self
-    }
-
-    #[inline]
-    fn or(self, other: Self) -> Self {
-        other
+    /// Unwrap the mode, returning the underlying error, if present
+    fn into_inner(self) -> winnow::Result<Self::Inner, Self> {
+        Ok(self)
     }
 }
 
@@ -210,8 +205,9 @@ where
 }
 
 impl<C, I> winnow::error::FromExternalError<I, CompilationError> for ContextError<C> {
+    /// Like [`ParserError::from_input`] but also include an external error.
     #[inline]
-    fn from_external_error(_input: &I, _kind: winnow::error::ErrorKind, e: CompilationError) -> Self {
+    fn from_external_error(_input: &I, e: CompilationError) -> Self {
         let mut err = Self::default();
         {
             err.cause = Some(e);
@@ -799,7 +795,7 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> ModalResult<Node<ArrayEx
     ignore_whitespace(i);
 
     let maybe_end = close_bracket(i).map_err(|e| {
-        if let Some(mut err) = e.clone().into_inner() {
+        if let Ok(mut err) = e.clone().into_inner() {
             let start_range = open.as_source_range();
             let end_range = i.as_source_range();
             err.cause = Some(CompilationError::fatal(
@@ -1017,7 +1013,7 @@ pub(crate) fn object(i: &mut TokenSlice) -> ModalResult<Node<ObjectExpression>> 
     ignore_whitespace(i);
 
     let maybe_end = close_brace(i).map_err(|e| {
-        if let Some(mut err) = e.clone().into_inner() {
+        if let Ok(mut err) = e.clone().into_inner() {
             let start_range = open.as_source_range();
             let end_range = i.as_source_range();
             err.cause = Some(CompilationError::fatal(
@@ -1781,7 +1777,7 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
             })
             .context(expected("the 'from' keyword"))
             .parse_next(i)
-            .map_err(|e| e.cut())?;
+            .map_err(|e: ErrMode<ContextError>| e.cut())?;
 
             require_whitespace(i)?;
 
@@ -2498,7 +2494,7 @@ fn tag(i: &mut TokenSlice) -> ModalResult<Node<TagDeclarator>> {
         .try_map(Node::<TagDeclarator>::try_from)
         .context(expected("a tag, e.g. '$seg01' or '$line01'"))
         .parse_next(i)
-        .map_err(|e| e.cut())?;
+        .map_err(|e: ErrMode<ContextError>| e.cut())?;
     // Now that we've parsed a tag declarator, verify that it's not a stdlib
     // name.  If it is, stop backtracking.
     tag_declarator
