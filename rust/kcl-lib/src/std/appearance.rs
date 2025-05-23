@@ -22,7 +22,7 @@ lazy_static::lazy_static! {
 }
 
 /// Construct a color from its red, blue and green components.
-pub async fn rgb(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn hex_string(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let rgb: [TyF64; 3] = args.get_unlabeled_kw_arg_typed(
         "rgb",
         &RuntimeType::Array(Box::new(RuntimeType::count()), ArrayLen::Known(3)),
@@ -37,10 +37,10 @@ pub async fn rgb(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         )));
     }
 
-    inner_rgb(rgb, exec_state, args).await
+    inner_hex_string(rgb, exec_state, args).await
 }
 
-async fn inner_rgb(rgb: [TyF64; 3], _: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+async fn inner_hex_string(rgb: [TyF64; 3], _: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let [r, g, b] = rgb.map(|n| n.n.floor() as u32);
     let s = format!("#{r:02x}{g:02x}{b:02x}");
     Ok(KclValue::String {

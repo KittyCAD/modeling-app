@@ -5,7 +5,7 @@
 /// startSketchOn(-XZ)
 ///   |> circle(center = [0, 0], radius = 10)
 ///   |> extrude(length = 4)
-///   |> appearance(color = appearance::rgb([50, 160, 160]))
+///   |> appearance(color = appearance::hexString([50, 160, 160]))
 /// ```
 /// ```
 /// sideLen = 30
@@ -18,7 +18,7 @@
 ///   return startSketchOn(XY)
 ///     |> polygon(radius = sideLen / 2, numSides = 4, center = [center, 0])
 ///     |> extrude(length = sideLen)
-///     |> appearance(color = appearance::rgb([0, g, b]), metalness = 80, roughness = 20)
+///     |> appearance(color = appearance::hexString([0, g, b]), metalness = 80, roughness = 20)
 /// }
 /// 
 /// // Create n cubes, shifting each one over in a line.
@@ -41,7 +41,7 @@
 ///   return startSketchOn(offsetPlane(XZ, offset))
 ///     |> circle(diameter = sideLen, center = [sideLen * x * 1.5, sideLen * y * 1.5])
 ///     |> extrude(length = sideLen)
-///     |> appearance(color = appearance::rgb([red, g, b]), metalness = 80, roughness = 40)
+///     |> appearance(color = appearance::hexString([red, g, b]), metalness = 80, roughness = 40)
 /// }
 /// 
 /// fn grid(offset, red) {
@@ -57,7 +57,7 @@
 /// ```
 ///
 @(impl = std_rust)
-export fn rgb(
+export fn hexString(
   /// The red, blue and green components of the color.
   /// Must be between 0 and 255.
   @rgb: [number(_); 3],
