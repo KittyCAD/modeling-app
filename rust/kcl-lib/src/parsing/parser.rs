@@ -2731,15 +2731,11 @@ fn end_exclusive_range(i: &mut TokenSlice) -> PResult<Token> {
         } else {
             Err(CompilationError::fatal(
                 token.as_source_range(),
-                format!(
-                    "expected a '..' (double period) found {} which is {}",
-                    token.value.as_str(),
-                    token.token_type
-                ),
+                format!("expected a '..<' but found {}", token.value.as_str()),
             ))
         }
     })
-    .context(expected("the .. operator, used for array ranges like [0..10]"))
+    .context(expected("the ..< operator, used for array ranges like [0..<10]"))
     .parse_next(i)
 }
 
