@@ -13,6 +13,141 @@ description: Result of parsing t-slot-rail.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "name": "interiorRadius",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "raw": "0.01",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.01,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "preComments": [
+          "// Define parameters"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "scoreDepth",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "raw": "0.018",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.018,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "arcEnd",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "raw": "0.0275",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.0275,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "holeDiameter",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "raw": "0.262",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.262,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
             "name": "railTslot",
             "start": 0,
             "type": "Identifier"
@@ -407,16 +542,20 @@ description: Result of parsing t-slot-rail.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
-                                "raw": "0.01",
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "interiorRadius",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.01,
-                                  "suffix": "None"
-                                }
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
@@ -510,16 +649,20 @@ description: Result of parsing t-slot-rail.kcl
                                 },
                                 "operator": "-",
                                 "right": {
+                                  "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
-                                  "raw": "0.01",
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "interiorRadius",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 0.01,
-                                    "suffix": "None"
-                                  }
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 0,
                                 "type": "BinaryExpression",
@@ -591,16 +734,20 @@ description: Result of parsing t-slot-rail.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
-                                "raw": "0.01",
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "interiorRadius",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.01,
-                                  "suffix": "None"
-                                }
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
@@ -638,16 +785,20 @@ description: Result of parsing t-slot-rail.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
-                                "raw": "0.01",
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "interiorRadius",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.01,
-                                  "suffix": "None"
-                                }
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
@@ -715,16 +866,20 @@ description: Result of parsing t-slot-rail.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
-                                "raw": "0.01",
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "interiorRadius",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.01,
-                                  "suffix": "None"
-                                }
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
@@ -861,16 +1016,20 @@ description: Result of parsing t-slot-rail.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
-                                "raw": "0.018",
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "scoreDepth",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.018,
-                                  "suffix": "None"
-                                }
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
@@ -1007,16 +1166,20 @@ description: Result of parsing t-slot-rail.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
-                                "raw": "0.018",
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "scoreDepth",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.018,
-                                  "suffix": "None"
-                                }
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
@@ -1112,28 +1275,36 @@ description: Result of parsing t-slot-rail.kcl
                                 "commentStart": 0,
                                 "elements": [
                                   {
+                                    "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
-                                    "raw": "0.0275",
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "arcEnd",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 0.0275,
-                                      "suffix": "None"
-                                    }
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   {
+                                    "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
-                                    "raw": "0.0275",
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "arcEnd",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 0.0275,
-                                      "suffix": "None"
-                                    }
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 ],
                                 "end": 0,
@@ -1713,16 +1884,20 @@ description: Result of parsing t-slot-rail.kcl
                                       "commentStart": 0,
                                       "end": 0,
                                       "left": {
+                                        "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
-                                        "raw": ".262",
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "name": "holeDiameter",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "Literal",
-                                        "type": "Literal",
-                                        "value": {
-                                          "value": 0.262,
-                                          "suffix": "None"
-                                        }
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "operator": "/",
                                       "right": {
@@ -2232,7 +2407,19 @@ description: Result of parsing t-slot-rail.kcl
       }
     ],
     "nonCodeMeta": {
-      "nonCodeNodes": {},
+      "nonCodeNodes": {
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
       "startNodes": [
         {
           "commentStart": 0,
