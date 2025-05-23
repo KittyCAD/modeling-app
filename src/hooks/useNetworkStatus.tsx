@@ -112,7 +112,7 @@ export function useNetworkStatus() {
     if (nextOverallState === overallState) return
 
     setOverallState(nextOverallState)
-  }, [hasIssues, internetConnected, pingEMA])
+  }, [hasIssues, internetConnected, pingEMA, overallState])
 
   useEffect(() => {
     const offlineCallback = () => {
