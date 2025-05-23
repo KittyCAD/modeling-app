@@ -209,15 +209,10 @@ description: Operations executed surgical-drill-guide.kcl
     "labeledArgs": {
       "tools": {
         "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
         },
         "sourceRange": []
       }
