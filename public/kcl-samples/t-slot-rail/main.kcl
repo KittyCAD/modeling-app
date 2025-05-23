@@ -14,7 +14,7 @@ fn railTslot(railHeight, railLength) {
     |> tangentialArc(angle = 135, radius = 0.01)
     |> xLine(endAbsolute = .5 - (.320 / 2) - 0.01)
     |> tangentialArc(angle = -90, radius = 0.01)
-+    |> yLine(endAbsolute = 0.01)
+    |> yLine(endAbsolute = 0.01)
     |> tangentialArc(angle = -90, radius = 0.01)
     |> xLine(length = -0.03)
     |> arc(angleStart = 0, angleEnd = 180, radius = 0.018)
@@ -37,6 +37,7 @@ fn railTslot(railHeight, railLength) {
          origin = [0.5, 0.0]
        })
     |> close()
+
     // Sketch a dimensioned hole in the center of the profile
     |> subtract2d(tool = circle(center = [railHeight / 2, railHeight / 2], radius = .262 / 2))
 
