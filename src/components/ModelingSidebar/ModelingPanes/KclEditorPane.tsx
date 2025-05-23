@@ -213,7 +213,6 @@ export const KclEditorPane = () => {
 
             // Update diagnostics as they are cleared when the editor is unmounted.
             // Without this, errors would not be shown when closing and reopening the editor.
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             kclManager
               .safeParse(codeManager.code)
               .then(() => {
