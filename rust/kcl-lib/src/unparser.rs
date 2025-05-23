@@ -583,14 +583,16 @@ impl ArrayRangeExpression {
         let s1 = self.start_element.recast(options, 0, ExprContext::Other);
         let s2 = self.end_element.recast(options, 0, ExprContext::Other);
 
+        let range_op = if self.end_inclusive { ".." } else { "..<" };
+
         // Format these items into a one-line array. Put spaces around the `..` if either expression
         // is non-trivial. This is a bit arbitrary but people seem to like simple ranges to be formatted
         // tightly, but this is a misleading visual representation of the precedence if the range
         // components are compound expressions.
         if expr_is_trivial(&self.start_element) && expr_is_trivial(&self.end_element) {
-            format!("[{s1}..{s2}]")
+            format!("[{s1}{range_op}{s2}]")
         } else {
-            format!("[{s1} .. {s2}]")
+            format!("[{s1} {range_op} {s2}]")
         }
 
         // Assume a range expression fits on one line.
@@ -2793,6 +2795,14 @@ yo = 'bing'
   // this is also a comment
 }
 "#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(recasted, code);
+    }
+
+    #[test]
+    fn array_range_end_exclusive() {
+        let code = "myArray = [0..<4]\n";
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast(&FormatOptions::new(), 0);
         assert_eq!(recasted, code);
