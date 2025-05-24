@@ -208,7 +208,7 @@ jobs:
 
   web:
     name: test:e2e:web
-    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
+    runs-on: namespace-profile-macos-8-cores
     needs: [prepare-wasm]
     steps:
       - uses: actions/create-github-app-token@v1
