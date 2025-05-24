@@ -46,6 +46,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-appearance-hexString-0",
     "std-appearance-hexString-1",
     "std-appearance-hexString-2",
+    "std-appearance-hexString-3",
     "std-array-map-0",
     "std-array-map-1",
     "std-array-pop-0",
