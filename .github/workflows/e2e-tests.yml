@@ -100,9 +100,11 @@ jobs:
             rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
 
   snapshots:
-    name: playwright:snapshots:ubuntu
-    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
     needs: [prepare-wasm]
+
+    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
+    name: playwright:snapshots:ubuntu
+
     steps:
       - uses: actions/create-github-app-token@v1
         id: app-token
@@ -210,6 +212,7 @@ jobs:
     needs: [prepare-wasm]
 
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
@@ -282,10 +285,7 @@ jobs:
 
   desktop:
     needs: [prepare-wasm]
-    timeout-minutes: 60
-    env:
-      OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
-    name: playwright:electron:${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }} (shard ${{ matrix.shardIndex }})
+
     strategy:
       fail-fast: false
       matrix:
@@ -328,6 +328,10 @@ jobs:
             shardIndex: 2
             shardTotal: 2
     runs-on: ${{ matrix.os }}
+    name: playwright:electron:${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }} (shard ${{ matrix.shardIndex }})
+    env:
+      OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
+
     steps:
       - uses: actions/checkout@v4
 
