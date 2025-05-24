@@ -17,7 +17,7 @@ test.describe('Share link tests', () => {
       `Open in desktop app with ${codeLength}-long code ${isWindows && showsErrorOnWindows ? 'shows error' : "doesn't show error"}`,
       { tag: ['@web'] },
       async ({ page }) => {
-        if (process.env.PLATFORM !== 'web') {
+        if (process.env.TARGET !== 'web') {
           // This test is web-only
           // TODO: re-enable on CI as part of a new @web test suite
           return
