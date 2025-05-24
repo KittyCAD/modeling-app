@@ -15,7 +15,7 @@ import {
   SystemIOMachineEvents,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
-import { reportRejection } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import { joinOSPaths } from '@src/lib/paths'
@@ -120,12 +120,15 @@ export async function submitAndAwaitTextToKclSystemIO({
       return value
     })
     .catch((error) => {
-      showFailureToast('Failed to submit to Text-to-CAD API')
+      const message = err(error)
+        ? error.message
+        : 'Failed to submit to Text-to-CAD API'
+      showFailureToast(message)
       return error
     })
 
-  if (textToCadQueued instanceof Error) {
-    showFailureToast('Failed to submit to Text-to-CAD API')
+  if (err(textToCadQueued)) {
+    showFailureToast(textToCadQueued.message)
     return
   }
 
