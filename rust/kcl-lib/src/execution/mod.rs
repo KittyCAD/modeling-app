@@ -775,6 +775,10 @@ impl ExecutorContext {
         .await;
 
         let outcome = exec_state.to_exec_outcome(result.0).await;
+
+        println!("batch_end: {:#?}", self.engine.batch_end().read().await);
+        println!("responses: {:#?}", self.engine.responses().read().await);
+        println!("batch: {:#?}", self.engine.batch().read().await);
         Ok(outcome)
     }
 

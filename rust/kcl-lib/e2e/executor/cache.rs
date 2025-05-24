@@ -674,3 +674,36 @@ extrude(profile001, length = 100)"#
     assert!(first.1 != last.1, "The images should be different for the grid");
     assert_eq!(first.2, last.2, "The outcomes should be the same");
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_fillet_error_opening_closing_specific_files() {
+    let main_code = include_str!("../../tests/fillet_error_switch_files/main.kcl");
+    let switch_code = include_str!("../../tests/fillet_error_switch_files/switch_protector.kcl");
+
+    let result = cache_test(
+        "fillet_error_opening_closing_specific_files",
+        vec![
+            Variation {
+                code: main_code,
+                other_files: Vec::new(),
+                settings: &Default::default(),
+            },
+            Variation {
+                code: switch_code,
+                other_files: Vec::new(),
+                settings: &Default::default(),
+            },
+            Variation {
+                code: main_code,
+                other_files: Vec::new(),
+                settings: &Default::default(),
+            },
+        ],
+    )
+    .await;
+
+    // Make sure nothing failed.
+    result.first().unwrap();
+    result.get(1).unwrap();
+    result.last().unwrap();
+}
