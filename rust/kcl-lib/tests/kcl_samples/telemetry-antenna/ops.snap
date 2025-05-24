@@ -21,15 +21,10 @@ description: Operations executed telemetry-antenna.kcl
     "name": "revolve",
     "unlabeledArg": {
       "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
       },
       "sourceRange": []
     },

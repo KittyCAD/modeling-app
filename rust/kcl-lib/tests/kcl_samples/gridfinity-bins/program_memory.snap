@@ -12871,329 +12871,324 @@ description: Variables in memory after executing gridfinity-bins.kcl
     }
   },
   "binTop": {
-    "type": "HomArray",
-    "value": [
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4474,
+            "end": 4482,
+            "start": 4474,
+            "type": "TagDeclarator",
+            "value": "line010"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4553,
+            "end": 4561,
+            "start": 4553,
+            "type": "TagDeclarator",
+            "value": "line011"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4612,
+            "end": 4620,
+            "start": 4612,
+            "type": "TagDeclarator",
+            "value": "line012"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4639,
+            "end": 4647,
+            "start": 4639,
+            "type": "TagDeclarator",
+            "value": "line013"
+          },
+          "type": "extrudePlane"
+        }
+      ],
+      "sketch": {
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 4474,
-                "end": 4482,
-                "start": 4474,
-                "type": "TagDeclarator",
-                "value": "line010"
-              },
-              "type": "extrudePlane"
+              "sourceRange": []
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 4553,
-                "end": 4561,
-                "start": 4553,
-                "type": "TagDeclarator",
-                "value": "line011"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 4612,
-                "end": 4620,
-                "start": 4612,
-                "type": "TagDeclarator",
-                "value": "line012"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 4639,
-                "end": 4647,
-                "start": 4639,
-                "type": "TagDeclarator",
-                "value": "line013"
-              },
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "commentStart": 4474,
-                  "end": 4482,
-                  "start": 4474,
-                  "type": "TagDeclarator",
-                  "value": "line010"
-                },
-                "to": [
-                  84.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  84.0,
-                  0.0
-                ],
-                "tag": {
-                  "commentStart": 4553,
-                  "end": 4561,
-                  "start": 4553,
-                  "type": "TagDeclarator",
-                  "value": "line011"
-                },
-                "to": [
-                  84.0,
-                  126.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  84.0,
-                  126.0
-                ],
-                "tag": {
-                  "commentStart": 4612,
-                  "end": 4620,
-                  "start": 4612,
-                  "type": "TagDeclarator",
-                  "value": "line012"
-                },
-                "to": [
-                  0.0,
-                  126.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  126.0
-                ],
-                "tag": {
-                  "commentStart": 4639,
-                  "end": 4647,
-                  "start": 4639,
-                  "type": "TagDeclarator",
-                  "value": "line013"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
+            "from": [
+              0.0,
+              0.0
             ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 4.75,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "type": "plane",
-              "value": "Custom",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              }
+            "tag": {
+              "commentStart": 4474,
+              "end": 4482,
+              "start": 4474,
+              "type": "TagDeclarator",
+              "value": "line010"
             },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "tags": {
-              "line010": {
-                "type": "TagIdentifier",
-                "value": "line010"
-              },
-              "line011": {
-                "type": "TagIdentifier",
-                "value": "line011"
-              },
-              "line012": {
-                "type": "TagIdentifier",
-                "value": "line012"
-              },
-              "line013": {
-                "type": "TagIdentifier",
-                "value": "line013"
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "to": [
+              84.0,
+              0.0
+            ],
+            "type": "ToPoint",
             "units": {
               "type": "Mm"
             }
           },
-          "height": 14.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
+          {
+            "__geoMeta": {
               "id": "[uuid]",
-              "radius": {
-                "n": 3.75,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
+              "sourceRange": []
             },
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 3.75,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
+            "from": [
+              84.0,
+              0.0
+            ],
+            "tag": {
+              "commentStart": 4553,
+              "end": 4561,
+              "start": 4553,
+              "type": "TagDeclarator",
+              "value": "line011"
             },
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 3.75,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            },
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 3.75,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
+            "to": [
+              84.0,
+              126.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
             }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              84.0,
+              126.0
+            ],
+            "tag": {
+              "commentStart": 4612,
+              "end": 4620,
+              "start": 4612,
+              "type": "TagDeclarator",
+              "value": "line012"
+            },
+            "to": [
+              0.0,
+              126.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              126.0
+            ],
+            "tag": {
+              "commentStart": 4639,
+              "end": 4647,
+              "start": 4639,
+              "type": "TagDeclarator",
+              "value": "line013"
+            },
+            "to": [
+              0.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
+        "on": {
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
+          "origin": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 4.75,
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "type": "plane",
+          "value": "Custom",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          }
+        },
+        "start": {
+          "from": [
+            0.0,
+            0.0
+          ],
+          "to": [
+            0.0,
+            0.0
           ],
           "units": {
             "type": "Mm"
           },
-          "sectional": false
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          }
+        },
+        "tags": {
+          "line010": {
+            "type": "TagIdentifier",
+            "value": "line010"
+          },
+          "line011": {
+            "type": "TagIdentifier",
+            "value": "line011"
+          },
+          "line012": {
+            "type": "TagIdentifier",
+            "value": "line012"
+          },
+          "line013": {
+            "type": "TagIdentifier",
+            "value": "line013"
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": {
+          "type": "Mm"
         }
-      }
-    ]
+      },
+      "height": 14.0,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
+      "edgeCuts": [
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 3.75,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 3.75,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 3.75,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 3.75,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        }
+      ],
+      "units": {
+        "type": "Mm"
+      },
+      "sectional": false
+    }
   },
   "cornerRadius": {
     "type": "Number",
