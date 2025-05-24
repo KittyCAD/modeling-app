@@ -6,7 +6,7 @@ clockDiameter = 500
 minuteHandLength = 100
 nubDiameter = 30
 numHeight = 10
-minuteHandWidth = 30
+minuteHandWidth = 25
 hourHandWidth = 25
 hourHandLargeDiameter = 230
 minuteHandLargeDiameter = 310
@@ -280,7 +280,7 @@ profile009 = startProfile(
   |> angledLine(
        %,
        angle = minuteHandAngle - 90,
-       length = hourHandWidth / 2,
+       length = minuteHandWidth / 2,
        tag = $seg003,
      )
   |> line(
