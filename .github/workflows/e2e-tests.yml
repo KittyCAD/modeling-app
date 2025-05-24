@@ -207,10 +207,15 @@ jobs:
           git push origin ${{ github.head_ref }}
 
   web:
-    name: test:e2e:web
-    runs-on: namespace-profile-macos-8-cores
     needs: [prepare-wasm]
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
     steps:
+
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
