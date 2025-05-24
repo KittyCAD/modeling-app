@@ -2,6 +2,7 @@ import { DEV } from '@src/env'
 import isomorphicFetch from 'isomorphic-fetch'
 
 import { isDesktop } from '@src/lib/isDesktop'
+import { err } from './trap'
 
 // TODO I not sure this file should exist
 
@@ -13,7 +14,8 @@ const headers = (token?: string): HeadersInit => ({
 export default async function crossPlatformFetch<T>(
   url: string,
   options?: RequestInit,
-  token?: string
+  token?: string,
+  rewriteError = true
 ): Promise<T | Error> {
   let response = null
   let opts = options || {}
@@ -39,18 +41,18 @@ export default async function crossPlatformFetch<T>(
   }
 
   if (!response.ok) {
+    const jsonBody = await response.json().catch((e) => e)
     console.error(
-      'Failed to request endpoint: ' + url,
-      JSON.stringify(response)
+      `Failed to request endpoint: ${url}`,
+      JSON.stringify(response),
+      jsonBody
     )
-    return new Error(
-      'Failed to request endpoint: ' +
-        url +
-        ' with status: ' +
-        response.status +
-        ' ' +
-        response.statusText
-    )
+    const fallbackErrorMessage = `Failed to request endpoint: ${url} with status: ${response.status} ${response.statusText}`
+    const resolvedMessage =
+      !err(jsonBody) && 'message' in jsonBody
+        ? jsonBody.message
+        : fallbackErrorMessage
+    return new Error(resolvedMessage)
   }
 
   const data = (await response.json()) as T | Error
