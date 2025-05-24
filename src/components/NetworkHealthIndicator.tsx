@@ -10,8 +10,8 @@ import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 
 export const NETWORK_HEALTH_TEXT: Record<NetworkHealthState, string> = {
-  [NetworkHealthState.Ok]: 'Connected',
-  [NetworkHealthState.Weak]: 'Weak',
+  [NetworkHealthState.Ok]: 'Strong',
+  [NetworkHealthState.Weak]: 'Ok',
   [NetworkHealthState.Issue]: 'Problem',
   [NetworkHealthState.Disconnected]: 'Offline',
 }
@@ -53,8 +53,8 @@ const overallConnectionStateColor: Record<NetworkHealthState, IconColorConfig> =
       bg: 'bg-succeed-10/30 dark:bg-succeed-80/50',
     },
     [NetworkHealthState.Weak]: {
-      icon: 'text-warn-80 dark:text-warn-10',
-      bg: 'bg-warn-10 dark:bg-warn-80/80',
+      icon: 'text-succeed-50 dark:text-succeed-30',
+      bg: 'bg-lime-300/70 dark:bg-lime-300/30',
     },
     [NetworkHealthState.Issue]: {
       icon: 'text-destroy-80 dark:text-destroy-10',
