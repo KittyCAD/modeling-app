@@ -27,7 +27,7 @@ description: Operations executed involute_circular_units.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 0.2992,
+            "value": 0.299,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -39,7 +39,7 @@ description: Operations executed involute_circular_units.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 4.9334,
+            "value": 4.933,
             "ty": {
               "type": "Default",
               "len": {

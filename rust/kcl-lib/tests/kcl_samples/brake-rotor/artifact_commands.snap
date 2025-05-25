@@ -182,8 +182,8 @@ description: Artifact commands brake-rotor.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 11.7072,
-          "y": 111.3865
+          "x": 11.707,
+          "y": 111.386
         },
         "radius": 3.0,
         "start": {
@@ -207,83 +207,8 @@ description: Artifact commands brake-rotor.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 33.6465,
-          "y": 125.5704
-        },
-        "radius": 3.0,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 60.197,
-          "y": 135.2047
-        },
-        "radius": 3.0,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 11.7072,
-          "y": 111.3865
-        },
-        "radius": 3.0,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 33.6465,
-          "y": 125.5704
+          "x": 33.646,
+          "y": 125.57
         },
         "radius": 3.0,
         "start": {
@@ -308,7 +233,82 @@ description: Artifact commands brake-rotor.kcl
         "type": "arc",
         "center": {
           "x": 60.197,
-          "y": 135.2047
+          "y": 135.205
+        },
+        "radius": 3.0,
+        "start": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 11.707,
+          "y": 111.386
+        },
+        "radius": 3.0,
+        "start": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 33.646,
+          "y": 125.57
+        },
+        "radius": 3.0,
+        "start": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 60.197,
+          "y": 135.205
         },
         "radius": 3.0,
         "start": {
@@ -330,8 +330,8 @@ description: Artifact commands brake-rotor.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 14.7072,
-        "y": 111.3865,
+        "x": 14.707,
+        "y": 111.386,
         "z": 0.0
       }
     }
@@ -343,47 +343,8 @@ description: Artifact commands brake-rotor.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 36.6465,
-        "y": 125.5704,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 63.197,
-        "y": 135.2047,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 14.7072,
-        "y": 111.3865,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 36.6465,
-        "y": 125.5704,
+        "x": 36.646,
+        "y": 125.57,
         "z": 0.0
       }
     }
@@ -396,7 +357,46 @@ description: Artifact commands brake-rotor.kcl
       "path": "[uuid]",
       "to": {
         "x": 63.197,
-        "y": 135.2047,
+        "y": 135.205,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 14.707,
+        "y": 111.386,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 36.646,
+        "y": 125.57,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 63.197,
+        "y": 135.205,
         "z": 0.0
       }
     }
@@ -2898,7 +2898,7 @@ description: Artifact commands brake-rotor.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 3.4995,
+          "x": 3.5,
           "y": 40.0,
           "z": 0.0
         },
@@ -2915,7 +2915,7 @@ description: Artifact commands brake-rotor.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 56.5005,
+          "x": 56.5,
           "y": 0.0,
           "z": 0.0
         },
@@ -2949,7 +2949,7 @@ description: Artifact commands brake-rotor.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -51.9379,
+          "x": -51.938,
           "y": 0.0,
           "z": 0.0
         },
@@ -2966,7 +2966,7 @@ description: Artifact commands brake-rotor.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -3.0621,
+          "x": -3.062,
           "y": -40.0,
           "z": 0.0
         },

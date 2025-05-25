@@ -131,8 +131,8 @@ description: Artifact commands bone-plate.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 20.6923,
-          "y": 12.7009
+          "x": 20.692,
+          "y": 12.701
         },
         "radius": 5.0,
         "start": {
@@ -156,7 +156,7 @@ description: Artifact commands bone-plate.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 143.6312,
+          "x": 143.631,
           "y": 16.746
         },
         "radius": 120.0,
@@ -181,8 +181,8 @@ description: Artifact commands bone-plate.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 21.4236,
-          "y": 29.4469
+          "x": 21.424,
+          "y": 29.447
         },
         "radius": 5.0,
         "start": {
@@ -206,7 +206,7 @@ description: Artifact commands bone-plate.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 144.3625,
+          "x": 144.362,
           "y": 33.492
         },
         "radius": 120.0,
@@ -231,8 +231,8 @@ description: Artifact commands bone-plate.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 22.1548,
-          "y": 46.1929
+          "x": 22.155,
+          "y": 46.193
         },
         "radius": 5.0,
         "start": {
@@ -256,7 +256,7 @@ description: Artifact commands bone-plate.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 195.0937,
+          "x": 195.094,
           "y": 50.238
         },
         "radius": 170.0,
@@ -282,7 +282,7 @@ description: Artifact commands bone-plate.kcl
         "type": "tangential_arc_to",
         "to": {
           "x": 15.775,
-          "y": 23.8722,
+          "y": 23.872,
           "z": 0.0
         },
         "angle_snap_increment": null
@@ -315,8 +315,8 @@ description: Artifact commands bone-plate.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.4095,
-          "y": 23.1564,
+          "x": 0.41,
+          "y": 23.156,
           "z": 0.0
         },
         "relative": true
@@ -332,8 +332,8 @@ description: Artifact commands bone-plate.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": 3.6005,
-          "y": 0.2036,
+          "x": 3.6,
+          "y": 0.204,
           "z": 0.0
         },
         "angle_snap_increment": null
@@ -349,8 +349,8 @@ description: Artifact commands bone-plate.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 3.3422,
-          "y": -25.4313,
+          "x": 3.342,
+          "y": -25.431,
           "z": 0.0
         },
         "relative": true
@@ -366,8 +366,8 @@ description: Artifact commands bone-plate.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": -15.9222,
-          "y": -29.4787,
+          "x": -15.922,
+          "y": -29.479,
           "z": 0.0
         },
         "angle_snap_increment": null
@@ -400,8 +400,8 @@ description: Artifact commands bone-plate.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -7.3998,
-          "y": -48.4987,
+          "x": -7.4,
+          "y": -48.499,
           "z": 0.0
         },
         "relative": true

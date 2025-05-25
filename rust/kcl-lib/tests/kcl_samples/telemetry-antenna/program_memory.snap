@@ -96,8 +96,8 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "value": "seg01"
           },
           "to": [
-            0.2291,
-            1.1758
+            0.229,
+            1.176
           ],
           "type": "ToPoint",
           "units": {
@@ -111,12 +111,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
           },
           "ccw": true,
           "center": [
-            0.0281,
-            1.1582
+            0.028,
+            1.158
           ],
           "from": [
-            0.2291,
-            1.1758
+            0.229,
+            1.176
           ],
           "tag": null,
           "to": [
@@ -221,8 +221,8 @@ description: Variables in memory after executing telemetry-antenna.kcl
           ],
           "tag": null,
           "to": [
-            0.2677,
-            -0.7123
+            0.268,
+            -0.712
           ],
           "type": "ToPoint",
           "units": {
@@ -235,13 +235,13 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "sourceRange": []
           },
           "from": [
-            0.2677,
-            -0.7123
+            0.268,
+            -0.712
           ],
           "tag": null,
           "to": [
-            0.2677,
-            -0.5873
+            0.268,
+            -0.587
           ],
           "type": "ToPoint",
           "units": {
@@ -254,32 +254,13 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "sourceRange": []
           },
           "from": [
-            0.2677,
-            -0.5873
+            0.268,
+            -0.587
           ],
           "tag": null,
           "to": [
             0.25,
-            -0.5696
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.25,
-            -0.5696
-          ],
-          "tag": null,
-          "to": [
-            0.25,
-            -0.4446
+            -0.57
           ],
           "type": "ToPoint",
           "units": {
@@ -293,12 +274,31 @@ description: Variables in memory after executing telemetry-antenna.kcl
           },
           "from": [
             0.25,
-            -0.4446
+            -0.57
+          ],
+          "tag": null,
+          "to": [
+            0.25,
+            -0.445
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            0.25,
+            -0.445
           ],
           "tag": null,
           "to": [
             0.275,
-            -0.4446
+            -0.445
           ],
           "type": "ToPoint",
           "units": {
@@ -312,12 +312,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
           },
           "from": [
             0.275,
-            -0.4446
+            -0.445
           ],
           "tag": null,
           "to": [
             0.275,
-            -0.4196
+            -0.42
           ],
           "type": "ToPoint",
           "units": {
@@ -331,12 +331,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
           },
           "from": [
             0.275,
-            -0.4196
+            -0.42
           ],
           "tag": null,
           "to": [
-            0.3125,
-            -0.4196
+            0.313,
+            -0.42
           ],
           "type": "ToPoint",
           "units": {
@@ -349,12 +349,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "sourceRange": []
           },
           "from": [
-            0.3125,
-            -0.4196
+            0.313,
+            -0.42
           ],
           "tag": null,
           "to": [
-            0.3125,
+            0.313,
             -0.25
           ],
           "type": "ToPoint",
@@ -368,7 +368,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "sourceRange": []
           },
           "from": [
-            0.3125,
+            0.313,
             -0.25
           ],
           "tag": null,
@@ -706,8 +706,8 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "value": "seg01"
             },
             "to": [
-              0.2291,
-              1.1758
+              0.229,
+              1.176
             ],
             "type": "ToPoint",
             "units": {
@@ -721,12 +721,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
             },
             "ccw": true,
             "center": [
-              0.0281,
-              1.1582
+              0.028,
+              1.158
             ],
             "from": [
-              0.2291,
-              1.1758
+              0.229,
+              1.176
             ],
             "tag": null,
             "to": [
@@ -831,8 +831,8 @@ description: Variables in memory after executing telemetry-antenna.kcl
             ],
             "tag": null,
             "to": [
-              0.2677,
-              -0.7123
+              0.268,
+              -0.712
             ],
             "type": "ToPoint",
             "units": {
@@ -845,13 +845,13 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "sourceRange": []
             },
             "from": [
-              0.2677,
-              -0.7123
+              0.268,
+              -0.712
             ],
             "tag": null,
             "to": [
-              0.2677,
-              -0.5873
+              0.268,
+              -0.587
             ],
             "type": "ToPoint",
             "units": {
@@ -864,32 +864,13 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "sourceRange": []
             },
             "from": [
-              0.2677,
-              -0.5873
+              0.268,
+              -0.587
             ],
             "tag": null,
             "to": [
               0.25,
-              -0.5696
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.25,
-              -0.5696
-            ],
-            "tag": null,
-            "to": [
-              0.25,
-              -0.4446
+              -0.57
             ],
             "type": "ToPoint",
             "units": {
@@ -903,12 +884,31 @@ description: Variables in memory after executing telemetry-antenna.kcl
             },
             "from": [
               0.25,
-              -0.4446
+              -0.57
+            ],
+            "tag": null,
+            "to": [
+              0.25,
+              -0.445
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.25,
+              -0.445
             ],
             "tag": null,
             "to": [
               0.275,
-              -0.4446
+              -0.445
             ],
             "type": "ToPoint",
             "units": {
@@ -922,12 +922,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
             },
             "from": [
               0.275,
-              -0.4446
+              -0.445
             ],
             "tag": null,
             "to": [
               0.275,
-              -0.4196
+              -0.42
             ],
             "type": "ToPoint",
             "units": {
@@ -941,12 +941,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
             },
             "from": [
               0.275,
-              -0.4196
+              -0.42
             ],
             "tag": null,
             "to": [
-              0.3125,
-              -0.4196
+              0.313,
+              -0.42
             ],
             "type": "ToPoint",
             "units": {
@@ -959,12 +959,12 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "sourceRange": []
             },
             "from": [
-              0.3125,
-              -0.4196
+              0.313,
+              -0.42
             ],
             "tag": null,
             "to": [
-              0.3125,
+              0.313,
               -0.25
             ],
             "type": "ToPoint",
@@ -978,7 +978,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               "sourceRange": []
             },
             "from": [
-              0.3125,
+              0.313,
               -0.25
             ],
             "tag": null,

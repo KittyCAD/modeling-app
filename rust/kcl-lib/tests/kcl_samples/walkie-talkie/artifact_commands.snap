@@ -584,7 +584,7 @@ description: Artifact commands walkie-talkie.kcl
       "path": "[uuid]",
       "to": {
         "x": -28.575,
-        "y": 41.4225,
+        "y": 41.422,
         "z": 0.0
       }
     }
@@ -612,7 +612,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -22.3725,
+          "x": -22.372,
           "y": 47.625,
           "z": 0.0
         },
@@ -629,7 +629,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 22.3725,
+          "x": 22.372,
           "y": 47.625,
           "z": 0.0
         },
@@ -647,7 +647,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 28.575,
-          "y": 41.4225,
+          "y": 41.422,
           "z": 0.0
         },
         "relative": false
@@ -664,7 +664,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 28.575,
-          "y": -41.4225,
+          "y": -41.422,
           "z": 0.0
         },
         "relative": false
@@ -680,7 +680,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 22.3725,
+          "x": 22.372,
           "y": -47.625,
           "z": 0.0
         },
@@ -697,7 +697,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -22.3725,
+          "x": -22.372,
           "y": -47.625,
           "z": 0.0
         },
@@ -715,7 +715,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": -28.575,
-          "y": -41.4225,
+          "y": -41.422,
           "z": 0.0
         },
         "relative": false
@@ -1349,7 +1349,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.7938,
+          "x": 0.794,
           "y": 0.0,
           "z": 0.0
         },
@@ -1367,7 +1367,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -0.7938,
+          "y": -0.794,
           "z": 0.0
         },
         "relative": true
@@ -1383,7 +1383,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.7938,
+          "x": -0.794,
           "y": 0.0,
           "z": 0.0
         },
@@ -5720,7 +5720,7 @@ description: Artifact commands walkie-talkie.kcl
       "path": "[uuid]",
       "to": {
         "x": -28.321,
-        "y": 41.3327,
+        "y": 41.333,
         "z": 0.0
       }
     }
@@ -5748,7 +5748,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -22.2827,
+          "x": -22.283,
           "y": 47.371,
           "z": 0.0
         },
@@ -5765,7 +5765,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 22.2827,
+          "x": 22.283,
           "y": 47.371,
           "z": 0.0
         },
@@ -5783,7 +5783,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 28.321,
-          "y": 41.3327,
+          "y": 41.333,
           "z": 0.0
         },
         "relative": false
@@ -5800,7 +5800,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 28.321,
-          "y": -41.3327,
+          "y": -41.333,
           "z": 0.0
         },
         "relative": false
@@ -5816,7 +5816,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 22.2827,
+          "x": 22.283,
           "y": -47.371,
           "z": 0.0
         },
@@ -5833,7 +5833,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -22.2827,
+          "x": -22.283,
           "y": -47.371,
           "z": 0.0
         },
@@ -5851,7 +5851,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": -28.321,
-          "y": -41.3327,
+          "y": -41.333,
           "z": 0.0
         },
         "relative": false
@@ -8837,7 +8837,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": -6.096,
-          "y": -45.5336,
+          "y": -45.534,
           "z": 0.0
         },
         "relative": false
@@ -8870,7 +8870,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 3.2004,
+          "x": 3.2,
           "y": 0.0,
           "z": 0.0
         },
@@ -8904,7 +8904,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -2.8956,
+          "x": -2.896,
           "y": 0.0,
           "z": 0.0
         },
@@ -8921,8 +8921,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -2.8956,
-          "y": -42.0905,
+          "x": -2.896,
+          "y": -42.091,
           "z": 0.0
         },
         "relative": false
@@ -8973,7 +8973,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": -0.762,
-          "y": -0.8214,
+          "y": -0.821,
           "z": 0.0
         },
         "relative": true
@@ -8990,7 +8990,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.8214,
+          "y": 0.821,
           "z": 0.0
         },
         "relative": true
@@ -9007,7 +9007,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": -7.62,
-          "y": -41.3285,
+          "y": -41.329,
           "z": 0.0
         },
         "relative": false
@@ -9040,8 +9040,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -4.7179,
-          "y": -42.4715,
+          "x": -4.718,
+          "y": -42.472,
           "z": 0.0
         },
         "relative": false
@@ -9096,7 +9096,7 @@ description: Artifact commands walkie-talkie.kcl
       "path": "[uuid]",
       "to": {
         "x": 2.098,
-        "y": -41.6763,
+        "y": -41.676,
         "z": 0.0
       }
     }
@@ -9109,7 +9109,7 @@ description: Artifact commands walkie-talkie.kcl
       "path": "[uuid]",
       "to": {
         "x": 8.448,
-        "y": -41.6763,
+        "y": -41.676,
         "z": 0.0
       }
     }
@@ -9151,8 +9151,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.4986,
-          "y": -43.8105
+          "x": 0.499,
+          "y": -43.81
         },
         "radius": 2.6670000000000003,
         "start": {
@@ -9176,8 +9176,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 6.8486,
-          "y": -43.8105
+          "x": 6.849,
+          "y": -43.81
         },
         "radius": 2.6670000000000003,
         "start": {
@@ -9201,8 +9201,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.8292,
-          "y": 0.8938,
+          "x": 0.829,
+          "y": 0.894,
           "z": 0.0
         },
         "relative": true
@@ -9218,8 +9218,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.8292,
-          "y": 0.8938,
+          "x": 0.829,
+          "y": 0.894,
           "z": 0.0
         },
         "relative": true
@@ -9235,8 +9235,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.5009,
-          "y": -43.8086
+          "x": 0.501,
+          "y": -43.809
         },
         "radius": 1.46304,
         "start": {
@@ -9260,8 +9260,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 6.8509,
-          "y": -43.8086
+          "x": 6.851,
+          "y": -43.809
         },
         "radius": 1.46304,
         "start": {
@@ -9331,8 +9331,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -1.0922,
-        "y": -45.9537,
+        "x": -1.092,
+        "y": -45.954,
         "z": 0.0
       }
     }
@@ -9344,8 +9344,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 5.2578,
-        "y": -45.9537,
+        "x": 5.258,
+        "y": -45.954,
         "z": 0.0
       }
     }
@@ -9387,8 +9387,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.5073,
-          "y": -43.8195
+          "x": 0.507,
+          "y": -43.82
         },
         "radius": 2.6670000000000003,
         "start": {
@@ -9412,8 +9412,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 6.8573,
-          "y": -43.8195
+          "x": 6.857,
+          "y": -43.82
         },
         "radius": 2.6670000000000003,
         "start": {
@@ -9437,8 +9437,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.8292,
-          "y": -0.8938,
+          "x": -0.829,
+          "y": -0.894,
           "z": 0.0
         },
         "relative": true
@@ -9454,8 +9454,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.8292,
-          "y": -0.8938,
+          "x": -0.829,
+          "y": -0.894,
           "z": 0.0
         },
         "relative": true
@@ -9472,7 +9472,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "arc",
         "center": {
           "x": 0.505,
-          "y": -43.8214
+          "y": -43.821
         },
         "radius": 1.46304,
         "start": {
@@ -9497,7 +9497,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "arc",
         "center": {
           "x": 6.855,
-          "y": -43.8214
+          "y": -43.821
         },
         "radius": 1.46304,
         "start": {
@@ -9718,7 +9718,7 @@ description: Artifact commands walkie-talkie.kcl
       "path": "[uuid]",
       "to": {
         "x": -3.175,
-        "y": 1.5875,
+        "y": 1.588,
         "z": 0.0
       }
     }

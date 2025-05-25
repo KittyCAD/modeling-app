@@ -1071,8 +1071,8 @@ description: Variables in memory after executing bone-plate.kcl
             "radius": 120.0,
             "tag": null,
             "to": [
-              23.1923,
-              8.3708
+              23.192,
+              8.371
             ],
             "type": "Arc",
             "units": {
@@ -1086,17 +1086,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              20.6923,
-              12.7009
+              20.692,
+              12.701
             ],
             "from": [
-              23.1923,
-              8.3708
+              23.192,
+              8.371
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              23.6312,
+              23.631,
               16.746
             ],
             "type": "Arc",
@@ -1111,18 +1111,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              143.6312,
+              143.631,
               16.746
             ],
             "from": [
-              23.6312,
+              23.631,
               16.746
             ],
             "radius": 120.0,
             "tag": null,
             "to": [
-              23.9236,
-              25.1168
+              23.924,
+              25.117
             ],
             "type": "Arc",
             "units": {
@@ -1136,17 +1136,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              21.4236,
-              29.4469
+              21.424,
+              29.447
             ],
             "from": [
-              23.9236,
-              25.1168
+              23.924,
+              25.117
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              24.3625,
+              24.362,
               33.492
             ],
             "type": "Arc",
@@ -1161,18 +1161,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              144.3625,
+              144.362,
               33.492
             ],
             "from": [
-              24.3625,
+              24.362,
               33.492
             ],
             "radius": 120.0,
             "tag": null,
             "to": [
-              24.6548,
-              41.8628
+              24.655,
+              41.863
             ],
             "type": "Arc",
             "units": {
@@ -1186,17 +1186,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              22.1548,
-              46.1929
+              22.155,
+              46.193
             ],
             "from": [
-              24.6548,
-              41.8628
+              24.655,
+              41.863
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              25.0937,
+              25.094,
               50.238
             ],
             "type": "Arc",
@@ -1211,18 +1211,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              195.0937,
+              195.094,
               50.238
             ],
             "from": [
-              25.0937,
+              25.094,
               50.238
             ],
             "radius": 170.0,
             "tag": null,
             "to": [
               26.025,
-              68.0078
+              68.008
             ],
             "type": "Arc",
             "units": {
@@ -1236,12 +1236,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              56.8835,
-              64.7645
+              56.883,
+              64.764
             ],
             "from": [
               26.025,
-              68.0078
+              68.008
             ],
             "tag": null,
             "to": [
@@ -1260,8 +1260,8 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              27.4926,
-              117.6004
+              27.493,
+              117.6
             ],
             "from": [
               41.8,
@@ -1294,8 +1294,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              57.3295,
-              140.2364
+              57.33,
+              140.236
             ],
             "type": "ToPoint",
             "units": {
@@ -1309,12 +1309,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              59.1373,
-              140.2044
+              59.137,
+              140.204
             ],
             "from": [
-              57.3295,
-              140.2364
+              57.33,
+              140.236
             ],
             "tag": {
               "commentStart": 1189,
@@ -1343,8 +1343,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              64.2722,
-              115.0087
+              64.272,
+              115.009
             ],
             "type": "ToPoint",
             "units": {
@@ -1358,12 +1358,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              35.9207,
-              111.2827
+              35.921,
+              111.283
             ],
             "from": [
-              64.2722,
-              115.0087
+              64.272,
+              115.009
             ],
             "tag": null,
             "to": [
@@ -1382,8 +1382,8 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              58.6693,
-              64.1491
+              58.669,
+              64.149
             ],
             "from": [
               48.35,
@@ -1416,8 +1416,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              27.8002,
-              19.2313
+              27.8,
+              19.231
             ],
             "type": "ToPoint",
             "units": {
@@ -1430,8 +1430,8 @@ description: Variables in memory after executing bone-plate.kcl
               "sourceRange": []
             },
             "from": [
-              27.8002,
-              19.2313
+              27.8,
+              19.231
             ],
             "tag": null,
             "to": [
@@ -1714,8 +1714,8 @@ description: Variables in memory after executing bone-plate.kcl
             "radius": 120.0,
             "tag": null,
             "to": [
-              23.1923,
-              8.3708
+              23.192,
+              8.371
             ],
             "type": "Arc",
             "units": {
@@ -1729,17 +1729,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              20.6923,
-              12.7009
+              20.692,
+              12.701
             ],
             "from": [
-              23.1923,
-              8.3708
+              23.192,
+              8.371
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              23.6312,
+              23.631,
               16.746
             ],
             "type": "Arc",
@@ -1754,18 +1754,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              143.6312,
+              143.631,
               16.746
             ],
             "from": [
-              23.6312,
+              23.631,
               16.746
             ],
             "radius": 120.0,
             "tag": null,
             "to": [
-              23.9236,
-              25.1168
+              23.924,
+              25.117
             ],
             "type": "Arc",
             "units": {
@@ -1779,17 +1779,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              21.4236,
-              29.4469
+              21.424,
+              29.447
             ],
             "from": [
-              23.9236,
-              25.1168
+              23.924,
+              25.117
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              24.3625,
+              24.362,
               33.492
             ],
             "type": "Arc",
@@ -1804,18 +1804,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              144.3625,
+              144.362,
               33.492
             ],
             "from": [
-              24.3625,
+              24.362,
               33.492
             ],
             "radius": 120.0,
             "tag": null,
             "to": [
-              24.6548,
-              41.8628
+              24.655,
+              41.863
             ],
             "type": "Arc",
             "units": {
@@ -1829,17 +1829,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              22.1548,
-              46.1929
+              22.155,
+              46.193
             ],
             "from": [
-              24.6548,
-              41.8628
+              24.655,
+              41.863
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              25.0937,
+              25.094,
               50.238
             ],
             "type": "Arc",
@@ -1854,18 +1854,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              195.0937,
+              195.094,
               50.238
             ],
             "from": [
-              25.0937,
+              25.094,
               50.238
             ],
             "radius": 170.0,
             "tag": null,
             "to": [
               26.025,
-              68.0078
+              68.008
             ],
             "type": "Arc",
             "units": {
@@ -1879,12 +1879,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              56.8835,
-              64.7645
+              56.883,
+              64.764
             ],
             "from": [
               26.025,
-              68.0078
+              68.008
             ],
             "tag": null,
             "to": [
@@ -1903,8 +1903,8 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              27.4926,
-              117.6004
+              27.493,
+              117.6
             ],
             "from": [
               41.8,
@@ -1937,8 +1937,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              57.3295,
-              140.2364
+              57.33,
+              140.236
             ],
             "type": "ToPoint",
             "units": {
@@ -1952,12 +1952,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              59.1373,
-              140.2044
+              59.137,
+              140.204
             ],
             "from": [
-              57.3295,
-              140.2364
+              57.33,
+              140.236
             ],
             "tag": {
               "commentStart": 1189,
@@ -1986,8 +1986,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              64.2722,
-              115.0087
+              64.272,
+              115.009
             ],
             "type": "ToPoint",
             "units": {
@@ -2001,12 +2001,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              35.9207,
-              111.2827
+              35.921,
+              111.283
             ],
             "from": [
-              64.2722,
-              115.0087
+              64.272,
+              115.009
             ],
             "tag": null,
             "to": [
@@ -2025,8 +2025,8 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              58.6693,
-              64.1491
+              58.669,
+              64.149
             ],
             "from": [
               48.35,
@@ -2059,8 +2059,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              27.8002,
-              19.2313
+              27.8,
+              19.231
             ],
             "type": "ToPoint",
             "units": {
@@ -2073,8 +2073,8 @@ description: Variables in memory after executing bone-plate.kcl
               "sourceRange": []
             },
             "from": [
-              27.8002,
-              19.2313
+              27.8,
+              19.231
             ],
             "tag": null,
             "to": [
@@ -2342,8 +2342,8 @@ description: Variables in memory after executing bone-plate.kcl
             "radius": 120.0,
             "tag": null,
             "to": [
-              23.1923,
-              8.3708
+              23.192,
+              8.371
             ],
             "type": "Arc",
             "units": {
@@ -2357,17 +2357,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              20.6923,
-              12.7009
+              20.692,
+              12.701
             ],
             "from": [
-              23.1923,
-              8.3708
+              23.192,
+              8.371
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              23.6312,
+              23.631,
               16.746
             ],
             "type": "Arc",
@@ -2382,18 +2382,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              143.6312,
+              143.631,
               16.746
             ],
             "from": [
-              23.6312,
+              23.631,
               16.746
             ],
             "radius": 120.0,
             "tag": null,
             "to": [
-              23.9236,
-              25.1168
+              23.924,
+              25.117
             ],
             "type": "Arc",
             "units": {
@@ -2407,17 +2407,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              21.4236,
-              29.4469
+              21.424,
+              29.447
             ],
             "from": [
-              23.9236,
-              25.1168
+              23.924,
+              25.117
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              24.3625,
+              24.362,
               33.492
             ],
             "type": "Arc",
@@ -2432,18 +2432,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              144.3625,
+              144.362,
               33.492
             ],
             "from": [
-              24.3625,
+              24.362,
               33.492
             ],
             "radius": 120.0,
             "tag": null,
             "to": [
-              24.6548,
-              41.8628
+              24.655,
+              41.863
             ],
             "type": "Arc",
             "units": {
@@ -2457,17 +2457,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              22.1548,
-              46.1929
+              22.155,
+              46.193
             ],
             "from": [
-              24.6548,
-              41.8628
+              24.655,
+              41.863
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              25.0937,
+              25.094,
               50.238
             ],
             "type": "Arc",
@@ -2482,18 +2482,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              195.0937,
+              195.094,
               50.238
             ],
             "from": [
-              25.0937,
+              25.094,
               50.238
             ],
             "radius": 170.0,
             "tag": null,
             "to": [
               26.025,
-              68.0078
+              68.008
             ],
             "type": "Arc",
             "units": {
@@ -2507,12 +2507,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              56.8835,
-              64.7645
+              56.883,
+              64.764
             ],
             "from": [
               26.025,
-              68.0078
+              68.008
             ],
             "tag": null,
             "to": [
@@ -2531,8 +2531,8 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              27.4926,
-              117.6004
+              27.493,
+              117.6
             ],
             "from": [
               41.8,
@@ -2565,8 +2565,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              57.3295,
-              140.2364
+              57.33,
+              140.236
             ],
             "type": "ToPoint",
             "units": {
@@ -2580,12 +2580,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              59.1373,
-              140.2044
+              59.137,
+              140.204
             ],
             "from": [
-              57.3295,
-              140.2364
+              57.33,
+              140.236
             ],
             "tag": {
               "commentStart": 1189,
@@ -2614,8 +2614,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              64.2722,
-              115.0087
+              64.272,
+              115.009
             ],
             "type": "ToPoint",
             "units": {
@@ -2629,12 +2629,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              35.9207,
-              111.2827
+              35.921,
+              111.283
             ],
             "from": [
-              64.2722,
-              115.0087
+              64.272,
+              115.009
             ],
             "tag": null,
             "to": [
@@ -2653,8 +2653,8 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              58.6693,
-              64.1491
+              58.669,
+              64.149
             ],
             "from": [
               48.35,
@@ -2687,8 +2687,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              27.8002,
-              19.2313
+              27.8,
+              19.231
             ],
             "type": "ToPoint",
             "units": {
@@ -2701,8 +2701,8 @@ description: Variables in memory after executing bone-plate.kcl
               "sourceRange": []
             },
             "from": [
-              27.8002,
-              19.2313
+              27.8,
+              19.231
             ],
             "tag": null,
             "to": [
@@ -2970,8 +2970,8 @@ description: Variables in memory after executing bone-plate.kcl
             "radius": 120.0,
             "tag": null,
             "to": [
-              23.1923,
-              8.3708
+              23.192,
+              8.371
             ],
             "type": "Arc",
             "units": {
@@ -2985,17 +2985,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              20.6923,
-              12.7009
+              20.692,
+              12.701
             ],
             "from": [
-              23.1923,
-              8.3708
+              23.192,
+              8.371
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              23.6312,
+              23.631,
               16.746
             ],
             "type": "Arc",
@@ -3010,18 +3010,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              143.6312,
+              143.631,
               16.746
             ],
             "from": [
-              23.6312,
+              23.631,
               16.746
             ],
             "radius": 120.0,
             "tag": null,
             "to": [
-              23.9236,
-              25.1168
+              23.924,
+              25.117
             ],
             "type": "Arc",
             "units": {
@@ -3035,17 +3035,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              21.4236,
-              29.4469
+              21.424,
+              29.447
             ],
             "from": [
-              23.9236,
-              25.1168
+              23.924,
+              25.117
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              24.3625,
+              24.362,
               33.492
             ],
             "type": "Arc",
@@ -3060,18 +3060,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              144.3625,
+              144.362,
               33.492
             ],
             "from": [
-              24.3625,
+              24.362,
               33.492
             ],
             "radius": 120.0,
             "tag": null,
             "to": [
-              24.6548,
-              41.8628
+              24.655,
+              41.863
             ],
             "type": "Arc",
             "units": {
@@ -3085,17 +3085,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              22.1548,
-              46.1929
+              22.155,
+              46.193
             ],
             "from": [
-              24.6548,
-              41.8628
+              24.655,
+              41.863
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              25.0937,
+              25.094,
               50.238
             ],
             "type": "Arc",
@@ -3110,18 +3110,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              195.0937,
+              195.094,
               50.238
             ],
             "from": [
-              25.0937,
+              25.094,
               50.238
             ],
             "radius": 170.0,
             "tag": null,
             "to": [
               26.025,
-              68.0078
+              68.008
             ],
             "type": "Arc",
             "units": {
@@ -3135,12 +3135,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              56.8835,
-              64.7645
+              56.883,
+              64.764
             ],
             "from": [
               26.025,
-              68.0078
+              68.008
             ],
             "tag": null,
             "to": [
@@ -3159,8 +3159,8 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              27.4926,
-              117.6004
+              27.493,
+              117.6
             ],
             "from": [
               41.8,
@@ -3193,8 +3193,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              57.3295,
-              140.2364
+              57.33,
+              140.236
             ],
             "type": "ToPoint",
             "units": {
@@ -3208,12 +3208,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              59.1373,
-              140.2044
+              59.137,
+              140.204
             ],
             "from": [
-              57.3295,
-              140.2364
+              57.33,
+              140.236
             ],
             "tag": {
               "commentStart": 1189,
@@ -3242,8 +3242,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              64.2722,
-              115.0087
+              64.272,
+              115.009
             ],
             "type": "ToPoint",
             "units": {
@@ -3257,12 +3257,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              35.9207,
-              111.2827
+              35.921,
+              111.283
             ],
             "from": [
-              64.2722,
-              115.0087
+              64.272,
+              115.009
             ],
             "tag": null,
             "to": [
@@ -3281,8 +3281,8 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              58.6693,
-              64.1491
+              58.669,
+              64.149
             ],
             "from": [
               48.35,
@@ -3315,8 +3315,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              27.8002,
-              19.2313
+              27.8,
+              19.231
             ],
             "type": "ToPoint",
             "units": {
@@ -3329,8 +3329,8 @@ description: Variables in memory after executing bone-plate.kcl
               "sourceRange": []
             },
             "from": [
-              27.8002,
-              19.2313
+              27.8,
+              19.231
             ],
             "tag": null,
             "to": [
@@ -3598,8 +3598,8 @@ description: Variables in memory after executing bone-plate.kcl
             "radius": 120.0,
             "tag": null,
             "to": [
-              23.1923,
-              8.3708
+              23.192,
+              8.371
             ],
             "type": "Arc",
             "units": {
@@ -3613,17 +3613,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              20.6923,
-              12.7009
+              20.692,
+              12.701
             ],
             "from": [
-              23.1923,
-              8.3708
+              23.192,
+              8.371
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              23.6312,
+              23.631,
               16.746
             ],
             "type": "Arc",
@@ -3638,18 +3638,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              143.6312,
+              143.631,
               16.746
             ],
             "from": [
-              23.6312,
+              23.631,
               16.746
             ],
             "radius": 120.0,
             "tag": null,
             "to": [
-              23.9236,
-              25.1168
+              23.924,
+              25.117
             ],
             "type": "Arc",
             "units": {
@@ -3663,17 +3663,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              21.4236,
-              29.4469
+              21.424,
+              29.447
             ],
             "from": [
-              23.9236,
-              25.1168
+              23.924,
+              25.117
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              24.3625,
+              24.362,
               33.492
             ],
             "type": "Arc",
@@ -3688,18 +3688,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              144.3625,
+              144.362,
               33.492
             ],
             "from": [
-              24.3625,
+              24.362,
               33.492
             ],
             "radius": 120.0,
             "tag": null,
             "to": [
-              24.6548,
-              41.8628
+              24.655,
+              41.863
             ],
             "type": "Arc",
             "units": {
@@ -3713,17 +3713,17 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              22.1548,
-              46.1929
+              22.155,
+              46.193
             ],
             "from": [
-              24.6548,
-              41.8628
+              24.655,
+              41.863
             ],
             "radius": 5.0,
             "tag": null,
             "to": [
-              25.0937,
+              25.094,
               50.238
             ],
             "type": "Arc",
@@ -3738,18 +3738,18 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              195.0937,
+              195.094,
               50.238
             ],
             "from": [
-              25.0937,
+              25.094,
               50.238
             ],
             "radius": 170.0,
             "tag": null,
             "to": [
               26.025,
-              68.0078
+              68.008
             ],
             "type": "Arc",
             "units": {
@@ -3763,12 +3763,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              56.8835,
-              64.7645
+              56.883,
+              64.764
             ],
             "from": [
               26.025,
-              68.0078
+              68.008
             ],
             "tag": null,
             "to": [
@@ -3787,8 +3787,8 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              27.4926,
-              117.6004
+              27.493,
+              117.6
             ],
             "from": [
               41.8,
@@ -3821,8 +3821,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              57.3295,
-              140.2364
+              57.33,
+              140.236
             ],
             "type": "ToPoint",
             "units": {
@@ -3836,12 +3836,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              59.1373,
-              140.2044
+              59.137,
+              140.204
             ],
             "from": [
-              57.3295,
-              140.2364
+              57.33,
+              140.236
             ],
             "tag": {
               "commentStart": 1189,
@@ -3870,8 +3870,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              64.2722,
-              115.0087
+              64.272,
+              115.009
             ],
             "type": "ToPoint",
             "units": {
@@ -3885,12 +3885,12 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": false,
             "center": [
-              35.9207,
-              111.2827
+              35.921,
+              111.283
             ],
             "from": [
-              64.2722,
-              115.0087
+              64.272,
+              115.009
             ],
             "tag": null,
             "to": [
@@ -3909,8 +3909,8 @@ description: Variables in memory after executing bone-plate.kcl
             },
             "ccw": true,
             "center": [
-              58.6693,
-              64.1491
+              58.669,
+              64.149
             ],
             "from": [
               48.35,
@@ -3943,8 +3943,8 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "tag": null,
             "to": [
-              27.8002,
-              19.2313
+              27.8,
+              19.231
             ],
             "type": "ToPoint",
             "units": {
@@ -3957,8 +3957,8 @@ description: Variables in memory after executing bone-plate.kcl
               "sourceRange": []
             },
             "from": [
-              27.8002,
-              19.2313
+              27.8,
+              19.231
             ],
             "tag": null,
             "to": [

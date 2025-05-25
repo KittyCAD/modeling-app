@@ -167,7 +167,7 @@ description: Operations executed gear-rack.kcl
       "distance": {
         "value": {
           "type": "Number",
-          "value": 1.5708,
+          "value": 1.571,
           "ty": {
             "type": "Default",
             "len": {

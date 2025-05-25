@@ -32,7 +32,7 @@ description: Operations executed pattern_into_union.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -3.2874,
+          "value": -3.287,
           "ty": {
             "type": "Default",
             "len": {
@@ -200,7 +200,7 @@ description: Operations executed pattern_into_union.kcl
       "distance": {
         "value": {
           "type": "Number",
-          "value": 0.1594,
+          "value": 0.159,
           "ty": {
             "type": "Default",
             "len": {
@@ -384,7 +384,7 @@ description: Operations executed pattern_into_union.kcl
       "distance": {
         "value": {
           "type": "Number",
-          "value": 0.1594,
+          "value": 0.159,
           "ty": {
             "type": "Default",
             "len": {

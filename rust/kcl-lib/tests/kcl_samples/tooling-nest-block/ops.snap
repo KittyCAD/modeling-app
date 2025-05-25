@@ -1348,7 +1348,7 @@ description: Operations executed tooling-nest-block.kcl
       "radius": {
         "value": {
           "type": "Number",
-          "value": 0.3712,
+          "value": 0.371,
           "ty": {
             "type": "Known",
             "type": "Length",
@@ -1388,7 +1388,7 @@ description: Operations executed tooling-nest-block.kcl
       "radius": {
         "value": {
           "type": "Number",
-          "value": 0.2475,
+          "value": 0.248,
           "ty": {
             "type": "Known",
             "type": "Length",
@@ -1428,7 +1428,7 @@ description: Operations executed tooling-nest-block.kcl
       "radius": {
         "value": {
           "type": "Number",
-          "value": 0.2475,
+          "value": 0.248,
           "ty": {
             "type": "Known",
             "type": "Length",
@@ -1468,7 +1468,7 @@ description: Operations executed tooling-nest-block.kcl
       "radius": {
         "value": {
           "type": "Number",
-          "value": 0.2475,
+          "value": 0.248,
           "ty": {
             "type": "Known",
             "type": "Length",
@@ -1900,7 +1900,7 @@ description: Operations executed tooling-nest-block.kcl
       "radius": {
         "value": {
           "type": "Number",
-          "value": 0.7425,
+          "value": 0.742,
           "ty": {
             "type": "Known",
             "type": "Length",

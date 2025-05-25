@@ -110,7 +110,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             },
             "ccw": true,
             "center": [
-              -0.7236,
+              -0.724,
               8.0
             ],
             "from": [
@@ -119,8 +119,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             ],
             "tag": null,
             "to": [
-              -0.7236,
-              8.7236
+              -0.724,
+              8.724
             ],
             "type": "TangentialArc",
             "units": {
@@ -133,13 +133,13 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
               "sourceRange": []
             },
             "from": [
-              -0.7236,
-              8.7236
+              -0.724,
+              8.724
             ],
             "tag": null,
             "to": [
-              -9.7236,
-              8.7236
+              -9.724,
+              8.724
             ],
             "type": "ToPoint",
             "units": {
@@ -152,13 +152,13 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
               "sourceRange": []
             },
             "from": [
-              -9.7236,
-              8.7236
+              -9.724,
+              8.724
             ],
             "tag": null,
             "to": [
-              -9.7236,
-              8.3618
+              -9.724,
+              8.362
             ],
             "type": "ToPoint",
             "units": {
@@ -171,13 +171,13 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
               "sourceRange": []
             },
             "from": [
-              -9.7236,
-              8.3618
+              -9.724,
+              8.362
             ],
             "tag": null,
             "to": [
-              -0.7236,
-              8.3618
+              -0.724,
+              8.362
             ],
             "type": "ToPoint",
             "units": {
@@ -191,16 +191,16 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             },
             "ccw": false,
             "center": [
-              -0.7236,
+              -0.724,
               8.0
             ],
             "from": [
-              -0.7236,
-              8.3618
+              -0.724,
+              8.362
             ],
             "tag": null,
             "to": [
-              -0.3618,
+              -0.362,
               8.0
             ],
             "type": "TangentialArc",
@@ -214,12 +214,12 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
               "sourceRange": []
             },
             "from": [
-              -0.3618,
+              -0.362,
               8.0
             ],
             "tag": null,
             "to": [
-              -0.3618,
+              -0.362,
               0.0
             ],
             "type": "ToPoint",
@@ -233,7 +233,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
               "sourceRange": []
             },
             "from": [
-              -0.3618,
+              -0.362,
               0.0
             ],
             "tag": null,
@@ -325,7 +325,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
   },
   "filletR": {
     "type": "Number",
-    "value": 0.7236,
+    "value": 0.724,
     "ty": {
       "type": "Default",
       "len": {
@@ -377,7 +377,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
   },
   "thickness": {
     "type": "Number",
-    "value": 0.3618,
+    "value": 0.362,
     "ty": {
       "type": "Default",
       "len": {

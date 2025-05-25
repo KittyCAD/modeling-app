@@ -78,7 +78,7 @@ description: Artifact commands shepherds-hook-bolt.kcl
       "path": "[uuid]",
       "to": {
         "x": 0.0,
-        "y": -22.1378,
+        "y": -22.138,
         "z": 0.0
       }
     }
@@ -107,7 +107,7 @@ description: Artifact commands shepherds-hook-bolt.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -17.1378,
+          "y": -17.138,
           "z": 0.0
         },
         "relative": false
@@ -123,8 +123,8 @@ description: Artifact commands shepherds-hook-bolt.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": 4.1042,
-          "y": 5.8615,
+          "x": 4.104,
+          "y": 5.861,
           "z": 0.0
         },
         "angle_snap_increment": null
@@ -140,8 +140,8 @@ description: Artifact commands shepherds-hook-bolt.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": -14.4965,
-          "y": 17.2763,
+          "x": -14.497,
+          "y": 17.276,
           "z": 0.0
         },
         "angle_snap_increment": null
@@ -156,7 +156,7 @@ description: Artifact commands shepherds-hook-bolt.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": -22.1378
+        "z": -22.138
       },
       "x_axis": {
         "x": 1.0,
@@ -516,7 +516,7 @@ description: Artifact commands shepherds-hook-bolt.kcl
       "path": "[uuid]",
       "to": {
         "x": 2.04,
-        "y": -52.1378,
+        "y": -52.138,
         "z": 0.0
       }
     }
@@ -544,7 +544,7 @@ description: Artifact commands shepherds-hook-bolt.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.4601,
+          "x": 0.46,
           "y": 0.375,
           "z": 0.0
         },
@@ -561,7 +561,7 @@ description: Artifact commands shepherds-hook-bolt.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.4601,
+          "x": -0.46,
           "y": 0.375,
           "z": 0.0
         },
@@ -1755,7 +1755,7 @@ description: Artifact commands shepherds-hook-bolt.kcl
         "type": "line",
         "end": {
           "x": 2.04,
-          "y": -52.1378,
+          "y": -52.138,
           "z": 0.0
         },
         "relative": false
