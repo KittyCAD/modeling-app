@@ -14,7 +14,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         types::{NumericType, PrimitiveType, RuntimeType},
-        ExecState, KclValue, Sketch, Solid,
+        ExecState, KclValue, Path, Sketch, Solid,
     },
     parsing::ast::types::TagNode,
     std::{axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude, Args},
@@ -182,6 +182,16 @@ async fn inner_revolve(
         // If an edge lies on the axis of revolution it will not exist after the revolve, so
         // it cannot be used to retrieve data about the solid
         for path in sketch.paths.clone() {
+            let is_line = match &path {
+                Path::AngledLineTo { .. } | Path::ToPoint { .. } => true,
+                _ => false,
+            };
+
+            if !is_line {
+                edge_id = Some(path.get_id());
+                break;
+            }
+
             let from = path.get_from();
             let to = path.get_to();
 
