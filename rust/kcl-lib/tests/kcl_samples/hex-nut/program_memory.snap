@@ -5,7 +5,7 @@ description: Variables in memory after executing hex-nut.kcl
 {
   "diameter": {
     "type": "Number",
-    "value": 0.3125,
+    "value": 0.313,
     "ty": {
       "type": "Default",
       "len": {

@@ -338,7 +338,7 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              0.8929,
+              0.893,
               11.36
             ],
             "from": [
@@ -362,8 +362,8 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              0.5706,
-              8.1992
+              0.571,
+              8.199
             ],
             "from": [
               0.95,
@@ -396,8 +396,8 @@ description: Variables in memory after executing hammer.kcl
             ],
             "tag": null,
             "to": [
-              2.8349,
-              11.4237
+              2.835,
+              11.424
             ],
             "type": "ToPoint",
             "units": {
@@ -410,13 +410,13 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              2.8349,
-              11.4237
+              2.835,
+              11.424
             ],
             "tag": null,
             "to": [
-              2.4819,
-              11.7777
+              2.482,
+              11.778
             ],
             "type": "ToPoint",
             "units": {
@@ -430,12 +430,12 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              -0.1327,
-              9.1702
+              -0.133,
+              9.17
             ],
             "from": [
-              2.4819,
-              11.7777
+              2.482,
+              11.778
             ],
             "tag": {
               "commentStart": 617,
@@ -460,8 +460,8 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              -1.1784,
-              14.0265
+              -1.178,
+              14.026
             ],
             "from": [
               -0.91,
@@ -605,8 +605,8 @@ description: Variables in memory after executing hammer.kcl
             ],
             "tag": null,
             "to": [
-              -1.5779,
-              11.6641
+              -1.578,
+              11.664
             ],
             "type": "ToPoint",
             "units": {
@@ -620,12 +620,12 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              -1.1869,
-              10.7428
+              -1.187,
+              10.743
             ],
             "from": [
-              -1.5779,
-              11.6641
+              -1.578,
+              11.664
             ],
             "tag": null,
             "to": [
@@ -924,7 +924,7 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              0.8929,
+              0.893,
               11.36
             ],
             "from": [
@@ -948,8 +948,8 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              0.5706,
-              8.1992
+              0.571,
+              8.199
             ],
             "from": [
               0.95,
@@ -982,8 +982,8 @@ description: Variables in memory after executing hammer.kcl
             ],
             "tag": null,
             "to": [
-              2.8349,
-              11.4237
+              2.835,
+              11.424
             ],
             "type": "ToPoint",
             "units": {
@@ -996,13 +996,13 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              2.8349,
-              11.4237
+              2.835,
+              11.424
             ],
             "tag": null,
             "to": [
-              2.4819,
-              11.7777
+              2.482,
+              11.778
             ],
             "type": "ToPoint",
             "units": {
@@ -1016,12 +1016,12 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              -0.1327,
-              9.1702
+              -0.133,
+              9.17
             ],
             "from": [
-              2.4819,
-              11.7777
+              2.482,
+              11.778
             ],
             "tag": {
               "commentStart": 617,
@@ -1046,8 +1046,8 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              -1.1784,
-              14.0265
+              -1.178,
+              14.026
             ],
             "from": [
               -0.91,
@@ -1191,8 +1191,8 @@ description: Variables in memory after executing hammer.kcl
             ],
             "tag": null,
             "to": [
-              -1.5779,
-              11.6641
+              -1.578,
+              11.664
             ],
             "type": "ToPoint",
             "units": {
@@ -1206,12 +1206,12 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              -1.1869,
-              10.7428
+              -1.187,
+              10.743
             ],
             "from": [
-              -1.5779,
-              11.6641
+              -1.578,
+              11.664
             ],
             "tag": null,
             "to": [
@@ -1408,7 +1408,7 @@ description: Variables in memory after executing hammer.kcl
             ],
             "tag": null,
             "to": [
-              0.5725,
+              0.573,
               0.0
             ],
             "type": "ToPoint",
@@ -1423,16 +1423,16 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              0.5725,
+              0.573,
               0.05
             ],
             "from": [
-              0.5725,
+              0.573,
               0.0
             ],
             "tag": null,
             "to": [
-              0.6225,
+              0.623,
               0.05
             ],
             "type": "TangentialArc",
@@ -1447,17 +1447,17 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              -127.8681,
+              -127.868,
               0.05
             ],
             "from": [
-              0.6225,
+              0.623,
               0.05
             ],
             "tag": null,
             "to": [
               0.38,
-              7.9404
+              7.94
             ],
             "type": "TangentialArcTo",
             "units": {
@@ -1471,12 +1471,12 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              59.7449,
-              11.5929
+              59.745,
+              11.593
             ],
             "from": [
               0.38,
-              7.9404
+              7.94
             ],
             "tag": null,
             "to": [
@@ -1702,8 +1702,8 @@ description: Variables in memory after executing hammer.kcl
             ],
             "tag": null,
             "to": [
-              0.2265,
-              0.1646
+              0.227,
+              0.165
             ],
             "type": "ToPoint",
             "units": {
@@ -1716,13 +1716,13 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              0.2265,
-              0.1646
+              0.227,
+              0.165
             ],
             "tag": null,
             "to": [
-              0.0865,
-              0.2663
+              0.087,
+              0.266
             ],
             "type": "ToPoint",
             "units": {
@@ -1735,13 +1735,13 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              0.0865,
-              0.2663
+              0.087,
+              0.266
             ],
             "tag": null,
             "to": [
-              -0.0865,
-              0.2663
+              -0.087,
+              0.266
             ],
             "type": "ToPoint",
             "units": {
@@ -1754,13 +1754,13 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0865,
-              0.2663
+              -0.087,
+              0.266
             ],
             "tag": null,
             "to": [
-              -0.2265,
-              0.1646
+              -0.227,
+              0.165
             ],
             "type": "ToPoint",
             "units": {
@@ -1773,8 +1773,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2265,
-              0.1646
+              -0.227,
+              0.165
             ],
             "tag": null,
             "to": [
@@ -1797,8 +1797,8 @@ description: Variables in memory after executing hammer.kcl
             ],
             "tag": null,
             "to": [
-              -0.2265,
-              -0.1646
+              -0.227,
+              -0.165
             ],
             "type": "ToPoint",
             "units": {
@@ -1811,13 +1811,13 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2265,
-              -0.1646
+              -0.227,
+              -0.165
             ],
             "tag": null,
             "to": [
-              -0.0865,
-              -0.2663
+              -0.087,
+              -0.266
             ],
             "type": "ToPoint",
             "units": {
@@ -1830,13 +1830,13 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0865,
-              -0.2663
+              -0.087,
+              -0.266
             ],
             "tag": null,
             "to": [
-              0.0865,
-              -0.2663
+              0.087,
+              -0.266
             ],
             "type": "ToPoint",
             "units": {
@@ -1849,13 +1849,13 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              0.0865,
-              -0.2663
+              0.087,
+              -0.266
             ],
             "tag": null,
             "to": [
-              0.2265,
-              -0.1646
+              0.227,
+              -0.165
             ],
             "type": "ToPoint",
             "units": {
@@ -1868,8 +1868,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              0.2265,
-              -0.1646
+              0.227,
+              -0.165
             ],
             "tag": null,
             "to": [
@@ -1962,7 +1962,7 @@ description: Variables in memory after executing hammer.kcl
           ],
           "tag": null,
           "to": [
-            0.5725,
+            0.573,
             0.0
           ],
           "type": "ToPoint",
@@ -1977,16 +1977,16 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            0.5725,
+            0.573,
             0.05
           ],
           "from": [
-            0.5725,
+            0.573,
             0.0
           ],
           "tag": null,
           "to": [
-            0.6225,
+            0.623,
             0.05
           ],
           "type": "TangentialArc",
@@ -2001,17 +2001,17 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            -127.8681,
+            -127.868,
             0.05
           ],
           "from": [
-            0.6225,
+            0.623,
             0.05
           ],
           "tag": null,
           "to": [
             0.38,
-            7.9404
+            7.94
           ],
           "type": "TangentialArcTo",
           "units": {
@@ -2025,12 +2025,12 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            59.7449,
-            11.5929
+            59.745,
+            11.593
           ],
           "from": [
             0.38,
-            7.9404
+            7.94
           ],
           "tag": null,
           "to": [
@@ -2322,7 +2322,7 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              0.8929,
+              0.893,
               11.36
             ],
             "from": [
@@ -2346,8 +2346,8 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              0.5706,
-              8.1992
+              0.571,
+              8.199
             ],
             "from": [
               0.95,
@@ -2380,8 +2380,8 @@ description: Variables in memory after executing hammer.kcl
             ],
             "tag": null,
             "to": [
-              2.8349,
-              11.4237
+              2.835,
+              11.424
             ],
             "type": "ToPoint",
             "units": {
@@ -2394,13 +2394,13 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              2.8349,
-              11.4237
+              2.835,
+              11.424
             ],
             "tag": null,
             "to": [
-              2.4819,
-              11.7777
+              2.482,
+              11.778
             ],
             "type": "ToPoint",
             "units": {
@@ -2414,12 +2414,12 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              -0.1327,
-              9.1702
+              -0.133,
+              9.17
             ],
             "from": [
-              2.4819,
-              11.7777
+              2.482,
+              11.778
             ],
             "tag": {
               "commentStart": 617,
@@ -2444,8 +2444,8 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              -1.1784,
-              14.0265
+              -1.178,
+              14.026
             ],
             "from": [
               -0.91,
@@ -2589,8 +2589,8 @@ description: Variables in memory after executing hammer.kcl
             ],
             "tag": null,
             "to": [
-              -1.5779,
-              11.6641
+              -1.578,
+              11.664
             ],
             "type": "ToPoint",
             "units": {
@@ -2604,12 +2604,12 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              -1.1869,
-              10.7428
+              -1.187,
+              10.743
             ],
             "from": [
-              -1.5779,
-              11.6641
+              -1.578,
+              11.664
             ],
             "tag": null,
             "to": [
@@ -2846,7 +2846,7 @@ description: Variables in memory after executing hammer.kcl
             "tag": null,
             "to": [
               -1.97,
-              -0.5625
+              -0.563
             ],
             "type": "ToPoint",
             "units": {
@@ -2861,17 +2861,17 @@ description: Variables in memory after executing hammer.kcl
             "ccw": true,
             "center": [
               -1.92,
-              -0.5625
+              -0.563
             ],
             "from": [
               -1.97,
-              -0.5625
+              -0.563
             ],
             "radius": 0.05,
             "tag": null,
             "to": [
               -1.92,
-              -0.6125
+              -0.613
             ],
             "type": "Arc",
             "units": {
@@ -2885,12 +2885,12 @@ description: Variables in memory after executing hammer.kcl
             },
             "from": [
               -1.92,
-              -0.6125
+              -0.613
             ],
             "tag": null,
             "to": [
               -1.67,
-              -0.6125
+              -0.613
             ],
             "type": "ToPoint",
             "units": {
@@ -2904,7 +2904,7 @@ description: Variables in memory after executing hammer.kcl
             },
             "from": [
               -1.67,
-              -0.6125
+              -0.613
             ],
             "p1": [
               -1.67,
@@ -2921,7 +2921,7 @@ description: Variables in memory after executing hammer.kcl
             "tag": null,
             "to": [
               -0.91,
-              -0.6125
+              -0.613
             ],
             "type": "ArcThreePoint",
             "units": {
@@ -2935,12 +2935,12 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              2.4855,
-              9.0824
+              2.485,
+              9.082
             ],
             "from": [
               -0.91,
-              -0.6125
+              -0.613
             ],
             "tag": null,
             "to": [
@@ -3131,8 +3131,8 @@ description: Variables in memory after executing hammer.kcl
             ],
             "tag": null,
             "to": [
-              3.2901,
-              -0.5548
+              3.29,
+              -0.555
             ],
             "type": "ToPoint",
             "units": {
@@ -3146,12 +3146,12 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              3.7863,
+              3.786,
               8.913
             ],
             "from": [
-              3.2901,
-              -0.5548
+              3.29,
+              -0.555
             ],
             "tag": null,
             "to": [
@@ -3170,7 +3170,7 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              1.9368,
+              1.937,
               0.0
             ],
             "from": [
@@ -3194,8 +3194,8 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              3.7945,
-              -8.9522
+              3.794,
+              -8.952
             ],
             "from": [
               1.86,
@@ -3386,7 +3386,7 @@ description: Variables in memory after executing hammer.kcl
             "tag": null,
             "to": [
               -1.97,
-              0.5625
+              0.563
             ],
             "type": "ToPoint",
             "units": {
@@ -3401,17 +3401,17 @@ description: Variables in memory after executing hammer.kcl
             "ccw": false,
             "center": [
               -1.92,
-              0.5625
+              0.563
             ],
             "from": [
               -1.97,
-              0.5625
+              0.563
             ],
             "radius": 0.05,
             "tag": null,
             "to": [
               -1.92,
-              0.6125
+              0.613
             ],
             "type": "Arc",
             "units": {
@@ -3425,12 +3425,12 @@ description: Variables in memory after executing hammer.kcl
             },
             "from": [
               -1.92,
-              0.6125
+              0.613
             ],
             "tag": null,
             "to": [
               -1.67,
-              0.6125
+              0.613
             ],
             "type": "ToPoint",
             "units": {
@@ -3444,7 +3444,7 @@ description: Variables in memory after executing hammer.kcl
             },
             "from": [
               -1.67,
-              0.6125
+              0.613
             ],
             "p1": [
               -1.67,
@@ -3461,7 +3461,7 @@ description: Variables in memory after executing hammer.kcl
             "tag": null,
             "to": [
               -0.91,
-              0.6125
+              0.613
             ],
             "type": "ArcThreePoint",
             "units": {
@@ -3475,12 +3475,12 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              2.4855,
-              -9.0824
+              2.485,
+              -9.082
             ],
             "from": [
               -0.91,
-              0.6125
+              0.613
             ],
             "tag": null,
             "to": [

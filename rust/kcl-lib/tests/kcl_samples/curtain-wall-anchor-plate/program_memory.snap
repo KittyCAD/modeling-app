@@ -489,7 +489,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "tag": null,
                 "to": [
                   -6.0,
-                  10.3923
+                  10.392
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -503,12 +503,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "from": [
                   -6.0,
-                  10.3923
+                  10.392
                 ],
                 "tag": null,
                 "to": [
                   6.0,
-                  10.3923
+                  10.392
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -522,7 +522,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "from": [
                   6.0,
-                  10.3923
+                  10.392
                 ],
                 "tag": null,
                 "to": [
@@ -546,7 +546,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "tag": null,
                 "to": [
                   6.0,
-                  -10.3923
+                  -10.392
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -560,12 +560,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "from": [
                   6.0,
-                  -10.3923
+                  -10.392
                 ],
                 "tag": null,
                 "to": [
                   -6.0,
-                  -10.3923
+                  -10.392
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -579,7 +579,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "from": [
                   -6.0,
-                  -10.3923
+                  -10.392
                 ],
                 "tag": null,
                 "to": [
@@ -931,7 +931,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "tag": null,
                 "to": [
                   -6.0,
-                  10.3923
+                  10.392
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -945,12 +945,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "from": [
                   -6.0,
-                  10.3923
+                  10.392
                 ],
                 "tag": null,
                 "to": [
                   6.0,
-                  10.3923
+                  10.392
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -964,7 +964,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "from": [
                   6.0,
-                  10.3923
+                  10.392
                 ],
                 "tag": null,
                 "to": [
@@ -988,7 +988,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "tag": null,
                 "to": [
                   6.0,
-                  -10.3923
+                  -10.392
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1002,12 +1002,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "from": [
                   6.0,
-                  -10.3923
+                  -10.392
                 ],
                 "tag": null,
                 "to": [
                   -6.0,
-                  -10.3923
+                  -10.392
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1021,7 +1021,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "from": [
                   -6.0,
-                  -10.3923
+                  -10.392
                 ],
                 "tag": null,
                 "to": [

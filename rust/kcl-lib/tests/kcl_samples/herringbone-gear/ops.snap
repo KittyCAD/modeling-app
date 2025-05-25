@@ -100,7 +100,7 @@ description: Operations executed herringbone-gear.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.5708,
+            "value": 1.571,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -112,7 +112,7 @@ description: Operations executed herringbone-gear.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 12.1287,
+            "value": 12.129,
             "ty": {
               "type": "Default",
               "len": {
@@ -140,7 +140,7 @@ description: Operations executed herringbone-gear.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.3195,
+            "value": 1.32,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -152,7 +152,7 @@ description: Operations executed herringbone-gear.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 12.1287,
+            "value": 12.129,
             "ty": {
               "type": "Default",
               "len": {
@@ -180,7 +180,7 @@ description: Operations executed herringbone-gear.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.6825,
+            "value": 1.682,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -220,7 +220,7 @@ description: Operations executed herringbone-gear.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.4312,
+            "value": 1.431,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -260,7 +260,7 @@ description: Operations executed herringbone-gear.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.8221,
+            "value": 1.822,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -272,7 +272,7 @@ description: Operations executed herringbone-gear.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 12.1287,
+            "value": 12.129,
             "ty": {
               "type": "Default",
               "len": {
@@ -300,7 +300,7 @@ description: Operations executed herringbone-gear.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.5709,
+            "value": 1.571,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -312,7 +312,7 @@ description: Operations executed herringbone-gear.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 12.1287,
+            "value": 12.129,
             "ty": {
               "type": "Default",
               "len": {

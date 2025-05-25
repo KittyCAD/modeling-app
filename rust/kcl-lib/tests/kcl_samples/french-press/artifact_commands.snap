@@ -235,8 +235,8 @@ description: Artifact commands french-press.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.7071,
-        "y": 0.7071,
+        "x": 0.707,
+        "y": 0.707,
         "z": 0.0
       },
       "y_axis": {
@@ -259,8 +259,8 @@ description: Artifact commands french-press.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.7071,
-        "y": -0.7071,
+        "x": 0.707,
+        "y": -0.707,
         "z": 0.0
       }
     }
@@ -370,7 +370,7 @@ description: Artifact commands french-press.kcl
         "type": "line",
         "end": {
           "x": 7.62,
-          "y": -13.1982,
+          "y": -13.198,
           "z": 0.0
         },
         "relative": true
@@ -386,8 +386,8 @@ description: Artifact commands french-press.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 53.6827,
-          "y": -11.3386
+          "x": 53.683,
+          "y": -11.339
         },
         "radius": 15.239999999999998,
         "start": {
@@ -411,7 +411,7 @@ description: Artifact commands french-press.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 12.3625,
+          "x": 12.363,
           "y": -5.08,
           "z": 0.0
         },
@@ -428,8 +428,8 @@ description: Artifact commands french-press.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 6.0125,
-          "y": -16.0785
+          "x": 6.013,
+          "y": -16.079
         },
         "radius": 12.7,
         "start": {
@@ -454,7 +454,7 @@ description: Artifact commands french-press.kcl
         "type": "line",
         "end": {
           "x": 2.54,
-          "y": -3.3785,
+          "y": -3.379,
           "z": 0.0
         },
         "relative": false
@@ -487,7 +487,7 @@ description: Artifact commands french-press.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.3615,
+          "x": 4.362,
           "y": 0.0,
           "z": 0.0
         },
@@ -504,8 +504,8 @@ description: Artifact commands french-press.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 6.9015,
-          "y": -16.0785
+          "x": 6.902,
+          "y": -16.079
         },
         "radius": 15.239999999999998,
         "start": {
@@ -529,8 +529,8 @@ description: Artifact commands french-press.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 32.9303,
-          "y": -19.0123,
+          "x": 32.93,
+          "y": -19.012,
           "z": 0.0
         },
         "relative": true
@@ -546,8 +546,8 @@ description: Artifact commands french-press.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 53.8018,
-          "y": -10.8941
+          "x": 53.802,
+          "y": -10.894
         },
         "radius": 12.7,
         "start": {
@@ -571,8 +571,8 @@ description: Artifact commands french-press.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -7.1755,
-          "y": 12.4283,
+          "x": -7.175,
+          "y": 12.428,
           "z": 0.0
         },
         "relative": true
@@ -639,8 +639,8 @@ description: Artifact commands french-press.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.7071,
-        "y": -0.7071,
+        "x": 0.707,
+        "y": -0.707,
         "z": 0.0
       }
     }
@@ -1284,7 +1284,7 @@ description: Artifact commands french-press.kcl
         "type": "line",
         "end": {
           "x": 54.229,
-          "y": 30.1004,
+          "y": 30.1,
           "z": 0.0
         },
         "relative": false
@@ -1301,7 +1301,7 @@ description: Artifact commands french-press.kcl
         "type": "line",
         "end": {
           "x": 0.635,
-          "y": -1.0999,
+          "y": -1.1,
           "z": 0.0
         },
         "relative": true
@@ -1318,7 +1318,7 @@ description: Artifact commands french-press.kcl
         "type": "line",
         "end": {
           "x": -3.302,
-          "y": -1.9064,
+          "y": -1.906,
           "z": 0.0
         },
         "relative": true
@@ -1335,7 +1335,7 @@ description: Artifact commands french-press.kcl
         "type": "line",
         "end": {
           "x": 3.81,
-          "y": 27.0941,
+          "y": 27.094,
           "z": 0.0
         },
         "relative": false
@@ -1513,7 +1513,7 @@ description: Artifact commands french-press.kcl
         "type": "line",
         "end": {
           "x": 1.27,
-          "y": 24.7282,
+          "y": 24.728,
           "z": 0.0
         },
         "relative": false
@@ -3149,7 +3149,7 @@ description: Artifact commands french-press.kcl
           "z": 0.0
         },
         "control2": {
-          "x": 11.2014,
+          "x": 11.201,
           "y": 25.4,
           "z": 0.0
         },

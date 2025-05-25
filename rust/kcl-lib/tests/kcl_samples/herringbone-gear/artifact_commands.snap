@@ -147,7 +147,7 @@ description: Artifact commands herringbone-gear.kcl
       "path": "[uuid]",
       "to": {
         "x": 0.0,
-        "y": 12.1287,
+        "y": 12.129,
         "z": 0.0
       }
     }
@@ -159,8 +159,8 @@ description: Artifact commands herringbone-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.0155,
-        "y": 11.7479,
+        "x": 3.015,
+        "y": 11.748,
         "z": 0.0
       }
     }
@@ -256,8 +256,8 @@ description: Artifact commands herringbone-gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.5048,
-          "y": 13.4159,
+          "x": -1.505,
+          "y": 13.416,
           "z": 0.0
         },
         "relative": false
@@ -273,8 +273,8 @@ description: Artifact commands herringbone-gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.8779,
-          "y": 13.3688,
+          "x": 1.878,
+          "y": 13.369,
           "z": 0.0
         },
         "relative": false
@@ -293,7 +293,7 @@ description: Artifact commands herringbone-gear.kcl
         "end_radius": 13.5,
         "angle": {
           "unit": "degrees",
-          "value": 622.1736
+          "value": 622.174
         },
         "reverse": true
       }
@@ -311,7 +311,7 @@ description: Artifact commands herringbone-gear.kcl
         "end_radius": 13.5,
         "angle": {
           "unit": "degrees",
-          "value": -83.4304
+          "value": -83.43
         },
         "reverse": true
       }
@@ -326,8 +326,8 @@ description: Artifact commands herringbone-gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -3.0163,
-          "y": 11.7477,
+          "x": -3.016,
+          "y": 11.748,
           "z": 0.0
         },
         "relative": false
@@ -343,8 +343,8 @@ description: Artifact commands herringbone-gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.0008,
-          "y": 12.1287,
+          "x": -0.001,
+          "y": 12.129,
           "z": 0.0
         },
         "relative": false

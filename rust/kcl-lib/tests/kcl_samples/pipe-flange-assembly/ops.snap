@@ -1483,7 +1483,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -0.4688,
+          "value": -0.469,
           "ty": {
             "type": "Default",
             "len": {
@@ -1583,7 +1583,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 0.5469,
+          "value": 0.547,
           "ty": {
             "type": "Default",
             "len": {
@@ -1638,7 +1638,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -0.5469,
+          "value": -0.547,
           "ty": {
             "type": "Default",
             "len": {
