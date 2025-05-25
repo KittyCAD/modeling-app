@@ -2327,7 +2327,7 @@ pub async fn subtract_2d(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         "tool",
         &RuntimeType::Array(
             Box::new(RuntimeType::Primitive(PrimitiveType::Sketch)),
-            ArrayLen::NonEmpty,
+            ArrayLen::Minimum(1),
         ),
         exec_state,
     )?;

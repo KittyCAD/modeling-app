@@ -2968,16 +2968,9 @@ fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
     .parse_next(i)?;
     close_bracket(i)?;
 
-    let len = if let Some((tok, _, n, plus)) = len {
+    let len = if let Some((_, _, n, plus)) = len {
         if plus.is_some() {
-            if n != 1 {
-                return Err(ErrMode::Cut(ContextError::from(CompilationError::fatal(
-                    tok.as_source_range(),
-                    "Non-empty arrays are specified using `1+`, for a fixed-size array use just an integer",
-                ))));
-            } else {
-                ArrayLen::NonEmpty
-            }
+            ArrayLen::Minimum(n)
         } else {
             ArrayLen::Known(n)
         }

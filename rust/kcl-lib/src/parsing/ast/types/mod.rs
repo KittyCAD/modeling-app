@@ -3336,7 +3336,7 @@ impl fmt::Display for Type {
                 write!(f, "[{ty}")?;
                 match len {
                     ArrayLen::None => {}
-                    ArrayLen::NonEmpty => write!(f, "; 1+")?,
+                    ArrayLen::Minimum(n) => write!(f, "; {n}+")?,
                     ArrayLen::Known(n) => write!(f, "; {n}")?,
                 }
                 write!(f, "]")
