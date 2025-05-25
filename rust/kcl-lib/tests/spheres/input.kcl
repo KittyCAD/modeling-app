@@ -1,0 +1,13 @@
+diameter = 10
+lineWidth = 0.5
+
+startSketchOn(XY)
+|> startProfile(at = [-diameter / 2, 0])
+  |> xLine(length = diameter)
+  |> arc(
+       angleStart = 0.0,
+       angleEnd = 180.0,
+       radius = diameter / 2
+     )
+  |> close()
+  |> revolve(axis = X)
