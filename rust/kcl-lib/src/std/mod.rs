@@ -77,9 +77,7 @@ lazy_static! {
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Subtract2D),
         Box::new(crate::std::patterns::PatternLinear2D),
-        Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
-        Box::new(crate::std::patterns::PatternCircular3D),
         Box::new(crate::std::edge::GetOppositeEdge),
         Box::new(crate::std::edge::GetNextAdjacentEdge),
         Box::new(crate::std::edge::GetPreviousAdjacentEdge),
@@ -91,9 +89,6 @@ lazy_static! {
         Box::new(crate::std::transform::Scale),
         Box::new(crate::std::transform::Translate),
         Box::new(crate::std::transform::Rotate),
-        Box::new(crate::std::csg::Intersect),
-        Box::new(crate::std::csg::Union),
-        Box::new(crate::std::csg::Subtract),
     ];
 }
 
@@ -258,6 +253,30 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::shell::hollow(e, a)),
             StdFnProps::default("std::solid::hollow").include_in_feature_tree(),
         ),
+        ("solid", "union") => (
+            |e, a| Box::pin(crate::std::csg::union(e, a)),
+            StdFnProps::default("std::solid::union").include_in_feature_tree(),
+        ),
+        ("solid", "intersect") => (
+            |e, a| Box::pin(crate::std::csg::intersect(e, a)),
+            StdFnProps::default("std::solid::intersect").include_in_feature_tree(),
+        ),
+        ("solid", "subtract") => (
+            |e, a| Box::pin(crate::std::csg::subtract(e, a)),
+            StdFnProps::default("std::solid::subtract").include_in_feature_tree(),
+        ),
+        ("solid", "patternTransform") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_transform(e, a)),
+            StdFnProps::default("std::solid::patternTransform").include_in_feature_tree(),
+        ),
+        ("solid", "patternLinear3d") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_linear_3d(e, a)),
+            StdFnProps::default("std::solid::patternLinear3d").include_in_feature_tree(),
+        ),
+        ("solid", "patternCircular3d") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_circular_3d(e, a)),
+            StdFnProps::default("std::solid::patternCircular3d").include_in_feature_tree(),
+        ),
         ("array", "map") => (
             |e, a| Box::pin(crate::std::array::map(e, a)),
             StdFnProps::default("std::array::map"),
@@ -277,10 +296,6 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("prelude", "clone") => (
             |e, a| Box::pin(crate::std::clone::clone(e, a)),
             StdFnProps::default("std::clone").include_in_feature_tree(),
-        ),
-        ("solid", "patternTransform") => (
-            |e, a| Box::pin(crate::std::patterns::pattern_transform(e, a)),
-            StdFnProps::default("std::solid::patternTransform").include_in_feature_tree(),
         ),
         ("sketch", "patternTransform2d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
