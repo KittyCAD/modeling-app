@@ -115,7 +115,7 @@ describe('modelingMachine - XState', () => {
     })
   })
 
-  describe('when in sketch mode', () => {
+  describe('Adding segment overlay constraints', () => {
     // Test cases with different variations
     const makeStraightSegmentSnippet = (line: string) => ({
       code: `sketch001 = startSketchOn(XZ)
@@ -433,15 +433,15 @@ profile001 = ${line}
             artifact.codeRef.pathToNode,
             filter
           )
-          const first = constraintInfo[constraintIndex]
+          const constraint = constraintInfo[constraintIndex]
 
           // Now that we're in sketchIdle state, test the "Constrain with named value" event
           actor.send({
             type: 'Constrain with named value',
             data: {
               currentValue: {
-                valueText: first.value,
-                pathToNode: first.pathToNode,
+                valueText: constraint.value,
+                pathToNode: constraint.pathToNode,
                 variableName: 'test_variable',
               },
               // Use type assertion to mock the complex type
@@ -480,6 +480,315 @@ profile001 = ${line}
               JSON.stringify({ Sketch: 'Converting to named value' })
             )
           }, 5000)
+          expect(codeManager.code).toContain(expectedResult)
+        }, 10_000)
+      }
+    )
+  })
+  describe('Removing segment overlay constraints', () => {
+    // Test cases with different variations
+    const makeStraightSegmentSnippet = (line: string) => ({
+      code: `testVar1 = 55
+testVar2 = 66
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [2263.04, -2721.2])
+  |> line(end = [78, 19])
+  |> ${line}
+  |> line(end = [75.72, 18.41])`,
+      searchText: line,
+    })
+    const makeCircSnippet = (line: string) => ({
+      code: `sketch001 = startSketchOn(YZ)
+profile001 = ${line}
+`,
+      searchText: line,
+    })
+    const threePointCirceCode = `circleThreePoint(
+  sketch001,
+  p1 = [281.18, 215.74],
+  p2 = [295.39, 269.96],
+  p3 = [342.51, 216.38],
+)`
+
+    const testCases: {
+      name: string
+      code: string
+      searchText: string
+      constraintIndex: number
+      expectedResult: string
+      filter?: string
+    }[] = [
+      {
+        name: 'should un-constrain rel-line',
+        ...makeStraightSegmentSnippet('line(end = [testVar1, testVar2])'),
+        constraintIndex: 0,
+        expectedResult: 'line(end = [55, 66])',
+      },
+      {
+        name: 'should un-constrain abs-line',
+        ...makeStraightSegmentSnippet(
+          'line(endAbsolute = [testVar1, testVar2])'
+        ),
+        constraintIndex: 0,
+        expectedResult: 'line(end = [-2286.04, 2768.2]',
+        // TODO un-constrains to relative line when it should not, expectedResult should be the following
+        // expectedResult: 'line(endAbsolute = [55, 66]',
+      },
+      {
+        name: 'should un-constrain xLine',
+        ...makeStraightSegmentSnippet('xLine(length = testVar1)'),
+        constraintIndex: 1,
+        expectedResult: 'line(end = [55, 0])',
+      },
+      {
+        name: 'should un-constrain xLine absolute value',
+        ...makeStraightSegmentSnippet('xLine(endAbsolute = testVar1)'),
+        constraintIndex: 1,
+        expectedResult: 'line(end = [-2286.04, 0])',
+        // TODO un-constrains to relative line when it should not, expectedResult should be the following
+        // expectedResult: 'line(endAbsolute = [55, 0])',
+      },
+      {
+        name: 'should un-constrain yLine value',
+        ...makeStraightSegmentSnippet('yLine(length = testVar1)'),
+        constraintIndex: 1,
+        expectedResult: 'line(end = [0, 55])',
+      },
+      {
+        name: 'should un-constrain yLine absolute value',
+        ...makeStraightSegmentSnippet('yLine(endAbsolute = testVar1)'),
+        constraintIndex: 1,
+        expectedResult: 'line(end = [0, 2757.2])',
+        // TODO un-constrains to relative line when it should not, expectedResult should be the following
+        // expectedResult: 'line(endAbsolute = [0, 55])',
+      },
+      {
+        name: 'should un-constrain angledLine',
+        ...makeStraightSegmentSnippet(
+          'angledLine(angle = testVar1, length = testVar2)'
+        ),
+        constraintIndex: 0,
+        expectedResult: 'line(end = [37.86, 54.06]',
+      },
+      {
+        name: 'should un-constrain angledLine, endAbsoluteY',
+        ...makeStraightSegmentSnippet(
+          'angledLine(angle = testVar1, endAbsoluteY = testVar2)'
+        ),
+        constraintIndex: 1,
+        expectedResult: 'line(end = [1938.31, 2768.2])',
+      },
+      {
+        name: 'should un-constrain angledLine, endAbsoluteX',
+        ...makeStraightSegmentSnippet(
+          'angledLine(angle = testVar1, endAbsoluteX = testVar2)'
+        ),
+        constraintIndex: 1,
+        expectedResult: 'line(end = [-2275.04, -3249.09])',
+      },
+      {
+        name: 'should un-constrain angledLine, lengthY',
+        ...makeStraightSegmentSnippet(
+          'angledLine(angle = testVar1, lengthY = testVar2)'
+        ),
+        constraintIndex: 1,
+        expectedResult: 'line(end = [46.21, 66])',
+      },
+      {
+        name: 'should un-constrain angledLine, lengthX',
+        ...makeStraightSegmentSnippet(
+          'angledLine(angle = testVar1, lengthX = testVar2)'
+        ),
+        constraintIndex: 1,
+        expectedResult: 'line(end = [66, 94.26])',
+      },
+
+      // TODO tangentialArc
+      // {
+      //   name: 'should constrain tangentialArc absolute x value',
+      //   ...makeStraightSegmentSnippet(
+      //     'tangentialArc(endAbsolute = [testVar1, testVar2])'
+      //   ),
+      //   constraintIndex: 1,
+      //   expectedResult: 'endAbsolute = [55, 66]',
+      // },
+      // {
+      //   name: 'should constrain tangentialArc absolute y value',
+      //   ...makeStraightSegmentSnippet(
+      //     'tangentialArc(endAbsolute = [176.11, 19.49])'
+      //   ),
+      //   constraintIndex: 2,
+      //   expectedResult: 'endAbsolute = [176.11, test_variable]',
+      // },
+      // // TODO tangentialArc relative when that's working
+      // TODO threePoint Arc
+      // {
+      //   name: 'should constrain threePoint Arc interior x value',
+      //   ...makeStraightSegmentSnippet(
+      //     'arc(interiorAbsolute = [379.93, 103.92], endAbsolute = [386.2, 162.89])'
+      //   ),
+      //   constraintIndex: 0,
+      //   expectedResult: 'interiorAbsolute = [test_variable, 103.92]',
+      //   filter: ARG_INTERIOR_ABSOLUTE,
+      // },
+      // {
+      //   name: 'should constrain threePoint Arc interior y value',
+      //   ...makeStraightSegmentSnippet(
+      //     'arc(interiorAbsolute = [379.93, 103.92], endAbsolute = [386.2, 162.89])'
+      //   ),
+      //   constraintIndex: 1,
+      //   expectedResult: 'interiorAbsolute = [379.93, test_variable]',
+      //   filter: ARG_INTERIOR_ABSOLUTE,
+      // },
+      // {
+      //   name: 'should constrain threePoint Arc end x value',
+      //   ...makeStraightSegmentSnippet(
+      //     'arc(interiorAbsolute = [379.93, 103.92], endAbsolute = [386.2, 162.89])'
+      //   ),
+      //   constraintIndex: 0,
+      //   expectedResult: 'endAbsolute = [test_variable, 162.89]',
+      //   filter: ARG_END_ABSOLUTE,
+      // },
+      // {
+      //   name: 'should constrain threePoint Arc end y value',
+      //   ...makeStraightSegmentSnippet(
+      //     'arc(interiorAbsolute = [379.93, 103.92], endAbsolute = [386.2, 162.89])'
+      //   ),
+      //   constraintIndex: 1,
+      //   expectedResult: 'endAbsolute = [386.2, test_variable]',
+      //   filter: ARG_END_ABSOLUTE,
+      // },
+    ]
+
+    testCases.forEach(
+      ({ name, code, searchText, constraintIndex, expectedResult, filter }) => {
+        it(name, async () => {
+          const indexOfInterest = code.indexOf(searchText)
+
+          const ast = assertParse(code)
+
+          await kclManager.executeAst({ ast })
+
+          expect(kclManager.errors).toEqual([])
+
+          // segment artifact with that source range
+          const artifact = [...kclManager.artifactGraph].find(
+            ([_, artifact]) =>
+              artifact?.type === 'segment' &&
+              artifact.codeRef.range[0] <= indexOfInterest &&
+              indexOfInterest <= artifact.codeRef.range[1]
+          )?.[1]
+          if (!artifact || !('codeRef' in artifact)) {
+            throw new Error('Artifact not found or invalid artifact structure')
+          }
+
+          const actor = createActor(modelingMachine, {
+            input: modelingMachineDefaultContext,
+          }).start()
+
+          // Send event to transition to sketch mode
+          actor.send({
+            type: 'Set selection',
+            data: {
+              selectionType: 'mirrorCodeMirrorSelections',
+              selection: {
+                graphSelections: [
+                  {
+                    artifact: artifact,
+                    codeRef: artifact.codeRef,
+                  },
+                ],
+                otherSelections: [],
+              },
+            },
+          })
+          actor.send({ type: 'Enter sketch' })
+
+          // Check that we're in the sketch state
+          let state = actor.getSnapshot()
+          expect(state.value).toBe('animating to existing sketch')
+
+          // wait for it to transition
+          await waitForCondition(() => {
+            const snapshot = actor.getSnapshot()
+            return snapshot.value !== 'animating to existing sketch'
+          }, 5000)
+
+          // After the condition is met, do the actual assertion
+          expect(actor.getSnapshot().value).toEqual({
+            Sketch: { SketchIdle: 'scene drawn' },
+          })
+
+          const callExp = getNodeFromPath<Node<CallExpressionKw>>(
+            kclManager.ast,
+            artifact.codeRef.pathToNode,
+            'CallExpressionKw'
+          )
+          if (err(callExp)) {
+            throw new Error('Failed to get CallExpressionKw node')
+          }
+          const constraintInfo = getConstraintInfoKw(
+            callExp.node,
+            codeManager.code,
+            artifact.codeRef.pathToNode,
+            filter
+          )
+          const constraint = constraintInfo[constraintIndex]
+
+          // Now that we're in sketchIdle state, test the "Constrain with named value" event
+          actor.send({
+            type: 'Constrain remove constraints',
+            data: constraint.pathToNode,
+            // data: {
+            //   currentValue: {
+            //     valueText: first.value,
+            //     pathToNode: first.pathToNode,
+            //     variableName: 'test_variable',
+            //   },
+            //   // Use type assertion to mock the complex type
+            //   namedValue: {
+            //     valueText: '20',
+            //     variableName: 'test_variable',
+            //     insertIndex: 0,
+            //     valueCalculated: '20',
+            //     variableDeclarationAst: createVariableDeclaration(
+            //       'test_variable',
+            //       createLiteral('20')
+            //     ),
+            //     variableIdentifierAst: createIdentifier('test_variable') as any,
+            //     valueAst: createLiteral('20'),
+            //   },
+            // },
+          })
+
+          // Wait for the state to change in response to the constraint
+          await waitForCondition(() => {
+            const snapshot = actor.getSnapshot()
+            // Check if we've transitioned to a different state
+            return (
+              JSON.stringify(snapshot.value) !==
+              JSON.stringify({
+                Sketch: { SketchIdle: 'set up segments' },
+              })
+            )
+          }, 5000)
+
+          await waitForCondition(() => {
+            const snapshot = actor.getSnapshot()
+            // Check if we've transitioned to a different state
+            return (
+              JSON.stringify(snapshot.value) !==
+              JSON.stringify({ Sketch: 'Constrain remove constraints' })
+            )
+          }, 5000)
+          const startTime = Date.now()
+          while (
+            !codeManager.code.includes(expectedResult) &&
+            Date.now() - startTime < 5000
+          ) {
+            await new Promise((resolve) => setTimeout(resolve, 100))
+          }
+          // await new Promise((resolve => setTimeout(resolve, 5000)))
           expect(codeManager.code).toContain(expectedResult)
         }, 10_000)
       }
