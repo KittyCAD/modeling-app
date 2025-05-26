@@ -54,7 +54,7 @@ intersectPoint2 = polar(angle = -5, length = housingR1 - 0.08)
 // starting with a revolve
 threadedShaftBodyRevolveSketch = startSketchOn(XZ)
 threadedShaftBodyRevolveProfile = startProfile(threadedShaftBodyRevolveSketch, at = [0, -distanceBetweenEyeAndShaftEnd])
-  |> xLine(length = shaftR - 0.07, tag = $seg05) // 0.07 dither make make CSG work
+  |> xLine(length = shaftR - 0.07, tag = $seg05) // 0.07 dither to make CSG work
   |> yLine(endAbsolute = -intersectPoint, tag = $kink)
   |> arc(interiorAbsolute = intersectPoint2, endAbsolute = [housingR1 - 0.08, 0])
   // |> line(endAbsolute = [housingR1, 0])
