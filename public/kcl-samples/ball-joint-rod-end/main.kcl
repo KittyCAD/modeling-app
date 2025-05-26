@@ -62,7 +62,6 @@ threadedShaftBodyRevolveProfile = startProfile(threadedShaftBodyRevolveSketch, a
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 threadedShaftBodyRevolve = revolve(threadedShaftBodyRevolveProfile, angle = 360, axis = Y)
-// |> fillet(radius = 1, tags = [getNextAdjacentEdge(kink)]) // TOD0, this fillet does weird things, add back in when fixed
 
 // second part of the shalft is a extrude that will add the flats and the filleted taper to get to the retaining ring width
 threadedShaftBodySketch = startSketchOn(-YZ)
