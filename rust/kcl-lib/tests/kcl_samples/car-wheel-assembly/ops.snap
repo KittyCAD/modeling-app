@@ -53,10 +53,15 @@ description: Operations executed car-wheel-assembly.kcl
     "name": "patternCircular3d",
     "unlabeledArg": {
       "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
+        "type": "Array",
+        "value": [
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
       },
       "sourceRange": []
     },

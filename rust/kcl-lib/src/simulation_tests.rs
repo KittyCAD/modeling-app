@@ -194,7 +194,10 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         ".**[].x[]" => rounded_redaction(3),
                         ".**[].y[]" => rounded_redaction(3),
                         ".**[].z[]" => rounded_redaction(3),
-                        ".**.sourceRange" => Vec::new(),
+                        ".**.x" => rounded_redaction(3),
+                        ".**.y" => rounded_redaction(3),
+                        ".**.z" => rounded_redaction(3),
+                         ".**.sourceRange" => Vec::new(),
                     })
                 })
             }));

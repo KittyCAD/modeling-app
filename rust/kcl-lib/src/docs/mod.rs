@@ -1074,12 +1074,12 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_appearance() {
-        let appearance_fn: Box<dyn StdLibFn> = Box::new(crate::std::appearance::Appearance);
-        let snippet = appearance_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"appearance(${0:%}, color = ${1:"#.to_owned() + "\"#" + r#"ff0000"})"#
-        );
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(helix_fn) = data.find_by_name("appearance").unwrap() else {
+            panic!();
+        };
+        let snippet = helix_fn.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"appearance(color = ${0:"ff0000"})"#);
     }
 
     #[test]
