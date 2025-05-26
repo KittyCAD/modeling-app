@@ -362,7 +362,7 @@ profile001 = ${line}
 
     testCases.forEach(
       ({ name, code, searchText, constraintIndex, expectedResult, filter }) => {
-        it.only(name, async () => {
+        it(name, async () => {
           const indexOfInterest = code.indexOf(searchText)
 
           const ast = assertParse(code)
