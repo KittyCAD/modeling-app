@@ -1,6 +1,9 @@
 // ball joint rod end
 // A ball joint rod end is a mechanical linkage component that consists of a spherical ball housed within a socket, connected to a threaded rod, allowing rotational movement in multiple directions while providing a secure connection point between two parts of a mechanical system. Commonly used in steering systems and suspension components.
 
+// Set Units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
 // variables
 ballBoltLength = 6
 ballRadius = 8
