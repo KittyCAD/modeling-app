@@ -101,4 +101,3 @@ threadedRodHole = extrude(profile001, length = holdDepth + 1)
 
 // cut hold for threaded rod
 solid004 = subtract([solid003], tools = [threadedRodHole])
-

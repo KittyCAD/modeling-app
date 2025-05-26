@@ -25,6 +25,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "ball-joint-rod-end/main.kcl",
+    "multipleFiles": false,
+    "title": "ball joint rod end",
+    "description": "A ball joint rod end is a mechanical linkage component that consists of a spherical ball housed within a socket, connected to a threaded rod, allowing rotational movement in multiple directions while providing a secure connection point between two parts of a mechanical system. Commonly used in steering systems and suspension components.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "bench/main.kcl",
     "multipleFiles": true,
     "title": "Bench",
