@@ -145,8 +145,8 @@ description: Artifact commands tangent_to_3_point_arc.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -99.8038,
-          "y": -6.2608,
+          "x": -99.804,
+          "y": -6.261,
           "z": 0.0
         },
         "relative": true

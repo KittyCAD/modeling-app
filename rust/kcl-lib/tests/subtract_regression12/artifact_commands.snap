@@ -175,7 +175,7 @@ description: Artifact commands subtract_regression12.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 20.0406,
+          "y": 20.041,
           "z": 0.0
         },
         "relative": true
@@ -192,7 +192,7 @@ description: Artifact commands subtract_regression12.kcl
         "type": "line",
         "end": {
           "x": 2.413,
-          "y": 2.8194,
+          "y": 2.819,
           "z": 0.0
         },
         "relative": true

@@ -98,12 +98,12 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 "from": [
                   0.0,
-                  38.9785
+                  38.978
                 ],
                 "tag": null,
                 "to": [
-                  1.3595,
-                  38.3445
+                  1.359,
+                  38.345
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -116,13 +116,13 @@ description: Variables in memory after executing truss-structure.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.3595,
-                  38.3445
+                  1.359,
+                  38.345
                 ],
                 "tag": null,
                 "to": [
-                  1.3595,
-                  36.8445
+                  1.359,
+                  36.845
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -135,70 +135,13 @@ description: Variables in memory after executing truss-structure.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.3595,
-                  36.8445
+                  1.359,
+                  36.845
                 ],
                 "tag": null,
                 "to": [
                   0.0,
-                  37.4785
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  37.4785
-                ],
-                "tag": null,
-                "to": [
-                  -1.3595,
-                  36.8445
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.3595,
-                  36.8445
-                ],
-                "tag": null,
-                "to": [
-                  -1.3595,
-                  38.3445
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.3595,
-                  38.3445
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  38.9785
+                  37.478
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -212,12 +155,69 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 "from": [
                   0.0,
-                  38.9785
+                  37.478
+                ],
+                "tag": null,
+                "to": [
+                  -1.359,
+                  36.845
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -1.359,
+                  36.845
+                ],
+                "tag": null,
+                "to": [
+                  -1.359,
+                  38.345
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -1.359,
+                  38.345
                 ],
                 "tag": null,
                 "to": [
                   0.0,
-                  38.9785
+                  38.978
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  38.978
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  38.978
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -258,11 +258,11 @@ description: Variables in memory after executing truss-structure.kcl
             "start": {
               "from": [
                 0.0,
-                38.9785
+                38.978
               ],
               "to": [
                 0.0,
-                38.9785
+                38.978
               ],
               "units": {
                 "type": "Inches"
@@ -349,12 +349,12 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 "from": [
                   0.0,
-                  38.9785
+                  38.978
                 ],
                 "tag": null,
                 "to": [
-                  1.3595,
-                  38.3445
+                  1.359,
+                  38.345
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -367,13 +367,13 @@ description: Variables in memory after executing truss-structure.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.3595,
-                  38.3445
+                  1.359,
+                  38.345
                 ],
                 "tag": null,
                 "to": [
-                  1.3595,
-                  36.8445
+                  1.359,
+                  36.845
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -386,70 +386,13 @@ description: Variables in memory after executing truss-structure.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.3595,
-                  36.8445
+                  1.359,
+                  36.845
                 ],
                 "tag": null,
                 "to": [
                   0.0,
-                  37.4785
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  37.4785
-                ],
-                "tag": null,
-                "to": [
-                  -1.3595,
-                  36.8445
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.3595,
-                  36.8445
-                ],
-                "tag": null,
-                "to": [
-                  -1.3595,
-                  38.3445
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.3595,
-                  38.3445
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  38.9785
+                  37.478
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -463,12 +406,69 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 "from": [
                   0.0,
-                  38.9785
+                  37.478
+                ],
+                "tag": null,
+                "to": [
+                  -1.359,
+                  36.845
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -1.359,
+                  36.845
+                ],
+                "tag": null,
+                "to": [
+                  -1.359,
+                  38.345
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -1.359,
+                  38.345
                 ],
                 "tag": null,
                 "to": [
                   0.0,
-                  38.9785
+                  38.978
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  38.978
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  38.978
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -509,11 +509,11 @@ description: Variables in memory after executing truss-structure.kcl
             "start": {
               "from": [
                 0.0,
-                38.9785
+                38.978
               ],
               "to": [
                 0.0,
-                38.9785
+                38.978
               ],
               "units": {
                 "type": "Inches"
@@ -716,7 +716,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 "to": [
                   0.0,
-                  39.9785
+                  39.978
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -730,7 +730,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 "from": [
                   0.0,
-                  39.9785
+                  39.978
                 ],
                 "tag": {
                   "commentStart": 884,
@@ -972,7 +972,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 "to": [
                   0.0,
-                  39.9785
+                  39.978
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -986,7 +986,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 "from": [
                   0.0,
-                  39.9785
+                  39.978
                 ],
                 "tag": {
                   "commentStart": 884,
@@ -1228,7 +1228,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 "to": [
                   0.0,
-                  39.9785
+                  39.978
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1242,7 +1242,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 "from": [
                   0.0,
-                  39.9785
+                  39.978
                 ],
                 "tag": {
                   "commentStart": 884,
@@ -2180,7 +2180,7 @@ description: Variables in memory after executing truss-structure.kcl
             },
             "to": [
               0.0,
-              39.9785
+              39.978
             ],
             "type": "ToPoint",
             "units": {
@@ -2194,7 +2194,7 @@ description: Variables in memory after executing truss-structure.kcl
             },
             "from": [
               0.0,
-              39.9785
+              39.978
             ],
             "tag": {
               "commentStart": 884,
@@ -2377,7 +2377,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           "to": [
             0.0,
-            39.9785
+            39.978
           ],
           "type": "ToPoint",
           "units": {
@@ -2391,7 +2391,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           "from": [
             0.0,
-            39.9785
+            39.978
           ],
           "tag": {
             "commentStart": 884,
@@ -2535,7 +2535,7 @@ description: Variables in memory after executing truss-structure.kcl
           "tag": null,
           "to": [
             2.0,
-            35.9785
+            35.978
           ],
           "type": "ToPoint",
           "units": {
@@ -2549,12 +2549,12 @@ description: Variables in memory after executing truss-structure.kcl
           },
           "from": [
             2.0,
-            35.9785
+            35.978
           ],
           "tag": null,
           "to": [
             56.0,
-            10.7978
+            10.798
           ],
           "type": "ToPoint",
           "units": {
@@ -2568,7 +2568,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           "from": [
             56.0,
-            10.7978
+            10.798
           ],
           "tag": null,
           "to": [
@@ -2673,7 +2673,7 @@ description: Variables in memory after executing truss-structure.kcl
           "tag": null,
           "to": [
             -2.0,
-            35.9785
+            35.978
           ],
           "type": "ToPoint",
           "units": {
@@ -2687,12 +2687,12 @@ description: Variables in memory after executing truss-structure.kcl
           },
           "from": [
             -2.0,
-            35.9785
+            35.978
           ],
           "tag": null,
           "to": [
             -56.0,
-            10.7978
+            10.798
           ],
           "type": "ToPoint",
           "units": {
@@ -2706,7 +2706,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           "from": [
             -56.0,
-            10.7978
+            10.798
           ],
           "tag": null,
           "to": [
@@ -2842,7 +2842,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           "to": [
             0.0,
-            39.9785
+            39.978
           ],
           "type": "ToPoint",
           "units": {
@@ -2856,7 +2856,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           "from": [
             0.0,
-            39.9785
+            39.978
           ],
           "tag": {
             "commentStart": 884,
@@ -2976,12 +2976,12 @@ description: Variables in memory after executing truss-structure.kcl
           },
           "from": [
             0.0,
-            38.9785
+            38.978
           ],
           "tag": null,
           "to": [
-            1.3595,
-            38.3445
+            1.359,
+            38.345
           ],
           "type": "ToPoint",
           "units": {
@@ -2994,13 +2994,13 @@ description: Variables in memory after executing truss-structure.kcl
             "sourceRange": []
           },
           "from": [
-            1.3595,
-            38.3445
+            1.359,
+            38.345
           ],
           "tag": null,
           "to": [
-            1.3595,
-            36.8445
+            1.359,
+            36.845
           ],
           "type": "ToPoint",
           "units": {
@@ -3013,70 +3013,13 @@ description: Variables in memory after executing truss-structure.kcl
             "sourceRange": []
           },
           "from": [
-            1.3595,
-            36.8445
+            1.359,
+            36.845
           ],
           "tag": null,
           "to": [
             0.0,
-            37.4785
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            37.4785
-          ],
-          "tag": null,
-          "to": [
-            -1.3595,
-            36.8445
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.3595,
-            36.8445
-          ],
-          "tag": null,
-          "to": [
-            -1.3595,
-            38.3445
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.3595,
-            38.3445
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            38.9785
+            37.478
           ],
           "type": "ToPoint",
           "units": {
@@ -3090,12 +3033,69 @@ description: Variables in memory after executing truss-structure.kcl
           },
           "from": [
             0.0,
-            38.9785
+            37.478
+          ],
+          "tag": null,
+          "to": [
+            -1.359,
+            36.845
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -1.359,
+            36.845
+          ],
+          "tag": null,
+          "to": [
+            -1.359,
+            38.345
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -1.359,
+            38.345
           ],
           "tag": null,
           "to": [
             0.0,
-            38.9785
+            38.978
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            0.0,
+            38.978
+          ],
+          "tag": null,
+          "to": [
+            0.0,
+            38.978
           ],
           "type": "ToPoint",
           "units": {
@@ -3136,11 +3136,11 @@ description: Variables in memory after executing truss-structure.kcl
       "start": {
         "from": [
           0.0,
-          38.9785
+          38.978
         ],
         "to": [
           0.0,
-          38.9785
+          38.978
         ],
         "units": {
           "type": "Inches"
@@ -3175,7 +3175,7 @@ description: Variables in memory after executing truss-structure.kcl
           ],
           "tag": null,
           "to": [
-            22.6506,
+            22.651,
             26.5
           ],
           "type": "ToPoint",
@@ -3189,13 +3189,13 @@ description: Variables in memory after executing truss-structure.kcl
             "sourceRange": []
           },
           "from": [
-            22.6506,
+            22.651,
             26.5
           ],
           "tag": null,
           "to": [
-            27.1822,
-            24.3869
+            27.182,
+            24.387
           ],
           "type": "ToPoint",
           "units": {
@@ -3208,13 +3208,13 @@ description: Variables in memory after executing truss-structure.kcl
             "sourceRange": []
           },
           "from": [
-            27.1822,
-            24.3869
+            27.182,
+            24.387
           ],
           "tag": null,
           "to": [
             1.0,
-            9.2706
+            9.271
           ],
           "type": "ToPoint",
           "units": {
@@ -3228,7 +3228,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           "from": [
             1.0,
-            9.2706
+            9.271
           ],
           "tag": null,
           "to": [
@@ -3313,7 +3313,7 @@ description: Variables in memory after executing truss-structure.kcl
           ],
           "tag": null,
           "to": [
-            -22.6506,
+            -22.651,
             26.5
           ],
           "type": "ToPoint",
@@ -3327,13 +3327,13 @@ description: Variables in memory after executing truss-structure.kcl
             "sourceRange": []
           },
           "from": [
-            -22.6506,
+            -22.651,
             26.5
           ],
           "tag": null,
           "to": [
-            -27.1822,
-            24.3869
+            -27.182,
+            24.387
           ],
           "type": "ToPoint",
           "units": {
@@ -3346,13 +3346,13 @@ description: Variables in memory after executing truss-structure.kcl
             "sourceRange": []
           },
           "from": [
-            -27.1822,
-            24.3869
+            -27.182,
+            24.387
           ],
           "tag": null,
           "to": [
             -1.0,
-            9.2706
+            9.271
           ],
           "type": "ToPoint",
           "units": {
@@ -3366,7 +3366,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           "from": [
             -1.0,
-            9.2706
+            9.271
           ],
           "tag": null,
           "to": [
@@ -3825,7 +3825,7 @@ description: Variables in memory after executing truss-structure.kcl
             ],
             "tag": null,
             "to": [
-              22.6506,
+              22.651,
               26.5
             ],
             "type": "ToPoint",
@@ -3839,13 +3839,13 @@ description: Variables in memory after executing truss-structure.kcl
               "sourceRange": []
             },
             "from": [
-              22.6506,
+              22.651,
               26.5
             ],
             "tag": null,
             "to": [
-              27.1822,
-              24.3869
+              27.182,
+              24.387
             ],
             "type": "ToPoint",
             "units": {
@@ -3858,13 +3858,13 @@ description: Variables in memory after executing truss-structure.kcl
               "sourceRange": []
             },
             "from": [
-              27.1822,
-              24.3869
+              27.182,
+              24.387
             ],
             "tag": null,
             "to": [
               1.0,
-              9.2706
+              9.271
             ],
             "type": "ToPoint",
             "units": {
@@ -3878,7 +3878,7 @@ description: Variables in memory after executing truss-structure.kcl
             },
             "from": [
               1.0,
-              9.2706
+              9.271
             ],
             "tag": null,
             "to": [
@@ -4005,7 +4005,7 @@ description: Variables in memory after executing truss-structure.kcl
             ],
             "tag": null,
             "to": [
-              -22.6506,
+              -22.651,
               26.5
             ],
             "type": "ToPoint",
@@ -4019,13 +4019,13 @@ description: Variables in memory after executing truss-structure.kcl
               "sourceRange": []
             },
             "from": [
-              -22.6506,
+              -22.651,
               26.5
             ],
             "tag": null,
             "to": [
-              -27.1822,
-              24.3869
+              -27.182,
+              24.387
             ],
             "type": "ToPoint",
             "units": {
@@ -4038,13 +4038,13 @@ description: Variables in memory after executing truss-structure.kcl
               "sourceRange": []
             },
             "from": [
-              -27.1822,
-              24.3869
+              -27.182,
+              24.387
             ],
             "tag": null,
             "to": [
               -1.0,
-              9.2706
+              9.271
             ],
             "type": "ToPoint",
             "units": {
@@ -4058,7 +4058,7 @@ description: Variables in memory after executing truss-structure.kcl
             },
             "from": [
               -1.0,
-              9.2706
+              9.271
             ],
             "tag": null,
             "to": [
@@ -4297,7 +4297,7 @@ description: Variables in memory after executing truss-structure.kcl
             },
             "to": [
               0.0,
-              39.9785
+              39.978
             ],
             "type": "ToPoint",
             "units": {
@@ -4311,7 +4311,7 @@ description: Variables in memory after executing truss-structure.kcl
             },
             "from": [
               0.0,
-              39.9785
+              39.978
             ],
             "tag": {
               "commentStart": 884,

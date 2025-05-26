@@ -1,0 +1,58 @@
+// T-Slotted Framing Rail
+// A T-slotted framing rail, or T-slot extrusion, is a rectangular or square aluminum profile with a "T" shaped slot along one or more sides. These slots allow for easy attachment of various hardware components like brackets, connectors, and fasteners, making it a versatile and customizable framing system.
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Define parameters
+interiorRadius = 0.01
+scoreDepth = 0.018
+arcEnd = 0.0275
+holeDiameter = 0.262
+
+fn railTslot(railHeight, railLength) {
+  // Sketch one inner leg of the extruded rail
+  railProfile = startSketchOn(XZ)
+    |> startProfile(at = [0.5, (1 - 0.356) / 2])
+    |> xLine(length = -0.08)
+    |> tangentialArc(angle = 45, radius = .09)
+    |> angledLine(angle = 45, endAbsoluteY = 0.113)
+    |> tangentialArc(angle = 135, radius = interiorRadius)
+    |> xLine(endAbsolute = .5 - (.320 / 2) - interiorRadius)
+    |> tangentialArc(angle = -90, radius = interiorRadius)
+    |> yLine(endAbsolute = interiorRadius)
+    |> tangentialArc(angle = -90, radius = interiorRadius)
+    |> xLine(length = -0.03)
+    |> arc(angleStart = 0, angleEnd = 180, radius = scoreDepth)
+    |> xLine(length = -0.1)
+    |> arc(angleStart = 0, angleEnd = 180, radius = scoreDepth)
+    |> xLine(length = -0.03)
+    |> tangentialArc(endAbsolute = [arcEnd, arcEnd])
+
+    // Mirror the sketch about the diagonal to complete the leg. Then mirror across the center of the profile in the horizontal and vertical directions. Then close the sketch
+    |> mirror2d(axis = {
+         direction = [1.0, 1.0],
+         origin = [0.0, 0.0]
+       })
+    |> mirror2d(axis = {
+         direction = [1.0, 0.0],
+         origin = [0.0, 0.5]
+       })
+    |> mirror2d(axis = {
+         direction = [0.0, 1.0],
+         origin = [0.5, 0.0]
+       })
+    |> close()
+
+    // Sketch a dimensioned hole in the center of the profile
+    |> subtract2d(tool = circle(center = [railHeight / 2, railHeight / 2], radius = holeDiameter / 2))
+
+    // Scale the entire sketch by a factor of the rail height, then extrude
+    |> scale(x = railHeight, z = railHeight)
+    |> extrude(length = -railLength)
+
+  return railProfile
+}
+
+// Generate one rail using the rail function
+railTslot(railHeight = 1.5, railLength = 2ft)

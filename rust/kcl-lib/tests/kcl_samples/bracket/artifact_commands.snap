@@ -106,7 +106,7 @@ description: Artifact commands bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 117.2247,
+          "x": 117.225,
           "y": 0.0,
           "z": 0.0
         },
@@ -124,7 +124,7 @@ description: Artifact commands bracket.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 9.7753,
+          "y": 9.775,
           "z": 0.0
         },
         "relative": true
@@ -174,7 +174,7 @@ description: Artifact commands bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 9.7753,
+          "x": 9.775,
           "y": 0.0,
           "z": 0.0
         },
@@ -350,7 +350,7 @@ description: Artifact commands bracket.kcl
         [
           {
             "translate": {
-              "x": -72.7747,
+              "x": -72.775,
               "y": 0.0,
               "z": 0.0
             },
@@ -712,8 +712,8 @@ description: Artifact commands bracket.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 26.9875,
-          "y": 23.8125
+          "x": 26.987,
+          "y": 23.813
         },
         "radius": 7.9375,
         "start": {
@@ -736,7 +736,7 @@ description: Artifact commands bracket.kcl
       "path": "[uuid]",
       "to": {
         "x": 34.925,
-        "y": 23.8125,
+        "y": 23.813,
         "z": 0.0
       }
     }
