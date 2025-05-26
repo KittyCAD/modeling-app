@@ -99,5 +99,5 @@ sketch001 = startSketchOn(plane001)
 profile001 = circle(sketch001, center = [0, 0], radius = holeDForM8Tap / 2)
 threadedRodHole = extrude(profile001, length = holdDepth + 1)
 
-// cut hold for threaded rod
+// cut hole for threaded rod
 solid004 = subtract([solid003], tools = [threadedRodHole])
