@@ -3445,7 +3445,7 @@ description: Result of parsing ball-joint-rod-end.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "0.07 dither make make CSG work",
+                      "value": "0.07 dither to make CSG work",
                       "style": "line"
                     }
                   }
@@ -6387,7 +6387,7 @@ description: Result of parsing ball-joint-rod-end.kcl
         "preComments": [
           "",
           "",
-          "// cut hold for threaded rod"
+          "// cut hole for threaded rod"
         ],
         "start": 0,
         "type": "VariableDeclaration",
