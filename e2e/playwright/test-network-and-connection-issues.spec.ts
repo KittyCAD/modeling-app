@@ -15,7 +15,7 @@ test.describe('Test network related behaviors', () => {
     { tag: '@skipLocalEngine' },
     async ({ page, homePage }) => {
       const networkToggleConnectedText = page.getByText('Connected')
-      const networkToggleWeakText = page.getByText('Network health (Weak)')
+      const networkToggleWeakText = page.getByText('Ok')
 
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -99,7 +99,7 @@ test.describe('Test network related behaviors', () => {
     async ({ page, homePage, toolbar, scene, cmdBar }) => {
       const networkToggle = page.getByTestId('network-toggle')
       const networkToggleConnectedText = page.getByText('Connected')
-      const networkToggleWeakText = page.getByText('Network health (Weak)')
+      const networkToggleWeakText = page.getByText('Ok')
 
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -284,7 +284,7 @@ profile001 = startProfile(sketch001, at = [12.34, -12.34])
     async ({ page, homePage, scene, cmdBar, toolbar, tronApp }) => {
       const networkToggle = page.getByTestId('network-toggle')
       const networkToggleConnectedText = page.getByText('Connected')
-      const networkToggleWeakText = page.getByText('Network health (Weak)')
+      const networkToggleWeakText = page.getByText('Ok')
 
       if (!tronApp) {
         fail()
