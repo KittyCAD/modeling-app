@@ -1955,7 +1955,7 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
 
       await endArcStartLine()
       await editor.expectEditor.toContain(
-        `|> tangentialArc(endAbsolute = [16.61, 4.14])`
+        `|> tangentialArc(end = [2.98, -7.52])`
       )
 
       // Add a three-point arc segment
