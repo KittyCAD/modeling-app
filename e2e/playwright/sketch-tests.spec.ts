@@ -1733,7 +1733,7 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
       await page.waitForTimeout(600)
     })
 
-    const codeFromTangentialArc = `  |> tangentialArc(endAbsolute = [39.49, 88.22])`
+    const codeFromTangentialArc = `  |> tangentialArc(end = [-10.82, 144.95])`
     await test.step('check that tangential tool does not snap to other profile starts', async () => {
       await toolbar.selectTangentialArc()
       await page.waitForTimeout(1000)
@@ -1755,7 +1755,7 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
       // check pixel is now gray at tanArcLocation to verify code has executed
       await scene.expectPixelColor([26, 26, 26], tanArcLocation, 15)
       await editor.expectEditor.not.toContain(
-        `tangentialArc(endAbsolute = [39.49, 88.22])`
+        `tangentialArc(end = [-10.82, 144.95])`
       )
     })
 
