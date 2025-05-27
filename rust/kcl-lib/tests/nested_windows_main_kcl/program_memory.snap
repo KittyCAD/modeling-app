@@ -1,9 +1,9 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Variables in memory after executing nested_main_kcl.kcl
+description: Variables in memory after executing nested_windows_main_kcl.kcl
 ---
 {
-  "bar": {
+  "__mod_bar": {
     "type": "Module",
     "value": 1
   }

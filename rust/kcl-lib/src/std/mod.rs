@@ -45,7 +45,6 @@ pub type StdFn = fn(
 
 lazy_static! {
     static ref CORE_FNS: Vec<Box<dyn StdLibFn>> = vec![
-        Box::new(crate::std::appearance::Appearance),
         Box::new(crate::std::extrude::Extrude),
         Box::new(crate::std::segment::SegEnd),
         Box::new(crate::std::segment::SegEndX),
@@ -276,6 +275,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("solid", "patternCircular3d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_circular_3d(e, a)),
             StdFnProps::default("std::solid::patternCircular3d").include_in_feature_tree(),
+        ),
+        ("solid", "appearance") => (
+            |e, a| Box::pin(crate::std::appearance::appearance(e, a)),
+            StdFnProps::default("std::solid::appearance"),
         ),
         ("array", "map") => (
             |e, a| Box::pin(crate::std::array::map(e, a)),

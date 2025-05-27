@@ -463,7 +463,11 @@ impl ModData {
     }
 
     pub fn find_by_name(&self, name: &str) -> Option<&DocData> {
-        if let Some(result) = self.children.values().find(|dd| dd.name() == name) {
+        if let Some(result) = self
+            .children
+            .values()
+            .find(|dd| dd.name() == name && !matches!(dd, DocData::Mod(_)))
+        {
             return Some(result);
         }
 
@@ -824,7 +828,13 @@ impl ArgData {
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
             Some("Plane") => Some((index, format!(r#"{label}${{{}:XY}}"#, index))),
 
-            Some("string") => Some((index, format!(r#"{label}${{{}:"string"}}"#, index))),
+            Some("string") => {
+                if self.name == "color" {
+                    Some((index, format!(r#"{label}${{{}:"ff0000"}}"#, index)))
+                } else {
+                    Some((index, format!(r#"{label}${{{}:"string"}}"#, index)))
+                }
+            }
             Some("bool") => Some((index, format!(r#"{label}${{{}:false}}"#, index))),
             _ => None,
         }

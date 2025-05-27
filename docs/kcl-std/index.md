@@ -9,7 +9,6 @@ layout: manual
 ### Functions
 
 * [**std**](/docs/kcl-std/modules/std)
-  * [`appearance`](/docs/kcl-std/appearance)
   * [`assert`](/docs/kcl-std/assert)
   * [`assertIs`](/docs/kcl-std/assertIs)
   * [`clone`](/docs/kcl-std/functions/std-clone)
@@ -90,6 +89,7 @@ layout: manual
   * [`xLine`](/docs/kcl-std/xLine)
   * [`yLine`](/docs/kcl-std/yLine)
 * [**std::solid**](/docs/kcl-std/modules/std-solid)
+  * [`appearance`](/docs/kcl-std/functions/std-solid-appearance)
   * [`chamfer`](/docs/kcl-std/functions/std-solid-chamfer)
   * [`fillet`](/docs/kcl-std/functions/std-solid-fillet)
   * [`hollow`](/docs/kcl-std/functions/std-solid-hollow)

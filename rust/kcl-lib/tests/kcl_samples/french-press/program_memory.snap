@@ -4120,7 +4120,7 @@ description: Variables in memory after executing french-press.kcl
           "id": "[uuid]",
           "origin": {
             "x": 0.0,
-            "y": -8.254999999999999,
+            "y": -8.255,
             "z": 0.0,
             "units": {
               "type": "Mm"
@@ -5226,8 +5226,8 @@ description: Variables in memory after executing french-press.kcl
               "type": "plane",
               "value": "Custom",
               "xAxis": {
-                "x": 0.7071067811865475,
-                "y": 0.7071067811865475,
+                "x": 0.707,
+                "y": 0.707,
                 "z": 0.0,
                 "units": {
                   "type": "Unknown"
@@ -5887,8 +5887,8 @@ description: Variables in memory after executing french-press.kcl
               "type": "plane",
               "value": "Custom",
               "xAxis": {
-                "x": 0.7071067811865475,
-                "y": 0.7071067811865475,
+                "x": 0.707,
+                "y": 0.707,
                 "z": 0.0,
                 "units": {
                   "type": "Unknown"
@@ -6548,8 +6548,8 @@ description: Variables in memory after executing french-press.kcl
               "type": "plane",
               "value": "Custom",
               "xAxis": {
-                "x": 0.7071067811865475,
-                "y": 0.7071067811865475,
+                "x": 0.707,
+                "y": 0.707,
                 "z": 0.0,
                 "units": {
                   "type": "Unknown"
@@ -7209,8 +7209,8 @@ description: Variables in memory after executing french-press.kcl
               "type": "plane",
               "value": "Custom",
               "xAxis": {
-                "x": 0.7071067811865475,
-                "y": 0.7071067811865475,
+                "x": 0.707,
+                "y": 0.707,
                 "z": 0.0,
                 "units": {
                   "type": "Unknown"
@@ -11659,7 +11659,7 @@ description: Variables in memory after executing french-press.kcl
         "id": "[uuid]",
         "origin": {
           "x": 0.0,
-          "y": -8.254999999999999,
+          "y": -8.255,
           "z": 0.0,
           "units": {
             "type": "Mm"

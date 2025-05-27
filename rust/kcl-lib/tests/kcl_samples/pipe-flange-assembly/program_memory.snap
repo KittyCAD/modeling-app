@@ -3,6 +3,10 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing pipe-flange-assembly.kcl
 ---
 {
+  "__mod_gasket": {
+    "type": "Module",
+    "value": 2
+  },
   "bolt": {
     "type": "Function",
     "value": null
@@ -197,10 +201,6 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
         "type": "Degrees"
       }
     }
-  },
-  "gasket": {
-    "type": "Module",
-    "value": 2
   },
   "gasketInnerDiameter": {
     "type": "Number",

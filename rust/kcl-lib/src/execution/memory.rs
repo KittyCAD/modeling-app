@@ -226,8 +226,9 @@ use crate::{
 
 /// The distinguished name of the return value of a function.
 pub(crate) const RETURN_NAME: &str = "__return";
-/// Low-budget namespacing for types.
+/// Low-budget namespacing for types and modules.
 pub(crate) const TYPE_PREFIX: &str = "__ty_";
+pub(crate) const MODULE_PREFIX: &str = "__mod_";
 
 /// KCL memory. There should be only one ProgramMemory for the interpretation of a program (
 /// including other modules). Multiple interpretation runs should have fresh instances.
@@ -364,8 +365,10 @@ impl ProgramMemory {
             };
         }
 
+        let name = var.trim_start_matches(TYPE_PREFIX).trim_start_matches(MODULE_PREFIX);
+
         Err(KclError::UndefinedValue(KclErrorDetails::new(
-            format!("`{}` is not defined", var),
+            format!("`{name}` is not defined"),
             vec![source_range],
         )))
     }
