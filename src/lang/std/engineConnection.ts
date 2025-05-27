@@ -300,6 +300,7 @@ class EngineConnection extends EventTarget {
 
   set state(next: EngineConnectionState) {
     console.log(`${JSON.stringify(this.state)} → ${JSON.stringify(next)}`)
+    console.trace()
 
     if (next.type === EngineConnectionStateType.Disconnecting) {
       const sub = next.value
@@ -847,7 +848,6 @@ class EngineConnection extends EventTarget {
               'message',
               this.onDataChannelMessage
             )
-            this.disconnectAll()
           }
 
           this.unreliableDataChannel?.addEventListener(
@@ -866,7 +866,6 @@ class EngineConnection extends EventTarget {
                 },
               },
             }
-            this.disconnectAll()
           }
           this.unreliableDataChannel?.addEventListener(
             'error',
@@ -955,8 +954,6 @@ class EngineConnection extends EventTarget {
             'use-network-status-ready',
             this.onNetworkStatusReady
           )
-
-          this.disconnectAll()
         }
         this.websocket.addEventListener('close', this.onWebSocketClose)
 
@@ -974,8 +971,6 @@ class EngineConnection extends EventTarget {
               },
             }
           }
-
-          this.disconnectAll()
         }
         this.websocket.addEventListener('error', this.onWebSocketError)
 
@@ -1459,7 +1454,7 @@ export class EngineCommandManager extends EventTarget {
       console.warn('DURING TESTS ENGINECONNECTION.ONOFFLINE WILL DO NOTHING.')
       return
     }
-    this.onEngineConnectionRestartRequest()
+    // this.onEngineConnectionRestartRequest()
   }
 
   idleMode: boolean = false
@@ -1491,6 +1486,8 @@ export class EngineCommandManager extends EventTarget {
     token?: string
     settings?: SettingsViaQueryString
   }) {
+    console.trace()
+
     if (settings) {
       this.settings = settings
     }
@@ -1597,23 +1594,7 @@ export class EngineCommandManager extends EventTarget {
       console.log('camControlsCameraChange')
       this._camControlsCameraChange()
 
-      // We should eventually only have 1 restoral call.
-      if (this.idleMode) {
-        await this.sceneInfra?.camControls.restoreRemoteCameraStateAndTriggerSync()
-      } else {
-        // NOTE: This code is old. It uses the old hack to restore camera.
-        console.log('call default_camera_get_settings')
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        await this.sendSceneCommand({
-          // CameraControls subscribes to default_camera_get_settings response events
-          // firing this at connection ensure the camera's are synced initially
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'default_camera_get_settings',
-          },
-        })
-      }
+      await this.sceneInfra?.camControls.restoreRemoteCameraStateAndTriggerSync()
 
       setIsStreamReady(true)
 
