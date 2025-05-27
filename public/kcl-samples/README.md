@@ -39,6 +39,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![brake-rotor](screenshots/brake-rotor.png)](brake-rotor/main.kcl)
 #### [car-wheel-assembly](car-wheel-assembly/main.kcl) ([screenshot](screenshots/car-wheel-assembly.png))
 [![car-wheel-assembly](screenshots/car-wheel-assembly.png)](car-wheel-assembly/main.kcl)
+#### [clock](clock/main.kcl) ([screenshot](screenshots/clock.png))
+[![clock](screenshots/clock.png)](clock/main.kcl)
 #### [cold-plate](cold-plate/main.kcl) ([screenshot](screenshots/cold-plate.png))
 [![cold-plate](screenshots/cold-plate.png)](cold-plate/main.kcl)
 #### [color-cube](color-cube/main.kcl) ([screenshot](screenshots/color-cube.png))
