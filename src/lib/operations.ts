@@ -868,7 +868,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
           operation.labeledArgs.angle.sourceRange[0],
           operation.labeledArgs.angle.sourceRange[1]
         )
-      : '360'
+      : '360deg'
   )
   if (err(angle) || 'errors' in angle) {
     return { reason: 'Error in angle argument retrieval' }
