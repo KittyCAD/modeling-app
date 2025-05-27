@@ -16,6 +16,8 @@ layout: manual
   * [`helix`](/docs/kcl-std/functions/std-helix)
   * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
   * [`patternLinear2d`](/docs/kcl-std/patternLinear2d)
+* [**std::appearance**](/docs/kcl-std/modules/std-appearance)
+  * [`appearance::hexString`](/docs/kcl-std/functions/std-appearance-hexString)
 * [**std::array**](/docs/kcl-std/modules/std-array)
   * [`map`](/docs/kcl-std/functions/std-array-map)
   * [`pop`](/docs/kcl-std/functions/std-array-pop)

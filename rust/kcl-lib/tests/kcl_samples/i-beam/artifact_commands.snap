@@ -106,7 +106,7 @@ description: Artifact commands i-beam.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 33.8201,
+          "x": 33.82,
           "y": 0.0,
           "z": 0.0
         },
@@ -124,7 +124,7 @@ description: Artifact commands i-beam.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -7.4422,
+          "y": -7.442,
           "z": 0.0
         },
         "relative": true
@@ -140,8 +140,8 @@ description: Artifact commands i-beam.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 14.0589,
-          "y": 43.3578,
+          "x": 14.059,
+          "y": 43.358,
           "z": 0.0
         },
         "relative": false
@@ -173,7 +173,7 @@ description: Artifact commands i-beam.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 2.4511,
+          "x": 2.451,
           "y": 0.0,
           "z": 0.0
         },

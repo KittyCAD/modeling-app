@@ -107,7 +107,7 @@ description: Artifact commands pentagon_fillet_sugar.kcl
         "type": "line",
         "end": {
           "x": 250.0,
-          "y": 433.0127,
+          "y": 433.013,
           "z": 0.0
         },
         "relative": true
@@ -141,7 +141,7 @@ description: Artifact commands pentagon_fillet_sugar.kcl
         "type": "line",
         "end": {
           "x": 250.0,
-          "y": -433.0127,
+          "y": -433.013,
           "z": 0.0
         },
         "relative": true

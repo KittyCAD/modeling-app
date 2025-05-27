@@ -1,0 +1,95 @@
+/// Build a color from its red, green and blue components.
+/// These must be between 0 and 255.
+///
+/// ```
+/// startSketchOn(-XZ)
+///   |> circle(center = [0, 0], radius = 10)
+///   |> extrude(length = 4)
+///   |> appearance(color = appearance::hexString([50, 160, 160]))
+/// ```
+/// ```
+/// sideLen = 30
+/// n = 10
+/// 
+/// // The cubes become more green and less blue with each instance.
+/// fn cube(i, center) {
+///   g = 255 / n * i
+///   b = 255 / n * (n - i)
+///   return startSketchOn(XY)
+///     |> polygon(radius = sideLen / 2, numSides = 4, center = [center, 0])
+///     |> extrude(length = sideLen)
+///     |> appearance(color = appearance::hexString([0, g, b]), metalness = 80, roughness = 20)
+/// }
+/// 
+/// // Create n cubes, shifting each one over in a line.
+/// map(
+///   [0..n],
+///   f = fn(@i) {
+///     return cube(i, center = sideLen * i * 1.5)
+///   },
+/// )
+/// ```
+/// ```
+/// sideLen = 30
+/// n = 6
+/// 
+/// fn cube(offset, i, red) {
+///   x = floor(i / n)
+///   y = rem(i, divisor = n)
+///   g = 255 / n * x
+///   b = 255 / n * y
+///   return startSketchOn(offsetPlane(XZ, offset))
+///     |> circle(diameter = sideLen, center = [sideLen * x * 1.5, sideLen * y * 1.5])
+///     |> extrude(length = sideLen)
+///     |> appearance(color = appearance::hexString([red, g, b]), metalness = 80, roughness = 40)
+/// }
+/// 
+/// fn grid(offset, red) {
+///   return map(
+///     [0 ..< n * n],
+///     f = fn(@i) {
+///       return cube(offset, i, red)
+///     },
+///   )
+/// }
+/// 
+/// grid(offset = 0, red = 0)
+/// ```
+///
+/// ```kcl
+/// sideLen = 30
+/// n = 4
+/// 
+/// fn cube(offset, i, red) {
+///   x = floor(i / n)
+///   y = rem(i, divisor = n)
+///   g = 255 / n * x
+///   b = 255 / n * y
+///   return startSketchOn(offsetPlane(XY, offset))
+///     |> circle(diameter = sideLen, center = [sideLen * x * 1.5, sideLen * y * 1.5])
+///     |> extrude(length = sideLen)
+///     |> appearance(color = appearance::hexString([red, g, b]), metalness = 80, roughness = 40)
+/// }
+/// 
+/// fn grid(offset, red) {
+///   return map(
+///     [0 ..< n * n],
+///     f = fn(@i) {
+///       return cube(offset, i, red)
+///     },
+///   )
+/// }
+/// 
+/// map(
+///   [0..<n],
+///   f = fn(@i) {
+///     return grid(offset = i * sideLen * 2, red = 255 * i / n)
+///   },
+/// )
+/// ```
+@(impl = std_rust)
+export fn hexString(
+  /// The red, blue and green components of the color.
+  /// Must be between 0 and 255.
+  @rgb: [number(_); 3],
+): string {}

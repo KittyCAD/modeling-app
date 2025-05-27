@@ -15,7 +15,7 @@ import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
-import { APP_VERSION, IS_NIGHTLY } from '@src/routes/utils'
+import { APP_VERSION } from '@src/routes/utils'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -107,9 +107,11 @@ const SignIn = () => {
               <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl">
                 {APP_NAME}
               </h1>
-              <span className="px-2 md:px-3 py-1 text-xs md:text-base rounded-full bg-primary/10 text-primary self-start">
-                {IS_NIGHTLY ? 'nightly' : ''} v{APP_VERSION}
-              </span>
+              {isDesktop() && (
+                <span className="px-2 md:px-3 py-1 text-xs md:text-base rounded-full bg-primary/10 text-primary self-start">
+                  v{APP_VERSION}
+                </span>
+              )}
             </div>
             <p className="my-4 text-lg xl:text-xl">
               Thank you for using our CAD application. It is built on a novel

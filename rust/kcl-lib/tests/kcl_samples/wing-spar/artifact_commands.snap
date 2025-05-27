@@ -196,7 +196,7 @@ description: Artifact commands wing-spar.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": 190.1098,
+          "x": 190.11,
           "y": -1.583,
           "z": 0.0
         },

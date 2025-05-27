@@ -52,7 +52,7 @@ description: Operations executed spur-gear.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 15.2822,
+            "value": 15.282,
             "ty": {
               "type": "Default",
               "len": {
@@ -120,7 +120,7 @@ description: Operations executed spur-gear.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 0.2992,
+            "value": 0.299,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -132,7 +132,7 @@ description: Operations executed spur-gear.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 15.2822,
+            "value": 15.282,
             "ty": {
               "type": "Default",
               "len": {
