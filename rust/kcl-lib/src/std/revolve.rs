@@ -182,6 +182,11 @@ async fn inner_revolve(
         // If an edge lies on the axis of revolution it will not exist after the revolve, so
         // it cannot be used to retrieve data about the solid
         for path in sketch.paths.clone() {
+            if !path.is_straight_line() {
+                edge_id = Some(path.get_id());
+                break;
+            }
+
             let from = path.get_from();
             let to = path.get_to();
 
