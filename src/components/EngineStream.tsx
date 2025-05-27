@@ -53,7 +53,9 @@ export const EngineStream = (props: {
 
   const [firstPlay, setFirstPlay] = useState(true)
   const [goRestart, setGoRestart] = useState(false)
-  const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const [timeoutId, setTimeoutId] = useState<
+    ReturnType<typeof setTimeout> | undefined
+  >(undefined)
   const [attemptTimes, setAttemptTimes] = useState<[number, number]>([
     0,
     TIME_1_SECOND,
@@ -200,31 +202,36 @@ export const EngineStream = (props: {
       // Timeout already set.
       if (timeoutId) return
 
-      setTimeoutId(setTimeout(() => {
-        // The system is in a weird state - it was paused but the browser
-        // never reported it went offline, but reported going online.
-        // Let's put it into a better state to reconnect.
-        // When we stop it'll go back to WaitingForDependencies, which
-        // we can then act on.
-        if (engineStreamState.value === EngineStreamState.Paused) {
-          engineStreamActor.send({ type: EngineStreamTransition.Stop })
+      setTimeoutId(
+        setTimeout(() => {
+          // The system is in a weird state - it was paused but the browser
+          // never reported it went offline, but reported going online.
+          // Let's put it into a better state to reconnect.
+          // When we stop it'll go back to WaitingForDependencies, which
+          // we can then act on.
+          if (engineStreamState.value === EngineStreamState.Paused) {
+            engineStreamActor.send({ type: EngineStreamTransition.Stop })
+            setTimeoutId(undefined)
+            setGoRestart(false)
+            return
+          }
+
+          engineStreamState.context.videoRef.current?.pause()
+          engineCommandManager.tearDown()
+          startOrReconfigureEngine()
+          setFirstPlay(false)
+
           setTimeoutId(undefined)
           setGoRestart(false)
-          return
-        }
-
-        engineStreamState.context.videoRef.current?.pause()
-        engineCommandManager.tearDown()
-        startOrReconfigureEngine()
-        setFirstPlay(false)
-
-        setTimeoutId(undefined)
-        setGoRestart(false)
-      }, attemptTimes[0] + attemptTimes[1]))
+        }, attemptTimes[0] + attemptTimes[1])
+      )
       setAttemptTimes([attemptTimes[1], attemptTimes[0] + attemptTimes[1]])
     }
 
-    if (!goRestart && engineStreamState.value === EngineStreamState.WaitingForDependencies) {
+    if (
+      !goRestart &&
+      engineStreamState.value === EngineStreamState.WaitingForDependencies
+    ) {
       setGoRestart(true)
     }
 
@@ -246,7 +253,13 @@ export const EngineStream = (props: {
       )
       window.removeEventListener('online', attemptRestartIfNecessary)
     }
-  }, [engineStreamState, attemptTimes, goRestart, timeoutId, engineCommandManager.engineConnection?.state.type])
+  }, [
+    engineStreamState,
+    attemptTimes,
+    goRestart,
+    timeoutId,
+    engineCommandManager.engineConnection?.state.type,
+  ])
 
   useEffect(() => {
     // If engineStreamMachine is already reconfiguring, bail.
@@ -343,7 +356,11 @@ export const EngineStream = (props: {
       } else if (timeoutStart.current) {
         const elapsed = Date.now() - timeoutStart.current
         // Don't pause if we're already disconnected.
-        if (window.navigator.onLine && elapsed >= IDLE_TIME_MS && engineStreamState.value === EngineStreamState.Playing) {
+        if (
+          window.navigator.onLine &&
+          elapsed >= IDLE_TIME_MS &&
+          engineStreamState.value === EngineStreamState.Playing
+        ) {
           timeoutStart.current = null
           engineStreamActor.send({ type: EngineStreamTransition.Pause })
         }
