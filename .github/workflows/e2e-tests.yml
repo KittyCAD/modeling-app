@@ -216,6 +216,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    env:
+      OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
     steps:
 
@@ -257,6 +259,13 @@ jobs:
 
       - name: Install browsers
         run: npm run playwright install --with-deps
+
+      - name: Start Vector
+        if: ${{ !contains(matrix.os, 'windows') }}
+        run: .github/ci-cd-scripts/start-vector-${{ env.OS_NAME }}.sh
+        env:
+          GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
+          OS_NAME: ${{ env.OS_NAME }}
 
       - name: Test web
         uses: nick-fields/retry@v3.0.2
@@ -353,14 +362,14 @@ jobs:
         id: deps-install
         run: npm install
 
-      - name: Cache Playwright Browsers
+      - name: Cache browsers
         uses: actions/cache@v4
         with:
           path: |
             ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
-      - name: Install Playwright Browsers
+      - name: Install browsers
         run: npm run playwright install --with-deps
 
       - name: Build web
