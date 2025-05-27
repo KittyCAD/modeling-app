@@ -861,14 +861,14 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   }
 
   // angle kcl arg
-  if (!('angle' in operation.labeledArgs) || !operation.labeledArgs.angle) {
-    return { reason: "Couldn't find angle argument" }
-  }
+  // Default to '360' if not present
   const angle = await stringToKclExpression(
-    codeManager.code.slice(
-      operation.labeledArgs.angle.sourceRange[0],
-      operation.labeledArgs.angle.sourceRange[1]
-    )
+    'angle' in operation.labeledArgs && operation.labeledArgs.angle
+      ? codeManager.code.slice(
+          operation.labeledArgs.angle.sourceRange[0],
+          operation.labeledArgs.angle.sourceRange[1]
+        )
+      : '360deg'
   )
   if (err(angle) || 'errors' in angle) {
     return { reason: 'Error in angle argument retrieval' }
