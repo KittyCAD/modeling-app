@@ -49,7 +49,9 @@ export default async function crossPlatformFetch<T>(
     )
     const fallbackErrorMessage = `Failed to request endpoint: ${url} with status: ${response.status} ${response.statusText}`
     const resolvedMessage =
-      data instanceof Object && err(data) ? data.message : fallbackErrorMessage
+      data instanceof Object && 'message' in data
+        ? data.message
+        : fallbackErrorMessage
     return new Error(resolvedMessage)
   }
 
