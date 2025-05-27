@@ -12,7 +12,7 @@ patternTransform(
   @solids: [Solid; 1+],
   instances: number(_),
   transform: fn(number(_)): { },
-  useOriginal?: boolean,
+  useOriginal?: bool,
 ): [Solid; 1+]
 ```
 
@@ -61,7 +61,7 @@ Its properties are:
 | `solids` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) | The solid(s) to duplicate. | Yes |
 | `instances` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `transform` | [`fn(number(_)): { }`](/docs/kcl-std/types/std-types-fn) | How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples. | Yes |
-| `useOriginal` | `boolean` | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. | No |
+| `useOriginal` | [`bool`](/docs/kcl-std/types/std-types-bool) | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. | No |
 
 ### Returns
 
