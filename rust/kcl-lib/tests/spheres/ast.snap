@@ -40,39 +40,6 @@ description: Result of parsing spheres.kcl
       },
       {
         "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "name": "lineWidth",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "commentStart": 0,
-            "end": 0,
-            "raw": "0.5",
-            "start": 0,
-            "type": "Literal",
-            "type": "Literal",
-            "value": {
-              "value": 0.5,
-              "suffix": "None"
-            }
-          },
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
         "end": 0,
         "expression": {
           "body": [
@@ -903,7 +870,7 @@ description: Result of parsing spheres.kcl
     "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
-        "1": [
+        "0": [
           {
             "commentStart": 0,
             "end": 0,
@@ -914,7 +881,7 @@ description: Result of parsing spheres.kcl
             }
           }
         ],
-        "2": [
+        "1": [
           {
             "commentStart": 0,
             "end": 0,

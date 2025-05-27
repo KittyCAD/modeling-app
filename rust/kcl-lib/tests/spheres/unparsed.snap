@@ -3,7 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing spheres.kcl
 ---
 diameter = 10
-lineWidth = 0.5
 
 startSketchOn(XY)
   |> startProfile(at = [-diameter / 2, 0])

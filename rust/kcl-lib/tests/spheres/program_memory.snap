@@ -15,18 +15,5 @@ description: Variables in memory after executing spheres.kcl
         "type": "Degrees"
       }
     }
-  },
-  "lineWidth": {
-    "type": "Number",
-    "value": 0.5,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
   }
 }
