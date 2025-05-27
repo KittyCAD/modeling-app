@@ -110,7 +110,7 @@ description: Artifact commands circle_three_point.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 30.0059,
+        "x": 30.006,
         "y": 19.75,
         "z": 0.0
       }

@@ -108,7 +108,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       "radius": {
         "value": {
           "type": "Number",
-          "value": 0.5707,
+          "value": 0.571,
           "ty": {
             "type": "Default",
             "len": {

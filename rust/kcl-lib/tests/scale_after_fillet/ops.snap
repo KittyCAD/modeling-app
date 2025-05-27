@@ -136,7 +136,7 @@ description: Operations executed scale_after_fillet.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -0.4688,
+          "value": -0.469,
           "ty": {
             "type": "Default",
             "len": {

@@ -176,7 +176,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
             "tag": null,
             "to": [
               -8.0,
-              5.6793
+              5.679
             ],
             "type": "ToPoint",
             "units": {
@@ -190,7 +190,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
             },
             "from": [
               -8.0,
-              5.6793
+              5.679
             ],
             "tag": {
               "commentStart": 1225,
@@ -200,8 +200,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               "value": "innerEdge"
             },
             "to": [
-              -0.3207,
-              5.6793
+              -0.321,
+              5.679
             ],
             "type": "ToPoint",
             "units": {
@@ -214,12 +214,12 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               "sourceRange": []
             },
             "from": [
-              -0.3207,
-              5.6793
+              -0.321,
+              5.679
             ],
             "tag": null,
             "to": [
-              -0.3207,
+              -0.321,
               0.0
             ],
             "type": "ToPoint",
@@ -233,7 +233,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               "sourceRange": []
             },
             "from": [
-              -0.3207,
+              -0.321,
               0.0
             ],
             "tag": null,
@@ -718,7 +718,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                   "tag": null,
                   "to": [
                     -8.0,
-                    5.6793
+                    5.679
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -732,7 +732,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                   },
                   "from": [
                     -8.0,
-                    5.6793
+                    5.679
                   ],
                   "tag": {
                     "commentStart": 1225,
@@ -742,8 +742,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     "value": "innerEdge"
                   },
                   "to": [
-                    -0.3207,
-                    5.6793
+                    -0.321,
+                    5.679
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -756,12 +756,12 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     "sourceRange": []
                   },
                   "from": [
-                    -0.3207,
-                    5.6793
+                    -0.321,
+                    5.679
                   ],
                   "tag": null,
                   "to": [
-                    -0.3207,
+                    -0.321,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -775,7 +775,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     "sourceRange": []
                   },
                   "from": [
-                    -0.3207,
+                    -0.321,
                     0.0
                   ],
                   "tag": null,
@@ -942,7 +942,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
   },
   "thickness": {
     "type": "Number",
-    "value": 0.3207,
+    "value": 0.321,
     "ty": {
       "type": "Default",
       "len": {

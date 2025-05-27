@@ -131,7 +131,7 @@ description: Artifact commands multi_transform.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 14.1421,
+          "y": 14.142,
           "z": 0.0
         },
         "relative": false
@@ -147,7 +147,7 @@ description: Artifact commands multi_transform.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -14.1421,
+          "x": -14.142,
           "y": 0.0,
           "z": 0.0
         },
@@ -165,7 +165,7 @@ description: Artifact commands multi_transform.kcl
         "type": "line",
         "end": {
           "x": -0.0,
-          "y": -14.1421,
+          "y": -14.142,
           "z": 0.0
         },
         "relative": false
@@ -181,7 +181,7 @@ description: Artifact commands multi_transform.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 14.1421,
+          "x": 14.142,
           "y": 0.0,
           "z": 0.0
         },
@@ -196,7 +196,7 @@ description: Artifact commands multi_transform.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 14.1421,
+        "x": 14.142,
         "y": 0.0,
         "z": 0.0
       }

@@ -30,7 +30,7 @@ description: Operations executed ball-bearing.kcl
       "offset": {
         "value": {
           "type": "Number",
-          "value": -0.1565,
+          "value": -0.157,
           "ty": {
             "type": "Default",
             "len": {
@@ -905,7 +905,7 @@ description: Operations executed ball-bearing.kcl
       "offset": {
         "value": {
           "type": "Number",
-          "value": -0.1565,
+          "value": -0.157,
           "ty": {
             "type": "Default",
             "len": {

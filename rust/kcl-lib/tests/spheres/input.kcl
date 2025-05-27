@@ -1,0 +1,25 @@
+diameter = 10
+
+startSketchOn(XY)
+|> startProfile(at = [-diameter / 2, 0])
+  |> xLine(length = diameter)
+  |> arc(
+       angleStart = 0.0,
+       angleEnd = 180.0,
+       radius = diameter / 2
+     )
+  |> close()
+  |> revolve(axis = X)
+
+
+startSketchOn(XY)
+|> startProfile(at = [0, 0])
+  |> yLine(length = diameter)
+  |> arc(
+       angleStart = 90.0,
+       angleEnd = 270.0,
+       radius = diameter / 2
+     )
+     |> close()
+     |> revolve(axis = Y)
+     |> translate(x = diameter * 1.5)

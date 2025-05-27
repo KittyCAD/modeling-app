@@ -168,7 +168,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 },
                 "to": [
                   250.0,
-                  433.0127
+                  433.013
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -182,7 +182,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 },
                 "from": [
                   250.0,
-                  433.0127
+                  433.013
                 ],
                 "tag": {
                   "commentStart": 239,
@@ -193,7 +193,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 },
                 "to": [
                   -250.0,
-                  433.0127
+                  433.013
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -207,7 +207,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 },
                 "from": [
                   -250.0,
-                  433.0127
+                  433.013
                 ],
                 "tag": {
                   "commentStart": 300,
@@ -482,7 +482,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 },
                 "to": [
                   250.0,
-                  433.0127
+                  433.013
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -496,7 +496,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 },
                 "from": [
                   250.0,
-                  433.0127
+                  433.013
                 ],
                 "tag": {
                   "commentStart": 239,
@@ -507,7 +507,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 },
                 "to": [
                   -250.0,
-                  433.0127
+                  433.013
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -521,7 +521,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 },
                 "from": [
                   -250.0,
-                  433.0127
+                  433.013
                 ],
                 "tag": {
                   "commentStart": 300,
@@ -724,7 +724,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             },
             "to": [
               250.0,
-              433.0127
+              433.013
             ],
             "type": "ToPoint",
             "units": {
@@ -738,7 +738,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             },
             "from": [
               250.0,
-              433.0127
+              433.013
             ],
             "tag": {
               "commentStart": 239,
@@ -749,7 +749,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             },
             "to": [
               -250.0,
-              433.0127
+              433.013
             ],
             "type": "ToPoint",
             "units": {
@@ -763,7 +763,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             },
             "from": [
               -250.0,
-              433.0127
+              433.013
             ],
             "tag": {
               "commentStart": 300,
@@ -1023,7 +1023,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   },
                   "to": [
                     250.0,
-                    433.0127
+                    433.013
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -1037,7 +1037,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   },
                   "from": [
                     250.0,
-                    433.0127
+                    433.013
                   ],
                   "tag": {
                     "commentStart": 239,
@@ -1048,7 +1048,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   },
                   "to": [
                     -250.0,
-                    433.0127
+                    433.013
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -1062,7 +1062,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   },
                   "from": [
                     -250.0,
-                    433.0127
+                    433.013
                   ],
                   "tag": {
                     "commentStart": 300,
@@ -1402,7 +1402,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   },
                   "to": [
                     250.0,
-                    433.0127
+                    433.013
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -1416,7 +1416,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   },
                   "from": [
                     250.0,
-                    433.0127
+                    433.013
                   ],
                   "tag": {
                     "commentStart": 239,
@@ -1427,7 +1427,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   },
                   "to": [
                     -250.0,
-                    433.0127
+                    433.013
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -1441,7 +1441,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   },
                   "from": [
                     -250.0,
-                    433.0127
+                    433.013
                   ],
                   "tag": {
                     "commentStart": 300,

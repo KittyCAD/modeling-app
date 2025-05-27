@@ -5,7 +5,7 @@ description: Variables in memory after executing t-slot-rail.kcl
 {
   "arcEnd": {
     "type": "Number",
-    "value": 0.0275,
+    "value": 0.028,
     "ty": {
       "type": "Default",
       "len": {

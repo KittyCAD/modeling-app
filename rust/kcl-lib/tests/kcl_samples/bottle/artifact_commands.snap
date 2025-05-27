@@ -107,7 +107,7 @@ description: Artifact commands bottle.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 26.6667,
+          "y": 26.667,
           "z": 0.0
         },
         "relative": true
@@ -129,7 +129,7 @@ description: Artifact commands bottle.kcl
         },
         "end": {
           "x": 62.5,
-          "y": 26.6667,
+          "y": 26.667,
           "z": 0.0
         },
         "relative": false

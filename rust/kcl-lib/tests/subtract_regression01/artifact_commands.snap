@@ -77,8 +77,8 @@ description: Artifact commands subtract_regression01.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -23.1902,
-        "y": -14.9098,
+        "x": -23.19,
+        "y": -14.91,
         "z": 0.0
       }
     }
@@ -106,7 +106,7 @@ description: Artifact commands subtract_regression01.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 23.1902,
+          "x": 23.19,
           "y": 0.0,
           "z": 0.0
         },
@@ -148,8 +148,8 @@ description: Artifact commands subtract_regression01.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.5026,
-          "y": 1.6203,
+          "x": 1.503,
+          "y": 1.62,
           "z": 0.0
         },
         "relative": true
@@ -190,7 +190,7 @@ description: Artifact commands subtract_regression01.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -23.1902,
+          "x": -23.19,
           "y": 0.0,
           "z": 0.0
         },
@@ -208,7 +208,7 @@ description: Artifact commands subtract_regression01.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -2.2098,
+          "y": -2.21,
           "z": 0.0
         },
         "relative": true
@@ -357,7 +357,7 @@ description: Artifact commands subtract_regression01.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -17.9832,
+          "x": -17.983,
           "y": 0.0
         },
         "radius": 2.6034999999999995,
@@ -380,7 +380,7 @@ description: Artifact commands subtract_regression01.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -15.3797,
+        "x": -15.38,
         "y": 0.0,
         "z": 0.0
       }
