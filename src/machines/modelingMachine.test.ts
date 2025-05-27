@@ -4,7 +4,7 @@ import {
 } from '@src/machines/modelingMachine'
 import { createActor } from 'xstate'
 import { vi } from 'vitest'
-import { assertParse, type CallExpressionKw } from '@src/lang/wasm'
+import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import {
   codeManager,
@@ -22,6 +22,7 @@ import {
   createVariableDeclaration,
 } from '@src/lang/create'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
+import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 
 // Store original method to restore in afterAll
 
@@ -481,6 +482,372 @@ profile001 = ${line}
             )
           }, 5000)
           expect(codeManager.code).toContain(expectedResult)
+        }, 10_000)
+      }
+    )
+  })
+  describe('removing individual constraints with segment overlay events', () => {
+    // Test cases with different variations
+    const makeStraightSegmentSnippet = (line: string) => ({
+      code: `testVar1 = 55
+testVar2 = 66
+testVar3 = 77
+testVar4 = 88
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [2263.04, -2721.2])
+  |> line(end = [78, 19])
+  |> ${line}
+  |> line(end = [75.72, 18.41])`,
+      searchText: line,
+    })
+    const makeCircSnippet = (line: string) => ({
+      code: `testVar1 = 55
+testVar2 = 66
+testVar3 = 77
+testVar4 = 88
+testVar5 = 99
+testVar6 = 11
+sketch001 = startSketchOn(YZ)
+profile001 = ${line}
+`,
+      searchText: line,
+    })
+    const threePointCirceCode = `circleThreePoint(
+  sketch001,
+  p1 = [testVar1, testVar2],
+  p2 = [testVar3, testVar4],
+  p3 = [testVar5, testVar6],
+)`
+
+    const testCases: {
+      name: string
+      code: string
+      searchText: string
+      constraintIndex: number
+      expectedResult: string
+      filter?: string
+    }[] = [
+      {
+        name: 'should un-constrain line x value',
+        ...makeStraightSegmentSnippet('line(end = [testVar1, testVar2])'),
+        constraintIndex: 0,
+        expectedResult: 'line(end = [55, testVar2]',
+      },
+      {
+        name: 'should un-constrain line y value',
+        ...makeStraightSegmentSnippet('line(end = [testVar1, testVar2])'),
+        constraintIndex: 1,
+        expectedResult: 'line(end = [testVar1, 66]',
+      },
+      {
+        name: 'should un-constrain line absolute x value',
+        ...makeStraightSegmentSnippet(
+          'line(endAbsolute = [testVar1, testVar2])'
+        ),
+        constraintIndex: 0,
+        // expectedResult: 'line(end = [-2286.04, testVar2])',
+        // // TODO should not swap from abs to relative, expected should be
+        expectedResult: 'line(endAbsolute = [55, testVar2]',
+      },
+      {
+        name: 'should un-constrain line absolute y value',
+        ...makeStraightSegmentSnippet(
+          'line(endAbsolute = [testVar1, testVar2])'
+        ),
+        constraintIndex: 1,
+        expectedResult: 'line(endAbsolute = [testVar1, 66])',
+      },
+      {
+        name: 'should un-constrain xLine x value',
+        ...makeStraightSegmentSnippet('xLine(length = testVar1)'),
+        constraintIndex: 1,
+        expectedResult: 'xLine(length = 55)',
+      },
+      {
+        name: 'should un-constrain xLine x absolute value',
+        ...makeStraightSegmentSnippet('xLine(endAbsolute = testVar1)'),
+        constraintIndex: 1,
+        expectedResult: 'xLine(endAbsolute = 55)',
+      },
+      {
+        name: 'should un-constrain yLine y value',
+        ...makeStraightSegmentSnippet('yLine(length = testVar1)'),
+        constraintIndex: 1,
+        expectedResult: 'yLine(length = 55)',
+      },
+      {
+        name: 'should un-constrain yLine y absolute value',
+        ...makeStraightSegmentSnippet('yLine(endAbsolute = testVar1)'),
+        constraintIndex: 1,
+        expectedResult: 'yLine(endAbsolute = 55)',
+      },
+      {
+        name: 'should un-constrain angledLine, angle value',
+        ...makeStraightSegmentSnippet(
+          'angledLine(angle = testVar1, length = testVar2)'
+        ),
+        constraintIndex: 0,
+        expectedResult: 'angledLine(angle = 55, length = testVar2)',
+      },
+      {
+        name: 'should un-constrain angledLine, length value',
+        ...makeStraightSegmentSnippet(
+          'angledLine(angle = testVar1, length = testVar2)'
+        ),
+        constraintIndex: 1,
+        expectedResult: 'angledLine(angle = testVar1, length = 66)',
+      },
+      {
+        name: 'should un-constrain angledLine, endAbsoluteY value',
+        ...makeStraightSegmentSnippet(
+          'angledLine(angle = testVar1, endAbsoluteY = testVar2)'
+        ),
+        constraintIndex: 1,
+        expectedResult: 'angledLine(angle = testVar1, endAbsoluteY = 66)',
+      },
+      {
+        name: 'should un-constrain angledLine, endAbsoluteX value',
+        ...makeStraightSegmentSnippet(
+          'angledLine(angle = testVar1, endAbsoluteX = testVar2)'
+        ),
+        constraintIndex: 1,
+        expectedResult: 'angledLine(angle = testVar1, endAbsoluteX = 66)',
+      },
+      {
+        name: 'should un-constrain angledLine, lengthY value',
+        ...makeStraightSegmentSnippet(
+          'angledLine(angle = testVar1, lengthY = testVar2)'
+        ),
+        constraintIndex: 1,
+        expectedResult: 'angledLine(angle = testVar1, lengthY = 66)',
+      },
+      {
+        name: 'should un-constrain angledLine, lengthX value',
+        ...makeStraightSegmentSnippet(
+          'angledLine(angle = testVar1, lengthX = testVar2)'
+        ),
+        constraintIndex: 1,
+        expectedResult: 'angledLine(angle = testVar1, lengthX = 66)',
+      },
+
+      {
+        name: 'should un-constrain circle, radius value',
+        ...makeCircSnippet(
+          'circle(sketch001, center = [140.82, 183.92], radius = testVar1)'
+        ),
+        constraintIndex: 0,
+        expectedResult:
+          'circle(sketch001, center = [140.82, 183.92], radius = 55)',
+      },
+      {
+        name: 'should un-constrain circle, center x value',
+        ...makeCircSnippet(
+          'circle(sketch001, center = [testVar1, testVar2], radius = 74.18)'
+        ),
+        constraintIndex: 1,
+        expectedResult:
+          'circle(sketch001, center = [55, testVar2], radius = 74.18)',
+      },
+      {
+        name: 'should un-constrain circle, center y value',
+        ...makeCircSnippet(
+          'circle(sketch001, center = [testVar1, testVar2], radius = 74.18)'
+        ),
+        constraintIndex: 2,
+        expectedResult:
+          'circle(sketch001, center = [testVar1, 66], radius = 74.18)',
+      },
+
+      {
+        name: 'should un-constrain circleThreePoint, p1 x value',
+        ...makeCircSnippet(threePointCirceCode),
+        constraintIndex: 0,
+        expectedResult: 'p1 = [55, testVar2]',
+        filter: 'p1',
+      },
+      {
+        name: 'should un-constrain circleThreePoint, p1 y value',
+        ...makeCircSnippet(threePointCirceCode),
+        constraintIndex: 1,
+        expectedResult: 'p1 = [testVar1, 66]',
+        filter: 'p1',
+      },
+      {
+        name: 'should un-constrain circleThreePoint, p2 x value',
+        ...makeCircSnippet(threePointCirceCode),
+        constraintIndex: 0,
+        expectedResult: 'p2 = [77, testVar4]',
+        filter: 'p2',
+      },
+      {
+        name: 'should un-constrain circleThreePoint, p2 y value',
+        ...makeCircSnippet(threePointCirceCode),
+        constraintIndex: 1,
+        expectedResult: 'p2 = [testVar3, 88]',
+        filter: 'p2',
+      },
+      {
+        name: 'should un-constrain circleThreePoint, p3 x value',
+        ...makeCircSnippet(threePointCirceCode),
+        constraintIndex: 0,
+        expectedResult: 'p3 = [99, testVar6]',
+        filter: 'p3',
+      },
+      {
+        name: 'should un-constrain circleThreePoint, p3 y value',
+        ...makeCircSnippet(threePointCirceCode),
+        constraintIndex: 1,
+        expectedResult: 'p3 = [testVar5, 11]',
+        filter: 'p3',
+      },
+      {
+        name: 'should un-constrain tangentialArc absolute x value',
+        ...makeStraightSegmentSnippet(
+          'tangentialArc(endAbsolute = [testVar1, testVar2])'
+        ),
+        constraintIndex: 1,
+        expectedResult: 'endAbsolute = [55, testVar2]',
+      },
+      {
+        name: 'should un-constrain tangentialArc absolute y value',
+        ...makeStraightSegmentSnippet(
+          'tangentialArc(endAbsolute = [testVar1, testVar2])'
+        ),
+        constraintIndex: 2,
+        expectedResult: 'endAbsolute = [testVar1, 66]',
+      },
+      // TODO tangentialArc relative when that's working
+      {
+        name: 'should un-constrain threePoint Arc interior x value',
+        ...makeStraightSegmentSnippet(
+          'arc(interiorAbsolute = [testVar1, testVar2], endAbsolute = [testVar3, testVar4])'
+        ),
+        constraintIndex: 0,
+        expectedResult: 'interiorAbsolute = [55, testVar2]',
+        filter: ARG_INTERIOR_ABSOLUTE,
+      },
+      {
+        name: 'should un-constrain threePoint Arc interior y value',
+        ...makeStraightSegmentSnippet(
+          'arc(interiorAbsolute = [testVar1, testVar2], endAbsolute = [testVar3, testVar4])'
+        ),
+        constraintIndex: 1,
+        expectedResult: 'interiorAbsolute = [testVar1, 66]',
+        filter: ARG_INTERIOR_ABSOLUTE,
+      },
+      {
+        name: 'should un-constrain threePoint Arc end x value',
+        ...makeStraightSegmentSnippet(
+          'arc(interiorAbsolute = [testVar1, testVar2], endAbsolute = [testVar3, testVar4])'
+        ),
+        constraintIndex: 0,
+        expectedResult: 'endAbsolute = [77, testVar4]',
+        filter: ARG_END_ABSOLUTE,
+      },
+      {
+        name: 'should un-constrain threePoint Arc end y value',
+        ...makeStraightSegmentSnippet(
+          'arc(interiorAbsolute = [testVar1, testVar2], endAbsolute = [testVar3, testVar4])'
+        ),
+        constraintIndex: 1,
+        expectedResult: 'endAbsolute = [testVar3, 88]',
+        filter: ARG_END_ABSOLUTE,
+      },
+    ]
+
+    testCases.forEach(
+      ({ name, code, searchText, constraintIndex, expectedResult, filter }) => {
+        it(name, async () => {
+          const indexOfInterest = code.indexOf(searchText)
+
+          const ast = assertParse(code)
+
+          await kclManager.executeAst({ ast })
+
+          expect(kclManager.errors).toEqual([])
+
+          // segment artifact with that source range
+          const artifact = [...kclManager.artifactGraph].find(
+            ([_, artifact]) =>
+              artifact?.type === 'segment' &&
+              artifact.codeRef.range[0] <= indexOfInterest &&
+              indexOfInterest <= artifact.codeRef.range[1]
+          )?.[1]
+          if (!artifact || !('codeRef' in artifact)) {
+            throw new Error('Artifact not found or invalid artifact structure')
+          }
+
+          const actor = createActor(modelingMachine, {
+            input: modelingMachineDefaultContext,
+          }).start()
+
+          // Send event to transition to sketch mode
+          actor.send({
+            type: 'Set selection',
+            data: {
+              selectionType: 'mirrorCodeMirrorSelections',
+              selection: {
+                graphSelections: [
+                  {
+                    artifact: artifact,
+                    codeRef: artifact.codeRef,
+                  },
+                ],
+                otherSelections: [],
+              },
+            },
+          })
+          actor.send({ type: 'Enter sketch' })
+
+          // Check that we're in the sketch state
+          let state = actor.getSnapshot()
+          expect(state.value).toBe('animating to existing sketch')
+
+          // wait for it to transition
+          await waitForCondition(() => {
+            const snapshot = actor.getSnapshot()
+            return snapshot.value !== 'animating to existing sketch'
+          }, 5000)
+
+          // After the condition is met, do the actual assertion
+          expect(actor.getSnapshot().value).toEqual({
+            Sketch: { SketchIdle: 'scene drawn' },
+          })
+
+          const callExp = getNodeFromPath<Node<CallExpressionKw>>(
+            kclManager.ast,
+            artifact.codeRef.pathToNode,
+            'CallExpressionKw'
+          )
+          if (err(callExp)) {
+            throw new Error('Failed to get CallExpressionKw node')
+          }
+          const constraintInfo = getConstraintInfoKw(
+            callExp.node,
+            codeManager.code,
+            artifact.codeRef.pathToNode,
+            filter
+          )
+          const constraint = constraintInfo[constraintIndex]
+          console.log('constraint', constraint)
+          if (!constraint.argPosition) {
+            throw new Error(
+              `Constraint at index ${constraintIndex} does not have argPosition`
+            )
+          }
+
+          const mod = removeSingleConstraintInfo(
+            constraint.pathToNode,
+            constraint.argPosition,
+            ast,
+            kclManager.variables
+          )
+          if (!mod) {
+            throw new Error('Failed to remove constraint info')
+          }
+          const codeRecast = recast(mod.modifiedAst)
+
+          expect(codeRecast).toContain(expectedResult)
         }, 10_000)
       }
     )

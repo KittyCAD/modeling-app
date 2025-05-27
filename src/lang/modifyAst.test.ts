@@ -666,6 +666,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
   })
 })
 
+// TODO maybe remove as made redundant by src/machines/modelingMachine.test.ts
 describe('Testing removeSingleConstraintInfo', () => {
   describe('with mostly object notation', () => {
     const code = `part001 = startSketchOn(-XZ)
