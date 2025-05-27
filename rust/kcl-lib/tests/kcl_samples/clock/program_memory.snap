@@ -25,9 +25,9 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 455,
-            "end": 461,
-            "start": 455,
+            "commentStart": 889,
+            "end": 895,
+            "start": 889,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -38,9 +38,9 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 522,
-            "end": 534,
-            "start": 522,
+            "commentStart": 968,
+            "end": 980,
+            "start": 968,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -67,9 +67,9 @@ description: Variables in memory after executing clock.kcl
             ],
             "radius": 250.0,
             "tag": {
-              "commentStart": 455,
-              "end": 461,
-              "start": 455,
+              "commentStart": 889,
+              "end": 895,
+              "start": 889,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -233,9 +233,9 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 855,
-            "end": 861,
-            "start": 855,
+            "commentStart": 1312,
+            "end": 1318,
+            "start": 1312,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -246,9 +246,9 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1033,
-            "end": 1043,
-            "start": 1033,
+            "commentStart": 1512,
+            "end": 1522,
+            "start": 1512,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -275,9 +275,9 @@ description: Variables in memory after executing clock.kcl
             ],
             "radius": 250.0,
             "tag": {
-              "commentStart": 855,
-              "end": 861,
-              "start": 855,
+              "commentStart": 1312,
+              "end": 1318,
+              "start": 1312,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -322,9 +322,9 @@ description: Variables in memory after executing clock.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 455,
-                  "end": 461,
-                  "start": 455,
+                  "commentStart": 889,
+                  "end": 895,
+                  "start": 889,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -335,9 +335,9 @@ description: Variables in memory after executing clock.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 522,
-                  "end": 534,
-                  "start": 522,
+                  "commentStart": 968,
+                  "end": 980,
+                  "start": 968,
                   "type": "TagDeclarator",
                   "value": "capStart001"
                 },
@@ -364,9 +364,9 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 250.0,
                   "tag": {
-                    "commentStart": 455,
-                    "end": 461,
-                    "start": 455,
+                    "commentStart": 889,
+                    "end": 895,
+                    "start": 889,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -571,9 +571,9 @@ description: Variables in memory after executing clock.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 455,
-              "end": 461,
-              "start": 455,
+              "commentStart": 889,
+              "end": 895,
+              "start": 889,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -584,9 +584,9 @@ description: Variables in memory after executing clock.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 522,
-              "end": 534,
-              "start": 522,
+              "commentStart": 968,
+              "end": 980,
+              "start": 968,
               "type": "TagDeclarator",
               "value": "capStart001"
             },
@@ -613,9 +613,9 @@ description: Variables in memory after executing clock.kcl
               ],
               "radius": 250.0,
               "tag": {
-                "commentStart": 455,
-                "end": 461,
-                "start": 455,
+                "commentStart": 889,
+                "end": 895,
+                "start": 889,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -726,9 +726,61 @@ description: Variables in memory after executing clock.kcl
       }
     }
   },
+  "clockThickness": {
+    "type": "Number",
+    "value": 50.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "filletRadius": {
+    "type": "Number",
+    "value": 5.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "hour": {
+    "type": "Number",
+    "value": 9.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
   "hourHandAngle": {
     "type": "Number",
-    "value": 180.0,
+    "value": -180.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "hourHandArmLength": {
+    "type": "Number",
+    "value": 62.5,
     "ty": {
       "type": "Default",
       "len": {
@@ -777,9 +829,35 @@ description: Variables in memory after executing clock.kcl
     "type": "Function",
     "value": null
   },
+  "minute": {
+    "type": "Number",
+    "value": 29.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
   "minuteHandAngle": {
     "type": "Number",
-    "value": 276.0,
+    "value": -84.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "minuteHandArmLength": {
+    "type": "Number",
+    "value": 100.0,
     "ty": {
       "type": "Default",
       "len": {
@@ -818,7 +896,7 @@ description: Variables in memory after executing clock.kcl
   },
   "minuteHandWidth": {
     "type": "Number",
-    "value": 30.0,
+    "value": 25.0,
     "ty": {
       "type": "Default",
       "len": {
@@ -866,7 +944,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": -160.0,
+                "value": -152.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -879,7 +957,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": -90.0,
+                "value": -93.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -897,7 +975,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": -145.0,
+                "value": -137.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -910,7 +988,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": -90.0,
+                "value": -93.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -928,7 +1006,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": -130.0,
+                "value": -122.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -941,7 +1019,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": -90.0,
+                "value": -93.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -959,7 +1037,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": -180.0,
+                "value": -172.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -972,7 +1050,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": -90.0,
+                "value": -93.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -995,7 +1073,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": -77.0,
+                "value": -83.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1008,7 +1086,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": 160.0,
+                "value": 162.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1026,7 +1104,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": -90.0,
+                "value": -93.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1039,7 +1117,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": 160.0,
+                "value": 162.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1062,7 +1140,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": 95.0,
+                "value": 93.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1075,7 +1153,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": -165.0,
+                "value": -162.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1098,7 +1176,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": 150.0,
+                "value": 152.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1111,7 +1189,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": -90.0,
+                "value": -93.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1129,7 +1207,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": 172.0,
+                "value": 175.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1142,7 +1220,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": -90.0,
+                "value": -93.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1165,7 +1243,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": -200.0,
+                "value": -202.5,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1191,12 +1269,12 @@ description: Variables in memory after executing clock.kcl
               }
             ]
           },
-          "xWidth": {
+          "x": {
             "type": "HomArray",
             "value": [
               {
                 "type": "Number",
-                "value": -170.0,
+                "value": -172.5,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1232,7 +1310,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": 90.0,
+                "value": 93.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1245,7 +1323,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": 160.0,
+                "value": 162.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1268,7 +1346,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": -90.0,
+                "value": -88.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1281,7 +1359,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": -160.0,
+                "value": -162.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1299,7 +1377,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": -75.0,
+                "value": -73.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1312,7 +1390,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": -160.0,
+                "value": -162.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1330,7 +1408,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": -110.0,
+                "value": -108.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1343,7 +1421,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": -160.0,
+                "value": -162.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1366,7 +1444,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": 15.0,
+                "value": 12.0,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1379,7 +1457,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": -190.0,
+                "value": -187.5,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1410,7 +1488,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": -190.0,
+                "value": -187.5,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1433,7 +1511,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": -155.0,
+                "value": -157.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1446,7 +1524,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": 95.0,
+                "value": 93.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1469,7 +1547,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": 170.0,
+                "value": 172.5,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1500,7 +1578,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": 185.0,
+                "value": 187.5,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1531,7 +1609,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": 200.0,
+                "value": 202.5,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1580,7 +1658,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": 190.0,
+                "value": 187.5,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1611,7 +1689,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": 190.0,
+                "value": 187.5,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1629,7 +1707,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": -8.0,
+                "value": -10.0,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1642,7 +1720,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": 190.0,
+                "value": 187.5,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1665,7 +1743,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": 150.0,
+                "value": 152.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1678,7 +1756,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": 100.0,
+                "value": 93.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1696,7 +1774,7 @@ description: Variables in memory after executing clock.kcl
             "value": [
               {
                 "type": "Number",
-                "value": 165.0,
+                "value": 167.38,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1709,7 +1787,7 @@ description: Variables in memory after executing clock.kcl
               },
               {
                 "type": "Number",
-                "value": 100.0,
+                "value": 93.75,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -1723,6 +1801,19 @@ description: Variables in memory after executing clock.kcl
             ]
           }
         }
+      }
+    }
+  },
+  "numberThickness": {
+    "type": "Number",
+    "value": 10.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
       }
     }
   },
@@ -1748,9 +1839,9 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 250.0,
           "tag": {
-            "commentStart": 455,
-            "end": 461,
-            "start": 455,
+            "commentStart": 889,
+            "end": 895,
+            "start": 889,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1851,9 +1942,9 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 250.0,
           "tag": {
-            "commentStart": 855,
-            "end": 861,
-            "start": 855,
+            "commentStart": 1312,
+            "end": 1318,
+            "start": 1312,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1898,9 +1989,9 @@ description: Variables in memory after executing clock.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 455,
-                "end": 461,
-                "start": 455,
+                "commentStart": 889,
+                "end": 895,
+                "start": 889,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1911,9 +2002,9 @@ description: Variables in memory after executing clock.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 522,
-                "end": 534,
-                "start": 522,
+                "commentStart": 968,
+                "end": 980,
+                "start": 968,
                 "type": "TagDeclarator",
                 "value": "capStart001"
               },
@@ -1940,9 +2031,9 @@ description: Variables in memory after executing clock.kcl
                 ],
                 "radius": 250.0,
                 "tag": {
-                  "commentStart": 455,
-                  "end": 461,
-                  "start": 455,
+                  "commentStart": 889,
+                  "end": 895,
+                  "start": 889,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2150,9 +2241,9 @@ description: Variables in memory after executing clock.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 455,
-                "end": 461,
-                "start": 455,
+                "commentStart": 889,
+                "end": 895,
+                "start": 889,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2163,9 +2254,9 @@ description: Variables in memory after executing clock.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 522,
-                "end": 534,
-                "start": 522,
+                "commentStart": 968,
+                "end": 980,
+                "start": 968,
                 "type": "TagDeclarator",
                 "value": "capStart001"
               },
@@ -2192,9 +2283,9 @@ description: Variables in memory after executing clock.kcl
                 ],
                 "radius": 250.0,
                 "tag": {
-                  "commentStart": 455,
-                  "end": 461,
-                  "start": 455,
+                  "commentStart": 889,
+                  "end": 895,
+                  "start": 889,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2375,12 +2466,12 @@ description: Variables in memory after executing clock.kcl
               "sourceRange": []
             },
             "from": [
-              -2.5075,
+              -2.508,
               200.0
             ],
             "tag": null,
             "to": [
-              -2.5075,
+              -2.508,
               160.0
             ],
             "type": "ToPoint",
@@ -2396,16 +2487,16 @@ description: Variables in memory after executing clock.kcl
             "ccw": true,
             "center": [
               0.125,
-              155.4404
+              155.44
             ],
             "from": [
-              -2.5075,
+              -2.508,
               160.0
             ],
             "radius": 5.265,
             "tag": null,
             "to": [
-              2.7575,
+              2.757,
               160.0
             ],
             "type": "Arc",
@@ -2419,12 +2510,12 @@ description: Variables in memory after executing clock.kcl
               "sourceRange": []
             },
             "from": [
-              2.7575,
+              2.757,
               160.0
             ],
             "tag": null,
             "to": [
-              2.7575,
+              2.757,
               200.0
             ],
             "type": "ToPoint",
@@ -2443,12 +2534,12 @@ description: Variables in memory after executing clock.kcl
               200.0
             ],
             "from": [
-              2.7575,
+              2.757,
               200.0
             ],
             "tag": null,
             "to": [
-              -2.5075,
+              -2.508,
               200.0
             ],
             "type": "TangentialArcTo",
@@ -2462,12 +2553,12 @@ description: Variables in memory after executing clock.kcl
               "sourceRange": []
             },
             "from": [
-              -2.5075,
+              -2.508,
               200.0
             ],
             "tag": null,
             "to": [
-              -2.5075,
+              -2.508,
               200.0
             ],
             "type": "ToPoint",
@@ -2507,9 +2598,9 @@ description: Variables in memory after executing clock.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 455,
-                  "end": 461,
-                  "start": 455,
+                  "commentStart": 889,
+                  "end": 895,
+                  "start": 889,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2520,9 +2611,9 @@ description: Variables in memory after executing clock.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 522,
-                  "end": 534,
-                  "start": 522,
+                  "commentStart": 968,
+                  "end": 980,
+                  "start": 968,
                   "type": "TagDeclarator",
                   "value": "capStart001"
                 },
@@ -2549,9 +2640,9 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 250.0,
                   "tag": {
-                    "commentStart": 455,
-                    "end": 461,
-                    "start": 455,
+                    "commentStart": 889,
+                    "end": 895,
+                    "start": 889,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -2663,11 +2754,11 @@ description: Variables in memory after executing clock.kcl
         },
         "start": {
           "from": [
-            -2.5075,
+            -2.508,
             200.0
           ],
           "to": [
-            -2.5075,
+            -2.508,
             200.0
           ],
           "units": {
@@ -2706,25 +2797,25 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            -18.7939,
-            -6.8404
+            -19.381,
+            -7.054
           ],
           "p1": [
-            -18.79385241571817,
-            -6.840402866513373
+            -19.381160303709358,
+            -7.054165456091921
           ],
           "p2": [
-            20.0,
-            -0.000000000000004898587196589413
+            20.625,
+            0.0
           ],
           "p3": [
-            -18.79385241571817,
-            6.840402866513374
+            -19.381160303709358,
+            7.054165456091921
           ],
           "tag": null,
           "to": [
-            -18.7939,
-            6.8404
+            -19.381,
+            7.054
           ],
           "type": "ArcThreePoint",
           "units": {
@@ -2737,13 +2828,13 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            -18.7939,
-            6.8404
+            -19.381,
+            7.054
           ],
           "tag": null,
           "to": [
-            -78.7939,
-            6.8404
+            -81.881,
+            7.054
           ],
           "type": "ToPoint",
           "units": {
@@ -2756,19 +2847,19 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            -78.7939,
-            6.8404
+            -81.881,
+            7.054
           ],
           "tag": {
-            "commentStart": 6927,
-            "end": 6934,
-            "start": 6927,
+            "commentStart": 9962,
+            "end": 9969,
+            "start": 9962,
             "type": "TagDeclarator",
             "value": "seg004"
           },
           "to": [
-            -78.7939,
-            19.3404
+            -81.881,
+            19.554
           ],
           "type": "ToPoint",
           "units": {
@@ -2781,19 +2872,19 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            -78.7939,
-            19.3404
+            -81.881,
+            19.554
           ],
           "tag": {
-            "commentStart": 7123,
-            "end": 7130,
-            "start": 7123,
+            "commentStart": 10158,
+            "end": 10165,
+            "start": 10158,
             "type": "TagDeclarator",
             "value": "seg002"
           },
           "to": [
             -115.0,
-            0.0
+            -0.0
           ],
           "type": "ToPoint",
           "units": {
@@ -2807,12 +2898,12 @@ description: Variables in memory after executing clock.kcl
           },
           "from": [
             -115.0,
-            0.0
+            -0.0
           ],
           "tag": null,
           "to": [
-            -78.3903,
-            -18.5651
+            -81.506,
+            -18.905
           ],
           "type": "ToPoint",
           "units": {
@@ -2825,13 +2916,13 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            -78.3903,
-            -18.5651
+            -81.506,
+            -18.905
           ],
           "tag": null,
           "to": [
-            -78.3903,
-            -6.0651
+            -81.506,
+            -6.405
           ],
           "type": "ToPoint",
           "units": {
@@ -2844,13 +2935,13 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            -78.3903,
-            -6.0651
+            -81.506,
+            -6.405
           ],
           "tag": null,
           "to": [
-            -18.7939,
-            -6.8404
+            -19.381,
+            -7.054
           ],
           "type": "ToPoint",
           "units": {
@@ -2863,13 +2954,13 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            -18.7939,
-            -6.8404
+            -19.381,
+            -7.054
           ],
           "tag": null,
           "to": [
-            -18.7939,
-            -6.8404
+            -19.381,
+            -7.054
           ],
           "type": "ToPoint",
           "units": {
@@ -2909,12 +3000,12 @@ description: Variables in memory after executing clock.kcl
       },
       "start": {
         "from": [
-          -18.7939,
-          -6.8404
+          -19.381,
+          -7.054
         ],
         "to": [
-          -18.7939,
-          -6.8404
+          -19.381,
+          -7.054
         ],
         "units": {
           "type": "Mm"
@@ -3041,25 +3132,25 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            8.7674,
-            -17.9759
+            9.041,
+            -18.538
           ],
           "p1": [
-            8.767422935781548,
-            -17.97588092598334
+            9.041404902524723,
+            -18.53762720492032
           ],
           "p2": [
-            -2.0905692653530576,
-            19.890437907365467
+            -2.15589955489535,
+            20.512014091970638
           ],
           "p3": [
-            -4.838437911993378,
-            -19.405914525519922
+            -4.989639096743148,
+            -20.012349354442428
           ],
           "tag": null,
           "to": [
-            -4.8384,
-            -19.4059
+            -4.99,
+            -20.012
           ],
           "type": "ArcThreePoint",
           "units": {
@@ -3072,13 +3163,13 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            -4.8384,
-            -19.4059
+            -4.99,
+            -20.012
           ],
           "tag": null,
           "to": [
-            5.6144,
-            -118.8581
+            5.463,
+            -119.465
           ],
           "type": "ToPoint",
           "units": {
@@ -3091,19 +3182,19 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            5.6144,
-            -118.8581
+            5.463,
+            -119.465
           ],
           "tag": {
-            "commentStart": 8209,
-            "end": 8216,
-            "start": 8209,
+            "commentStart": 11501,
+            "end": 11508,
+            "start": 11501,
             "type": "TagDeclarator",
             "value": "seg003"
           },
           "to": [
-            -6.8171,
-            -120.1647
+            -6.968,
+            -120.771
           ],
           "type": "ToPoint",
           "units": {
@@ -3116,19 +3207,19 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            -6.8171,
-            -120.1647
+            -6.968,
+            -120.771
           ],
           "tag": {
-            "commentStart": 8413,
-            "end": 8420,
-            "start": 8413,
+            "commentStart": 11705,
+            "end": 11712,
+            "start": 11705,
             "type": "TagDeclarator",
             "value": "seg005"
           },
           "to": [
-            16.2019,
-            -154.1509
+            16.202,
+            -154.151
           ],
           "type": "ToPoint",
           "units": {
@@ -3141,13 +3232,13 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            16.2019,
-            -154.1509
+            16.202,
+            -154.151
           ],
           "tag": null,
           "to": [
-            30.8386,
-            -115.8011
+            33.525,
+            -117.395
           ],
           "type": "ToPoint",
           "units": {
@@ -3160,13 +3251,13 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            30.8386,
-            -115.8011
+            33.525,
+            -117.395
           ],
           "tag": null,
           "to": [
-            18.4071,
-            -117.1077
+            21.093,
+            -118.702
           ],
           "type": "ToPoint",
           "units": {
@@ -3179,13 +3270,13 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            18.4071,
-            -117.1077
+            21.093,
+            -118.702
           ],
           "tag": null,
           "to": [
-            8.7674,
-            -17.9759
+            9.041,
+            -18.538
           ],
           "type": "ToPoint",
           "units": {
@@ -3198,13 +3289,13 @@ description: Variables in memory after executing clock.kcl
             "sourceRange": []
           },
           "from": [
-            8.7674,
-            -17.9759
+            9.041,
+            -18.538
           ],
           "tag": null,
           "to": [
-            8.7674,
-            -17.9759
+            9.041,
+            -18.538
           ],
           "type": "ToPoint",
           "units": {
@@ -3244,12 +3335,12 @@ description: Variables in memory after executing clock.kcl
       },
       "start": {
         "from": [
-          8.7674,
-          -17.9759
+          9.041,
+          -18.538
         ],
         "to": [
-          8.7674,
-          -17.9759
+          9.041,
+          -18.538
         ],
         "units": {
           "type": "Mm"
@@ -3364,6 +3455,32 @@ description: Variables in memory after executing clock.kcl
       }
     }
   },
+  "ridgeDiameter": {
+    "type": "Number",
+    "value": 450.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "ridgeThickness": {
+    "type": "Number",
+    "value": 10.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
   "screwHeadDiameter": {
     "type": "Number",
     "value": 9.53,
@@ -3452,9 +3569,9 @@ description: Variables in memory after executing clock.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 455,
-              "end": 461,
-              "start": 455,
+              "commentStart": 889,
+              "end": 895,
+              "start": 889,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -3465,9 +3582,9 @@ description: Variables in memory after executing clock.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 522,
-              "end": 534,
-              "start": 522,
+              "commentStart": 968,
+              "end": 980,
+              "start": 968,
               "type": "TagDeclarator",
               "value": "capStart001"
             },
@@ -3494,9 +3611,9 @@ description: Variables in memory after executing clock.kcl
               ],
               "radius": 250.0,
               "tag": {
-                "commentStart": 455,
-                "end": 461,
-                "start": 455,
+                "commentStart": 889,
+                "end": 895,
+                "start": 889,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
