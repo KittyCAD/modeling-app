@@ -40,7 +40,6 @@ async fn inner_mirror_2d(
     args: Args,
 ) -> Result<Vec<Sketch>, KclError> {
     let mut starting_sketches = sketches.clone();
-    println!("sketches: {:?}", sketches);
 
     // Update all to have a mirror.
     starting_sketches.iter_mut().for_each(|sketch| {
@@ -73,7 +72,7 @@ async fn inner_mirror_2d(
             )
             .await?;
 
-            let mut mock_ids = Vec::new();
+            let mock_ids = Vec::new();
             let entity_ids = if let OkWebSocketResponseData::Modeling {
                 modeling_response: OkModelingCmdResponse::EntityMirror(mirror_info),
             } = &resp
@@ -94,7 +93,7 @@ async fn inner_mirror_2d(
         Axis2dOrEdgeReference::Edge(edge) => {
             let edge_id = edge.get_engine_id(exec_state, &args)?;
 
-            args.batch_modeling_cmd(
+            let resp = args.send_modeling_cmd(
                 exec_state.next_uuid(),
                 ModelingCmd::from(mcmd::EntityMirrorAcrossEdge {
                     ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
@@ -102,10 +101,26 @@ async fn inner_mirror_2d(
                 }),
             )
             .await?;
+
+            let mock_ids = Vec::new();
+            let entity_ids = if let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::EntityMirrorAcrossEdge(mirror_info),
+            } = &resp
+            {
+                &mirror_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
+            } else if args.ctx.no_engine_commands().await {
+                &mock_ids
+            } else {
+                return Err(KclError::Engine(KclErrorDetails::new(
+                    format!("EntityLinearPattern response was not as expected: {:?}", resp),
+                    vec![args.source_range],
+                )));
+            };
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("entityidsnew{:?}", entity_ids).into());
+            mirrored_ids.extend(entity_ids.iter().cloned());
         }
     };
-
-    
 
     // After the mirror, get the first child uuid for the path.
     // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
