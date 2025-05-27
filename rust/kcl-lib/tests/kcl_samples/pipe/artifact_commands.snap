@@ -110,7 +110,7 @@ description: Artifact commands pipe.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 30.1625,
+        "x": 30.162,
         "y": 0.0,
         "z": 0.0
       }

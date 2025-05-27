@@ -583,7 +583,7 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
         sketches = { docs = "The sketch(es) to duplicate" },
         instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
         distance = { docs = "Distance between each repetition. Also known as 'spacing'."},
-        axis = { docs = "The axis of the pattern. A 2D vector." },
+        axis = { docs = "The axis of the pattern. A 2D vector.", snippet_value_array = ["1", "0"] },
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
     }
 }]
@@ -746,7 +746,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
         solids = { docs = "The solid(s) to duplicate" },
         instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
         distance = { docs = "Distance between each repetition. Also known as 'spacing'."},
-        axis = { docs = "The axis of the pattern. A 2D vector." },
+        axis = { docs = "The axis of the pattern. A 3D vector.", snippet_value_array = ["1", "0", "0"] },
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
     },
     tags = ["solid"]
@@ -1082,7 +1082,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
     args = {
         solids = { docs = "Which solid(s) to pattern" },
         instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect."},
-        axis = { docs = "The axis around which to make the pattern. This is a 3D vector"},
+        axis = { docs = "The axis around which to make the pattern. This is a 3D vector", snippet_value_array = ["1", "0", "0"]},
         center = { docs = "The center about which to make the pattern. This is a 3D vector.", snippet_value_array = ["0", "0", "0"]},
         arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0. Defaults to 360."},
         rotate_duplicates = { docs = "Whether or not to rotate the duplicates as they are copied. Defaults to true."},

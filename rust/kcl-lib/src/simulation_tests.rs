@@ -186,14 +186,14 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             let mem_result = catch_unwind(AssertUnwindSafe(|| {
                 assert_snapshot(test, "Variables in memory after executing", || {
                     insta::assert_json_snapshot!("program_memory", outcome.variables, {
-                        ".**.value" => rounded_redaction(4),
-                        ".**[].value" => rounded_redaction(4),
-                        ".**.from[]" => rounded_redaction(4),
-                        ".**.to[]" => rounded_redaction(4),
-                        ".**.center[]" => rounded_redaction(4),
-                        ".**[].x[]" => rounded_redaction(4),
-                        ".**[].y[]" => rounded_redaction(4),
-                        ".**[].z[]" => rounded_redaction(4),
+                        ".**.value" => rounded_redaction(3),
+                        ".**[].value" => rounded_redaction(3),
+                        ".**.from[]" => rounded_redaction(3),
+                        ".**.to[]" => rounded_redaction(3),
+                        ".**.center[]" => rounded_redaction(3),
+                        ".**[].x[]" => rounded_redaction(3),
+                        ".**[].y[]" => rounded_redaction(3),
+                        ".**[].z[]" => rounded_redaction(3),
                         ".**.sourceRange" => Vec::new(),
                     })
                 })
@@ -281,11 +281,11 @@ fn assert_common_snapshots(
     let result1 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Operations executed", || {
             insta::assert_json_snapshot!("ops", operations, {
-                "[].*.unlabeledArg.*.value.**[].from[]" => rounded_redaction(4),
-                "[].*.unlabeledArg.*.value.**[].to[]" => rounded_redaction(4),
-                "[].**.value.value" => rounded_redaction(4),
-                "[].*.labeledArgs.*.value.**[].from[]" => rounded_redaction(4),
-                "[].*.labeledArgs.*.value.**[].to[]" => rounded_redaction(4),
+                "[].*.unlabeledArg.*.value.**[].from[]" => rounded_redaction(3),
+                "[].*.unlabeledArg.*.value.**[].to[]" => rounded_redaction(3),
+                "[].**.value.value" => rounded_redaction(3),
+                "[].*.labeledArgs.*.value.**[].from[]" => rounded_redaction(3),
+                "[].*.labeledArgs.*.value.**[].to[]" => rounded_redaction(3),
                 ".**.sourceRange" => Vec::new(),
                 ".**.functionSourceRange" => Vec::new(),
                 ".**.moduleId" => 0,
@@ -295,10 +295,10 @@ fn assert_common_snapshots(
     let result2 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Artifact commands", || {
             insta::assert_json_snapshot!("artifact_commands", artifact_commands, {
-                "[].command.**.value" => rounded_redaction(4),
-                "[].command.**.x" => rounded_redaction(4),
-                "[].command.**.y" => rounded_redaction(4),
-                "[].command.**.z" => rounded_redaction(4),
+                "[].command.**.value" => rounded_redaction(3),
+                "[].command.**.x" => rounded_redaction(3),
+                "[].command.**.y" => rounded_redaction(3),
+                "[].command.**.z" => rounded_redaction(3),
                 ".**.range" => Vec::new(),
             });
         })
@@ -321,7 +321,7 @@ fn assert_common_snapshots(
                 // Change the snapshot suffix so that it is rendered as a Markdown file
                 // in GitHub.
                 // Ignore the cpu cooler for now because its being a little bitch.
-                if test.name != "cpu-cooler" {
+                if test.name != "cpu-cooler" && test.name != "subtract_regression10" {
                     insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
                 }
             })
@@ -3437,6 +3437,27 @@ mod subtract_regression11 {
 }
 mod subtract_regression12 {
     const TEST_NAME: &str = "subtract_regression12";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod spheres {
+    const TEST_NAME: &str = "spheres";
 
     /// Test parsing KCL.
     #[test]

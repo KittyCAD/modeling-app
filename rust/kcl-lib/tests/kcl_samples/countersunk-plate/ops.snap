@@ -27,7 +27,7 @@ description: Operations executed countersunk-plate.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.1972,
+            "value": 1.197,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -39,7 +39,7 @@ description: Operations executed countersunk-plate.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 1.6625,
+            "value": 1.663,
             "ty": {
               "type": "Default",
               "len": {

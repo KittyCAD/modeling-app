@@ -1189,6 +1189,7 @@ impl LanguageServer for Backend {
     }
 
     async fn completion(&self, params: CompletionParams) -> RpcResult<Option<CompletionResponse>> {
+        // ADAM: This is the entrypoint.
         let mut completions = vec![CompletionItem {
             label: PIPE_OPERATOR.to_string(),
             label_details: None,

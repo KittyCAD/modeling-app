@@ -215,12 +215,6 @@ flowchart LR
   111["SweepEdge Adjacent"]
   112["EdgeCut Fillet<br>[3014, 3304, 0]"]
     %% [ProgramBodyItem { index: 26 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-  113["EdgeCut Fillet<br>[3014, 3304, 0]"]
-    %% [ProgramBodyItem { index: 26 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-  114["EdgeCut Fillet<br>[3014, 3304, 0]"]
-    %% [ProgramBodyItem { index: 26 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-  115["EdgeCut Fillet<br>[3014, 3304, 0]"]
-    %% [ProgramBodyItem { index: 26 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
   1 --- 8
   1 --- 9
   1 --- 13
@@ -420,8 +414,5 @@ flowchart LR
   94 <--x 87
   90 <--x 88
   96 <--x 89
-  98 <--x 113
-  99 <--x 112
-  100 <--x 115
-  101 <--x 114
+  98 <--x 112
 ```

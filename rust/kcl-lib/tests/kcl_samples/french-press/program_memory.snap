@@ -244,7 +244,7 @@ description: Variables in memory after executing french-press.kcl
                 "radius": 1.2,
                 "tag": null,
                 "to": [
-                  1.3392,
+                  1.339,
                   -0.43
                 ],
                 "type": "Arc",
@@ -258,7 +258,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.3392,
+                  1.339,
                   -0.43
                 ],
                 "tag": null,
@@ -523,7 +523,7 @@ description: Variables in memory after executing french-press.kcl
                 "radius": 1.2,
                 "tag": null,
                 "to": [
-                  1.3392,
+                  1.339,
                   -0.43
                 ],
                 "type": "Arc",
@@ -537,7 +537,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.3392,
+                  1.339,
                   -0.43
                 ],
                 "tag": null,
@@ -802,7 +802,7 @@ description: Variables in memory after executing french-press.kcl
                 "radius": 1.2,
                 "tag": null,
                 "to": [
-                  1.3392,
+                  1.339,
                   -0.43
                 ],
                 "type": "Arc",
@@ -816,7 +816,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.3392,
+                  1.339,
                   -0.43
                 ],
                 "tag": null,
@@ -3864,7 +3864,7 @@ description: Variables in memory after executing french-press.kcl
             "ccw": false,
             "center": [
               2.86,
-              5.1556
+              5.156
             ],
             "from": [
               2.86,
@@ -3887,8 +3887,8 @@ description: Variables in memory after executing french-press.kcl
             },
             "ccw": false,
             "center": [
-              -24.0397,
-              2.8911
+              -24.04,
+              2.891
             ],
             "from": [
               4.1,
@@ -3911,8 +3911,8 @@ description: Variables in memory after executing french-press.kcl
             },
             "ccw": false,
             "center": [
-              3.1336,
-              1.6474
+              3.134,
+              1.647
             ],
             "from": [
               4.17,
@@ -3992,8 +3992,8 @@ description: Variables in memory after executing french-press.kcl
             },
             "ccw": true,
             "center": [
-              3.0419,
-              1.6081
+              3.042,
+              1.608
             ],
             "from": [
               3.03,
@@ -4016,8 +4016,8 @@ description: Variables in memory after executing french-press.kcl
             },
             "ccw": true,
             "center": [
-              -49.5106,
-              2.3278
+              -49.511,
+              2.328
             ],
             "from": [
               3.63,
@@ -4040,8 +4040,8 @@ description: Variables in memory after executing french-press.kcl
             },
             "ccw": true,
             "center": [
-              2.7871,
-              5.1089
+              2.787,
+              5.109
             ],
             "from": [
               3.56,
@@ -4871,8 +4871,8 @@ description: Variables in memory after executing french-press.kcl
                 "radius": 0.3,
                 "tag": null,
                 "to": [
-                  2.3331,
-                  0.3732
+                  2.333,
+                  0.373
                 ],
                 "type": "Arc",
                 "units": {
@@ -4885,8 +4885,8 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.3331,
-                  0.3732
+                  2.333,
+                  0.373
                 ],
                 "tag": {
                   "commentStart": 1205,
@@ -4896,8 +4896,8 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  2.6331,
-                  -0.1464
+                  2.633,
+                  -0.146
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -4911,17 +4911,17 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": false,
                 "center": [
-                  2.1135,
-                  -0.4464
+                  2.113,
+                  -0.446
                 ],
                 "from": [
-                  2.6331,
-                  -0.1464
+                  2.633,
+                  -0.146
                 ],
                 "radius": 0.6,
                 "tag": null,
                 "to": [
-                  1.8135,
+                  1.813,
                   -0.966
                 ],
                 "type": "Arc",
@@ -4935,7 +4935,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.8135,
+                  1.813,
                   -0.966
                 ],
                 "tag": {
@@ -4946,7 +4946,7 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge3"
                 },
                 "to": [
-                  0.4867,
+                  0.487,
                   -0.2
                 ],
                 "type": "ToPoint",
@@ -4961,17 +4961,17 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": true,
                 "center": [
-                  0.2367,
+                  0.237,
                   -0.633
                 ],
                 "from": [
-                  0.4867,
+                  0.487,
                   -0.2
                 ],
                 "radius": 0.5,
                 "tag": null,
                 "to": [
-                  0.2367,
+                  0.237,
                   -0.133
                 ],
                 "type": "Arc",
@@ -4985,7 +4985,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.2367,
+                  0.237,
                   -0.133
                 ],
                 "tag": {
@@ -5040,7 +5040,7 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge4"
                 },
                 "to": [
-                  0.2717,
+                  0.272,
                   -0.033
                 ],
                 "type": "ToPoint",
@@ -5055,18 +5055,18 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": false,
                 "center": [
-                  0.2717,
+                  0.272,
                   -0.633
                 ],
                 "from": [
-                  0.2717,
+                  0.272,
                   -0.033
                 ],
                 "radius": 0.6,
                 "tag": null,
                 "to": [
-                  0.5717,
-                  -0.1134
+                  0.572,
+                  -0.113
                 ],
                 "type": "Arc",
                 "units": {
@@ -5079,8 +5079,8 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5717,
-                  -0.1134
+                  0.572,
+                  -0.113
                 ],
                 "tag": {
                   "commentStart": 1642,
@@ -5090,8 +5090,8 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge5"
                 },
                 "to": [
-                  1.8682,
-                  -0.8619
+                  1.868,
+                  -0.862
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -5105,18 +5105,18 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": true,
                 "center": [
-                  2.1182,
-                  -0.4289
+                  2.118,
+                  -0.429
                 ],
                 "from": [
-                  1.8682,
-                  -0.8619
+                  1.868,
+                  -0.862
                 ],
                 "radius": 0.5,
                 "tag": null,
                 "to": [
-                  2.5512,
-                  -0.1789
+                  2.551,
+                  -0.179
                 ],
                 "type": "Arc",
                 "units": {
@@ -5129,8 +5129,8 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.5512,
-                  -0.1789
+                  2.551,
+                  -0.179
                 ],
                 "tag": {
                   "commentStart": 1775,
@@ -5140,8 +5140,8 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge6"
                 },
                 "to": [
-                  2.2687,
-                  0.3104
+                  2.269,
+                  0.31
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -5155,17 +5155,17 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": false,
                 "center": [
-                  2.8125,
+                  2.812,
                   0.564
                 ],
                 "from": [
-                  2.2687,
-                  0.3104
+                  2.269,
+                  0.31
                 ],
                 "radius": 0.6,
                 "tag": null,
                 "to": [
-                  2.2125,
+                  2.212,
                   0.564
                 ],
                 "type": "Arc",
@@ -5179,7 +5179,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.2125,
+                  2.212,
                   0.564
                 ],
                 "tag": null,
@@ -5532,8 +5532,8 @@ description: Variables in memory after executing french-press.kcl
                 "radius": 0.3,
                 "tag": null,
                 "to": [
-                  2.3331,
-                  0.3732
+                  2.333,
+                  0.373
                 ],
                 "type": "Arc",
                 "units": {
@@ -5546,8 +5546,8 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.3331,
-                  0.3732
+                  2.333,
+                  0.373
                 ],
                 "tag": {
                   "commentStart": 1205,
@@ -5557,8 +5557,8 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  2.6331,
-                  -0.1464
+                  2.633,
+                  -0.146
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -5572,17 +5572,17 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": false,
                 "center": [
-                  2.1135,
-                  -0.4464
+                  2.113,
+                  -0.446
                 ],
                 "from": [
-                  2.6331,
-                  -0.1464
+                  2.633,
+                  -0.146
                 ],
                 "radius": 0.6,
                 "tag": null,
                 "to": [
-                  1.8135,
+                  1.813,
                   -0.966
                 ],
                 "type": "Arc",
@@ -5596,7 +5596,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.8135,
+                  1.813,
                   -0.966
                 ],
                 "tag": {
@@ -5607,7 +5607,7 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge3"
                 },
                 "to": [
-                  0.4867,
+                  0.487,
                   -0.2
                 ],
                 "type": "ToPoint",
@@ -5622,17 +5622,17 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": true,
                 "center": [
-                  0.2367,
+                  0.237,
                   -0.633
                 ],
                 "from": [
-                  0.4867,
+                  0.487,
                   -0.2
                 ],
                 "radius": 0.5,
                 "tag": null,
                 "to": [
-                  0.2367,
+                  0.237,
                   -0.133
                 ],
                 "type": "Arc",
@@ -5646,7 +5646,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.2367,
+                  0.237,
                   -0.133
                 ],
                 "tag": {
@@ -5701,7 +5701,7 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge4"
                 },
                 "to": [
-                  0.2717,
+                  0.272,
                   -0.033
                 ],
                 "type": "ToPoint",
@@ -5716,18 +5716,18 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": false,
                 "center": [
-                  0.2717,
+                  0.272,
                   -0.633
                 ],
                 "from": [
-                  0.2717,
+                  0.272,
                   -0.033
                 ],
                 "radius": 0.6,
                 "tag": null,
                 "to": [
-                  0.5717,
-                  -0.1134
+                  0.572,
+                  -0.113
                 ],
                 "type": "Arc",
                 "units": {
@@ -5740,8 +5740,8 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5717,
-                  -0.1134
+                  0.572,
+                  -0.113
                 ],
                 "tag": {
                   "commentStart": 1642,
@@ -5751,8 +5751,8 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge5"
                 },
                 "to": [
-                  1.8682,
-                  -0.8619
+                  1.868,
+                  -0.862
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -5766,18 +5766,18 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": true,
                 "center": [
-                  2.1182,
-                  -0.4289
+                  2.118,
+                  -0.429
                 ],
                 "from": [
-                  1.8682,
-                  -0.8619
+                  1.868,
+                  -0.862
                 ],
                 "radius": 0.5,
                 "tag": null,
                 "to": [
-                  2.5512,
-                  -0.1789
+                  2.551,
+                  -0.179
                 ],
                 "type": "Arc",
                 "units": {
@@ -5790,8 +5790,8 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.5512,
-                  -0.1789
+                  2.551,
+                  -0.179
                 ],
                 "tag": {
                   "commentStart": 1775,
@@ -5801,8 +5801,8 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge6"
                 },
                 "to": [
-                  2.2687,
-                  0.3104
+                  2.269,
+                  0.31
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -5816,17 +5816,17 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": false,
                 "center": [
-                  2.8125,
+                  2.812,
                   0.564
                 ],
                 "from": [
-                  2.2687,
-                  0.3104
+                  2.269,
+                  0.31
                 ],
                 "radius": 0.6,
                 "tag": null,
                 "to": [
-                  2.2125,
+                  2.212,
                   0.564
                 ],
                 "type": "Arc",
@@ -5840,7 +5840,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.2125,
+                  2.212,
                   0.564
                 ],
                 "tag": null,
@@ -6193,8 +6193,8 @@ description: Variables in memory after executing french-press.kcl
                 "radius": 0.3,
                 "tag": null,
                 "to": [
-                  2.3331,
-                  0.3732
+                  2.333,
+                  0.373
                 ],
                 "type": "Arc",
                 "units": {
@@ -6207,8 +6207,8 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.3331,
-                  0.3732
+                  2.333,
+                  0.373
                 ],
                 "tag": {
                   "commentStart": 1205,
@@ -6218,8 +6218,8 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  2.6331,
-                  -0.1464
+                  2.633,
+                  -0.146
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -6233,17 +6233,17 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": false,
                 "center": [
-                  2.1135,
-                  -0.4464
+                  2.113,
+                  -0.446
                 ],
                 "from": [
-                  2.6331,
-                  -0.1464
+                  2.633,
+                  -0.146
                 ],
                 "radius": 0.6,
                 "tag": null,
                 "to": [
-                  1.8135,
+                  1.813,
                   -0.966
                 ],
                 "type": "Arc",
@@ -6257,7 +6257,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.8135,
+                  1.813,
                   -0.966
                 ],
                 "tag": {
@@ -6268,7 +6268,7 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge3"
                 },
                 "to": [
-                  0.4867,
+                  0.487,
                   -0.2
                 ],
                 "type": "ToPoint",
@@ -6283,17 +6283,17 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": true,
                 "center": [
-                  0.2367,
+                  0.237,
                   -0.633
                 ],
                 "from": [
-                  0.4867,
+                  0.487,
                   -0.2
                 ],
                 "radius": 0.5,
                 "tag": null,
                 "to": [
-                  0.2367,
+                  0.237,
                   -0.133
                 ],
                 "type": "Arc",
@@ -6307,7 +6307,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.2367,
+                  0.237,
                   -0.133
                 ],
                 "tag": {
@@ -6362,7 +6362,7 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge4"
                 },
                 "to": [
-                  0.2717,
+                  0.272,
                   -0.033
                 ],
                 "type": "ToPoint",
@@ -6377,18 +6377,18 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": false,
                 "center": [
-                  0.2717,
+                  0.272,
                   -0.633
                 ],
                 "from": [
-                  0.2717,
+                  0.272,
                   -0.033
                 ],
                 "radius": 0.6,
                 "tag": null,
                 "to": [
-                  0.5717,
-                  -0.1134
+                  0.572,
+                  -0.113
                 ],
                 "type": "Arc",
                 "units": {
@@ -6401,8 +6401,8 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5717,
-                  -0.1134
+                  0.572,
+                  -0.113
                 ],
                 "tag": {
                   "commentStart": 1642,
@@ -6412,8 +6412,8 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge5"
                 },
                 "to": [
-                  1.8682,
-                  -0.8619
+                  1.868,
+                  -0.862
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -6427,18 +6427,18 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": true,
                 "center": [
-                  2.1182,
-                  -0.4289
+                  2.118,
+                  -0.429
                 ],
                 "from": [
-                  1.8682,
-                  -0.8619
+                  1.868,
+                  -0.862
                 ],
                 "radius": 0.5,
                 "tag": null,
                 "to": [
-                  2.5512,
-                  -0.1789
+                  2.551,
+                  -0.179
                 ],
                 "type": "Arc",
                 "units": {
@@ -6451,8 +6451,8 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.5512,
-                  -0.1789
+                  2.551,
+                  -0.179
                 ],
                 "tag": {
                   "commentStart": 1775,
@@ -6462,8 +6462,8 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge6"
                 },
                 "to": [
-                  2.2687,
-                  0.3104
+                  2.269,
+                  0.31
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -6477,17 +6477,17 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": false,
                 "center": [
-                  2.8125,
+                  2.812,
                   0.564
                 ],
                 "from": [
-                  2.2687,
-                  0.3104
+                  2.269,
+                  0.31
                 ],
                 "radius": 0.6,
                 "tag": null,
                 "to": [
-                  2.2125,
+                  2.212,
                   0.564
                 ],
                 "type": "Arc",
@@ -6501,7 +6501,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.2125,
+                  2.212,
                   0.564
                 ],
                 "tag": null,
@@ -6854,8 +6854,8 @@ description: Variables in memory after executing french-press.kcl
                 "radius": 0.3,
                 "tag": null,
                 "to": [
-                  2.3331,
-                  0.3732
+                  2.333,
+                  0.373
                 ],
                 "type": "Arc",
                 "units": {
@@ -6868,8 +6868,8 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.3331,
-                  0.3732
+                  2.333,
+                  0.373
                 ],
                 "tag": {
                   "commentStart": 1205,
@@ -6879,8 +6879,8 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  2.6331,
-                  -0.1464
+                  2.633,
+                  -0.146
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -6894,17 +6894,17 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": false,
                 "center": [
-                  2.1135,
-                  -0.4464
+                  2.113,
+                  -0.446
                 ],
                 "from": [
-                  2.6331,
-                  -0.1464
+                  2.633,
+                  -0.146
                 ],
                 "radius": 0.6,
                 "tag": null,
                 "to": [
-                  1.8135,
+                  1.813,
                   -0.966
                 ],
                 "type": "Arc",
@@ -6918,7 +6918,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.8135,
+                  1.813,
                   -0.966
                 ],
                 "tag": {
@@ -6929,7 +6929,7 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge3"
                 },
                 "to": [
-                  0.4867,
+                  0.487,
                   -0.2
                 ],
                 "type": "ToPoint",
@@ -6944,17 +6944,17 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": true,
                 "center": [
-                  0.2367,
+                  0.237,
                   -0.633
                 ],
                 "from": [
-                  0.4867,
+                  0.487,
                   -0.2
                 ],
                 "radius": 0.5,
                 "tag": null,
                 "to": [
-                  0.2367,
+                  0.237,
                   -0.133
                 ],
                 "type": "Arc",
@@ -6968,7 +6968,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.2367,
+                  0.237,
                   -0.133
                 ],
                 "tag": {
@@ -7023,7 +7023,7 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge4"
                 },
                 "to": [
-                  0.2717,
+                  0.272,
                   -0.033
                 ],
                 "type": "ToPoint",
@@ -7038,18 +7038,18 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": false,
                 "center": [
-                  0.2717,
+                  0.272,
                   -0.633
                 ],
                 "from": [
-                  0.2717,
+                  0.272,
                   -0.033
                 ],
                 "radius": 0.6,
                 "tag": null,
                 "to": [
-                  0.5717,
-                  -0.1134
+                  0.572,
+                  -0.113
                 ],
                 "type": "Arc",
                 "units": {
@@ -7062,8 +7062,8 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5717,
-                  -0.1134
+                  0.572,
+                  -0.113
                 ],
                 "tag": {
                   "commentStart": 1642,
@@ -7073,8 +7073,8 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge5"
                 },
                 "to": [
-                  1.8682,
-                  -0.8619
+                  1.868,
+                  -0.862
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -7088,18 +7088,18 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": true,
                 "center": [
-                  2.1182,
-                  -0.4289
+                  2.118,
+                  -0.429
                 ],
                 "from": [
-                  1.8682,
-                  -0.8619
+                  1.868,
+                  -0.862
                 ],
                 "radius": 0.5,
                 "tag": null,
                 "to": [
-                  2.5512,
-                  -0.1789
+                  2.551,
+                  -0.179
                 ],
                 "type": "Arc",
                 "units": {
@@ -7112,8 +7112,8 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.5512,
-                  -0.1789
+                  2.551,
+                  -0.179
                 ],
                 "tag": {
                   "commentStart": 1775,
@@ -7123,8 +7123,8 @@ description: Variables in memory after executing french-press.kcl
                   "value": "edge6"
                 },
                 "to": [
-                  2.2687,
-                  0.3104
+                  2.269,
+                  0.31
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -7138,17 +7138,17 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "ccw": false,
                 "center": [
-                  2.8125,
+                  2.812,
                   0.564
                 ],
                 "from": [
-                  2.2687,
-                  0.3104
+                  2.269,
+                  0.31
                 ],
                 "radius": 0.6,
                 "tag": null,
                 "to": [
-                  2.2125,
+                  2.212,
                   0.564
                 ],
                 "type": "Arc",
@@ -7162,7 +7162,7 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.2125,
+                  2.212,
                   0.564
                 ],
                 "tag": null,
@@ -7422,7 +7422,7 @@ description: Variables in memory after executing french-press.kcl
               "radius": 1.2,
               "tag": null,
               "to": [
-                1.3392,
+                1.339,
                 -0.43
               ],
               "type": "Arc",
@@ -7436,7 +7436,7 @@ description: Variables in memory after executing french-press.kcl
                 "sourceRange": []
               },
               "from": [
-                1.3392,
+                1.339,
                 -0.43
               ],
               "tag": null,
@@ -7666,7 +7666,7 @@ description: Variables in memory after executing french-press.kcl
               "radius": 1.2,
               "tag": null,
               "to": [
-                1.3392,
+                1.339,
                 -0.43
               ],
               "type": "Arc",
@@ -7680,7 +7680,7 @@ description: Variables in memory after executing french-press.kcl
                 "sourceRange": []
               },
               "from": [
-                1.3392,
+                1.339,
                 -0.43
               ],
               "tag": null,
@@ -7910,7 +7910,7 @@ description: Variables in memory after executing french-press.kcl
               "radius": 1.2,
               "tag": null,
               "to": [
-                1.3392,
+                1.339,
                 -0.43
               ],
               "type": "Arc",
@@ -7924,7 +7924,7 @@ description: Variables in memory after executing french-press.kcl
                 "sourceRange": []
               },
               "from": [
-                1.3392,
+                1.339,
                 -0.43
               ],
               "tag": null,
@@ -8211,7 +8211,7 @@ description: Variables in memory after executing french-press.kcl
             },
             "to": [
               2.135,
-              1.1851
+              1.185
             ],
             "type": "ToPoint",
             "units": {
@@ -8225,12 +8225,12 @@ description: Variables in memory after executing french-press.kcl
             },
             "from": [
               2.135,
-              1.1851
+              1.185
             ],
             "tag": null,
             "to": [
               2.16,
-              1.1418
+              1.142
             ],
             "type": "ToPoint",
             "units": {
@@ -8244,12 +8244,12 @@ description: Variables in memory after executing french-press.kcl
             },
             "from": [
               2.16,
-              1.1418
+              1.142
             ],
             "tag": null,
             "to": [
               2.03,
-              1.0667
+              1.067
             ],
             "type": "ToPoint",
             "units": {
@@ -8263,12 +8263,12 @@ description: Variables in memory after executing french-press.kcl
             },
             "from": [
               2.03,
-              1.0667
+              1.067
             ],
             "tag": null,
             "to": [
               0.15,
-              1.0667
+              1.067
             ],
             "type": "ToPoint",
             "units": {
@@ -8282,7 +8282,7 @@ description: Variables in memory after executing french-press.kcl
             },
             "from": [
               0.15,
-              1.0667
+              1.067
             ],
             "tag": null,
             "to": [
@@ -8475,7 +8475,7 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "to": [
               0.05,
-              0.9736
+              0.974
             ],
             "type": "ToPoint",
             "units": {
@@ -8489,12 +8489,12 @@ description: Variables in memory after executing french-press.kcl
             },
             "from": [
               0.05,
-              0.9736
+              0.974
             ],
             "tag": null,
             "to": [
               0.05,
-              10.9736
+              10.974
             ],
             "type": "ToPoint",
             "units": {
@@ -8508,12 +8508,12 @@ description: Variables in memory after executing french-press.kcl
             },
             "from": [
               0.05,
-              10.9736
+              10.974
             ],
             "tag": null,
             "to": [
               0.65,
-              10.9736
+              10.974
             ],
             "type": "ToPoint",
             "units": {
@@ -8527,12 +8527,12 @@ description: Variables in memory after executing french-press.kcl
             },
             "from": [
               0.65,
-              10.9736
+              10.974
             ],
             "tag": null,
             "to": [
               0.65,
-              10.9236
+              10.924
             ],
             "type": "ToPoint",
             "units": {
@@ -8547,16 +8547,16 @@ description: Variables in memory after executing french-press.kcl
             "ccw": false,
             "center": [
               0.05,
-              10.9236
+              10.924
             ],
             "from": [
               0.65,
-              10.9236
+              10.924
             ],
             "tag": null,
             "to": [
               0.05,
-              10.3236
+              10.324
             ],
             "type": "TangentialArc",
             "units": {
@@ -8570,7 +8570,7 @@ description: Variables in memory after executing french-press.kcl
             },
             "from": [
               0.05,
-              10.3236
+              10.324
             ],
             "tag": null,
             "to": [
@@ -11403,7 +11403,7 @@ description: Variables in memory after executing french-press.kcl
           "ccw": false,
           "center": [
             2.86,
-            5.1556
+            5.156
           ],
           "from": [
             2.86,
@@ -11426,8 +11426,8 @@ description: Variables in memory after executing french-press.kcl
           },
           "ccw": false,
           "center": [
-            -24.0397,
-            2.8911
+            -24.04,
+            2.891
           ],
           "from": [
             4.1,
@@ -11450,8 +11450,8 @@ description: Variables in memory after executing french-press.kcl
           },
           "ccw": false,
           "center": [
-            3.1336,
-            1.6474
+            3.134,
+            1.647
           ],
           "from": [
             4.17,
@@ -11531,8 +11531,8 @@ description: Variables in memory after executing french-press.kcl
           },
           "ccw": true,
           "center": [
-            3.0419,
-            1.6081
+            3.042,
+            1.608
           ],
           "from": [
             3.03,
@@ -11555,8 +11555,8 @@ description: Variables in memory after executing french-press.kcl
           },
           "ccw": true,
           "center": [
-            -49.5106,
-            2.3278
+            -49.511,
+            2.328
           ],
           "from": [
             3.63,
@@ -11579,8 +11579,8 @@ description: Variables in memory after executing french-press.kcl
           },
           "ccw": true,
           "center": [
-            2.7871,
-            5.1089
+            2.787,
+            5.109
           ],
           "from": [
             3.56,

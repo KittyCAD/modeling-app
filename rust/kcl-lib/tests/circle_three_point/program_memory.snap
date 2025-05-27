@@ -28,7 +28,7 @@ description: Variables in memory after executing circle_three_point.kcl
               "sourceRange": []
             },
             "from": [
-              30.0059,
+              30.006,
               19.75
             ],
             "p1": [
@@ -45,7 +45,7 @@ description: Variables in memory after executing circle_three_point.kcl
             ],
             "tag": null,
             "to": [
-              30.0059,
+              30.006,
               19.75
             ],
             "type": "CircleThreePoint",
@@ -86,11 +86,11 @@ description: Variables in memory after executing circle_three_point.kcl
         },
         "start": {
           "from": [
-            30.0059,
+            30.006,
             19.75
           ],
           "to": [
-            30.0059,
+            30.006,
             19.75
           ],
           "units": {

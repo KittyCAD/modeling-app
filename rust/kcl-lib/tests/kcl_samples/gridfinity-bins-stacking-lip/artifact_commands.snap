@@ -745,64 +745,20 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       "object_id": "[uuid]",
       "edge_id": null,
       "edge_ids": [
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
         "[uuid]"
       ],
       "radius": 0.8,
       "tolerance": 0.0000001,
       "cut_type": "fillet",
       "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
+      "extra_face_ids": [
+        "[uuid]",
+        "[uuid]",
         "[uuid]"
-      ],
-      "radius": 0.8,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
-        "[uuid]"
-      ],
-      "radius": 0.8,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
-        "[uuid]"
-      ],
-      "radius": 0.8,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
+      ]
     }
   },
   {
@@ -2982,64 +2938,20 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       "object_id": "[uuid]",
       "edge_id": null,
       "edge_ids": [
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
         "[uuid]"
       ],
       "radius": 3.75,
       "tolerance": 0.0000001,
       "cut_type": "fillet",
       "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
+      "extra_face_ids": [
+        "[uuid]",
+        "[uuid]",
         "[uuid]"
-      ],
-      "radius": 3.75,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
-        "[uuid]"
-      ],
-      "radius": 3.75,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
-        "[uuid]"
-      ],
-      "radius": 3.75,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
+      ]
     }
   },
   {
@@ -3413,7 +3325,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 5.7929,
+          "y": 5.793,
           "z": 0.0
         },
         "relative": true
@@ -3430,7 +3342,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 5.7929,
+          "y": 5.793,
           "z": 0.0
         },
         "relative": true
@@ -3447,7 +3359,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 5.7929,
+          "y": 5.793,
           "z": 0.0
         },
         "relative": true
@@ -3464,7 +3376,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 5.7929,
+          "y": 5.793,
           "z": 0.0
         },
         "relative": true
@@ -3481,7 +3393,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "type": "arc",
         "center": {
           "x": 0.5,
-          "y": 5.7929
+          "y": 5.793
         },
         "radius": 0.5,
         "start": {
@@ -3506,7 +3418,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "type": "arc",
         "center": {
           "x": 0.5,
-          "y": 5.7929
+          "y": 5.793
         },
         "radius": 0.5,
         "start": {
@@ -3531,7 +3443,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "type": "arc",
         "center": {
           "x": 0.5,
-          "y": 5.7929
+          "y": 5.793
         },
         "radius": 0.5,
         "start": {
@@ -3556,7 +3468,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "type": "arc",
         "center": {
           "x": 0.5,
-          "y": 5.7929
+          "y": 5.793
         },
         "radius": 0.5,
         "start": {
@@ -3580,8 +3492,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.0464,
-          "y": -1.0464,
+          "x": 1.046,
+          "y": -1.046,
           "z": 0.0
         },
         "relative": true
@@ -3597,8 +3509,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.0464,
-          "y": -1.0464,
+          "x": 1.046,
+          "y": -1.046,
           "z": 0.0
         },
         "relative": true
@@ -3614,8 +3526,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.0464,
-          "y": -1.0464,
+          "x": 1.046,
+          "y": -1.046,
           "z": 0.0
         },
         "relative": true
@@ -3631,8 +3543,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.0464,
-          "y": -1.0464,
+          "x": 1.046,
+          "y": -1.046,
           "z": 0.0
         },
         "relative": true

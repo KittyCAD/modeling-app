@@ -699,7 +699,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
       "distance": {
         "value": {
           "type": "Number",
-          "value": 54.6667,
+          "value": 54.667,
           "ty": {
             "type": "Default",
             "len": {
@@ -1089,7 +1089,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
       "distance": {
         "value": {
           "type": "Number",
-          "value": 54.6667,
+          "value": 54.667,
           "ty": {
             "type": "Default",
             "len": {

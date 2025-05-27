@@ -1835,8 +1835,8 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -44.1242,
-          "y": 37.0246,
+          "x": -44.124,
+          "y": 37.025,
           "z": 0.0
         },
         "relative": true
@@ -1869,7 +1869,7 @@ description: Artifact commands cpu-cooler.kcl
         "type": "line",
         "end": {
           "x": -24.683,
-          "y": -29.4161,
+          "y": -29.416,
           "z": 0.0
         },
         "relative": true
@@ -1902,7 +1902,7 @@ description: Artifact commands cpu-cooler.kcl
         "type": "line",
         "end": {
           "x": 7.354,
-          "y": -6.1708,
+          "y": -6.171,
           "z": 0.0
         },
         "relative": true
@@ -1951,8 +1951,8 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": 25.4555,
-          "y": 11.2232,
+          "x": 25.456,
+          "y": 11.223,
           "z": 0.0
         },
         "angle_snap_increment": null
@@ -3469,132 +3469,28 @@ description: Artifact commands cpu-cooler.kcl
       "object_id": "[uuid]",
       "edge_id": null,
       "edge_ids": [
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
         "[uuid]"
       ],
       "radius": 7.5,
       "tolerance": 0.0000001,
       "cut_type": "fillet",
       "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
+      "extra_face_ids": [
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
         "[uuid]"
-      ],
-      "radius": 7.5,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
-        "[uuid]"
-      ],
-      "radius": 7.5,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
-        "[uuid]"
-      ],
-      "radius": 7.5,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
-        "[uuid]"
-      ],
-      "radius": 7.5,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
-        "[uuid]"
-      ],
-      "radius": 7.5,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
-        "[uuid]"
-      ],
-      "radius": 7.5,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
-        "[uuid]"
-      ],
-      "radius": 7.5,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
+      ]
     }
   },
   {
@@ -3869,30 +3765,16 @@ description: Artifact commands cpu-cooler.kcl
       "object_id": "[uuid]",
       "edge_id": null,
       "edge_ids": [
+        "[uuid]",
         "[uuid]"
       ],
       "radius": 2.0,
       "tolerance": 0.0000001,
       "cut_type": "fillet",
       "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
+      "extra_face_ids": [
         "[uuid]"
-      ],
-      "radius": 2.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
+      ]
     }
   },
   {
@@ -4483,8 +4365,8 @@ description: Artifact commands cpu-cooler.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 9.6418,
-        "y": 11.4907,
+        "x": 9.642,
+        "y": 11.491,
         "z": 0.0
       }
     }
@@ -4496,7 +4378,7 @@ description: Artifact commands cpu-cooler.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 12.9904,
+        "x": 12.99,
         "y": 7.5,
         "z": 0.0
       }
@@ -4668,12 +4550,12 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 15.8879,
+          "x": 15.888,
           "y": 21.084,
           "z": 0.0
         },
         "end": {
-          "x": 45.7261,
+          "x": 45.726,
           "y": 26.4,
           "z": 0.0
         },
@@ -4690,13 +4572,13 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 22.1409,
-          "y": 14.3785,
+          "x": 22.141,
+          "y": 14.378,
           "z": 0.0
         },
         "end": {
-          "x": 51.9978,
-          "y": 9.1686,
+          "x": 51.998,
+          "y": 9.169,
           "z": 0.0
         },
         "relative": false
@@ -4712,13 +4594,13 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 26.3638,
-          "y": 1.3817,
+          "x": 26.364,
+          "y": 1.382,
           "z": 0.0
         },
         "end": {
-          "x": 49.6158,
-          "y": -18.0587,
+          "x": 49.616,
+          "y": -18.059,
           "z": 0.0
         },
         "relative": false
@@ -4734,12 +4616,12 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 46.6196,
-          "y": 24.7881,
+          "x": 46.62,
+          "y": 24.788,
           "z": 0.0
         },
         "end": {
-          "x": 47.4563,
+          "x": 47.456,
           "y": 23.146,
           "z": 0.0
         },
@@ -4756,13 +4638,13 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 52.2862,
-          "y": 7.3483,
+          "x": 52.286,
+          "y": 7.348,
           "z": 0.0
         },
         "end": {
-          "x": 52.5108,
-          "y": 5.5191,
+          "x": 52.511,
+          "y": 5.519,
           "z": 0.0
         },
         "relative": false
@@ -4778,13 +4660,13 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 48.9553,
-          "y": -19.7792,
+          "x": 48.955,
+          "y": -19.779,
           "z": 0.0
         },
         "end": {
-          "x": 48.2352,
-          "y": -21.4757,
+          "x": 48.235,
+          "y": -21.476,
           "z": 0.0
         },
         "relative": false
@@ -4800,13 +4682,13 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 18.6676,
-          "y": 18.6676,
+          "x": 18.668,
+          "y": 18.668,
           "z": 0.0
         },
         "end": {
-          "x": 9.6418,
-          "y": 11.4907,
+          "x": 9.642,
+          "y": 11.491,
           "z": 0.0
         },
         "relative": false
@@ -4822,12 +4704,12 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 23.9265,
-          "y": 11.1571,
+          "x": 23.927,
+          "y": 11.157,
           "z": 0.0
         },
         "end": {
-          "x": 12.9904,
+          "x": 12.99,
           "y": 7.5,
           "z": 0.0
         },
@@ -4844,8 +4726,8 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 26.2995,
-          "y": -2.3009,
+          "x": 26.3,
+          "y": -2.301,
           "z": 0.0
         },
         "end": {
@@ -5662,7 +5544,7 @@ description: Artifact commands cpu-cooler.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 44.9438,
+        "x": 44.944,
         "y": 158.0,
         "z": 0.0
       }
@@ -5700,7 +5582,7 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 44.9438,
+          "x": 44.944,
           "y": 40.0,
           "z": 0.0
         },
@@ -5783,7 +5665,7 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -14.9438,
+          "x": -14.944,
           "y": 0.0,
           "z": 0.0
         },
@@ -5832,7 +5714,7 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -12.6224,
+          "x": -12.622,
           "y": 158.0,
           "z": 0.0
         },
@@ -5913,7 +5795,7 @@ description: Artifact commands cpu-cooler.kcl
         "type": "arc",
         "center": {
           "x": -4.0,
-          "y": 44.9438
+          "y": 44.944
         },
         "radius": 3.0,
         "start": {
@@ -5936,7 +5818,7 @@ description: Artifact commands cpu-cooler.kcl
       "path": "[uuid]",
       "to": {
         "x": -1.0,
-        "y": 44.9438,
+        "y": 44.944,
         "z": 0.0
       }
     }
@@ -6016,7 +5898,7 @@ description: Artifact commands cpu-cooler.kcl
         "type": "arc",
         "center": {
           "x": -4.0,
-          "y": 44.9438
+          "y": 44.944
         },
         "radius": 2.5,
         "start": {
@@ -6039,7 +5921,7 @@ description: Artifact commands cpu-cooler.kcl
       "path": "[uuid]",
       "to": {
         "x": -1.5,
-        "y": 44.9438,
+        "y": 44.944,
         "z": 0.0
       }
     }
@@ -6333,7 +6215,7 @@ description: Artifact commands cpu-cooler.kcl
         "type": "line",
         "end": {
           "x": 1.25,
-          "y": -2.1651,
+          "y": -2.165,
           "z": 0.0
         },
         "relative": true
@@ -6367,12 +6249,12 @@ description: Artifact commands cpu-cooler.kcl
         "type": "arc_to",
         "interior": {
           "x": 12.0,
-          "y": -60.9651,
+          "y": -60.965,
           "z": 0.0
         },
         "end": {
           "x": 13.0,
-          "y": -62.1651,
+          "y": -62.165,
           "z": 0.0
         },
         "relative": false
@@ -6406,7 +6288,7 @@ description: Artifact commands cpu-cooler.kcl
         "type": "line",
         "end": {
           "x": 1.25,
-          "y": 2.1651,
+          "y": 2.165,
           "z": 0.0
         },
         "relative": true
@@ -6600,7 +6482,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 3.6667
+              "z": 3.667
             },
             "scale": {
               "x": 1.0,
@@ -6629,7 +6511,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 7.3333
+              "z": 7.333
             },
             "scale": {
               "x": 1.0,
@@ -6687,7 +6569,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 14.6667
+              "z": 14.667
             },
             "scale": {
               "x": 1.0,
@@ -6716,7 +6598,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 18.3333
+              "z": 18.333
             },
             "scale": {
               "x": 1.0,
@@ -6774,7 +6656,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 25.6667
+              "z": 25.667
             },
             "scale": {
               "x": 1.0,
@@ -6803,7 +6685,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 29.3333
+              "z": 29.333
             },
             "scale": {
               "x": 1.0,
@@ -6861,7 +6743,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 36.6667
+              "z": 36.667
             },
             "scale": {
               "x": 1.0,
@@ -6890,7 +6772,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 40.3333
+              "z": 40.333
             },
             "scale": {
               "x": 1.0,
@@ -6948,7 +6830,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 47.6667
+              "z": 47.667
             },
             "scale": {
               "x": 1.0,
@@ -6977,7 +6859,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 51.3333
+              "z": 51.333
             },
             "scale": {
               "x": 1.0,
@@ -7035,7 +6917,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 58.6667
+              "z": 58.667
             },
             "scale": {
               "x": 1.0,
@@ -7064,7 +6946,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 62.3333
+              "z": 62.333
             },
             "scale": {
               "x": 1.0,
@@ -7122,7 +7004,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 69.6667
+              "z": 69.667
             },
             "scale": {
               "x": 1.0,
@@ -7151,7 +7033,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 73.3333
+              "z": 73.333
             },
             "scale": {
               "x": 1.0,
@@ -7209,7 +7091,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 80.6667
+              "z": 80.667
             },
             "scale": {
               "x": 1.0,
@@ -7238,7 +7120,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 84.3333
+              "z": 84.333
             },
             "scale": {
               "x": 1.0,
@@ -7296,7 +7178,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 91.6667
+              "z": 91.667
             },
             "scale": {
               "x": 1.0,
@@ -7325,7 +7207,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 95.3333
+              "z": 95.333
             },
             "scale": {
               "x": 1.0,
@@ -7383,7 +7265,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 102.6667
+              "z": 102.667
             },
             "scale": {
               "x": 1.0,
@@ -7412,7 +7294,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 106.3333
+              "z": 106.333
             },
             "scale": {
               "x": 1.0,
@@ -8269,8 +8151,8 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -13.1557,
-          "y": -4.7883,
+          "x": -13.156,
+          "y": -4.788,
           "z": 0.0
         },
         "relative": true
@@ -8302,8 +8184,8 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -21.1734,
-          "y": 3.7334,
+          "x": -21.173,
+          "y": 3.733,
           "z": 0.0
         },
         "relative": true
@@ -8320,7 +8202,7 @@ description: Artifact commands cpu-cooler.kcl
         "type": "line",
         "end": {
           "x": 0.369,
-          "y": 2.0927,
+          "y": 2.093,
           "z": 0.0
         },
         "relative": true
@@ -8336,8 +8218,8 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 21.1734,
-          "y": -3.7334,
+          "x": 21.173,
+          "y": -3.733,
           "z": 0.0
         },
         "relative": true
@@ -8369,8 +8251,8 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 13.1557,
-          "y": 4.7883,
+          "x": 13.156,
+          "y": 4.788,
           "z": 0.0
         },
         "relative": true
@@ -8503,64 +8385,20 @@ description: Artifact commands cpu-cooler.kcl
       "object_id": "[uuid]",
       "edge_id": null,
       "edge_ids": [
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
         "[uuid]"
       ],
       "radius": 2.0,
       "tolerance": 0.0000001,
       "cut_type": "fillet",
       "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
+      "extra_face_ids": [
+        "[uuid]",
+        "[uuid]",
         "[uuid]"
-      ],
-      "radius": 2.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
-        "[uuid]"
-      ],
-      "radius": 2.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
-        "[uuid]"
-      ],
-      "radius": 2.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
+      ]
     }
   },
   {
@@ -9612,7 +9450,7 @@ description: Artifact commands cpu-cooler.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 152.6527
+        "z": 152.653
       },
       "x_axis": {
         "x": 1.0,
@@ -9666,7 +9504,7 @@ description: Artifact commands cpu-cooler.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -43.8797,
+        "x": -43.88,
         "y": -62.0,
         "z": 0.0
       }
@@ -9770,7 +9608,7 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 8.3333,
+          "x": 8.333,
           "y": 0.0,
           "z": 0.0
         },
@@ -9786,7 +9624,7 @@ description: Artifact commands cpu-cooler.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 47.3473
+        "z": 47.347
       },
       "x_axis": {
         "x": 1.0,
@@ -9840,7 +9678,7 @@ description: Artifact commands cpu-cooler.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -43.8797,
+        "x": -43.88,
         "y": -62.0,
         "z": 0.0
       }
@@ -9944,7 +9782,7 @@ description: Artifact commands cpu-cooler.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 8.3333,
+          "x": 8.333,
           "y": 0.0,
           "z": 0.0
         },
@@ -9958,7 +9796,7 @@ description: Artifact commands cpu-cooler.kcl
     "command": {
       "type": "make_plane",
       "origin": {
-        "x": -43.8797,
+        "x": -43.88,
         "y": 0.0,
         "z": 0.0
       },
@@ -10025,7 +9863,7 @@ description: Artifact commands cpu-cooler.kcl
         "type": "arc",
         "center": {
           "x": -62.0,
-          "y": 152.6527
+          "y": 152.653
         },
         "radius": 1.0,
         "start": {
@@ -10048,7 +9886,7 @@ description: Artifact commands cpu-cooler.kcl
       "path": "[uuid]",
       "to": {
         "x": -61.0,
-        "y": 152.6527,
+        "y": 152.653,
         "z": 0.0
       }
     }
@@ -10157,7 +9995,7 @@ description: Artifact commands cpu-cooler.kcl
         "type": "arc",
         "center": {
           "x": -62.0,
-          "y": 47.3473
+          "y": 47.347
         },
         "radius": 1.0,
         "start": {
@@ -10180,7 +10018,7 @@ description: Artifact commands cpu-cooler.kcl
       "path": "[uuid]",
       "to": {
         "x": -61.0,
-        "y": 47.3473,
+        "y": 47.347,
         "z": 0.0
       }
     }

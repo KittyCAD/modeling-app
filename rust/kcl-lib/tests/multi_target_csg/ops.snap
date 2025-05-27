@@ -57,7 +57,7 @@ description: Operations executed multi_target_csg.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 0.0625,
+          "value": 0.063,
           "ty": {
             "type": "Default",
             "len": {

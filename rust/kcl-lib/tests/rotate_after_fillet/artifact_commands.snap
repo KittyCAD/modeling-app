@@ -198,30 +198,16 @@ description: Artifact commands rotate_after_fillet.kcl
       "object_id": "[uuid]",
       "edge_id": null,
       "edge_ids": [
+        "[uuid]",
         "[uuid]"
       ],
       "radius": 0.02,
       "tolerance": 0.0000001,
       "cut_type": "fillet",
       "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
+      "extra_face_ids": [
         "[uuid]"
-      ],
-      "radius": 0.02,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
+      ]
     }
   },
   {
@@ -254,7 +240,7 @@ description: Artifact commands rotate_after_fillet.kcl
       "path": "[uuid]",
       "to": {
         "x": 0.25,
-        "y": 0.1443,
+        "y": 0.144,
         "z": 0.0
       }
     }
@@ -283,7 +269,7 @@ description: Artifact commands rotate_after_fillet.kcl
         "type": "line",
         "end": {
           "x": -0.0,
-          "y": -0.2887,
+          "y": -0.289,
           "z": 0.0
         },
         "relative": true
@@ -300,7 +286,7 @@ description: Artifact commands rotate_after_fillet.kcl
         "type": "line",
         "end": {
           "x": -0.25,
-          "y": -0.1443,
+          "y": -0.144,
           "z": 0.0
         },
         "relative": true
@@ -317,7 +303,7 @@ description: Artifact commands rotate_after_fillet.kcl
         "type": "line",
         "end": {
           "x": -0.25,
-          "y": 0.1443,
+          "y": 0.144,
           "z": 0.0
         },
         "relative": true
@@ -334,7 +320,7 @@ description: Artifact commands rotate_after_fillet.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.2887,
+          "y": 0.289,
           "z": 0.0
         },
         "relative": true
@@ -351,7 +337,7 @@ description: Artifact commands rotate_after_fillet.kcl
         "type": "line",
         "end": {
           "x": 0.25,
-          "y": 0.1443,
+          "y": 0.144,
           "z": 0.0
         },
         "relative": true
@@ -474,7 +460,7 @@ description: Artifact commands rotate_after_fillet.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.3125,
+        "x": 0.313,
         "y": 0.0,
         "z": 0.0
       }

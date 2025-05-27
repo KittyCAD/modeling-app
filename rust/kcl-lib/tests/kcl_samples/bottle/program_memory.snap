@@ -26,7 +26,7 @@ description: Variables in memory after executing bottle.kcl
             "tag": null,
             "to": [
               -62.5,
-              26.6667
+              26.667
             ],
             "type": "ToPoint",
             "units": {
@@ -40,7 +40,7 @@ description: Variables in memory after executing bottle.kcl
             },
             "from": [
               -62.5,
-              26.6667
+              26.667
             ],
             "p1": [
               -62.5,
@@ -57,7 +57,7 @@ description: Variables in memory after executing bottle.kcl
             "tag": null,
             "to": [
               62.5,
-              26.6667
+              26.667
             ],
             "type": "ArcThreePoint",
             "units": {
@@ -71,7 +71,7 @@ description: Variables in memory after executing bottle.kcl
             },
             "from": [
               62.5,
-              26.6667
+              26.667
             ],
             "tag": null,
             "to": [
@@ -279,7 +279,7 @@ description: Variables in memory after executing bottle.kcl
                   "tag": null,
                   "to": [
                     -62.5,
-                    26.6667
+                    26.667
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -293,7 +293,7 @@ description: Variables in memory after executing bottle.kcl
                   },
                   "from": [
                     -62.5,
-                    26.6667
+                    26.667
                   ],
                   "p1": [
                     -62.5,
@@ -310,7 +310,7 @@ description: Variables in memory after executing bottle.kcl
                   "tag": null,
                   "to": [
                     62.5,
-                    26.6667
+                    26.667
                   ],
                   "type": "ArcThreePoint",
                   "units": {
@@ -324,7 +324,7 @@ description: Variables in memory after executing bottle.kcl
                   },
                   "from": [
                     62.5,
-                    26.6667
+                    26.667
                   ],
                   "tag": null,
                   "to": [
@@ -542,7 +542,7 @@ description: Variables in memory after executing bottle.kcl
                   "tag": null,
                   "to": [
                     -62.5,
-                    26.6667
+                    26.667
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -556,7 +556,7 @@ description: Variables in memory after executing bottle.kcl
                   },
                   "from": [
                     -62.5,
-                    26.6667
+                    26.667
                   ],
                   "p1": [
                     -62.5,
@@ -573,7 +573,7 @@ description: Variables in memory after executing bottle.kcl
                   "tag": null,
                   "to": [
                     62.5,
-                    26.6667
+                    26.667
                   ],
                   "type": "ArcThreePoint",
                   "units": {
@@ -587,7 +587,7 @@ description: Variables in memory after executing bottle.kcl
                   },
                   "from": [
                     62.5,
-                    26.6667
+                    26.667
                   ],
                   "tag": null,
                   "to": [

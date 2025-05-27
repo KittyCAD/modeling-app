@@ -369,6 +369,8 @@ pub enum TokenType {
     Period,
     /// A double period: `..`.
     DoublePeriod,
+    /// A double period and a less than: `..<`.
+    DoublePeriodLessThan,
     /// A line comment.
     LineComment,
     /// A block comment.
@@ -410,6 +412,7 @@ impl TryFrom<TokenType> for SemanticTokenType {
             | TokenType::DoubleColon
             | TokenType::Period
             | TokenType::DoublePeriod
+            | TokenType::DoublePeriodLessThan
             | TokenType::Hash
             | TokenType::Dollar
             | TokenType::At
