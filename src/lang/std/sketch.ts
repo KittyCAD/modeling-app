@@ -3196,6 +3196,7 @@ export function fnNameToToolTipFromSegment(
   fnName: string
 ): ToolTip | Error {
   switch (fnName) {
+    case 'arcTo':
     case 'arc': {
       return seg.type === 'ArcThreePoint' ? 'arcTo' : 'arc'
     }
