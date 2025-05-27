@@ -2833,7 +2833,22 @@ fn record_ty_field(i: &mut TokenSlice) -> ModalResult<(Node<Identifier>, Node<Ty
 
 /// Parse a type in various positions.
 fn type_(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
-    let type_ = alt((
+    separated(1.., type_not_union, pipe_sep)
+        .map(|mut tys: Vec<_>| {
+            if tys.len() == 1 {
+                tys.pop().unwrap()
+            } else {
+                let start = tys[0].start;
+                let module_id = tys[0].module_id;
+                let end = tys.last().unwrap().end;
+                Node::new(Type::Union { tys }, start, end, module_id)
+            }
+        })
+        .parse_next(i)
+}
+
+fn type_not_union(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
+    alt((
         // Object types
         (
             open_brace,
@@ -2852,21 +2867,10 @@ fn type_(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
             }),
         // Array types
         array_type,
-        // Primitive or union types
-        separated(1.., primitive_type, pipe_sep).map(|mut tys: Vec<_>| {
-            if tys.len() == 1 {
-                tys.pop().unwrap().map(Type::Primitive)
-            } else {
-                let start = tys[0].start;
-                let module_id = tys[0].module_id;
-                let end = tys.last().unwrap().end;
-                Node::new(Type::Union { tys }, start, end, module_id)
-            }
-        }),
+        // Primitive types
+        primitive_type.map(|t| t.map(Type::Primitive)),
     ))
-    .parse_next(i)?;
-
-    Ok(type_)
+    .parse_next(i)
 }
 
 fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {

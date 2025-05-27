@@ -150,7 +150,7 @@ impl RuntimeType {
             }
             Type::Union { tys } => tys
                 .into_iter()
-                .map(|t| Self::from_parsed_primitive(t.inner, exec_state, source_range))
+                .map(|t| Self::from_parsed(t.inner, exec_state, source_range))
                 .collect::<Result<Vec<_>, CompilationError>>()
                 .map(RuntimeType::Union),
             Type::Object { properties } => properties

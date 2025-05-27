@@ -3320,7 +3320,7 @@ pub enum Type {
     },
     // Union/enum types
     Union {
-        tys: NodeList<PrimitiveType>,
+        tys: NodeList<Type>,
     },
     // An object type.
     Object {
