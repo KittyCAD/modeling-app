@@ -2,7 +2,7 @@ import { DEV } from '@src/env'
 import isomorphicFetch from 'isomorphic-fetch'
 
 import { isDesktop } from '@src/lib/isDesktop'
-import { err } from './trap'
+import { err } from '@src/lib/trap'
 
 // TODO I not sure this file should exist
 
