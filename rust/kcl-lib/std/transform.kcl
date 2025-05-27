@@ -3,6 +3,8 @@
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
+import Axis3d from "std::types"
+
 /// Mirror a sketch.
 ///
 /// Mirror occurs around a local sketch axis rather than a global axis.
@@ -90,3 +92,510 @@ export fn mirror2d(
   /// The axis to reflect around.
   axis: Axis2d | Edge,
 ): Sketch {}
+
+/// Move a solid or a sketch.
+///
+/// This is really useful for assembling parts together. You can create a part
+/// and then move it to the correct location.
+///
+/// Translate is really useful for sketches if you want to move a sketch
+/// and then rotate it using the `rotate` function to create a loft.
+///
+/// ```kcl
+/// // Move a pipe.
+///
+/// // Create a path for the sweep.
+/// sweepPath = startSketchOn(XZ)
+///     |> startProfile(at = [0.05, 0.05])
+///     |> line(end = [0, 7])
+///     |> tangentialArc(angle = 90, radius = 5)
+///     |> line(end = [-3, 0])
+///     |> tangentialArc(angle = -90, radius = 5)
+///     |> line(end = [0, 7])
+///
+/// // Create a hole for the pipe.
+/// pipeHole = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 1.5,
+///     )
+///
+/// sweepSketch = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 2,
+///         )              
+///     |> subtract2d(tool = pipeHole)
+///     |> sweep(path = sweepPath)   
+///     |> translate(
+///         x = 1.0,
+///         y = 1.0,
+///         z = 2.5,
+///     )
+/// ```
+///
+/// ```kcl
+/// // Move an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// // Circle so you actually see the move.
+/// startSketchOn(XY)
+///     |> circle(
+///         center = [-10, -10],
+///         radius = 10,
+///         )
+///     |> extrude(
+///     length = 10,
+///     )
+///
+/// cube
+///     |> translate(
+///     x = 10.0,
+///     y = 10.0,
+///     z = 2.5,
+///     )
+/// ```
+///
+/// ```kcl
+/// // Sweep two sketches along the same path.
+///
+/// sketch001 = startSketchOn(XY)
+/// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
+///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001) - 90,
+///         length = 50.61,
+///     )
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001),
+///         length = -segLen(rectangleSegmentA001),
+///     )
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
+///
+/// sketch002 = startSketchOn(YZ)
+/// sweepPath = startProfile(sketch002, at = [0, 0])
+///     |> yLine(length = 231.81)
+///     |> tangentialArc(radius = 80, angle = -90)
+///     |> xLine(length = 384.93)
+///
+/// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
+///
+/// // Move the sweeps.
+/// translate(parts, x = 1.0, y = 1.0, z = 2.5)
+/// ```
+///
+/// ```kcl
+/// // Move a sketch.
+///
+/// fn square(@length){
+///     l = length / 2
+///     p0 = [-l, -l]
+///     p1 = [-l, l]
+///     p2 = [l, l]
+///     p3 = [l, -l]
+///
+///     return startSketchOn(XY)
+///         |> startProfile(at = p0)
+///         |> line(endAbsolute = p1)
+///         |> line(endAbsolute = p2)
+///         |> line(endAbsolute = p3)
+///         |> close()
+/// }
+///
+/// square(10)
+///     |> translate(
+///         x = 5,
+///         y = 5,
+///     )
+///     |> extrude(
+///         length = 10,
+///     )
+/// ```
+///
+/// ```kcl
+/// // Translate and rotate a sketch to create a loft.
+/// sketch001 = startSketchOn(XY)
+///
+/// fn square() {
+///     return  startProfile(sketch001, at = [-10, 10])
+///         |> xLine(length = 20)
+///         |> yLine(length = -20)
+///         |> xLine(length = -20)
+///         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///         |> close()
+/// }
+///
+/// profile001 = square()
+///
+/// profile002 = square()
+///     |> translate(z = 20)
+///     |> rotate(axis = [0, 0, 1.0], angle = 45)
+///
+/// loft([profile001, profile002])
+/// ```
+@(impl = std_rust)
+export fn translate(
+  /// The solid, sketch, or set of solids or sketches to move.
+  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  /// The amount to move the solid or sketch along the x axis.
+  @(includeInSnippet = true)
+  x?: number(Length) = 0,
+  /// The amount to move the solid or sketch along the y axis.
+  @(includeInSnippet = true)
+  y?: number(Length) = 0,
+  /// The amount to move the solid or sketch along the z axis.
+  @(includeInSnippet = true)
+  z?: number(Length) = 0,
+  /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
+  global?: bool = false,  
+): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
+
+/// Rotate a solid or a sketch.
+///
+/// This is really useful for assembling parts together. You can create a part
+/// and then rotate it to the correct orientation.
+///
+/// For sketches, you can use this to rotate a sketch and then loft it with another sketch.
+///
+/// ### Using Roll, Pitch, and Yaw
+///
+/// When rotating a part in 3D space, "roll," "pitch," and "yaw" refer to the
+/// three rotational axes used to describe its orientation: roll is rotation
+/// around the longitudinal axis (front-to-back), pitch is rotation around the
+/// lateral axis (wing-to-wing), and yaw is rotation around the vertical axis
+/// (up-down); essentially, it's like tilting the part on its side (roll),
+/// tipping the nose up or down (pitch), and turning it left or right (yaw).
+///
+/// So, in the context of a 3D model:
+///
+/// - **Roll**: Imagine spinning a pencil on its tip - that's a roll movement.
+///
+/// - **Pitch**: Think of a seesaw motion, where the object tilts up or down along its side axis.
+///
+/// - **Yaw**: Like turning your head left or right, this is a rotation around the vertical axis
+///
+/// ### Using an Axis and Angle
+///
+/// When rotating a part around an axis, you specify the axis of rotation and the angle of
+/// rotation.
+///
+/// ```kcl
+/// // Rotate a pipe with roll, pitch, and yaw.
+///
+/// // Create a path for the sweep.
+/// sweepPath = startSketchOn(XZ)
+///     |> startProfile(at = [0.05, 0.05])
+///     |> line(end = [0, 7])
+///     |> tangentialArc(angle = 90, radius = 5)
+///     |> line(end = [-3, 0])
+///     |> tangentialArc(angle = -90, radius = 5)
+///     |> line(end = [0, 7])
+///
+/// // Create a hole for the pipe.
+/// pipeHole = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 1.5,
+///     )
+///
+/// sweepSketch = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 2,
+///         )              
+///     |> subtract2d(tool = pipeHole)
+///     |> sweep(path = sweepPath)   
+///     |> rotate(
+///         roll = 10,
+///         pitch =  10,
+///         yaw = 90,
+///     )
+/// ```
+///
+/// ```kcl
+/// // Rotate a pipe with just roll.
+///
+/// // Create a path for the sweep.
+/// sweepPath = startSketchOn(XZ)
+///     |> startProfile(at = [0.05, 0.05])
+///     |> line(end = [0, 7])
+///     |> tangentialArc(angle = 90, radius = 5)
+///     |> line(end = [-3, 0])
+///     |> tangentialArc(angle = -90, radius = 5)
+///     |> line(end = [0, 7])
+///
+/// // Create a hole for the pipe.
+/// pipeHole = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 1.5,
+///     )
+///
+/// sweepSketch = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 2,
+///         )              
+///     |> subtract2d(tool = pipeHole)
+///     |> sweep(path = sweepPath)   
+///     |> rotate(
+///         roll = 10,
+///     )
+/// ```
+///
+/// ```kcl
+/// // Rotate a pipe about a named axis with an angle.
+///
+/// // Create a path for the sweep.
+/// sweepPath = startSketchOn(XZ)
+///     |> startProfile(at = [0.05, 0.05])
+///     |> line(end = [0, 7])
+///     |> tangentialArc(angle = 90, radius = 5)
+///     |> line(end = [-3, 0])
+///     |> tangentialArc(angle = -90, radius = 5)
+///     |> line(end = [0, 7])
+///
+/// // Create a hole for the pipe.
+/// pipeHole = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 1.5,
+///    )
+///
+/// sweepSketch = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 2,
+///         )              
+///     |> subtract2d(tool = pipeHole)
+///     |> sweep(path = sweepPath)   
+///     |> rotate(
+///     axis =  Z,
+///     angle = 90,
+///     )
+/// ```
+///
+/// ```kcl
+/// // Rotate an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
+///     |> rotate(
+///     axis =  [0, 0, 1.0],
+///     angle = 9,
+///     )
+/// ```
+///
+/// ```kcl
+/// // Rotate a pipe about a raw axis with an angle.
+///
+/// // Create a path for the sweep.
+/// sweepPath = startSketchOn(XZ)
+///     |> startProfile(at = [0.05, 0.05])
+///     |> line(end = [0, 7])
+///     |> tangentialArc(angle = 90, radius = 5)
+///     |> line(end = [-3, 0])
+///     |> tangentialArc(angle = -90, radius = 5)
+///     |> line(end = [0, 7])
+///
+/// // Create a hole for the pipe.
+/// pipeHole = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 1.5,
+///    )
+///
+/// sweepSketch = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 2,
+///         )              
+///     |> subtract2d(tool = pipeHole)
+///     |> sweep(path = sweepPath)   
+///     |> rotate(
+///     axis =  [0, 0, 1.0],
+///     angle = 90,
+///     )
+/// ```
+///
+/// ```kcl
+/// // Sweep two sketches along the same path.
+///
+/// sketch001 = startSketchOn(XY)
+/// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
+///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001) - 90,
+///         length = 50.61,
+///     )
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001),
+///         length = -segLen(rectangleSegmentA001),
+///     )
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
+///
+/// sketch002 = startSketchOn(YZ)
+/// sweepPath = startProfile(sketch002, at = [0, 0])
+///     |> yLine(length = 231.81)
+///     |> tangentialArc(radius = 80, angle = -90)
+///     |> xLine(length = 384.93)
+///
+/// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
+///
+/// // Rotate the sweeps.
+/// rotate(parts, axis =  [0, 0, 1.0], angle = 90)
+/// ```
+///
+/// ```kcl
+/// // Translate and rotate a sketch to create a loft.
+/// sketch001 = startSketchOn(XY)
+///
+/// fn square() {
+///     return  startProfile(sketch001, at = [-10, 10])
+///         |> xLine(length = 20)
+///         |> yLine(length = -20)
+///         |> xLine(length = -20)
+///         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///         |> close()
+/// }
+///
+/// profile001 = square()
+///
+/// profile002 = square()
+///     |> translate(x = 0, y = 0, z = 20)
+///     |> rotate(axis = [0, 0, 1.0], angle = 45)
+///
+/// loft([profile001, profile002])
+/// ```
+@(impl = std_rust)
+export fn rotate(
+  /// The solid, sketch, or set of solids or sketches to rotate.
+  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  /// The roll angle. Must be between -360deg and 360deg.
+  @(includeInSnippet = true)
+  roll?: number(Angle),
+  /// The pitch angle. Must be between -360deg and 360deg.
+  @(includeInSnippet = true)
+  pitch?: number(Angle),
+  /// The yaw angle. Must be between -360deg and 360deg.
+  @(includeInSnippet = true)
+  yaw?: number(Angle),
+  /// The axis to rotate around. Must be used with `angle`.
+  axis?: Axis3d | Point3d,
+  /// The angle to rotate. Must be used with `axis`. Must be between -360deg and 360deg.
+  angle?: number(Angle),
+  /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
+  global?: bool = false,  
+): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
+
+/// Scale a solid or a sketch.
+///
+/// This is really useful for resizing parts. You can create a part and then scale it to the
+/// correct size.
+///
+/// For sketches, you can use this to scale a sketch and then loft it with another sketch.
+///
+/// By default the transform is applied in local sketch axis, therefore the origin will not move.
+///
+/// If you want to apply the transform in global space, set `global` to `true`. The origin of the
+/// model will move. If the model is not centered on origin and you scale globally it will
+/// look like the model moves and gets bigger at the same time. Say you have a square
+/// `(1,1) - (1,2) - (2,2) - (2,1)` and you scale by 2 globally it will become
+/// `(2,2) - (2,4)`...etc so the origin has moved from `(1.5, 1.5)` to `(2,2)`.
+///
+/// ```kcl
+/// // Scale a pipe.
+///
+/// // Create a path for the sweep.
+/// sweepPath = startSketchOn(XZ)
+///     |> startProfile(at = [0.05, 0.05])
+///     |> line(end = [0, 7])
+///     |> tangentialArc(angle = 90, radius = 5)
+///     |> line(end = [-3, 0])
+///     |> tangentialArc(angle = -90, radius = 5)
+///     |> line(end = [0, 7])
+///
+/// // Create a hole for the pipe.
+/// pipeHole = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 1.5,
+///     )
+///
+/// sweepSketch = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 2,
+///         )              
+///     |> subtract2d(tool = pipeHole)
+///     |> sweep(path = sweepPath)   
+///     |> scale(
+///     z = 2.5,
+///     )
+/// ```
+///
+/// ```kcl
+/// // Scale an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
+///     |> scale(
+///     y = 2.5,
+///     )
+/// ```
+///
+/// ```kcl
+/// // Sweep two sketches along the same path.
+///
+/// sketch001 = startSketchOn(XY)
+/// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
+///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001) - 90,
+///         length = 50.61,
+///     )
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001),
+///         length = -segLen(rectangleSegmentA001),
+///     )
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
+///
+/// sketch002 = startSketchOn(YZ)
+/// sweepPath = startProfile(sketch002, at = [0, 0])
+///     |> yLine(length = 231.81)
+///     |> tangentialArc(radius = 80, angle = -90)
+///     |> xLine(length = 384.93)
+///
+/// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
+///
+/// // Scale the sweep.
+/// scale(parts, z = 0.5)
+/// ```
+@(impl = std_rust)
+export fn scale(
+  /// The solid, sketch, or set of solids or sketches to scale.
+  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  /// The scale factor for the x axis.
+  @(includeInSnippet = true)
+  x?: number(Count) = 1,
+  /// The scale factor for the y axis.
+  @(includeInSnippet = true)
+  y?: number(Count) = 1,
+  /// The scale factor for the z axis.
+  @(includeInSnippet = true)
+  z?: number(Count) = 1,
+  /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
+  global?: bool = false,  
+): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}

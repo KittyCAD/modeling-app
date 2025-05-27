@@ -744,12 +744,12 @@ impl ArgData {
             } = &attr.inner
             {
                 for p in props {
-                    if p.key.name == "include_in_snippet" {
+                    if p.key.name == "includeInSnippet" {
                         if let Some(b) = p.value.literal_bool() {
                             result.override_in_snippet = Some(b);
                         } else {
                             panic!(
-                                "Invalid value for `include_in_snippet`, expected bool literal, found {:?}",
+                                "Invalid value for `includeInSnippet`, expected bool literal, found {:?}",
                                 p.value
                             );
                         }
