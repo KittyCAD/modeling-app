@@ -209,10 +209,15 @@ description: Operations executed surgical-drill-guide.kcl
     "labeledArgs": {
       "tools": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
         },
         "sourceRange": []
       }
@@ -272,7 +277,7 @@ description: Operations executed surgical-drill-guide.kcl
       "offset": {
         "value": {
           "type": "Number",
-          "value": 28.4952,
+          "value": 28.495,
           "ty": {
             "type": "Known",
             "type": "Length",
@@ -401,7 +406,7 @@ description: Operations executed surgical-drill-guide.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 0.6667,
+          "value": 0.667,
           "ty": {
             "type": "Default",
             "len": {
@@ -511,7 +516,7 @@ description: Operations executed surgical-drill-guide.kcl
       "offset": {
         "value": {
           "type": "Number",
-          "value": 47.4952,
+          "value": 47.495,
           "ty": {
             "type": "Known",
             "type": "Length",
@@ -795,7 +800,7 @@ description: Operations executed surgical-drill-guide.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 1.0667,
+          "value": 1.067,
           "ty": {
             "type": "Default",
             "len": {

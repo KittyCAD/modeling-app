@@ -796,7 +796,7 @@ fn coerce_result_type(
             // can be removed.
             // I believe this is safe, since anywhere which requires an array should coerce the singleton
             // to an array and we only do this hack for return values.
-            if let RuntimeType::Array(inner, ArrayLen::NonEmpty) = &ty {
+            if let RuntimeType::Array(inner, ArrayLen::Minimum(1)) = &ty {
                 ty = RuntimeType::Union(vec![(**inner).clone(), ty]);
             }
             let val = val.coerce(&ty, true, exec_state).map_err(|_| {

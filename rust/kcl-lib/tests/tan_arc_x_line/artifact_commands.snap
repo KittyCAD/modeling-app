@@ -172,7 +172,7 @@ description: Artifact commands tan_arc_x_line.kcl
         "type": "line",
         "end": {
           "x": 1.0,
-          "y": -1.2817,
+          "y": -1.282,
           "z": 0.0
         },
         "relative": false

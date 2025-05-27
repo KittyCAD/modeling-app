@@ -57,7 +57,7 @@ description: Operations executed subtract_regression07.kcl
       "bidirectionalLength": {
         "value": {
           "type": "Number",
-          "value": 0.1875,
+          "value": 0.188,
           "ty": {
             "type": "Default",
             "len": {
@@ -73,7 +73,7 @@ description: Operations executed subtract_regression07.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 0.1875,
+          "value": 0.188,
           "ty": {
             "type": "Default",
             "len": {
@@ -206,20 +206,30 @@ description: Operations executed subtract_regression07.kcl
     "name": "subtract",
     "unlabeledArg": {
       "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
+        "type": "Array",
+        "value": [
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
       },
       "sourceRange": []
     },
     "labeledArgs": {
       "tools": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
         },
         "sourceRange": []
       }

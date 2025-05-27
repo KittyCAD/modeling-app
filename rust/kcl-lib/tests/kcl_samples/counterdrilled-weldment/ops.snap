@@ -237,7 +237,7 @@ description: Operations executed counterdrilled-weldment.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -0.1875,
+          "value": -0.188,
           "ty": {
             "type": "Default",
             "len": {
@@ -269,7 +269,7 @@ description: Operations executed counterdrilled-weldment.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -0.1875,
+          "value": -0.188,
           "ty": {
             "type": "Default",
             "len": {
@@ -301,7 +301,7 @@ description: Operations executed counterdrilled-weldment.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -0.1875,
+          "value": -0.188,
           "ty": {
             "type": "Default",
             "len": {
@@ -333,7 +333,7 @@ description: Operations executed counterdrilled-weldment.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -0.1875,
+          "value": -0.188,
           "ty": {
             "type": "Default",
             "len": {
@@ -457,7 +457,7 @@ description: Operations executed counterdrilled-weldment.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -0.3125,
+          "value": -0.313,
           "ty": {
             "type": "Default",
             "len": {
@@ -489,7 +489,7 @@ description: Operations executed counterdrilled-weldment.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -0.3125,
+          "value": -0.313,
           "ty": {
             "type": "Default",
             "len": {
@@ -521,7 +521,7 @@ description: Operations executed counterdrilled-weldment.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -0.3125,
+          "value": -0.313,
           "ty": {
             "type": "Default",
             "len": {
@@ -553,7 +553,7 @@ description: Operations executed counterdrilled-weldment.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -0.3125,
+          "value": -0.313,
           "ty": {
             "type": "Default",
             "len": {
@@ -585,7 +585,7 @@ description: Operations executed counterdrilled-weldment.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 0.1326,
+          "value": 0.133,
           "ty": {
             "type": "Default",
             "len": {
@@ -630,7 +630,7 @@ description: Operations executed counterdrilled-weldment.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 0.1326,
+          "value": 0.133,
           "ty": {
             "type": "Default",
             "len": {
@@ -675,7 +675,7 @@ description: Operations executed counterdrilled-weldment.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 0.1326,
+          "value": 0.133,
           "ty": {
             "type": "Default",
             "len": {
@@ -720,7 +720,7 @@ description: Operations executed counterdrilled-weldment.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 0.1326,
+          "value": 0.133,
           "ty": {
             "type": "Default",
             "len": {
@@ -1475,10 +1475,15 @@ description: Operations executed counterdrilled-weldment.kcl
     "name": "patternCircular3d",
     "unlabeledArg": {
       "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
+        "type": "Array",
+        "value": [
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1488,13 +1493,9 @@ description: Operations executed counterdrilled-weldment.kcl
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -1598,13 +1599,8 @@ description: Operations executed counterdrilled-weldment.kcl
           "type": "Number",
           "value": 2.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -1624,10 +1620,15 @@ description: Operations executed counterdrilled-weldment.kcl
     "name": "patternCircular3d",
     "unlabeledArg": {
       "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
+        "type": "Array",
+        "value": [
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1637,13 +1638,9 @@ description: Operations executed counterdrilled-weldment.kcl
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -1747,13 +1744,8 @@ description: Operations executed counterdrilled-weldment.kcl
           "type": "Number",
           "value": 2.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []

@@ -118,7 +118,7 @@ description: Operations executed shepherds-hook-bolt.kcl
       "offset": {
         "value": {
           "type": "Number",
-          "value": -22.1378,
+          "value": -22.138,
           "ty": {
             "type": "Default",
             "len": {

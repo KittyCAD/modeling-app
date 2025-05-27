@@ -1348,6 +1348,11 @@ impl Path {
             }
         }
     }
+
+    /// i.e. not a curve
+    pub(crate) fn is_straight_line(&self) -> bool {
+        matches!(self, Path::AngledLineTo { .. } | Path::ToPoint { .. })
+    }
 }
 
 /// Compute the straight-line distance between a pair of (2D) points.

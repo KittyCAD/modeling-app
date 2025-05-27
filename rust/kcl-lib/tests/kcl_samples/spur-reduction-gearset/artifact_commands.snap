@@ -118,7 +118,7 @@ description: Artifact commands spur-reduction-gearset.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 12.3713,
+        "x": 12.371,
         "y": 0.0,
         "z": 0.0
       }
@@ -131,7 +131,7 @@ description: Artifact commands spur-reduction-gearset.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 37.1138,
+        "x": 37.114,
         "y": 0.0,
         "z": 0.0
       }
@@ -210,8 +210,8 @@ description: Artifact commands spur-reduction-gearset.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 14.0582,
-          "y": 2.3303,
+          "x": 14.058,
+          "y": 2.33,
           "z": 0.0
         },
         "relative": false
@@ -227,8 +227,8 @@ description: Artifact commands spur-reduction-gearset.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 39.6904,
-          "y": 2.1754,
+          "x": 39.69,
+          "y": 2.175,
           "z": 0.0
         },
         "relative": false
@@ -265,7 +265,7 @@ description: Artifact commands spur-reduction-gearset.kcl
         "end_radius": 39.75,
         "angle": {
           "unit": "degrees",
-          "value": -4.5208
+          "value": -4.521
         },
         "reverse": true
       }
@@ -280,7 +280,7 @@ description: Artifact commands spur-reduction-gearset.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 11.5359,
+          "x": 11.536,
           "y": 4.469,
           "z": 0.0
         },
@@ -297,8 +297,8 @@ description: Artifact commands spur-reduction-gearset.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 36.8325,
-          "y": 4.5609,
+          "x": 36.833,
+          "y": 4.561,
           "z": 0.0
         },
         "relative": false

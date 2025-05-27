@@ -751,8 +751,8 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -44.1242,
-          "y": 37.0246,
+          "x": -44.124,
+          "y": 37.025,
           "z": 0.0
         },
         "relative": true
@@ -785,7 +785,7 @@ description: Artifact commands axial-fan.kcl
         "type": "line",
         "end": {
           "x": -24.683,
-          "y": -29.4161,
+          "y": -29.416,
           "z": 0.0
         },
         "relative": true
@@ -818,7 +818,7 @@ description: Artifact commands axial-fan.kcl
         "type": "line",
         "end": {
           "x": 7.354,
-          "y": -6.1708,
+          "y": -6.171,
           "z": 0.0
         },
         "relative": true
@@ -867,8 +867,8 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": 25.4555,
-          "y": 11.2232,
+          "x": 25.456,
+          "y": 11.223,
           "z": 0.0
         },
         "angle_snap_increment": null
@@ -2969,7 +2969,7 @@ description: Artifact commands axial-fan.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -0.0001,
+        "x": -0.0,
         "y": 25.0,
         "z": 0.0
       }
@@ -3149,7 +3149,7 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.0001,
+          "x": -1.0,
           "y": 23.6,
           "z": 0.0
         },
@@ -3166,7 +3166,7 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.0001,
+          "x": -0.0,
           "y": 23.6,
           "z": 0.0
         },
@@ -3183,7 +3183,7 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.0001,
+          "x": -0.0,
           "y": 25.0,
           "z": 0.0
         },
@@ -3439,8 +3439,8 @@ description: Artifact commands axial-fan.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 9.6418,
-        "y": 11.4907,
+        "x": 9.642,
+        "y": 11.491,
         "z": 0.0
       }
     }
@@ -3452,7 +3452,7 @@ description: Artifact commands axial-fan.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 12.9904,
+        "x": 12.99,
         "y": 7.5,
         "z": 0.0
       }
@@ -3624,12 +3624,12 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 15.8879,
+          "x": 15.888,
           "y": 21.084,
           "z": 0.0
         },
         "end": {
-          "x": 45.7261,
+          "x": 45.726,
           "y": 26.4,
           "z": 0.0
         },
@@ -3646,13 +3646,13 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 22.1409,
-          "y": 14.3785,
+          "x": 22.141,
+          "y": 14.378,
           "z": 0.0
         },
         "end": {
-          "x": 51.9978,
-          "y": 9.1686,
+          "x": 51.998,
+          "y": 9.169,
           "z": 0.0
         },
         "relative": false
@@ -3668,13 +3668,13 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 26.3638,
-          "y": 1.3817,
+          "x": 26.364,
+          "y": 1.382,
           "z": 0.0
         },
         "end": {
-          "x": 49.6158,
-          "y": -18.0587,
+          "x": 49.616,
+          "y": -18.059,
           "z": 0.0
         },
         "relative": false
@@ -3690,12 +3690,12 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 46.6196,
-          "y": 24.7881,
+          "x": 46.62,
+          "y": 24.788,
           "z": 0.0
         },
         "end": {
-          "x": 47.4563,
+          "x": 47.456,
           "y": 23.146,
           "z": 0.0
         },
@@ -3712,13 +3712,13 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 52.2862,
-          "y": 7.3483,
+          "x": 52.286,
+          "y": 7.348,
           "z": 0.0
         },
         "end": {
-          "x": 52.5108,
-          "y": 5.5191,
+          "x": 52.511,
+          "y": 5.519,
           "z": 0.0
         },
         "relative": false
@@ -3734,13 +3734,13 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 48.9553,
-          "y": -19.7792,
+          "x": 48.955,
+          "y": -19.779,
           "z": 0.0
         },
         "end": {
-          "x": 48.2352,
-          "y": -21.4757,
+          "x": 48.235,
+          "y": -21.476,
           "z": 0.0
         },
         "relative": false
@@ -3756,13 +3756,13 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 18.6676,
-          "y": 18.6676,
+          "x": 18.668,
+          "y": 18.668,
           "z": 0.0
         },
         "end": {
-          "x": 9.6418,
-          "y": 11.4907,
+          "x": 9.642,
+          "y": 11.491,
           "z": 0.0
         },
         "relative": false
@@ -3778,12 +3778,12 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 23.9265,
-          "y": 11.1571,
+          "x": 23.927,
+          "y": 11.157,
           "z": 0.0
         },
         "end": {
-          "x": 12.9904,
+          "x": 12.99,
           "y": 7.5,
           "z": 0.0
         },
@@ -3800,8 +3800,8 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 26.2995,
-          "y": -2.3009,
+          "x": 26.3,
+          "y": -2.301,
           "z": 0.0
         },
         "end": {

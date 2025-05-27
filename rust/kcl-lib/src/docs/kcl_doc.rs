@@ -618,6 +618,12 @@ impl FnData {
     pub(super) fn to_autocomplete_snippet(&self) -> String {
         if self.name == "loft" {
             return "loft([${0:sketch000}, ${1:sketch001}])".to_owned();
+        } else if self.name == "union" {
+            return "union([${0:extrude001}, ${1:extrude002}])".to_owned();
+        } else if self.name == "subtract" {
+            return "subtract([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
+        } else if self.name == "intersect" {
+            return "intersect([${0:extrude001}, ${1:extrude002}])".to_owned();
         } else if self.name == "clone" {
             return "clone(${0:part001})".to_owned();
         } else if self.name == "hole" {
@@ -802,15 +808,12 @@ impl ArgData {
             return Some((index + n - 1, snippet));
         }
         match self.ty.as_deref() {
-            Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{}:3.14}}"#, index))),
-            Some("Point2d") => Some((
-                index + 1,
-                format!(r#"{label}[${{{}:3.14}}, ${{{}:3.14}}]"#, index, index + 1),
-            )),
+            Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{}:10}}"#, index))),
+            Some("Point2d") => Some((index + 1, format!(r#"{label}[${{{}:0}}, ${{{}:0}}]"#, index, index + 1))),
             Some("Point3d") => Some((
                 index + 2,
                 format!(
-                    r#"{label}[${{{}:3.14}}, ${{{}:3.14}}, ${{{}:3.14}}]"#,
+                    r#"{label}[${{{}:0}}, ${{{}:0}}, ${{{}:0}}]"#,
                     index,
                     index + 1,
                     index + 2

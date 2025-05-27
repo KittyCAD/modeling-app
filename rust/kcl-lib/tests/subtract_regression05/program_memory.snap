@@ -33,13 +33,13 @@ description: Variables in memory after executing subtract_regression05.kcl
               0.0
             ],
             "from": [
-              1.1875,
+              1.188,
               0.0
             ],
             "radius": 1.1875,
             "tag": null,
             "to": [
-              1.1875,
+              1.188,
               0.0
             ],
             "type": "Circle",
@@ -80,11 +80,11 @@ description: Variables in memory after executing subtract_regression05.kcl
         },
         "start": {
           "from": [
-            1.1875,
+            1.188,
             0.0
           ],
           "to": [
-            1.1875,
+            1.188,
             0.0
           ],
           "units": {
@@ -158,12 +158,12 @@ description: Variables in memory after executing subtract_regression05.kcl
             },
             "from": [
               0.937,
-              -1.1255
+              -1.126
             ],
             "tag": null,
             "to": [
               0.937,
-              -1.2875
+              -1.287
             ],
             "type": "ToPoint",
             "units": {
@@ -177,12 +177,12 @@ description: Variables in memory after executing subtract_regression05.kcl
             },
             "from": [
               0.937,
-              -1.2875
+              -1.287
             ],
             "tag": null,
             "to": [
               0.625,
-              -1.2875
+              -1.287
             ],
             "type": "ToPoint",
             "units": {
@@ -196,12 +196,12 @@ description: Variables in memory after executing subtract_regression05.kcl
             },
             "from": [
               0.625,
-              -1.2875
+              -1.287
             ],
             "tag": null,
             "to": [
               0.625,
-              -1.1255
+              -1.126
             ],
             "type": "ToPoint",
             "units": {
@@ -215,12 +215,12 @@ description: Variables in memory after executing subtract_regression05.kcl
             },
             "from": [
               0.625,
-              -1.1255
+              -1.126
             ],
             "tag": null,
             "to": [
               0.937,
-              -1.1255
+              -1.126
             ],
             "type": "ToPoint",
             "units": {
@@ -234,12 +234,12 @@ description: Variables in memory after executing subtract_regression05.kcl
             },
             "from": [
               0.937,
-              -1.1255
+              -1.126
             ],
             "tag": null,
             "to": [
               0.937,
-              -1.1255
+              -1.126
             ],
             "type": "ToPoint",
             "units": {
@@ -280,11 +280,11 @@ description: Variables in memory after executing subtract_regression05.kcl
         "start": {
           "from": [
             0.937,
-            -1.1255
+            -1.126
           ],
           "to": [
             0.937,
-            -1.1255
+            -1.126
           ],
           "units": {
             "type": "Inches"
@@ -359,13 +359,13 @@ description: Variables in memory after executing subtract_regression05.kcl
             0.0
           ],
           "from": [
-            1.1875,
+            1.188,
             0.0
           ],
           "radius": 1.1875,
           "tag": null,
           "to": [
-            1.1875,
+            1.188,
             0.0
           ],
           "type": "Circle",
@@ -406,11 +406,11 @@ description: Variables in memory after executing subtract_regression05.kcl
       },
       "start": {
         "from": [
-          1.1875,
+          1.188,
           0.0
         ],
         "to": [
-          1.1875,
+          1.188,
           0.0
         ],
         "units": {
@@ -631,12 +631,12 @@ description: Variables in memory after executing subtract_regression05.kcl
           },
           "from": [
             0.937,
-            -1.1255
+            -1.126
           ],
           "tag": null,
           "to": [
             0.937,
-            -1.2875
+            -1.287
           ],
           "type": "ToPoint",
           "units": {
@@ -650,12 +650,12 @@ description: Variables in memory after executing subtract_regression05.kcl
           },
           "from": [
             0.937,
-            -1.2875
+            -1.287
           ],
           "tag": null,
           "to": [
             0.625,
-            -1.2875
+            -1.287
           ],
           "type": "ToPoint",
           "units": {
@@ -669,12 +669,12 @@ description: Variables in memory after executing subtract_regression05.kcl
           },
           "from": [
             0.625,
-            -1.2875
+            -1.287
           ],
           "tag": null,
           "to": [
             0.625,
-            -1.1255
+            -1.126
           ],
           "type": "ToPoint",
           "units": {
@@ -688,12 +688,12 @@ description: Variables in memory after executing subtract_regression05.kcl
           },
           "from": [
             0.625,
-            -1.1255
+            -1.126
           ],
           "tag": null,
           "to": [
             0.937,
-            -1.1255
+            -1.126
           ],
           "type": "ToPoint",
           "units": {
@@ -707,12 +707,12 @@ description: Variables in memory after executing subtract_regression05.kcl
           },
           "from": [
             0.937,
-            -1.1255
+            -1.126
           ],
           "tag": null,
           "to": [
             0.937,
-            -1.1255
+            -1.126
           ],
           "type": "ToPoint",
           "units": {
@@ -753,11 +753,11 @@ description: Variables in memory after executing subtract_regression05.kcl
       "start": {
         "from": [
           0.937,
-          -1.1255
+          -1.126
         ],
         "to": [
           0.937,
-          -1.1255
+          -1.126
         ],
         "units": {
           "type": "Inches"
@@ -805,13 +805,13 @@ description: Variables in memory after executing subtract_regression05.kcl
               0.0
             ],
             "from": [
-              1.1875,
+              1.188,
               0.0
             ],
             "radius": 1.1875,
             "tag": null,
             "to": [
-              1.1875,
+              1.188,
               0.0
             ],
             "type": "Circle",
@@ -852,11 +852,11 @@ description: Variables in memory after executing subtract_regression05.kcl
         },
         "start": {
           "from": [
-            1.1875,
+            1.188,
             0.0
           ],
           "to": [
-            1.1875,
+            1.188,
             0.0
           ],
           "units": {
