@@ -14,8 +14,7 @@ const headers = (token?: string): HeadersInit => ({
 export default async function crossPlatformFetch<T>(
   url: string,
   options?: RequestInit,
-  token?: string,
-  rewriteError = true
+  token?: string
 ): Promise<T | Error> {
   let response = null
   let opts = options || {}
@@ -40,22 +39,19 @@ export default async function crossPlatformFetch<T>(
     return new Error('Failed to request endpoint: ' + url)
   }
 
+  const data = (await response.json()) as T | Error
+
   if (!response.ok) {
-    const jsonBody = await response.json().catch((e) => e)
     console.error(
       `Failed to request endpoint: ${url}`,
       JSON.stringify(response),
-      jsonBody
+      data
     )
     const fallbackErrorMessage = `Failed to request endpoint: ${url} with status: ${response.status} ${response.statusText}`
     const resolvedMessage =
-      !err(jsonBody) && 'message' in jsonBody
-        ? jsonBody.message
-        : fallbackErrorMessage
+      data instanceof Object && err(data) ? data.message : fallbackErrorMessage
     return new Error(resolvedMessage)
   }
-
-  const data = (await response.json()) as T | Error
 
   return data
 }
