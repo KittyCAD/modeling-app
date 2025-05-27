@@ -620,13 +620,13 @@ export const lineTo: SketchLineHelperKw = {
         {
           type: 'arrayItem',
           index: 0,
-          argType: 'xRelative',
+          argType: 'xAbsolute',
           expr: newXVal,
         },
         {
           type: 'arrayItem',
           index: 1,
-          argType: 'yRelative',
+          argType: 'yAbsolute',
           expr: newYVal,
         },
       ])
@@ -3236,8 +3236,7 @@ export function fnNameToTooltip(
   argLabels: string[],
   fnName: string
 ): ToolTip | Error {
-  const isAbsolute =
-    argLabels.findIndex((label) => label === ARG_END_ABSOLUTE) >= 0
+  const isAbsolute = argLabels.some((label) => label === ARG_END_ABSOLUTE)
   switch (fnName) {
     case 'arc': {
       const isArc = argLabels.some((label) =>
@@ -3965,6 +3964,7 @@ export function getArgForEnd(lineCall: CallExpressionKw):
   switch (name) {
     case 'circle':
       return getCircle(lineCall)
+    case 'tangentialArc':
     case 'line': {
       const arg = findKwArgAny(DETERMINING_ARGS, lineCall)
       if (arg === undefined) {

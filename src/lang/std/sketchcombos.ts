@@ -1350,8 +1350,15 @@ export function removeSingleConstraint({
     return false
   }
 
+  let tooltip = fnNameToTooltip(
+    allLabels(callExp.node),
+    callExp.node.callee.name.name
+  )
+
   const transform: TransformInfo = {
-    tooltip: callExp.node.callee.name.name as any,
+    tooltip: err(tooltip)
+      ? (callExp.node.callee.name.name as ToolTip)
+      : tooltip,
     createNode: ({ tag, inputs, rawArgs }) => {
       // inputs is the current values for each of the inputs
       // rawValues is the raw 'literal' values equivalent to the inputs
@@ -1495,23 +1502,20 @@ export function removeSingleConstraint({
           const literal = rawArg?.overrideExpr ?? rawArg?.expr
           return (arg.index === inputToReplace.index && literal) || argExpr
         })
+
         // It's a kw call.
-        const isAbsolute = callExp.node.callee.name.name == 'lineTo'
-        if (isAbsolute) {
-          const args = [
-            createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression(values)),
-          ]
-          return createStdlibCallExpressionKw('line', args, tag)
-        } else {
-          const args = [
-            createLabeledArg(ARG_END, createArrayExpression(values)),
-          ]
-          return createStdlibCallExpressionKw(
-            callExp.node.callee.name.name as ToolTip,
-            args,
-            tag
-          )
-        }
+        const isAbsolute = inputs.some((input) => input.argType === 'xAbsolute')
+        const args = [
+          createLabeledArg(
+            isAbsolute ? ARG_END_ABSOLUTE : ARG_END,
+            createArrayExpression(values)
+          ),
+        ]
+        return createStdlibCallExpressionKw(
+          callExp.node.callee.name.name as ToolTip,
+          args,
+          tag
+        )
       }
       if (
         inputToReplace.type === 'arrayInObject' ||
