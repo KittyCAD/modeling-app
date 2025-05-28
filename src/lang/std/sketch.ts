@@ -713,14 +713,8 @@ export const lineTo: SketchLineHelperKw = {
       ['arg', LABELED_ARG_FIELD],
       ['elements', 'ArrayExpression'],
     ]
-    const pathToXArg: PathToNode = [
-      ...pathToArg,
-      [0, 'index'],
-    ]
-    const pathToYArg: PathToNode = [
-      ...pathToArg,
-      [1, 'index'],
-    ]
+    const pathToXArg: PathToNode = [...pathToArg, [0, 'index']]
+    const pathToYArg: PathToNode = [...pathToArg, [1, 'index']]
     constraints.push(
       constrainInfo(
         'xAbsolute',
