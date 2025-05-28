@@ -160,10 +160,10 @@ export const EngineStream = (props: {
     // Reset the restart timeouts
     setAttemptTimes([0, TIME_1_SECOND])
 
+    console.log(firstPlay)
     if (!firstPlay) return
 
     setFirstPlay(false)
-
     console.log('firstPlay true, zoom to fit')
     kmp
       .then(async () => {
@@ -215,7 +215,7 @@ export const EngineStream = (props: {
           engineStreamState.context.videoRef.current?.pause()
           engineCommandManager.tearDown()
           startOrReconfigureEngine()
-          setFirstPlay(false)
+          setFirstPlay(true)
 
           setTimeoutId(undefined)
           setGoRestart(false)
