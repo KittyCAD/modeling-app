@@ -692,6 +692,7 @@ export const lineTo: SketchLineHelperKw = {
   },
   getTag: getTagKwArg(),
   addTag: addTagKw(),
+
   getConstraintInfo: (callExp, code, pathToNode) => {
     const endAbsoluteArg = findKwArgWithIndex(ARG_END_ABSOLUTE, callExp)
     if (endAbsoluteArg === undefined) {
@@ -699,37 +700,36 @@ export const lineTo: SketchLineHelperKw = {
     }
     const { expr, argIndex } = endAbsoluteArg
     const constraints: ConstrainInfo[] = []
-    const pathToArgs: PathToNode = [
-      ...pathToNode,
-      ['arguments', 'CallExpressionKw'],
-    ]
-    const pathToArg: PathToNode = [
-      ...pathToArgs,
-      [argIndex, ARG_INDEX_FIELD],
-      ['arg', LABELED_ARG_FIELD],
-    ]
-    const pathToXAbsolute: PathToNode = [
-      ...pathToArg,
-      ['elements', 'ArrayExpression'],
-      [0, 'index'],
-    ]
-    const pathToYAbsolute: PathToNode = [
-      ...pathToArg,
-      ['elements', 'ArrayExpression'],
-      [1, 'index'],
-    ]
     if (!(expr.type === 'ArrayExpression' && expr.elements.length === 2)) {
       return []
     }
+    const pipeExpressionIndex = pathToNode.findIndex(
+      ([_, nodeName]) => nodeName === 'PipeExpression'
+    )
+    const pathToArg: PathToNode = [
+      ...pathToNode.slice(0, pipeExpressionIndex + 2),
+      ['arguments', 'CallExpressionKw'],
+      [argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
+      ['elements', 'ArrayExpression'],
+    ]
+    const pathToXArg: PathToNode = [
+      ...pathToArg,
+      [0, 'index'],
+    ]
+    const pathToYArg: PathToNode = [
+      ...pathToArg,
+      [1, 'index'],
+    ]
     constraints.push(
       constrainInfo(
         'xAbsolute',
         isNotLiteralArrayOrStatic(expr.elements[0]),
         code.slice(expr.elements[0].start, expr.elements[0].end),
-        'lineTo',
+        'line',
         { type: 'labeledArgArrayItem', index: 0, key: ARG_END_ABSOLUTE },
         topLevelRange(expr.elements[0].start, expr.elements[0].end),
-        pathToXAbsolute
+        pathToXArg
       )
     )
     constraints.push(
@@ -737,10 +737,10 @@ export const lineTo: SketchLineHelperKw = {
         'yAbsolute',
         isNotLiteralArrayOrStatic(expr.elements[1]),
         code.slice(expr.elements[1].start, expr.elements[1].end),
-        'lineTo',
+        'line',
         { type: 'labeledArgArrayItem', index: 1, key: ARG_END_ABSOLUTE },
         topLevelRange(expr.elements[1].start, expr.elements[1].end),
-        pathToYAbsolute
+        pathToYArg
       )
     )
     return constraints
@@ -2393,21 +2393,21 @@ export const circleThreePoint: SketchLineHelperKw = {
       ...pathToNode,
       ['arguments', 'CallExpressionKw'],
       [p1Details.argIndex, 'arg index'],
-      ['arg', 'labeledArg -> Arg'],
+      ['arg', LABELED_ARG_FIELD],
       ['elements', 'ArrayExpression'],
     ]
     const pathToP2ArrayExpression: PathToNode = [
       ...pathToNode,
       ['arguments', 'CallExpressionKw'],
       [p2Details.argIndex, 'arg index'],
-      ['arg', 'labeledArg -> Arg'],
+      ['arg', LABELED_ARG_FIELD],
       ['elements', 'ArrayExpression'],
     ]
     const pathToP3ArrayExpression: PathToNode = [
       ...pathToNode,
       ['arguments', 'CallExpressionKw'],
       [p3Details.argIndex, 'arg index'],
-      ['arg', 'labeledArg -> Arg'],
+      ['arg', LABELED_ARG_FIELD],
       ['elements', 'ArrayExpression'],
     ]
 
