@@ -153,32 +153,21 @@ p2 = [295.39, 269.96],
 p3 = [342.51, 216.38],
 )`
 
+  type TestDetails = {
+    name: string
+    code: string
+    searchText: string
+    constraintIndex: number
+    expectedResult: string
+    filter?: string
+  }
+
   const cases: {
     [strLibName: string]: {
-      namedConstantConstraint: {
-        name: string
-        code: string
-        searchText: string
-        constraintIndex: number
-        expectedResult: string
-        filter?: string
-      }[]
-      removeAllConstraintsCases: {
-        name: string
-        code: string
-        searchText: string
-        constraintIndex: number
-        expectedResult: string
-        filter?: string
-      }[]
-      removeIndividualConstraintsCases: {
-        name: string
-        code: string
-        searchText: string
-        constraintIndex: number
-        expectedResult: string
-        filter?: string
-      }[]
+      namedConstantConstraint: TestDetails[]
+      removeAllConstraintsCases: TestDetails[]
+      removeIndividualConstraintsCases: TestDetails[]
+      deleteSegment: TestDetails[]
     }
   } = {
     line: {
@@ -258,6 +247,7 @@ p3 = [342.51, 216.38],
           expectedResult: 'line(endAbsolute = [testVar1, 66])',
         },
       ],
+      deleteSegment: [],
     },
     xLine: {
       namedConstantConstraint: [
@@ -304,6 +294,7 @@ p3 = [342.51, 216.38],
           expectedResult: 'xLine(endAbsolute = 55)',
         },
       ],
+      deleteSegment: [],
     },
     yLine: {
       namedConstantConstraint: [
@@ -350,6 +341,7 @@ p3 = [342.51, 216.38],
           expectedResult: 'yLine(endAbsolute = 55)',
         },
       ],
+      deleteSegment: [],
     },
     angledLine: {
       namedConstantConstraint: [
@@ -488,6 +480,7 @@ p3 = [342.51, 216.38],
           expectedResult: 'angledLine(angle = testVar1, lengthX = 66)',
         },
       ],
+      deleteSegment: [],
     },
     circle: {
       namedConstantConstraint: [
@@ -551,6 +544,7 @@ p3 = [342.51, 216.38],
             'circle(sketch001, center = [testVar1, 66], radius = 74.18)',
         },
       ],
+      deleteSegment: [/** TODO once circle has delete implemented */],
     },
     circleThreePoint: {
       namedConstantConstraint: [
@@ -644,6 +638,7 @@ p3 = [342.51, 216.38],
           filter: 'p3',
         },
       ],
+      deleteSegment: [],
     },
     tangentialArc: {
       namedConstantConstraint: [
@@ -686,6 +681,7 @@ p3 = [342.51, 216.38],
           expectedResult: 'endAbsolute = [testVar1, 66]',
         },
       ],
+      deleteSegment: [],
     },
     arc: {
       namedConstantConstraint: [
@@ -768,6 +764,7 @@ p3 = [342.51, 216.38],
           filter: ARG_END_ABSOLUTE,
         },
       ],
+      deleteSegment: [],
     },
   }
 
