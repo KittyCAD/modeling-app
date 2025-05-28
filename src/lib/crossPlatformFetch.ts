@@ -1,8 +1,6 @@
 import { DEV } from '@src/env'
 import isomorphicFetch from 'isomorphic-fetch'
-
 import { isDesktop } from '@src/lib/isDesktop'
-import { err } from '@src/lib/trap'
 
 // TODO I not sure this file should exist
 
@@ -39,7 +37,7 @@ export default async function crossPlatformFetch<T>(
     return new Error('Failed to request endpoint: ' + url)
   }
 
-  const data = (await response.json()) as T | Error
+  const data = (await response.json().catch((e) => e)) as T | Error
 
   if (!response.ok) {
     console.error(
