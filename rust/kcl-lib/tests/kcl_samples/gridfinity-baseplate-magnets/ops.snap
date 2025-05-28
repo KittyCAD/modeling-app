@@ -113,10 +113,15 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "name": "patternCircular3d",
     "unlabeledArg": {
       "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
+        "type": "Array",
+        "value": [
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -126,13 +131,9 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -236,13 +237,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Number",
           "value": 4.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -416,10 +412,15 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "name": "patternCircular3d",
     "unlabeledArg": {
       "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
+        "type": "Array",
+        "value": [
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -429,13 +430,9 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -539,13 +536,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Number",
           "value": 4.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -664,13 +656,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Number",
           "value": 2.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -806,13 +793,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Number",
           "value": 3.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -924,13 +906,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Number",
           "value": 2.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -1066,13 +1043,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Number",
           "value": 3.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -1522,10 +1494,15 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "name": "patternLinear3d",
     "unlabeledArg": {
       "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
+        "type": "Array",
+        "value": [
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1598,13 +1575,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Number",
           "value": 2.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -1704,13 +1676,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Number",
           "value": 3.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -1723,10 +1690,15 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "name": "patternLinear3d",
     "unlabeledArg": {
       "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
+        "type": "Array",
+        "value": [
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1799,13 +1771,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Number",
           "value": 2.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -1905,13 +1872,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Number",
           "value": 3.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []

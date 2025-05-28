@@ -52,8 +52,8 @@ description: Variables in memory after executing subtract_regression03.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "origin": {
-            "x": -0.503704,
-            "y": -0.264924,
+            "x": -0.504,
+            "y": -0.265,
             "z": 0.0,
             "units": {
               "type": "Inches"
@@ -62,8 +62,8 @@ description: Variables in memory after executing subtract_regression03.kcl
           "type": "plane",
           "value": "Custom",
           "xAxis": {
-            "x": 0.7435091262737867,
-            "y": 0.6687257877094245,
+            "x": 0.744,
+            "y": 0.669,
             "z": 0.0,
             "units": {
               "type": "Unknown"
@@ -225,7 +225,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "origin": {
-            "x": -0.503704,
+            "x": -0.504,
             "y": -0.28,
             "z": 0.0,
             "units": {
@@ -235,8 +235,8 @@ description: Variables in memory after executing subtract_regression03.kcl
           "type": "plane",
           "value": "Custom",
           "xAxis": {
-            "x": -0.7435091262737867,
-            "y": 0.6687257877094245,
+            "x": -0.744,
+            "y": 0.669,
             "z": 0.0,
             "units": {
               "type": "Unknown"
@@ -333,8 +333,8 @@ description: Variables in memory after executing subtract_regression03.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "origin": {
-            "x": -0.503704,
-            "y": -0.264924,
+            "x": -0.504,
+            "y": -0.265,
             "z": 0.0,
             "units": {
               "type": "Inches"
@@ -343,8 +343,8 @@ description: Variables in memory after executing subtract_regression03.kcl
           "type": "plane",
           "value": "Custom",
           "xAxis": {
-            "x": 0.7435091262737867,
-            "y": 0.6687257877094245,
+            "x": 0.744,
+            "y": 0.669,
             "z": 0.0,
             "units": {
               "type": "Unknown"
@@ -516,8 +516,8 @@ description: Variables in memory after executing subtract_regression03.kcl
           "type": "plane",
           "value": "Custom",
           "xAxis": {
-            "x": -0.6025804201392091,
-            "y": -0.7980581665924197,
+            "x": -0.603,
+            "y": -0.798,
             "z": 0.0,
             "units": {
               "type": "Unknown"
@@ -1114,8 +1114,8 @@ description: Variables in memory after executing subtract_regression03.kcl
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "origin": {
-        "x": -0.503704,
-        "y": -0.264924,
+        "x": -0.504,
+        "y": -0.265,
         "z": 0.0,
         "units": {
           "type": "Inches"
@@ -1123,8 +1123,8 @@ description: Variables in memory after executing subtract_regression03.kcl
       },
       "value": "Custom",
       "xAxis": {
-        "x": 0.7435091262737867,
-        "y": 0.6687257877094245,
+        "x": 0.744,
+        "y": 0.669,
         "z": 0.0,
         "units": {
           "type": "Unknown"
@@ -1176,8 +1176,8 @@ description: Variables in memory after executing subtract_regression03.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "origin": {
-          "x": -0.503704,
-          "y": -0.264924,
+          "x": -0.504,
+          "y": -0.265,
           "z": 0.0,
           "units": {
             "type": "Inches"
@@ -1186,8 +1186,8 @@ description: Variables in memory after executing subtract_regression03.kcl
         "type": "plane",
         "value": "Custom",
         "xAxis": {
-          "x": 0.7435091262737867,
-          "y": 0.6687257877094245,
+          "x": 0.744,
+          "y": 0.669,
           "z": 0.0,
           "units": {
             "type": "Unknown"
@@ -1478,7 +1478,7 @@ description: Variables in memory after executing subtract_regression03.kcl
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "origin": {
-        "x": -0.503704,
+        "x": -0.504,
         "y": -0.28,
         "z": 0.0,
         "units": {
@@ -1487,8 +1487,8 @@ description: Variables in memory after executing subtract_regression03.kcl
       },
       "value": "Custom",
       "xAxis": {
-        "x": -0.7435091262737867,
-        "y": 0.6687257877094245,
+        "x": -0.744,
+        "y": 0.669,
         "z": 0.0,
         "units": {
           "type": "Unknown"
@@ -1591,7 +1591,7 @@ description: Variables in memory after executing subtract_regression03.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "origin": {
-          "x": -0.503704,
+          "x": -0.504,
           "y": -0.28,
           "z": 0.0,
           "units": {
@@ -1601,8 +1601,8 @@ description: Variables in memory after executing subtract_regression03.kcl
         "type": "plane",
         "value": "Custom",
         "xAxis": {
-          "x": -0.7435091262737867,
-          "y": 0.6687257877094245,
+          "x": -0.744,
+          "y": 0.669,
           "z": 0.0,
           "units": {
             "type": "Unknown"
@@ -1657,8 +1657,8 @@ description: Variables in memory after executing subtract_regression03.kcl
       },
       "value": "Custom",
       "xAxis": {
-        "x": -0.6025804201392091,
-        "y": -0.7980581665924197,
+        "x": -0.603,
+        "y": -0.798,
         "z": 0.0,
         "units": {
           "type": "Unknown"
@@ -1771,8 +1771,8 @@ description: Variables in memory after executing subtract_regression03.kcl
         "type": "plane",
         "value": "Custom",
         "xAxis": {
-          "x": -0.6025804201392091,
-          "y": -0.7980581665924197,
+          "x": -0.603,
+          "y": -0.798,
           "z": 0.0,
           "units": {
             "type": "Unknown"
@@ -1861,8 +1861,8 @@ description: Variables in memory after executing subtract_regression03.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "origin": {
-            "x": -0.503704,
-            "y": -0.264924,
+            "x": -0.504,
+            "y": -0.265,
             "z": 0.0,
             "units": {
               "type": "Inches"
@@ -1871,8 +1871,8 @@ description: Variables in memory after executing subtract_regression03.kcl
           "type": "plane",
           "value": "Custom",
           "xAxis": {
-            "x": 0.7435091262737867,
-            "y": 0.6687257877094245,
+            "x": 0.744,
+            "y": 0.669,
             "z": 0.0,
             "units": {
               "type": "Unknown"

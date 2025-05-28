@@ -536,7 +536,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": -22.13777608090537,
+            "z": -22.138,
             "units": {
               "type": "Mm"
             }
@@ -800,7 +800,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": -22.13777608090537,
+        "z": -22.138,
         "units": {
           "type": "Mm"
         }
@@ -862,7 +862,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": -22.13777608090537,
+          "z": -22.138,
           "units": {
             "type": "Mm"
           }
@@ -1195,7 +1195,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": -22.13777608090537,
+                  "z": -22.138,
                   "units": {
                     "type": "Mm"
                   }
@@ -1393,7 +1393,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             "origin": {
               "x": 0.0,
               "y": 0.0,
-              "z": -22.13777608090537,
+              "z": -22.138,
               "units": {
                 "type": "Mm"
               }
@@ -1562,7 +1562,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": -22.13777608090537,
+                "z": -22.138,
                 "units": {
                   "type": "Mm"
                 }

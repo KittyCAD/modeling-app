@@ -324,13 +324,8 @@ description: Operations executed cold-plate.kcl
           "type": "Number",
           "value": 4.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
