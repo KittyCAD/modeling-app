@@ -259,30 +259,6 @@ impl Args {
         })
     }
 
-    /// Get the unlabeled keyword argument. If not set, returns Err.  If it
-    /// can't be converted to the given type, returns Err.
-    pub(crate) fn get_unlabeled_kw_arg<'a, T>(&'a self, label: &str) -> Result<T, KclError>
-    where
-        T: FromKclValue<'a>,
-    {
-        let arg = self
-            .unlabeled_kw_arg_unconverted()
-            .ok_or(KclError::Semantic(KclErrorDetails::new(
-                format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
-                vec![self.source_range],
-            )))?;
-
-        T::from_kcl_val(&arg.value).ok_or_else(|| {
-            let expected_type_name = tynm::type_name::<T>();
-            let actual_type_name = arg.value.human_friendly_type();
-            let message = format!("This function expected the input argument to be of type {expected_type_name} but it's actually of type {actual_type_name}");
-            KclError::Semantic(KclErrorDetails::new(
-                message,
-                arg.source_ranges(),
-            ))
-        })
-    }
-
     /// Get the unlabeled keyword argument. If not set, returns Err. If it
     /// can't be converted to the given type, returns Err.
     pub(crate) fn get_unlabeled_kw_arg_typed<T>(

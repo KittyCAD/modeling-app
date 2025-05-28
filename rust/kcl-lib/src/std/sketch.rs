@@ -1266,8 +1266,11 @@ async fn make_sketch_plane_from_orientation(
 
 /// Start a new profile at a given point.
 pub async fn start_profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    // let (start, sketch_surface, tag) = args.get_data_and_sketch_surface()?;
-    let sketch_surface = args.get_unlabeled_kw_arg("startProfileOn")?;
+    let sketch_surface = args.get_unlabeled_kw_arg_typed(
+        "startProfileOn",
+        &RuntimeType::Union(vec![RuntimeType::plane(), RuntimeType::face()]),
+        exec_state,
+    )?;
     let start: [TyF64; 2] = args.get_kw_arg_typed("at", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 

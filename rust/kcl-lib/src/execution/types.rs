@@ -44,6 +44,10 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Sketch)
     }
 
+    pub fn sketch_or_surface() -> Self {
+        RuntimeType::Union(vec![Self::sketch(), Self::plane(), Self::face()])
+    }
+
     /// `[Sketch; 1+]`
     pub fn sketches() -> Self {
         RuntimeType::Array(

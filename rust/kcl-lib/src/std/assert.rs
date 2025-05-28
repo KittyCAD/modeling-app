@@ -6,7 +6,7 @@ use kcl_derive_docs::stdlib;
 use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue},
+    execution::{types::RuntimeType, ExecState, KclValue},
     std::Args,
 };
 
@@ -20,8 +20,8 @@ async fn _assert(value: bool, message: &str, args: &Args) -> Result<(), KclError
     Ok(())
 }
 
-pub async fn assert_is(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let actual = args.get_unlabeled_kw_arg("actual")?;
+pub async fn assert_is(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let actual = args.get_unlabeled_kw_arg_typed("actual", &RuntimeType::bool(), exec_state)?;
     let error = args.get_kw_arg_opt("error")?;
     inner_assert_is(actual, error, &args).await?;
     Ok(KclValue::none())
@@ -29,8 +29,8 @@ pub async fn assert_is(_exec_state: &mut ExecState, args: Args) -> Result<KclVal
 
 /// Check that the provided value is true, or raise a [KclError]
 /// with the provided description.
-pub async fn assert(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let actual = args.get_unlabeled_kw_arg("actual")?;
+pub async fn assert(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let actual = args.get_unlabeled_kw_arg_typed("actual", &RuntimeType::num_any(), exec_state)?;
     let gt = args.get_kw_arg_opt("isGreaterThan")?;
     let lt = args.get_kw_arg_opt("isLessThan")?;
     let gte = args.get_kw_arg_opt("isGreaterThanOrEqual")?;
