@@ -476,7 +476,7 @@ test.describe(
 
       // click to continue profile
       await page.mouse.click(813, 392)
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(101)
 
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
