@@ -29,6 +29,7 @@ use crate::{
         utils::{calculate_circle_center, distance},
         Args,
     },
+    SourceRange,
 };
 
 /// A sketch surface or a sketch.
@@ -70,25 +71,7 @@ async fn inner_circle(
     let (center_u, ty) = untype_point(center.clone());
     let units = ty.expect_length();
 
-    let radius = match (radius, diameter) {
-        (Some(radius), None) => radius,
-        (None, Some(mut diameter)) => {
-            diameter.n /= 2.0;
-            diameter
-        }
-        (None, None) => {
-            return Err(KclError::Type(KclErrorDetails::new(
-                "This function needs either `diameter` or `radius`".to_string(),
-                vec![args.source_range],
-            )))
-        }
-        (Some(_), Some(_)) => {
-            return Err(KclError::Type(KclErrorDetails::new(
-                "You cannot specify both `diameter` and `radius`, please remove one".to_string(),
-                vec![args.source_range],
-            )))
-        }
-    };
+    let radius = get_radius(radius, diameter, args.source_range)?;
     let from = [center_u[0] + radius.to_length_units(units), center_u[1]];
     let from_t = [TyF64::new(from[0], ty.clone()), TyF64::new(from[1], ty)];
 
@@ -470,4 +453,23 @@ async fn inner_polygon(
     .await?;
 
     Ok(sketch)
+}
+
+pub(crate) fn get_radius(
+    radius: Option<TyF64>,
+    diameter: Option<TyF64>,
+    source_range: SourceRange,
+) -> Result<TyF64, KclError> {
+    match (radius, diameter) {
+        (Some(radius), None) => Ok(radius),
+        (None, Some(diameter)) => Ok(TyF64::new(diameter.n / 2.0, diameter.ty)),
+        (None, None) => Err(KclError::Type(KclErrorDetails::new(
+            "This function needs either `diameter` or `radius`".to_string(),
+            vec![source_range],
+        ))),
+        (Some(_), Some(_)) => Err(KclError::Type(KclErrorDetails::new(
+            "You cannot specify both `diameter` and `radius`, please remove one".to_string(),
+            vec![source_range],
+        ))),
+    }
 }
