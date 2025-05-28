@@ -19,6 +19,7 @@ This module contains functions for creating and manipulating sketches, and makin
 * [`circle`](/docs/kcl-std/functions/std-sketch-circle)
 * [`circleThreePoint`](/docs/kcl-std/circleThreePoint)
 * [`close`](/docs/kcl-std/close)
+* [`ellipse`](/doc/kcl-std/ellipse)
 * [`extrude`](/docs/kcl-std/extrude)
 * [`getCommonEdge`](/docs/kcl-std/getCommonEdge)
 * [`getNextAdjacentEdge`](/docs/kcl-std/getNextAdjacentEdge)

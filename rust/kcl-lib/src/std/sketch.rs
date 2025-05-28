@@ -32,6 +32,8 @@ use crate::{
     },
 };
 
+use super::utils::untype_point;
+
 /// A tag for a face.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -2408,6 +2410,148 @@ async fn inner_subtract_2d(
     }
 
     Ok(sketch)
+}
+
+/// Draw an elliptical arc.
+pub async fn elliptical_arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketch =
+        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+
+    let center: [TyF64; 2] = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
+    let angle_start: TyF64 = args.get_kw_arg_typed("angleStart", &RuntimeType::degrees(), exec_state)?;
+    let angle_end: TyF64 = args.get_kw_arg_typed("angleEnd", &RuntimeType::degrees(), exec_state)?;
+    let major_radius: TyF64 = args.get_kw_arg_typed("majorRadius", &RuntimeType::length(), exec_state)?;
+    let minor_radius: TyF64 = args.get_kw_arg_typed("minorRadius", &RuntimeType::length(), exec_state)?;
+    let end_absolute: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let interior_absolute: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt_typed("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let new_sketch = inner_elliptical_arc(
+        sketch,
+        center,
+        angle_start,
+        angle_end,
+        major_radius,
+        minor_radius,
+        interior_absolute,
+        end_absolute,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
+}
+
+/// ```no_run
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> ellipticalArc(
+///         endAbsolute = [10,0],
+///         interiorAbsolute = [5,5]
+///      )
+///   |> close()
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+#[stdlib {
+    name = "ellipticalArc",
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?" },
+        center = { docs = "The center of the ellipse.", include_in_snippet = true },
+        angle_start = { docs = "Where along the circle should this arc start?", include_in_snippet = true },
+        angle_end = { docs = "Where along the circle should this arc end?", include_in_snippet = true },
+        major_radius = { docs = "The length of the ellipse in the x direction", include_in_snippet = true },
+        minor_radius = { docs = "The length of the ellipse in the y direction", include_in_snippet = true },
+        interior_absolute = { docs = "Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
+        end_absolute = { docs = "Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
+        tag = { docs = "Create a new tag which refers to this line"},
+    },
+    tags = ["sketch"]
+}]
+#[allow(clippy::too_many_arguments)]
+pub(crate) async fn inner_elliptical_arc(
+    sketch: Sketch,
+    center: [TyF64; 2],
+    angle_start: TyF64,
+    angle_end: TyF64,
+    major_radius: TyF64,
+    minor_radius: TyF64,
+    _interior_absolute: Option<[TyF64; 2]>,
+    _end_absolute: Option<[TyF64; 2]>,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
+    let from: Point2d = sketch.current_pen_position()?;
+    let id = exec_state.next_uuid();
+
+    let (center_u, _) = untype_point(center);
+
+    let start_angle = Angle::from_degrees(angle_start.to_degrees());
+    let end_angle = Angle::from_degrees(angle_end.to_degrees());
+    let to = [
+        center_u[0] + major_radius.to_length_units(from.units) * start_angle.to_radians().cos(),
+        center_u[1] + minor_radius.to_length_units(from.units) * end_angle.to_radians().sin(),
+    ];
+
+    // match (angle_start, angle_end, radius, interior_absolute, end_absolute) {
+    //     (Some(angle_start), Some(angle_end), Some(radius), None, None) => {
+    //         relative_arc(&args, id, exec_state, sketch, from, angle_start, angle_end, radius, tag).await
+    //     }
+    //     (None, None, None, Some(interior_absolute), Some(end_absolute)) => {
+    //         absolute_arc(&args, id, exec_state, sketch, from, interior_absolute, end_absolute, tag).await
+    //     }
+    //     _ => {
+    //         Err(KclError::Type(KclErrorDetails::new(
+    //             "Invalid combination of arguments. Either provide (angleStart, angleEnd, radius) or (endAbsolute, interiorAbsolute)".to_owned(),
+    //             vec![args.source_range],
+    //         )))
+    //     }
+    // }
+    //
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch.id.into(),
+            segment: PathSegment::Ellipse {
+                center: KPoint2d::from(untyped_point_to_mm(center_u, from.units)).map(LengthUnit),
+                major_radius: LengthUnit(from.units.adjust_to(major_radius.to_mm(), UnitLen::Mm).0),
+                minor_radius: LengthUnit(from.units.adjust_to(minor_radius.to_mm(), UnitLen::Mm).0),
+                start_angle,
+                end_angle,
+            },
+        }),
+    )
+    .await?;
+
+    let current_path = Path::Ellipse {
+        ccw: start_angle < end_angle,
+        center: center_u,
+        major_radius: major_radius.to_mm(),
+        minor_radius: minor_radius.to_mm(),
+        base: BasePath {
+            from: from.ignore_units(),
+            to,
+            tag: tag.clone(),
+            units: sketch.units,
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+    };
+    let mut new_sketch = sketch.clone();
+    if let Some(tag) = &tag {
+        new_sketch.add_tag(tag, &current_path, exec_state);
+    }
+
+    new_sketch.paths.push(current_path);
+
+    Ok(new_sketch)
 }
 
 #[cfg(test)]

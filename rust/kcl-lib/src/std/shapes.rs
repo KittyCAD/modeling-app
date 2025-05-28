@@ -471,3 +471,117 @@ async fn inner_polygon(
 
     Ok(sketch)
 }
+
+/// Sketch an ellipse.
+pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketch_or_surface = args.get_unlabeled_kw_arg("sketchOrSurface")?;
+    let center = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
+    let major_radius: TyF64 = args.get_kw_arg_typed("majorRadius", &RuntimeType::length(), exec_state)?;
+    let minor_radius: TyF64 = args.get_kw_arg_typed("minorRadius", &RuntimeType::length(), exec_state)?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+
+    let sketch = inner_ellipse(
+        sketch_or_surface,
+        center,
+        major_radius,
+        minor_radius,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
+    Ok(KclValue::Sketch {
+        value: Box::new(sketch),
+    })
+}
+
+/// Construct an ellipse derived from center and major/minor axes.
+///
+/// ```no_run
+/// exampleSketch = startSketchOn(XY)
+///   |> ellipse(center = [10,10], majorRadius = 5, minorRadius = 2)
+///   |> extrude(length = 5)
+/// ```
+#[stdlib {
+    name = "ellipse",
+    unlabeled_first = true,
+    args = {
+        sketch_surface_or_group = { docs = "Plane or surface to sketch on" },
+        center = {docs = "The center of the ellipse."},
+        major_radius = {docs = "The length along the x axis."},
+        minor_radius = {docs = "The length along the y axis."},
+        tag = {docs = "Identifier for the circle to reference elsewhere."},
+    },
+    tags = ["sketch"]
+}]
+async fn inner_ellipse(
+    sketch_surface_or_group: SketchOrSurface,
+    center: [TyF64; 2],
+    major_radius: TyF64,
+    minor_radius: TyF64,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
+    let sketch_surface = match sketch_surface_or_group {
+        SketchOrSurface::SketchSurface(surface) => surface,
+        SketchOrSurface::Sketch(group) => group.on,
+    };
+    let (center_u, ty) = untype_point(center.clone());
+    let units = ty.expect_length();
+
+    let from = [center_u[0] + major_radius.to_length_units(units), center_u[1]];
+    let from_t = [TyF64::new(from[0], ty.clone()), TyF64::new(from[1], ty)];
+
+    let sketch =
+        crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, args.clone()).await?;
+
+    let angle_start = Angle::zero();
+    let angle_end = Angle::turn();
+
+    let id = exec_state.next_uuid();
+
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch.id.into(),
+            segment: PathSegment::Ellipse {
+                center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
+                major_radius: LengthUnit(major_radius.to_mm()),
+                minor_radius: LengthUnit(minor_radius.to_mm()),
+                start_angle: Angle::from_degrees(angle_start.to_degrees()),
+                end_angle: Angle::from_degrees(angle_end.to_degrees()),
+            },
+        }),
+    )
+    .await?;
+
+    let current_path = Path::Ellipse {
+        base: BasePath {
+            from,
+            to: from,
+            tag: tag.clone(),
+            units,
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+        major_radius: major_radius.to_length_units(units),
+        minor_radius: minor_radius.to_length_units(units),
+        center: center_u,
+        ccw: angle_start < angle_end,
+    };
+
+    let mut new_sketch = sketch.clone();
+    if let Some(tag) = &tag {
+        new_sketch.add_tag(tag, &current_path, exec_state);
+    }
+
+    new_sketch.paths.push(current_path);
+
+    args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }))
+        .await?;
+
+    Ok(new_sketch)
+}
