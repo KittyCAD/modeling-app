@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing import_transform.kcl
 ---
 {
-  "screw": {
+  "__mod_screw": {
     "type": "Module",
     "value": 1
   }

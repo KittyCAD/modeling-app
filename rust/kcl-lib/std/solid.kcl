@@ -562,5 +562,582 @@ export fn patternTransform(
   /// How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples.
   transform: fn(number(Count)): {},
   /// If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.
-  useOriginal?: boolean = false,
+  useOriginal?: bool = false,
 ): [Solid; 1+] {}
+
+/// Repeat a 3-dimensional solid along a linear path, with a dynamic amount
+/// of distance between each repetition, some specified number of times.
+///
+/// ```kcl
+/// /// Pattern using a named axis.
+///
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [0, 2])
+///   |> line(end = [3, 1])
+///   |> line(end = [0, -4])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 1)
+///   |> patternLinear3d(
+///       axis = X,
+///       instances = 7,
+///       distance = 6
+///     )
+/// ```
+///
+/// ```kcl
+/// /// Pattern using a raw axis.
+///
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [0, 2])
+///   |> line(end = [3, 1])
+///   |> line(end = [0, -4])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 1)
+///   |> patternLinear3d(
+///       axis = [1, 0, 1],
+///       instances = 7,
+///       distance = 6
+///     )
+/// ```
+///
+/// ```kcl
+/// // Pattern a whole sketch on face.
+/// size = 100
+/// case = startSketchOn(XY)
+///     |> startProfile(at = [-size, -size])
+///     |> line(end = [2 * size, 0])
+///     |> line(end = [0, 2 * size])
+///     |> tangentialArc(endAbsolute = [-size, size])
+///     |> close(%)
+///     |> extrude(length = 65)
+///
+/// thing1 = startSketchOn(case, face = END)
+///     |> circle(center = [-size / 2, -size / 2], radius = 25)
+///     |> extrude(length = 50)
+///
+/// thing2 = startSketchOn(case, face = END)
+///     |> circle(center = [size / 2, -size / 2], radius = 25)
+///     |> extrude(length = 50)
+///
+/// // We pass in the "case" here since we want to pattern the whole sketch.
+/// // And the case was the base of the sketch.
+/// patternLinear3d(case,
+///     axis= [1, 0, 0],
+///     distance= 250,
+///     instances=2,
+///  )
+/// ```
+///
+/// ```kcl
+/// // Pattern an object on a face.
+/// size = 100
+/// case = startSketchOn(XY)
+///     |> startProfile(at = [-size, -size])
+///     |> line(end = [2 * size, 0])
+///     |> line(end = [0, 2 * size])
+///     |> tangentialArc(endAbsolute = [-size, size])
+///     |> close(%)
+///     |> extrude(length = 65)
+///
+/// thing1 = startSketchOn(case, face = END)
+///     |> circle(center =[-size / 2, -size / 2], radius = 25)
+///     |> extrude(length = 50)
+///
+/// // We pass in `thing1` here with `useOriginal` since we want to pattern just this object on the face.
+/// patternLinear3d(thing1,
+///     axis = [1, 0, 0],
+///     distance = size,
+///     instances =2,
+///     useOriginal = true
+/// )
+/// ```
+@(impl = std_rust)
+export fn patternLinear3d(
+  /// The solid(s) to duplicate.
+  @solids: [Solid; 1+],
+  /// The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect.
+  instances: number(Count),
+  /// Distance between each repetition. Also known as 'spacing'.
+  distance: number(Length),
+  /// The axis of the pattern. A 3D vector.
+  @(snippetArray = ["1", "0", "0"])
+  axis: Axis3d | Point3d,
+  /// If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.
+  useOriginal?: bool = false,
+): [Solid; 1+] {}
+
+/// Repeat a 3-dimensional solid some number of times along a partial or
+/// complete circle some specified number of times. Each object may
+/// additionally be rotated along the circle, ensuring orientation of the
+/// solid with respect to the center of the circle is maintained.
+///
+/// ```kcl
+/// /// Pattern using a named axis.
+///
+/// exampleSketch = startSketchOn(XZ)
+///   |> circle(center = [0, 0], radius = 1)
+///
+/// example = extrude(exampleSketch, length = -5)
+///   |> patternCircular3d(
+///        axis = X,
+///        center = [10, -20, 0],
+///        instances = 11,
+///        arcDegrees = 360,
+///        rotateDuplicates = true
+///      )
+/// ```
+///
+/// ```kcl
+/// /// Pattern using a raw axis.
+///
+/// exampleSketch = startSketchOn(XZ)
+///   |> circle(center = [0, 0], radius = 1)
+///
+/// example = extrude(exampleSketch, length = -5)
+///   |> patternCircular3d(
+///        axis = [1, -1, 0],
+///        center = [10, -20, 0],
+///        instances = 11,
+///        arcDegrees = 360,
+///        rotateDuplicates = true
+///      )
+/// ```
+@(impl = std_rust)
+export fn patternCircular3d(
+  /// The solid(s) to pattern.
+  @solids: [Solid; 1+],
+  /// The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect.
+  instances: number(Count),
+  /// The axis of the pattern. A 3D vector.
+  @(snippetArray = ["1", "0", "0"])
+  axis: Axis3d | Point3d,
+  /// The center about which to make the pattern. This is a 3D vector.
+  @(snippetArray = ["0", "0", "0"])
+  center: Point3d,
+  /// "The arc angle to place the repetitions. Must be greater than 0.
+  arcDegrees?: number(deg) = 360deg,
+  /// Whether or not to rotate the duplicates as they are copied.
+  rotateDuplicates?: bool = true,
+  /// If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.
+  useOriginal?: bool = false,
+): [Solid; 1+] {}
+
+/// Union two or more solids into a single solid.
+///
+/// ```kcl
+/// // Union two cubes using the stdlib functions.
+///
+/// fn cube(center, size) {
+///     return startSketchOn(XY)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] + size])
+///         |> line(endAbsolute = [center[0] - size, center[1] + size])
+///         |> close()
+///         |> extrude(length = 10)
+/// }
+///
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
+///     |> translate(z = 1)
+///
+/// unionedPart = union([part001, part002])
+/// ```
+///
+/// ```kcl
+/// // Union two cubes using operators.
+/// // NOTE: This will not work when using codemods through the UI.
+/// // Codemods will generate the stdlib function call instead.
+///
+/// fn cube(center, size) {
+///     return startSketchOn(XY)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] + size])
+///         |> line(endAbsolute = [center[0] - size, center[1] + size])
+///         |> close()
+///         |> extrude(length = 10)
+/// }
+///
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
+///     |> translate(z = 1)
+///
+/// // This is the equivalent of: union([part001, part002])
+/// unionedPart = part001 + part002
+/// ```
+///
+/// ```kcl
+/// // Union two cubes using the more programmer-friendly operator.
+/// // NOTE: This will not work when using codemods through the UI.
+/// // Codemods will generate the stdlib function call instead.
+///
+/// fn cube(center, size) {
+///     return startSketchOn(XY)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] + size])
+///         |> line(endAbsolute = [center[0] - size, center[1] + size])
+///         |> close()
+///         |> extrude(length = 10)
+/// }
+///
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
+///     |> translate(z = 1)
+///
+/// // This is the equivalent of: union([part001, part002])
+/// // Programmers will understand `|` as a union operation, but mechanical engineers
+/// // will understand `+`, we made both work.
+/// unionedPart = part001 | part002
+/// ```
+@(impl = std_rust)
+export fn union(
+  /// The solids to union.
+  @solids: [Solid; 2+],
+  /// The tolerance to use for the union operation.
+  tolerance?: number(Length),
+): [Solid; 1+] {}
+
+/// Intersect returns the shared volume between multiple solids, preserving only
+/// overlapping regions.
+///
+/// Intersect computes the geometric intersection of multiple solid bodies,
+/// returning a new solid representing the volume that is common to all input
+/// solids. This operation is useful for determining shared material regions,
+/// verifying fit, and analyzing overlapping geometries in assemblies.
+///
+/// ```kcl
+/// // Intersect two cubes using the stdlib functions.
+///
+/// fn cube(center, size) {
+///     return startSketchOn(XY)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] + size])
+///         |> line(endAbsolute = [center[0] - size, center[1] + size])
+///         |> close()
+///         |> extrude(length = 10)
+/// }
+///
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
+///     |> translate(z = 1)
+///
+/// intersectedPart = intersect([part001, part002])
+/// ```
+///
+/// ```kcl
+/// // Intersect two cubes using operators.
+/// // NOTE: This will not work when using codemods through the UI.
+/// // Codemods will generate the stdlib function call instead.
+///
+/// fn cube(center, size) {
+///     return startSketchOn(XY)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] + size])
+///         |> line(endAbsolute = [center[0] - size, center[1] + size])
+///         |> close()
+///         |> extrude(length = 10)
+/// }
+///
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
+///     |> translate(z = 1)
+///
+/// // This is the equivalent of: intersect([part001, part002])
+/// intersectedPart = part001 & part002
+/// ```
+@(impl = std_rust)
+export fn intersect(
+  /// The solids to intersect.
+  @solids: [Solid; 2+],
+  /// The tolerance to use for the intersection operation.
+  tolerance?: number(Length),
+): [Solid; 1+] {}
+
+/// Subtract removes tool solids from base solids, leaving the remaining material.
+///
+/// Performs a bool subtraction operation, removing the volume of one or more
+/// tool solids from one or more base solids. The result is a new solid
+/// representing the material that remains after all tool solids have been cut
+/// away. This function is essential for machining simulations, cavity creation,
+/// and complex multi-body part modeling.
+///
+/// ```kcl
+/// // Subtract a cylinder from a cube using the stdlib functions.
+///
+/// fn cube(center, size) {
+///     return startSketchOn(XY)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] + size])
+///         |> line(endAbsolute = [center[0] - size, center[1] + size])
+///         |> close()
+///         |> extrude(length = 10)
+/// }
+///
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
+///     |> translate(z = 1)
+///
+/// subtractedPart = subtract([part001], tools=[part002])
+/// ```
+///
+/// ```kcl
+/// // Subtract a cylinder from a cube using operators.
+/// // NOTE: This will not work when using codemods through the UI.
+/// // Codemods will generate the stdlib function call instead.
+///
+/// fn cube(center, size) {
+///     return startSketchOn(XY)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] + size])
+///         |> line(endAbsolute = [center[0] - size, center[1] + size])
+///         |> close()
+///         |> extrude(length = 10)
+/// }
+///
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
+///     |> translate(z = 1)
+///
+/// // This is the equivalent of: subtract([part001], tools=[part002])
+/// subtractedPart = part001 - part002
+/// ```
+@(impl = std_rust)
+export fn subtract(
+  /// The solids to use as the base to subtract from.
+  @solids: [Solid; 1+],
+  /// The solids to subtract.
+  tools: [Solid],
+  /// The tolerance to use for the subtraction operation.
+  tolerance?: number(Length),
+): [Solid; 1+] {}
+
+/// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
+///
+/// This will work on any solid, including extruded solids, revolved solids, and shelled solids.
+///
+/// ```kcl
+/// // Add color to an extruded solid.
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(endAbsolute = [10, 0])
+///   |> line(endAbsolute = [0, 10])
+///   |> line(endAbsolute = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+///  // There are other options besides 'color', but they're optional.
+///  |> appearance(color='#ff0000')
+/// ```
+///
+/// ```kcl
+/// // Add color to a revolved solid.
+/// sketch001 = startSketchOn(XY)
+///     |> circle( center = [15, 0], radius = 5 )
+///     |> revolve( angle = 360, axis = Y)
+///     |> appearance(
+///         color = '#ff0000',
+///         metalness = 90,
+///         roughness = 90
+///     )
+/// ```
+///
+/// ```kcl
+/// // Add color to different solids.
+/// fn cube(center) {
+///    return startSketchOn(XY)
+///    |> startProfile(at = [center[0] - 10, center[1] - 10])
+///    |> line(endAbsolute = [center[0] + 10, center[1] - 10])
+///     |> line(endAbsolute = [center[0] + 10, center[1] + 10])
+///     |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///     |> close()
+///    |> extrude(length = 10)
+/// }
+///
+/// example0 = cube(center = [0, 0])
+/// example1 = cube(center = [20, 0])
+/// example2 = cube(center = [40, 0])
+///
+///  appearance([example0, example1], color='#ff0000', metalness=50, roughness=50)
+///  appearance(example2, color='#00ff00', metalness=50, roughness=50)
+/// ```
+///
+/// ```kcl
+/// // You can set the appearance before or after you shell it will yield the same result.
+/// // This example shows setting the appearance _after_ the shell.
+/// firstSketch = startSketchOn(XY)
+///     |> startProfile(at = [-12, 12])
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
+///
+/// shell(
+///     firstSketch,
+///     faces = [END],
+///     thickness = 0.25,
+/// )
+///     |> appearance(
+///         color = '#ff0000',
+///         metalness = 90,
+///         roughness = 90
+///     )
+/// ```
+///
+/// ```kcl
+/// // You can set the appearance before or after you shell it will yield the same result.
+/// // This example shows setting the appearance _before_ the shell.
+/// firstSketch = startSketchOn(XY)
+///     |> startProfile(at = [-12, 12])
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
+///     |> appearance(
+///         color = '#ff0000',
+///         metalness = 90,
+///         roughness = 90
+///     )
+///
+/// shell(
+///     firstSketch,
+///     faces = [END],
+///     thickness = 0.25,
+/// )
+/// ```
+///
+/// ```kcl
+/// // Setting the appearance of a 3D pattern can be done _before_ or _after_ the pattern.
+/// // This example shows _before_ the pattern.
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [0, 2])
+///   |> line(end = [3, 1])
+///   |> line(end = [0, -4])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 1)
+///     |> appearance(
+///         color = '#ff0000',
+///         metalness = 90,
+///         roughness = 90
+///        )
+///     |> patternLinear3d(
+///         axis = [1, 0, 1],
+///         instances = 7,
+///         distance = 6
+///        )
+/// ```
+///
+/// ```kcl
+/// // Setting the appearance of a 3D pattern can be done _before_ or _after_ the pattern.
+/// // This example shows _after_ the pattern.
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [0, 2])
+///   |> line(end = [3, 1])
+///   |> line(end = [0, -4])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 1)
+///   |> patternLinear3d(
+///       axis = [1, 0, 1],
+///       instances = 7,
+///       distance = 6
+///      )
+///   |> appearance(
+///       color = '#ff0000',
+///       metalness = 90,
+///       roughness = 90
+///      )
+/// ```
+///
+/// ```kcl
+/// // Color the result of a 2D pattern that was extruded.
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [.5, 25])
+///   |> line(end = [0, 5])
+///   |> line(end = [-1, 0])
+///   |> line(end = [0, -5])
+///   |> close()
+///   |> patternCircular2d(
+///        center = [0, 0],
+///        instances = 13,
+///        arcDegrees = 360,
+///        rotateDuplicates = true
+///      )
+///
+/// example = extrude(exampleSketch, length = 1)
+///     |> appearance(
+///         color = '#ff0000',
+///         metalness = 90,
+///         roughness = 90
+///     )
+/// ```
+///
+/// ```kcl
+/// // Color the result of a sweep.
+///
+/// // Create a path for the sweep.
+/// sweepPath = startSketchOn(XZ)
+///     |> startProfile(at = [0.05, 0.05])
+///     |> line(end = [0, 7])
+///     |> tangentialArc(angle = 90, radius = 5)
+///     |> line(end = [-3, 0])
+///     |> tangentialArc(angle = -90, radius = 5)
+///     |> line(end = [0, 7])
+///
+/// pipeHole = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 1.5,
+///     )
+///
+/// sweepSketch = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 2,
+///         )              
+///     |> subtract2d(tool = pipeHole)
+///     |> sweep(path = sweepPath)
+///     |> appearance(
+///         color = "#ff0000",
+///         metalness = 50,
+///         roughness = 50
+///     )
+/// ```
+///
+/// ```kcl
+/// // Change the appearance of an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
+///    |> appearance(
+///        color = "#ff0000",
+///        metalness = 50,
+///        roughness = 50
+///    )
+/// ```
+@(impl = std_rust)
+export fn appearance(
+  /// The The solid(s) whose appearance is being set.
+  @solids: [Solid; 1+] | ImportedGeometry,
+  /// Color of the new material, a hex string like '#ff0000'.
+  color: string,
+  /// Metalness of the new material, a percentage like 95.7.
+  metalness?: number(Count),
+  /// Roughness of the new material, a percentage like 95.7.
+  roughness?: number(Count),
+): [Solid; 1+] | ImportedGeometry {}

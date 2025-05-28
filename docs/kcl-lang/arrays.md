@@ -16,15 +16,16 @@ There are some useful functions for working with arrays in the standard library,
 
 Arrays have their own types: `[T]` where `T` is the type of the elements of the array, for example, `[string]` means an array of `string`s and `[any]` means an array of any values.
 
-Array types can also include length information: `[T; n]` denotes an array of length `n` (where `n` is a number literal) and `[T; 1+]` denotes an array whose length is at least one (i.e., a non-empty array). E.g., `[string; 1+]` and `[number(mm); 3]` are valid array types.
+Array types can also include length information: `[T; n]` denotes an array of length `n` (where `n` is a number literal) and `[T; n+]` denotes an array whose length is at least `n`. The common case for that is `[T; 1+]`, i.e., a non-empty array. E.g., `[string; 1+]` and `[number(mm); 3]` are valid array types.
 
 ## Ranges
 
-Ranges are a succinct way to create an array of sequential numbers. The syntax is `[start .. end]` where `start` and `end` evaluate to whole numbers (integers). Ranges are inclusive of the start and end. The end must be greater than the start. Examples:
+Ranges are a succinct way to create an array of sequential numbers. The syntax is `[start .. end]` where `start` and `end` evaluate to whole numbers (integers). Ranges are inclusive of the start and end. The end must be greater than the start. A range which is exclusive of its end is written with `<end`. Examples:
 
 ```kcl,norun
 [0..3]      // [0, 1, 2, 3]
 [3..10]     // [3, 4, 5, 6, 7, 8, 9, 10]
+[3..<10]    // [3, 4, 5, 6, 7, 8, 9]
 x = 2
 [x..x+1]    // [2, 3]
 ```

@@ -219,7 +219,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                       "id": "[uuid]",
                       "origin": {
                         "x": 0.0,
-                        "y": -28.495190528383297,
+                        "y": -28.495,
                         "z": 0.0,
                         "units": {
                           "type": "Mm"
@@ -1047,7 +1047,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "origin": {
             "x": 0.0,
-            "y": -28.495190528383297,
+            "y": -28.495,
             "z": 0.0,
             "units": {
               "type": "Mm"
@@ -1802,7 +1802,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "id": "[uuid]",
           "origin": {
             "x": 0.0,
-            "y": -47.4951905283833,
+            "y": -47.495,
             "z": 0.0,
             "units": {
               "type": "Mm"
@@ -2791,7 +2791,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "id": "[uuid]",
                 "origin": {
                   "x": 0.0,
-                  "y": -28.495190528383297,
+                  "y": -28.495,
                   "z": 0.0,
                   "units": {
                     "type": "Mm"

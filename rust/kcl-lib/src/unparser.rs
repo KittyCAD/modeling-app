@@ -1427,6 +1427,7 @@ c = "dsfds": A | B | C
 d = [1]: [number]
 e = foo: [number; 3]
 f = [1, 2, 3]: [number; 1+]
+f = [1, 2, 3]: [number; 3+]
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -2453,6 +2454,7 @@ thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
 @(impl = primitive)
 export type bar(unit, baz)
 type baz = Foo | Bar
+type UnionOfArrays = [Foo] | [Bar] | Foo | { a: T, b: Foo | Bar | [Baz] }
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
         let recasted = program.recast(&Default::default(), 0);

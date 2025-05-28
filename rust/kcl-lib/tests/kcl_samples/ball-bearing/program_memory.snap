@@ -3540,7 +3540,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": -3.9751,
+            "z": -3.975,
             "units": {
               "type": "Mm"
             }
@@ -3635,7 +3635,7 @@ description: Variables in memory after executing ball-bearing.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": -3.9751,
+          "z": -3.975,
           "units": {
             "type": "Mm"
           }
@@ -4946,7 +4946,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": -3.9751,
+            "z": -3.975,
             "units": {
               "type": "Mm"
             }
@@ -5041,7 +5041,7 @@ description: Variables in memory after executing ball-bearing.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": -3.9751,
+          "z": -3.975,
           "units": {
             "type": "Mm"
           }

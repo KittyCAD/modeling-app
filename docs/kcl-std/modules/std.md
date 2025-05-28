@@ -36,7 +36,6 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`Y`](/docs/kcl-std/consts/std-Y)
 * [`YZ`](/docs/kcl-std/consts/std-YZ)
 * [`Z`](/docs/kcl-std/consts/std-Z)
-* [`appearance`](/docs/kcl-std/appearance)
 * [`assert`](/docs/kcl-std/assert)
 * [`assertIs`](/docs/kcl-std/assertIs)
 * [`clone`](/docs/kcl-std/functions/std-clone)
