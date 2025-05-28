@@ -353,6 +353,12 @@ export const EngineStream = (props: {
         const elapsed = Date.now() - timeoutStart.current
         // Don't pause if we're already disconnected.
         if (
+          // It's unnecessary to once again setup an event listener for
+          // offline/online to capture this state, when this state already
+          // exists on the window.navigator object. In hindsight it makes
+          // me (lee) regret we set React state variables such as
+          // isInternetConnected in other files when we could check this
+          // object instead.
           window.navigator.onLine &&
           elapsed >= IDLE_TIME_MS &&
           engineStreamState.value === EngineStreamState.Playing

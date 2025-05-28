@@ -300,7 +300,6 @@ class EngineConnection extends EventTarget {
 
   set state(next: EngineConnectionState) {
     console.log(`${JSON.stringify(this.state)} → ${JSON.stringify(next)}`)
-    console.trace()
 
     if (next.type === EngineConnectionStateType.Disconnecting) {
       const sub = next.value
@@ -1454,7 +1453,6 @@ export class EngineCommandManager extends EventTarget {
       console.warn('DURING TESTS ENGINECONNECTION.ONOFFLINE WILL DO NOTHING.')
       return
     }
-    // this.onEngineConnectionRestartRequest()
   }
 
   idleMode: boolean = false
@@ -1486,8 +1484,6 @@ export class EngineCommandManager extends EventTarget {
     token?: string
     settings?: SettingsViaQueryString
   }) {
-    console.trace()
-
     if (settings) {
       this.settings = settings
     }
