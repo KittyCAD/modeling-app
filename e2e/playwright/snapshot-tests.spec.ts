@@ -485,7 +485,7 @@ test.describe(
       await expect(u.codeLocator).toHaveText(code)
 
       await toolbar.tangentialArcBtn.click()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(1000)
 
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
