@@ -1950,6 +1950,10 @@ impl CallExpressionKw {
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        if let Some(unlabeled) = &mut self.unlabeled {
+            unlabeled.replace_value(source_range, new_value.clone());
+        }
+
         for arg in &mut self.arguments {
             arg.arg.replace_value(source_range, new_value.clone());
         }
