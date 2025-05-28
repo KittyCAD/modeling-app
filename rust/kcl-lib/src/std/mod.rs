@@ -84,10 +84,7 @@ lazy_static! {
         Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
         Box::new(crate::std::assert::Assert),
-        Box::new(crate::std::assert::AssertIs),
-        Box::new(crate::std::transform::Scale),
-        Box::new(crate::std::transform::Translate),
-        Box::new(crate::std::transform::Rotate),
+        Box::new(crate::std::assert::AssertIs)
     ];
 }
 
@@ -227,6 +224,18 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("transform", "mirror2d") => (
             |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a)),
             StdFnProps::default("std::transform::mirror2d"),
+        ),
+        ("transform", "translate") => (
+            |e, a| Box::pin(crate::std::transform::translate(e, a)),
+            StdFnProps::default("std::transform::translate"),
+        ),
+        ("transform", "rotate") => (
+            |e, a| Box::pin(crate::std::transform::rotate(e, a)),
+            StdFnProps::default("std::transform::rotate"),
+        ),
+        ("transform", "scale") => (
+            |e, a| Box::pin(crate::std::transform::scale(e, a)),
+            StdFnProps::default("std::transform::scale"),
         ),
         ("sketch", "revolve") => (
             |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
