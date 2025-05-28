@@ -32,6 +32,8 @@ use crate::{
     },
 };
 
+use super::shapes::get_radius;
+
 /// A tag for a face.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -1610,6 +1612,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let angle_start: Option<TyF64> = args.get_kw_arg_opt_typed("angleStart", &RuntimeType::degrees(), exec_state)?;
     let angle_end: Option<TyF64> = args.get_kw_arg_opt_typed("angleEnd", &RuntimeType::degrees(), exec_state)?;
     let radius: Option<TyF64> = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;
+    let diameter: Option<TyF64> = args.get_kw_arg_opt_typed("diameter", &RuntimeType::length(), exec_state)?;
     let end_absolute: Option<[TyF64; 2]> =
         args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::point2d(), exec_state)?;
     let interior_absolute: Option<[TyF64; 2]> =
@@ -1620,6 +1623,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         angle_start,
         angle_end,
         radius,
+        diameter,
         interior_absolute,
         end_absolute,
         tag,
@@ -1672,7 +1676,8 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         sketch = { docs = "Which sketch should this path be added to?" },
         angle_start = { docs = "Where along the circle should this arc start?", include_in_snippet = true },
         angle_end = { docs = "Where along the circle should this arc end?", include_in_snippet = true },
-        radius = { docs = "How large should the circle be?", include_in_snippet = true },
+        radius = { docs = "How large should the circle be? Incompatible with `diameter`.", include_in_snippet = true },
+        diameter = { docs = "How large should the circle be? Incompatible with `radius`.", include_in_snippet = true },
         interior_absolute = { docs = "Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
         end_absolute = { docs = "Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
         tag = { docs = "Create a new tag which refers to this line"},
@@ -1685,6 +1690,7 @@ pub(crate) async fn inner_arc(
     angle_start: Option<TyF64>,
     angle_end: Option<TyF64>,
     radius: Option<TyF64>,
+    diameter: Option<TyF64>,
     interior_absolute: Option<[TyF64; 2]>,
     end_absolute: Option<[TyF64; 2]>,
     tag: Option<TagNode>,
@@ -1694,11 +1700,12 @@ pub(crate) async fn inner_arc(
     let from: Point2d = sketch.current_pen_position()?;
     let id = exec_state.next_uuid();
 
-    match (angle_start, angle_end, radius, interior_absolute, end_absolute) {
-        (Some(angle_start), Some(angle_end), Some(radius), None, None) => {
+    match (angle_start, angle_end, radius, diameter, interior_absolute, end_absolute) {
+        (Some(angle_start), Some(angle_end), radius, diameter, None, None) => {
+            let radius = get_radius(radius, diameter, args.source_range)?;
             relative_arc(&args, id, exec_state, sketch, from, angle_start, angle_end, radius, tag).await
         }
-        (None, None, None, Some(interior_absolute), Some(end_absolute)) => {
+        (None, None, None, None, Some(interior_absolute), Some(end_absolute)) => {
             absolute_arc(&args, id, exec_state, sketch, from, interior_absolute, end_absolute, tag).await
         }
         _ => {
@@ -1844,10 +1851,22 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
     let end = args.get_kw_arg_opt_typed("end", &RuntimeType::point2d(), exec_state)?;
     let end_absolute = args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::point2d(), exec_state)?;
     let radius = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;
+    let diameter = args.get_kw_arg_opt_typed("diameter", &RuntimeType::length(), exec_state)?;
     let angle = args.get_kw_arg_opt_typed("angle", &RuntimeType::angle(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let new_sketch = inner_tangential_arc(sketch, end_absolute, end, radius, angle, tag, exec_state, args).await?;
+    let new_sketch = inner_tangential_arc(
+        sketch,
+        end_absolute,
+        end,
+        radius,
+        diameter,
+        angle,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -1914,7 +1933,8 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
         sketch = { docs = "Which sketch should this path be added to?"},
         end_absolute = { docs = "Which absolute point should this arc go to? Incompatible with `end`, `radius`, and `offset`."},
         end = { docs = "How far away (along the X and Y axes) should this arc go? Incompatible with `endAbsolute`, `radius`, and `offset`.", include_in_snippet = true },
-        radius = { docs = "Radius of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute`."},
+        radius = { docs = "Radius of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute` and `diameter`."},
+        diameter = { docs = "Diameter of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute` and `radius`."},
         angle = { docs = "Offset of the arc in degrees. `radius` must be given. Incompatible with `end` and `endAbsolute`."},
         tag = { docs = "Create a new tag which refers to this arc"},
     },
@@ -1926,32 +1946,30 @@ async fn inner_tangential_arc(
     end_absolute: Option<[TyF64; 2]>,
     end: Option<[TyF64; 2]>,
     radius: Option<TyF64>,
+    diameter: Option<TyF64>,
     angle: Option<TyF64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    match (end_absolute, end, radius, angle) {
-        (Some(point), None, None, None) => {
+    match (end_absolute, end, radius, diameter, angle) {
+        (Some(point), None, None, None, None) => {
             inner_tangential_arc_to_point(sketch, point, true, tag, exec_state, args).await
         }
-        (None, Some(point), None, None) => {
+        (None, Some(point), None, None, None) => {
             inner_tangential_arc_to_point(sketch, point, false, tag, exec_state, args).await
         }
-        (None, None, Some(radius), Some(angle)) => {
+        (None, None, radius, diameter, Some(angle)) => {
+            let radius = get_radius(radius, diameter, args.source_range)?;
             let data = TangentialArcData::RadiusAndOffset { radius, offset: angle };
             inner_tangential_arc_radius_angle(data, sketch, tag, exec_state, args).await
         }
-        (Some(_), Some(_), None, None) => Err(KclError::Semantic(KclErrorDetails::new(
+        (Some(_), Some(_), None, None, None) => Err(KclError::Semantic(KclErrorDetails::new(
             "You cannot give both `end` and `endAbsolute` params, you have to choose one or the other".to_owned(),
             vec![args.source_range],
         ))),
-        (None, None, Some(_), None) | (None, None, None, Some(_)) => Err(KclError::Semantic(KclErrorDetails::new(
-            "You must supply both `radius` and `angle` arguments".to_owned(),
-            vec![args.source_range],
-        ))),
-        (_, _, _, _) => Err(KclError::Semantic(KclErrorDetails::new(
-            "You must supply `end`, `endAbsolute`, or both `radius` and `angle` arguments".to_owned(),
+        (_, _, _, _, _) => Err(KclError::Semantic(KclErrorDetails::new(
+            "You must supply `end`, `endAbsolute`, or both `angle` and `radius`/`diameter` arguments".to_owned(),
             vec![args.source_range],
         ))),
     }

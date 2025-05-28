@@ -13,6 +13,7 @@ tangentialArc(
   endAbsolute?: Point2d,
   end?: Point2d,
   radius?: number,
+  diameter?: number,
   angle?: number,
   tag?: TagDeclarator,
 ): Sketch
@@ -27,7 +28,8 @@ When using radius and angle, draw a curved line segment along part of an imagina
 | `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
 | `endAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Which absolute point should this arc go to? Incompatible with `end`, `radius`, and `offset`. | No |
 | `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | How far away (along the X and Y axes) should this arc go? Incompatible with `endAbsolute`, `radius`, and `offset`. | No |
-| `radius` | [`number`](/docs/kcl-std/types/std-types-number) | Radius of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute`. | No |
+| `radius` | [`number`](/docs/kcl-std/types/std-types-number) | Radius of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute` and `diameter`. | No |
+| `diameter` | [`number`](/docs/kcl-std/types/std-types-number) | Diameter of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute` and `radius`. | No |
 | `angle` | [`number`](/docs/kcl-std/types/std-types-number) | Offset of the arc in degrees. `radius` must be given. Incompatible with `end` and `endAbsolute`. | No |
 | [`tag`](/docs/kcl-std/types/std-types-tag) | [`TagDeclarator`](/docs/kcl-lang/types#TagDeclarator) | Create a new tag which refers to this arc | No |
 
