@@ -77,10 +77,6 @@ lazy_static! {
         Box::new(crate::std::sketch::Subtract2D),
         Box::new(crate::std::patterns::PatternLinear2D),
         Box::new(crate::std::patterns::PatternCircular2D),
-        Box::new(crate::std::edge::GetOppositeEdge),
-        Box::new(crate::std::edge::GetNextAdjacentEdge),
-        Box::new(crate::std::edge::GetPreviousAdjacentEdge),
-        Box::new(crate::std::edge::GetCommonEdge),
         Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
         Box::new(crate::std::assert::Assert),
@@ -213,10 +209,6 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::math::leg_angle_y(e, a)),
             StdFnProps::default("std::math::legAngY"),
         ),
-        ("sketch", "circle") => (
-            |e, a| Box::pin(crate::std::shapes::circle(e, a)),
-            StdFnProps::default("std::sketch::circle"),
-        ),
         ("prelude", "helix") => (
             |e, a| Box::pin(crate::std::helix::helix(e, a)),
             StdFnProps::default("std::helix").include_in_feature_tree(),
@@ -236,10 +228,6 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("transform", "scale") => (
             |e, a| Box::pin(crate::std::transform::scale(e, a)),
             StdFnProps::default("std::transform::scale"),
-        ),
-        ("sketch", "revolve") => (
-            |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
-            StdFnProps::default("std::sketch::revolve").include_in_feature_tree(),
         ),
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
@@ -309,9 +297,33 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::clone::clone(e, a)),
             StdFnProps::default("std::clone").include_in_feature_tree(),
         ),
+        ("sketch", "circle") => (
+            |e, a| Box::pin(crate::std::shapes::circle(e, a)),
+            StdFnProps::default("std::sketch::circle"),
+        ),
         ("sketch", "patternTransform2d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
             StdFnProps::default("std::sketch::patternTransform2d"),
+        ),
+        ("sketch", "revolve") => (
+            |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
+            StdFnProps::default("std::sketch::revolve").include_in_feature_tree(),
+        ),
+        ("sketch", "getCommonEdge") => (
+            |e, a| Box::pin(crate::std::edge::get_common_edge(e, a)),
+            StdFnProps::default("std::sketch::getCommonEdge"),
+        ),
+        ("sketch", "getNextAdjacentEdge") => (
+            |e, a| Box::pin(crate::std::edge::get_next_adjacent_edge(e, a)),
+            StdFnProps::default("std::sketch::getNextAdjacentEdge"),
+        ),
+        ("sketch", "getOppositeEdge") => (
+            |e, a| Box::pin(crate::std::edge::get_opposite_edge(e, a)),
+            StdFnProps::default("std::sketch::revolve"),
+        ),
+        ("sketch", "getPreviousAdjacentEdge") => (
+            |e, a| Box::pin(crate::std::edge::get_previous_adjacent_edge(e, a)),
+            StdFnProps::default("std::sketch::getPreviousAdjacentEdge"),
         ),
         ("appearance", "hexString") => (
             |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),

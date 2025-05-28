@@ -1148,14 +1148,12 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_get_common_edge() {
-        let get_common_edge_fn: Box<dyn StdLibFn> = Box::new(crate::std::edge::GetCommonEdge);
-        let snippet = get_common_edge_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"getCommonEdge(faces = [{
-	value = ${0:"string"},
-}])"#
-        );
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("getCommonEdge").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"getCommonEdge(faces = [${0:tag}, ${1:tag}])"#);
     }
 
     #[test]
