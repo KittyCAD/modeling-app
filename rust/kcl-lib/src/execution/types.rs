@@ -44,7 +44,7 @@ impl RuntimeType {
     pub fn sketches() -> Self {
         RuntimeType::Array(
             Box::new(RuntimeType::Primitive(PrimitiveType::Sketch)),
-            ArrayLen::NonEmpty,
+            ArrayLen::Minimum(1),
         )
     }
 
@@ -52,7 +52,7 @@ impl RuntimeType {
     pub fn solids() -> Self {
         RuntimeType::Array(
             Box::new(RuntimeType::Primitive(PrimitiveType::Solid)),
-            ArrayLen::NonEmpty,
+            ArrayLen::Minimum(1),
         )
     }
 
@@ -150,7 +150,7 @@ impl RuntimeType {
             }
             Type::Union { tys } => tys
                 .into_iter()
-                .map(|t| Self::from_parsed_primitive(t.inner, exec_state, source_range))
+                .map(|t| Self::from_parsed(t.inner, exec_state, source_range))
                 .collect::<Result<Vec<_>, CompilationError>>()
                 .map(RuntimeType::Union),
             Type::Object { properties } => properties
@@ -208,8 +208,13 @@ impl RuntimeType {
     pub fn human_friendly_type(&self) -> String {
         match self {
             RuntimeType::Primitive(ty) => ty.to_string(),
-            RuntimeType::Array(ty, ArrayLen::None) => format!("an array of {}", ty.display_multiple()),
-            RuntimeType::Array(ty, ArrayLen::NonEmpty) => format!("one or more {}", ty.display_multiple()),
+            RuntimeType::Array(ty, ArrayLen::None | ArrayLen::Minimum(0)) => {
+                format!("an array of {}", ty.display_multiple())
+            }
+            RuntimeType::Array(ty, ArrayLen::Minimum(1)) => format!("one or more {}", ty.display_multiple()),
+            RuntimeType::Array(ty, ArrayLen::Minimum(n)) => {
+                format!("an array of {n} or more {}", ty.display_multiple())
+            }
             RuntimeType::Array(ty, ArrayLen::Known(n)) => format!("an array of {n} {}", ty.display_multiple()),
             RuntimeType::Union(tys) => tys
                 .iter()
@@ -292,7 +297,7 @@ impl fmt::Display for RuntimeType {
             RuntimeType::Primitive(t) => t.fmt(f),
             RuntimeType::Array(t, l) => match l {
                 ArrayLen::None => write!(f, "[{t}]"),
-                ArrayLen::NonEmpty => write!(f, "[{t}; 1+]"),
+                ArrayLen::Minimum(n) => write!(f, "[{t}; {n}+]"),
                 ArrayLen::Known(n) => write!(f, "[{t}; {n}]"),
             },
             RuntimeType::Tuple(ts) => write!(
@@ -321,7 +326,7 @@ impl fmt::Display for RuntimeType {
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
 pub enum ArrayLen {
     None,
-    NonEmpty,
+    Minimum(usize),
     Known(usize),
 }
 
@@ -329,8 +334,9 @@ impl ArrayLen {
     pub fn subtype(self, other: ArrayLen) -> bool {
         match (self, other) {
             (_, ArrayLen::None) => true,
-            (ArrayLen::NonEmpty, ArrayLen::NonEmpty) => true,
-            (ArrayLen::Known(size), ArrayLen::NonEmpty) if size > 0 => true,
+            (ArrayLen::Minimum(s1), ArrayLen::Minimum(s2)) if s1 >= s2 => true,
+            (ArrayLen::Known(s1), ArrayLen::Minimum(s2)) if s1 >= s2 => true,
+            (ArrayLen::None, ArrayLen::Minimum(0)) => true,
             (ArrayLen::Known(s1), ArrayLen::Known(s2)) if s1 == s2 => true,
             _ => false,
         }
@@ -340,7 +346,7 @@ impl ArrayLen {
     fn satisfied(self, len: usize, allow_shrink: bool) -> Option<usize> {
         match self {
             ArrayLen::None => Some(len),
-            ArrayLen::NonEmpty => (len > 0).then_some(len),
+            ArrayLen::Minimum(s) => (len >= s).then_some(len),
             ArrayLen::Known(s) => (if allow_shrink { len >= s } else { len == s }).then_some(s),
         }
     }
@@ -1557,7 +1563,7 @@ mod test {
             // Array subtypes
             let aty = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::None);
             let aty1 = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(1));
-            let aty0 = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::NonEmpty);
+            let aty0 = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Minimum(1));
 
             match v {
                 KclValue::Tuple { .. } | KclValue::HomArray { .. } => {
@@ -1640,7 +1646,7 @@ mod test {
         let aty = RuntimeType::Array(Box::new(RuntimeType::solid()), ArrayLen::None);
         let aty0 = RuntimeType::Array(Box::new(RuntimeType::solid()), ArrayLen::Known(0));
         let aty1 = RuntimeType::Array(Box::new(RuntimeType::solid()), ArrayLen::Known(1));
-        let aty1p = RuntimeType::Array(Box::new(RuntimeType::solid()), ArrayLen::NonEmpty);
+        let aty1p = RuntimeType::Array(Box::new(RuntimeType::solid()), ArrayLen::Minimum(1));
         assert_coerce_results(
             &none,
             &aty,
@@ -1854,15 +1860,25 @@ mod test {
         );
         let tyh1 = RuntimeType::Array(
             Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
-            ArrayLen::NonEmpty,
+            ArrayLen::Minimum(1),
         );
         let tyh3 = RuntimeType::Array(
             Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
             ArrayLen::Known(3),
         );
+        let tyhm3 = RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
+            ArrayLen::Minimum(3),
+        );
+        let tyhm5 = RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
+            ArrayLen::Minimum(5),
+        );
         assert_coerce_results(&hom_arr, &tyhn, &hom_arr, &mut exec_state);
         assert_coerce_results(&hom_arr, &tyh1, &hom_arr, &mut exec_state);
         hom_arr.coerce(&tyh3, true, &mut exec_state).unwrap_err();
+        assert_coerce_results(&hom_arr, &tyhm3, &hom_arr, &mut exec_state);
+        hom_arr.coerce(&tyhm5, true, &mut exec_state).unwrap_err();
 
         let hom_arr0 = KclValue::HomArray {
             value: vec![],
@@ -2364,7 +2380,7 @@ d = cos(30)
         // Principal types
         let tym1 = RuntimeType::Array(
             Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
-            ArrayLen::NonEmpty,
+            ArrayLen::Minimum(1),
         );
 
         let result = KclValue::HomArray {

@@ -122,24 +122,24 @@ https://github.com/KittyCAD/modeling-app/issues/new
 
 #### 2. Push a new tag
 
-Decide on a `v`-prefixed semver `VERSION` (eg. `v1.2.3`) with the team and tag the repo, eg. on latest main:
+Decide on a `v`-prefixed semver `VERSION` (e.g. `v1.2.3`) with the team and tag the repo on the latest main:
 
 ```
-git tag $VERSION
+git tag $VERSION --message=""
 git push origin $VERSION
 ```
 
-This will trigger the `build-apps` workflow, set the version, build & sign the apps, and generate release files.
+This will trigger the `build-apps` workflow to set the version, build & sign the apps, and generate release files.
 
-The workflow should be listed right away [in this list](https://github.com/KittyCAD/modeling-app/actions/workflows/build-apps.yml?query=event%3Apush)).
+The workflow should be listed right away [in this list](https://github.com/KittyCAD/modeling-app/actions/workflows/build-apps.yml?query=event%3Apush).
 
 #### 3. Manually test artifacts
 
 ##### Release builds
 
-The release builds can be found under the `out-{arch}-{platform}` zip files, at the very bottom of the `build-apps` summary page for the workflow (triggered by the tag in 2.).
+The release builds can be found under the `out-{arch}-{platform}` zip files, at the very bottom of the `build-apps` summary page for the workflow (triggered by the tag in step 2).
 
-Manually test against this [list](https://github.com/KittyCAD/modeling-app/issues/3588) across Windows, MacOS, Linux and posting results as comments in the issue.
+Manually test against [this list](https://github.com/KittyCAD/modeling-app/issues/3588) across Windows, MacOS, Linux and posting results as comments in the issue.
 
 A prompt should show up asking for a downgrade to the last release version. Running through that at the end of testing
 and making sure the current release candidate has the ability to be updated to what electron-updater points to is critical,
@@ -157,15 +157,20 @@ If the prompt doesn't show up, start the app in command line to grab the electro
 ./Zoo Design Studio-{version}-{arch}-linux.AppImage
 ```
 
-#### 4. Publish the release
+#### 4. Bump the KCL version
 
-Head over to https://github.com/KittyCAD/modeling-app/releases/new, pick the newly created tag and type it in the _Release title_ field as well.
+Follow the instructions [here](./rust/README.md) to publish new crates.
+This ensures that the KCL accepted by the app is also accepted by the CLI.
 
-Hit _Generate release notes_ as a starting point to discuss the changelog in the issue. Once done, make sure _Set as the latest release_ is checked, and hit _Publish release_.
+#### 5. Publish the release
 
-A new `publish-apps-release` will kick in and you should be able to find it [here](https://github.com/KittyCAD/modeling-app/actions?query=event%3Arelease). On success, the files will be uploaded to the public bucket as well as to the GitHub release, and the announcement on Discord will be sent.
+Head over to https://github.com/KittyCAD/modeling-app/releases/new, pick the newly created tag and type it in the **Release title** field as well.
 
-#### 5. Close the issue
+Click **Generate release notes** as a starting point to discuss the changelog in the issue. Once done, make sure **Set as the latest release** is checked, and click **Publish release**.
+
+A new `publish-apps-release` workflow will start and you should be able to find it [here](https://github.com/KittyCAD/modeling-app/actions?query=event%3Arelease). On success, the files will be uploaded to the public bucket as well as to the GitHub release, and the announcement on Discord will be sent.
+
+#### 6. Close the issue
 
 If everything is well and the release is out to the public, the issue tracking the release shall be closed.
 
@@ -200,7 +205,7 @@ Prepare these system dependencies:
 
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
-Only Ubunu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
+Only Ubuntu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
 If you don't run Ubuntu locally or in a VM, you may use a GitHub Codespace.
 ```
 npm run playwright -- install chrome

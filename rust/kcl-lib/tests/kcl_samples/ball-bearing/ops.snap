@@ -225,13 +225,9 @@ description: Operations executed ball-bearing.kcl
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -335,13 +331,8 @@ description: Operations executed ball-bearing.kcl
           "type": "Number",
           "value": 10.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -478,13 +469,9 @@ description: Operations executed ball-bearing.kcl
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -588,13 +575,8 @@ description: Operations executed ball-bearing.kcl
           "type": "Number",
           "value": 10.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -747,13 +729,9 @@ description: Operations executed ball-bearing.kcl
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -857,13 +835,8 @@ description: Operations executed ball-bearing.kcl
           "type": "Number",
           "value": 10.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []

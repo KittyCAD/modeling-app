@@ -20,7 +20,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let thickness: TyF64 = args.get_kw_arg_typed("thickness", &RuntimeType::length(), exec_state)?;
     let faces = args.get_kw_arg_typed(
         "faces",
-        &RuntimeType::Array(Box::new(RuntimeType::tag()), ArrayLen::NonEmpty),
+        &RuntimeType::Array(Box::new(RuntimeType::tag()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
 
