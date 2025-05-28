@@ -216,6 +216,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    name: e2e:web (${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }})
     env:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
@@ -267,7 +268,7 @@ jobs:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
 
-      - name: Test web
+      - name: Run tests
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
@@ -336,7 +337,7 @@ jobs:
             shardIndex: 2
             shardTotal: 2
     runs-on: ${{ matrix.os }}
-    name: playwright:electron:${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }} (shard ${{ matrix.shardIndex }})
+    name: e2e:desktop (${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}, shard ${{ matrix.shardIndex }})
     env:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
@@ -389,7 +390,7 @@ jobs:
           name: test-results-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
 
-      - name: Run playwright/electron flow (with retries)
+      - name: Run tests
         id: retry
         if:  ${{ !cancelled() && steps.deps-install.outcome == 'success' }}
         uses: nick-fields/retry@v3.0.2

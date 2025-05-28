@@ -217,7 +217,7 @@ You may use `-- --update-snapshots` as needed.
 
 ```
 npm run playwright -- install chromium
-npm run test:playwright:electron:local
+npm run test:e2e:desktop:local
 ```
 You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file.spec.ts` for a test file.
 
