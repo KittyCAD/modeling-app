@@ -168,9 +168,9 @@ test.describe('Testing segment overlays', () => {
             name: 'arrow right Continue',
           })
           .click()
-          await editor.expectEditor.toContain(expectAfterUnconstrained, {
-            shouldNormalise: true,
-          })
+        await editor.expectEditor.toContain(expectAfterUnconstrained, {
+          shouldNormalise: true,
+        })
         await expect(page.getByText('Added variable')).not.toBeVisible()
 
         await page.mouse.move(0, 0)
