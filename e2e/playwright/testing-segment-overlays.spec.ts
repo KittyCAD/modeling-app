@@ -50,6 +50,11 @@ test.describe('Testing segment overlays', () => {
           y = 0
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
+
+        const constrainedLocator = page.locator(
+          `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`
+        )
+
         await page.mouse.move(x, y)
         await wiggleMove(page, x, y, 20, 30, ang, 10, 5, locator)
         await page.mouse.move(x, y)
@@ -57,9 +62,6 @@ test.describe('Testing segment overlays', () => {
         await editor.expectEditor.toContain(expectBeforeUnconstrained, {
           shouldNormalise: true,
         })
-        const constrainedLocator = page.locator(
-          `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`
-        )
         await expect(constrainedLocator).toBeVisible()
         await constrainedLocator.hover()
         await expect(
@@ -90,15 +92,12 @@ test.describe('Testing segment overlays', () => {
         await expect(
           page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
         ).toBeFocused()
+        await page.waitForTimeout(500)
         await page
           .getByRole('button', {
             name: 'arrow right Continue',
           })
           .click()
-        await expect(page.locator('.cm-content')).toContainText(expectFinal)
-        await editor.expectEditor.toContain(expectFinal, {
-          shouldNormalise: true,
-        })
         await editor.expectEditor.toContain(expectFinal, {
           shouldNormalise: true,
         })
@@ -163,14 +162,15 @@ test.describe('Testing segment overlays', () => {
         await expect(
           page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
         ).toBeFocused()
+        await page.waitForTimeout(500)
         await page
           .getByRole('button', {
             name: 'arrow right Continue',
           })
           .click()
-        await editor.expectEditor.toContain(expectAfterUnconstrained, {
-          shouldNormalise: true,
-        })
+          await editor.expectEditor.toContain(expectAfterUnconstrained, {
+            shouldNormalise: true,
+          })
         await expect(page.getByText('Added variable')).not.toBeVisible()
 
         await page.mouse.move(0, 0)
@@ -195,14 +195,20 @@ test.describe('Testing segment overlays', () => {
         })
       }
     test.setTimeout(120000)
-    test('for a line segment', async ({ page, editor, homePage }) => {
+    test('for a line segment', async ({
+      page,
+      editor,
+      homePage,
+      scene,
+      cmdBar,
+    }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
           `@settings(defaultLengthUnit = in)
       part001 = startSketchOn(XZ)
         |> startProfile(at = [5 + 0, 20 + 0])
-        |> line(end = [0.5, -14 + 0])
+        |> line(end = [0.5, -12 + 0])
         |> angledLine(angle = 3 + 0, length = 32 + 0)
         |> line(endAbsolute = [5 + 33, 20 + 11.5 + 0])
         |> xLine(endAbsolute = 5 + 9 - 5)
@@ -222,18 +228,16 @@ test.describe('Testing segment overlays', () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await await scene.settled(cmdBar)
 
       // wait for execution done
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
 
       await page.getByText('xLine(endAbsolute = 5 + 9 - 5)').click()
       await page.waitForTimeout(100)
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
       await page.waitForTimeout(500)
 
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(14)
 
       const clickUnconstrained = _clickUnconstrained(page, editor)
       const clickConstrained = _clickConstrained(page, editor)
@@ -257,22 +261,22 @@ test.describe('Testing segment overlays', () => {
           type: 'default_camera_get_settings',
         },
       })
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(1000)
       await u.closeDebugPanel()
 
       let ang = 0
 
-      const line = await u.getBoundingBox('[data-overlay-index="0"]')
-      ang = await u.getAngle('[data-overlay-index="0"]')
+      const line = await u.getBoundingBox('[data-overlay-index="1"]')
+      ang = await u.getAngle('[data-overlay-index="1"]')
       console.log('line1', line, ang)
       await clickConstrained({
         hoverPos: { x: line.x, y: line.y },
         constraintType: 'yRelative',
-        expectBeforeUnconstrained: '|> line(end = [0.5, -14 + 0])',
-        expectAfterUnconstrained: '|> line(end = [0.5, -14])',
+        expectBeforeUnconstrained: '|> line(end = [0.5, -12 + 0])',
+        expectAfterUnconstrained: '|> line(end = [0.5, -12])',
         expectFinal: '|> line(end = [0.5, yRel001])',
         ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="0"]',
+        locator: '[data-overlay-toolbar-index="1"]',
       })
       console.log('line2')
       await clickUnconstrained({
@@ -282,7 +286,7 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained: 'line(end = [xRel001, yRel001])',
         expectFinal: '|> line(end = [0.5, yRel001])',
         ang: ang + 180,
-        locator: '[data-overlay-index="0"]',
+        locator: '[data-overlay-index="1"]',
       })
     })
   })
