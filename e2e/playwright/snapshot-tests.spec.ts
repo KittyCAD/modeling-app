@@ -1,3 +1,4 @@
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import {
