@@ -220,7 +220,7 @@ export const engineStreamMachine = setup({
           await context.videoRef.current.pause()
 
           // It's possible we've already frozen the frame due to a disconnect.
-          if (context.videoRef.current.display !== 'none') {
+          if (context.videoRef.current.style.display !== 'none') {
             await holdOntoVideoFrameInCanvas(
               context.videoRef.current,
               context.canvasRef.current
