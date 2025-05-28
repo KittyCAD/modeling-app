@@ -1,4 +1,3 @@
-import { isPlaywright } from '@src/lib/isPlaywright'
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -6,10 +5,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
-import {
-  EngineCommandManagerEvents,
-  EngineConnectionStateType,
-} from '@src/lang/std/engineConnection'
+import { EngineCommandManagerEvents } from '@src/lang/std/engineConnection'
 import { btnName } from '@src/lib/cameraControls'
 import { PATHS } from '@src/lib/paths'
 import { sendSelectEventToEngine } from '@src/lib/selections'
@@ -505,7 +501,11 @@ export const EngineStream = (props: {
     }
 
     sendSelectEventToEngine(e)
-      .then(({ entity_id }) => {
+      .then((result) => {
+        if (!result) {
+          return
+        }
+        const { entity_id } = result
         if (!entity_id) {
           // No entity selected. This is benign
           return
