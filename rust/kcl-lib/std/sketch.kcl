@@ -38,7 +38,7 @@ export fn circle(
   /// The radius of the circle. Incompatible with `diameter`.
   radius?: number(Length),
   /// The diameter of the circle. Incompatible with `radius`.
-  @(include_in_snippet = true)
+  @(includeInSnippet = true)
   diameter?: number(Length),
   /// Create a new tag which refers to this circle.
   tag?: tag,

@@ -463,7 +463,11 @@ impl ModData {
     }
 
     pub fn find_by_name(&self, name: &str) -> Option<&DocData> {
-        if let Some(result) = self.children.values().find(|dd| dd.name() == name) {
+        if let Some(result) = self
+            .children
+            .values()
+            .find(|dd| dd.name() == name && !matches!(dd, DocData::Mod(_)))
+        {
             return Some(result);
         }
 
@@ -618,6 +622,12 @@ impl FnData {
     pub(super) fn to_autocomplete_snippet(&self) -> String {
         if self.name == "loft" {
             return "loft([${0:sketch000}, ${1:sketch001}])".to_owned();
+        } else if self.name == "union" {
+            return "union([${0:extrude001}, ${1:extrude002}])".to_owned();
+        } else if self.name == "subtract" {
+            return "subtract([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
+        } else if self.name == "intersect" {
+            return "intersect([${0:extrude001}, ${1:extrude002}])".to_owned();
         } else if self.name == "clone" {
             return "clone(${0:part001})".to_owned();
         } else if self.name == "hole" {
@@ -734,12 +744,12 @@ impl ArgData {
             } = &attr.inner
             {
                 for p in props {
-                    if p.key.name == "include_in_snippet" {
+                    if p.key.name == "includeInSnippet" {
                         if let Some(b) = p.value.literal_bool() {
                             result.override_in_snippet = Some(b);
                         } else {
                             panic!(
-                                "Invalid value for `include_in_snippet`, expected bool literal, found {:?}",
+                                "Invalid value for `includeInSnippet`, expected bool literal, found {:?}",
                                 p.value
                             );
                         }
@@ -802,15 +812,12 @@ impl ArgData {
             return Some((index + n - 1, snippet));
         }
         match self.ty.as_deref() {
-            Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{}:3.14}}"#, index))),
-            Some("Point2d") => Some((
-                index + 1,
-                format!(r#"{label}[${{{}:3.14}}, ${{{}:3.14}}]"#, index, index + 1),
-            )),
+            Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{}:10}}"#, index))),
+            Some("Point2d") => Some((index + 1, format!(r#"{label}[${{{}:0}}, ${{{}:0}}]"#, index, index + 1))),
             Some("Point3d") => Some((
                 index + 2,
                 format!(
-                    r#"{label}[${{{}:3.14}}, ${{{}:3.14}}, ${{{}:3.14}}]"#,
+                    r#"{label}[${{{}:0}}, ${{{}:0}}, ${{{}:0}}]"#,
                     index,
                     index + 1,
                     index + 2
@@ -821,7 +828,13 @@ impl ArgData {
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
             Some("Plane") => Some((index, format!(r#"{label}${{{}:XY}}"#, index))),
 
-            Some("string") => Some((index, format!(r#"{label}${{{}:"string"}}"#, index))),
+            Some("string") => {
+                if self.name == "color" {
+                    Some((index, format!(r#"{label}${{{}:"ff0000"}}"#, index)))
+                } else {
+                    Some((index, format!(r#"{label}${{{}:"string"}}"#, index)))
+                }
+            }
             Some("bool") => Some((index, format!(r#"{label}${{{}:false}}"#, index))),
             _ => None,
         }

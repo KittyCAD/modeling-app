@@ -205,7 +205,7 @@ Prepare these system dependencies:
 
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
-Only Ubunu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
+Only Ubuntu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
 If you don't run Ubuntu locally or in a VM, you may use a GitHub Codespace.
 ```
 npm run playwright -- install chrome

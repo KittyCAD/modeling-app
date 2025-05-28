@@ -284,13 +284,8 @@ description: Operations executed wing-spar.kcl
           "type": "Number",
           "value": 5.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []

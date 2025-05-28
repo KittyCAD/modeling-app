@@ -32,6 +32,10 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Any)
     }
 
+    pub fn any_array() -> Self {
+        RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::None)
+    }
+
     pub fn edge() -> Self {
         RuntimeType::Primitive(PrimitiveType::Edge)
     }
@@ -44,7 +48,7 @@ impl RuntimeType {
     pub fn sketches() -> Self {
         RuntimeType::Array(
             Box::new(RuntimeType::Primitive(PrimitiveType::Sketch)),
-            ArrayLen::NonEmpty,
+            ArrayLen::Minimum(1),
         )
     }
 
@@ -52,7 +56,7 @@ impl RuntimeType {
     pub fn solids() -> Self {
         RuntimeType::Array(
             Box::new(RuntimeType::Primitive(PrimitiveType::Solid)),
-            ArrayLen::NonEmpty,
+            ArrayLen::Minimum(1),
         )
     }
 
@@ -150,7 +154,7 @@ impl RuntimeType {
             }
             Type::Union { tys } => tys
                 .into_iter()
-                .map(|t| Self::from_parsed_primitive(t.inner, exec_state, source_range))
+                .map(|t| Self::from_parsed(t.inner, exec_state, source_range))
                 .collect::<Result<Vec<_>, CompilationError>>()
                 .map(RuntimeType::Union),
             Type::Object { properties } => properties
@@ -208,8 +212,13 @@ impl RuntimeType {
     pub fn human_friendly_type(&self) -> String {
         match self {
             RuntimeType::Primitive(ty) => ty.to_string(),
-            RuntimeType::Array(ty, ArrayLen::None) => format!("an array of {}", ty.display_multiple()),
-            RuntimeType::Array(ty, ArrayLen::NonEmpty) => format!("one or more {}", ty.display_multiple()),
+            RuntimeType::Array(ty, ArrayLen::None | ArrayLen::Minimum(0)) => {
+                format!("an array of {}", ty.display_multiple())
+            }
+            RuntimeType::Array(ty, ArrayLen::Minimum(1)) => format!("one or more {}", ty.display_multiple()),
+            RuntimeType::Array(ty, ArrayLen::Minimum(n)) => {
+                format!("an array of {n} or more {}", ty.display_multiple())
+            }
             RuntimeType::Array(ty, ArrayLen::Known(n)) => format!("an array of {n} {}", ty.display_multiple()),
             RuntimeType::Union(tys) => tys
                 .iter()
@@ -233,12 +242,21 @@ impl RuntimeType {
             (Primitive(t1), Primitive(t2)) => t1.subtype(t2),
             (Array(t1, l1), Array(t2, l2)) => t1.subtype(t2) && l1.subtype(*l2),
             (Tuple(t1), Tuple(t2)) => t1.len() == t2.len() && t1.iter().zip(t2).all(|(t1, t2)| t1.subtype(t2)),
+
             (Union(ts1), Union(ts2)) => ts1.iter().all(|t| ts2.contains(t)),
             (t1, Union(ts2)) => ts2.iter().any(|t| t1.subtype(t)),
+
             (Object(t1), Object(t2)) => t2
                 .iter()
                 .all(|(f, t)| t1.iter().any(|(ff, tt)| f == ff && tt.subtype(t))),
-            // Equality between Axis types and their object representation.
+
+            // Equivalence between singleton types and single-item arrays/tuples of the same type (plus transitivity with the array subtyping).
+            (t1, RuntimeType::Array(t2, l)) if t1.subtype(t2) && ArrayLen::Known(1).subtype(*l) => true,
+            (RuntimeType::Array(t1, ArrayLen::Known(1)), t2) if t1.subtype(t2) => true,
+            (t1, RuntimeType::Tuple(t2)) if !t2.is_empty() && t1.subtype(&t2[0]) => true,
+            (RuntimeType::Tuple(t1), t2) if t1.len() == 1 && t1[0].subtype(t2) => true,
+
+            // Equivalence between Axis types and their object representation.
             (Object(t1), Primitive(PrimitiveType::Axis2d)) => {
                 t1.iter()
                     .any(|(n, t)| n == "origin" && t.subtype(&RuntimeType::point2d()))
@@ -292,7 +310,7 @@ impl fmt::Display for RuntimeType {
             RuntimeType::Primitive(t) => t.fmt(f),
             RuntimeType::Array(t, l) => match l {
                 ArrayLen::None => write!(f, "[{t}]"),
-                ArrayLen::NonEmpty => write!(f, "[{t}; 1+]"),
+                ArrayLen::Minimum(n) => write!(f, "[{t}; {n}+]"),
                 ArrayLen::Known(n) => write!(f, "[{t}; {n}]"),
             },
             RuntimeType::Tuple(ts) => write!(
@@ -321,7 +339,7 @@ impl fmt::Display for RuntimeType {
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
 pub enum ArrayLen {
     None,
-    NonEmpty,
+    Minimum(usize),
     Known(usize),
 }
 
@@ -329,8 +347,9 @@ impl ArrayLen {
     pub fn subtype(self, other: ArrayLen) -> bool {
         match (self, other) {
             (_, ArrayLen::None) => true,
-            (ArrayLen::NonEmpty, ArrayLen::NonEmpty) => true,
-            (ArrayLen::Known(size), ArrayLen::NonEmpty) if size > 0 => true,
+            (ArrayLen::Minimum(s1), ArrayLen::Minimum(s2)) if s1 >= s2 => true,
+            (ArrayLen::Known(s1), ArrayLen::Minimum(s2)) if s1 >= s2 => true,
+            (ArrayLen::None, ArrayLen::Minimum(0)) => true,
             (ArrayLen::Known(s1), ArrayLen::Known(s2)) if s1 == s2 => true,
             _ => false,
         }
@@ -340,7 +359,7 @@ impl ArrayLen {
     fn satisfied(self, len: usize, allow_shrink: bool) -> Option<usize> {
         match self {
             ArrayLen::None => Some(len),
-            ArrayLen::NonEmpty => (len > 0).then_some(len),
+            ArrayLen::Minimum(s) => (len >= s).then_some(len),
             ArrayLen::Known(s) => (if allow_shrink { len >= s } else { len == s }).then_some(s),
         }
     }
@@ -1045,6 +1064,20 @@ impl KclValue {
         convert_units: bool,
         exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
+        match self {
+            KclValue::Tuple { value, .. } if value.len() == 1 && !matches!(ty, RuntimeType::Tuple(..)) => {
+                if let Ok(coerced) = value[0].coerce(ty, convert_units, exec_state) {
+                    return Ok(coerced);
+                }
+            }
+            KclValue::HomArray { value, .. } if value.len() == 1 && !matches!(ty, RuntimeType::Array(..)) => {
+                if let Ok(coerced) = value[0].coerce(ty, convert_units, exec_state) {
+                    return Ok(coerced);
+                }
+            }
+            _ => {}
+        }
+
         match ty {
             RuntimeType::Primitive(ty) => self.coerce_to_primitive_type(ty, convert_units, exec_state),
             RuntimeType::Array(ty, len) => self.coerce_to_array_type(ty, convert_units, *len, exec_state, false),
@@ -1060,15 +1093,11 @@ impl KclValue {
         convert_units: bool,
         exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
-        let value = match self {
-            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } if value.len() == 1 => &value[0],
-            _ => self,
-        };
         match ty {
-            PrimitiveType::Any => Ok(value.clone()),
+            PrimitiveType::Any => Ok(self.clone()),
             PrimitiveType::Number(ty) => {
                 if convert_units {
-                    return ty.coerce(value);
+                    return ty.coerce(self);
                 }
 
                 // Instead of converting units, reinterpret the number as having
@@ -1077,7 +1106,7 @@ impl KclValue {
                 // If the user is explicitly specifying units, treat the value
                 // as having had its units erased, rather than forcing the user
                 // to explicitly erase them.
-                if let KclValue::Number { value: n, meta, .. } = &value {
+                if let KclValue::Number { value: n, meta, .. } = &self {
                     if ty.is_fully_specified() {
                         let value = KclValue::Number {
                             ty: NumericType::Any,
@@ -1087,34 +1116,34 @@ impl KclValue {
                         return ty.coerce(&value);
                     }
                 }
-                ty.coerce(value)
+                ty.coerce(self)
             }
-            PrimitiveType::String => match value {
-                KclValue::String { .. } => Ok(value.clone()),
+            PrimitiveType::String => match self {
+                KclValue::String { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            PrimitiveType::Boolean => match value {
-                KclValue::Bool { .. } => Ok(value.clone()),
+            PrimitiveType::Boolean => match self {
+                KclValue::Bool { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            PrimitiveType::Sketch => match value {
-                KclValue::Sketch { .. } => Ok(value.clone()),
+            PrimitiveType::Sketch => match self {
+                KclValue::Sketch { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            PrimitiveType::Solid => match value {
-                KclValue::Solid { .. } => Ok(value.clone()),
+            PrimitiveType::Solid => match self {
+                KclValue::Solid { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            PrimitiveType::Plane => match value {
+            PrimitiveType::Plane => match self {
                 KclValue::String { value: s, .. }
                     if [
                         "xy", "xz", "yz", "-xy", "-xz", "-yz", "XY", "XZ", "YZ", "-XY", "-XZ", "-YZ",
                     ]
                     .contains(&&**s) =>
                 {
-                    Ok(value.clone())
+                    Ok(self.clone())
                 }
-                KclValue::Plane { .. } => Ok(value.clone()),
+                KclValue::Plane { .. } => Ok(self.clone()),
                 KclValue::Object { value, meta } => {
                     let origin = value
                         .get("origin")
@@ -1153,20 +1182,20 @@ impl KclValue {
                 }
                 _ => Err(self.into()),
             },
-            PrimitiveType::Face => match value {
-                KclValue::Face { .. } => Ok(value.clone()),
+            PrimitiveType::Face => match self {
+                KclValue::Face { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            PrimitiveType::Helix => match value {
-                KclValue::Helix { .. } => Ok(value.clone()),
+            PrimitiveType::Helix => match self {
+                KclValue::Helix { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            PrimitiveType::Edge => match value {
-                KclValue::Uuid { .. } => Ok(value.clone()),
-                KclValue::TagIdentifier { .. } => Ok(value.clone()),
+            PrimitiveType::Edge => match self {
+                KclValue::Uuid { .. } => Ok(self.clone()),
+                KclValue::TagIdentifier { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            PrimitiveType::Axis2d => match value {
+            PrimitiveType::Axis2d => match self {
                 KclValue::Object { value: values, meta } => {
                     if values
                         .get("origin")
@@ -1177,7 +1206,7 @@ impl KclValue {
                             .ok_or(CoercionError::from(self))?
                             .has_type(&RuntimeType::point2d())
                     {
-                        return Ok(value.clone());
+                        return Ok(self.clone());
                     }
 
                     let origin = values.get("origin").ok_or(self.into()).and_then(|p| {
@@ -1206,7 +1235,7 @@ impl KclValue {
                 }
                 _ => Err(self.into()),
             },
-            PrimitiveType::Axis3d => match value {
+            PrimitiveType::Axis3d => match self {
                 KclValue::Object { value: values, meta } => {
                     if values
                         .get("origin")
@@ -1217,7 +1246,7 @@ impl KclValue {
                             .ok_or(CoercionError::from(self))?
                             .has_type(&RuntimeType::point3d())
                     {
-                        return Ok(value.clone());
+                        return Ok(self.clone());
                     }
 
                     let origin = values.get("origin").ok_or(self.into()).and_then(|p| {
@@ -1246,21 +1275,21 @@ impl KclValue {
                 }
                 _ => Err(self.into()),
             },
-            PrimitiveType::ImportedGeometry => match value {
-                KclValue::ImportedGeometry { .. } => Ok(value.clone()),
+            PrimitiveType::ImportedGeometry => match self {
+                KclValue::ImportedGeometry { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            PrimitiveType::Function => match value {
-                KclValue::Function { .. } => Ok(value.clone()),
+            PrimitiveType::Function => match self {
+                KclValue::Function { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            PrimitiveType::TagId => match value {
-                KclValue::TagIdentifier { .. } => Ok(value.clone()),
+            PrimitiveType::TagId => match self {
+                KclValue::TagIdentifier { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            PrimitiveType::Tag => match value {
+            PrimitiveType::Tag => match self {
                 KclValue::TagDeclarator { .. } | KclValue::TagIdentifier { .. } | KclValue::Uuid { .. } => {
-                    Ok(value.clone())
+                    Ok(self.clone())
                 }
                 s @ KclValue::String { value, .. } if ["start", "end", "START", "END"].contains(&&**value) => {
                     Ok(s.clone())
@@ -1360,10 +1389,7 @@ impl KclValue {
                 value: Vec::new(),
                 ty: ty.clone(),
             }),
-            _ if len.satisfied(1, false).is_some() => Ok(KclValue::HomArray {
-                value: vec![self.coerce(ty, convert_units, exec_state)?],
-                ty: ty.clone(),
-            }),
+            _ if len.satisfied(1, false).is_some() => self.coerce(ty, convert_units, exec_state),
             _ => Err(self.into()),
         }
     }
@@ -1390,10 +1416,7 @@ impl KclValue {
                 value: Vec::new(),
                 meta: meta.clone(),
             }),
-            value if tys.len() == 1 && value.has_type(&tys[0]) => Ok(KclValue::Tuple {
-                value: vec![value.clone()],
-                meta: Vec::new(),
-            }),
+            _ if tys.len() == 1 => self.coerce(&tys[0], convert_units, exec_state),
             _ => Err(self.into()),
         }
     }
@@ -1525,7 +1548,8 @@ mod test {
         exec_state: &mut ExecState,
     ) {
         let is_subtype = value == expected_value;
-        assert_eq!(&value.coerce(super_type, true, exec_state).unwrap(), expected_value);
+        let actual = value.coerce(super_type, true, exec_state).unwrap();
+        assert_eq!(&actual, expected_value);
         assert_eq!(
             is_subtype,
             value.principal_type().is_some() && value.principal_type().unwrap().subtype(super_type),
@@ -1557,10 +1581,10 @@ mod test {
             // Array subtypes
             let aty = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::None);
             let aty1 = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(1));
-            let aty0 = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::NonEmpty);
+            let aty0 = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Minimum(1));
 
             match v {
-                KclValue::Tuple { .. } | KclValue::HomArray { .. } => {
+                KclValue::HomArray { .. } => {
                     // These will not get wrapped if possible.
                     assert_coerce_results(
                         v,
@@ -1571,53 +1595,22 @@ mod test {
                         },
                         &mut exec_state,
                     );
-                    // Coercing an empty tuple or array to an array of length 1
+                    // Coercing an empty array to an array of length 1
                     // should fail.
                     v.coerce(&aty1, true, &mut exec_state).unwrap_err();
-                    // Coercing an empty tuple or array to an array that's
+                    // Coercing an empty array to an array that's
                     // non-empty should fail.
                     v.coerce(&aty0, true, &mut exec_state).unwrap_err();
                 }
+                KclValue::Tuple { .. } => {}
                 _ => {
-                    assert_coerce_results(
-                        v,
-                        &aty,
-                        &KclValue::HomArray {
-                            value: vec![v.clone()],
-                            ty: ty.clone(),
-                        },
-                        &mut exec_state,
-                    );
-                    assert_coerce_results(
-                        v,
-                        &aty1,
-                        &KclValue::HomArray {
-                            value: vec![v.clone()],
-                            ty: ty.clone(),
-                        },
-                        &mut exec_state,
-                    );
-                    assert_coerce_results(
-                        v,
-                        &aty0,
-                        &KclValue::HomArray {
-                            value: vec![v.clone()],
-                            ty: ty.clone(),
-                        },
-                        &mut exec_state,
-                    );
+                    assert_coerce_results(v, &aty, v, &mut exec_state);
+                    assert_coerce_results(v, &aty1, v, &mut exec_state);
+                    assert_coerce_results(v, &aty0, v, &mut exec_state);
 
                     // Tuple subtype
                     let tty = RuntimeType::Tuple(vec![ty.clone()]);
-                    assert_coerce_results(
-                        v,
-                        &tty,
-                        &KclValue::Tuple {
-                            value: vec![v.clone()],
-                            meta: Vec::new(),
-                        },
-                        &mut exec_state,
-                    );
+                    assert_coerce_results(v, &tty, v, &mut exec_state);
                 }
             }
         }
@@ -1640,7 +1633,7 @@ mod test {
         let aty = RuntimeType::Array(Box::new(RuntimeType::solid()), ArrayLen::None);
         let aty0 = RuntimeType::Array(Box::new(RuntimeType::solid()), ArrayLen::Known(0));
         let aty1 = RuntimeType::Array(Box::new(RuntimeType::solid()), ArrayLen::Known(1));
-        let aty1p = RuntimeType::Array(Box::new(RuntimeType::solid()), ArrayLen::NonEmpty);
+        let aty1p = RuntimeType::Array(Box::new(RuntimeType::solid()), ArrayLen::Minimum(1));
         assert_coerce_results(
             &none,
             &aty,
@@ -1854,15 +1847,25 @@ mod test {
         );
         let tyh1 = RuntimeType::Array(
             Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
-            ArrayLen::NonEmpty,
+            ArrayLen::Minimum(1),
         );
         let tyh3 = RuntimeType::Array(
             Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
             ArrayLen::Known(3),
         );
+        let tyhm3 = RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
+            ArrayLen::Minimum(3),
+        );
+        let tyhm5 = RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
+            ArrayLen::Minimum(5),
+        );
         assert_coerce_results(&hom_arr, &tyhn, &hom_arr, &mut exec_state);
         assert_coerce_results(&hom_arr, &tyh1, &hom_arr, &mut exec_state);
         hom_arr.coerce(&tyh3, true, &mut exec_state).unwrap_err();
+        assert_coerce_results(&hom_arr, &tyhm3, &hom_arr, &mut exec_state);
+        hom_arr.coerce(&tyhm5, true, &mut exec_state).unwrap_err();
 
         let hom_arr0 = KclValue::HomArray {
             value: vec![],
@@ -2364,7 +2367,7 @@ d = cos(30)
         // Principal types
         let tym1 = RuntimeType::Array(
             Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
-            ArrayLen::NonEmpty,
+            ArrayLen::Minimum(1),
         );
 
         let result = KclValue::HomArray {

@@ -393,13 +393,8 @@ description: Operations executed truss-structure.kcl
           "type": "Number",
           "value": 3.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -533,13 +528,8 @@ description: Operations executed truss-structure.kcl
           "type": "Number",
           "value": 2.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -695,13 +685,8 @@ description: Operations executed truss-structure.kcl
           "type": "Number",
           "value": 2.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []

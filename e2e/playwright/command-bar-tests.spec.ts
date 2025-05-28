@@ -519,7 +519,7 @@ test.describe('Command bar tests', () => {
     `Zoom to fit to shared model on web`,
     { tag: ['@web'] },
     async ({ page, scene }) => {
-      if (process.env.PLATFORM !== 'web') {
+      if (process.env.TARGET !== 'web') {
         // This test is web-only
         // TODO: re-enable on CI as part of a new @web test suite
         return

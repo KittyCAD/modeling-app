@@ -13,6 +13,7 @@ arc(
   angleStart?: number,
   angleEnd?: number,
   radius?: number,
+  diameter?: number,
   interiorAbsolute?: Point2d,
   endAbsolute?: Point2d,
   tag?: TagDeclarator,
@@ -30,7 +31,8 @@ Unless this makes a lot of sense and feels like what you're looking for to const
 | `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
 | `angleStart` | [`number`](/docs/kcl-std/types/std-types-number) | Where along the circle should this arc start? | No |
 | `angleEnd` | [`number`](/docs/kcl-std/types/std-types-number) | Where along the circle should this arc end? | No |
-| `radius` | [`number`](/docs/kcl-std/types/std-types-number) | How large should the circle be? | No |
+| `radius` | [`number`](/docs/kcl-std/types/std-types-number) | How large should the circle be? Incompatible with `diameter`. | No |
+| `diameter` | [`number`](/docs/kcl-std/types/std-types-number) | How large should the circle be? Incompatible with `radius`. | No |
 | `interiorAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd` | No |
 | `endAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd` | No |
 | [`tag`](/docs/kcl-std/types/std-types-tag) | [`TagDeclarator`](/docs/kcl-lang/types#TagDeclarator) | Create a new tag which refers to this line | No |

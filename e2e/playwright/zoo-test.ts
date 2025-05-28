@@ -41,7 +41,7 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
 }>({
   tronApp: [
     async ({}, use, testInfo) => {
-      if (process.env.PLATFORM === 'web') {
+      if (process.env.TARGET === 'web') {
         await use(undefined)
         return
       }

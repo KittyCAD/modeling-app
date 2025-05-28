@@ -777,9 +777,9 @@ description: Variables in memory after executing food-service-spatula.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "origin": {
-            "x": 208.593833,
+            "x": 208.594,
             "y": 0.0,
-            "z": 75.921946,
+            "z": 75.922,
             "units": {
               "type": "Mm"
             }
@@ -787,9 +787,9 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "plane",
           "value": "Custom",
           "xAxis": {
-            "x": 0.342019894888923,
+            "x": 0.342,
             "y": -0.0,
-            "z": -0.9396927112094517,
+            "z": -0.94,
             "units": {
               "type": "Unknown"
             }
@@ -991,9 +991,9 @@ description: Variables in memory after executing food-service-spatula.kcl
         "artifactId": "[uuid]",
         "value": "gripEdgeTop",
         "xAxis": {
-          "x": 0.342019894888923,
+          "x": 0.342,
           "y": -0.0,
-          "z": -0.9396927112094517,
+          "z": -0.94,
           "units": {
             "type": "Unknown"
           }
@@ -1284,9 +1284,9 @@ description: Variables in memory after executing food-service-spatula.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "origin": {
-                "x": 208.593833,
+                "x": 208.594,
                 "y": 0.0,
-                "z": 75.921946,
+                "z": 75.922,
                 "units": {
                   "type": "Mm"
                 }
@@ -1294,9 +1294,9 @@ description: Variables in memory after executing food-service-spatula.kcl
               "type": "plane",
               "value": "Custom",
               "xAxis": {
-                "x": 0.342019894888923,
+                "x": 0.342,
                 "y": -0.0,
-                "z": -0.9396927112094517,
+                "z": -0.94,
                 "units": {
                   "type": "Unknown"
                 }
@@ -1602,9 +1602,9 @@ description: Variables in memory after executing food-service-spatula.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "origin": {
-          "x": 208.593833,
+          "x": 208.594,
           "y": 0.0,
-          "z": 75.921946,
+          "z": 75.922,
           "units": {
             "type": "Mm"
           }
@@ -1612,9 +1612,9 @@ description: Variables in memory after executing food-service-spatula.kcl
         "type": "plane",
         "value": "Custom",
         "xAxis": {
-          "x": 0.342019894888923,
+          "x": 0.342,
           "y": -0.0,
-          "z": -0.9396927112094517,
+          "z": -0.94,
           "units": {
             "type": "Unknown"
           }
@@ -1665,18 +1665,18 @@ description: Variables in memory after executing food-service-spatula.kcl
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "origin": {
-        "x": 208.593833,
+        "x": 208.594,
         "y": 0.0,
-        "z": 75.921946,
+        "z": 75.922,
         "units": {
           "type": "Mm"
         }
       },
       "value": "Custom",
       "xAxis": {
-        "x": 0.342019894888923,
+        "x": 0.342,
         "y": -0.0,
-        "z": -0.9396927112094517,
+        "z": -0.94,
         "units": {
           "type": "Unknown"
         }
@@ -2469,9 +2469,9 @@ description: Variables in memory after executing food-service-spatula.kcl
       "artifactId": "[uuid]",
       "value": "gripEdgeTop",
       "xAxis": {
-        "x": 0.342019894888923,
+        "x": 0.342,
         "y": -0.0,
-        "z": -0.9396927112094517,
+        "z": -0.94,
         "units": {
           "type": "Unknown"
         }
@@ -2762,9 +2762,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             "artifactId": "[uuid]",
             "id": "[uuid]",
             "origin": {
-              "x": 208.593833,
+              "x": 208.594,
               "y": 0.0,
-              "z": 75.921946,
+              "z": 75.922,
               "units": {
                 "type": "Mm"
               }
@@ -2772,9 +2772,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             "type": "plane",
             "value": "Custom",
             "xAxis": {
-              "x": 0.342019894888923,
+              "x": 0.342,
               "y": -0.0,
-              "z": -0.9396927112094517,
+              "z": -0.94,
               "units": {
                 "type": "Unknown"
               }

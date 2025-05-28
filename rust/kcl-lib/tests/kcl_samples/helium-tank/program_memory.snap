@@ -1051,7 +1051,7 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "origin": {
             "x": 0.0,
-            "y": 120.31578947368422,
+            "y": 120.316,
             "z": 0.0,
             "units": {
               "type": "Mm"

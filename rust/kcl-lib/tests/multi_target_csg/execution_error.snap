@@ -8,7 +8,19 @@ KCL Engine error
     ╭─[69:10]
  68 │ 
  69 │ cut000 = subtract(extrude001, tools = cut000Extrude)
-    ·          ─────────────────────┬─────────────────────
+    ·          ─────────────────────┬─────────────────────┬
+    ·                               ╰── tests/multi_target_csg/input.kcl
     ·                               ╰── tests/multi_target_csg/input.kcl
  70 │ 
     ╰────
+  ╰─▶ KCL Engine error
+      
+        × engine: Currently the engine does not support multiple targets on
+        │ subtract
+          ╭─[69:10]
+       68 │
+       69 │ cut000 = subtract(extrude001, tools = cut000Extrude)
+          ·          ─────────────────────┬─────────────────────
+          ·                               ╰── tests/multi_target_csg/input.kcl
+       70 │
+          ╰────

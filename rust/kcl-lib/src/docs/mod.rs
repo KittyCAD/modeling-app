@@ -578,12 +578,6 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn to_autocomplete_snippet(&self) -> Result<String> {
         if self.name() == "loft" {
             return Ok("loft([${0:sketch000}, ${1:sketch001}])".to_string());
-        } else if self.name() == "union" {
-            return Ok("union([${0:extrude001}, ${1:extrude002}])".to_string());
-        } else if self.name() == "subtract" {
-            return Ok("subtract([${0:extrude001}], tools = [${1:extrude002}])".to_string());
-        } else if self.name() == "intersect" {
-            return Ok("intersect([${0:extrude001}, ${1:extrude002}])".to_string());
         } else if self.name() == "subtract2D" {
             return Ok("subtract2d(${0:%}, tool = ${1:%})".to_string());
         }
@@ -994,7 +988,7 @@ mod tests {
             panic!();
         };
         let snippet = fillet_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"fillet(radius = ${0:3.14}, tags = [${1:tag_or_edge_fn}])"#);
+        assert_eq!(snippet, r#"fillet(radius = ${0:10}, tags = [${1:tag_or_edge_fn}])"#);
     }
 
     #[test]
@@ -1014,11 +1008,14 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_pattern_circular_3d() {
         // We test this one specifically because it has ints and floats and strings.
-        let pattern_fn: Box<dyn StdLibFn> = Box::new(crate::std::patterns::PatternCircular3D);
-        let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("patternCircular3d").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"patternCircular3d(${0:%}, instances = ${1:10}, axis = [${2:1}, ${3:0}, ${4:0}], center = [${5:0}, ${6:0}, ${7:0}])"#
+            r#"patternCircular3d(instances = ${0:10}, axis = [${1:1}, ${2:0}, ${3:0}], center = [${4:0}, ${5:0}, ${6:0}])"#
         );
     }
 
@@ -1040,7 +1037,7 @@ mod tests {
         };
         let snippet = circle_fn.to_autocomplete_snippet();
         assert_eq!(
-            snippet, r#"circle(center = [${0:0}, ${1:0}], diameter = ${2:3.14})"#,
+            snippet, r#"circle(center = [${0:0}, ${1:0}], diameter = ${2:10})"#,
             "actual = left, expected = right"
         );
     }
@@ -1051,7 +1048,7 @@ mod tests {
         let snippet = arc_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"arc(${0:%}, angleStart = ${1:3.14}, angleEnd = ${2:3.14}, radius = ${3:3.14})"#
+            r#"arc(${0:%}, angleStart = ${1:3.14}, angleEnd = ${2:3.14}, diameter = ${3:3.14})"#
         );
     }
 
@@ -1077,12 +1074,12 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_appearance() {
-        let appearance_fn: Box<dyn StdLibFn> = Box::new(crate::std::appearance::Appearance);
-        let snippet = appearance_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"appearance(${0:%}, color = ${1:"#.to_owned() + "\"#" + r#"ff0000"})"#
-        );
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(helix_fn) = data.find_by_name("appearance").unwrap() else {
+            panic!();
+        };
+        let snippet = helix_fn.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"appearance(color = ${0:"ff0000"})"#);
     }
 
     #[test]
@@ -1115,28 +1112,37 @@ mod tests {
         let snippet = helix_fn.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"helix(revolutions = ${0:3.14}, angleStart = ${1:3.14}, radius = ${2:3.14}, axis = ${3:X}, length = ${4:3.14})"#
+            r#"helix(revolutions = ${0:10}, angleStart = ${1:10}, radius = ${2:10}, axis = ${3:X}, length = ${4:10})"#
         );
     }
 
     #[test]
     fn get_autocomplete_snippet_union() {
-        let union_fn: Box<dyn StdLibFn> = Box::new(crate::std::csg::Union);
-        let snippet = union_fn.to_autocomplete_snippet().unwrap();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("union").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
         assert_eq!(snippet, r#"union([${0:extrude001}, ${1:extrude002}])"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_subtract() {
-        let subtract_fn: Box<dyn StdLibFn> = Box::new(crate::std::csg::Subtract);
-        let snippet = subtract_fn.to_autocomplete_snippet().unwrap();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("subtract").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
         assert_eq!(snippet, r#"subtract([${0:extrude001}], tools = [${1:extrude002}])"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_intersect() {
-        let intersect_fn: Box<dyn StdLibFn> = Box::new(crate::std::csg::Intersect);
-        let snippet = intersect_fn.to_autocomplete_snippet().unwrap();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("intersect").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
         assert_eq!(snippet, r#"intersect([${0:extrude001}, ${1:extrude002}])"#);
     }
 
@@ -1154,29 +1160,32 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_scale() {
-        let scale_fn: Box<dyn StdLibFn> = Box::new(crate::std::transform::Scale);
-        let snippet = scale_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"scale(${0:%}, x = ${1:3.14}, y = ${2:3.14}, z = ${3:3.14})"#);
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("scale").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"scale(x = ${0:10}, y = ${1:10}, z = ${2:10})"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_translate() {
-        let translate_fn: Box<dyn StdLibFn> = Box::new(crate::std::transform::Translate);
-        let snippet = translate_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"translate(${0:%}, x = ${1:3.14}, y = ${2:3.14}, z = ${3:3.14})"#
-        );
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("translate").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"translate(x = ${0:10}, y = ${1:10}, z = ${2:10})"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_rotate() {
-        let rotate_fn: Box<dyn StdLibFn> = Box::new(crate::std::transform::Rotate);
-        let snippet = rotate_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"rotate(${0:%}, roll = ${1:3.14}, pitch = ${2:3.14}, yaw = ${3:3.14})"#
-        );
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("rotate").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"rotate(roll = ${0:10}, pitch = ${1:10}, yaw = ${2:10})"#);
     }
 
     #[test]
@@ -1197,7 +1206,7 @@ mod tests {
             panic!();
         };
         let snippet = offset_plane_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"offsetPlane(${0:XY}, offset = ${1:3.14})"#);
+        assert_eq!(snippet, r#"offsetPlane(${0:XY}, offset = ${1:10})"#);
     }
 
     // We want to test the snippets we compile at lsp start.

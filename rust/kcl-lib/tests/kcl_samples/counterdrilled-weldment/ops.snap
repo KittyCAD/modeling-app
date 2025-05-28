@@ -1488,13 +1488,9 @@ description: Operations executed counterdrilled-weldment.kcl
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -1598,13 +1594,8 @@ description: Operations executed counterdrilled-weldment.kcl
           "type": "Number",
           "value": 2.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -1637,13 +1628,9 @@ description: Operations executed counterdrilled-weldment.kcl
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -1747,13 +1734,8 @@ description: Operations executed counterdrilled-weldment.kcl
           "type": "Number",
           "value": 2.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
