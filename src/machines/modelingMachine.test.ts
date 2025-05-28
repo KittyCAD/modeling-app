@@ -1086,26 +1086,6 @@ p3 = [342.51, 216.38],
           actor.send({
             type: 'Constrain remove constraints',
             data: constraint.pathToNode,
-            // data: {
-            //   currentValue: {
-            //     valueText: first.value,
-            //     pathToNode: first.pathToNode,
-            //     variableName: 'test_variable',
-            //   },
-            //   // Use type assertion to mock the complex type
-            //   namedValue: {
-            //     valueText: '20',
-            //     variableName: 'test_variable',
-            //     insertIndex: 0,
-            //     valueCalculated: '20',
-            //     variableDeclarationAst: createVariableDeclaration(
-            //       'test_variable',
-            //       createLiteral('20')
-            //     ),
-            //     variableIdentifierAst: createIdentifier('test_variable') as any,
-            //     valueAst: createLiteral('20'),
-            //   },
-            // },
           })
 
           // Wait for the state to change in response to the constraint
