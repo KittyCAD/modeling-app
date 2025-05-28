@@ -827,6 +827,10 @@ impl ArgData {
             Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
             Some("Plane") => Some((index, format!(r#"{label}${{{}:XY}}"#, index))),
+            Some("[tag; 2]") => Some((
+                index + 1,
+                format!(r#"{label}[${{{}:tag}}, ${{{}:tag}}]"#, index, index + 1),
+            )),
 
             Some("string") => {
                 if self.name == "color" {
