@@ -1389,7 +1389,6 @@ export function removeSingleConstraint({
         const labeledArgs = filteredArgs.map((arg) => {
           if (arg.label?.name === toReplace) {
             // Find the raw value to use for the argument being replaced
-            console.trace('rawVars', rawArgs, toReplace)
             const rawArgVersion = rawArgs.find(
               (a) => a.type === 'labeledArg' && a.key === toReplace
             )
