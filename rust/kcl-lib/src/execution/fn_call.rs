@@ -1,7 +1,6 @@
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use super::{types::ArrayLen, EnvironmentRef};
 use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
@@ -10,7 +9,8 @@ use crate::{
         kcl_value::FunctionSource,
         memory,
         types::RuntimeType,
-        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo,
+        TagIdentifier,
     },
     parsing::ast::types::{CallExpressionKw, DefaultParamVal, FunctionExpression, Node, Program, Type},
     source_range::SourceRange,
@@ -294,7 +294,7 @@ impl Node<CallExpressionKw> {
                 // exec_state.
                 let func = fn_name.get_result(exec_state, ctx).await?.clone();
 
-                let Some(fn_src) = func.as_fn() else {
+                let Some(fn_src) = func.as_function() else {
                     return Err(KclError::Semantic(KclErrorDetails::new(
                         "cannot call this because it isn't a function".to_string(),
                         vec![callsite],
@@ -787,18 +787,8 @@ fn coerce_result_type(
 ) -> Result<Option<KclValue>, KclError> {
     if let Ok(Some(val)) = result {
         if let Some(ret_ty) = &fn_def.return_type {
-            let mut ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range())
+            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range())
                 .map_err(|e| KclError::Semantic(e.into()))?;
-            // Treat `[T; 1+]` as `T | [T; 1+]` (which can't yet be expressed in our syntax of types).
-            // This is a very specific hack which exists because some std functions can produce arrays
-            // but usually only make a singleton and the frontend expects the singleton.
-            // If we can make the frontend work on arrays (or at least arrays of length 1), then this
-            // can be removed.
-            // I believe this is safe, since anywhere which requires an array should coerce the singleton
-            // to an array and we only do this hack for return values.
-            if let RuntimeType::Array(inner, ArrayLen::Minimum(1)) = &ty {
-                ty = RuntimeType::Union(vec![(**inner).clone(), ty]);
-            }
             let val = val.coerce(&ty, true, exec_state).map_err(|_| {
                 KclError::Semantic(KclErrorDetails::new(
                     format!(

@@ -71,15 +71,10 @@ description: Operations executed cpu-cooler.kcl
     "name": "patternLinear3d",
     "unlabeledArg": {
       "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
       },
       "sourceRange": []
     },
@@ -445,26 +440,16 @@ description: Operations executed cpu-cooler.kcl
             "type": "Array",
             "value": [
               {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Solid",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                ]
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
               },
               {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Solid",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                ]
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
               }
             ]
           },
