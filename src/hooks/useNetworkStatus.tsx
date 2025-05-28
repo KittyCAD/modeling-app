@@ -168,6 +168,10 @@ export function useNetworkStatus() {
 
             if (engineConnectionState.value.type === DisconnectingType.Error) {
               setError(engineConnectionState.value.value)
+            } else if (
+              engineConnectionState.value.type === DisconnectingType.Quit
+            ) {
+              return structuredClone(initialConnectingTypeGroupState)
             }
           }
         }

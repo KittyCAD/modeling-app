@@ -140,14 +140,27 @@ export const EngineStream = (props: {
   }
 
   useEffect(() => {
+    // Signal engineStreamMachine also that we're offline
+    const onOffline = () => {
+      engineStreamActor.send({ type: EngineStreamTransition.Stop })
+    }
+
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.SceneReady,
       play
+    )
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.Offline,
+      onOffline
     )
     return () => {
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.SceneReady,
         play
+      )
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.Offline,
+        onOffline
       )
     }
   }, [])

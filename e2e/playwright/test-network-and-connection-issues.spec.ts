@@ -156,6 +156,7 @@ test.describe('Test network related behaviors', () => {
 
       // Expect the network to be down
       await networkToggle.hover()
+
       await expect(networkToggle).toContainText('Problem')
 
       // Ensure we are not in sketch mode

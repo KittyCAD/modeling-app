@@ -1325,6 +1325,9 @@ export enum EngineCommandManagerEvents {
 
   // the whole scene is ready (settings loaded)
   SceneReady = 'scene-ready',
+
+  // we're offline
+  Offline = 'offline',
 }
 
 /**
@@ -1374,6 +1377,7 @@ export class EngineCommandManager extends EventTarget {
    * This is compared to the {@link outSequence} number to determine if we should ignore
    * any out-of-order late responses in the unreliable channel.
    */
+  keepForcefulOffline = false
   inSequence = 1
   engineConnection?: EngineConnection
   commandLogs: CommandLog[] = []
@@ -1487,6 +1491,11 @@ export class EngineCommandManager extends EventTarget {
     if (settings) {
       this.settings = settings
     }
+
+    if (this.keepForcefulOffline) {
+      return
+    }
+
     if (width === 0 || height === 0) {
       return
     }
@@ -1905,7 +1914,23 @@ export class EngineCommandManager extends EventTarget {
       this.engineCommandManager.engineConnection = null
     }
     this.engineConnection = undefined
+    this.dispatchEvent(new CustomEvent(EngineCommandManagerEvents.Offline, {}))
   }
+
+  offline() {
+    this.keepForcefulOffline = true
+    this.tearDown()
+    console.log('offline')
+  }
+
+  online() {
+    this.keepForcefulOffline = false
+    this.dispatchEvent(
+      new CustomEvent(EngineCommandManagerEvents.EngineRestartRequest, {})
+    )
+    console.log('online')
+  }
+
   async startNewSession() {
     this.responseMap = {}
   }
