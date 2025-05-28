@@ -22,7 +22,7 @@ async fn _assert(value: bool, message: &str, args: &Args) -> Result<(), KclError
 
 pub async fn assert_is(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let actual = args.get_unlabeled_kw_arg_typed("actual", &RuntimeType::bool(), exec_state)?;
-    let error = args.get_kw_arg_opt("error")?;
+    let error = args.get_kw_arg_opt_typed("error", &RuntimeType::string(), exec_state)?;
     inner_assert_is(actual, error, &args).await?;
     Ok(KclValue::none())
 }
@@ -31,13 +31,13 @@ pub async fn assert_is(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// with the provided description.
 pub async fn assert(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let actual = args.get_unlabeled_kw_arg_typed("actual", &RuntimeType::num_any(), exec_state)?;
-    let gt = args.get_kw_arg_opt("isGreaterThan")?;
-    let lt = args.get_kw_arg_opt("isLessThan")?;
-    let gte = args.get_kw_arg_opt("isGreaterThanOrEqual")?;
-    let lte = args.get_kw_arg_opt("isLessThanOrEqual")?;
-    let eq = args.get_kw_arg_opt("isEqualTo")?;
-    let tolerance = args.get_kw_arg_opt("tolerance")?;
-    let error = args.get_kw_arg_opt("error")?;
+    let gt = args.get_kw_arg_opt_typed("isGreaterThan", &RuntimeType::num_any(), exec_state)?;
+    let lt = args.get_kw_arg_opt_typed("isLessThan", &RuntimeType::num_any(), exec_state)?;
+    let gte = args.get_kw_arg_opt_typed("isGreaterThanOrEqual", &RuntimeType::num_any(), exec_state)?;
+    let lte = args.get_kw_arg_opt_typed("isLessThanOrEqual", &RuntimeType::num_any(), exec_state)?;
+    let eq = args.get_kw_arg_opt_typed("isEqualTo", &RuntimeType::num_any(), exec_state)?;
+    let tolerance = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::num_any(), exec_state)?;
+    let error = args.get_kw_arg_opt_typed("error", &RuntimeType::string(), exec_state)?;
     inner_assert(actual, gt, lt, gte, lte, eq, tolerance, error, &args).await?;
     Ok(KclValue::none())
 }

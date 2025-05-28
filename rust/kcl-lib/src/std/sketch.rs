@@ -107,7 +107,7 @@ pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result
     let start_radius: TyF64 = args.get_kw_arg_typed("startRadius", &RuntimeType::length(), exec_state)?;
     let end_radius: TyF64 = args.get_kw_arg_typed("endRadius", &RuntimeType::length(), exec_state)?;
     let angle: TyF64 = args.get_kw_arg_typed("angle", &RuntimeType::angle(), exec_state)?;
-    let reverse = args.get_kw_arg_opt("reverse")?;
+    let reverse = args.get_kw_arg_opt_typed("reverse", &RuntimeType::bool(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
     let new_sketch =
         inner_involute_circular(sketch, start_radius, end_radius, angle, reverse, tag, exec_state, args).await?;
@@ -839,9 +839,10 @@ async fn inner_angled_line_to_y(
 pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch =
         args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
-    let angle: TyF64 = args.get_kw_arg("angle")?;
-    let intersect_tag: TagIdentifier = args.get_kw_arg("intersectTag")?;
-    let offset: Option<TyF64> = args.get_kw_arg_opt("offset")?;
+    let angle: TyF64 = args.get_kw_arg_typed("angle", &RuntimeType::angle(), exec_state)?;
+    let intersect_tag: TagIdentifier =
+        args.get_kw_arg_typed("intersectTag", &RuntimeType::tag_identifier(), exec_state)?;
+    let offset = args.get_kw_arg_opt_typed("offset", &RuntimeType::length(), exec_state)?;
     let tag: Option<TagNode> = args.get_kw_arg_opt("tag")?;
     let new_sketch =
         inner_angled_line_that_intersects(sketch, angle, intersect_tag, offset, tag, exec_state, args).await?;
@@ -963,7 +964,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
         &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::plane()]),
         exec_state,
     )?;
-    let face = args.get_kw_arg_opt("face")?;
+    let face = args.get_kw_arg_opt_typed("face", &RuntimeType::tag(), exec_state)?;
 
     match inner_start_sketch_on(data, face, exec_state, &args).await? {
         SketchSurface::Plane(value) => Ok(KclValue::Plane { value }),

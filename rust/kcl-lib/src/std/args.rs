@@ -28,6 +28,8 @@ use crate::{
     ModuleId,
 };
 
+use super::fillet::EdgeReference;
+
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`";
 
@@ -214,10 +216,10 @@ impl Args {
 
     /// Get a labelled keyword arg, check it's an array, and return all items in the array
     /// plus their source range.
-    pub(crate) fn kw_arg_array_and_source<T>(&self, label: &str) -> Result<Vec<(T, SourceRange)>, KclError>
-    where
-        T: for<'a> FromKclValue<'a>,
-    {
+    pub(crate) fn kw_arg_edge_array_and_source(
+        &self,
+        label: &str,
+    ) -> Result<Vec<(EdgeReference, SourceRange)>, KclError> {
         let Some(arg) = self.kw_args.labeled.get(label) else {
             let err = KclError::Semantic(KclErrorDetails::new(
                 format!("This function requires a keyword argument '{label}'"),
@@ -233,11 +235,7 @@ impl Args {
                 let source = SourceRange::from(item);
                 let val = FromKclValue::from_kcl_val(item).ok_or_else(|| {
                     KclError::Semantic(KclErrorDetails::new(
-                        format!(
-                            "Expected a {} but found {}",
-                            tynm::type_name::<T>(),
-                            arg.value.human_friendly_type()
-                        ),
+                        format!("Expected an Edge but found {}", arg.value.human_friendly_type()),
                         arg.source_ranges(),
                     ))
                 })?;

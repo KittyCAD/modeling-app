@@ -70,7 +70,7 @@ async fn call_map_closure(
 pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let array: Vec<KclValue> = args.get_unlabeled_kw_arg_typed("array", &RuntimeType::any_array(), exec_state)?;
     let f: &FunctionSource = args.get_kw_arg("f")?;
-    let initial: KclValue = args.get_kw_arg("initial")?;
+    let initial: KclValue = args.get_kw_arg_typed("initial", &RuntimeType::any(), exec_state)?;
     inner_reduce(array, initial, f, exec_state, &args).await
 }
 
@@ -128,7 +128,7 @@ async fn call_reduce_closure(
 
 pub async fn push(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (mut array, ty) = args.get_unlabeled_kw_arg_array_and_type("array", exec_state)?;
-    let item: KclValue = args.get_kw_arg("item")?;
+    let item: KclValue = args.get_kw_arg_typed("item", &RuntimeType::any(), exec_state)?;
 
     array.push(item);
 
