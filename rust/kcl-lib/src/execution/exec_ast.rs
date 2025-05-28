@@ -944,6 +944,9 @@ impl Node<MemberExpression> {
                     )))
                 }
             }
+            // Singletons and single-element arrays should be interchangeable, but only indexing by 0 should work.
+            // This is kind of a silly property, but it's possible it occurs in generic code or something.
+            (obj, Property::UInt(0), _) => Ok(obj),
             (KclValue::HomArray { .. }, p, _) => {
                 let t = p.type_name();
                 let article = article_for(t);
@@ -1979,6 +1982,38 @@ startSketchOn(XY)
         let e = parse_execute(ast).await.unwrap_err();
         // Make sure we get a useful error message and not an engine error.
         assert!(e.message().contains("sqrt"), "Error message: '{}'", e.message());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn non_array_fns() {
+        let ast = r#"push(1, item = 2)
+pop(1)
+map(1, f = fn(@x) { return x + 1 })
+reduce(1, f = fn(@x, accum) { return accum + x}, initial = 0)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn non_array_indexing() {
+        let good = r#"a = 42
+good = a[0]
+"#;
+        let result = parse_execute(good).await.unwrap();
+        let mem = result.exec_state.stack();
+        let num = mem
+            .memory
+            .get_from("good", result.mem_env, SourceRange::default(), 0)
+            .unwrap()
+            .as_ty_f64()
+            .unwrap();
+        assert_eq!(num.n, 42.0);
+
+        let bad = r#"a = 42
+bad = a[1]
+"#;
+
+        parse_execute(bad).await.unwrap_err();
     }
 
     #[tokio::test(flavor = "multi_thread")]
