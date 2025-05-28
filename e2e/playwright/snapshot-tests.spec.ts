@@ -375,11 +375,11 @@ test.describe(
       await expect(u.codeLocator).toHaveText(code)
 
       await toolbar.selectTangentialArc()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(200)
 
       // click to continue profile
       await page.mouse.click(813, 392)
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(300)
 
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
@@ -472,11 +472,11 @@ test.describe(
       await expect(u.codeLocator).toHaveText(code)
 
       await toolbar.selectTangentialArc()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(200)
 
       // click to continue profile
       await page.mouse.click(813, 392)
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(300)
 
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
