@@ -9,11 +9,11 @@ Construct a circle derived from 3 points.
 
 ```kcl
 circleThreePoint(
-  @sketchSurfaceOrGroup: Sketch | Plane | Face,
+  @sketchOrSurface: Sketch | Plane | Face,
   p1: Point2d,
   p2: Point2d,
   p3: Point2d,
-  tag?: TagDeclarator,
+  tag?: tag,
 ): Sketch
 ```
 
@@ -23,11 +23,11 @@ circleThreePoint(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketchSurfaceOrGroup` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Face`](/docs/kcl-std/types/std-types-Face) | Plane or surface to sketch on. | Yes |
+| `sketchOrSurface` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Face`](/docs/kcl-std/types/std-types-Face) | Plane or surface to sketch on. | Yes |
 | `p1` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | 1st point to derive the circle. | Yes |
 | `p2` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | 2nd point to derive the circle. | Yes |
 | `p3` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | 3rd point to derive the circle. | Yes |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`TagDeclarator`](/docs/kcl-lang/types#TagDeclarator) | Identifier for the circle to reference elsewhere. | No |
+| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Identifier for the circle to reference elsewhere. | No |
 
 ### Returns
 
@@ -38,7 +38,7 @@ circleThreePoint(
 
 ```kcl
 exampleSketch = startSketchOn(XY)
-  |> circleThreePoint(p1 = [10, 10], p2 = [20, 8], p3 = [15, 5])
+  |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5])
   |> extrude(length = 5)
 ```
 

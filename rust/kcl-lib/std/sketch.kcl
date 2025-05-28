@@ -31,7 +31,7 @@
 @(impl = std_rust)
 export fn circle(
   /// Sketch to extend, or plane or surface to sketch on.
-  @sketch_or_surface: Sketch | Plane | Face,
+  @sketchOrSurface: Sketch | Plane | Face,
   /// The center of the circle.
   @(snippetArray = ["0", "0"])
   center: Point2d,
@@ -43,6 +43,115 @@ export fn circle(
   /// Create a new tag which refers to this circle.
   tag?: tag,
 ): Sketch {}
+
+/// Extend a 2-dimensional sketch through a third dimension in order to
+/// create new 3-dimensional volume, or if extruded into an existing volume,
+/// cut into an existing solid.
+///
+/// You can provide more than one sketch to extrude, and they will all be
+/// extruded in the same direction.
+///
+/// ```kcl
+/// example = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> arc(
+///     angleStart = 120,
+///     angleEnd = 0,
+///     radius = 5,
+///   )
+///   |> line(end = [5, 0])
+///   |> line(end = [0, 10])
+///   |> bezierCurve(
+///        control1 = [-10, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
+///   |> line(end = [-5, -2])
+///   |> close()
+///   |> extrude(length = 10)
+/// ```
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [-10, 0])
+///   |> arc(
+///     angleStart = 120,
+///     angleEnd = -60,
+///     radius = 5,
+///   )
+///   |> line(end = [10, 0])
+///   |> line(end = [5, 0])
+///   |> bezierCurve(
+///        control1 = [-3, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
+///   |> line(end = [-4, 10])
+///   |> line(end = [-5, -2])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [-10, 0])
+///   |> arc(
+///     angleStart = 120,
+///     angleEnd = -60,
+///     radius = 5,
+///   )
+///   |> line(end = [10, 0])
+///   |> line(end = [5, 0])
+///   |> bezierCurve(
+///        control1 = [-3, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
+///   |> line(end = [-4, 10])
+///   |> line(end = [-5, -2])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 20, symmetric = true)
+/// ```
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [-10, 0])
+///   |> arc(
+///     angleStart = 120,
+///     angleEnd = -60,
+///     radius = 5,
+///   )
+///   |> line(end = [10, 0])
+///   |> line(end = [5, 0])
+///   |> bezierCurve(
+///        control1 = [-3, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
+///   |> line(end = [-4, 10])
+///   |> line(end = [-5, -2])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10, bidirectionalLength = 50)
+/// ```
+@(impl = std_rust)
+export fn extrude(
+  /// Which sketch or sketches should be extruded.
+  @sketches: [Sketch; 1+],
+  /// How far to extrude the given sketches.
+  length: number(Length),
+  /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
+  symmetric?: bool,
+  /// If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.
+  bidirectionalLength?: number(Length),
+  /// A named tag for the face at the start of the extrusion, i.e. the original sketch.
+  tagStart?: tag,
+  /// A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch.
+  tagEnd?: tag,
+): [Solid; 1+] {}
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
 ///
@@ -57,7 +166,7 @@ export fn circle(
 /// You can provide more than one sketch to revolve, and they will all be
 /// revolved around the same axis.
 ///
-/// ```
+/// ```kcl
 /// part001 = startSketchOn(XY)
 ///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
@@ -71,7 +180,7 @@ export fn circle(
 ///     |> revolve(axis = Y) // default angle is 360
 /// ```
 ///
-/// ```
+/// ```kcl
 /// // A donut shape.
 /// sketch001 = startSketchOn(XY)
 ///     |> circle( center = [15, 0], radius = 5 )
@@ -81,7 +190,7 @@ export fn circle(
 ///     )
 /// ```
 ///
-/// ```
+/// ```kcl
 /// part001 = startSketchOn(XY)
 ///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
@@ -95,7 +204,7 @@ export fn circle(
 ///     |> revolve(axis = Y, angle = 180)
 /// ```
 ///
-/// ```
+/// ```kcl
 /// part001 = startSketchOn(XY)
 ///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
@@ -117,7 +226,7 @@ export fn circle(
 ///     |> extrude(length = 5)
 /// ```
 ///
-/// ```
+/// ```kcl
 /// box = startSketchOn(XY)
 ///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
@@ -134,7 +243,7 @@ export fn circle(
 ///     )
 /// ```
 ///
-/// ```
+/// ```kcl
 /// box = startSketchOn(XY)
 ///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
@@ -151,7 +260,7 @@ export fn circle(
 ///     )
 /// ```
 ///
-/// ```
+/// ```kcl
 /// box = startSketchOn(XY)
 ///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
@@ -169,7 +278,7 @@ export fn circle(
 ///     )
 /// ```
 ///
-/// ```
+/// ```kcl
 /// sketch001 = startSketchOn(XY)
 ///   |> startProfile(at = [10, 0])
 ///   |> line(end = [5, -5])
@@ -186,7 +295,7 @@ export fn circle(
 /// )
 /// ```
 ///
-/// ```
+/// ```kcl
 /// // Revolve two sketches around the same axis.
 ///
 /// sketch001 = startSketchOn(XY)
@@ -210,7 +319,7 @@ export fn circle(
 /// )
 /// ```
 ///
-/// ```
+/// ```kcl
 /// // Revolve around a path that has not been extruded.
 ///
 /// profile001 = startSketchOn(XY)
@@ -225,7 +334,7 @@ export fn circle(
 ///     |> revolve(angle = 90, axis = revolveAxis)
 /// ```
 ///
-/// ```
+/// ```kcl
 /// // Revolve around a path that has not been extruded or closed.
 ///
 /// profile001 = startSketchOn(XY)
@@ -238,7 +347,7 @@ export fn circle(
 ///     |> revolve(angle = 90, axis = revolveAxis)
 /// ```
 ///
-/// ```
+/// ```kcl
 /// // Symmetrically revolve around a path.
 ///
 /// profile001 = startSketchOn(XY)
@@ -251,7 +360,7 @@ export fn circle(
 ///     |> revolve(angle = 90, axis = revolveAxis, symmetric = true)
 /// ```
 ///
-/// ```
+/// ```kcl
 /// // Bidirectional revolve around a path.
 ///
 /// profile001 = startSketchOn(XY)
@@ -438,3 +547,65 @@ export fn getCommonEdge(
   /// The tags of the faces you want to find the common edge between.
   faces: [tag; 2],
 ): Edge {}
+
+/// Construct a circle derived from 3 points.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XY)
+///   |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5])
+///   |> extrude(length = 5)
+/// ```
+@(impl = std_rust)
+export fn circleThreePoint(
+  /// Plane or surface to sketch on.
+  @sketchOrSurface: Sketch | Plane | Face,
+  /// 1st point to derive the circle.
+  p1: Point2d,
+  /// 2nd point to derive the circle.
+  p2: Point2d,
+  /// 3rd point to derive the circle.
+  p3: Point2d,
+  /// Identifier for the circle to reference elsewhere.
+  tag?: tag,
+): Sketch {}
+
+/// Create a regular polygon with the specified number of sides that is either inscribed or circumscribed around a circle of the specified radius.
+///
+/// ```kcl
+/// // Create a regular hexagon inscribed in a circle of radius 10
+/// hex = startSketchOn(XY)
+///   |> polygon(
+///     radius = 10,
+///     numSides = 6,
+///     center = [0, 0],
+///     inscribed = true,
+///   )
+///
+/// example = extrude(hex, length = 5)
+/// ```
+///
+/// ```kcl
+/// // Create a square circumscribed around a circle of radius 5
+/// square = startSketchOn(XY)
+///   |> polygon(
+///     radius = 5.0,
+///     numSides = 4,
+///     center = [10, 10],
+///     inscribed = false,
+///   )
+/// example = extrude(square, length = 5)
+/// ```
+@(impl = std_rust)
+export fn polygon(
+  /// Plane or surface to sketch on.
+  @sketchOrSurface: Sketch | Plane | Face,
+  /// The radius of the polygon.
+  radius: number(Length),
+  /// The number of sides in the polygon.
+  numSides: number(Count),
+  /// The center point of the polygon.
+  @(snippetValueArray = ["0", "0"])
+  center: Point2d,
+  /// Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius.
+  inscribed?: bool = true,
+): Sketch {}

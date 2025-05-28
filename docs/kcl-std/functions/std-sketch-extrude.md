@@ -1,39 +1,43 @@
 ---
 title: "extrude"
 subtitle: "Function in std::sketch"
-excerpt: "Extend a 2-dimensional sketch through a third dimension in order to create new 3-dimensional volume, or if extruded into an existing volume, cut into an existing solid."
+excerpt: ""
 layout: manual
 ---
 
-Extend a 2-dimensional sketch through a third dimension in order to create new 3-dimensional volume, or if extruded into an existing volume, cut into an existing solid.
+
 
 ```kcl
 extrude(
-  @sketches: [Sketch],
-  length: number,
+  @sketches: [Sketch; 1+],
+  length: number(Length),
   symmetric?: bool,
-  bidirectionalLength?: number,
-  tagStart?: TagDeclarator,
-  tagEnd?: TagDeclarator,
-): [Solid]
+  bidirectionalLength?: number(Length),
+  tagStart?: tag,
+  tagEnd?: tag,
+): [Solid; 1+]
 ```
 
-You can provide more than one sketch to extrude, and they will all be extruded in the same direction.
+Extend a 2-dimensional sketch through a third dimension in order to
+create new 3-dimensional volume, or if extruded into an existing volume,cut into an existing solid.
+
+You can provide more than one sketch to extrude, and they will all be
+extruded in the same direction.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [`[Sketch]`](/docs/kcl-std/types/std-types-Sketch) | Which sketch or sketches should be extruded | Yes |
-| `length` | [`number`](/docs/kcl-std/types/std-types-number) | How far to extrude the given sketches | Yes |
+| `sketches` | [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) | Which sketch or sketches should be extruded. | Yes |
+| `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | How far to extrude the given sketches. | Yes |
 | `symmetric` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |
-| `bidirectionalLength` | [`number`](/docs/kcl-std/types/std-types-number) | If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored. | No |
-| `tagStart` | [`TagDeclarator`](/docs/kcl-lang/types#TagDeclarator) | A named tag for the face at the start of the extrusion, i.e. the original sketch | No |
-| `tagEnd` | [`TagDeclarator`](/docs/kcl-lang/types#TagDeclarator) | A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch | No |
+| `bidirectionalLength` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored. | No |
+| `tagStart` | [`tag`](/docs/kcl-std/types/std-types-tag) | A named tag for the face at the start of the extrusion, i.e. the original sketch. | No |
+| `tagEnd` | [`tag`](/docs/kcl-std/types/std-types-tag) | A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch. | No |
 
 ### Returns
 
-[`[Solid]`](/docs/kcl-std/types/std-types-Solid)
+[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
 
 
 ### Examples
@@ -42,10 +46,18 @@ You can provide more than one sketch to extrude, and they will all be extruded i
 example = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
-  |> arc(angleStart = 120, angleEnd = 0, radius = 5)
+  |> arc(
+    angleStart = 120,
+    angleEnd = 0,
+    radius = 5,
+  )
   |> line(end = [5, 0])
   |> line(end = [0, 10])
-  |> bezierCurve(control1 = [-10, 0], control2 = [2, 10], end = [-5, 10])
+  |> bezierCurve(
+       control1 = [-10, 0],
+       control2 = [2, 10],
+       end = [-5, 10],
+     )
   |> line(end = [-5, -2])
   |> close()
   |> extrude(length = 10)
@@ -56,10 +68,18 @@ example = startSketchOn(XZ)
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [-10, 0])
-  |> arc(angleStart = 120, angleEnd = -60, radius = 5)
+  |> arc(
+    angleStart = 120,
+    angleEnd = -60,
+    radius = 5,
+  )
   |> line(end = [10, 0])
   |> line(end = [5, 0])
-  |> bezierCurve(control1 = [-3, 0], control2 = [2, 10], end = [-5, 10])
+  |> bezierCurve(
+       control1 = [-3, 0],
+       control2 = [2, 10],
+       end = [-5, 10],
+     )
   |> line(end = [-4, 10])
   |> line(end = [-5, -2])
   |> close()
@@ -72,10 +92,18 @@ example = extrude(exampleSketch, length = 10)
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [-10, 0])
-  |> arc(angleStart = 120, angleEnd = -60, radius = 5)
+  |> arc(
+    angleStart = 120,
+    angleEnd = -60,
+    radius = 5,
+  )
   |> line(end = [10, 0])
   |> line(end = [5, 0])
-  |> bezierCurve(control1 = [-3, 0], control2 = [2, 10], end = [-5, 10])
+  |> bezierCurve(
+       control1 = [-3, 0],
+       control2 = [2, 10],
+       end = [-5, 10],
+     )
   |> line(end = [-4, 10])
   |> line(end = [-5, -2])
   |> close()
@@ -88,10 +116,18 @@ example = extrude(exampleSketch, length = 20, symmetric = true)
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [-10, 0])
-  |> arc(angleStart = 120, angleEnd = -60, radius = 5)
+  |> arc(
+    angleStart = 120,
+    angleEnd = -60,
+    radius = 5,
+  )
   |> line(end = [10, 0])
   |> line(end = [5, 0])
-  |> bezierCurve(control1 = [-3, 0], control2 = [2, 10], end = [-5, 10])
+  |> bezierCurve(
+       control1 = [-3, 0],
+       control2 = [2, 10],
+       end = [-5, 10],
+     )
   |> line(end = [-4, 10])
   |> line(end = [-5, -2])
   |> close()

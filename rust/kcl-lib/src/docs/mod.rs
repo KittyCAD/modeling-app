@@ -976,9 +976,12 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_extrude() {
-        let extrude_fn: Box<dyn StdLibFn> = Box::new(crate::std::extrude::Extrude);
-        let snippet = extrude_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"extrude(${0:%}, length = ${1:3.14})"#);
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("extrude").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"extrude(length = ${0:10})"#);
     }
 
     #[test]
@@ -1225,18 +1228,21 @@ mod tests {
 
     #[test]
     fn get_extrude_signature_help() {
-        let extrude_fn: Box<dyn StdLibFn> = Box::new(crate::std::extrude::Extrude);
-        let sh = extrude_fn.to_signature_help();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("extrude").unwrap() else {
+            panic!();
+        };
+        let sh = data.to_signature_help();
         assert_eq!(
             sh.signatures[0].label,
             r#"extrude(
-  @sketches: [Sketch],
-  length: number,
+  @sketches: [Sketch; 1+],
+  length: number(Length),
   symmetric?: bool,
-  bidirectionalLength?: number,
-  tagStart?: TagNode,
-  tagEnd?: TagNode,
-): [Solid]"#
+  bidirectionalLength?: number(Length),
+  tagStart?: tag,
+  tagEnd?: tag,
+): [Solid; 1+]"#
         );
     }
 }

@@ -9,9 +9,9 @@ Create a regular polygon with the specified number of sides that is either inscr
 
 ```kcl
 polygon(
-  @sketchSurfaceOrGroup: Sketch | Plane | Face,
-  radius: number,
-  numSides: u64,
+  @sketchOrSurface: Sketch | Plane | Face,
+  radius: number(Length),
+  numSides: number(_),
   center: Point2d,
   inscribed?: bool,
 ): Sketch
@@ -23,11 +23,11 @@ polygon(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketchSurfaceOrGroup` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Face`](/docs/kcl-std/types/std-types-Face) | Plane or surface to sketch on | Yes |
-| `radius` | [`number`](/docs/kcl-std/types/std-types-number) | The radius of the polygon | Yes |
-| `numSides` | `u64` | The number of sides in the polygon | Yes |
-| `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center point of the polygon | Yes |
-| `inscribed` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius | No |
+| `sketchOrSurface` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Face`](/docs/kcl-std/types/std-types-Face) | Plane or surface to sketch on. | Yes |
+| `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The radius of the polygon. | Yes |
+| `numSides` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of sides in the polygon. | Yes |
+| `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center point of the polygon. | Yes |
+| `inscribed` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius. | No |
 
 ### Returns
 
@@ -40,11 +40,11 @@ polygon(
 // Create a regular hexagon inscribed in a circle of radius 10
 hex = startSketchOn(XY)
   |> polygon(
-       radius = 10,
-       numSides = 6,
-       center = [0, 0],
-       inscribed = true,
-     )
+    radius = 10,
+    numSides = 6,
+    center = [0, 0],
+    inscribed = true,
+  )
 
 example = extrude(hex, length = 5)
 ```
@@ -55,11 +55,11 @@ example = extrude(hex, length = 5)
 // Create a square circumscribed around a circle of radius 5
 square = startSketchOn(XY)
   |> polygon(
-       radius = 5.0,
-       numSides = 4,
-       center = [10, 10],
-       inscribed = false,
-     )
+    radius = 5.0,
+    numSides = 4,
+    center = [10, 10],
+    inscribed = false,
+  )
 example = extrude(square, length = 5)
 ```
 

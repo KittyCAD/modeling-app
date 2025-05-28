@@ -45,7 +45,6 @@ pub type StdFn = fn(
 
 lazy_static! {
     static ref CORE_FNS: Vec<Box<dyn StdLibFn>> = vec![
-        Box::new(crate::std::extrude::Extrude),
         Box::new(crate::std::segment::SegEnd),
         Box::new(crate::std::segment::SegEndX),
         Box::new(crate::std::segment::SegEndY),
@@ -57,8 +56,6 @@ lazy_static! {
         Box::new(crate::std::segment::SegLen),
         Box::new(crate::std::segment::SegAng),
         Box::new(crate::std::segment::TangentToEnd),
-        Box::new(crate::std::shapes::CircleThreePoint),
-        Box::new(crate::std::shapes::Polygon),
         Box::new(crate::std::sketch::InvoluteCircular),
         Box::new(crate::std::sketch::Line),
         Box::new(crate::std::sketch::XLine),
@@ -301,6 +298,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::shapes::circle(e, a)),
             StdFnProps::default("std::sketch::circle"),
         ),
+        ("sketch", "extrude") => (
+            |e, a| Box::pin(crate::std::extrude::extrude(e, a)),
+            StdFnProps::default("std::sketch::extrude").include_in_feature_tree(),
+        ),
         ("sketch", "patternTransform2d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
             StdFnProps::default("std::sketch::patternTransform2d"),
@@ -308,6 +309,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch", "revolve") => (
             |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
             StdFnProps::default("std::sketch::revolve").include_in_feature_tree(),
+        ),
+        ("sketch", "polygon") => (
+            |e, a| Box::pin(crate::std::shapes::polygon(e, a)),
+            StdFnProps::default("std::sketch::polygon"),
+        ),
+        ("sketch", "circleThreePoint") => (
+            |e, a| Box::pin(crate::std::shapes::circle_three_point(e, a)),
+            StdFnProps::default("std::sketch::circleThreePoint"),
         ),
         ("sketch", "getCommonEdge") => (
             |e, a| Box::pin(crate::std::edge::get_common_edge(e, a)),

@@ -644,13 +644,13 @@ impl FnData {
         format!("{}({})", self.preferred_name, args.join(", "))
     }
 
-    fn to_signature_help(&self) -> SignatureHelp {
+    pub(crate) fn to_signature_help(&self) -> SignatureHelp {
         // TODO Fill this in based on the current position of the cursor.
         let active_parameter = None;
 
         SignatureHelp {
             signatures: vec![SignatureInformation {
-                label: self.preferred_name.clone(),
+                label: self.preferred_name.clone() + &self.fn_signature(),
                 documentation: self.short_docs().map(|s| {
                     Documentation::MarkupContent(MarkupContent {
                         kind: MarkupKind::Markdown,
