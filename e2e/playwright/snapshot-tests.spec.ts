@@ -1,4 +1,3 @@
-import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import {
@@ -390,7 +389,7 @@ test.describe(
       // click tangential arc tool again to unequip it
       // it will be available directly in the toolbar since it was last equipped
       await toolbar.tangentialArcBtn.click()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(1000)
 
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
