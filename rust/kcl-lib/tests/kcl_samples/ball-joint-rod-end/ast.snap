@@ -35,10 +35,6 @@ description: Result of parsing ball-joint-rod-end.kcl
         "end": 0,
         "kind": "const",
         "preComments": [
-          "// ball joint rod end",
-          "// A ball joint rod end is a mechanical linkage component that consists of a spherical ball housed within a socket, connected to a threaded rod, allowing rotational movement in multiple directions while providing a secure connection point between two parts of a mechanical system. Commonly used in steering systems and suspension components.",
-          "",
-          "",
           "// variables"
         ],
         "start": 0,
@@ -3652,7 +3648,6 @@ description: Result of parsing ball-joint-rod-end.kcl
         "end": 0,
         "kind": "const",
         "preComments": [
-          "// |> fillet(radius = 1, tags = [getNextAdjacentEdge(kink)]) // TOD0, this fillet does weird things, add back in when fixed",
           "",
           "",
           "// second part of the shalft is a extrude that will add the flats and the filleted taper to get to the retaining ring width"
@@ -6396,6 +6391,84 @@ description: Result of parsing ball-joint-rod-end.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "name": {
+          "commentStart": 0,
+          "end": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "preComments": [
+          "// ball joint rod end",
+          "// A ball joint rod end is a mechanical linkage component that consists of a spherical ball housed within a socket, connected to a threaded rod, allowing rotational movement in multiple directions while providing a secure connection point between two parts of a mechanical system. Commonly used in steering systems and suspension components.",
+          "",
+          "",
+          "// Set Units"
+        ],
+        "properties": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "defaultLengthUnit",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "raw": "1.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
     "nonCodeMeta": {
       "nonCodeNodes": {
         "17": [
@@ -6443,7 +6516,17 @@ description: Result of parsing ball-joint-rod-end.kcl
           }
         ]
       },
-      "startNodes": []
+      "startNodes": [
+        {
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
     },
     "start": 0
   }

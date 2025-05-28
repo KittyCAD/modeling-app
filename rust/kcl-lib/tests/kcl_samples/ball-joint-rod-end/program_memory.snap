@@ -9,7 +9,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"
@@ -44,7 +44,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "Arc",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -63,7 +63,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -82,7 +82,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -101,7 +101,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -120,7 +120,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         }
       ],
@@ -164,7 +164,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           5.292
         ],
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         },
         "tag": null,
         "__geoMeta": {
@@ -175,7 +175,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       }
     }
   },
@@ -185,7 +185,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"
@@ -193,209 +193,214 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     }
   },
   "ballRevolve": {
-    "type": "Solid",
-    "value": {
-      "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
+    "type": "HomArray",
+    "value": [
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
           "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        }
-      ],
-      "sketch": {
-        "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              -0.0,
-              -0.0
-            ],
-            "from": [
-              -6.0,
-              5.292
-            ],
-            "radius": 8.0,
-            "tag": null,
-            "to": [
-              6.0,
-              5.292
-            ],
-            "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              6.0,
-              5.292
-            ],
-            "tag": null,
-            "to": [
-              6.0,
-              4.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              6.0,
-              4.0
-            ],
-            "tag": null,
-            "to": [
-              -6.0,
-              4.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -6.0,
-              4.0
-            ],
-            "tag": null,
-            "to": [
-              -6.0,
-              5.292
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -6.0,
-              5.292
-            ],
-            "tag": null,
-            "to": [
-              -6.0,
-              5.292
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          }
-        ],
-        "on": {
           "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "origin": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
             }
-          },
-          "type": "plane",
-          "value": "YZ",
-          "xAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
-          }
-        },
-        "start": {
-          "from": [
-            -6.0,
-            5.292
           ],
-          "to": [
-            -6.0,
-            5.292
-          ],
-          "units": {
-            "type": "Mm"
-          },
-          "tag": null,
-          "__geoMeta": {
+          "sketch": {
+            "type": "Sketch",
             "id": "[uuid]",
-            "sourceRange": []
-          }
-        },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": false,
+                "center": [
+                  -0.0,
+                  -0.0
+                ],
+                "from": [
+                  -6.0,
+                  5.292
+                ],
+                "radius": 8.0,
+                "tag": null,
+                "to": [
+                  6.0,
+                  5.292
+                ],
+                "type": "Arc",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  6.0,
+                  5.292
+                ],
+                "tag": null,
+                "to": [
+                  6.0,
+                  4.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  6.0,
+                  4.0
+                ],
+                "tag": null,
+                "to": [
+                  -6.0,
+                  4.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -6.0,
+                  4.0
+                ],
+                "tag": null,
+                "to": [
+                  -6.0,
+                  5.292
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -6.0,
+                  5.292
+                ],
+                "tag": null,
+                "to": [
+                  -6.0,
+                  5.292
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "type": "plane",
+              "value": "YZ",
+              "xAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              }
+            },
+            "start": {
+              "from": [
+                -6.0,
+                5.292
+              ],
+              "to": [
+                -6.0,
+                5.292
+              ],
+              "units": {
+                "type": "Inches"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "height": 0.0,
+          "startCapId": null,
+          "endCapId": null,
+          "units": {
+            "type": "Inches"
+          },
+          "sectional": false
         }
-      },
-      "height": 0.0,
-      "startCapId": null,
-      "endCapId": null,
-      "units": {
-        "type": "Mm"
-      },
-      "sectional": false
-    }
+      }
+    ]
   },
   "ballSketch": {
     "type": "Plane",
@@ -435,7 +440,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"
@@ -483,7 +488,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "Circle",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           }
         ],
@@ -527,7 +532,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             0.0
           ],
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           },
           "tag": null,
           "__geoMeta": {
@@ -538,14 +543,14 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         }
       },
       "height": 100.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "sectional": false
     }
@@ -556,7 +561,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"
@@ -569,7 +574,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"
@@ -582,7 +587,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"
@@ -595,7 +600,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"
@@ -608,7 +613,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"
@@ -621,7 +626,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"
@@ -634,7 +639,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"
@@ -650,7 +655,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "ty": {
           "type": "Default",
           "len": {
-            "type": "Mm"
+            "type": "Inches"
           },
           "angle": {
             "type": "Degrees"
@@ -663,7 +668,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "ty": {
           "type": "Default",
           "len": {
-            "type": "Mm"
+            "type": "Inches"
           },
           "angle": {
             "type": "Degrees"
@@ -690,7 +695,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": -37.0,
+        "z": -939.8,
         "units": {
           "type": "Mm"
         }
@@ -723,7 +728,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "ty": {
           "type": "Default",
           "len": {
-            "type": "Mm"
+            "type": "Inches"
           },
           "angle": {
             "type": "Degrees"
@@ -736,7 +741,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "ty": {
           "type": "Default",
           "len": {
-            "type": "Mm"
+            "type": "Inches"
           },
           "angle": {
             "type": "Degrees"
@@ -751,7 +756,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"
@@ -786,7 +791,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "Circle",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         }
       ],
@@ -796,7 +801,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": -37.0,
+          "z": -939.8,
           "units": {
             "type": "Mm"
           }
@@ -830,7 +835,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           0.0
         ],
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         },
         "tag": null,
         "__geoMeta": {
@@ -841,7 +846,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       }
     }
   },
@@ -873,7 +878,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "Circle",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         }
       ],
@@ -917,7 +922,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           0.0
         ],
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         },
         "tag": null,
         "__geoMeta": {
@@ -928,7 +933,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       }
     }
   },
@@ -938,7 +943,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"
@@ -973,7 +978,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "Arc",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -992,7 +997,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -1017,7 +1022,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "Arc",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -1036,7 +1041,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -1055,7 +1060,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         }
       ],
@@ -1099,7 +1104,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           10.037
         ],
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         },
         "tag": null,
         "__geoMeta": {
@@ -1110,7 +1115,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       }
     }
   },
@@ -1176,7 +1181,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "Arc",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -1195,7 +1200,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -1220,7 +1225,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "Arc",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -1239,7 +1244,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -1258,7 +1263,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           }
         ],
@@ -1302,7 +1307,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             10.037
           ],
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           },
           "tag": null,
           "__geoMeta": {
@@ -1313,14 +1318,14 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         }
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "sectional": false
     }
@@ -1406,7 +1411,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"
@@ -1421,7 +1426,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": -37.0,
+        "z": -939.8,
         "units": {
           "type": "Mm"
         }
@@ -1498,9 +1503,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2565,
-            "end": 2571,
-            "start": 2565,
+            "commentStart": 2631,
+            "end": 2637,
+            "start": 2631,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -1511,9 +1516,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2653,
-            "end": 2658,
-            "start": 2653,
+            "commentStart": 2719,
+            "end": 2724,
+            "start": 2719,
             "type": "TagDeclarator",
             "value": "kink"
           },
@@ -1548,9 +1553,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               -36.0
             ],
             "tag": {
-              "commentStart": 2565,
-              "end": 2571,
-              "start": 2565,
+              "commentStart": 2631,
+              "end": 2637,
+              "start": 2631,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -1560,7 +1565,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -1573,9 +1578,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               -36.0
             ],
             "tag": {
-              "commentStart": 2653,
-              "end": 2658,
-              "start": 2653,
+              "commentStart": 2719,
+              "end": 2724,
+              "start": 2719,
               "type": "TagDeclarator",
               "value": "kink"
             },
@@ -1585,7 +1590,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -1616,7 +1621,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ArcThreePoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -1635,7 +1640,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -1654,7 +1659,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -1673,7 +1678,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           }
         ],
@@ -1717,7 +1722,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             -36.0
           ],
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           },
           "tag": null,
           "__geoMeta": {
@@ -1738,14 +1743,14 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         }
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "sectional": false
     }
@@ -1762,9 +1767,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2565,
-            "end": 2571,
-            "start": 2565,
+            "commentStart": 2631,
+            "end": 2637,
+            "start": 2631,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -1775,9 +1780,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2653,
-            "end": 2658,
-            "start": 2653,
+            "commentStart": 2719,
+            "end": 2724,
+            "start": 2719,
             "type": "TagDeclarator",
             "value": "kink"
           },
@@ -1812,9 +1817,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               -36.0
             ],
             "tag": {
-              "commentStart": 2565,
-              "end": 2571,
-              "start": 2565,
+              "commentStart": 2631,
+              "end": 2637,
+              "start": 2631,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -1824,7 +1829,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -1837,9 +1842,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               -36.0
             ],
             "tag": {
-              "commentStart": 2653,
-              "end": 2658,
-              "start": 2653,
+              "commentStart": 2719,
+              "end": 2724,
+              "start": 2719,
               "type": "TagDeclarator",
               "value": "kink"
             },
@@ -1849,7 +1854,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -1880,7 +1885,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ArcThreePoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -1899,7 +1904,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -1918,7 +1923,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -1937,7 +1942,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           }
         ],
@@ -1981,7 +1986,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             -36.0
           ],
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           },
           "tag": null,
           "__geoMeta": {
@@ -2002,14 +2007,14 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         }
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "sectional": false
     }
@@ -2026,9 +2031,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2565,
-            "end": 2571,
-            "start": 2565,
+            "commentStart": 2631,
+            "end": 2637,
+            "start": 2631,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -2039,9 +2044,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2653,
-            "end": 2658,
-            "start": 2653,
+            "commentStart": 2719,
+            "end": 2724,
+            "start": 2719,
             "type": "TagDeclarator",
             "value": "kink"
           },
@@ -2076,9 +2081,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               -36.0
             ],
             "tag": {
-              "commentStart": 2565,
-              "end": 2571,
-              "start": 2565,
+              "commentStart": 2631,
+              "end": 2637,
+              "start": 2631,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -2088,7 +2093,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2101,9 +2106,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               -36.0
             ],
             "tag": {
-              "commentStart": 2653,
-              "end": 2658,
-              "start": 2653,
+              "commentStart": 2719,
+              "end": 2724,
+              "start": 2719,
               "type": "TagDeclarator",
               "value": "kink"
             },
@@ -2113,7 +2118,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2144,7 +2149,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ArcThreePoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2163,7 +2168,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2182,7 +2187,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2201,7 +2206,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           }
         ],
@@ -2245,7 +2250,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             -36.0
           ],
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           },
           "tag": null,
           "__geoMeta": {
@@ -2266,14 +2271,14 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         }
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "sectional": false
     }
@@ -2290,9 +2295,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2565,
-            "end": 2571,
-            "start": 2565,
+            "commentStart": 2631,
+            "end": 2637,
+            "start": 2631,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -2303,9 +2308,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2653,
-            "end": 2658,
-            "start": 2653,
+            "commentStart": 2719,
+            "end": 2724,
+            "start": 2719,
             "type": "TagDeclarator",
             "value": "kink"
           },
@@ -2340,9 +2345,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               -36.0
             ],
             "tag": {
-              "commentStart": 2565,
-              "end": 2571,
-              "start": 2565,
+              "commentStart": 2631,
+              "end": 2637,
+              "start": 2631,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -2352,7 +2357,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2365,9 +2370,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               -36.0
             ],
             "tag": {
-              "commentStart": 2653,
-              "end": 2658,
-              "start": 2653,
+              "commentStart": 2719,
+              "end": 2724,
+              "start": 2719,
               "type": "TagDeclarator",
               "value": "kink"
             },
@@ -2377,7 +2382,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2408,7 +2413,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ArcThreePoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2427,7 +2432,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2446,7 +2451,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2465,7 +2470,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           }
         ],
@@ -2509,7 +2514,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             -36.0
           ],
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           },
           "tag": null,
           "__geoMeta": {
@@ -2530,14 +2535,14 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         }
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "sectional": false
     }
@@ -2548,7 +2553,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"
@@ -2596,7 +2601,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "Circle",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           }
         ],
@@ -2606,7 +2611,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": -37.0,
+            "z": -939.8,
             "units": {
               "type": "Mm"
             }
@@ -2640,7 +2645,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             0.0
           ],
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           },
           "tag": null,
           "__geoMeta": {
@@ -2651,14 +2656,14 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         }
       },
       "height": 19.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "sectional": false
     }
@@ -2682,9 +2687,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3481,
-            "end": 3491,
-            "start": 3481,
+            "commentStart": 3423,
+            "end": 3433,
+            "start": 3423,
             "type": "TagDeclarator",
             "value": "longflats"
           },
@@ -2695,9 +2700,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3515,
-            "end": 3521,
-            "start": 3515,
+            "commentStart": 3457,
+            "end": 3463,
+            "start": 3457,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -2708,9 +2713,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3626,
-            "end": 3632,
-            "start": 3626,
+            "commentStart": 3568,
+            "end": 3574,
+            "start": 3568,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -2728,9 +2733,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3731,
-            "end": 3737,
-            "start": 3731,
+            "commentStart": 3673,
+            "end": 3679,
+            "start": 3673,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2741,9 +2746,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3814,
-            "end": 3820,
-            "start": 3814,
+            "commentStart": 3756,
+            "end": 3762,
+            "start": 3756,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2784,7 +2789,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2797,9 +2802,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               -37.0
             ],
             "tag": {
-              "commentStart": 3481,
-              "end": 3491,
-              "start": 3481,
+              "commentStart": 3423,
+              "end": 3433,
+              "start": 3423,
               "type": "TagDeclarator",
               "value": "longflats"
             },
@@ -2809,7 +2814,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2822,9 +2827,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               -10.16
             ],
             "tag": {
-              "commentStart": 3515,
-              "end": 3521,
-              "start": 3515,
+              "commentStart": 3457,
+              "end": 3463,
+              "start": 3457,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -2834,7 +2839,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2847,9 +2852,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               -7.56
             ],
             "tag": {
-              "commentStart": 3626,
-              "end": 3632,
-              "start": 3626,
+              "commentStart": 3568,
+              "end": 3574,
+              "start": 3568,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -2859,7 +2864,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2878,7 +2883,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2891,9 +2896,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3731,
-              "end": 3737,
-              "start": 3731,
+              "commentStart": 3673,
+              "end": 3679,
+              "start": 3673,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -2903,7 +2908,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2916,9 +2921,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               -7.56
             ],
             "tag": {
-              "commentStart": 3814,
-              "end": 3820,
-              "start": 3814,
+              "commentStart": 3756,
+              "end": 3762,
+              "start": 3756,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -2928,7 +2933,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2947,7 +2952,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2966,7 +2971,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -2985,7 +2990,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           }
         ],
@@ -3029,7 +3034,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             -37.0
           ],
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           },
           "tag": null,
           "__geoMeta": {
@@ -3062,7 +3067,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         }
       },
       "height": 40.0,
@@ -3077,7 +3082,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             "ty": {
               "type": "Default",
               "len": {
-                "type": "Mm"
+                "type": "Inches"
               },
               "angle": {
                 "type": "Degrees"
@@ -3095,7 +3100,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             "ty": {
               "type": "Default",
               "len": {
-                "type": "Mm"
+                "type": "Inches"
               },
               "angle": {
                 "type": "Degrees"
@@ -3107,7 +3112,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         }
       ],
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "sectional": false
     }
@@ -3134,7 +3139,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -3147,9 +3152,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             -37.0
           ],
           "tag": {
-            "commentStart": 3481,
-            "end": 3491,
-            "start": 3481,
+            "commentStart": 3423,
+            "end": 3433,
+            "start": 3423,
             "type": "TagDeclarator",
             "value": "longflats"
           },
@@ -3159,7 +3164,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -3172,9 +3177,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             -10.16
           ],
           "tag": {
-            "commentStart": 3515,
-            "end": 3521,
-            "start": 3515,
+            "commentStart": 3457,
+            "end": 3463,
+            "start": 3457,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -3184,7 +3189,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -3197,9 +3202,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             -7.56
           ],
           "tag": {
-            "commentStart": 3626,
-            "end": 3632,
-            "start": 3626,
+            "commentStart": 3568,
+            "end": 3574,
+            "start": 3568,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -3209,7 +3214,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -3228,7 +3233,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -3241,9 +3246,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3731,
-            "end": 3737,
-            "start": 3731,
+            "commentStart": 3673,
+            "end": 3679,
+            "start": 3673,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -3253,7 +3258,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -3266,9 +3271,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             -7.56
           ],
           "tag": {
-            "commentStart": 3814,
-            "end": 3820,
-            "start": 3814,
+            "commentStart": 3756,
+            "end": 3762,
+            "start": 3756,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -3278,7 +3283,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -3297,7 +3302,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -3316,7 +3321,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -3335,7 +3340,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         }
       ],
@@ -3379,7 +3384,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           -37.0
         ],
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         },
         "tag": null,
         "__geoMeta": {
@@ -3412,7 +3417,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       }
     }
   },
@@ -3428,9 +3433,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2565,
-            "end": 2571,
-            "start": 2565,
+            "commentStart": 2631,
+            "end": 2637,
+            "start": 2631,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -3441,9 +3446,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2653,
-            "end": 2658,
-            "start": 2653,
+            "commentStart": 2719,
+            "end": 2724,
+            "start": 2719,
             "type": "TagDeclarator",
             "value": "kink"
           },
@@ -3478,9 +3483,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               -36.0
             ],
             "tag": {
-              "commentStart": 2565,
-              "end": 2571,
-              "start": 2565,
+              "commentStart": 2631,
+              "end": 2637,
+              "start": 2631,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -3490,7 +3495,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -3503,9 +3508,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               -36.0
             ],
             "tag": {
-              "commentStart": 2653,
-              "end": 2658,
-              "start": 2653,
+              "commentStart": 2719,
+              "end": 2724,
+              "start": 2719,
               "type": "TagDeclarator",
               "value": "kink"
             },
@@ -3515,7 +3520,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -3546,7 +3551,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ArcThreePoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -3565,7 +3570,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -3584,7 +3589,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           },
           {
@@ -3603,7 +3608,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             }
           }
         ],
@@ -3647,7 +3652,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             -36.0
           ],
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           },
           "tag": null,
           "__geoMeta": {
@@ -3668,14 +3673,14 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         }
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "sectional": false
     }
@@ -3696,9 +3701,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             -36.0
           ],
           "tag": {
-            "commentStart": 2565,
-            "end": 2571,
-            "start": 2565,
+            "commentStart": 2631,
+            "end": 2637,
+            "start": 2631,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -3708,7 +3713,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -3721,9 +3726,9 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             -36.0
           ],
           "tag": {
-            "commentStart": 2653,
-            "end": 2658,
-            "start": 2653,
+            "commentStart": 2719,
+            "end": 2724,
+            "start": 2719,
             "type": "TagDeclarator",
             "value": "kink"
           },
@@ -3733,7 +3738,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -3764,7 +3769,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ArcThreePoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -3783,7 +3788,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -3802,7 +3807,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         },
         {
@@ -3821,7 +3826,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Mm"
+            "type": "Inches"
           }
         }
       ],
@@ -3865,7 +3870,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           -36.0
         ],
         "units": {
-          "type": "Mm"
+          "type": "Inches"
         },
         "tag": null,
         "__geoMeta": {
@@ -3886,7 +3891,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
-        "type": "Mm"
+        "type": "Inches"
       }
     }
   },
@@ -3960,7 +3965,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "ty": {
       "type": "Default",
       "len": {
-        "type": "Mm"
+        "type": "Inches"
       },
       "angle": {
         "type": "Degrees"

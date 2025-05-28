@@ -30,7 +30,7 @@ description: Operations executed ball-joint-rod-end.kcl
             "ty": {
               "type": "Default",
               "len": {
-                "type": "Mm"
+                "type": "Inches"
               },
               "angle": {
                 "type": "Degrees"
@@ -83,7 +83,7 @@ description: Operations executed ball-joint-rod-end.kcl
             "ty": {
               "type": "Default",
               "len": {
-                "type": "Mm"
+                "type": "Inches"
               },
               "angle": {
                 "type": "Degrees"
@@ -121,7 +121,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "ty": {
             "type": "Default",
             "len": {
-              "type": "Mm"
+              "type": "Inches"
             },
             "angle": {
               "type": "Degrees"
@@ -243,7 +243,7 @@ description: Operations executed ball-joint-rod-end.kcl
             "ty": {
               "type": "Default",
               "len": {
-                "type": "Mm"
+                "type": "Inches"
               },
               "angle": {
                 "type": "Degrees"
@@ -281,7 +281,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "ty": {
             "type": "Default",
             "len": {
-              "type": "Mm"
+              "type": "Inches"
             },
             "angle": {
               "type": "Degrees"
@@ -390,7 +390,7 @@ description: Operations executed ball-joint-rod-end.kcl
             "ty": {
               "type": "Default",
               "len": {
-                "type": "Mm"
+                "type": "Inches"
               },
               "angle": {
                 "type": "Degrees"
@@ -441,7 +441,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "ty": {
             "type": "Default",
             "len": {
-              "type": "Mm"
+              "type": "Inches"
             },
             "angle": {
               "type": "Degrees"
@@ -556,7 +556,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "ty": {
             "type": "Default",
             "len": {
-              "type": "Mm"
+              "type": "Inches"
             },
             "angle": {
               "type": "Degrees"
@@ -588,7 +588,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "ty": {
             "type": "Default",
             "len": {
-              "type": "Mm"
+              "type": "Inches"
             },
             "angle": {
               "type": "Degrees"
@@ -632,7 +632,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "ty": {
             "type": "Default",
             "len": {
-              "type": "Mm"
+              "type": "Inches"
             },
             "angle": {
               "type": "Degrees"
@@ -715,7 +715,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "ty": {
             "type": "Default",
             "len": {
-              "type": "Mm"
+              "type": "Inches"
             },
             "angle": {
               "type": "Degrees"
@@ -806,7 +806,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "ty": {
             "type": "Default",
             "len": {
-              "type": "Mm"
+              "type": "Inches"
             },
             "angle": {
               "type": "Degrees"
@@ -851,7 +851,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "ty": {
             "type": "Default",
             "len": {
-              "type": "Mm"
+              "type": "Inches"
             },
             "angle": {
               "type": "Degrees"
