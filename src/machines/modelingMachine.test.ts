@@ -167,7 +167,7 @@ p3 = [342.51, 216.38],
       namedConstantConstraint: TestDetails[]
       removeAllConstraintsCases: TestDetails[]
       removeIndividualConstraintsCases: TestDetails[]
-      deleteSegment: TestDetails[]
+      deleteSegment: Omit<TestDetails, 'expectedResult' | 'constraintIndex'>[]
     }
   } = {
     line: {
@@ -247,7 +247,18 @@ p3 = [342.51, 216.38],
           expectedResult: 'line(endAbsolute = [testVar1, 66])',
         },
       ],
-      deleteSegment: [],
+      deleteSegment: [
+        {
+          name: 'should delete rel-line',
+          ...makeStraightSegmentSnippet('line(end = [testVar1, testVar2])'),
+        },
+        {
+          name: 'should delete abs-line',
+          ...makeStraightSegmentSnippet(
+            'line(endAbsolute = [testVar1, testVar2])'
+          ),
+        },
+      ],
     },
     xLine: {
       namedConstantConstraint: [
@@ -294,7 +305,16 @@ p3 = [342.51, 216.38],
           expectedResult: 'xLine(endAbsolute = 55)',
         },
       ],
-      deleteSegment: [],
+      deleteSegment: [
+        {
+          name: 'should delete xLine',
+          ...makeStraightSegmentSnippet('xLine(length = 15)'),
+        },
+        {
+          name: 'should delete xLine',
+          ...makeStraightSegmentSnippet('xLine(endAbsolute = 15)'),
+        },
+      ],
     },
     yLine: {
       namedConstantConstraint: [
@@ -341,7 +361,16 @@ p3 = [342.51, 216.38],
           expectedResult: 'yLine(endAbsolute = 55)',
         },
       ],
-      deleteSegment: [],
+      deleteSegment: [
+        {
+          name: 'should delete yLine',
+          ...makeStraightSegmentSnippet('yLine(length = 15)'),
+        },
+        {
+          name: 'should delete yLine abs',
+          ...makeStraightSegmentSnippet('yLine(endAbsolute = 15)'),
+        },
+      ],
     },
     angledLine: {
       namedConstantConstraint: [
@@ -480,7 +509,32 @@ p3 = [342.51, 216.38],
           expectedResult: 'angledLine(angle = testVar1, lengthX = 66)',
         },
       ],
-      deleteSegment: [],
+      deleteSegment: [
+        {
+          name: 'should delete angledLine, angle length',
+          ...makeStraightSegmentSnippet('angledLine(angle = 45, length = 100)'),
+        },
+        {
+          name: 'should delete angledLine, endAbsoluteY',
+          ...makeStraightSegmentSnippet(
+            'angledLine(angle = 45, endAbsoluteY = 5)'
+          ),
+        },
+        {
+          name: 'should delete angledLine, endAbsoluteX',
+          ...makeStraightSegmentSnippet(
+            'angledLine(angle = 45, endAbsoluteX = 5)'
+          ),
+        },
+        {
+          name: 'should delete angledLine, lengthY',
+          ...makeStraightSegmentSnippet('angledLine(angle = 45, lengthY = 5)'),
+        },
+        {
+          name: 'should delete angledLine, lengthX',
+          ...makeStraightSegmentSnippet('angledLine(angle = 45, lengthX = 5)'),
+        },
+      ],
     },
     circle: {
       namedConstantConstraint: [
@@ -544,7 +598,9 @@ p3 = [342.51, 216.38],
             'circle(sketch001, center = [testVar1, 66], radius = 74.18)',
         },
       ],
-      deleteSegment: [/** TODO once circle has delete implemented */],
+      deleteSegment: [
+        /** TODO once circle has delete implemented */
+      ],
     },
     circleThreePoint: {
       namedConstantConstraint: [
@@ -638,7 +694,9 @@ p3 = [342.51, 216.38],
           filter: 'p3',
         },
       ],
-      deleteSegment: [],
+      deleteSegment: [
+        /**TODO once three point circle has delete implemented */
+      ],
     },
     tangentialArc: {
       namedConstantConstraint: [
@@ -681,7 +739,14 @@ p3 = [342.51, 216.38],
           expectedResult: 'endAbsolute = [testVar1, 66]',
         },
       ],
-      deleteSegment: [],
+      deleteSegment: [
+        {
+          name: 'should delete tangentialArc absolute',
+          ...makeStraightSegmentSnippet(
+            'tangentialArc(endAbsolute = [176.11, 19.49])'
+          ),
+        },
+      ],
     },
     arc: {
       namedConstantConstraint: [
@@ -764,10 +829,126 @@ p3 = [342.51, 216.38],
           filter: ARG_END_ABSOLUTE,
         },
       ],
-      deleteSegment: [],
+      deleteSegment: [
+        {
+          name: 'should delete threePoint Arc (interior, end)',
+          ...makeStraightSegmentSnippet(
+            'arc(interiorAbsolute = [379.93, 103.92], endAbsolute = [386.2, 162.89])'
+          ),
+        },
+      ],
     },
   }
 
+  describe('Deleting segment with three dot menu', () => {
+    const namedConstantConstraintCases = Object.values(cases).flatMap(
+      (caseGroup) => caseGroup.deleteSegment
+    )
+    namedConstantConstraintCases.forEach(
+      ({ name, code, searchText, filter }) => {
+        it(name, async () => {
+          const indexOfInterest = code.indexOf(searchText)
+
+          const ast = assertParse(code)
+
+          await kclManager.executeAst({ ast })
+
+          expect(kclManager.errors).toEqual([])
+
+          // segment artifact with that source range
+          const artifact = [...kclManager.artifactGraph].find(
+            ([_, artifact]) =>
+              artifact?.type === 'segment' &&
+              artifact.codeRef.range[0] <= indexOfInterest &&
+              indexOfInterest <= artifact.codeRef.range[1]
+          )?.[1]
+          if (!artifact || !('codeRef' in artifact)) {
+            throw new Error('Artifact not found or invalid artifact structure')
+          }
+
+          const actor = createActor(modelingMachine, {
+            input: modelingMachineDefaultContext,
+          }).start()
+
+          // Send event to transition to sketch mode
+          actor.send({
+            type: 'Set selection',
+            data: {
+              selectionType: 'mirrorCodeMirrorSelections',
+              selection: {
+                graphSelections: [
+                  {
+                    artifact: artifact,
+                    codeRef: artifact.codeRef,
+                  },
+                ],
+                otherSelections: [],
+              },
+            },
+          })
+          actor.send({ type: 'Enter sketch' })
+
+          // Check that we're in the sketch state
+          let state = actor.getSnapshot()
+          expect(state.value).toBe('animating to existing sketch')
+
+          // wait for it to transition
+          await waitForCondition(() => {
+            const snapshot = actor.getSnapshot()
+            return snapshot.value !== 'animating to existing sketch'
+          }, 5000)
+
+          // After the condition is met, do the actual assertion
+          expect(actor.getSnapshot().value).toEqual({
+            Sketch: { SketchIdle: 'scene drawn' },
+          })
+
+          const callExp = getNodeFromPath<Node<CallExpressionKw>>(
+            kclManager.ast,
+            artifact.codeRef.pathToNode,
+            'CallExpressionKw'
+          )
+          if (err(callExp)) {
+            throw new Error('Failed to get CallExpressionKw node')
+          }
+          const constraintInfo = getConstraintInfoKw(
+            callExp.node,
+            codeManager.code,
+            artifact.codeRef.pathToNode,
+            filter
+          )
+          const constraint = constraintInfo[0]
+
+          // Now that we're in sketchIdle state, test the "Constrain with named value" event
+          actor.send({
+            type: 'Delete segment',
+            data: constraint.pathToNode,
+          })
+
+          // Wait for the state to change in response to the constraint
+          await waitForCondition(() => {
+            const snapshot = actor.getSnapshot()
+            // Check if we've transitioned to a different state
+            return (
+              JSON.stringify(snapshot.value) !==
+              JSON.stringify({
+                Sketch: { SketchIdle: 'set up segments' },
+              })
+            )
+          }, 5000)
+
+          const startTime = Date.now()
+          while (
+            codeManager.code.includes(searchText) &&
+            Date.now() - startTime < 5000
+          ) {
+            await new Promise((resolve) => setTimeout(resolve, 100))
+          }
+          expect(codeManager.code).not.toContain(searchText)
+        }, 10_000)
+      }
+    )
+  })
   describe('Adding segment overlay constraints', () => {
     const namedConstantConstraintCases = Object.values(cases).flatMap(
       (caseGroup) => caseGroup.namedConstantConstraint
@@ -1112,7 +1293,6 @@ p3 = [342.51, 216.38],
           ) {
             await new Promise((resolve) => setTimeout(resolve, 100))
           }
-          // await new Promise((resolve => setTimeout(resolve, 5000)))
           expect(codeManager.code).toContain(expectedResult)
         }, 10_000)
       }
