@@ -3,13 +3,17 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing multiple-foreign-imports-all-render.kcl
 ---
 {
-  "anothercube": {
+  "__mod_anothercube": {
     "type": "Module",
     "value": 3
   },
-  "cube": {
+  "__mod_cube": {
     "type": "Module",
     "value": 1
+  },
+  "__mod_othercube": {
+    "type": "Module",
+    "value": 2
   },
   "model": {
     "type": "ImportedGeometry",
@@ -17,9 +21,5 @@ description: Variables in memory after executing multiple-foreign-imports-all-re
     "value": [
       "cube.step"
     ]
-  },
-  "othercube": {
-    "type": "Module",
-    "value": 2
   }
 }

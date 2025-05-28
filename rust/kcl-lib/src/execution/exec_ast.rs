@@ -160,8 +160,10 @@ impl ExecutorContext {
                                     .cloned();
                                 let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.name.name);
                                 let mut ty = mem.get_from(&ty_name, env_ref, import_item.into(), 0).cloned();
+                                let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.name.name);
+                                let mut mod_value = mem.get_from(&mod_name, env_ref, import_item.into(), 0).cloned();
 
-                                if value.is_err() && ty.is_err() {
+                                if value.is_err() && ty.is_err() && mod_value.is_err() {
                                     return Err(KclError::UndefinedValue(KclErrorDetails::new(
                                         format!("{} is not defined in module", import_item.name.name),
                                         vec![SourceRange::from(&import_item.name)],
@@ -180,10 +182,22 @@ impl ExecutorContext {
                                 }
 
                                 if ty.is_ok() && !module_exports.contains(&ty_name) {
-                                    ty = Err(KclError::Semantic(KclErrorDetails::new(String::new(), vec![])));
+                                    ty = Err(KclError::Semantic(KclErrorDetails::new(format!(
+                                        "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                        import_item.name.name
+                                    ),
+                                    vec![SourceRange::from(&import_item.name)],)));
                                 }
 
-                                if value.is_err() && ty.is_err() {
+                                if mod_value.is_ok() && !module_exports.contains(&mod_name) {
+                                    mod_value = Err(KclError::Semantic(KclErrorDetails::new(format!(
+                                        "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                        import_item.name.name
+                                    ),
+                                    vec![SourceRange::from(&import_item.name)],)));
+                                }
+
+                                if value.is_err() && ty.is_err() && mod_value.is_err() {
                                     return value.map(Option::Some);
                                 }
 
@@ -205,7 +219,6 @@ impl ExecutorContext {
 
                                 if let Ok(ty) = ty {
                                     let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.identifier());
-                                    // Add the item to the current module.
                                     exec_state.mut_stack().add(
                                         ty_name.clone(),
                                         ty,
@@ -214,6 +227,19 @@ impl ExecutorContext {
 
                                     if let ItemVisibility::Export = import_stmt.visibility {
                                         exec_state.mod_local.module_exports.push(ty_name);
+                                    }
+                                }
+
+                                if let Ok(mod_value) = mod_value {
+                                    let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.identifier());
+                                    exec_state.mut_stack().add(
+                                        mod_name.clone(),
+                                        mod_value,
+                                        SourceRange::from(&import_item.name),
+                                    )?;
+
+                                    if let ItemVisibility::Export = import_stmt.visibility {
+                                        exec_state.mod_local.module_exports.push(mod_name);
                                     }
                                 }
                             }
@@ -246,7 +272,11 @@ impl ExecutorContext {
                                 value: module_id,
                                 meta: vec![source_range.into()],
                             };
-                            exec_state.mut_stack().add(name, item, source_range)?;
+                            exec_state.mut_stack().add(
+                                format!("{}{}", memory::MODULE_PREFIX, name),
+                                item,
+                                source_range,
+                            )?;
                         }
                     }
                     last_expr = None;
@@ -780,8 +810,14 @@ impl Node<Name> {
             )));
         }
 
+        let mod_name = format!("{}{}", memory::MODULE_PREFIX, self.name.name);
+
         if self.path.is_empty() {
-            return exec_state.stack().get(&self.name.name, self.into());
+            let item_value = exec_state.stack().get(&self.name.name, self.into());
+            if item_value.is_ok() {
+                return item_value;
+            }
+            return exec_state.stack().get(&mod_name, self.into());
         }
 
         let mut mem_spec: Option<(EnvironmentRef, Vec<String>)> = None;
@@ -800,7 +836,9 @@ impl Node<Name> {
                         .memory
                         .get_from(&p.name, env, p.as_source_range(), 0)?
                 }
-                None => exec_state.stack().get(&p.name, self.into())?,
+                None => exec_state
+                    .stack()
+                    .get(&format!("{}{}", memory::MODULE_PREFIX, p.name), self.into())?,
             };
 
             let KclValue::Module { value: module_id, .. } = value else {
@@ -820,17 +858,40 @@ impl Node<Name> {
         }
 
         let (env, exports) = mem_spec.unwrap();
-        if !exports.contains(&self.name.name) {
-            return Err(KclError::Semantic(KclErrorDetails::new(
-                format!("Item {} not found in module's exported items", self.name.name),
-                self.name.as_source_ranges(),
-            )));
-        }
 
-        exec_state
+        let item_exported = exports.contains(&self.name.name);
+        let item_value = exec_state
             .stack()
             .memory
-            .get_from(&self.name.name, env, self.name.as_source_range(), 0)
+            .get_from(&self.name.name, env, self.name.as_source_range(), 0);
+
+        // Item is defined and exported.
+        if item_exported && item_value.is_ok() {
+            return item_value;
+        }
+
+        let mod_exported = exports.contains(&mod_name);
+        let mod_value = exec_state
+            .stack()
+            .memory
+            .get_from(&mod_name, env, self.name.as_source_range(), 0);
+
+        // Module is defined and exported.
+        if mod_exported && mod_value.is_ok() {
+            return mod_value;
+        }
+
+        // Neither item or module is defined.
+        if item_value.is_err() && mod_value.is_err() {
+            return item_value;
+        }
+
+        // Either item or module is defined, but not exported.
+        debug_assert!((item_value.is_ok() && !item_exported) || (mod_value.is_ok() && !mod_exported));
+        Err(KclError::Semantic(KclErrorDetails::new(
+            format!("Item {} not found in module's exported items", self.name.name),
+            self.name.as_source_ranges(),
+        )))
     }
 }
 

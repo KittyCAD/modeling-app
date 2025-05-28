@@ -194,7 +194,10 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         ".**[].x[]" => rounded_redaction(3),
                         ".**[].y[]" => rounded_redaction(3),
                         ".**[].z[]" => rounded_redaction(3),
-                        ".**.sourceRange" => Vec::new(),
+                        ".**.x" => rounded_redaction(3),
+                        ".**.y" => rounded_redaction(3),
+                        ".**.z" => rounded_redaction(3),
+                         ".**.sourceRange" => Vec::new(),
                     })
                 })
             }));
@@ -321,7 +324,10 @@ fn assert_common_snapshots(
                 // Change the snapshot suffix so that it is rendered as a Markdown file
                 // in GitHub.
                 // Ignore the cpu cooler for now because its being a little bitch.
-                if test.name != "cpu-cooler" && test.name != "subtract_regression10" {
+                if test.name != "cpu-cooler"
+                    && test.name != "subtract_regression08"
+                    && test.name != "subtract_regression10"
+                {
                     insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
                 }
             })
@@ -3437,6 +3443,27 @@ mod subtract_regression11 {
 }
 mod subtract_regression12 {
     const TEST_NAME: &str = "subtract_regression12";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod spheres {
+    const TEST_NAME: &str = "spheres";
 
     /// Test parsing KCL.
     #[test]

@@ -9,9 +9,9 @@ Union two or more solids into a single solid.
 
 ```kcl
 union(
-  @solids: [Solid],
-  tolerance?: number,
-): [Solid]
+  @solids: [Solid; 2+],
+  tolerance?: number(Length),
+): [Solid; 1+]
 ```
 
 
@@ -20,12 +20,12 @@ union(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`[Solid]`](/docs/kcl-std/types/std-types-Solid) | The solids to union. | Yes |
-| `tolerance` | [`number`](/docs/kcl-std/types/std-types-number) | The tolerance to use for the union operation. | No |
+| `solids` | `[Solid; 2+]` | The solids to union. | Yes |
+| `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The tolerance to use for the union operation. | No |
 
 ### Returns
 
-[`[Solid]`](/docs/kcl-std/types/std-types-Solid)
+[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
 
 
 ### Examples
@@ -33,20 +33,19 @@ union(
 ```kcl
 // Union two cubes using the stdlib functions.
 
-
 fn cube(center, size) {
-  return startSketchOn(XY)
-    |> startProfile(at = [center[0] - size, center[1] - size])
-    |> line(endAbsolute = [center[0] + size, center[1] - size])
-    |> line(endAbsolute = [center[0] + size, center[1] + size])
-    |> line(endAbsolute = [center[0] - size, center[1] + size])
-    |> close()
-    |> extrude(length = 10)
+    return startSketchOn(XY)
+        |> startProfile(at = [center[0] - size, center[1] - size])
+        |> line(endAbsolute = [center[0] + size, center[1] - size])
+        |> line(endAbsolute = [center[0] + size, center[1] + size])
+        |> line(endAbsolute = [center[0] - size, center[1] + size])
+        |> close()
+        |> extrude(length = 10)
 }
 
 part001 = cube(center = [0, 0], size = 10)
 part002 = cube(center = [7, 3], size = 5)
-  |> translate(z = 1)
+    |> translate(z = 1)
 
 unionedPart = union([part001, part002])
 ```
@@ -58,20 +57,19 @@ unionedPart = union([part001, part002])
 // NOTE: This will not work when using codemods through the UI.
 // Codemods will generate the stdlib function call instead.
 
-
 fn cube(center, size) {
-  return startSketchOn(XY)
-    |> startProfile(at = [center[0] - size, center[1] - size])
-    |> line(endAbsolute = [center[0] + size, center[1] - size])
-    |> line(endAbsolute = [center[0] + size, center[1] + size])
-    |> line(endAbsolute = [center[0] - size, center[1] + size])
-    |> close()
-    |> extrude(length = 10)
+    return startSketchOn(XY)
+        |> startProfile(at = [center[0] - size, center[1] - size])
+        |> line(endAbsolute = [center[0] + size, center[1] - size])
+        |> line(endAbsolute = [center[0] + size, center[1] + size])
+        |> line(endAbsolute = [center[0] - size, center[1] + size])
+        |> close()
+        |> extrude(length = 10)
 }
 
 part001 = cube(center = [0, 0], size = 10)
 part002 = cube(center = [7, 3], size = 5)
-  |> translate(z = 1)
+    |> translate(z = 1)
 
 // This is the equivalent of: union([part001, part002])
 unionedPart = part001 + part002
@@ -84,23 +82,22 @@ unionedPart = part001 + part002
 // NOTE: This will not work when using codemods through the UI.
 // Codemods will generate the stdlib function call instead.
 
-
 fn cube(center, size) {
-  return startSketchOn(XY)
-    |> startProfile(at = [center[0] - size, center[1] - size])
-    |> line(endAbsolute = [center[0] + size, center[1] - size])
-    |> line(endAbsolute = [center[0] + size, center[1] + size])
-    |> line(endAbsolute = [center[0] - size, center[1] + size])
-    |> close()
-    |> extrude(length = 10)
+    return startSketchOn(XY)
+        |> startProfile(at = [center[0] - size, center[1] - size])
+        |> line(endAbsolute = [center[0] + size, center[1] - size])
+        |> line(endAbsolute = [center[0] + size, center[1] + size])
+        |> line(endAbsolute = [center[0] - size, center[1] + size])
+        |> close()
+        |> extrude(length = 10)
 }
 
 part001 = cube(center = [0, 0], size = 10)
 part002 = cube(center = [7, 3], size = 5)
-  |> translate(z = 1)
+    |> translate(z = 1)
 
-  // This is the equivalent of: union([part001, part002])
-  // Programmers will understand `|` as a union operation, but mechanical engineers
+// This is the equivalent of: union([part001, part002])
+// Programmers will understand `|` as a union operation, but mechanical engineers
 // will understand `+`, we made both work.
 unionedPart = part001 | part002
 ```

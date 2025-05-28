@@ -92,6 +92,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "clock/main.kcl",
+    "multipleFiles": false,
+    "title": "Clock",
+    "description": "A clock with roman numerals",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "cold-plate/main.kcl",
     "multipleFiles": false,
     "title": "Cold Plate",
