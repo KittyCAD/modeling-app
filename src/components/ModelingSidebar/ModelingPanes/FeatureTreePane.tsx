@@ -21,6 +21,7 @@ import {
   filterOperations,
   getOperationIcon,
   getOperationLabel,
+  getOperationVariableName,
   stdLibMap,
 } from '@src/lib/operations'
 import { editorManager, kclManager, rustContext } from '@src/lib/singletons'
@@ -236,6 +237,7 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
 const OperationItemWrapper = ({
   icon,
   name,
+  variableName,
   visibilityToggle,
   menuItems,
   errors,
@@ -246,6 +248,7 @@ const OperationItemWrapper = ({
 }: React.HTMLAttributes<HTMLButtonElement> & {
   icon: CustomIconName
   name: string
+  variableName?: string
   visibilityToggle?: VisibilityToggleProps
   customSuffix?: JSX.Element
   menuItems?: ComponentProps<typeof ContextMenu>['items']
@@ -265,7 +268,10 @@ const OperationItemWrapper = ({
       >
         <CustomIcon name={icon} className="w-5 h-5 block" />
         <div className="flex items-baseline">
-          <div className="mr-2">{name}</div>
+          <div className="mr-2">
+            {name}
+            {variableName && <span className="ml-2">{variableName}</span>}
+          </div>
           {customSuffix && customSuffix}
         </div>
       </button>
@@ -290,6 +296,11 @@ const OperationItem = (props: {
 }) => {
   const kclContext = useKclContext()
   const name = getOperationLabel(props.item)
+
+  const variableName = useMemo(() => {
+    return getOperationVariableName(props.item, kclContext.ast)
+  }, [props.item, kclContext.ast])
+
   const errors = useMemo(() => {
     return kclContext.diagnostics.filter(
       (diag) =>
@@ -499,6 +510,7 @@ const OperationItem = (props: {
     <OperationItemWrapper
       icon={getOperationIcon(props.item)}
       name={name}
+      variableName={variableName}
       menuItems={menuItems}
       onClick={selectOperation}
       onDoubleClick={enterEditFlow}
