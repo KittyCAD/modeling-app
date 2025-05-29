@@ -152,13 +152,13 @@ export fn helix(
   /// Is the helix rotation counter clockwise? The default is `false`.
   ccw?: bool,
   /// Radius of the helix.
-  @(include_in_snippet = true)
+  @(includeInSnippet = true)
   radius?: number(Length),
   /// Axis to use for the helix.
-  @(include_in_snippet = true)
+  @(includeInSnippet = true)
   axis?: Axis3d | Edge,
   /// Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.
-  @(include_in_snippet = true)
+  @(includeInSnippet = true)
   length?: number(Length),
   /// Cylinder to create the helix on.
   cylinder?: Solid,
