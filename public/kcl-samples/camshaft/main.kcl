@@ -1,0 +1,164 @@
+// Camshaft
+// A camshaft is a shaft with cams attached, used to convert rotational motion into reciprocating motion. In internal combustion engines, it's crucial for controlling the opening and closing of intake and exhaust valves at precise moments, ensuring proper timing for combustion.
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define shaft parameters
+valvesPerCylinder = 4
+cylinderCount = 4
+shaftDiameter = 0.97
+supportBearingWidth = 0.45
+
+// Define cam lobe parameters
+baseCircle = 1.34
+lobeSeperation = 112
+intakeCenterline = 108
+intakeLift = 0.235
+exhaustLift = 0.235
+intakeDuration = 242
+exhaustDuration = 246
+camHeight = 0.522
+camSpacing = 0.50
+
+// Write a function to sketch a cam lobe profile given the specified parameters
+fn lobe(duration, lift) {
+  camProfile = startSketchOn(offsetPlane(XY, offset = supportBearingWidth * 2))
+    |> startProfile(at = polar(angle = 90 + duration / 4, length = baseCircle / 2))
+    |> arc(interiorAbsolute = [0, -baseCircle / 2], endAbsolute = polar(angle = 90 - (duration / 4), length = baseCircle / 2), tag = $seg02)
+    |> angledLine(angle = tangentToEnd(seg02), endAbsoluteY = baseCircle / 2 + lift, tag = $seg04)
+    |> xLine(endAbsolute = 0, tag = $seg03)
+    |> xLine(length = -segLen(seg03))
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg05)
+    |> close()
+    |> extrude(length = camHeight)
+    |> fillet(
+         radius = min([segLen(seg03), segLen(seg04)]) * 0.99,
+         tags = [
+           getCommonEdge(faces = [seg04, seg03]),
+           getCommonEdge(faces = [seg03, seg05])
+         ],
+       )
+    |> rotate(yaw = intakeCenterline)
+
+  return camProfile
+}
+
+// Create an intake and exhaust cam pair
+intake = lobe(duration = intakeDuration, lift = intakeLift)
+exhaust = lobe(duration = exhaustDuration, lift = exhaustLift)
+  |> translate(z = camHeight + camSpacing)
+  |> rotate(yaw = lobeSeperation)
+
+// Pattern the cam pair to represent the number of valves. Round odd number valves to the next highest even number
+fn valveCount(@i) {
+  return {
+    translate = [0, 0, i * (camHeight + camSpacing) * 2],
+    rotation = {
+      angle = lobeSeperation + 30 * i,
+      // Rotate around the overall scene's origin.
+      origin = 'global'
+    }
+  }
+}
+
+// Pattern the cam instances by the number of cylinders. Rotate each group to reflect the relative position of each piston
+fn cylinderPattern(@i) {
+  return {
+    translate = [
+      0,
+      0,
+      i * (2 * (camHeight + camSpacing) * round(valvesPerCylinder / 2) + supportBearingWidth)
+    ],
+    rotation = {
+      angle = 360 / cylinderCount * i,
+      // Rotate around the overall scene's origin.
+      origin = 'global'
+    }
+  }
+}
+
+// Call each pattern function in turn
+[intake, exhaust]
+  |> patternTransform(instances = round(valvesPerCylinder / 2), transform = valveCount)
+  |> patternTransform(instances = cylinderCount, transform = cylinderPattern)
+
+// Extrude a center connecting cylinder shaft to each cam position
+centerShaft = startSketchOn(XY)
+  |> circle(center = [0, 0], diameter = shaftDiameter)
+  |> extrude(length = (2 * (camHeight + camSpacing) * round(valvesPerCylinder / 2) + supportBearingWidth) * cylinderCount + supportBearingWidth)
+
+// Attach a helical timing gear to the base of the camshaft
+fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
+  // Calculate gear parameters
+  pitchDiameter = module * nTeeth
+  addendum = module
+  deddendum = 1.25 * module
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  tipDiameter = pitchDiameter + 2 * module
+
+  // Define a function to create a rotated gear sketch on an offset plane
+  fn helicalGearSketch(offsetHeight) {
+    // Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height
+    helixCalc = acos(offsetHeight * tan(helixAngle) / (tipDiameter / 2))
+
+    // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
+    helicalGearSketch = startSketchOn(offsetPlane(XY, offset = offsetHeight))
+      |> startProfile(at = polar(angle = helixCalc, length = baseDiameter / 2))
+      |> involuteCircular(
+           startRadius = baseDiameter / 2,
+           endRadius = tipDiameter / 2,
+           angle = helixCalc,
+           tag = $seg01,
+         )
+      |> line(endAbsolute = polar(angle = 160 / nTeeth + helixCalc, length = tipDiameter / 2))
+      |> involuteCircular(
+           startRadius = baseDiameter / 2,
+           endRadius = tipDiameter / 2,
+           angle = -(4 * atan(segEndY(seg01) / segEndX(seg01)) - (3 * helixCalc)),
+           reverse = true,
+         )
+
+      // Position the end line of the sketch at the start of the next tooth
+      |> line(endAbsolute = polar(angle = 360 / nTeeth + helixCalc, length = baseDiameter / 2))
+
+      // Pattern the sketch about the center by the specified number of teeth, then close the sketch
+      |> patternCircular2d(
+           %,
+           instances = nTeeth,
+           center = [0, 0],
+           arcDegrees = 360,
+           rotateDuplicates = true,
+         )
+      |> close()
+      |> subtract2d(tool = circle(center = [0, 0], diameter = shaftDiameter))
+    return helicalGearSketch
+  }
+
+  // Draw a gear sketch on the base plane
+  gearcamProfile = helicalGearSketch(offsetHeight = 0)
+
+  // Draw a rotated gear sketch on a middle interstitial plane
+  gearcenterShaft = helicalGearSketch(offsetHeight = gearHeight / 2)
+
+  // Draw a rotated gear sketch at the gear height offset plane
+  gearSketch003 = helicalGearSketch(offsetHeight = gearHeight)
+
+  // Loft each rotated gear sketch together to form a helical gear
+  helicalGear = loft([
+    gearcamProfile,
+    gearcenterShaft,
+    gearSketch003
+  ])
+
+  return helicalGear
+}
+
+// Call the timing gear function
+helicalGear(
+  nTeeth = 15,
+  module = .15,
+  pressureAngle = 20,
+  helixAngle = 55,
+  gearHeight = supportBearingWidth,
+)

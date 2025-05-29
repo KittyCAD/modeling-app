@@ -1,0 +1,39 @@
+// Cable Gland
+// A cable gland is a mechanical fitting used to attach and secure the end of an electrical cable to equipment or an enclosure. It provides strain relief, sealing against environmental factors like dust and moisture, and can ensure earth continuity if required.
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+width = 40
+length = 40
+trim = 39
+cableDiameter = 14
+
+// Model a starting hexagon with a center securement hole for the cable diameter
+core = startSketchOn(XY)
+  |> polygon(radius = width / 2, numSides = 6, center = [0, 0])
+  |> subtract2d(tool = circle(center = [0, 0], diameter = cableDiameter))
+  |> extrude(length)
+
+// Cut around the exterior to form the cable gland shape
+revolveCut = startSketchOn(YZ)
+  |> startProfile(at = [cableDiameter / 2 + 5, -0.01])
+  |> angledLine(angle = 15, endAbsoluteX = trim / 2)
+  |> yLine(length = length / 6)
+  |> angledLine(angle = -15, endAbsoluteX = profileStartX(%))
+  |> yLine(length = length / 9)
+  |> xLine(length = -0.9)
+  |> yLine(length = length / 8)
+  |> angledLine(angle = 15, endAbsoluteX = trim / 2)
+  |> yLine(length = length / 6)
+  |> angledLine(angle = -5, endAbsoluteX = cableDiameter / 2 + 2)
+  |> yLine(endAbsolute = length + 0.1)
+  |> xLine(endAbsolute = width / 1.75)
+  |> yLine(endAbsolute = 0)
+  |> line(endAbsolute = profileStart())
+  |> close()
+  |> revolve(axis = Y)
+subtract([core], tools = [revolveCut])
+  // Assigning a material property to represent brass
+  |> appearance(color = "#f2671c", metalness = 70, roughness = 30)

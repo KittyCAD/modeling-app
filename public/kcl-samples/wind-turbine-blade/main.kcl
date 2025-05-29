@@ -1,0 +1,172 @@
+// Wind Turbine Blade
+// A wind turbine blade is a curved airfoil-shaped propeller that captures wind energy and converts it into rotational motion, ultimately driving a generator to produce electricity. These blades are typically made of composite materials like fiberglass or carbon fiber for strength and durability, and are designed to maximize efficiency in capturing the wind's kinetic energy. Most modern wind turbines use root inserts or a T-bolt connection to join the blade to the pitch bearing. The root insert is a metal bushing imbedded within the laminate
+
+// Set Units
+@settings(defaultLengthUnit = m)
+
+// Define parameters
+interfaceDiameter = 1.5
+bladeLength = 52
+wallThickness = 0.2
+
+// Model the base of the turbine blade
+baseExtrude = startSketchOn(YZ)
+  |> circle(center = [0, 0], radius = interfaceDiameter / 2)
+  |> subtract2d(tool = circle(center = [0, 0], radius = interfaceDiameter / 2 - wallThickness))
+  |> extrude(length = 1)
+
+// Create an interface on the base of the turbine blade
+interfaceClearance = startSketchOn(baseExtrude, face = START)
+  |> circle(
+       center = [
+         (interfaceDiameter - wallThickness) / 2,
+         0
+       ],
+       radius = 50mm,
+     )
+  |> patternCircular2d(
+       instances = 16,
+       center = [0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = false,
+     )
+  |> extrude(length = -750mm)
+
+// Fill each interface hole with a metal insert nut
+insertNut = startSketchOn(XY)
+  |> startProfile(at = [
+       0,
+       (interfaceDiameter - wallThickness) / 2 + 50mm
+     ])
+  |> yLine(length = 25mm)
+  |> xLine(length = -5mm)
+  |> yLine(length = -30mm)
+  |> xLine(length = 600mm)
+  |> yLine(endAbsolute = profileStartY(%))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(axis = {
+       direction = [1, 0],
+       origin = [
+         0,
+         (interfaceDiameter - wallThickness) / 2
+       ]
+     })
+  |> patternCircular3d(
+       instances = 16,
+       axis = [1, 0, 0],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = false,
+     )
+  |> appearance(color = '#b87333')
+
+// Model a root insert at each interface nut
+rootInsert = startSketchOn(XY)
+  |> startProfile(at = [
+       0,
+       (interfaceDiameter - wallThickness) / 2 + 45mm
+     ])
+  |> xLine(length = 0.09)
+  |> tangentialArc(endAbsolute = [
+       0.5,
+       (interfaceDiameter - wallThickness) / 2 + 5mm
+     ])
+  |> yLine(length = -4.5mm)
+  |> xLine(length = -0.73)
+  |> yLine(length = 18mm)
+  |> xLine(length = 200mm)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(axis = {
+       direction = [1, 0],
+       origin = [
+         0,
+         (interfaceDiameter - wallThickness) / 2
+       ]
+     })
+  |> patternCircular3d(
+       instances = 16,
+       axis = [1, 0, 0],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = false,
+     )
+
+// Create a sketch on the end of the base plate to begin the composite blade
+baseEnd = startSketchOn(offsetPlane(YZ, offset = 1))
+  |> circle(center = [0, 0], radius = interfaceDiameter / 2)
+  |> subtract2d(tool = circle(center = [0, 0], radius = 0.55))
+
+// Define a function to sketch the hollow airfoil section of a wind turbine blade
+fn fanBladeSketch(r1, offsetDistance, angle, armLength) {
+  d1 = r1 + armLength
+  airfoilCenter = startSketchOn(offsetPlane(YZ, offset = offsetDistance))
+    |> startProfile(at = [0, d1])
+    |> angledLine(angle = -90 + asin(r1 / d1), length = r1 / tan(asin(r1 / d1)))
+    |> tangentialArc(endAbsolute = polar(angle = -220, length = r1))
+    |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+    |> rotate(roll = angle)
+
+  r2 = r1 + wallThickness
+  d2 = d1 + wallThickness
+  fanBladeSketch = startSketchOn(offsetPlane(YZ, offset = offsetDistance))
+    |> startProfile(at = [0, d2])
+    |> angledLine(angle = -90 + asin(r2 / d2), length = r2 / tan(asin(r2 / d2)))
+    |> tangentialArc(endAbsolute = polar(angle = -220, length = r2))
+    |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+    |> subtract2d(tool = airfoilCenter)
+    |> rotate(roll = angle)
+
+  return fanBladeSketch
+}
+
+// Define a function to sketch she solid airfoil section of a wind turbine blade cap
+fn endCapSketch(r1, offsetDistance, angle, armLength) {
+  d1 = r1 + armLength
+  r2 = r1 + wallThickness
+  d2 = d1 + wallThickness
+  endCapSketch = startSketchOn(offsetPlane(YZ, offset = offsetDistance))
+    |> startProfile(at = [0, d2])
+    |> angledLine(angle = -90 + asin(r2 / d2), length = r2 / tan(asin(r2 / d2)))
+    |> tangentialArc(endAbsolute = polar(angle = -220, length = r2))
+    |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+    |> rotate(roll = angle)
+
+  return endCapSketch
+}
+
+// Use the defined functions to create a lofted wind turbine blade
+blade01 = fanBladeSketch(
+  r1 = interfaceDiameter / 2,
+  offsetDistance = bladeLength / 3,
+  angle = -30,
+  armLength = 1.4,
+)
+blade02 = fanBladeSketch(
+  r1 = interfaceDiameter / 2,
+  offsetDistance = bladeLength - 1,
+  angle = -20,
+  armLength = 0.4,
+)
+loft([baseEnd, blade01, blade02])
+  |> appearance(color = "#ffffff")
+
+// Use the defined functions to create a lofted end cap
+cap01 = endCapSketch(
+  r1 = interfaceDiameter / 2,
+  offsetDistance = bladeLength - 1,
+  angle = -20,
+  armLength = 0.4,
+)
+cap02 = endCapSketch(
+  r1 = 0.075,
+  offsetDistance = bladeLength,
+  angle = -20,
+  armLength = .1,
+)
+loft([cap01, cap02])
+  |> appearance(color = "#ffffff")
