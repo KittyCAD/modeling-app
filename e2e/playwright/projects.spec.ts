@@ -2119,7 +2119,7 @@ test(
 
 test(
   'segment position changes persist after dragging and reopening project',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ scene, cmdBar, context, page, editor, toolbar }, testInfo) => {
     const projectName = 'segment-drag-test'
 
