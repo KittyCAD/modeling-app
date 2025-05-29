@@ -888,6 +888,19 @@ description: Variables in memory after executing camshaft.kcl
       }
     }
   },
+  "length": {
+    "type": "Number",
+    "value": 18.602,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
   "lobe": {
     "type": "Function",
     "value": null
