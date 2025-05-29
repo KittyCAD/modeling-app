@@ -1,0 +1,51 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`when testing with file imports > should handle KCL files that import other KCL files and capture text-to-cad requests 1`] = `
+{
+  "expectedFiles": {},
+  "files": {
+    "b.kcl": "sketch003 = startSketchOn(XY)
+  |> startProfile(at = [52.92, 157.81])
+  |> angledLine(angle = 0, length = 176.4, tag = $rectangleSegmentA001)
+  |> angledLine(
+       angle = segAng(rectangleSegmentA001) - 90,
+       length = 53.4,
+       tag = $rectangleSegmentB001,
+     )
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
+  |> line(end = [-22.12, -50.4])
+  |> line(end = [-22.12, -94.4])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude(sketch003, length = 20)
+",
+    "main.kcl": "import "b.kcl" as b
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [57.81, 250.51])
+  |> line(end = [121.13, 56.63], tag = $seg02)
+  |> line(end = [83.37, -34.61], tag = $seg01)
+  |> line(end = [19.66, -116.4])
+  |> line(end = [-221.8, -41.69])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 200)
+sketch002 = startSketchOn(XZ)
+  |> startProfile(at = [-73.64, -42.89])
+  |> xLine(length = 173.71)
+  |> line(end = [-22.12, -94.4])
+  |> line(end = [-22.12, -50.4])
+  |> line(end = [-22.12, -94.4])
+  |> line(end = [-22.12, -50.4])
+  |> xLine(length = -156.98)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(sketch002, length = 50)
+b
+",
+  },
+  "kcl_version": "0.2.77",
+  "project_name": "test-project",
+  "prompt": "please make this green",
+  "source_ranges": [],
+}
+`;
