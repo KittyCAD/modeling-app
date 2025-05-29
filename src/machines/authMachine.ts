@@ -1,10 +1,5 @@
 import type { Models } from '@kittycad/lib'
-import {
-  DEV,
-  VITE_KC_API_BASE_URL,
-  VITE_KC_DEV_TOKEN,
-  VITE_KC_SKIP_AUTH,
-} from '@src/env'
+import { VITE_KC_API_BASE_URL, VITE_KC_DEV_TOKEN } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
 import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
@@ -20,26 +15,6 @@ import {
   default as withBaseUrl,
 } from '@src/lib/withBaseURL'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
-
-const SKIP_AUTH = VITE_KC_SKIP_AUTH === 'true' && DEV
-
-const LOCAL_USER: Models['User_type'] = {
-  id: '8675309',
-  name: 'Test User',
-  email: 'kittycad.sidebar.test@example.com',
-  image: 'https://placekitten.com/200/200',
-  created_at: 'yesteryear',
-  updated_at: 'today',
-  company: 'Test Company',
-  discord: 'Test User#1234',
-  github: 'testuser',
-  phone: '555-555-5555',
-  first_name: 'Test',
-  last_name: 'User',
-  can_train_on_data: false,
-  is_service_account: false,
-  deletion_scheduled: false,
-}
 
 export interface UserContext {
   user?: Models['User_type']
@@ -164,19 +139,6 @@ async function getUser(input: { token?: string }) {
 
   if (!token && isDesktop()) return Promise.reject(new Error('No token found'))
   if (token) headers['Authorization'] = `Bearer ${token}`
-
-  if (SKIP_AUTH) {
-    // For local tests
-    if (localStorage.getItem('FORCE_NO_IMAGE')) {
-      LOCAL_USER.image = ''
-    }
-
-    markOnce('code/didAuth')
-    return {
-      user: LOCAL_USER,
-      token,
-    }
-  }
 
   const userPromise = isDesktop()
     ? getUserDesktop(token, VITE_KC_API_BASE_URL)
