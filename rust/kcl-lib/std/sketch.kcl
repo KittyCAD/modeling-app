@@ -604,7 +604,7 @@ export fn polygon(
   /// The number of sides in the polygon.
   numSides: number(Count),
   /// The center point of the polygon.
-  @(snippetValueArray = ["0", "0"])
+  @(snippetArray = ["0", "0"])
   center: Point2d,
   /// Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius.
   inscribed?: bool = true,
@@ -812,3 +812,86 @@ export fn loft(
   /// A named tag for the face at the end of the loft.
   tagEnd?: tag,
 ): Solid {}
+
+/// Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
+/// of distance between each repetition, some specified number of times.
+///
+/// ```kcl
+/// /// Pattern using a named axis.
+///
+/// exampleSketch = startSketchOn(XZ)
+///   |> circle(center = [0, 0], radius = 1)
+///   |> patternLinear2d(
+///        axis = X,
+///        instances = 7,
+///        distance = 4
+///      )
+///
+/// example = extrude(exampleSketch, length = 1)
+/// ```
+///
+/// ```kcl
+/// /// Pattern using a raw axis.
+///
+/// exampleSketch = startSketchOn(XZ)
+///   |> circle(center = [0, 0], radius = 1)
+///   |> patternLinear2d(
+///        axis = [1, 0],
+///        instances = 7,
+///        distance = 4
+///      )
+///
+/// example = extrude(exampleSketch, length = 1)
+/// ```
+@(impl = std_rust)
+export fn patternLinear2d(
+  /// The sketch(es) to duplicate.
+  @sketches: [Sketch; 1+],
+  /// The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect.
+  instances: number(Count),
+  /// Distance between each repetition. Also known as 'spacing'.
+  distance: number(Length),
+  /// The axis of the pattern. A 2D vector.
+  @(snippetArray = ["1", "0"])
+  axis: Axis2d | Point2d,
+  /// If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.
+  useOriginal?: bool = false,
+): [Sketch; 1+] {}
+
+/// Repeat a 2-dimensional sketch some number of times along a partial or
+/// complete circle some specified number of times. Each object may
+/// additionally be rotated along the circle, ensuring orientation of the
+/// solid with respect to the center of the circle is maintained.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [.5, 25])
+///   |> line(end = [0, 5])
+///   |> line(end = [-1, 0])
+///   |> line(end = [0, -5])
+///   |> close()
+///   |> patternCircular2d(
+///        center = [0, 0],
+///        instances = 13,
+///        arcDegrees = 360,
+///        rotateDuplicates = true
+///      )
+///
+/// example = extrude(exampleSketch, length = 1)
+/// ```
+@(impl = std_rust)
+export fn patternCircular2d(
+  /// The sketch(es) to duplicate.
+  @sketches: [Sketch; 1+],
+  /// The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect.
+  instances: number(Count),
+  /// The center about which to make the pattern. This is a 2D vector.
+  @(snippetArray = ["0", "0"])
+  center: Point2d,
+  /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
+  arcDegrees?: number(Angle) = 360deg,
+  /// Whether or not to rotate the duplicates as they are copied.
+  rotateDuplicates?: bool = true,
+  /// If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.
+  useOriginal?: bool = false,
+): [Sketch; 1+] {}

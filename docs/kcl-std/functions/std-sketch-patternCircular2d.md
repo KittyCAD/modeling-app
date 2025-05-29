@@ -1,39 +1,41 @@
 ---
 title: "patternCircular2d"
 subtitle: "Function in std::sketch"
-excerpt: "Repeat a 2-dimensional sketch some number of times along a partial or complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orientation of the solid with respect to the center of the circle is maintained."
+excerpt: ""
 layout: manual
 ---
 
-Repeat a 2-dimensional sketch some number of times along a partial or complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orientation of the solid with respect to the center of the circle is maintained.
+
 
 ```kcl
 patternCircular2d(
-  @sketchSet: [Sketch],
-  instances: number,
+  @sketches: [Sketch; 1+],
+  instances: number(_),
   center: Point2d,
-  arcDegrees?: number,
+  arcDegrees?: number(Angle),
   rotateDuplicates?: bool,
   useOriginal?: bool,
-): [Sketch]
+): [Sketch; 1+]
 ```
 
-
+Repeat a 2-dimensional sketch some number of times along a partial or
+complete circle some specified number of times. Each object mayadditionally be rotated along the circle, ensuring orientation of the
+solid with respect to the center of the circle is maintained.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketchSet` | [`[Sketch]`](/docs/kcl-std/types/std-types-Sketch) | Which sketch(es) to pattern | Yes |
-| `instances` | [`number`](/docs/kcl-std/types/std-types-number) | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
+| `sketches` | [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) | The sketch(es) to duplicate. | Yes |
+| `instances` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center about which to make the pattern. This is a 2D vector. | Yes |
-| `arcDegrees` | [`number`](/docs/kcl-std/types/std-types-number) | The arc angle (in degrees) to place the repetitions. Must be greater than 0. Defaults to 360. | No |
-| `rotateDuplicates` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether or not to rotate the duplicates as they are copied. Defaults to true. | No |
-| `useOriginal` | [`bool`](/docs/kcl-std/types/std-types-bool) | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
+| `arcDegrees` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The arc angle (in degrees) to place the repetitions. Must be greater than 0. | No |
+| `rotateDuplicates` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether or not to rotate the duplicates as they are copied. | No |
+| `useOriginal` | [`bool`](/docs/kcl-std/types/std-types-bool) | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. | No |
 
 ### Returns
 
-[`[Sketch]`](/docs/kcl-std/types/std-types-Sketch)
+[`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch)
 
 
 ### Examples
@@ -49,7 +51,7 @@ exampleSketch = startSketchOn(XZ)
        center = [0, 0],
        instances = 13,
        arcDegrees = 360,
-       rotateDuplicates = true,
+       rotateDuplicates = true
      )
 
 example = extrude(exampleSketch, length = 1)

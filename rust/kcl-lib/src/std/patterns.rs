@@ -3,7 +3,6 @@
 use std::cmp::Ordering;
 
 use anyhow::Result;
-use kcl_derive_docs::stdlib;
 use kcmc::{
     each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Transform,
     websocket::OkWebSocketResponseData, ModelingCmd,
@@ -546,47 +545,6 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
     Ok(sketches.into())
 }
 
-/// Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
-/// of distance between each repetition, some specified number of times.
-///
-/// ```no_run
-/// /// Pattern using a named axis.
-///
-/// exampleSketch = startSketchOn(XZ)
-///   |> circle(center = [0, 0], radius = 1)
-///   |> patternLinear2d(
-///        axis = X,
-///        instances = 7,
-///        distance = 4
-///      )
-///
-/// example = extrude(exampleSketch, length = 1)
-/// ```
-///
-/// ```no_run
-/// /// Pattern using a raw axis.
-///
-/// exampleSketch = startSketchOn(XZ)
-///   |> circle(center = [0, 0], radius = 1)
-///   |> patternLinear2d(
-///        axis = [1, 0],
-///        instances = 7,
-///        distance = 4
-///      )
-///
-/// example = extrude(exampleSketch, length = 1)
-/// ```
-#[stdlib {
-    name = "patternLinear2d",
-    unlabeled_first = true,
-    args = {
-        sketches = { docs = "The sketch(es) to duplicate" },
-        instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
-        distance = { docs = "Distance between each repetition. Also known as 'spacing'."},
-        axis = { docs = "The axis of the pattern. A 2D vector.", snippet_value_array = ["1", "0"] },
-        use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
-    }
-}]
 async fn inner_pattern_linear_2d(
     sketches: Vec<Sketch>,
     instances: u32,
@@ -810,40 +768,6 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
     Ok(sketches.into())
 }
 
-/// Repeat a 2-dimensional sketch some number of times along a partial or
-/// complete circle some specified number of times. Each object may
-/// additionally be rotated along the circle, ensuring orientation of the
-/// solid with respect to the center of the circle is maintained.
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [.5, 25])
-///   |> line(end = [0, 5])
-///   |> line(end = [-1, 0])
-///   |> line(end = [0, -5])
-///   |> close()
-///   |> patternCircular2d(
-///        center = [0, 0],
-///        instances = 13,
-///        arcDegrees = 360,
-///        rotateDuplicates = true
-///      )
-///
-/// example = extrude(exampleSketch, length = 1)
-/// ```
-#[stdlib {
-    name = "patternCircular2d",
-    unlabeled_first = true,
-    args = {
-        sketch_set = { docs = "Which sketch(es) to pattern" },
-        instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect."},
-        center = { docs = "The center about which to make the pattern. This is a 2D vector.", snippet_value_array = ["0", "0"]},
-        arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0. Defaults to 360."},
-        rotate_duplicates= { docs = "Whether or not to rotate the duplicates as they are copied. Defaults to true."},
-        use_original= { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
-    },
-    tags = ["sketch"]
-}]
 #[allow(clippy::too_many_arguments)]
 async fn inner_pattern_circular_2d(
     sketch_set: Vec<Sketch>,

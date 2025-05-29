@@ -1067,11 +1067,14 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_pattern_linear_2d() {
-        let pattern_fn: Box<dyn StdLibFn> = Box::new(crate::std::patterns::PatternLinear2D);
-        let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("patternLinear2d").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"patternLinear2d(${0:%}, instances = ${1:10}, distance = ${2:3.14}, axis = [${3:1}, ${4:0}])"#
+            r#"patternLinear2d(instances = ${0:10}, distance = ${1:10}, axis = [${2:1}, ${3:0}])"#
         );
     }
 

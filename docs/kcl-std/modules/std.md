@@ -41,5 +41,4 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`clone`](/docs/kcl-std/functions/std-clone)
 * [`helix`](/docs/kcl-std/functions/std-helix)
 * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
-* [`patternLinear2d`](/docs/kcl-std/patternLinear2d)
 

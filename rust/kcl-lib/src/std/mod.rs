@@ -72,8 +72,6 @@ lazy_static! {
         Box::new(crate::std::sketch::TangentialArc),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Subtract2D),
-        Box::new(crate::std::patterns::PatternLinear2D),
-        Box::new(crate::std::patterns::PatternCircular2D),
     ];
 }
 
@@ -345,6 +343,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch", "getPreviousAdjacentEdge") => (
             |e, a| Box::pin(crate::std::edge::get_previous_adjacent_edge(e, a)),
             StdFnProps::default("std::sketch::getPreviousAdjacentEdge"),
+        ),
+        ("sketch", "patternLinear2d") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_linear_2d(e, a)),
+            StdFnProps::default("std::sketch::patternLinear2d"),
+        ),
+        ("sketch", "patternCircular2d") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_circular_2d(e, a)),
+            StdFnProps::default("std::sketch::patternCircular2d"),
         ),
         ("appearance", "hexString") => (
             |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),
