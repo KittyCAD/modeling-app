@@ -5,7 +5,10 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
-import { EngineCommandManagerEvents } from '@src/lang/std/engineConnection'
+import {
+  EngineCommandManagerEvents,
+  EngineConnectionStateType,
+} from '@src/lang/std/engineConnection'
 import { btnName } from '@src/lib/cameraControls'
 import { PATHS } from '@src/lib/paths'
 import { sendSelectEventToEngine } from '@src/lib/selections'
@@ -140,27 +143,14 @@ export const EngineStream = (props: {
   }
 
   useEffect(() => {
-    // Signal engineStreamMachine also that we're offline
-    const onOffline = () => {
-      engineStreamActor.send({ type: EngineStreamTransition.Stop })
-    }
-
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.SceneReady,
       play
-    )
-    engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.Offline,
-      onOffline
     )
     return () => {
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.SceneReady,
         play
-      )
-      engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.Offline,
-        onOffline
       )
     }
   }, [])
@@ -213,18 +203,6 @@ export const EngineStream = (props: {
 
       setTimeoutId(
         setTimeout(() => {
-          // The system is in a weird state - it was paused but the browser
-          // never reported it went offline, but reported going online.
-          // Let's put it into a better state to reconnect.
-          // When we stop it'll go back to WaitingForDependencies, which
-          // we can then act on.
-          if (engineStreamState.value === EngineStreamState.Paused) {
-            engineStreamActor.send({ type: EngineStreamTransition.Stop })
-            setTimeoutId(undefined)
-            setGoRestart(false)
-            return
-          }
-
           engineStreamState.context.videoRef.current?.pause()
           engineCommandManager.tearDown()
           startOrReconfigureEngine()
@@ -235,6 +213,21 @@ export const EngineStream = (props: {
         }, attemptTimes[0] + attemptTimes[1])
       )
       setAttemptTimes([attemptTimes[1], attemptTimes[0] + attemptTimes[1]])
+    }
+
+    const onOffline = () => {
+      if (
+        !(
+          EngineConnectionStateType.Disconnected ===
+            engineCommandManager.engineConnection?.state.type ||
+          EngineConnectionStateType.Disconnecting ===
+            engineCommandManager.engineConnection?.state.type
+        )
+      ) {
+        return
+      }
+      engineStreamActor.send({ type: EngineStreamTransition.Stop })
+      attemptRestartIfNecessary()
     }
 
     if (
@@ -253,14 +246,20 @@ export const EngineStream = (props: {
       attemptRestartIfNecessary
     )
 
-    window.addEventListener('online', attemptRestartIfNecessary)
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.Offline,
+      onOffline
+    )
 
     return () => {
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.EngineRestartRequest,
         attemptRestartIfNecessary
       )
-      window.removeEventListener('online', attemptRestartIfNecessary)
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.Offline,
+        onOffline
+      )
     }
   }, [
     engineStreamState,
@@ -372,11 +371,13 @@ export const EngineStream = (props: {
           // me (lee) regret we set React state variables such as
           // isInternetConnected in other files when we could check this
           // object instead.
-          window.navigator.onLine &&
+          engineCommandManager.engineConnection?.state.type ===
+            EngineConnectionStateType.ConnectionEstablished &&
           elapsed >= IDLE_TIME_MS &&
           engineStreamState.value === EngineStreamState.Playing
         ) {
           timeoutStart.current = null
+          console.log('PAUSING')
           engineStreamActor.send({ type: EngineStreamTransition.Pause })
         }
       }
@@ -470,16 +471,6 @@ export const EngineStream = (props: {
       window.document.removeEventListener('mouseup', onInput)
       window.document.removeEventListener('scroll', onInput)
       window.document.removeEventListener('touchend', onInput)
-    }
-  }, [engineStreamState.value])
-
-  useEffect(() => {
-    const onOffline = () => {
-      engineStreamActor.send({ type: EngineStreamTransition.Stop })
-    }
-    window.addEventListener('offline', onOffline)
-    return () => {
-      window.removeEventListener('offline', onOffline)
     }
   }, [engineStreamState.value])
 
