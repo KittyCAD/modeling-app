@@ -4,7 +4,7 @@ import { isArray } from '@src/lib/utils'
 import { vi } from 'vitest'
 import { assertParse } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
-import { getFaceCodeRef } from '@src/lang/std/artifactGraph'
+import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 
 // Store original method to restore in afterAll
 
@@ -383,29 +383,27 @@ extrude(sketch003, length = 20)
       expect(kclManager.errors).toEqual([])
 
       // Test that we can work with the imported content
-      const _indexOfInterest = fileWithImport.indexOf(
+      const indexOfInterest = fileWithImport.indexOf(
         'line(end = [19.66, -116.4])'
       )
-      ;[...kclManager.artifactGraph].forEach(([_, artifact]) => {
-        const codeRef = getFaceCodeRef(artifact)
-        if (codeRef && codeRef.range && codeRef.range[0] === 0) {
-          console.log('range 0 0 0!?', artifact.type, codeRef)
-        }
-      })
-      // const artifact = [...kclManager.artifactGraph].find(([_, artifact]) => {
-      //   const codeRef = getFaceCodeRef(artifact)
-      //   return (
-      //     artifact?.type === 'wall' &&
-      //     codeRef &&
-      //     codeRef.range[0] <= indexOfInterest &&
-      //     indexOfInterest <= codeRef.range[1]
-      //   )
-      // })?.[1]
-      // console.log('artifact!!!', artifact)
+      const artifact = [...kclManager.artifactGraph].find(([id, artifact]) => {
+        const codeRefs = getCodeRefsByArtifactId(id, kclManager.artifactGraph)
+        return (
+          artifact?.type === 'wall' &&
+          codeRefs &&
+          codeRefs.find(ref => {
+            return ref.range[0] <= indexOfInterest && ref.range[1] >= indexOfInterest
+          })
+        )
+      })?.[1]
 
-      // if (!artifact || !('codeRef' in artifact)) {
-      //   throw new Error('Artifact not found or invalid artifact structure')
-      // }
+      if (!artifact ) {
+        throw new Error('Artifact not found')
+      }
+      const codeRef = (getCodeRefsByArtifactId(artifact.id, kclManager.artifactGraph) || [])[0]
+      if (!codeRef) {
+        throw new Error('Code reference not found for the artifact')
+      }
 
       // Test direct call to promptToEditFlow instead of going through state machine
       const { promptToEditFlow } = await import('@src/lib/promptToEdit')
@@ -437,15 +435,18 @@ extrude(sketch003, length = 20)
         },
       ]
 
-      const selections = {
-        graphSelections: [],
-        otherSelections: [],
-      }
-
       // Call promptToEditFlow directly
       const resultPromise = promptToEditFlow({
         prompt: 'please make this green',
-        selections,
+        selections: {
+          graphSelections: [
+            {
+              artifact,
+              codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
         projectFiles,
         token: mockToken,
         artifactGraph: kclManager.artifactGraph,
@@ -477,7 +478,9 @@ extrude(sketch003, length = 20)
         const textToCadPayload = {
           ...request.body,
           expectedFiles: {
-            // TODO
+            'main.kcl': fileWithImport.replace('extrude001 = extrude(profile001, length = 200)', `extrude001 = extrude(profile001, length = 200)
+  |> appearance(color = "#00ff00")`),
+            'b.kcl': importedFile,
           },
           // Normalize file names to make snapshots deterministic
           files: request.body.files,
