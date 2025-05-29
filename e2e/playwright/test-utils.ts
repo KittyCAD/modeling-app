@@ -79,20 +79,6 @@ export function runningOnWindows() {
   return process.platform === 'win32'
 }
 
-async function waitForPageLoadWithRetry(page: Page) {
-  await expect(async () => {
-    await page.goto('/')
-    const errorMessage = 'App failed to load - 🔃 Retrying ...'
-
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' }),
-      errorMessage
-    ).toBeEnabled({
-      timeout: 20_000,
-    })
-  }).toPass({ timeout: 70_000, intervals: [1_000] })
-}
-
 // lee: This needs to be replaced by scene.settled() eventually.
 async function waitForPageLoad(page: Page) {
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeEnabled({
