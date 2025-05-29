@@ -1079,7 +1079,7 @@ mod tests {
             panic!();
         };
         let snippet = helix_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"appearance(color = ${0:"ff0000"})"#);
+        assert_eq!(snippet, "appearance(color = ${0:\"#ff0000\"})");
     }
 
     #[test]
