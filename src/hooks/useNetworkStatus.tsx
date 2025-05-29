@@ -78,18 +78,19 @@ export function useNetworkStatus() {
   }, [hasIssues, internetConnected, ping])
 
   useEffect(() => {
-    const onlineCallback = () => {
-      setInternetConnected(true)
-    }
     const offlineCallback = () => {
       setInternetConnected(false)
       setSteps(structuredClone(initialConnectingTypeGroupState))
     }
-    window.addEventListener('online', onlineCallback)
-    window.addEventListener('offline', offlineCallback)
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.Offline,
+      offlineCallback
+    )
     return () => {
-      window.removeEventListener('online', onlineCallback)
-      window.removeEventListener('offline', offlineCallback)
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.Offline,
+        offlineCallback
+      )
     }
   }, [])
 
@@ -139,6 +140,8 @@ export function useNetworkStatus() {
         if (
           engineConnectionState.type === EngineConnectionStateType.Connecting
         ) {
+          setInternetConnected(true)
+
           const groups = Object.values(nextSteps)
           for (let group of groups) {
             for (let step of group) {
