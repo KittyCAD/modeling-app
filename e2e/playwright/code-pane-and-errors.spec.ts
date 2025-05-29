@@ -275,7 +275,7 @@ middle()`)
 
 test(
   'Opening multiple panes persists when switching projects',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page }, testInfo) => {
     // Setup multiple projects.
     await context.folderSetupFn(async (dir) => {
@@ -346,7 +346,7 @@ test(
 
 test(
   'external change of file contents are reflected in editor',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page }, testInfo) => {
     const PROJECT_DIR_NAME = 'lee-was-here'
     const { dir: projectsDir } = await context.folderSetupFn(async (dir) => {

@@ -79,20 +79,6 @@ export function runningOnWindows() {
   return process.platform === 'win32'
 }
 
-async function waitForPageLoadWithRetry(page: Page) {
-  await expect(async () => {
-    await page.goto('/')
-    const errorMessage = 'App failed to load - 🔃 Retrying ...'
-
-    await expect(
-      page.getByRole('button', { name: 'sketch Start Sketch' }),
-      errorMessage
-    ).toBeEnabled({
-      timeout: 20_000,
-    })
-  }).toPass({ timeout: 70_000, intervals: [1_000] })
-}
-
 // lee: This needs to be replaced by scene.settled() eventually.
 async function waitForPageLoad(page: Page) {
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeEnabled({
@@ -354,13 +340,8 @@ async function waitForAuthAndLsp(page: Page) {
     },
     timeout: 45_000,
   })
-  if (process.env.CI) {
-    await waitForPageLoadWithRetry(page)
-  } else {
-    await page.goto('/')
-    await waitForPageLoad(page)
-  }
-
+  await page.goto('/')
+  await waitForPageLoad(page)
   return waitForLspPromise
 }
 
@@ -391,7 +372,6 @@ export async function getUtils(page: Page, test_?: typeof test) {
   const util = {
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
     waitForPageLoad: () => waitForPageLoad(page),
-    waitForPageLoadWithRetry: () => waitForPageLoadWithRetry(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     updateCamPosition: async (xyz: [number, number, number]) => {

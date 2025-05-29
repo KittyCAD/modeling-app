@@ -640,7 +640,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> New Project -> Stay in home page -> Reject -> Project should be deleted',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
@@ -678,7 +678,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> New Project -> Stay in home page -> Accept -> should navigate to file',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -724,7 +724,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> Existing Project -> Stay in home page -> Reject -> should delete single file',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ homePage, page }, testInfo) => {
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
@@ -767,7 +767,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> Existing Project -> Stay in home page -> Accept -> should navigate to file',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ homePage, page }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -818,7 +818,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> New Project -> Navigate to the project -> Reject -> should go to home page',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ homePage, page }, testInfo) => {
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
@@ -864,7 +864,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> New Project -> Navigate to the project -> Accept -> should stay in same file',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ homePage, page }, testInfo) => {
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
@@ -907,7 +907,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> Existing Project -> Navigate to the project -> Reject -> should load main.kcl',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ homePage, page }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -962,7 +962,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> Existing Project -> Navigate to the project -> Accept -> should load 2x2x2-cube.kcl',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ homePage, page }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -1019,7 +1019,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> New Project -> Navigate to different project -> Reject -> should stay in project',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ homePage, page }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -1096,7 +1096,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> New Project -> Navigate to different project -> Accept -> should go to new project',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, homePage }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -1165,7 +1165,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> Existing Project -> Navigate to different project -> Reject -> should stay in same project',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, homePage }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -1240,7 +1240,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> Existing Project -> Navigate to different project -> Accept -> should navigate to new project',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, homePage }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
