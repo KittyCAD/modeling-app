@@ -1232,7 +1232,7 @@ secondSketch = startSketchOn(part001, face = '')
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
         err.message(),
-        "The arg face was given, but it was the wrong type. It should be type FaceTag but it was string"
+        "This function expected the input argument to be tag but it's actually of type string"
     );
 }
 

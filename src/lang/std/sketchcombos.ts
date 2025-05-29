@@ -1350,15 +1350,15 @@ export function removeSingleConstraint({
     return false
   }
 
-  let tooltip = fnNameToTooltip(
+  const toolTip = fnNameToTooltip(
     allLabels(callExp.node),
     callExp.node.callee.name.name
   )
 
   const transform: TransformInfo = {
-    tooltip: err(tooltip)
+    tooltip: err(toolTip)
       ? (callExp.node.callee.name.name as ToolTip)
-      : tooltip,
+      : toolTip,
     createNode: ({ tag, inputs, rawArgs }) => {
       // inputs is the current values for each of the inputs
       // rawValues is the raw 'literal' values equivalent to the inputs

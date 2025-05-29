@@ -1048,7 +1048,7 @@ mod tests {
         let snippet = arc_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"arc(${0:%}, angleStart = ${1:3.14}, angleEnd = ${2:3.14}, radius = ${3:3.14})"#
+            r#"arc(${0:%}, angleStart = ${1:3.14}, angleEnd = ${2:3.14}, diameter = ${3:3.14})"#
         );
     }
 
@@ -1079,7 +1079,7 @@ mod tests {
             panic!();
         };
         let snippet = helix_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"appearance(color = ${0:"ff0000"})"#);
+        assert_eq!(snippet, "appearance(color = ${0:\"#ff0000\"})");
     }
 
     #[test]
@@ -1148,41 +1148,42 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_get_common_edge() {
-        let get_common_edge_fn: Box<dyn StdLibFn> = Box::new(crate::std::edge::GetCommonEdge);
-        let snippet = get_common_edge_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"getCommonEdge(faces = [{
-	value = ${0:"string"},
-}])"#
-        );
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("getCommonEdge").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"getCommonEdge(faces = [${0:tag}, ${1:tag}])"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_scale() {
-        let scale_fn: Box<dyn StdLibFn> = Box::new(crate::std::transform::Scale);
-        let snippet = scale_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"scale(${0:%}, x = ${1:3.14}, y = ${2:3.14}, z = ${3:3.14})"#);
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("scale").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"scale(x = ${0:10}, y = ${1:10}, z = ${2:10})"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_translate() {
-        let translate_fn: Box<dyn StdLibFn> = Box::new(crate::std::transform::Translate);
-        let snippet = translate_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"translate(${0:%}, x = ${1:3.14}, y = ${2:3.14}, z = ${3:3.14})"#
-        );
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("translate").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"translate(x = ${0:10}, y = ${1:10}, z = ${2:10})"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_rotate() {
-        let rotate_fn: Box<dyn StdLibFn> = Box::new(crate::std::transform::Rotate);
-        let snippet = rotate_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"rotate(${0:%}, roll = ${1:3.14}, pitch = ${2:3.14}, yaw = ${3:3.14})"#
-        );
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("rotate").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"rotate(roll = ${0:10}, pitch = ${1:10}, yaw = ${2:10})"#);
     }
 
     #[test]

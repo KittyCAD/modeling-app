@@ -38,7 +38,7 @@ export fn circle(
   /// The radius of the circle. Incompatible with `diameter`.
   radius?: number(Length),
   /// The diameter of the circle. Incompatible with `radius`.
-  @(include_in_snippet = true)
+  @(includeInSnippet = true)
   diameter?: number(Length),
   /// Create a new tag which refers to this circle.
   tag?: tag,
@@ -307,3 +307,134 @@ export fn patternTransform2d(
   /// If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.
   useOriginal?: boolean = false,
 ): [Sketch; 1+] {}
+
+/// Get the opposite edge to the edge given.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> angledLine(
+///        angle = 60,
+///        length = 10,
+///      )
+///   |> angledLine(
+///        angle = 120,
+///        length = 10,
+///      )
+///   |> line(end = [-10, 0])
+///   |> angledLine(
+///        angle = 240,
+///        length = 10,
+///        tag = $referenceEdge,
+///      )
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+///   |> fillet(
+///     radius = 3,
+///     tags = [getOppositeEdge(referenceEdge)],
+///   )
+/// ```
+@(impl = std_rust)
+export fn getOppositeEdge(
+  /// The tag of the edge you want to find the opposite edge of.
+  @edge: tag,
+): Edge {}
+
+/// Get the next adjacent edge to the edge given.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> angledLine(
+///        angle = 60,
+///        length = 10,
+///      )
+///   |> angledLine(
+///        angle = 120,
+///        length = 10,
+///      )
+///   |> line(end = [-10, 0])
+///   |> angledLine(
+///        angle = 240,
+///        length = 10,
+///        tag = $referenceEdge,
+///      )
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+///   |> fillet(
+///     radius = 3,
+///     tags = [getNextAdjacentEdge(referenceEdge)],
+///   )
+/// ```
+@(impl = std_rust)
+export fn getNextAdjacentEdge(
+  /// The tag of the edge you want to find the next adjacent edge of.
+  @edge: tag,
+): Edge {}
+
+/// Get the previous adjacent edge to the edge given.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> angledLine(
+///        angle = 60,
+///        length = 10,
+///      )
+///   |> angledLine(
+///        angle = 120,
+///        length = 10,
+///      )
+///   |> line(end = [-10, 0])
+///   |> angledLine(
+///        angle = 240,
+///        length = 10,
+///        tag = $referenceEdge,
+///      )
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+///   |> fillet(
+///     radius = 3,
+///     tags = [getPreviousAdjacentEdge(referenceEdge)],
+///   )
+/// ```
+@(impl = std_rust)
+export fn getPreviousAdjacentEdge(
+  /// The tag of the edge you want to find the previous adjacent edge of.
+  @edge: tag,
+): Edge {}
+
+/// Get the shared edge between two faces.
+///
+/// ```kcl
+/// // Get an edge shared between two faces, created after a chamfer.
+///
+/// scale = 20
+/// part001 = startSketchOn(XY)
+///     |> startProfile(at = [0, 0])
+///     |> line(end = [0, scale])
+///     |> line(end = [scale, 0])
+///     |> line(end = [0, -scale])
+///     |> close(tag = $line0)
+///     |> extrude(length = 20, tagEnd = $end0)
+///     // We tag the chamfer to reference it later.
+///     |> chamfer(length = 10, tags = [getOppositeEdge(line0)], tag = $chamfer0)
+///
+/// // Get the shared edge between the chamfer and the extrusion.
+/// commonEdge = getCommonEdge(faces = [chamfer0, end0])
+///
+/// // Chamfer the shared edge.
+/// // TODO: uncomment this when ssi for fillets lands
+/// // chamfer(part001, length = 5, tags = [commonEdge])
+/// ```
+@(impl = std_rust)
+export fn getCommonEdge(
+  /// The tags of the faces you want to find the common edge between.
+  faces: [tag; 2],
+): Edge {}

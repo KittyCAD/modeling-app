@@ -129,9 +129,9 @@ endif
 .PHONY: test-e2e-desktop
 test-e2e-desktop: install build ## Run the desktop e2e tests
 ifdef E2E_GREP
-	npm run test:playwright:electron -- --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
+	npm run test:e2e:desktop -- --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
 else
-	npm run test:playwright:electron -- --workers='100%'
+	npm run test:e2e:desktop -- --workers='100%'
 endif
 
 ###############################################################################

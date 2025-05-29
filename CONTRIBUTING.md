@@ -213,13 +213,20 @@ npm run test:snapshots
 ```
 You may use `-- --update-snapshots` as needed.
 
-#### Electron flow tests (Chromium on Ubuntu, macOS, Windows)
+#### Desktop tests (Electron on all platforms)
 
 ```
 npm run playwright -- install chromium
-npm run test:playwright:electron:local
+npm run test:e2e:desktop:local
 ```
+
 You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file.spec.ts` for a test file.
+
+#### Web tests (Google Chrome on all platforms)
+
+```
+npm run test:e2e:web
+```
 
 #### Debugger
 
