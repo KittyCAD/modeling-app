@@ -834,7 +834,7 @@ impl ArgData {
 
             Some("string") => {
                 if self.name == "color" {
-                    Some((index, format!(r#"{label}${{{}:"ff0000"}}"#, index)))
+                    Some((index, format!(r"{label}${{{}:{}#ff0000{}}}", index, r#"""#, r#"""#,)))
                 } else {
                     Some((index, format!(r#"{label}${{{}:"string"}}"#, index)))
                 }
