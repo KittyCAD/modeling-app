@@ -101,15 +101,10 @@ description: Operations executed ball-joint-rod-end.kcl
     "name": "revolve",
     "unlabeledArg": {
       "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
       },
       "sourceRange": []
     },
@@ -261,15 +256,10 @@ description: Operations executed ball-joint-rod-end.kcl
     "name": "revolve",
     "unlabeledArg": {
       "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
       },
       "sourceRange": []
     },
@@ -421,15 +411,10 @@ description: Operations executed ball-joint-rod-end.kcl
     "name": "revolve",
     "unlabeledArg": {
       "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
       },
       "sourceRange": []
     },
