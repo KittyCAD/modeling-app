@@ -9,7 +9,7 @@ layout: manual
 
 ```kcl
 circle(
-  @sketch_or_surface: Sketch | Plane | Face,
+  @sketchOrSurface: Sketch | Plane | Face,
   center: Point2d,
   radius?: number(Length),
   diameter?: number(Length),
@@ -24,7 +24,7 @@ the provided (x, y) origin point.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch_or_surface` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Face`](/docs/kcl-std/types/std-types-Face) | Sketch to extend, or plane or surface to sketch on. | Yes |
+| `sketchOrSurface` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Face`](/docs/kcl-std/types/std-types-Face) | Sketch to extend, or plane or surface to sketch on. | Yes |
 | `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center of the circle. | Yes |
 | `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The radius of the circle. Incompatible with `diameter`. | No |
 | `diameter` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The diameter of the circle. Incompatible with `radius`. | No |
