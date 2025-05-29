@@ -33,7 +33,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let scale_x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::count(), exec_state)?;
     let scale_y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::count(), exec_state)?;
     let scale_z: Option<TyF64> = args.get_kw_arg_opt_typed("z", &RuntimeType::count(), exec_state)?;
-    let global = args.get_kw_arg_opt("global")?;
+    let global = args.get_kw_arg_opt_typed("global", &RuntimeType::bool(), exec_state)?;
 
     // Ensure at least one scale value is provided.
     if scale_x.is_none() && scale_y.is_none() && scale_z.is_none() {
@@ -115,7 +115,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     let translate_x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::length(), exec_state)?;
     let translate_y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::length(), exec_state)?;
     let translate_z: Option<TyF64> = args.get_kw_arg_opt_typed("z", &RuntimeType::length(), exec_state)?;
-    let global = args.get_kw_arg_opt("global")?;
+    let global = args.get_kw_arg_opt_typed("global", &RuntimeType::bool(), exec_state)?;
 
     // Ensure at least one translation value is provided.
     if translate_x.is_none() && translate_y.is_none() && translate_z.is_none() {
@@ -198,7 +198,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     )?;
     let axis = axis.map(|a| a.to_point3d());
     let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::degrees(), exec_state)?;
-    let global = args.get_kw_arg_opt("global")?;
+    let global = args.get_kw_arg_opt_typed("global", &RuntimeType::bool(), exec_state)?;
 
     // Check if no rotation values are provided.
     if roll.is_none() && pitch.is_none() && yaw.is_none() && axis.is_none() && angle.is_none() {

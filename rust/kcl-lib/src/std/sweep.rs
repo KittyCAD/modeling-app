@@ -35,7 +35,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         &RuntimeType::Union(vec![RuntimeType::sketch(), RuntimeType::helix()]),
         exec_state,
     )?;
-    let sectional = args.get_kw_arg_opt("sectional")?;
+    let sectional = args.get_kw_arg_opt_typed("sectional", &RuntimeType::bool(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
     let relative_to: Option<String> = args.get_kw_arg_opt_typed("relativeTo", &RuntimeType::string(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
