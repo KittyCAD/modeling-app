@@ -1280,7 +1280,10 @@ mod test {
                     continue;
                 };
 
-                for i in 0..f.examples.len() {
+                for (i, (_, props)) in f.examples.iter().enumerate() {
+                    if props.norun {
+                        continue;
+                    }
                     let name = format!("{}-{i}", f.qual_name.replace("::", "-"));
                     assert!(TEST_NAMES.contains(&&*name), "Missing test for example \"{name}\", maybe need to update kcl-derive-docs/src/example_tests.rs?")
                 }

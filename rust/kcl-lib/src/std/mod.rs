@@ -76,8 +76,6 @@ lazy_static! {
         Box::new(crate::std::patterns::PatternCircular2D),
         Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
-        Box::new(crate::std::assert::Assert),
-        Box::new(crate::std::assert::AssertIs)
     ];
 }
 
@@ -229,6 +227,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
             StdFnProps::default("std::offsetPlane").include_in_feature_tree(),
+        ),
+        ("prelude", "assert") => (
+            |e, a| Box::pin(crate::std::assert::assert(e, a)),
+            StdFnProps::default("std::assert"),
+        ),
+        ("prelude", "assertIs") => (
+            |e, a| Box::pin(crate::std::assert::assert_is(e, a)),
+            StdFnProps::default("std::assertIs"),
         ),
         ("solid", "fillet") => (
             |e, a| Box::pin(crate::std::fillet::fillet(e, a)),

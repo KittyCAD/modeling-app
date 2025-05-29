@@ -9,8 +9,8 @@ layout: manual
 ### Functions
 
 * [**std**](/docs/kcl-std/modules/std)
-  * [`assert`](/docs/kcl-std/assert)
-  * [`assertIs`](/docs/kcl-std/assertIs)
+  * [`assert`](/docs/kcl-std/functions/std-assert)
+  * [`assertIs`](/docs/kcl-std/functions/std-assertIs)
   * [`clone`](/docs/kcl-std/functions/std-clone)
   * [`helix`](/docs/kcl-std/functions/std-helix)
   * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
