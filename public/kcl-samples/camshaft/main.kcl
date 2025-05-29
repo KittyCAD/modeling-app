@@ -83,10 +83,11 @@ fn cylinderPattern(@i) {
   |> patternTransform(instances = round(valvesPerCylinder / 2), transform = valveCount)
   |> patternTransform(instances = cylinderCount, transform = cylinderPattern)
 
-// Extrude a center connecting cylinder shaft to each cam position
+// Extrude a center connecting cylinder shaft through each cam position
+length = (2 * (camHeight + camSpacing) * round(valvesPerCylinder / 2) + supportBearingWidth) * cylinderCount + supportBearingWidth
 centerShaft = startSketchOn(XY)
   |> circle(center = [0, 0], diameter = shaftDiameter)
-  |> extrude(length = (2 * (camHeight + camSpacing) * round(valvesPerCylinder / 2) + supportBearingWidth) * cylinderCount + supportBearingWidth)
+  |> extrude(length)
 
 // Attach a helical timing gear to the base of the camshaft
 fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
