@@ -2494,7 +2494,7 @@ pub(crate) async fn inner_elliptical_arc(
     let start_angle = Angle::from_degrees(angle_start.to_degrees());
     let end_angle = Angle::from_degrees(angle_end.to_degrees());
     let to = [
-        center_u[0] + major_radius.to_length_units(from.units) * start_angle.to_radians().cos(),
+        center_u[0] + major_radius.to_length_units(from.units) * end_angle.to_radians().cos(),
         center_u[1] + minor_radius.to_length_units(from.units) * end_angle.to_radians().sin(),
     ];
 
@@ -2554,6 +2554,93 @@ pub(crate) async fn inner_elliptical_arc(
     Ok(new_sketch)
 }
 
+/// Draw a conic section
+pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketch = args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+
+    let start_tangent: [TyF64; 2] = args.get_kw_arg_typed("startTangent", &RuntimeType::point2d(), exec_state)?;
+    let end_tangent: [TyF64; 2] = args.get_kw_arg_typed("endTangent", &RuntimeType::point2d(), exec_state)?;
+    let end: [TyF64; 2] = args.get_kw_arg_typed("end", &RuntimeType::point2d(), exec_state)?;
+    let interior: [TyF64; 2] = args.get_kw_arg_typed("interior", &RuntimeType::point2d(), exec_state)?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+
+    let new_sketch = inner_conic(sketch, start_tangent, end, end_tangent, interior, tag, exec_state, args).await?;
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
+}
+
+/// ```no_run
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> conic(
+///         end = [10,0],
+///         endTangent = [0,1],
+///         interior = [5,5],
+///         startTangent = [0, -1],
+///      )
+///   |> close()
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+#[stdlib {
+    name = "conic",
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?" },
+        start_tangent = { docs = "The tangent of the conic at the start point (the end of the previous path segement)" },
+        end_tangent = { docs = "The tangent of the conic at the end point" },
+        interior = { docs = "Any point between the arc's start and end?" },
+        end = { docs = "Where should this arc end?" },
+        tag = { docs = "Create a new tag which refers to this line"},
+    },
+    tags = ["sketch"]
+}]
+#[allow(clippy::too_many_arguments)]
+pub(crate) async fn inner_conic(sketch: Sketch, start_tangent: [TyF64; 2], end: [TyF64; 2], end_tangent: [TyF64; 2], interior: [TyF64; 2], tag: Option<TagNode>, exec_state: &mut ExecState, args: Args
+) -> Result<Sketch, KclError> {
+    let from: Point2d = sketch.current_pen_position()?;
+    let id = exec_state.next_uuid();
+    let (start_tangent, _) =  untype_point(start_tangent);
+    let (end_tangent, _) =  untype_point(end_tangent);
+    let (end, _) =  untype_point(end);
+    let (interior, _) =  untype_point(interior);
+
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch.id.into(),
+            segment: PathSegment::ConicTo {
+                start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
+                end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
+                end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
+                interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
+                relative: false,
+            },
+        }),
+    ).await?;
+    
+    let current_path = Path::Conic {
+        base: BasePath {
+            from: from.ignore_units(),
+            to: end,
+            tag: tag.clone(),
+            units: sketch.units,
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+    };
+
+    let mut new_sketch = sketch.clone();
+    if let Some(tag) = &tag {
+        new_sketch.add_tag(tag, &current_path, exec_state);
+    }
+
+    new_sketch.paths.push(current_path);
+
+    Ok(new_sketch)
+}
 #[cfg(test)]
 mod tests {
 

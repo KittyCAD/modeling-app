@@ -1152,6 +1152,11 @@ pub enum Path {
         minor_radius: f64,
         ccw: bool,
     },
+    //TODO: (bc) figure this out
+    Conic {
+        #[serde(flatten)]
+        base: BasePath,
+    }
 }
 
 /// What kind of path is this?
@@ -1167,6 +1172,7 @@ enum PathType {
     AngledLineTo,
     Arc,
     Ellipse,
+    Conic,
 }
 
 impl From<&Path> for PathType {
@@ -1183,6 +1189,7 @@ impl From<&Path> for PathType {
             Path::Arc { .. } => Self::Arc,
             Path::ArcThreePoint { .. } => Self::Arc,
             Path::Ellipse { .. } => Self::Ellipse,
+            Path::Conic { .. } => Self::Conic,
         }
     }
 }
@@ -1201,6 +1208,7 @@ impl Path {
             Path::Arc { base, .. } => base.geo_meta.id,
             Path::ArcThreePoint { base, .. } => base.geo_meta.id,
             Path::Ellipse { base, .. } => base.geo_meta.id,
+            Path::Conic { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1217,6 +1225,7 @@ impl Path {
             Path::Arc { base, .. } => base.geo_meta.id = id,
             Path::ArcThreePoint { base, .. } => base.geo_meta.id = id,
             Path::Ellipse { base, .. } => base.geo_meta.id = id,
+            Path::Conic { base, .. } => base.geo_meta.id = id,
         }
     }
 
@@ -1233,6 +1242,7 @@ impl Path {
             Path::Arc { base, .. } => base.tag.clone(),
             Path::ArcThreePoint { base, .. } => base.tag.clone(),
             Path::Ellipse { base, .. } => base.tag.clone(),
+            Path::Conic { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1249,6 +1259,7 @@ impl Path {
             Path::Arc { base, .. } => base,
             Path::ArcThreePoint { base, .. } => base,
             Path::Ellipse { base, .. } => base,
+            Path::Conic { base, .. } => base,
         }
     }
 
@@ -1328,6 +1339,10 @@ impl Path {
                 //TODO: fix me
                 10.0
             }
+            Self::Conic { .. } => {
+                //TODO: fix me
+                10.0
+            }
         };
         TyF64::new(n, self.get_base().units.into())
     }
@@ -1345,6 +1360,7 @@ impl Path {
             Path::Arc { base, .. } => Some(base),
             Path::ArcThreePoint { base, .. } => Some(base),
             Path::Ellipse { base, .. } => Some(base),
+            Path::Conic { base, .. } => Some(base),
         }
     }
 
@@ -1380,6 +1396,7 @@ impl Path {
                     radius: circle.radius,
                 }
             }
+            // TODO: (bc) fix me
             Path::Ellipse {
                 center,
                 major_radius,
@@ -1392,6 +1409,7 @@ impl Path {
                 _minor_radius: *minor_radius,
                 ccw: *ccw,
             },
+            Path::Conic { .. } |
             Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)

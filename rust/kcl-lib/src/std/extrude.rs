@@ -329,7 +329,9 @@ pub(crate) async fn do_post_extrude<'a>(
                     Path::Arc { .. }
                     | Path::TangentialArc { .. }
                     | Path::TangentialArcTo { .. }
+                    // TODO: (bc) fix me
                     | Path::Ellipse { .. }
+                    | Path::Conic {.. }
                     | Path::Circle { .. }
                     | Path::CircleThreePoint { .. } => {
                         let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
