@@ -744,12 +744,12 @@ impl ArgData {
             } = &attr.inner
             {
                 for p in props {
-                    if p.key.name == "include_in_snippet" {
+                    if p.key.name == "includeInSnippet" {
                         if let Some(b) = p.value.literal_bool() {
                             result.override_in_snippet = Some(b);
                         } else {
                             panic!(
-                                "Invalid value for `include_in_snippet`, expected bool literal, found {:?}",
+                                "Invalid value for `includeInSnippet`, expected bool literal, found {:?}",
                                 p.value
                             );
                         }
@@ -827,6 +827,10 @@ impl ArgData {
             Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
             Some("Plane") => Some((index, format!(r#"{label}${{{}:XY}}"#, index))),
+            Some("[tag; 2]") => Some((
+                index + 1,
+                format!(r#"{label}[${{{}:tag}}, ${{{}:tag}}]"#, index, index + 1),
+            )),
 
             Some("string") => {
                 if self.name == "color" {
