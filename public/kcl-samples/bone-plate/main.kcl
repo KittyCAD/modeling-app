@@ -52,7 +52,4 @@ holeCenters = [
 holes = map(holeCenters, f = holeFn)
 
 // Cut each guiding clearance hole from the bone plate using a single subtract operation
-solid = subtract(
-  [plateRevolve],
-  tools = holes
-)
+solid = subtract([plateRevolve], tools = holes)
