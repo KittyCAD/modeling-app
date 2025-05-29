@@ -74,8 +74,6 @@ lazy_static! {
         Box::new(crate::std::sketch::Subtract2D),
         Box::new(crate::std::patterns::PatternLinear2D),
         Box::new(crate::std::patterns::PatternCircular2D),
-        Box::new(crate::std::sweep::Sweep),
-        Box::new(crate::std::loft::Loft),
     ];
 }
 
@@ -315,6 +313,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch", "revolve") => (
             |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
             StdFnProps::default("std::sketch::revolve").include_in_feature_tree(),
+        ),
+        ("sketch", "sweep") => (
+            |e, a| Box::pin(crate::std::sweep::sweep(e, a)),
+            StdFnProps::default("std::sketch::sweep").include_in_feature_tree(),
+        ),
+        ("sketch", "loft") => (
+            |e, a| Box::pin(crate::std::loft::loft(e, a)),
+            StdFnProps::default("std::sketch::loft").include_in_feature_tree(),
         ),
         ("sketch", "polygon") => (
             |e, a| Box::pin(crate::std::shapes::polygon(e, a)),

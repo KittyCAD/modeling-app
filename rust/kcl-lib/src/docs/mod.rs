@@ -1087,16 +1087,22 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_loft() {
-        let loft_fn: Box<dyn StdLibFn> = Box::new(crate::std::loft::Loft);
-        let snippet = loft_fn.to_autocomplete_snippet().unwrap();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("loft").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
         assert_eq!(snippet, r#"loft([${0:sketch000}, ${1:sketch001}])"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_sweep() {
-        let sweep_fn: Box<dyn StdLibFn> = Box::new(crate::std::sweep::Sweep);
-        let snippet = sweep_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"sweep(${0:%}, path = ${1:sketch000})"#);
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("sweep").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"sweep(path = ${0:sketch000})"#);
     }
 
     #[test]
