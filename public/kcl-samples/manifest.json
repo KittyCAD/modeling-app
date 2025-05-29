@@ -86,6 +86,26 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "cable-gland/main.kcl",
+    "multipleFiles": false,
+    "title": "Cable Gland",
+    "description": "A cable gland is a mechanical fitting used to attach and secure the end of an electrical cable to equipment or an enclosure. It provides strain relief, sealing against environmental factors like dust and moisture, and can ensure earth continuity if required.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "camshaft/main.kcl",
+    "multipleFiles": false,
+    "title": "Camshaft",
+    "description": "A camshaft is a shaft with cams attached, used to convert rotational motion into reciprocating motion. In internal combustion engines, it's crucial for controlling the opening and closing of intake and exhaust valves at precise moments, ensuring proper timing for combustion.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "car-wheel-assembly/main.kcl",
     "multipleFiles": true,
     "title": "Car Wheel Assembly",
@@ -203,6 +223,16 @@
     "multipleFiles": false,
     "title": "Enclosure",
     "description": "An enclosure body and sealing lid for storing items",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "end-effector-grippers/main.kcl",
+    "multipleFiles": false,
+    "title": "End Effector Grippers",
+    "description": "End effector grippers are devices attached to a robot's arm that allow it to interact with its environment and perform tasks like picking up, moving, and manipulating objects. They are essential for robots to perform useful work. Grippers are one type of end effector, but end effectors can also be tools like welding torches or cameras",
     "files": [
       "main.kcl"
     ]
@@ -726,6 +756,16 @@
     "multipleFiles": false,
     "title": "Washer",
     "description": "A small, typically disk-shaped component with a hole in the middle, used in a wide range of applications, primarily in conjunction with fasteners like bolts and screws. Washers distribute the load of a fastener across a broader area. This is especially important when the fastening surface is soft or uneven, as it helps to prevent damage to the surface and ensures the load is evenly distributed, reducing the risk of the fastener becoming loose over time.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "wind-turbine-blade/main.kcl",
+    "multipleFiles": false,
+    "title": "Wind Turbine Blade",
+    "description": "A wind turbine blade is a curved airfoil-shaped propeller that captures wind energy and converts it into rotational motion, ultimately driving a generator to produce electricity. These blades are typically made of composite materials like fiberglass or carbon fiber for strength and durability, and are designed to maximize efficiency in capturing the wind's kinetic energy. Most modern wind turbines use root inserts or a T-bolt connection to join the blade to the pitch bearing. The root insert is a metal bushing imbedded within the laminate",
     "files": [
       "main.kcl"
     ]
