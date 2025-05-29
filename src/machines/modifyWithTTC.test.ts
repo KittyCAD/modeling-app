@@ -391,16 +391,21 @@ extrude(sketch003, length = 20)
         return (
           artifact?.type === 'wall' &&
           codeRefs &&
-          codeRefs.find(ref => {
-            return ref.range[0] <= indexOfInterest && ref.range[1] >= indexOfInterest
+          codeRefs.find((ref) => {
+            return (
+              ref.range[0] <= indexOfInterest && ref.range[1] >= indexOfInterest
+            )
           })
         )
       })?.[1]
 
-      if (!artifact ) {
+      if (!artifact) {
         throw new Error('Artifact not found')
       }
-      const codeRef = (getCodeRefsByArtifactId(artifact.id, kclManager.artifactGraph) || [])[0]
+      const codeRef = (getCodeRefsByArtifactId(
+        artifact.id,
+        kclManager.artifactGraph
+      ) || [])[0]
       if (!codeRef) {
         throw new Error('Code reference not found for the artifact')
       }
@@ -478,8 +483,11 @@ extrude(sketch003, length = 20)
         const textToCadPayload = {
           ...request.body,
           expectedFiles: {
-            'main.kcl': fileWithImport.replace('extrude001 = extrude(profile001, length = 200)', `extrude001 = extrude(profile001, length = 200)
-  |> appearance(color = "#00ff00")`),
+            'main.kcl': fileWithImport.replace(
+              'extrude001 = extrude(profile001, length = 200)',
+              `extrude001 = extrude(profile001, length = 200)
+  |> appearance(color = "#00ff00")`
+            ),
             'b.kcl': importedFile,
           },
           // Normalize file names to make snapshots deterministic
