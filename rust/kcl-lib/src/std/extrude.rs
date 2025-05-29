@@ -31,7 +31,7 @@ use crate::{
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let length: TyF64 = args.get_kw_arg_typed("length", &RuntimeType::length(), exec_state)?;
-    let symmetric = args.get_kw_arg_opt("symmetric")?;
+    let symmetric = args.get_kw_arg_opt_typed("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_length: Option<TyF64> =
         args.get_kw_arg_opt_typed("bidirectionalLength", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;

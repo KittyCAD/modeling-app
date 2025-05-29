@@ -16,7 +16,7 @@ use crate::{
 
 /// Returns the point at the end of the given segment.
 pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
     let pt = inner_segment_end(&tag, exec_state, args.clone())?;
 
     args.make_kcl_val_from_point([pt[0].n, pt[1].n], pt[0].ty.clone())
@@ -72,7 +72,7 @@ fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args
 
 /// Returns the segment end of x.
 pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
     let result = inner_segment_end_x(&tag, exec_state, args.clone())?;
 
     Ok(args.make_user_val_from_f64_with_type(result))
@@ -113,7 +113,7 @@ fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
 
 /// Returns the segment end of y.
 pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
     let result = inner_segment_end_y(&tag, exec_state, args.clone())?;
 
     Ok(args.make_user_val_from_f64_with_type(result))
@@ -155,7 +155,7 @@ fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
 
 /// Returns the point at the start of the given segment.
 pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
     let pt = inner_segment_start(&tag, exec_state, args.clone())?;
 
     args.make_kcl_val_from_point([pt[0].n, pt[1].n], pt[0].ty.clone())
@@ -211,7 +211,7 @@ fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
 
 /// Returns the segment start of x.
 pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
     let result = inner_segment_start_x(&tag, exec_state, args.clone())?;
 
     Ok(args.make_user_val_from_f64_with_type(result))
@@ -252,7 +252,7 @@ fn inner_segment_start_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: 
 
 /// Returns the segment start of y.
 pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
     let result = inner_segment_start_y(&tag, exec_state, args.clone())?;
 
     Ok(args.make_user_val_from_f64_with_type(result))
@@ -385,7 +385,7 @@ fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
 
 /// Returns the length of the segment.
 pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
     let result = inner_segment_length(&tag, exec_state, args.clone())?;
     Ok(args.make_user_val_from_f64_with_type(result))
 }
@@ -431,7 +431,7 @@ fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: A
 
 /// Returns the angle of the segment.
 pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
 
     let result = inner_segment_angle(&tag, exec_state, args.clone())?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
@@ -476,7 +476,7 @@ fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
 
 /// Returns the angle coming out of the end of the segment in degrees.
 pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
 
     let result = inner_tangent_to_end(&tag, exec_state, args.clone()).await?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))

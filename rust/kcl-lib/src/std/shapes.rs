@@ -43,7 +43,8 @@ pub enum SketchOrSurface {
 
 /// Sketch a circle.
 pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch_or_surface = args.get_unlabeled_kw_arg("sketchOrSurface")?;
+    let sketch_or_surface =
+        args.get_unlabeled_kw_arg_typed("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
     let center = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
     let radius: Option<TyF64> = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;
     let diameter: Option<TyF64> = args.get_kw_arg_opt_typed("diameter", &RuntimeType::length(), exec_state)?;
@@ -129,13 +130,14 @@ async fn inner_circle(
 
 /// Sketch a 3-point circle.
 pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch_surface_or_group = args.get_unlabeled_kw_arg("sketch_surface_or_group")?;
+    let sketch_or_surface =
+        args.get_unlabeled_kw_arg_typed("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
     let p1 = args.get_kw_arg_typed("p1", &RuntimeType::point2d(), exec_state)?;
     let p2 = args.get_kw_arg_typed("p2", &RuntimeType::point2d(), exec_state)?;
     let p3 = args.get_kw_arg_typed("p3", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag")?;
 
-    let sketch = inner_circle_three_point(sketch_surface_or_group, p1, p2, p3, tag, exec_state, args).await?;
+    let sketch = inner_circle_three_point(sketch_or_surface, p1, p2, p3, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -257,14 +259,15 @@ pub enum PolygonType {
 
 /// Create a regular polygon with the specified number of sides and radius.
 pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch_surface_or_group = args.get_unlabeled_kw_arg("sketchOrSurface")?;
+    let sketch_or_surface =
+        args.get_unlabeled_kw_arg_typed("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
     let radius: TyF64 = args.get_kw_arg_typed("radius", &RuntimeType::length(), exec_state)?;
     let num_sides: TyF64 = args.get_kw_arg_typed("numSides", &RuntimeType::count(), exec_state)?;
     let center = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
     let inscribed = args.get_kw_arg_opt_typed("inscribed", &RuntimeType::bool(), exec_state)?;
 
     let sketch = inner_polygon(
-        sketch_surface_or_group,
+        sketch_or_surface,
         radius,
         num_sides.n as u64,
         center,
