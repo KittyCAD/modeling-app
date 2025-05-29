@@ -123,7 +123,7 @@ fn fanBladeSketch(r1, offsetDistance, angle, armLength) {
   return fanBladeSketch
 }
 
-// Define a function to sketch she solid airfoil section of a wind turbine blade cap
+// Define a function to sketch the solid airfoil section of a wind turbine blade cap
 fn endCapSketch(r1, offsetDistance, angle, armLength) {
   d1 = r1 + armLength
   r2 = r1 + wallThickness
