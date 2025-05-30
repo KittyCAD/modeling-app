@@ -2504,8 +2504,8 @@ export class SceneEntities {
             forward,
             position,
           })
-          await this.codeManager.writeToFile()
         }
+        await this.codeManager.writeToFile()
       },
       onDrag: async ({
         selected,
