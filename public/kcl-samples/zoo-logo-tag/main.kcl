@@ -1,0 +1,93 @@
+// Zoo Tag
+// A metal tag with a ZOO logo cutout
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+tagLength = 2
+tagHeight = 1.125
+sheetThickness = 0.090
+
+// Create the tag body
+tagSketch = startSketchOn(XZ)
+  |> startProfile(at = [.25, 0])
+  |> arc(interiorAbsolute = [0, tagHeight / 2], endAbsolute = [tagLength / 10, tagHeight])
+  |> xLine(length = tagLength * 4 / 5)
+  |> arc(interiorAbsolute = [tagLength, tagHeight / 2], endAbsolute = [tagLength * 9 / 10, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> subtract2d(tool = circle(center = [tagLength / 15, tagHeight / 2], diameter = tagLength / 20))
+tagBody = extrude(tagSketch, length = sheetThickness)
+
+// Define a function to draw the ZOO "Z"
+fn zLogo(surface, origin, fontSize, depth) {
+  zSketch = startSketchOn(surface)
+    |> startProfile(at = [0 + origin[0], 0.15 + origin[1]])
+    |> yLine(length = -0.15)
+    |> xLine(length = 0.15)
+    |> angledLine(angle = 47.15, endAbsoluteX = 0.3 + origin[0], tag = $seg1)
+    |> yLine(endAbsolute = 0 + origin[1], tag = $seg3)
+    |> xLine(length = 0.63)
+    |> yLine(length = 0.225)
+    |> xLine(length = -0.57)
+    |> angledLine(angle = 47.15, endAbsoluteX = 0.93 + origin[0])
+    |> yLine(length = 0.15)
+    |> xLine(length = -0.15)
+    |> angledLine(angle = 47.15, length = -segLen(seg1), tag = $seg2)
+    |> yLine(length = segLen(seg3))
+    |> xLine(endAbsolute = 0 + origin[0])
+    |> yLine(length = -0.225)
+    |> angledLineThatIntersects(angle = 0, intersectTag = seg2, offset = 0)
+    |> close()
+    |> scale(x = fontSize / 72, y = fontSize / 72, z = fontSize / 72)
+    |> extrude(length = depth)
+
+  return zSketch
+}
+
+// Define a function to draw the ZOO "O"
+fn oLogo(surface, origin, fontSize, depth) {
+  otagSketch = startSketchOn(surface)
+    |> startProfile(at = [.788 + origin[0], .921 + origin[1]])
+    |> arc(angleStart = 47.15 + 6, angleEnd = 47.15 - 6 + 180, radius = .525)
+    |> angledLine(angle = 47.15, length = .24)
+    |> arc(angleStart = 47.15 - 11 + 180, angleEnd = 47.15 + 11, radius = .288)
+    |> close(%)
+    |> scale(x = fontSize / 72, y = fontSize / 72, z = fontSize / 72)
+    |> extrude(length = depth)
+
+  oSketch002 = startSketchOn(surface)
+    |> startProfile(at = [.16 + origin[0], .079 + origin[1]])
+    |> arc(angleStart = 47.15 + 6 - 180, angleEnd = 47.15 - 6, radius = .525)
+    |> angledLine(angle = 47.15, length = -.24)
+    |> arc(angleStart = 47.15 - 11, angleEnd = 47.15 + 11 - 180, radius = .288)
+    |> close(%)
+    |> scale(x = fontSize / 72, y = fontSize / 72, z = fontSize / 72)
+    |> extrude(length = depth)
+  return [otagSketch, oSketch002]
+}
+
+// Create each letter using the letter functions
+z = zLogo(
+  surface = XZ,
+  origin = [0.5, .6],
+  fontSize = 36,
+  depth = sheetThickness,
+)
+
+o = oLogo(
+  surface = XZ,
+  origin = [1.525, .6],
+  fontSize = 36,
+  depth = sheetThickness,
+)
+oo = oLogo(
+  surface = XZ,
+  origin = [2.655, .6],
+  fontSize = 36,
+  depth = sheetThickness,
+)
+
+// Cut each letter from the tag body
+subtract([tagBody], tools = [z, o, oo])
