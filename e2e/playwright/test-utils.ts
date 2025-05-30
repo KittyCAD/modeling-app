@@ -364,6 +364,11 @@ export async function getUtils(page: Page, test_?: typeof test) {
     )
   }
 
+  // Chrome devtools protocol session only works in Chromium
+  const browserType = page.context().browser()?.browserType().name()
+  const cdpSession =
+    browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
+
   const util = {
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
     waitForPageLoad: () => waitForPageLoad(page),
@@ -484,9 +489,15 @@ export async function getUtils(page: Page, test_?: typeof test) {
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
     ) => {
-      return networkOptions.offline
-        ? page.evaluate('window.engineCommandManager.offline()')
-        : page.evaluate('window.engineCommandManager.online()')
+      if (cdpSession === null) {
+        // Use a fail safe if we can't simulate disconnect (on Safari)
+        return page.evaluate('window.engineCommandManager.tearDown()')
+      }
+
+      return cdpSession?.send(
+        'Network.emulateNetworkConditions',
+        networkOptions
+      )
     },
 
     toNormalizedCode(text: string) {
