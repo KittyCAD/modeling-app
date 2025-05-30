@@ -17,7 +17,7 @@ test.describe('Test network related behaviors', () => {
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
       )
-      const networkToggleWeakText = page.getByText('Ok')
+      const networkToggleWeakText = page.getByText('Network health (Ok)')
 
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -103,7 +103,7 @@ test.describe('Test network related behaviors', () => {
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
       )
-      const networkToggleWeakText = page.getByText('Ok')
+      const networkToggleWeakText = page.getByText('Network health (Ok)')
 
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
