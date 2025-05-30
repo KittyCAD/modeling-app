@@ -1409,7 +1409,6 @@ pub(crate) async fn inner_start_profile(
         on: sketch_surface.clone(),
         paths: vec![],
         units,
-        mirror: Default::default(),
         meta: vec![args.source_range.into()],
         tags: if let Some(tag) = &tag {
             let mut tag_identifier: TagIdentifier = tag.into();

@@ -583,9 +583,6 @@ pub struct Sketch {
     pub artifact_id: ArtifactId,
     #[ts(skip)]
     pub original_id: uuid::Uuid,
-    /// If the sketch includes a mirror.
-    #[serde(skip)]
-    pub mirror: Option<uuid::Uuid>,
     pub units: UnitLen,
     /// Metadata.
     #[serde(skip)]
