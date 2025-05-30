@@ -7,27 +7,22 @@
 // Import parameters
 import hexNutDiameter, hexNutFlatToFlat, hexNutThickness, hexNutFlatLength from "parameters.kcl"
 
-// Create a function to make the hex nut. Must be a function since multiple hex nuts are used
-export fn hexNut() {
-  // Create the base of the hex nut
-  hexNutBase = startSketchOn(XY)
-    |> startProfile(at = [
-         hexNutFlatToFlat / 2,
-         hexNutFlatLength / 2
-       ])
-    |> angledLine(angle = 270, length = hexNutFlatLength)
-    |> angledLine(angle = 210, length = hexNutFlatLength)
-    |> angledLine(angle = 150, length = hexNutFlatLength)
-    |> angledLine(angle = 90, length = hexNutFlatLength)
-    |> angledLine(angle = 30, length = hexNutFlatLength)
-    |> close()
-    |> extrude(length = hexNutThickness)
+// Create the base of the hex nut
+hexNutBase = startSketchOn(XY)
+  |> startProfile(at = [
+       hexNutFlatToFlat / 2,
+       hexNutFlatLength / 2
+     ])
+  |> angledLine(angle = 270, length = hexNutFlatLength)
+  |> angledLine(angle = 210, length = hexNutFlatLength)
+  |> angledLine(angle = 150, length = hexNutFlatLength)
+  |> angledLine(angle = 90, length = hexNutFlatLength)
+  |> angledLine(angle = 30, length = hexNutFlatLength)
+  |> close()
+  |> extrude(length = hexNutThickness)
 
-  // Create the hole in the center of the hex nut
-  hexNut = startSketchOn(hexNutBase, face = END)
-    |> circle(center = [0, 0], radius = hexNutDiameter / 2)
-    |> extrude(%, length = -hexNutThickness)
-    |> appearance(%, color = "#4edfd5")
-
-  return hexNut
-}
+// Create the hole in the center of the hex nut
+startSketchOn(hexNutBase, face = END)
+  |> circle(center = [0, 0], radius = hexNutDiameter / 2)
+  |> extrude(%, length = -hexNutThickness)
+  |> appearance(%, color = "#4edfd5")

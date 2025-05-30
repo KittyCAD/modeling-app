@@ -9,16 +9,19 @@ import * from "parameters.kcl"
 
 // Import parts
 import "9472k188-gasket.kcl" as gasket
-import flange from "68095k348-flange.kcl"
-import washer from "98017a257-washer.kcl"
-import bolt from "91251a404-bolt.kcl"
-import hexNut from "95479a127-hex-nut.kcl"
-import pipe from "1120t74-pipe.kcl"
+import "68095k348-flange.kcl" as flange
+import "98017a257-washer.kcl" as washer
+import "91251a404-bolt.kcl" as bolt
+import "95479a127-hex-nut.kcl" as hexNut
+import "1120t74-pipe.kcl" as pipe
 
-// Place flanges
-flange()
-flange()
-  |> rotate(axis = [0, 1, 0], angle = 180)
+// Place flange clone
+rotate(
+       clone(flange),
+       roll = 180,
+       pitch = 0,
+       yaw = 0,
+     )
   |> translate(x = 0, y = 0, z = flangeBackHeight * 2 + gasketThickness)
 
 // Place gasket between the flanges
@@ -26,7 +29,7 @@ gasket
   |> translate(x = 0, y = 0, z = -flangeBackHeight - gasketThickness)
 
 // Place eight washers (four front, four back)
-washer()
+washer
   |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = flangeBaseThickness)
   |> patternCircular3d(
        %,
@@ -44,7 +47,8 @@ washer()
      )
 
 // Place four bolts
-bolt()
+
+bolt
   |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = flangeBaseThickness + washerThickness)
   |> rotate(roll = 90, pitch = 0, yaw = 0)
   |> patternCircular3d(
@@ -57,7 +61,7 @@ bolt()
      )
 
 // Place four hex nuts
-hexNut()
+hexNut
   |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + washerThickness + hexNutThickness))
   |> patternCircular3d(
        %,
@@ -69,9 +73,8 @@ hexNut()
      )
 
 // Place both pieces of pipe
-pipe()
-  |> rotate(
-       %,
+rotate(
+       pipe,
        roll = -90,
        pitch = 0,
        yaw = 0,
@@ -83,16 +86,13 @@ pipe()
        z = flangeBaseThickness + flangeFrontHeight - 0.5,
        global = true,
      )
-
-pipe()
-  |> rotate(
-       %,
-       roll = 90,
+rotate(
+       clone(pipe),
+       roll = 180,
        pitch = 0,
        yaw = 0,
      )
   |> translate(
-       %,
        x = 0,
        y = 0,
        z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + flangeFrontHeight - 0.5),

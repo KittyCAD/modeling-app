@@ -7,17 +7,13 @@
 // Import parameters
 import pipeInnerDiameter, pipeOuterDiameter, pipeLength from "parameters.kcl"
 
-// Create a function to make the pipe. Export
-export fn pipe() {
-  // Create the pipe base
-  pipeBase = startSketchOn(XZ)
-    |> circle(%, center = [0, 0], radius = pipeOuterDiameter / 2)
-    |> extrude(%, length = pipeLength)
+// Create the pipe base
+pipeBase = startSketchOn(XZ)
+  |> circle(%, center = [0, 0], radius = pipeOuterDiameter / 2)
+  |> extrude(%, length = pipeLength)
 
-  // Extrude a hole through the length of the pipe
-  pipe = startSketchOn(pipeBase, face = END)
-    |> circle(center = [0, 0], radius = pipeInnerDiameter / 2)
-    |> extrude(%, length = -pipeLength)
-    |> appearance(color = "#a24ed0")
-  return pipe
-}
+// Extrude a hole through the length of the pipe
+startSketchOn(pipeBase, face = END)
+  |> circle(center = [0, 0], radius = pipeInnerDiameter / 2)
+  |> extrude(%, length = -pipeLength)
+  |> appearance(color = "#a24ed0")
