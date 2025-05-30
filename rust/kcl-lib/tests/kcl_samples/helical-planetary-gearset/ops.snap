@@ -2476,6 +2476,38 @@ description: Operations executed helical-planetary-gearset.kcl
   },
   {
     "type": "StdLibCall",
+    "name": "translate",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "y": {
+        "value": {
+          "type": "Number",
+          "value": 20.7,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
     "name": "patternCircular3d",
     "unlabeledArg": {
       "value": {

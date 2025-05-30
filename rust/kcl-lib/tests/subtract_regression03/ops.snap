@@ -18,6 +18,44 @@ description: Operations executed subtract_regression03.kcl
   },
   {
     "type": "StdLibCall",
+    "name": "scale",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "x": {
+        "value": {
+          "type": "Number",
+          "value": 0.958,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "y": {
+        "value": {
+          "type": "Number",
+          "value": 0.958,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
     "name": "startSketchOn",
     "unlabeledArg": {
       "value": {

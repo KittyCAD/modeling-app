@@ -210,15 +210,15 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("transform", "translate") => (
             |e, a| Box::pin(crate::std::transform::translate(e, a)),
-            StdFnProps::default("std::transform::translate"),
+            StdFnProps::default("std::transform::translate").include_in_feature_tree(),
         ),
         ("transform", "rotate") => (
             |e, a| Box::pin(crate::std::transform::rotate(e, a)),
-            StdFnProps::default("std::transform::rotate"),
+            StdFnProps::default("std::transform::rotate").include_in_feature_tree(),
         ),
         ("transform", "scale") => (
             |e, a| Box::pin(crate::std::transform::scale(e, a)),
-            StdFnProps::default("std::transform::scale"),
+            StdFnProps::default("std::transform::scale").include_in_feature_tree(),
         ),
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
