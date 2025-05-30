@@ -61,7 +61,7 @@ test.describe('Test network related behaviors', () => {
       })
 
       // Expect the network to be down
-      await expect(networkToggle).toContainText('Problem')
+      await expect(networkToggle).toContainText('Network health (Offline)')
 
       // Click the network widget
       await networkWidget.click()
@@ -156,7 +156,8 @@ test.describe('Test network related behaviors', () => {
 
       // Expect the network to be down
       await networkToggle.hover()
-      await expect(networkToggle).toContainText('Problem')
+
+      await expect(networkToggle).toContainText('Network health (Offline)')
 
       // Ensure we are not in sketch mode
       await expect(
@@ -279,7 +280,7 @@ profile001 = startProfile(sketch001, at = [12.34, -12.34])
 
   test(
     'Paused stream freezes view frame, unpause reconnect is seamless to user',
-    { tag: ['@electron', '@skipLocalEngine'] },
+    { tag: ['@desktop', '@skipLocalEngine'] },
     async ({ page, homePage, scene, cmdBar, toolbar, tronApp }) => {
       const networkToggle = page.getByTestId('network-toggle')
       const networkToggleConnectedText = page.getByText('Connected')

@@ -976,9 +976,12 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_extrude() {
-        let extrude_fn: Box<dyn StdLibFn> = Box::new(crate::std::extrude::Extrude);
-        let snippet = extrude_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"extrude(${0:%}, length = ${1:3.14})"#);
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("extrude").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"extrude(length = ${0:10})"#);
     }
 
     #[test]
@@ -1064,11 +1067,14 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_pattern_linear_2d() {
-        let pattern_fn: Box<dyn StdLibFn> = Box::new(crate::std::patterns::PatternLinear2D);
-        let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("patternLinear2d").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"patternLinear2d(${0:%}, instances = ${1:10}, distance = ${2:3.14}, axis = [${3:1}, ${4:0}])"#
+            r#"patternLinear2d(instances = ${0:10}, distance = ${1:10}, axis = [${2:1}, ${3:0}])"#
         );
     }
 
@@ -1079,21 +1085,27 @@ mod tests {
             panic!();
         };
         let snippet = helix_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"appearance(color = ${0:"ff0000"})"#);
+        assert_eq!(snippet, "appearance(color = ${0:\"#ff0000\"})");
     }
 
     #[test]
     fn get_autocomplete_snippet_loft() {
-        let loft_fn: Box<dyn StdLibFn> = Box::new(crate::std::loft::Loft);
-        let snippet = loft_fn.to_autocomplete_snippet().unwrap();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("loft").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
         assert_eq!(snippet, r#"loft([${0:sketch000}, ${1:sketch001}])"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_sweep() {
-        let sweep_fn: Box<dyn StdLibFn> = Box::new(crate::std::sweep::Sweep);
-        let snippet = sweep_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"sweep(${0:%}, path = ${1:sketch000})"#);
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("sweep").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"sweep(path = ${0:sketch000})"#);
     }
 
     #[test]
@@ -1225,18 +1237,21 @@ mod tests {
 
     #[test]
     fn get_extrude_signature_help() {
-        let extrude_fn: Box<dyn StdLibFn> = Box::new(crate::std::extrude::Extrude);
-        let sh = extrude_fn.to_signature_help();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("extrude").unwrap() else {
+            panic!();
+        };
+        let sh = data.to_signature_help();
         assert_eq!(
             sh.signatures[0].label,
             r#"extrude(
-  @sketches: [Sketch],
-  length: number,
+  @sketches: [Sketch; 1+],
+  length: number(Length),
   symmetric?: bool,
-  bidirectionalLength?: number,
-  tagStart?: TagNode,
-  tagEnd?: TagNode,
-): [Solid]"#
+  bidirectionalLength?: number(Length),
+  tagStart?: tag,
+  tagEnd?: tag,
+): [Solid; 1+]"#
         );
     }
 }

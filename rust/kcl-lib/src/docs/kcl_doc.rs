@@ -644,13 +644,13 @@ impl FnData {
         format!("{}({})", self.preferred_name, args.join(", "))
     }
 
-    fn to_signature_help(&self) -> SignatureHelp {
+    pub(crate) fn to_signature_help(&self) -> SignatureHelp {
         // TODO Fill this in based on the current position of the cursor.
         let active_parameter = None;
 
         SignatureHelp {
             signatures: vec![SignatureInformation {
-                label: self.preferred_name.clone(),
+                label: self.preferred_name.clone() + &self.fn_signature(),
                 documentation: self.short_docs().map(|s| {
                     Documentation::MarkupContent(MarkupContent {
                         kind: MarkupKind::Markdown,
@@ -824,6 +824,7 @@ impl ArgData {
                 ),
             )),
             Some("Axis2d | Edge") | Some("Axis3d | Edge") => Some((index, format!(r#"{label}${{{index}:X}}"#))),
+            Some("Sketch") | Some("Sketch | Helix") => Some((index, format!(r#"{label}${{{index}:sketch000}}"#))),
             Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
             Some("Plane") => Some((index, format!(r#"{label}${{{}:XY}}"#, index))),
@@ -834,7 +835,7 @@ impl ArgData {
 
             Some("string") => {
                 if self.name == "color" {
-                    Some((index, format!(r#"{label}${{{}:"ff0000"}}"#, index)))
+                    Some((index, format!(r"{label}${{{}:{}}}", index, "\"#ff0000\"")))
                 } else {
                     Some((index, format!(r#"{label}${{{}:"string"}}"#, index)))
                 }
@@ -1280,7 +1281,10 @@ mod test {
                     continue;
                 };
 
-                for i in 0..f.examples.len() {
+                for (i, (_, props)) in f.examples.iter().enumerate() {
+                    if props.norun {
+                        continue;
+                    }
                     let name = format!("{}-{i}", f.qual_name.replace("::", "-"));
                     assert!(TEST_NAMES.contains(&&*name), "Missing test for example \"{name}\", maybe need to update kcl-derive-docs/src/example_tests.rs?")
                 }

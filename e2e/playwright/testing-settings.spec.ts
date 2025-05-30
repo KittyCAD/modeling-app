@@ -278,7 +278,7 @@ test.describe(
 
     test(
       `Project settings override user settings on desktop`,
-      { tag: ['@electron'] },
+      { tag: ['@desktop'] },
       async ({ context, page }, testInfo) => {
         const projectName = 'bracket'
         const { dir: projectDirName } = await context.folderSetupFn(
@@ -373,7 +373,7 @@ test.describe(
     test(
       `Load desktop app with no settings file`,
       {
-        tag: '@electron',
+        tag: '@desktop',
       },
       async ({ page }, testInfo) => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -393,7 +393,7 @@ test.describe(
     test(
       `Load desktop app with a settings file, but no project directory setting`,
       {
-        tag: '@electron',
+        tag: '@desktop',
       },
       async ({ context, page, tronApp }, testInfo) => {
         if (!tronApp) {
@@ -425,7 +425,7 @@ test.describe(
     test(
       'user settings reload on external change, on project and modeling view',
       {
-        tag: '@electron',
+        tag: '@desktop',
       },
       async ({ context, page, tronApp }, testInfo) => {
         if (!tronApp) {
@@ -486,7 +486,7 @@ test.describe(
 
     test(
       'project settings reload on external change',
-      { tag: '@electron' },
+      { tag: '@desktop' },
       async ({ context, page }, testInfo) => {
         const { dir: projectDirName } = await context.folderSetupFn(
           async () => {}
@@ -536,7 +536,7 @@ test.describe(
 
     test(
       `Closing settings modal should go back to the original file being viewed`,
-      { tag: '@electron' },
+      { tag: '@desktop' },
       async ({ context, page }, testInfo) => {
         await context.folderSetupFn(async (dir) => {
           const bracketDir = join(dir, 'project-000')
