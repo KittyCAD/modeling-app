@@ -3,7 +3,7 @@
 use anyhow::Result;
 use kcmc::{each_cmd as mcmd, ModelingCmd};
 use kittycad_modeling_cmds::{
-    self as kcmc, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, output::EntityGetAllChildUuids,
+    self as kcmc, length_unit::LengthUnit, ok_response::OkModelingCmdResponse,
     shared::Point3d, websocket::OkWebSocketResponseData,
 };
 
@@ -41,18 +41,15 @@ async fn inner_mirror_2d(
 ) -> Result<Vec<Sketch>, KclError> {
     let mut starting_sketches = sketches.clone();
 
-    // Update all to have a mirror.
-    starting_sketches.iter_mut().for_each(|sketch| {
-        sketch.mirror = Some(exec_state.next_uuid());
-    });
-
     if args.ctx.no_engine_commands().await {
         return Ok(starting_sketches);
     }
 
+    let mut mirrored_ids = Vec::new();
+
     match axis {
         Axis2dOrEdgeReference::Axis { direction, origin } => {
-            args.batch_modeling_cmd(
+            let resp = args.send_modeling_cmd(
                 exec_state.next_uuid(),
                 ModelingCmd::from(mcmd::EntityMirror {
                     ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
@@ -69,11 +66,29 @@ async fn inner_mirror_2d(
                 }),
             )
             .await?;
+
+            let mock_ids = Vec::new();
+            let entity_ids = if let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::EntityMirror(mirror_info),
+            } = &resp
+            {
+                &mirror_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
+            } else if args.ctx.no_engine_commands().await {
+                &mock_ids
+            } else {
+                return Err(KclError::Engine(KclErrorDetails::new(
+                    format!("EntityLinearPattern response was not as expected: {:?}", resp),
+                    vec![args.source_range],
+                )));
+            };
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("entityidsnew{:?}", entity_ids).into());
+            mirrored_ids.extend(entity_ids.iter().cloned());
         }
         Axis2dOrEdgeReference::Edge(edge) => {
             let edge_id = edge.get_engine_id(exec_state, &args)?;
 
-            args.batch_modeling_cmd(
+            let resp = args.send_modeling_cmd(
                 exec_state.next_uuid(),
                 ModelingCmd::from(mcmd::EntityMirrorAcrossEdge {
                     ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
@@ -81,6 +96,24 @@ async fn inner_mirror_2d(
                 }),
             )
             .await?;
+
+            let mock_ids = Vec::new();
+            let entity_ids = if let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::EntityMirrorAcrossEdge(mirror_info),
+            } = &resp
+            {
+                &mirror_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
+            } else if args.ctx.no_engine_commands().await {
+                &mock_ids
+            } else {
+                return Err(KclError::Engine(KclErrorDetails::new(
+                    format!("EntityLinearPattern response was not as expected: {:?}", resp),
+                    vec![args.source_range],
+                )));
+            };
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("entityidsnew{:?}", entity_ids).into());
+            mirrored_ids.extend(entity_ids.iter().cloned());
         }
     };
 
@@ -89,34 +122,14 @@ async fn inner_mirror_2d(
     // But if you mirror2d a sketch these IDs might change so we need to get the children versus
     // using the IDs we already have.
     // We only do this with mirrors because otherwise it is a waste of a websocket call.
-    for sketch in &mut starting_sketches {
-        let response = args
-            .send_modeling_cmd(
-                exec_state.next_uuid(),
-                ModelingCmd::from(mcmd::EntityGetAllChildUuids { entity_id: sketch.id }),
-            )
-            .await?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response:
-                OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids { entity_ids: child_ids }),
-        } = response
-        else {
-            return Err(KclError::Internal(KclErrorDetails::new(
-                "Expected a successful response from EntityGetAllChildUuids".to_string(),
-                vec![args.source_range],
-            )));
-        };
-
-        if child_ids.len() >= 2 {
-            // The first child is the original sketch, the second is the mirrored sketch.
-            let child_id = child_ids[1];
-            sketch.mirror = Some(child_id);
-        } else {
-            return Err(KclError::Type(KclErrorDetails::new(
-                "Expected child uuids to be >= 2".to_string(),
-                vec![args.source_range],
-            )));
+    for i in 0..starting_sketches.len() {
+        if starting_sketches[i].id != mirrored_ids[i] {
+            // Mirroring created a new path. The mirrored Sketch is a clone of
+            // the original with a new ID.
+            starting_sketches[i].id = mirrored_ids[i];
         }
+        #[cfg(target_arch = "wasm32")]
+web_sys::console::log_1(&format!("mirroredid{:?}", mirrored_ids[i]).into());
     }
 
     Ok(starting_sketches)
