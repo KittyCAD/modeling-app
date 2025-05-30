@@ -3214,7 +3214,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         alt((
             terminated(non_code_node.map(ArgPlace::NonCode), whitespace),
             terminated(any_keyword.map(ArgPlace::Keyword), whitespace),
-            ((labeled_argument, labeled_arg_separator)).map(ArgPlace::LabeledArg),
+            (labeled_argument, labeled_arg_separator).map(ArgPlace::LabeledArg),
             expression.map(ArgPlace::UnlabeledArg),
         )),
     )
@@ -3231,7 +3231,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                         return Err(ErrMode::Cut(
                             CompilationError::fatal(
                                 bad_token_source_range,
-                                format!("Missing comma between arguments, try adding a comma in"),
+                                "Missing comma between arguments, try adding a comma in",
                             )
                             .into(),
                         ));
