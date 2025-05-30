@@ -24,7 +24,6 @@ const uuidv4 = v4
  * debugging e2e tests
  */
 export async function resetCameraPosition() {
-
   // We need a padding of 0.1 for zoom_to_fit for all E2E tests since they were originally
   // written with zoom_to_fit with padding 0.1
   const padding = 0.1
@@ -35,8 +34,7 @@ export async function resetCameraPosition() {
     const cameraProjection =
       settingsActor.getSnapshot().context.modeling.cameraProjection.current
 
-    sceneInfra.camControls
-      .updateCameraToAxis(AxisNames.NEG_Y)
+    sceneInfra.camControls.updateCameraToAxis(AxisNames.NEG_Y)
     /**
      * HACK: We need to update the gizmo, the command above doesn't trigger gizmo
      * to render which makes the axis point in an old direction.

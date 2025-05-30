@@ -1624,7 +1624,6 @@ export class EngineCommandManager extends EventTarget {
           detail: this.engineConnection,
         })
       )
-      
     }
 
     this.engineConnection.addEventListener(
@@ -2008,7 +2007,8 @@ export class EngineCommandManager extends EventTarget {
         value?.push(command.cmd.type)
         if (!window.clientCamera) {
           window.clientCamera = [value]
-        } {
+        }
+        {
           window.clientCamera.push(value)
         }
       }
@@ -2029,6 +2029,7 @@ export class EngineCommandManager extends EventTarget {
     const cmd = command.cmd
     if (
       (cmd.type === 'camera_drag_move' ||
+        cmd.type === 'default_camera_look_at' ||
         cmd.type === 'handle_mouse_drag_move' ||
         cmd.type === 'default_camera_zoom' ||
         cmd.type === ('default_camera_perspective_settings' as any)) &&
@@ -2043,7 +2044,8 @@ export class EngineCommandManager extends EventTarget {
         value?.push(command.cmd.type)
         if (!window.clientCamera) {
           window.clientCamera = [value]
-        } {
+        }
+        {
           window.clientCamera.push(value)
         }
       }

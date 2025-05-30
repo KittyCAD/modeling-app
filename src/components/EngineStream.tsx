@@ -192,7 +192,6 @@ export const EngineStream = (props: {
           })
         }
 
-
         if (!once) {
           const the3DMouse = new _3DMouseThreeJS({
             // Name needs to be registered in the python proxy server!
@@ -200,12 +199,11 @@ export const EngineStream = (props: {
             debug: false,
             canvasId: 'webgl',
           })
-      
+
           window.the3DMouse = the3DMouse
           the3DMouse.init3DMouse()
           once = true
         }
-        
       })
       .catch(trap)
   }

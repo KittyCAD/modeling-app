@@ -54,16 +54,14 @@ import {
 import { isPlaywright } from '@src/lib/isPlaywright'
 import { VITE_KC_SITE_BASE_URL } from '@src/env'
 
-
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
 
 maybeWriteToDisk()
   .then(() => {})
-.catch(() => {})
+  .catch(() => {})
 
 export function App() {
-
   useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)

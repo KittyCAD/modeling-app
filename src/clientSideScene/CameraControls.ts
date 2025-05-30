@@ -186,6 +186,7 @@ export class CameraControls {
   }, 1000 / 30)
 
   throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
+    console.log('three',threeValues)
     const cmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -285,15 +286,12 @@ export class CameraControls {
     const cb = ({ data, type }: CallBackParam) => {
       const camSettings = data.settings
       if (camSettings && type) {
-        const value = [
-          camSettings.pos.x,
-          camSettings.pos.y,
-          camSettings.pos.z
-        ]
+        const value = [camSettings.pos.x, camSettings.pos.y, camSettings.pos.z]
         value?.push(type)
         if (!window.engineCamera) {
           window.engineCamera = [value]
-        } {
+        }
+        {
           window.engineCamera.push(value)
         }
       }
