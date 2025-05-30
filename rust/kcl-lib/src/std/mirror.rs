@@ -3,7 +3,7 @@
 use anyhow::Result;
 use kcmc::{each_cmd as mcmd, ModelingCmd};
 use kittycad_modeling_cmds::{
-    self as kcmc, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, output::EntityGetAllChildUuids,
+    self as kcmc, length_unit::LengthUnit, ok_response::OkModelingCmdResponse,
     shared::Point3d, websocket::OkWebSocketResponseData,
 };
 
