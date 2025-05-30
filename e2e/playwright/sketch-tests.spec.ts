@@ -1733,7 +1733,7 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
       await page.waitForTimeout(600)
     })
 
-    const codeFromTangentialArc = `  |> tangentialArc(endAbsolute = [39.49, 88.22])`
+    const codeFromTangentialArc = `  |> tangentialArc(end = [-10.82, 144.95])`
     await test.step('check that tangential tool does not snap to other profile starts', async () => {
       await toolbar.selectTangentialArc()
       await page.waitForTimeout(1000)
@@ -1755,7 +1755,7 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
       // check pixel is now gray at tanArcLocation to verify code has executed
       await scene.expectPixelColor([26, 26, 26], tanArcLocation, 15)
       await editor.expectEditor.not.toContain(
-        `tangentialArc(endAbsolute = [39.49, 88.22])`
+        `tangentialArc(end = [-10.82, 144.95])`
       )
     })
 
@@ -1955,7 +1955,7 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
 
       await endArcStartLine()
       await editor.expectEditor.toContain(
-        `|> tangentialArc(endAbsolute = [16.61, 4.14])`
+        `|> tangentialArc(end = [2.98, -7.52])`
       )
 
       // Add a three-point arc segment
@@ -3181,7 +3181,7 @@ test.describe('Redirecting to home page and back to the original file should cle
 sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [191.39, 191.39])
-  |> tangentialArc(endAbsolute = [287.08, 95.69], tag = $seg01)
+  |> tangentialArc(end = [95.69, -95.7], tag = $seg01)
   |> angledLine(angle = tangentToEnd(seg01), length = 135.34)
   |> arc(interiorAbsolute = [191.39, -95.69], endAbsolute = [287.08, -95.69], tag = $seg02)
   |> angledLine(angle = tangentToEnd(seg02) + turns::HALF_TURN, length = 270.67)
