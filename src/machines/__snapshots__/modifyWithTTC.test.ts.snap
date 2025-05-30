@@ -198,98 +198,7 @@ export linkDiameter = sphereDia / 4
 ",
   },
   "files": {
-    "b.kcl": "// Pillow Block Bearing
-// The machined block for the pillow block bearing assembly. The block is dimensioned using the bolt pattern spacing, and each bolt hole includes a counterbore
-
-// Set units
-@settings(defaultLengthUnit = in)
-
-// Import Parameters
-import * from "parameters.kcl"
-
-// Calculate the dimensions of the block using the specified bolt spacing. The size of the block can be defined by adding a multiple of the counterbore diameter to the bolt spacing
-blockLength = boltSpacingX + counterboreDiameter + boltDiameter
-blockWidth = boltSpacingY + counterboreDiameter + boltDiameter
-
-// Draw the base plate
-plateSketch = startSketchOn(XY)
-  |> startProfile(at = [-blockLength / 2, -blockWidth / 2])
-  |> angledLine(angle = 0, length = blockLength, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = blockWidth, tag = $rectangleSegmentB001)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
-  |> close()
-  |> subtract2d(tool = circle(center = [0, 0], radius = bearingOuterDiameter / 2))
-plateBody = extrude(plateSketch, length = stockThickness)
-  |> appearance(%, color = "#1e62eb")
-  |> fillet(
-       radius = boltDiameter * 1 / 3,
-       tags = [
-         getNextAdjacentEdge(rectangleSegmentB001),
-         getNextAdjacentEdge(rectangleSegmentA001),
-         getNextAdjacentEdge(rectangleSegmentC001),
-         getNextAdjacentEdge(rectangleSegmentD001)
-       ],
-     )
-
-// Define hole positions
-holePositions = [
-  [-boltSpacingX / 2, -boltSpacingY / 2],
-  [-boltSpacingX / 2, boltSpacingY / 2],
-  [boltSpacingX / 2, -boltSpacingY / 2],
-  [boltSpacingX / 2, boltSpacingY / 2]
-]
-
-// Function to create a counterbored hole
-fn counterbore(@holePosition) {
-  cbBore = startSketchOn(plateBody, face = END)
-    |> circle(center = holePosition, radius = counterboreDiameter / 2)
-    |> extrude(length = -counterboreDepth)
-  cbBolt = startSketchOn(cbBore, face = START)
-    |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
-    |> extrude(length = -stockThickness + counterboreDepth)
-
-  return {  }
-}
-
-// Place a counterbored hole at each bolt hole position
-map(holePositions, f = counterbore)
-",
-    "file-2.kcl": "// Pillow Block Bearing
-// A bearing pillow block, also known as a plummer block or pillow block bearing, is a pedestal used to provide support for a rotating shaft with the help of compatible bearings and various accessories. Housing a bearing, the pillow block provides a secure and stable foundation that allows the shaft to rotate smoothly within its machinery setup. These components are essential in a wide range of mechanical systems and machinery, playing a key role in reducing friction and supporting radial and axial loads.
-
-// Set units
-@settings(defaultLengthUnit = in)
-
-// Import parts and parameters
-import * from "parameters.kcl"
-import "ball-bearing.kcl" as ballBearing
-import "block.kcl" as block
-
-// Render each part
-ballBearing
-block
-",
-    "file-3.kcl": "// Global parameters for the pillow block bearing
-
-// Set units
-@settings(defaultLengthUnit = in)
-
-// Export parameters
-export boltSpacingX = 5
-export boltSpacingY = 3
-export boltDiameter = 3 / 8
-export counterboreDiameter = 3 / 4
-export counterboreDepth = 3 / 16
-export stockThickness = .5
-export bearingBoreDiameter = 1 + 3 / 4
-export bearingOuterDiameter = bearingBoreDiameter * 1.5
-export sphereDia = (bearingOuterDiameter - bearingBoreDiameter) / 4
-export chainWidth = sphereDia / 2
-export chainThickness = sphereDia / 8
-export linkDiameter = sphereDia / 4
-",
-    "main.kcl": "// Pillow Block Bearing
+    "ball-bearing.kcl": "// Pillow Block Bearing
 // The ball bearing for the pillow block bearing assembly
 
 // Set units
@@ -390,6 +299,97 @@ revolve(linkSketch, axis = Y, angle = 360 / 16)
        instances = 16,
        rotateDuplicates = true,
      )
+",
+    "block.kcl": "// Pillow Block Bearing
+// The machined block for the pillow block bearing assembly. The block is dimensioned using the bolt pattern spacing, and each bolt hole includes a counterbore
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import Parameters
+import * from "parameters.kcl"
+
+// Calculate the dimensions of the block using the specified bolt spacing. The size of the block can be defined by adding a multiple of the counterbore diameter to the bolt spacing
+blockLength = boltSpacingX + counterboreDiameter + boltDiameter
+blockWidth = boltSpacingY + counterboreDiameter + boltDiameter
+
+// Draw the base plate
+plateSketch = startSketchOn(XY)
+  |> startProfile(at = [-blockLength / 2, -blockWidth / 2])
+  |> angledLine(angle = 0, length = blockLength, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = blockWidth, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
+  |> close()
+  |> subtract2d(tool = circle(center = [0, 0], radius = bearingOuterDiameter / 2))
+plateBody = extrude(plateSketch, length = stockThickness)
+  |> appearance(%, color = "#1e62eb")
+  |> fillet(
+       radius = boltDiameter * 1 / 3,
+       tags = [
+         getNextAdjacentEdge(rectangleSegmentB001),
+         getNextAdjacentEdge(rectangleSegmentA001),
+         getNextAdjacentEdge(rectangleSegmentC001),
+         getNextAdjacentEdge(rectangleSegmentD001)
+       ],
+     )
+
+// Define hole positions
+holePositions = [
+  [-boltSpacingX / 2, -boltSpacingY / 2],
+  [-boltSpacingX / 2, boltSpacingY / 2],
+  [boltSpacingX / 2, -boltSpacingY / 2],
+  [boltSpacingX / 2, boltSpacingY / 2]
+]
+
+// Function to create a counterbored hole
+fn counterbore(@holePosition) {
+  cbBore = startSketchOn(plateBody, face = END)
+    |> circle(center = holePosition, radius = counterboreDiameter / 2)
+    |> extrude(length = -counterboreDepth)
+  cbBolt = startSketchOn(cbBore, face = START)
+    |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
+    |> extrude(length = -stockThickness + counterboreDepth)
+
+  return {  }
+}
+
+// Place a counterbored hole at each bolt hole position
+map(holePositions, f = counterbore)
+",
+    "main.kcl": "// Pillow Block Bearing
+// A bearing pillow block, also known as a plummer block or pillow block bearing, is a pedestal used to provide support for a rotating shaft with the help of compatible bearings and various accessories. Housing a bearing, the pillow block provides a secure and stable foundation that allows the shaft to rotate smoothly within its machinery setup. These components are essential in a wide range of mechanical systems and machinery, playing a key role in reducing friction and supporting radial and axial loads.
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import parts and parameters
+import * from "parameters.kcl"
+import "ball-bearing.kcl" as ballBearing
+import "block.kcl" as block
+
+// Render each part
+ballBearing
+block
+",
+    "parameters.kcl": "// Global parameters for the pillow block bearing
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Export parameters
+export boltSpacingX = 5
+export boltSpacingY = 3
+export boltDiameter = 3 / 8
+export counterboreDiameter = 3 / 4
+export counterboreDepth = 3 / 16
+export stockThickness = .5
+export bearingBoreDiameter = 1 + 3 / 4
+export bearingOuterDiameter = bearingBoreDiameter * 1.5
+export sphereDia = (bearingOuterDiameter - bearingBoreDiameter) / 4
+export chainWidth = sphereDia / 2
+export chainThickness = sphereDia / 8
+export linkDiameter = sphereDia / 4
 ",
   },
   "kcl_version": "0.2.77",
@@ -765,7 +765,31 @@ export pipeLength = 6
 ",
   },
   "files": {
-    "b.kcl": "// Flange
+    "1120t74-pipe.kcl": "// Pipe
+// Piping for the pipe flange assembly
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import pipeInnerDiameter, pipeOuterDiameter, pipeLength from "parameters.kcl"
+
+// Create a function to make the pipe. Export
+export fn pipe() {
+  // Create the pipe base
+  pipeBase = startSketchOn(XZ)
+    |> circle(%, center = [0, 0], radius = pipeOuterDiameter / 2)
+    |> extrude(%, length = pipeLength)
+
+  // Extrude a hole through the length of the pipe
+  pipe = startSketchOn(pipeBase, face = END)
+    |> circle(center = [0, 0], radius = pipeInnerDiameter / 2)
+    |> extrude(%, length = -pipeLength)
+    |> appearance(color = "#a24ed0")
+  return pipe
+}
+",
+    "68095k348-flange.kcl": "// Flange
 // Flange used for mating two pipes together in the pipe flange assembly.
 
 // Set units
@@ -810,7 +834,7 @@ export fn flange() {
   return pipeCut
 }
 ",
-    "file-2.kcl": "// Socket Head Cap Screw
+    "91251a404-bolt.kcl": "// Socket Head Cap Screw
 // screw for mating the flanges together in the pipe flange assembly
 
 // Set units
@@ -850,7 +874,7 @@ export fn bolt() {
   return boltBody
 }
 ",
-    "file-3.kcl": "// Gasket
+    "9472k188-gasket.kcl": "// Gasket
 // Gasket for the pipe flange assembly. A gasket is a mechanical seal that fills the space between two or more mating surfaces, preventing leaks of liquids or gases under compression
 
 // Set units
@@ -870,7 +894,7 @@ startSketchOn(gasketBase, face = END)
   |> extrude(%, length = -gasketThickness)
   |> appearance(%, color = "#d0cb3e")
 ",
-    "file-4.kcl": "// Hex Nut
+    "95479a127-hex-nut.kcl": "// Hex Nut
 // Hex nut for the screws in the pipe flange assembly.
 
 // Set units
@@ -904,7 +928,7 @@ export fn hexNut() {
   return hexNut
 }
 ",
-    "file-5.kcl": "// 98017A257 Washer
+    "98017a257-washer.kcl": "// 98017A257 Washer
 // Washer for the screws in the pipe flange assembly.
 
 // Set units
@@ -929,7 +953,7 @@ export fn washer() {
   return washer
 }
 ",
-    "file-6.kcl": "// Pipe and Flange Assembly
+    "main.kcl": "// Pipe and Flange Assembly
 // A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint.
 
 // Set units
@@ -1022,7 +1046,7 @@ pipe()
        global = true,
      )
 ",
-    "file-7.kcl": "// Parameters
+    "parameters.kcl": "// Parameters
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
@@ -1070,30 +1094,6 @@ export gasketThickness = 0.031
 export pipeInnerDiameter = 2.0
 export pipeOuterDiameter = 2.375
 export pipeLength = 6
-",
-    "main.kcl": "// Pipe
-// Piping for the pipe flange assembly
-
-// Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
-
-// Import parameters
-import pipeInnerDiameter, pipeOuterDiameter, pipeLength from "parameters.kcl"
-
-// Create a function to make the pipe. Export
-export fn pipe() {
-  // Create the pipe base
-  pipeBase = startSketchOn(XZ)
-    |> circle(%, center = [0, 0], radius = pipeOuterDiameter / 2)
-    |> extrude(%, length = pipeLength)
-
-  // Extrude a hole through the length of the pipe
-  pipe = startSketchOn(pipeBase, face = END)
-    |> circle(center = [0, 0], radius = pipeInnerDiameter / 2)
-    |> extrude(%, length = -pipeLength)
-    |> appearance(color = "#a24ed0")
-  return pipe
-}
 ",
   },
   "kcl_version": "0.2.77",

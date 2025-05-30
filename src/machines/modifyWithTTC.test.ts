@@ -246,6 +246,9 @@ function createFetchSpy(options: FetchSpyOptions = {}) {
   const capturedRequests: CapturedRequest[] = []
   const allFetchCalls: string[] = []
 
+  // Store test context for file mapping
+  let currentTestFiles: Record<string, string> = {}
+
   // Create a mock fetch that handles the specific text-to-cad endpoints
   const mockFetch = vi.fn(
     async (url: string | URL | Request, init?: RequestInit) => {
@@ -280,44 +283,36 @@ function createFetchSpy(options: FetchSpyOptions = {}) {
 
           // Parse multipart form data if present
           if (init?.body instanceof FormData) {
-            const formData = init.body
-
             // Extract the JSON body
-            const bodyData = formData.get('body')
+            const bodyData = init.body.get('body')
             if (bodyData) {
               requestBody = JSON.parse(bodyData.toString())
             }
 
-            // Extract files - look for the actual file data from the project files we know about
-            const expectedFileNames = ['main.kcl', 'b.kcl'] // We know what files we're sending
-            let fileIndex = 0
-
-            for (const [key, value] of formData.entries()) {
+            // Extract files and map them to correct names using test context
+            const fileContents: string[] = []
+            for (const [key, value] of init.body.entries()) {
               if (key === 'files' && value instanceof File) {
                 const text = await value.text()
-
-                // Map the file content to the expected filename based on content
-                let fileName: string
-                if (text.includes('import "b.kcl"')) {
-                  fileName = 'main.kcl'
-                } else if (text.includes('sketch003')) {
-                  fileName = 'b.kcl'
-                } else {
-                  // Fallback to expected order
-                  fileName =
-                    expectedFileNames[fileIndex] || `file-${fileIndex}.kcl`
-                  fileIndex++
-                }
-
-                files[fileName] = text
-              } else if (key.startsWith('files[') && value instanceof File) {
-                // Handle files submitted as files[filename] - this would be the ideal case
-                const match = key.match(/files\[(.+)\]/)
-                const fileName = match ? match[1] : value.name
-                const text = await value.text()
-                files[fileName] = text
+                fileContents.push(text)
               }
             }
+
+            // Map files to their correct names based on test context
+            const testFileNames = Object.keys(currentTestFiles)
+            fileContents.forEach((content, index) => {
+              // Find matching file by content
+              const matchingFileName = testFileNames.find(
+                (fileName) => currentTestFiles[fileName] === content
+              )
+
+              if (matchingFileName) {
+                files[matchingFileName] = content
+              } else {
+                // Fallback if no exact match found
+                files[testFileNames[index] || `file-${index + 1}.kcl`] = content
+              }
+            })
           } else if (init?.body && typeof init.body === 'string') {
             // Parse multipart data manually like Playwright does
             const postData = init.body
@@ -441,6 +436,9 @@ function createFetchSpy(options: FetchSpyOptions = {}) {
       capturedRequests.filter((req) => req.url.includes('text-to-cad')),
     getAllFetchCalls: () => allFetchCalls,
     clearCapturedRequests: () => capturedRequests.splice(0),
+    setTestFiles: (files: Record<string, string>) => {
+      currentTestFiles = files
+    },
     restore: () => {
       vi.unstubAllGlobals()
     },
@@ -517,6 +515,9 @@ describe('When prompting modify with TTC, prompt:', () => {
 
         // Set up fetch spy to capture requests
         const fetchSpy = createFetchSpy()
+
+        // Set the test files for proper filename mapping
+        fetchSpy.setTestFiles(inputFiles)
 
         // Set up mock token for authentication
         const mockToken = 'test-token-123'
