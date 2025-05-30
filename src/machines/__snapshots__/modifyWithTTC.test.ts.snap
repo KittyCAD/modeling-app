@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`When prompting modify with TTC, prompt: > Change this to red please, #ff0000 1`] = `
+exports[`When prompting modify with TTC, prompt: > Can you please pattern this nut 4 times, the same way the bolt and washer has been done already. 1`] = `
 {
   "expectedFiles": {
     "ball-bearing.kcl": "// Pillow Block Bearing
@@ -394,7 +394,7 @@ revolve(linkSketch, axis = Y, angle = 360 / 16)
   },
   "kcl_version": "0.2.77",
   "project_name": "test-project",
-  "prompt": "Change this to red please, #ff0000",
+  "prompt": "Can you please pattern this nut 4 times, the same way the bolt and washer has been done already.",
   "source_ranges": [
     {
       "file": "ball-bearing.kcl",
@@ -423,6 +423,710 @@ But it's also worth bearing in mind that the user may have intended to select th
         "start": {
           "column": 5,
           "line": 90,
+        },
+      },
+    },
+  ],
+}
+`;
+
+exports[`When prompting modify with TTC, prompt: > Change this to red please, #ff0000 1`] = `
+{
+  "expectedFiles": {
+    "1120t74-pipe.kcl": "// Pipe
+// Piping for the pipe flange assembly
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import pipeInnerDiameter, pipeOuterDiameter, pipeLength from "parameters.kcl"
+
+// Create a function to make the pipe. Export
+export fn pipe() {
+  // Create the pipe base
+  pipeBase = startSketchOn(XZ)
+    |> circle(%, center = [0, 0], radius = pipeOuterDiameter / 2)
+    |> extrude(%, length = pipeLength)
+
+  // Extrude a hole through the length of the pipe
+  pipe = startSketchOn(pipeBase, face = END)
+    |> circle(center = [0, 0], radius = pipeInnerDiameter / 2)
+    |> extrude(%, length = -pipeLength)
+    |> appearance(color = "#a24ed0")
+  return pipe
+}
+",
+    "68095k348-flange.kcl": "// Flange
+// Flange used for mating two pipes together in the pipe flange assembly.
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import pipeDiameter, mountingHoleDiameter, mountingHolePlacementDiameter, flangeDiameter, flangeTotalThickness, flangeBackHeight, flangeFrontHeight, flangeBaseThickness, flangeBackDiameter, flangeFrontDiameter from "parameters.kcl"
+
+// Create a function to create the flange. We must create a function since we are using multiple flanges.
+export fn flange() {
+  // Sketch the mounting hole pattern
+  mountingHoles = startSketchOn(XY)
+    |> circle(%, center = [0, mountingHolePlacementDiameter / 2], radius = mountingHoleDiameter / 2)
+    |> patternCircular2d(
+         %,
+         instances = 4,
+         center = [0, 0],
+         arcDegrees = 360,
+         rotateDuplicates = false,
+       )
+
+  // Create the flange base
+  flangeBase = startSketchOn(XY)
+    |> circle(%, center = [0, 0], radius = flangeDiameter / 2)
+    |> subtract2d(tool = mountingHoles)
+    |> extrude(%, length = flangeBaseThickness)
+
+  // Create both the raised portions on the front and back of the flange base
+  flangeBack = startSketchOn(flangeBase, face = START)
+    |> circle(%, center = [0, 0], radius = flangeBackDiameter / 2)
+    |> extrude(%, length = flangeBackHeight)
+  flangeFront = startSketchOn(flangeBase, face = END)
+    |> circle(%, center = [0, 0], radius = flangeFrontDiameter / 2)
+    |> extrude(%, length = flangeFrontHeight)
+
+  // Create the circular cut in the center for the pipe
+  pipeCut = startSketchOn(flangeFront, face = END)
+    |> circle(%, center = [0, 0], radius = pipeDiameter / 2)
+    |> extrude(%, length = -flangeTotalThickness)
+    |> appearance(%, color = "#bab0b0")
+
+  return pipeCut
+}
+",
+    "91251a404-bolt.kcl": "// Socket Head Cap Screw
+// screw for mating the flanges together in the pipe flange assembly
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import boltDiameter, boltLength, boltHeadLength, boltHeadDiameter, boltHexDrive, boltHexFlatLength, boltThreadLength from "parameters.kcl"
+
+// Create a function to make a the bolt
+export fn bolt() {
+  // Create the head of the cap screw
+  boltHead = startSketchOn(XZ)
+    |> circle(center = [0, 0], radius = boltHeadDiameter / 2, tag = $topEdge)
+    |> extrude(length = -boltHeadLength)
+    |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])
+
+  // Define the sketch of the hex pattern on the screw head and extrude into the head
+  hexPatternSketch = startSketchOn(boltHead, face = START)
+    |> startProfile(at = [
+         boltHexDrive / 2,
+         boltHexFlatLength / 2
+       ])
+    |> angledLine(angle = 270, length = boltHexFlatLength)
+    |> angledLine(angle = 210, length = boltHexFlatLength)
+    |> angledLine(angle = 150, length = boltHexFlatLength)
+    |> angledLine(angle = 90, length = boltHexFlatLength)
+    |> angledLine(angle = 30, length = boltHexFlatLength)
+    |> close()
+    |> extrude(length = -boltHeadLength * 0.75)
+
+  // create the body of the bolt
+  boltBody = startSketchOn(boltHead, face = END)
+    |> circle(center = [0, 0], radius = boltDiameter / 2, tag = $filletEdge)
+    |> extrude(length = boltLength)
+    |> appearance(color = "#4dd043", metalness = 90, roughness = 90)
+
+  return boltBody
+}
+",
+    "9472k188-gasket.kcl": "// Gasket
+// Gasket for the pipe flange assembly. A gasket is a mechanical seal that fills the space between two or more mating surfaces, preventing leaks of liquids or gases under compression
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import gasketOutsideDiameter, gasketInnerDiameter, gasketThickness from "parameters.kcl"
+
+// Create the base of the gasket
+gasketBase = startSketchOn(XY)
+  |> circle(%, center = [0, 0], radius = gasketOutsideDiameter / 2)
+  |> extrude(%, length = gasketThickness)
+
+// Extrude a circular hole through the gasket base
+startSketchOn(gasketBase, face = END)
+  |> circle(%, center = [0, 0], radius = gasketInnerDiameter / 2)
+  |> extrude(%, length = -gasketThickness)
+  |> appearance(%, color = "#d0cb3e")
+",
+    "95479a127-hex-nut.kcl": "// Hex Nut
+// Hex nut for the screws in the pipe flange assembly.
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import hexNutDiameter, hexNutFlatToFlat, hexNutThickness, hexNutFlatLength from "parameters.kcl"
+
+// Create a function to make the hex nut. Must be a function since multiple hex nuts are used
+export fn hexNut() {
+  // Create the base of the hex nut
+  hexNutBase = startSketchOn(XY)
+    |> startProfile(at = [
+         hexNutFlatToFlat / 2,
+         hexNutFlatLength / 2
+       ])
+    |> angledLine(angle = 270, length = hexNutFlatLength)
+    |> angledLine(angle = 210, length = hexNutFlatLength)
+    |> angledLine(angle = 150, length = hexNutFlatLength)
+    |> angledLine(angle = 90, length = hexNutFlatLength)
+    |> angledLine(angle = 30, length = hexNutFlatLength)
+    |> close()
+    |> extrude(length = hexNutThickness)
+
+  // Create the hole in the center of the hex nut
+  hexNut = startSketchOn(hexNutBase, face = END)
+    |> circle(center = [0, 0], radius = hexNutDiameter / 2)
+    |> extrude(%, length = -hexNutThickness)
+    |> appearance(%, color = "#4edfd5")
+
+  return hexNut
+}
+",
+    "98017a257-washer.kcl": "// 98017A257 Washer
+// Washer for the screws in the pipe flange assembly.
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import washerInnerDia, washerOuterDia, washerThickness from "parameters.kcl"
+
+// Create a function to make the washer. Must be a function since multiple washers are used.
+export fn washer() {
+  // Create the base of the washer
+  washerBase = startSketchOn(XY)
+    |> circle(center = [0, 0], radius = washerOuterDia / 2)
+    |> extrude(length = washerThickness)
+
+  // Extrude a hole through the washer
+  washer = startSketchOn(washerBase, face = END)
+    |> circle(center = [0, 0], radius = washerInnerDia / 2)
+    |> extrude(%, length = -washerThickness)
+    |> appearance(%, color = "#ee4f4f")
+
+  return washer
+}
+",
+    "main.kcl": "// Pipe and Flange Assembly
+// A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint.
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Import parts
+import "9472k188-gasket.kcl" as gasket
+import flange from "68095k348-flange.kcl"
+import washer from "98017a257-washer.kcl"
+import bolt from "91251a404-bolt.kcl"
+import hexNut from "95479a127-hex-nut.kcl"
+import pipe from "1120t74-pipe.kcl"
+
+// Place flanges
+flange()
+flange()
+  |> rotate(axis = [0, 1, 0], angle = 180)
+  |> translate(x = 0, y = 0, z = flangeBackHeight * 2 + gasketThickness)
+
+// Place gasket between the flanges
+gasket
+  |> translate(x = 0, y = 0, z = -flangeBackHeight - gasketThickness)
+
+// Place eight washers (four front, four back)
+washer()
+  |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = flangeBaseThickness)
+  |> patternCircular3d(
+       %,
+       instances = 4,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = false,
+     )
+  |> patternLinear3d(
+       %,
+       instances = 2,
+       distance = -(flangeBaseThickness * 2 + flangeBackHeight * 2 + gasketThickness + washerThickness),
+       axis = [0, 0, 1],
+     )
+
+// Place four bolts
+bolt()
+  |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = flangeBaseThickness + washerThickness)
+  |> rotate(roll = 90, pitch = 0, yaw = 0)
+  |> patternCircular3d(
+       %,
+       instances = 4,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = false,
+     )
+
+// Place four hex nuts
+hexNut()
+  |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + washerThickness + hexNutThickness))
+
+// Place both pieces of pipe
+pipe()
+  |> rotate(
+       %,
+       roll = -90,
+       pitch = 0,
+       yaw = 0,
+     )
+  |> translate(
+       %,
+       x = 0,
+       y = 0,
+       z = flangeBaseThickness + flangeFrontHeight - 0.5,
+       global = true,
+     )
+
+pipe()
+  |> rotate(
+       %,
+       roll = 90,
+       pitch = 0,
+       yaw = 0,
+     )
+  |> translate(
+       %,
+       x = 0,
+       y = 0,
+       z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + flangeFrontHeight - 0.5),
+       global = true,
+     )
+",
+    "parameters.kcl": "// Parameters
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Flange (68095K348)
+export pipeDiameter = 2.440
+export mountingHoleDiameter = 0.750
+export mountingHolePlacementDiameter = 4.750
+
+export flangeDiameter = 6.0
+export flangeTotalThickness = 1.0
+export flangeBackHeight = 0.060
+export flangeFrontHeight = 0.250
+export flangeBaseThickness = flangeTotalThickness - flangeBackHeight - flangeFrontHeight
+
+export flangeBackDiameter = 3.620
+export flangeFrontDiameter = 3.060
+
+// Washer (98017A257)
+export washerInnerDia = 0.640
+export washerOuterDia = 1.188
+export washerThickness = 0.032
+
+// Bolt (91251A404)
+export boltDiameter = 0.625
+export boltLength = 2.500
+export boltHeadLength = boltDiameter
+export boltHeadDiameter = 0.938
+export boltHexDrive = 1 / 2
+export boltHexFlatLength = boltHexDrive / (2 * cos(30deg))
+export boltThreadLength = 1.750
+
+// Hex nut (95479A127)
+export hexNutDiameter = 5 / 8
+export hexNutFlatToFlat = 15 / 16
+export hexNutThickness = 35 / 64
+export hexNutFlatLength = hexNutFlatToFlat / (2 * cos(30deg))
+
+// Gasket (9472K188)
+export gasketOutsideDiameter = 4.125
+export gasketInnerDiameter = 2.375
+export gasketThickness = 0.031
+
+// Pipe (1120T74)
+export pipeInnerDiameter = 2.0
+export pipeOuterDiameter = 2.375
+export pipeLength = 6
+",
+  },
+  "files": {
+    "b.kcl": "// Flange
+// Flange used for mating two pipes together in the pipe flange assembly.
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import pipeDiameter, mountingHoleDiameter, mountingHolePlacementDiameter, flangeDiameter, flangeTotalThickness, flangeBackHeight, flangeFrontHeight, flangeBaseThickness, flangeBackDiameter, flangeFrontDiameter from "parameters.kcl"
+
+// Create a function to create the flange. We must create a function since we are using multiple flanges.
+export fn flange() {
+  // Sketch the mounting hole pattern
+  mountingHoles = startSketchOn(XY)
+    |> circle(%, center = [0, mountingHolePlacementDiameter / 2], radius = mountingHoleDiameter / 2)
+    |> patternCircular2d(
+         %,
+         instances = 4,
+         center = [0, 0],
+         arcDegrees = 360,
+         rotateDuplicates = false,
+       )
+
+  // Create the flange base
+  flangeBase = startSketchOn(XY)
+    |> circle(%, center = [0, 0], radius = flangeDiameter / 2)
+    |> subtract2d(tool = mountingHoles)
+    |> extrude(%, length = flangeBaseThickness)
+
+  // Create both the raised portions on the front and back of the flange base
+  flangeBack = startSketchOn(flangeBase, face = START)
+    |> circle(%, center = [0, 0], radius = flangeBackDiameter / 2)
+    |> extrude(%, length = flangeBackHeight)
+  flangeFront = startSketchOn(flangeBase, face = END)
+    |> circle(%, center = [0, 0], radius = flangeFrontDiameter / 2)
+    |> extrude(%, length = flangeFrontHeight)
+
+  // Create the circular cut in the center for the pipe
+  pipeCut = startSketchOn(flangeFront, face = END)
+    |> circle(%, center = [0, 0], radius = pipeDiameter / 2)
+    |> extrude(%, length = -flangeTotalThickness)
+    |> appearance(%, color = "#bab0b0")
+
+  return pipeCut
+}
+",
+    "file-2.kcl": "// Socket Head Cap Screw
+// screw for mating the flanges together in the pipe flange assembly
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import boltDiameter, boltLength, boltHeadLength, boltHeadDiameter, boltHexDrive, boltHexFlatLength, boltThreadLength from "parameters.kcl"
+
+// Create a function to make a the bolt
+export fn bolt() {
+  // Create the head of the cap screw
+  boltHead = startSketchOn(XZ)
+    |> circle(center = [0, 0], radius = boltHeadDiameter / 2, tag = $topEdge)
+    |> extrude(length = -boltHeadLength)
+    |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])
+
+  // Define the sketch of the hex pattern on the screw head and extrude into the head
+  hexPatternSketch = startSketchOn(boltHead, face = START)
+    |> startProfile(at = [
+         boltHexDrive / 2,
+         boltHexFlatLength / 2
+       ])
+    |> angledLine(angle = 270, length = boltHexFlatLength)
+    |> angledLine(angle = 210, length = boltHexFlatLength)
+    |> angledLine(angle = 150, length = boltHexFlatLength)
+    |> angledLine(angle = 90, length = boltHexFlatLength)
+    |> angledLine(angle = 30, length = boltHexFlatLength)
+    |> close()
+    |> extrude(length = -boltHeadLength * 0.75)
+
+  // create the body of the bolt
+  boltBody = startSketchOn(boltHead, face = END)
+    |> circle(center = [0, 0], radius = boltDiameter / 2, tag = $filletEdge)
+    |> extrude(length = boltLength)
+    |> appearance(color = "#4dd043", metalness = 90, roughness = 90)
+
+  return boltBody
+}
+",
+    "file-3.kcl": "// Gasket
+// Gasket for the pipe flange assembly. A gasket is a mechanical seal that fills the space between two or more mating surfaces, preventing leaks of liquids or gases under compression
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import gasketOutsideDiameter, gasketInnerDiameter, gasketThickness from "parameters.kcl"
+
+// Create the base of the gasket
+gasketBase = startSketchOn(XY)
+  |> circle(%, center = [0, 0], radius = gasketOutsideDiameter / 2)
+  |> extrude(%, length = gasketThickness)
+
+// Extrude a circular hole through the gasket base
+startSketchOn(gasketBase, face = END)
+  |> circle(%, center = [0, 0], radius = gasketInnerDiameter / 2)
+  |> extrude(%, length = -gasketThickness)
+  |> appearance(%, color = "#d0cb3e")
+",
+    "file-4.kcl": "// Hex Nut
+// Hex nut for the screws in the pipe flange assembly.
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import hexNutDiameter, hexNutFlatToFlat, hexNutThickness, hexNutFlatLength from "parameters.kcl"
+
+// Create a function to make the hex nut. Must be a function since multiple hex nuts are used
+export fn hexNut() {
+  // Create the base of the hex nut
+  hexNutBase = startSketchOn(XY)
+    |> startProfile(at = [
+         hexNutFlatToFlat / 2,
+         hexNutFlatLength / 2
+       ])
+    |> angledLine(angle = 270, length = hexNutFlatLength)
+    |> angledLine(angle = 210, length = hexNutFlatLength)
+    |> angledLine(angle = 150, length = hexNutFlatLength)
+    |> angledLine(angle = 90, length = hexNutFlatLength)
+    |> angledLine(angle = 30, length = hexNutFlatLength)
+    |> close()
+    |> extrude(length = hexNutThickness)
+
+  // Create the hole in the center of the hex nut
+  hexNut = startSketchOn(hexNutBase, face = END)
+    |> circle(center = [0, 0], radius = hexNutDiameter / 2)
+    |> extrude(%, length = -hexNutThickness)
+    |> appearance(%, color = "#4edfd5")
+
+  return hexNut
+}
+",
+    "file-5.kcl": "// 98017A257 Washer
+// Washer for the screws in the pipe flange assembly.
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import washerInnerDia, washerOuterDia, washerThickness from "parameters.kcl"
+
+// Create a function to make the washer. Must be a function since multiple washers are used.
+export fn washer() {
+  // Create the base of the washer
+  washerBase = startSketchOn(XY)
+    |> circle(center = [0, 0], radius = washerOuterDia / 2)
+    |> extrude(length = washerThickness)
+
+  // Extrude a hole through the washer
+  washer = startSketchOn(washerBase, face = END)
+    |> circle(center = [0, 0], radius = washerInnerDia / 2)
+    |> extrude(%, length = -washerThickness)
+    |> appearance(%, color = "#ee4f4f")
+
+  return washer
+}
+",
+    "file-6.kcl": "// Pipe and Flange Assembly
+// A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint.
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Import parts
+import "9472k188-gasket.kcl" as gasket
+import flange from "68095k348-flange.kcl"
+import washer from "98017a257-washer.kcl"
+import bolt from "91251a404-bolt.kcl"
+import hexNut from "95479a127-hex-nut.kcl"
+import pipe from "1120t74-pipe.kcl"
+
+// Place flanges
+flange()
+flange()
+  |> rotate(axis = [0, 1, 0], angle = 180)
+  |> translate(x = 0, y = 0, z = flangeBackHeight * 2 + gasketThickness)
+
+// Place gasket between the flanges
+gasket
+  |> translate(x = 0, y = 0, z = -flangeBackHeight - gasketThickness)
+
+// Place eight washers (four front, four back)
+washer()
+  |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = flangeBaseThickness)
+  |> patternCircular3d(
+       %,
+       instances = 4,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = false,
+     )
+  |> patternLinear3d(
+       %,
+       instances = 2,
+       distance = -(flangeBaseThickness * 2 + flangeBackHeight * 2 + gasketThickness + washerThickness),
+       axis = [0, 0, 1],
+     )
+
+// Place four bolts
+bolt()
+  |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = flangeBaseThickness + washerThickness)
+  |> rotate(roll = 90, pitch = 0, yaw = 0)
+  |> patternCircular3d(
+       %,
+       instances = 4,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = false,
+     )
+
+// Place four hex nuts
+hexNut()
+  |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + washerThickness + hexNutThickness))
+
+// Place both pieces of pipe
+pipe()
+  |> rotate(
+       %,
+       roll = -90,
+       pitch = 0,
+       yaw = 0,
+     )
+  |> translate(
+       %,
+       x = 0,
+       y = 0,
+       z = flangeBaseThickness + flangeFrontHeight - 0.5,
+       global = true,
+     )
+
+pipe()
+  |> rotate(
+       %,
+       roll = 90,
+       pitch = 0,
+       yaw = 0,
+     )
+  |> translate(
+       %,
+       x = 0,
+       y = 0,
+       z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + flangeFrontHeight - 0.5),
+       global = true,
+     )
+",
+    "file-7.kcl": "// Parameters
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Flange (68095K348)
+export pipeDiameter = 2.440
+export mountingHoleDiameter = 0.750
+export mountingHolePlacementDiameter = 4.750
+
+export flangeDiameter = 6.0
+export flangeTotalThickness = 1.0
+export flangeBackHeight = 0.060
+export flangeFrontHeight = 0.250
+export flangeBaseThickness = flangeTotalThickness - flangeBackHeight - flangeFrontHeight
+
+export flangeBackDiameter = 3.620
+export flangeFrontDiameter = 3.060
+
+// Washer (98017A257)
+export washerInnerDia = 0.640
+export washerOuterDia = 1.188
+export washerThickness = 0.032
+
+// Bolt (91251A404)
+export boltDiameter = 0.625
+export boltLength = 2.500
+export boltHeadLength = boltDiameter
+export boltHeadDiameter = 0.938
+export boltHexDrive = 1 / 2
+export boltHexFlatLength = boltHexDrive / (2 * cos(30deg))
+export boltThreadLength = 1.750
+
+// Hex nut (95479A127)
+export hexNutDiameter = 5 / 8
+export hexNutFlatToFlat = 15 / 16
+export hexNutThickness = 35 / 64
+export hexNutFlatLength = hexNutFlatToFlat / (2 * cos(30deg))
+
+// Gasket (9472K188)
+export gasketOutsideDiameter = 4.125
+export gasketInnerDiameter = 2.375
+export gasketThickness = 0.031
+
+// Pipe (1120T74)
+export pipeInnerDiameter = 2.0
+export pipeOuterDiameter = 2.375
+export pipeLength = 6
+",
+    "main.kcl": "// Pipe
+// Piping for the pipe flange assembly
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+// Import parameters
+import pipeInnerDiameter, pipeOuterDiameter, pipeLength from "parameters.kcl"
+
+// Create a function to make the pipe. Export
+export fn pipe() {
+  // Create the pipe base
+  pipeBase = startSketchOn(XZ)
+    |> circle(%, center = [0, 0], radius = pipeOuterDiameter / 2)
+    |> extrude(%, length = pipeLength)
+
+  // Extrude a hole through the length of the pipe
+  pipe = startSketchOn(pipeBase, face = END)
+    |> circle(center = [0, 0], radius = pipeInnerDiameter / 2)
+    |> extrude(%, length = -pipeLength)
+    |> appearance(color = "#a24ed0")
+  return pipe
+}
+",
+  },
+  "kcl_version": "0.2.77",
+  "project_name": "test-project",
+  "prompt": "Change this to red please, #ff0000",
+  "source_ranges": [
+    {
+      "file": "95479a127-hex-nut.kcl",
+      "prompt": "The users main selection is the wall of a general-sweep (that is an extrusion, revolve, sweep or loft).
+The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, face = segmentTag)"
+But it's also worth bearing in mind that the user may have intended to select the sweep itself, not this individual wall, see later source ranges for more context. about the sweep",
+      "range": {
+        "end": {
+          "column": 57,
+          "line": 19,
+        },
+        "start": {
+          "column": 7,
+          "line": 19,
+        },
+      },
+    },
+    {
+      "file": "95479a127-hex-nut.kcl",
+      "prompt": "This is the sweep's source range from the user's main selection of the end cap.",
+      "range": {
+        "end": {
+          "column": 40,
+          "line": 24,
+        },
+        "start": {
+          "column": 7,
+          "line": 24,
         },
       },
     },

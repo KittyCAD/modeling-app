@@ -122,13 +122,14 @@ extrude(sketch003, length = 20)
 
   // Load pillow block files and add as another test case
   createCaseData({
-    testName: 'pillow block test',
+    testName: 'change color on imported file',
     artifactSearchSnippet: {
       fileName: 'ball-bearing.kcl',
       content: 'yLine(length = stockThickness)',
       type: 'wall',
     },
-    prompt: 'Change this to red please, #ff0000',
+    prompt:
+      'Can you please pattern this nut 4 times, the same way the bolt and washer has been done already.',
     inputFiles: loadSampleProject('pillow-block-bearing/main.kcl'),
     expectFilesCallBack: ({ fileName, content }) =>
       fileName === 'ball-bearing.kcl'
@@ -139,6 +140,37 @@ extrude(sketch003, length = 20)
         : content,
   }),
 ]
+
+const pipeFlangeAssembly = loadSampleProject('pipe-flange-assembly/main.kcl')
+const originalMain = pipeFlangeAssembly['main.kcl']
+pipeFlangeAssembly['main.kcl'] = pipeFlangeAssembly['main.kcl'].replace(
+  `translate(x = mountingHolePlacementDiameter / 2, y = 0, z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + washerThickness + hexNutThickness))
+  |> patternCircular3d(
+       %,
+       instances = 4,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = false,
+     )`,
+  'translate(x = mountingHolePlacementDiameter / 2, y = 0, z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + washerThickness + hexNutThickness))'
+)
+
+cases.push(
+  createCaseData({
+    // angledLine(angle = 210, length = hexNutFlatLength)
+    testName: 'try and pattern an inserted part',
+    artifactSearchSnippet: {
+      fileName: '95479a127-hex-nut.kcl',
+      content: 'angledLine(angle = 210, length = hexNutFlatLength)',
+      type: 'wall',
+    },
+    prompt: 'Change this to red please, #ff0000',
+    inputFiles: pipeFlangeAssembly,
+    expectFilesCallBack: ({ fileName, content }) =>
+      fileName === 'main' ? originalMain : content,
+  })
+)
 
 // Store original method to restore in afterAll
 
