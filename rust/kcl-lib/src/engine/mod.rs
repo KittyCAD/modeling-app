@@ -369,13 +369,15 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         settings: &crate::ExecutorSettings,
         source_range: SourceRange,
         id_generator: &mut IdGenerator,
+        grid_scale_unit: Option<kcmc::units::UnitLength>,
     ) -> Result<(), crate::errors::KclError> {
         // Set the edge visibility.
         self.set_edge_visibility(settings.highlight_edges, source_range, id_generator)
             .await?;
 
         // Send the command to show the grid.
-        self.modify_grid(!settings.show_grid, source_range, id_generator)
+
+        self.modify_grid(!settings.show_grid, grid_scale_unit, source_range, id_generator)
             .await?;
 
         // We do not have commands for changing ssao on the fly.
@@ -829,6 +831,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn modify_grid(
         &self,
         hidden: bool,
+        base_unit: Option<kcmc::units::UnitLength>,
         source_range: SourceRange,
         id_generator: &mut IdGenerator,
     ) -> Result<(), KclError> {
@@ -842,6 +845,17 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             }),
         )
         .await?;
+
+        let grid_scale = if let Some(units) = base_unit {
+            // The grid is 10x10, so setting the value to 10 means that
+            // users whose unit is cm will see each cell as 1cm by 1cm,
+            // which is useful for sketching.
+            ModelingCmd::from(mcmd::SetGridScale { value: 10.0, units })
+        } else {
+            ModelingCmd::from(mcmd::SetGridAutoScale {})
+        };
+        self.batch_modeling_cmd(id_generator.next_uuid(), source_range, &grid_scale)
+            .await?;
 
         // Hide/show the grid scale text.
         self.batch_modeling_cmd(

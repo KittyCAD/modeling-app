@@ -593,6 +593,12 @@ impl ExecutorContext {
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
+        let grid_scale = program
+            .meta_settings()
+            .ok()
+            .flatten()
+            .map(|s| s.default_length_units)
+            .map(kcmc::units::UnitLength::from);
 
         let (program, mut exec_state, preserve_mem, cached_body_items, imports_info) = if let Some(OldAstState {
             ast: old_ast,
@@ -623,7 +629,7 @@ impl ExecutorContext {
                     if reapply_settings
                         && self
                             .engine
-                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
+                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator(), grid_scale)
                             .await
                             .is_err()
                     {
@@ -647,7 +653,7 @@ impl ExecutorContext {
                     if reapply_settings
                         && self
                             .engine
-                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
+                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator(), grid_scale)
                             .await
                             .is_err()
                     {
@@ -697,7 +703,7 @@ impl ExecutorContext {
                 CacheResult::NoAction(true) => {
                     if self
                         .engine
-                        .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
+                        .reapply_settings(&self.settings, Default::default(), old_state.id_generator(), grid_scale)
                         .await
                         .is_ok()
                     {
@@ -1089,8 +1095,19 @@ impl ExecutorContext {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Re-apply the settings, in case the cache was busted.
+        let grid_scale = program
+            .meta_settings()
+            .ok()
+            .flatten()
+            .map(|s| s.default_length_units)
+            .map(kcmc::units::UnitLength::from);
         self.engine
-            .reapply_settings(&self.settings, Default::default(), exec_state.id_generator())
+            .reapply_settings(
+                &self.settings,
+                Default::default(),
+                exec_state.id_generator(),
+                grid_scale,
+            )
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
