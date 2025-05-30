@@ -333,6 +333,16 @@ export default class EditorManager {
 
   createEditorSelection(selections: Selections) {
     let codeBasedSelections = []
+    
+    // Handle empty graphSelections array to avoid runtime errors
+    if (selections.graphSelections.length === 0) {
+      // Return a cursor at the end of the document when there are no selections
+      const defaultCursor = EditorSelection.cursor(
+        this._editorView?.state.doc.length || 0
+      )
+      return EditorSelection.create([defaultCursor], 0)
+    }
+    
     for (const selection of selections.graphSelections) {
       const safeEnd = Math.min(
         selection.codeRef.range[1],
