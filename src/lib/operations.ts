@@ -988,6 +988,14 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  rotate: {
+    label: 'Rotate',
+    icon: 'rotate',
+  },
+  scale: {
+    label: 'Scale',
+    icon: 'arrowUp',
+  },
   shell: {
     label: 'Shell',
     icon: 'shell',
@@ -1023,6 +1031,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'sweep',
     prepareToEdit: prepareToEditSweep,
     supportsAppearance: true,
+  },
+  translate: {
+    label: 'Translate',
+    icon: 'move',
   },
   union: {
     label: 'Union',
