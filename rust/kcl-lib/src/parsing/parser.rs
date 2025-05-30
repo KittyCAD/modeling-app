@@ -3406,7 +3406,7 @@ mod tests {
     fn kw_call_as_operand() {
         let tokens = crate::parsing::token::lex("f(x = 1)", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        let op = operand.parse(tokens).unwrap();
+        operand.parse(tokens).unwrap();
     }
 
     #[test]
@@ -5227,7 +5227,7 @@ bar = 1
             let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
             let err = match fn_call_kw.parse(tokens.as_slice()) {
                 Err(e) => e,
-                Ok(ast) => {
+                Ok(_ast) => {
                     panic!("Expected this to error but it didn't");
                 }
             };
