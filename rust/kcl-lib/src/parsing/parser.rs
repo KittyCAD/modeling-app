@@ -3209,7 +3209,6 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         Keyword(Token),
     }
     let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
-    println!("Parsing args");
     let args: Vec<_> = repeat(
         0..,
         alt((
@@ -3220,7 +3219,6 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         )),
     )
     .parse_next(i)?;
-    println!("Parsed args");
     let (args, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = args.into_iter().enumerate().try_fold(
         (Vec::new(), BTreeMap::new()),
         |(mut args, mut non_code_nodes), (index, e)| {
@@ -3272,7 +3270,6 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
     )?;
     ignore_whitespace(i);
     opt(comma_sep).parse_next(i)?;
-    println!("Parsing end paren");
     let end = match close_paren.parse_next(i) {
         Ok(tok) => tok.end,
         Err(e) => {
@@ -3289,7 +3286,6 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
             }
         }
     };
-    println!("Parsed end paren");
 
     // Validate there aren't any duplicate labels.
     let mut counted_labels = IndexMap::with_capacity(args.len());
@@ -3411,7 +3407,6 @@ mod tests {
         let tokens = crate::parsing::token::lex("f(x = 1)", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         let op = operand.parse(tokens).unwrap();
-        println!("{op:#?}");
     }
 
     #[test]
@@ -5233,7 +5228,6 @@ bar = 1
             let err = match fn_call_kw.parse(tokens.as_slice()) {
                 Err(e) => e,
                 Ok(ast) => {
-                    eprintln!("{ast:#?}");
                     panic!("Expected this to error but it didn't");
                 }
             };
