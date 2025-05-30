@@ -128,7 +128,14 @@ async fn inner_mirror_2d(
     // using the IDs we already have.
     // We only do this with mirrors because otherwise it is a waste of a websocket call.
     for i in 0..starting_sketches.len() {
+        // Record the mirror ID.
         starting_sketches[i].mirror = Some(mirrored_ids[i]);
+
+        if starting_sketches[i].id != mirrored_ids[i] {
+            // Mirroring created a new path. The mirrored Sketch is a clone of
+            // the original with a new ID.
+            starting_sketches[i].id = mirrored_ids[i];
+        }
         #[cfg(target_arch = "wasm32")]
 web_sys::console::log_1(&format!("mirroredid{:?}", mirrored_ids[i]).into());
     }
