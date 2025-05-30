@@ -7,14 +7,13 @@
 // Import parameters
 import washerInnerDia, washerOuterDia, washerThickness from "parameters.kcl"
 
-  // Create the base of the washer
-  washerBase = startSketchOn(XY)
-    |> circle(center = [0, 0], radius = washerOuterDia / 2)
-    |> extrude(length = washerThickness)
+// Create the base of the washer
+washerBase = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = washerOuterDia / 2)
+  |> extrude(length = washerThickness)
 
-  // Extrude a hole through the washer
-  washer = startSketchOn(washerBase, face = END)
-    |> circle(center = [0, 0], radius = washerInnerDia / 2)
-    |> extrude(%, length = -washerThickness)
-    |> appearance(%, color = "#ee4f4f")
-
+// Extrude a hole through the washer
+washer = startSketchOn(washerBase, face = END)
+  |> circle(center = [0, 0], radius = washerInnerDia / 2)
+  |> extrude(%, length = -washerThickness)
+  |> appearance(%, color = "#ee4f4f")

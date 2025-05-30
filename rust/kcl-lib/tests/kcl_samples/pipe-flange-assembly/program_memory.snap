@@ -3,13 +3,29 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing pipe-flange-assembly.kcl
 ---
 {
+  "__mod_bolt": {
+    "type": "Module",
+    "value": 5
+  },
+  "__mod_flange": {
+    "type": "Module",
+    "value": 3
+  },
   "__mod_gasket": {
     "type": "Module",
     "value": 2
   },
-  "bolt": {
-    "type": "Function",
-    "value": null
+  "__mod_hexNut": {
+    "type": "Module",
+    "value": 6
+  },
+  "__mod_pipe": {
+    "type": "Module",
+    "value": 7
+  },
+  "__mod_washer": {
+    "type": "Module",
+    "value": 4
   },
   "boltDiameter": {
     "type": "Number",
@@ -106,10 +122,6 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "filletEdge"
-  },
-  "flange": {
-    "type": "Function",
-    "value": null
   },
   "flangeBackDiameter": {
     "type": "Number",
@@ -241,10 +253,6 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       }
     }
   },
-  "hexNut": {
-    "type": "Function",
-    "value": null
-  },
   "hexNutDiameter": {
     "type": "Number",
     "value": 0.625,
@@ -323,10 +331,6 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       }
     }
   },
-  "pipe": {
-    "type": "Function",
-    "value": null
-  },
   "pipeDiameter": {
     "type": "Number",
     "value": 2.44,
@@ -378,10 +382,6 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
         "type": "Degrees"
       }
     }
-  },
-  "washer": {
-    "type": "Function",
-    "value": null
   },
   "washerInnerDia": {
     "type": "Number",
