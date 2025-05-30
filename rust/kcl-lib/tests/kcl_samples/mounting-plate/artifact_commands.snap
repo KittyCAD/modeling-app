@@ -78,7 +78,7 @@ description: Artifact commands mounting-plate.kcl
       "path": "[uuid]",
       "to": {
         "x": -76.2,
-        "y": -127.0,
+        "y": 127.0,
         "z": 0.0
       }
     }
@@ -106,11 +106,11 @@ description: Artifact commands mounting-plate.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 76.2,
-          "y": -127.0,
+          "x": 152.4,
+          "y": 0.0,
           "z": 0.0
         },
-        "relative": false
+        "relative": true
       }
     }
   },
@@ -123,11 +123,28 @@ description: Artifact commands mounting-plate.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 76.2,
-          "y": 127.0,
+          "x": 0.0,
+          "y": -254.0,
           "z": 0.0
         },
-        "relative": false
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -152.4,
+          "y": -0.0,
+          "z": 0.0
+        },
+        "relative": true
       }
     }
   },
@@ -714,40 +731,48 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_prev_adjacent_edge",
+      "type": "solid3d_get_common_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "face_ids": [
+        "[uuid]",
+        "[uuid]"
+      ]
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_prev_adjacent_edge",
+      "type": "solid3d_get_common_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "face_ids": [
+        "[uuid]",
+        "[uuid]"
+      ]
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_prev_adjacent_edge",
+      "type": "solid3d_get_common_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "face_ids": [
+        "[uuid]",
+        "[uuid]"
+      ]
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_prev_adjacent_edge",
+      "type": "solid3d_get_common_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "face_ids": [
+        "[uuid]",
+        "[uuid]"
+      ]
     }
   }
 ]
