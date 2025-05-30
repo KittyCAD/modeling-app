@@ -117,19 +117,18 @@ export function useNetworkStatus() {
   }, [hasIssues, internetConnected, pingEMA, overallState])
 
   useEffect(() => {
+    const onlineCallback = () => {
+      setInternetConnected(true)
+    }
     const offlineCallback = () => {
       setInternetConnected(false)
       setSteps(structuredClone(initialConnectingTypeGroupState))
     }
-    engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.Offline,
-      offlineCallback
-    )
+    window.addEventListener('online', onlineCallback)
+    window.addEventListener('offline', offlineCallback)
     return () => {
-      engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.Offline,
-        offlineCallback
-      )
+      window.removeEventListener('online', onlineCallback)
+      window.removeEventListener('offline', offlineCallback)
     }
   }, [])
 
@@ -179,8 +178,6 @@ export function useNetworkStatus() {
         if (
           engineConnectionState.type === EngineConnectionStateType.Connecting
         ) {
-          setInternetConnected(true)
-
           const groups = Object.values(nextSteps)
           for (let group of groups) {
             for (let step of group) {
@@ -210,10 +207,6 @@ export function useNetworkStatus() {
 
             if (engineConnectionState.value.type === DisconnectingType.Error) {
               setError(engineConnectionState.value.value)
-            } else if (
-              engineConnectionState.value.type === DisconnectingType.Quit
-            ) {
-              return structuredClone(initialConnectingTypeGroupState)
             }
           }
         }

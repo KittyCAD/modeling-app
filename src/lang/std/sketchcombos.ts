@@ -1502,23 +1502,20 @@ export function removeSingleConstraint({
           const literal = rawArg?.overrideExpr ?? rawArg?.expr
           return (arg.index === inputToReplace.index && literal) || argExpr
         })
+
         // It's a kw call.
-        const isAbsolute = callExp.node.callee.name.name == 'lineTo'
-        if (isAbsolute) {
-          const args = [
-            createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression(values)),
-          ]
-          return createStdlibCallExpressionKw('line', args, tag)
-        } else {
-          const args = [
-            createLabeledArg(ARG_END, createArrayExpression(values)),
-          ]
-          return createStdlibCallExpressionKw(
-            callExp.node.callee.name.name as ToolTip,
-            args,
-            tag
-          )
-        }
+        const isAbsolute = inputs.some((input) => input.argType === 'xAbsolute')
+        const args = [
+          createLabeledArg(
+            isAbsolute ? ARG_END_ABSOLUTE : ARG_END,
+            createArrayExpression(values)
+          ),
+        ]
+        return createStdlibCallExpressionKw(
+          callExp.node.callee.name.name as ToolTip,
+          args,
+          tag
+        )
       }
       if (
         inputToReplace.type === 'arrayInObject' ||

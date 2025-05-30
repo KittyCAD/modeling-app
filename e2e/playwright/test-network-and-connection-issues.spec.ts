@@ -63,7 +63,7 @@ test.describe('Test network related behaviors', () => {
       })
 
       // Expect the network to be down
-      await expect(networkToggle).toContainText('Network health (Offline)')
+      await expect(networkToggle).toContainText('Problem')
 
       // Click the network widget
       await networkWidget.click()
@@ -160,8 +160,7 @@ test.describe('Test network related behaviors', () => {
 
       // Expect the network to be down
       await networkToggle.hover()
-
-      await expect(networkToggle).toContainText('Network health (Offline)')
+      await expect(networkToggle).toContainText('Problem')
 
       // Ensure we are not in sketch mode
       await expect(
