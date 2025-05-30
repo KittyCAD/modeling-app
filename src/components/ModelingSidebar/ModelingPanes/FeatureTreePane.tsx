@@ -267,10 +267,14 @@ const OperationItemWrapper = ({
         className={`reset flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : 'border-none cursor-default'} ${className}`}
       >
         <CustomIcon name={icon} className="w-5 h-5 block" />
-        <div className="flex items-baseline">
+        <div className="flex items-baseline align-baseline">
           <div className="mr-2">
             {name}
-            {variableName && <span className="ml-2">{variableName}</span>}
+            {variableName && (
+              <span className="ml-2 opacity-50 text-[11px] font-semibold">
+                {variableName}
+              </span>
+            )}
           </div>
           {customSuffix && customSuffix}
         </div>
