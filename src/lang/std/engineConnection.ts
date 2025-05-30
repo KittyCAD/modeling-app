@@ -1,4 +1,3 @@
-import { TEST } from '@src/env'
 import type { Models } from '@kittycad/lib'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from '@src/env'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -83,6 +82,9 @@ export enum ConnectionError {
   TooManyConnections,
   Outage,
 
+  // Observed to happen on a local network outage.
+  PeerConnectionRemoteDisconnected,
+
   // An unknown error is the most severe because it has not been classified
   // or encountered before.
   Unknown,
@@ -107,6 +109,8 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
     'There are too many open engine connections associated with your account.',
   [ConnectionError.Outage]:
     'We seem to be experiencing an outage. Please visit [status.zoo.dev](https://status.zoo.dev) for updates.',
+  [ConnectionError.PeerConnectionRemoteDisconnected]:
+    'The remote end has disconnected.',
   [ConnectionError.Unknown]:
     'An unexpected error occurred. Please report this to us.',
 }
@@ -226,6 +230,9 @@ export enum EngineConnectionEvents {
   Opened = 'opened', // (engineConnection: EngineConnection) => void
   Closed = 'closed', // (engineConnection: EngineConnection) => void
   NewTrack = 'new-track', // (track: NewTrackArgs) => void
+
+  // A general offline state.
+  Offline = 'offline',
 }
 
 function toRTCSessionDescriptionInit(
@@ -674,9 +681,20 @@ class EngineConnection extends EventTarget {
 
             // The remote end broke up with us! :(
             case 'disconnected':
+              this.state = {
+                type: EngineConnectionStateType.Disconnecting,
+                value: {
+                  type: DisconnectingType.Error,
+                  value: {
+                    error: ConnectionError.PeerConnectionRemoteDisconnected,
+                    context: event,
+                  },
+                },
+              }
               this.dispatchEvent(
-                new CustomEvent(EngineConnectionEvents.RestartRequest, {})
+                new CustomEvent(EngineConnectionEvents.Offline, {})
               )
+              this.disconnectAll()
               break
             case 'closed':
               this.pc?.removeEventListener('icecandidate', this.onIceCandidate)
@@ -847,7 +865,6 @@ class EngineConnection extends EventTarget {
               'message',
               this.onDataChannelMessage
             )
-            this.disconnectAll()
           }
 
           this.unreliableDataChannel?.addEventListener(
@@ -866,7 +883,6 @@ class EngineConnection extends EventTarget {
                 },
               },
             }
-            this.disconnectAll()
           }
           this.unreliableDataChannel?.addEventListener(
             'error',
@@ -956,6 +972,9 @@ class EngineConnection extends EventTarget {
             this.onNetworkStatusReady
           )
 
+          this.dispatchEvent(
+            new CustomEvent(EngineConnectionEvents.Offline, {})
+          )
           this.disconnectAll()
         }
         this.websocket.addEventListener('close', this.onWebSocketClose)
@@ -974,8 +993,6 @@ class EngineConnection extends EventTarget {
               },
             }
           }
-
-          this.disconnectAll()
         }
         this.websocket.addEventListener('error', this.onWebSocketError)
 
@@ -1331,6 +1348,9 @@ export enum EngineCommandManagerEvents {
 
   // the whole scene is ready (settings loaded)
   SceneReady = 'scene-ready',
+
+  // we're offline
+  Offline = 'offline',
 }
 
 /**
@@ -1380,6 +1400,7 @@ export class EngineCommandManager extends EventTarget {
    * This is compared to the {@link outSequence} number to determine if we should ignore
    * any out-of-order late responses in the unreliable channel.
    */
+  keepForcefulOffline = false
   inSequence = 1
   engineConnection?: EngineConnection
   commandLogs: CommandLog[] = []
@@ -1453,13 +1474,8 @@ export class EngineCommandManager extends EventTarget {
     )
   }
 
-  private onOffline = () => {
-    console.log('Browser reported network is offline')
-    if (TEST) {
-      console.warn('DURING TESTS ENGINECONNECTION.ONOFFLINE WILL DO NOTHING.')
-      return
-    }
-    this.onEngineConnectionRestartRequest()
+  private onEngineOffline = () => {
+    this.dispatchEvent(new CustomEvent(EngineCommandManagerEvents.Offline, {}))
   }
 
   idleMode: boolean = false
@@ -1494,6 +1510,11 @@ export class EngineCommandManager extends EventTarget {
     if (settings) {
       this.settings = settings
     }
+
+    if (this.keepForcefulOffline) {
+      return
+    }
+
     if (width === 0 || height === 0) {
       return
     }
@@ -1508,8 +1529,6 @@ export class EngineCommandManager extends EventTarget {
       this.handleResize(this.streamDimensions)
       return
     }
-
-    window.addEventListener('offline', this.onOffline)
 
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
@@ -1537,6 +1556,11 @@ export class EngineCommandManager extends EventTarget {
       this.onEngineConnectionRestartRequest as EventListener
     )
 
+    this.engineConnection.addEventListener(
+      EngineConnectionEvents.Offline,
+      this.onEngineOffline as EventListener
+    )
+
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
       console.log('onEngineConnectionOpened')
@@ -1552,9 +1576,9 @@ export class EngineCommandManager extends EventTarget {
         // Let's restart.
         console.warn("shit's gone south")
         console.warn(e)
-        this.engineConnection?.dispatchEvent(
-          new CustomEvent(EngineConnectionEvents.RestartRequest, {})
-        )
+        // this.engineConnection?.dispatchEvent(
+        //   new CustomEvent(EngineConnectionEvents.RestartRequest, {})
+        // )
         return
       }
 
@@ -1597,23 +1621,7 @@ export class EngineCommandManager extends EventTarget {
       console.log('camControlsCameraChange')
       this._camControlsCameraChange()
 
-      // We should eventually only have 1 restoral call.
-      if (this.idleMode) {
-        await this.sceneInfra?.camControls.restoreRemoteCameraStateAndTriggerSync()
-      } else {
-        // NOTE: This code is old. It uses the old hack to restore camera.
-        console.log('call default_camera_get_settings')
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        await this.sendSceneCommand({
-          // CameraControls subscribes to default_camera_get_settings response events
-          // firing this at connection ensure the camera's are synced initially
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'default_camera_get_settings',
-          },
-        })
-      }
+      await this.sceneInfra?.camControls.restoreRemoteCameraStateAndTriggerSync()
 
       setIsStreamReady(true)
 
@@ -1877,8 +1885,6 @@ export class EngineCommandManager extends EventTarget {
   tearDown(opts?: { idleMode: boolean }) {
     this.idleMode = opts?.idleMode ?? false
 
-    window.removeEventListener('offline', this.onOffline)
-
     if (this.engineConnection) {
       for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
         pending.reject([
@@ -1928,7 +1934,26 @@ export class EngineCommandManager extends EventTarget {
       this.engineCommandManager.engineConnection = null
     }
     this.engineConnection = undefined
+
+    // It is possible all connections never even started, but we still want
+    // to signal to the whole application we are "offline".
+    this.dispatchEvent(new CustomEvent(EngineCommandManagerEvents.Offline, {}))
   }
+
+  offline() {
+    this.keepForcefulOffline = true
+    this.tearDown()
+    console.log('offline')
+  }
+
+  online() {
+    this.keepForcefulOffline = false
+    this.dispatchEvent(
+      new CustomEvent(EngineCommandManagerEvents.EngineRestartRequest, {})
+    )
+    console.log('online')
+  }
+
   async startNewSession() {
     this.responseMap = {}
   }
