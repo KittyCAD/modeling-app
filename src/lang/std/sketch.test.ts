@@ -245,6 +245,38 @@ ${insertCode}
 })
 
 describe('testing getConstraintInfo', () => {
+  describe('when user edits KCL to be invalid', () => {
+    const code = `part001 = startSketchOn(XZ)
+  |> startProfile(at = [0,]) // Missing y coordinate
+  |> line(end = [3, 4])`
+    test.each([
+      [
+        'startProfile',
+        [
+          // No constraints
+        ],
+      ],
+    ])('testing %s when inputs are unconstrained', (functionName, expected) => {
+      const ast = assertParse(code)
+      const match = new RegExp(functionName).exec(code)
+      expect(match).toBeTruthy()
+      if (match === null) {
+        return
+      }
+      const start = code.indexOf(match[0])
+      expect(start).toBeGreaterThanOrEqual(0)
+      const sourceRange = topLevelRange(start, start + functionName.length)
+      if (err(ast)) return ast
+      const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
+      const callExp = getNodeFromPath<Node<CallExpressionKw>>(ast, pathToNode, [
+        'CallExpressionKw',
+      ])
+      if (err(callExp)) return callExp
+      const result = getConstraintInfoKw(callExp.node, code, pathToNode)
+      expect(result).toEqual(expected)
+    })
+  })
+
   describe('object notation', () => {
     const code = `part001 = startSketchOn(-XZ)
   |> startProfile(at = [0,0])
