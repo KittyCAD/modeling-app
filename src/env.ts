@@ -11,7 +11,6 @@ export const VITE_KC_API_WS_MODELING_URL = env.VITE_KC_API_WS_MODELING_URL as
 export const VITE_KC_API_BASE_URL = env.VITE_KC_API_BASE_URL
 export const VITE_KC_SITE_BASE_URL = env.VITE_KC_SITE_BASE_URL
 export const VITE_KC_SITE_APP_URL = env.VITE_KC_SITE_APP_URL
-export const VITE_KC_SKIP_AUTH = env.VITE_KC_SKIP_AUTH as string | undefined
 export const VITE_KC_CONNECTION_TIMEOUT_MS =
   env.VITE_KC_CONNECTION_TIMEOUT_MS as string | undefined
 export const VITE_KC_DEV_TOKEN = env.VITE_KC_DEV_TOKEN as string | undefined
