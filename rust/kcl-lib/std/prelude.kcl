@@ -152,13 +152,13 @@ export fn helix(
   /// Is the helix rotation counter clockwise? The default is `false`.
   ccw?: bool,
   /// Radius of the helix.
-  @(include_in_snippet = true)
+  @(includeInSnippet = true)
   radius?: number(Length),
   /// Axis to use for the helix.
-  @(include_in_snippet = true)
+  @(includeInSnippet = true)
   axis?: Axis3d | Edge,
   /// Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.
-  @(include_in_snippet = true)
+  @(includeInSnippet = true)
   length?: number(Length),
   /// Cylinder to create the helix on.
   cylinder?: Solid,
@@ -484,3 +484,47 @@ export fn clone(
   /// The sketch, solid, or imported geometry to be cloned.
   @geometry: Sketch | Solid | ImportedGeometry,
 ): Sketch | Solid | ImportedGeometry {}
+
+/// Asserts that a value is the boolean value true.
+///
+/// ```kcl,norun
+/// kclIsFun = true
+/// assertIs(kclIsFun)
+/// ```
+@(impl = std_rust)
+export fn assertIs(
+  /// Value to check. If this is the boolean value true, assert passes. Otherwise it fails..
+  @actual: bool,
+  /// If the value was false, the program will terminate with this error message
+  error?: string,
+) {}
+
+/// Check a value meets some expected conditions at runtime. Program terminates with an error if conditions aren't met.
+/// If you provide multiple conditions, they will all be checked and all must be met.
+///
+/// ```kcl,norun
+/// n = 10
+/// assert(n, isEqualTo = 10)
+/// assert(n, isGreaterThanOrEqual = 0, isLessThan = 100, error = "number should be between 0 and 100")
+/// assert(1.0000000000012, isEqualTo = 1, tolerance = 0.0001, error = "number should be almost exactly 1")
+/// ```
+@(impl = std_rust)
+export fn assert(
+  /// Value to check. If this is the boolean value true, assert passes. Otherwise it fails..
+  @actual: number,
+  /// Comparison argument. If given, checks the `actual` value is greater than this.
+  isGreaterThan?: number,
+  /// Comparison argument. If given, checks the `actual` value is less than this.
+  isLessThan?: number,
+  /// Comparison argument. If given, checks the `actual` value is greater than or equal to this.
+  isGreaterThanOrEqual?: number,
+  /// Comparison argument. If given, checks the `actual` value is less than or equal to this.
+  isLessThanOrEqual?: number,
+  /// Comparison argument. If given, checks the `actual` value is less than or equal to this.
+  @(includeInSnippet = true)
+  isEqualTo?: number,
+  /// If `isEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places.
+  tolerance?: number,
+  /// If the value was false, the program will terminate with this error message
+  error?: string,
+) {}

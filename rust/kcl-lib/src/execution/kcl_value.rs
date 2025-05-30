@@ -290,15 +290,15 @@ impl KclValue {
                 // The principal type of an array uses the array's element type,
                 // which is oftentimes `any`, and that's not a helpful message. So
                 // we show the actual elements.
-                if let Some(elements) = self.as_array() {
+                if let KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } = self {
                     // If it's empty, we want to show the type of the array.
-                    if !elements.is_empty() {
+                    if !value.is_empty() {
                         // A max of 3 is good because it's common to use 3D points.
                         let max = 3;
-                        let len = elements.len();
+                        let len = value.len();
                         let ellipsis = if len > max { ", ..." } else { "" };
                         let element_label = if len == 1 { "value" } else { "values" };
-                        let element_tys = elements
+                        let element_tys = value
                             .iter()
                             .take(max)
                             .map(|elem| elem.inner_human_friendly_type(max_depth - 1))
@@ -442,144 +442,128 @@ impl KclValue {
     }
 
     pub fn as_object(&self) -> Option<&KclObjectFields> {
-        if let KclValue::Object { value, meta: _ } = &self {
-            Some(value)
-        } else {
-            None
-        }
-    }
-
-    pub fn into_object(self) -> Option<KclObjectFields> {
-        if let KclValue::Object { value, meta: _ } = self {
-            Some(value)
-        } else {
-            None
-        }
-    }
-
-    pub fn as_str(&self) -> Option<&str> {
-        if let KclValue::String { value, meta: _ } = &self {
-            Some(value)
-        } else {
-            None
-        }
-    }
-
-    pub fn as_array(&self) -> Option<&[KclValue]> {
         match self {
-            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => Some(value),
+            KclValue::Object { value, .. } => Some(value),
             _ => None,
         }
     }
 
+    pub fn into_object(self) -> Option<KclObjectFields> {
+        match self {
+            KclValue::Object { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn as_str(&self) -> Option<&str> {
+        match self {
+            KclValue::String { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn into_array(self) -> Vec<KclValue> {
+        match self {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => value,
+            _ => vec![self],
+        }
+    }
+
     pub fn as_point2d(&self) -> Option<[TyF64; 2]> {
-        let arr = self.as_array()?;
-        if arr.len() != 2 {
+        let value = match self {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => value,
+            _ => return None,
+        };
+
+        if value.len() != 2 {
             return None;
         }
-        let x = arr[0].as_ty_f64()?;
-        let y = arr[1].as_ty_f64()?;
+        let x = value[0].as_ty_f64()?;
+        let y = value[1].as_ty_f64()?;
         Some([x, y])
     }
 
     pub fn as_point3d(&self) -> Option<[TyF64; 3]> {
-        let arr = self.as_array()?;
-        if arr.len() != 3 {
+        let value = match self {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => value,
+            _ => return None,
+        };
+
+        if value.len() != 3 {
             return None;
         }
-        let x = arr[0].as_ty_f64()?;
-        let y = arr[1].as_ty_f64()?;
-        let z = arr[2].as_ty_f64()?;
+        let x = value[0].as_ty_f64()?;
+        let y = value[1].as_ty_f64()?;
+        let z = value[2].as_ty_f64()?;
         Some([x, y, z])
     }
 
     pub fn as_uuid(&self) -> Option<uuid::Uuid> {
-        if let KclValue::Uuid { value, meta: _ } = &self {
-            Some(*value)
-        } else {
-            None
+        match self {
+            KclValue::Uuid { value, .. } => Some(*value),
+            _ => None,
         }
     }
 
     pub fn as_plane(&self) -> Option<&Plane> {
-        if let KclValue::Plane { value } = &self {
-            Some(value)
-        } else {
-            None
+        match self {
+            KclValue::Plane { value, .. } => Some(value),
+            _ => None,
         }
     }
 
     pub fn as_solid(&self) -> Option<&Solid> {
-        if let KclValue::Solid { value } = &self {
-            Some(value)
-        } else {
-            None
+        match self {
+            KclValue::Solid { value, .. } => Some(value),
+            _ => None,
         }
     }
 
     pub fn as_sketch(&self) -> Option<&Sketch> {
-        if let KclValue::Sketch { value } = self {
-            Some(value)
-        } else {
-            None
+        match self {
+            KclValue::Sketch { value, .. } => Some(value),
+            _ => None,
         }
     }
 
     pub fn as_mut_sketch(&mut self) -> Option<&mut Sketch> {
-        if let KclValue::Sketch { value } = self {
-            Some(value)
-        } else {
-            None
+        match self {
+            KclValue::Sketch { value } => Some(value),
+            _ => None,
         }
     }
 
     pub fn as_mut_tag(&mut self) -> Option<&mut TagIdentifier> {
-        if let KclValue::TagIdentifier(value) = self {
-            Some(value)
-        } else {
-            None
+        match self {
+            KclValue::TagIdentifier(value) => Some(value),
+            _ => None,
         }
     }
 
     #[cfg(test)]
     pub fn as_f64(&self) -> Option<f64> {
-        if let KclValue::Number { value, .. } = &self {
-            Some(*value)
-        } else {
-            None
+        match self {
+            KclValue::Number { value, .. } => Some(*value),
+            _ => None,
         }
     }
 
     pub fn as_ty_f64(&self) -> Option<TyF64> {
-        if let KclValue::Number { value, ty, .. } = &self {
-            Some(TyF64::new(*value, ty.clone()))
-        } else {
-            None
+        match self {
+            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, ty.clone())),
+            _ => None,
         }
     }
 
     pub fn as_bool(&self) -> Option<bool> {
-        if let KclValue::Bool { value, meta: _ } = &self {
-            Some(*value)
-        } else {
-            None
+        match self {
+            KclValue::Bool { value, .. } => Some(*value),
+            _ => None,
         }
     }
 
-    /// If this value fits in a u32, return it.
-    pub fn get_u32(&self, source_ranges: Vec<SourceRange>) -> Result<u32, KclError> {
-        let u = self.as_int().and_then(|n| u64::try_from(n).ok()).ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails::new(
-                "Expected an integer >= 0".to_owned(),
-                source_ranges.clone(),
-            ))
-        })?;
-        u32::try_from(u)
-            .map_err(|_| KclError::Semantic(KclErrorDetails::new("Number was too big".to_owned(), source_ranges)))
-    }
-
     /// If this value is of type function, return it.
-    pub fn get_function(&self) -> Option<&FunctionSource> {
+    pub fn as_function(&self) -> Option<&FunctionSource> {
         match self {
             KclValue::Function { value, .. } => Some(value),
             _ => None,
@@ -610,20 +594,12 @@ impl KclValue {
 
     /// If this KCL value is a bool, retrieve it.
     pub fn get_bool(&self) -> Result<bool, KclError> {
-        let Self::Bool { value: b, .. } = self else {
-            return Err(KclError::Type(KclErrorDetails::new(
+        self.as_bool().ok_or_else(|| {
+            KclError::Type(KclErrorDetails::new(
                 format!("Expected bool, found {}", self.human_friendly_type()),
                 self.into(),
-            )));
-        };
-        Ok(*b)
-    }
-
-    pub fn as_fn(&self) -> Option<&FunctionSource> {
-        match self {
-            KclValue::Function { value, .. } => Some(value),
-            _ => None,
-        }
+            ))
+        })
     }
 
     pub fn value_str(&self) -> Option<String> {

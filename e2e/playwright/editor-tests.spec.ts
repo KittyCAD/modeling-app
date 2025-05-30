@@ -1337,7 +1337,7 @@ sketch001 = startSketchOn(XZ)
 
   test(
     `Can import a local OBJ file`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, context }, testInfo) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'cube')

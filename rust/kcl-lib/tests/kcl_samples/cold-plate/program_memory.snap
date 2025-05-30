@@ -1699,7 +1699,7 @@ description: Variables in memory after executing cold-plate.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "origin": {
-            "x": -186.68999999999997,
+            "x": -186.69,
             "y": 0.0,
             "z": 0.0,
             "units": {

@@ -8,6 +8,16 @@ KCL Engine error
     ╭─[67:1]
  66 │ 
  67 │ union([base,endTabs])
-    · ──────────┬──────────
+    · ──────────┬──────────┬
+    ·           ╰── tests/pattern_into_union/input.kcl
     ·           ╰── tests/pattern_into_union/input.kcl
     ╰────
+  ╰─▶ KCL Engine error
+      
+        × engine: More than 2 solids were passed to the low-level CSG method
+          ╭─[67:1]
+       66 │
+       67 │ union([base,endTabs])
+          · ──────────┬──────────
+          ·           ╰── tests/pattern_into_union/input.kcl
+          ╰────

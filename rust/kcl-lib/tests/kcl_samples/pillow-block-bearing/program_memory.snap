@@ -3,9 +3,13 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing pillow-block-bearing.kcl
 ---
 {
-  "ballBearing": {
+  "__mod_ballBearing": {
     "type": "Module",
     "value": 2
+  },
+  "__mod_block": {
+    "type": "Module",
+    "value": 3
   },
   "bearingBoreDiameter": {
     "type": "Number",
@@ -32,10 +36,6 @@ description: Variables in memory after executing pillow-block-bearing.kcl
         "type": "Degrees"
       }
     }
-  },
-  "block": {
-    "type": "Module",
-    "value": 3
   },
   "boltDiameter": {
     "type": "Number",

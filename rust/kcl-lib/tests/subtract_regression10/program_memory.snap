@@ -57,7 +57,7 @@ description: Variables in memory after executing subtract_regression10.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 232.09247866942073,
+                "z": 232.092,
                 "units": {
                   "type": "Mm"
                 }
@@ -65,9 +65,9 @@ description: Variables in memory after executing subtract_regression10.kcl
               "type": "plane",
               "value": "Custom",
               "xAxis": {
-                "x": -0.9778288277170034,
+                "x": -0.978,
                 "y": 0.0,
-                "z": -0.2094057871349092,
+                "z": -0.209,
                 "units": {
                   "type": "Unknown"
                 }
@@ -157,7 +157,7 @@ description: Variables in memory after executing subtract_regression10.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 232.09247866942073,
+                "z": 232.092,
                 "units": {
                   "type": "Mm"
                 }
@@ -165,9 +165,9 @@ description: Variables in memory after executing subtract_regression10.kcl
               "type": "plane",
               "value": "Custom",
               "xAxis": {
-                "x": -0.9778288277170034,
+                "x": -0.978,
                 "y": 0.0,
-                "z": -0.2094057871349092,
+                "z": -0.209,
                 "units": {
                   "type": "Unknown"
                 }
@@ -1943,7 +1943,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 232.09247866942073,
+            "z": 232.092,
             "units": {
               "type": "Mm"
             }
@@ -1951,9 +1951,9 @@ description: Variables in memory after executing subtract_regression10.kcl
           "type": "plane",
           "value": "Custom",
           "xAxis": {
-            "x": -0.9778288277170034,
+            "x": -0.978,
             "y": 0.0,
-            "z": -0.2094057871349092,
+            "z": -0.209,
             "units": {
               "type": "Unknown"
             }

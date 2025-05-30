@@ -5,7 +5,7 @@ import * as fsp from 'fs/promises'
 test.describe('Electron app header tests', () => {
   test(
     'Open Command Palette button has correct shortcut',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page }, testInfo) => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -30,7 +30,7 @@ test.describe('Electron app header tests', () => {
 
   test(
     'User settings has correct shortcut',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, toolbar }, testInfo) => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
