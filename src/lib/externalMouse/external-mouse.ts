@@ -1,3 +1,4 @@
+import { sceneInfra } from "@src/lib/singletons"
 import { Matrix4, Vector3 } from 'three'
 // @ts-ignore
 import * as THREE from 'three'
@@ -175,14 +176,14 @@ class _3DMouse implements _3DconnexionMiddleware {
 
   constructor(configuration: _3DMouseConfiguration) {
     // no op for now
-    console.log('_3DMouse has a no op constructor')
+    console.log('[_3DMouse] _3DMouse has a no op constructor')
 
     this.name = configuration.name
     this.debug = configuration.debug
     this.canvasId = configuration.canvasId
 
     if (!_3Dconnexion) {
-      console.error('Unable to find _3Dconnexion library')
+      console.error('[_3DMouse] Unable to find _3Dconnexion library')
     }
   }
 
@@ -239,30 +240,44 @@ class _3DMouse implements _3DconnexionMiddleware {
     this.spaceMouse = new _3Dconnexion(this)
     this.spaceMouse.debug = this.debug
     if (!this.spaceMouse.connect()) {
-      if (this.debug) console.log('Cannot connect to 3Dconnexion NL-Proxy')
+      if (this.debug) console.log('[_3DMouse] Cannot connect to 3Dconnexion NL-Proxy')
     }
   }
 
   // init3DMouse needs onConnect
   onConnect(): void {
-    const canvas = document.getElementById(this.canvasId)
+    // const canvas = document.getElementById(this.canvasId)
+    const canvas = document.querySelector('[data-engine]')
 
+    if (!canvas) {
+      console.error('[_3DMouse] no canvas found', canvas)
+    }
+
+    const camControls = sceneInfra.camControls
     this.viewportWidth = canvas.width
     this.viewportHeight = canvas.height
-    this.fov = (33 * Math.PI) / 180.0
-    this.frustumNear = -1000
-    this.frustumFar = 1000
-    this.left = -175
-    this.right = -this.left
+    const fovFactor = 45 / camControls.lastPerspectiveFov
+    this.fov = fovFactor
+    this.frustumNear = camControls.camera.near
+    this.frustumFar = camControls.camera.far
+    this.left = camControls.camera.left || 1
+    this.right = camControls.camera.right || -1
     this.bottom =
       (-(this.right - this.left) * this.viewportHeight) / this.viewportWidth / 2
     this.top = -this.bottom
 
     this.spaceMouse.create3dmouse(canvas, this.name)
+    console.log(this.fov)
+    console.log(this.frustumNear)
+    console.log(this.frustumFar)
+    console.log(this.left)
+    console.log(this.right)
+    console.log(this.bottom)
+    console.log(this.top)
   }
 
   onDisconnect(reason: string): void {
-    console.log('3Dconnexion NL-Proxy disconnected ' + reason)
+    console.log('[_3DMouse] 3Dconnexion NL-Proxy disconnected ' + reason)
   }
 
   on3dmouseCreated(): void {
@@ -296,7 +311,7 @@ class _3DMouse implements _3DconnexionMiddleware {
   // commands
   setActiveCommand(id: any): void {
     if (id) {
-      console.log('Id of command to execute= ' + id)
+      console.log('[_3DMouse] Id of command to execute= ' + id)
     }
   }
 
@@ -310,12 +325,12 @@ class _3DMouse implements _3DconnexionMiddleware {
 
   setTransaction(transaction: number): void {
     if (transaction === 0) {
-      console.log('request a redraw not animating')
+      console.log('[_3DMouse] request a redraw not animating')
     }
   }
 
   onStartMotion(): void {
-    console.log('started!')
+    console.log('[_3DMouse] started!')
     if (!this.animating) {
       this.animating = true
       window.requestAnimationFrame(this.render.bind(this))
@@ -332,16 +347,11 @@ class _3DMouse implements _3DconnexionMiddleware {
   }
 
   onStopMotion(): void {
-    console.log('stopped!')
+    console.log('[_3DMouse] stopped!')
     this.animating = false
   }
 }
 
-const the3DMouse = new _3DMouse({
-  // Name needs to be registered in the python proxy server!
-  name: 'Image Web Viewer',
-  debug: true,
-  canvasId: 'webgl',
-})
-
-window.the3DMouse = the3DMouse
+export {
+  _3DMouse
+}
