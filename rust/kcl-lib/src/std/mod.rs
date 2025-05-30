@@ -58,12 +58,14 @@ lazy_static! {
         Box::new(crate::std::segment::SegAng),
         Box::new(crate::std::segment::TangentToEnd),
         Box::new(crate::std::shapes::CircleThreePoint),
-        Box::new(crate::std::shapes::Ellipse),
+        // Box::new(crate::std::shapes::Ellipse),
         Box::new(crate::std::shapes::Polygon),
         Box::new(crate::std::sketch::Conic),
-        Box::new(crate::std::sketch::EllipticalArc),
+        Box::new(crate::std::sketch::Elliptic),
+        Box::new(crate::std::sketch::Hyperbolic),
         Box::new(crate::std::sketch::InvoluteCircular),
         Box::new(crate::std::sketch::Line),
+        Box::new(crate::std::sketch::Parabolic),
         Box::new(crate::std::sketch::XLine),
         Box::new(crate::std::sketch::YLine),
         Box::new(crate::std::sketch::AngledLine),
@@ -222,6 +224,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch", "circle") => (
             |e, a| Box::pin(crate::std::shapes::circle(e, a)),
             StdFnProps::default("std::sketch::circle"),
+        ),
+        ("sketch", "ellipse") => (
+            |e, a| Box::pin(crate::std::shapes::ellipse(e, a)),
+            StdFnProps::default("std::sketch::ellipse"),
         ),
         ("prelude", "helix") => (
             |e, a| Box::pin(crate::std::helix::helix(e, a)),

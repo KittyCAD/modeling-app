@@ -44,6 +44,27 @@ export fn circle(
   tag?: tag,
 ): Sketch {}
 
+/// Construct a 2-dimensional ellipse, of the specified major/minor radius, centered at the provided (x, y) point.
+///
+/// ```
+/// exampleSketch = startSketchOn(XY)
+///   |> ellipse(center = [0, 0], majorRadius = 50, minorRadius = 20)
+/// ```
+@(impl = std_rust)
+export fn ellipse(
+  /// Sketch to extend, or plane or surface to sketch on.
+  @sketch_or_surface: Sketch | Plane | Face,
+  /// The center of the ellipse.
+  @(snippetArray = ["0", "0"])
+  center: Point2d,
+  /// The major radius of the ellipse.
+  majorRadius: number(Length),
+  /// The minor radius of the ellipse.
+  minorRadius: number(Length),
+  /// Create a new tag which refers to this ellipse.
+  tag?: tag,
+): Sketch {}
+
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
 ///
 /// This, like extrude, is able to create a 3-dimensional solid from a

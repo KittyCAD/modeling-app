@@ -2413,7 +2413,7 @@ async fn inner_subtract_2d(
 }
 
 /// Draw an elliptical arc.
-pub async fn elliptical_arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch =
         args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
@@ -2427,7 +2427,7 @@ pub async fn elliptical_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
     let interior_absolute: Option<[TyF64; 2]> =
         args.get_kw_arg_opt_typed("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
-    let new_sketch = inner_elliptical_arc(
+    let new_sketch = inner_elliptic(
         sketch,
         center,
         angle_start,
@@ -2449,7 +2449,7 @@ pub async fn elliptical_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
-///   |> ellipticalArc(
+///   |> elliptic(
 ///         endAbsolute = [10,0],
 ///         interiorAbsolute = [5,5]
 ///      )
@@ -2457,7 +2457,7 @@ pub async fn elliptical_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// example = extrude(exampleSketch, length = 10)
 /// ```
 #[stdlib {
-    name = "ellipticalArc",
+    name = "elliptic",
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?" },
@@ -2473,7 +2473,7 @@ pub async fn elliptical_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
     tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
-pub(crate) async fn inner_elliptical_arc(
+pub(crate) async fn inner_elliptic(
     sketch: Sketch,
     center: [TyF64; 2],
     angle_start: TyF64,
@@ -2554,11 +2554,207 @@ pub(crate) async fn inner_elliptical_arc(
     Ok(new_sketch)
 }
 
+pub async fn hyperbolic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketch = args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+
+    let semi_major: TyF64 = args.get_kw_arg_typed("semiMajor", &RuntimeType::length(), exec_state)?;
+    let semi_minor: TyF64 = args.get_kw_arg_typed("semiMinor", &RuntimeType::length(), exec_state)?;
+    let interior: [TyF64; 2] = args.get_kw_arg_typed("interior", &RuntimeType::point2d(), exec_state)?;
+    let end: [TyF64; 2] = args.get_kw_arg_typed("end", &RuntimeType::point2d(), exec_state)?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+
+    let new_sketch = inner_hyperbolic(sketch, semi_major, semi_minor, interior, end, tag, exec_state, args).await?;
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
+}
+
+/// Calculate the tangent of a hyperbolic given a point on the curve
+fn hyperbolic_tangent(point: Point2d, semi_major: f64, semi_minor: f64) -> [f64; 2] {
+    (point.y * semi_major.powf(2.0), point.x * semi_minor.powf(2.0)).into()
+}
+
+/// ```no_run
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [0,0])
+///   |> hyperbolic(
+///         end = [10,0],
+///         semiMajor = 2,
+///         semiMinor = 1,
+///         interior = [0,0]
+///   )
+///   |>close()
+///```
+#[stdlib {
+    name = "hyperbolic",
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?" },
+        semi_major = { docs = "The tangent of the conic at the start point (the end of the previous path segement)" },
+        semi_minor = { docs = "The tangent of the conic at the end point" },
+        interior = { docs = "Any point between the arc's start and end?" },
+        end = { docs = "Where should this arc end?" },
+        tag = { docs = "Create a new tag which refers to this line"},
+    },
+    tags = ["sketch"]
+}]
+#[allow(clippy::too_many_arguments)]
+pub(crate) async fn inner_hyperbolic(sketch: Sketch, semi_major: TyF64, semi_minor: TyF64, interior: [TyF64; 2], end: [TyF64; 2], tag: Option<TagNode>, exec_state: &mut ExecState, args: Args
+) -> Result<Sketch, KclError> {
+    let from = sketch.current_pen_position()?;
+    let id = exec_state.next_uuid();
+
+    let (interior, _) =  untype_point(interior);
+    let (end, _) = untype_point(end);
+    let end_point = Point2d {
+        x: end[0],
+        y: end[1],
+        units: from.units,
+    };
+
+    let semi_major_u = semi_major.to_length_units(from.units);
+    let semi_minor_u = semi_minor.to_length_units(from.units);
+        
+    let start_tangent = hyperbolic_tangent(from, semi_major_u, semi_minor_u);
+    let end_tangent = hyperbolic_tangent(end_point, semi_major_u, semi_minor_u);
+
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch.id.into(),
+            segment: PathSegment::ConicTo {
+                start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
+                end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
+                end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
+                interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
+                relative: false,
+            },
+        }),
+    ).await?;
+
+    let current_path = Path::Conic {
+        base: BasePath {
+            from: from.ignore_units(),
+            to: end,
+            tag: tag.clone(),
+            units: sketch.units,
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+    };
+
+    let mut new_sketch = sketch.clone();
+    if let Some(tag) = &tag {
+        new_sketch.add_tag(tag, &current_path, exec_state);
+    }
+
+    new_sketch.paths.push(current_path);
+
+    Ok(new_sketch)
+
+}
+
+pub async fn parabolic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketch = args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+
+    let coefficient: TyF64 = args.get_kw_arg_typed("coefficient", &RuntimeType::count(), exec_state)?;
+    let interior: [TyF64; 2] = args.get_kw_arg_typed("interior", &RuntimeType::point2d(), exec_state)?;
+    let end: [TyF64; 2] = args.get_kw_arg_typed("end", &RuntimeType::point2d(), exec_state)?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+
+    let new_sketch = inner_parabolic(sketch, coefficient, interior, end, tag, exec_state, args).await?;
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
+}
+
+fn parabolic_tangent(point: Point2d, coefficient: f64) -> [f64; 2] {
+    (1.0, 2.0 * coefficient * point.x).into()
+}
+
+/// ```no_run
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [0,0])
+///   |> parabolic(
+///         end = [10,0],
+///         coefficient = 2,
+///         interior = [0,0]
+///   )
+///   |>close()
+///```
+#[stdlib {
+    name = "parabolic",
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?" },
+        coefficient = { docs = "The tangent of the conic at the end point" },
+        interior = { docs = "Any point between the arc's start and end?" },
+        end = { docs = "Where should this arc end?" },
+        tag = { docs = "Create a new tag which refers to this line"},
+    },
+    tags = ["sketch"]
+}]
+pub(crate) async fn inner_parabolic(sketch: Sketch, coefficient: TyF64, interior: [TyF64; 2], end: [TyF64; 2], tag: Option<TagNode>, exec_state: &mut ExecState, args: Args
+) -> Result<Sketch, KclError> {
+    let from = sketch.current_pen_position()?;
+    let id = exec_state.next_uuid();
+
+    let (interior, _) =  untype_point(interior);
+    let (end, _) = untype_point(end);
+    let end_point = Point2d {
+        x: end[0],
+        y: end[1],
+        units: from.units,
+    };
+
+    let start_tangent = parabolic_tangent(from, coefficient.n);
+    let end_tangent = parabolic_tangent(end_point, coefficient.n);
+
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch.id.into(),
+            segment: PathSegment::ConicTo {
+                start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
+                end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
+                end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
+                interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
+                relative: false,
+            },
+        }),
+    ).await?;
+
+    let current_path = Path::Conic {
+        base: BasePath {
+            from: from.ignore_units(),
+            to: end,
+            tag: tag.clone(),
+            units: sketch.units,
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+    };
+
+    let mut new_sketch = sketch.clone();
+    if let Some(tag) = &tag {
+        new_sketch.add_tag(tag, &current_path, exec_state);
+    }
+
+    new_sketch.paths.push(current_path);
+
+    Ok(new_sketch)
+
+}
+
 /// Draw a conic section
 pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch = args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
-    let start_tangent: [TyF64; 2] = args.get_kw_arg_typed("startTangent", &RuntimeType::point2d(), exec_state)?;
+    let start_tangent: Option<[TyF64; 2]> = args.get_kw_arg_opt_typed("startTangent", &RuntimeType::point2d(), exec_state)?;
     let end_tangent: [TyF64; 2] = args.get_kw_arg_typed("endTangent", &RuntimeType::point2d(), exec_state)?;
     let end: [TyF64; 2] = args.get_kw_arg_typed("end", &RuntimeType::point2d(), exec_state)?;
     let interior: [TyF64; 2] = args.get_kw_arg_typed("interior", &RuntimeType::point2d(), exec_state)?;
@@ -2569,6 +2765,7 @@ pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         value: Box::new(new_sketch),
     })
 }
+
 
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
@@ -2596,14 +2793,21 @@ pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
-pub(crate) async fn inner_conic(sketch: Sketch, start_tangent: [TyF64; 2], end: [TyF64; 2], end_tangent: [TyF64; 2], interior: [TyF64; 2], tag: Option<TagNode>, exec_state: &mut ExecState, args: Args
+pub(crate) async fn inner_conic(sketch: Sketch, start_tangent: Option<[TyF64; 2]>, end: [TyF64; 2], end_tangent: [TyF64; 2], interior: [TyF64; 2], tag: Option<TagNode>, exec_state: &mut ExecState, args: Args
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
     let id = exec_state.next_uuid();
-    let (start_tangent, _) =  untype_point(start_tangent);
     let (end_tangent, _) =  untype_point(end_tangent);
     let (end, _) =  untype_point(end);
     let (interior, _) =  untype_point(interior);
+
+    let (start_tangent, _) =  if let Some(start_tangent) = start_tangent {
+        untype_point(start_tangent)
+    } else {
+        let previous_point = sketch.get_tangential_info_from_paths().tan_previous_point(from.ignore_units());
+        let from = from.ignore_units();
+        ([from[0] - previous_point[0], from[1] - previous_point[1]], NumericType::Any)
+    };
 
     args.batch_modeling_cmd(
         id,

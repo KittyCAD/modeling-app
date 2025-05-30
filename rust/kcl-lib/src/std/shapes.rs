@@ -495,25 +495,6 @@ pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     })
 }
 
-/// Construct an ellipse derived from center and major/minor axes.
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XY)
-///   |> ellipse(center = [10,10], majorRadius = 5, minorRadius = 2)
-///   |> extrude(length = 5)
-/// ```
-#[stdlib {
-    name = "ellipse",
-    unlabeled_first = true,
-    args = {
-        sketch_surface_or_group = { docs = "Plane or surface to sketch on" },
-        center = {docs = "The center of the ellipse."},
-        major_radius = {docs = "The length along the x axis."},
-        minor_radius = {docs = "The length along the y axis."},
-        tag = {docs = "Identifier for the circle to reference elsewhere."},
-    },
-    tags = ["sketch"]
-}]
 async fn inner_ellipse(
     sketch_surface_or_group: SketchOrSurface,
     center: [TyF64; 2],
