@@ -979,12 +979,18 @@ fn property_separator(i: &mut TokenSlice) -> ModalResult<()> {
 }
 
 /// Match something that separates the labeled arguments of a fn call.
-fn labeled_arg_separator(i: &mut TokenSlice) -> ModalResult<()> {
+/// Returns the source range of the erroneous separator, if any was found.
+fn labeled_arg_separator(i: &mut TokenSlice) -> ModalResult<Option<SourceRange>> {
     alt((
         // Normally you need a comma.
-        comma_sep,
+        comma_sep.map(|_| None),
         // But, if the argument list is ending, no need for a comma.
-        peek(preceded(opt(whitespace), close_paren)).void(),
+        peek(preceded(opt(whitespace), close_paren)).void().map(|_| None),
+        whitespace.map(|mut tokens| {
+            // Safe to unwrap here because `whitespace` is guaranteed to return at least 1 whitespace.
+            let first_token = tokens.pop().unwrap();
+            Some(SourceRange::from(&first_token))
+        }),
     ))
     .parse_next(i)
 }
@@ -3198,7 +3204,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
     #[allow(clippy::large_enum_variant)]
     enum ArgPlace {
         NonCode(Node<NonCodeNode>),
-        LabeledArg(LabeledArg),
+        LabeledArg((LabeledArg, Option<SourceRange>)),
         UnlabeledArg(Expr),
         Keyword(Token),
     }
@@ -3208,7 +3214,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         alt((
             terminated(non_code_node.map(ArgPlace::NonCode), whitespace),
             terminated(any_keyword.map(ArgPlace::Keyword), whitespace),
-            terminated(labeled_argument, labeled_arg_separator).map(ArgPlace::LabeledArg),
+            ((labeled_argument, labeled_arg_separator)).map(ArgPlace::LabeledArg),
             expression.map(ArgPlace::UnlabeledArg),
         )),
     )
@@ -3220,7 +3226,16 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                 ArgPlace::NonCode(x) => {
                     non_code_nodes.insert(index, vec![x]);
                 }
-                ArgPlace::LabeledArg(x) => {
+                ArgPlace::LabeledArg((x, bad_token_source_range)) => {
+                    if let Some(bad_token_source_range) = bad_token_source_range {
+                        return Err(ErrMode::Cut(
+                            CompilationError::fatal(
+                                bad_token_source_range,
+                                format!("Missing comma between arguments, try adding a comma in"),
+                            )
+                            .into(),
+                        ));
+                    }
                     args.push(x);
                 }
                 ArgPlace::Keyword(kw) => {
@@ -5132,6 +5147,27 @@ bar = 1
         };
         assert_eq!(actual.operator, UnaryOperator::Not);
         crate::parsing::top_level_parse(some_program_string).unwrap(); // Updated import path
+    }
+    #[test]
+    fn test_sensible_error_when_missing_comma_between_fn_args() {
+        let program_source = "startSketchOn(XY)
+|> arc(
+    endAbsolute = [0, 50]
+    interiorAbsolute = [-50, 0]
+)";
+        let expected_src_start = program_source.find("]").unwrap();
+        let tokens = crate::parsing::token::lex(program_source, ModuleId::default()).unwrap();
+        ParseContext::init();
+        let err = program
+            .parse(tokens.as_slice())
+            .expect_err("Program succeeded, but it should have failed");
+        let cause = err
+            .inner()
+            .cause
+            .as_ref()
+            .expect("Found an error, but there was no cause. Add a cause.");
+        assert_eq!(cause.message, "Missing comma between arguments, try adding a comma in",);
+        assert_eq!(cause.source_range.start() - 1, expected_src_start);
     }
 
     #[test]
