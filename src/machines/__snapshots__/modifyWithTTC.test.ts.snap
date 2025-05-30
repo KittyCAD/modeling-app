@@ -1,5 +1,435 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`When prompting modify with TTC, prompt: > Change this to red please, #ff0000 1`] = `
+{
+  "expectedFiles": {
+    "ball-bearing.kcl": "// Pillow Block Bearing
+// The ball bearing for the pillow block bearing assembly
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import Parameters
+import * from "parameters.kcl"
+
+// Create the sketch of one of the balls. The ball diameter is sized as a fraction of the difference between inner and outer radius of the bearing
+ballsSketch = startSketchOn(offsetPlane(XY, offset = stockThickness / 2))
+  |> startProfile(at = [bearingBoreDiameter / 2 + 0.1, 0.001])
+  |> arc(angleEnd = 0, angleStart = 180, radius = sphereDia / 2)
+  |> close()
+
+// Revolve the ball to make a sphere and pattern around the inside wall
+balls = revolve(ballsSketch, axis = X)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = 16,
+       rotateDuplicates = true,
+     )
+
+// Create the sketch for the chain around the balls
+chainSketch = startSketchOn(offsetPlane(XY, offset = stockThickness / 2))
+  |> startProfile(at = [
+       bearingBoreDiameter / 2 + 0.1 + sphereDia / 2 - (chainWidth / 2),
+       0.125 * sin(60deg)
+     ])
+  |> arc(angleEnd = 60, angleStart = 120, radius = sphereDia / 2)
+  |> line(end = [0, chainThickness])
+  |> line(end = [-chainWidth, 0])
+  |> close()
+
+// Revolve the chain sketch
+chainHead = revolve(chainSketch, axis = X)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = 16,
+       rotateDuplicates = true,
+     )
+
+// Create the sketch for the links in between the chains
+linkSketch = startSketchOn(XZ)
+  |> circle(
+       center = [
+         bearingBoreDiameter / 2 + 0.1 + sphereDia / 2,
+         stockThickness / 2
+       ],
+       radius = linkDiameter / 2,
+     )
+
+// Create the walls of the bearing
+bearingBody = startSketchOn(XZ)
+bearingUpper = startProfile(
+       bearingBody,
+       at = [
+         bearingOuterDiameter / 2 - .07,
+         stockThickness
+       ],
+     )
+  |> angledLine(angle = -91, length = 0.05)
+  |> xLine(length = -(bearingOuterDiameter / 2 - (bearingBoreDiameter / 2)) + .145)
+  |> yLine(endAbsolute = 0.105)
+  |> xLine(length = -0.025)
+  |> angledLine(angle = 91, endAbsoluteY = profileStartY(%))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(angle = 360, axis = Y)
+  |> appearance(%, color = "#121212")
+
+bearingLower = startProfile(bearingBody, at = [bearingBoreDiameter / 2, 0.025])
+  |> xLine(length = 0.05)
+  |> angledLine(angle = 75, length = 0.04, tag = $seg01)
+  |> xLine(length = 0.05)
+  |> angledLine(angle = -75, length = segLen(seg01))
+  |> xLine(endAbsolute = bearingOuterDiameter / 2)
+  |> yLine(length = stockThickness)
+  |> xLine(length = -0.07)
+  |> angledLine(angle = -91, endAbsoluteY = profileStartY(%) + .075)
+  |> xLine(endAbsolute = profileStartX(%) + .05)
+  |> angledLine(angle = 91, endAbsoluteY = stockThickness * 1.25)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(angle = 360, axis = Y)
+  |> appearance(%, color = "#ff0000")
+
+// Revolve the link sketch
+revolve(linkSketch, axis = Y, angle = 360 / 16)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = 16,
+       rotateDuplicates = true,
+     )
+",
+    "block.kcl": "// Pillow Block Bearing
+// The machined block for the pillow block bearing assembly. The block is dimensioned using the bolt pattern spacing, and each bolt hole includes a counterbore
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import Parameters
+import * from "parameters.kcl"
+
+// Calculate the dimensions of the block using the specified bolt spacing. The size of the block can be defined by adding a multiple of the counterbore diameter to the bolt spacing
+blockLength = boltSpacingX + counterboreDiameter + boltDiameter
+blockWidth = boltSpacingY + counterboreDiameter + boltDiameter
+
+// Draw the base plate
+plateSketch = startSketchOn(XY)
+  |> startProfile(at = [-blockLength / 2, -blockWidth / 2])
+  |> angledLine(angle = 0, length = blockLength, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = blockWidth, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
+  |> close()
+  |> subtract2d(tool = circle(center = [0, 0], radius = bearingOuterDiameter / 2))
+plateBody = extrude(plateSketch, length = stockThickness)
+  |> appearance(%, color = "#1e62eb")
+  |> fillet(
+       radius = boltDiameter * 1 / 3,
+       tags = [
+         getNextAdjacentEdge(rectangleSegmentB001),
+         getNextAdjacentEdge(rectangleSegmentA001),
+         getNextAdjacentEdge(rectangleSegmentC001),
+         getNextAdjacentEdge(rectangleSegmentD001)
+       ],
+     )
+
+// Define hole positions
+holePositions = [
+  [-boltSpacingX / 2, -boltSpacingY / 2],
+  [-boltSpacingX / 2, boltSpacingY / 2],
+  [boltSpacingX / 2, -boltSpacingY / 2],
+  [boltSpacingX / 2, boltSpacingY / 2]
+]
+
+// Function to create a counterbored hole
+fn counterbore(@holePosition) {
+  cbBore = startSketchOn(plateBody, face = END)
+    |> circle(center = holePosition, radius = counterboreDiameter / 2)
+    |> extrude(length = -counterboreDepth)
+  cbBolt = startSketchOn(cbBore, face = START)
+    |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
+    |> extrude(length = -stockThickness + counterboreDepth)
+
+  return {  }
+}
+
+// Place a counterbored hole at each bolt hole position
+map(holePositions, f = counterbore)
+",
+    "main.kcl": "// Pillow Block Bearing
+// A bearing pillow block, also known as a plummer block or pillow block bearing, is a pedestal used to provide support for a rotating shaft with the help of compatible bearings and various accessories. Housing a bearing, the pillow block provides a secure and stable foundation that allows the shaft to rotate smoothly within its machinery setup. These components are essential in a wide range of mechanical systems and machinery, playing a key role in reducing friction and supporting radial and axial loads.
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import parts and parameters
+import * from "parameters.kcl"
+import "ball-bearing.kcl" as ballBearing
+import "block.kcl" as block
+
+// Render each part
+ballBearing
+block
+",
+    "parameters.kcl": "// Global parameters for the pillow block bearing
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Export parameters
+export boltSpacingX = 5
+export boltSpacingY = 3
+export boltDiameter = 3 / 8
+export counterboreDiameter = 3 / 4
+export counterboreDepth = 3 / 16
+export stockThickness = .5
+export bearingBoreDiameter = 1 + 3 / 4
+export bearingOuterDiameter = bearingBoreDiameter * 1.5
+export sphereDia = (bearingOuterDiameter - bearingBoreDiameter) / 4
+export chainWidth = sphereDia / 2
+export chainThickness = sphereDia / 8
+export linkDiameter = sphereDia / 4
+",
+  },
+  "files": {
+    "b.kcl": "// Pillow Block Bearing
+// The machined block for the pillow block bearing assembly. The block is dimensioned using the bolt pattern spacing, and each bolt hole includes a counterbore
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import Parameters
+import * from "parameters.kcl"
+
+// Calculate the dimensions of the block using the specified bolt spacing. The size of the block can be defined by adding a multiple of the counterbore diameter to the bolt spacing
+blockLength = boltSpacingX + counterboreDiameter + boltDiameter
+blockWidth = boltSpacingY + counterboreDiameter + boltDiameter
+
+// Draw the base plate
+plateSketch = startSketchOn(XY)
+  |> startProfile(at = [-blockLength / 2, -blockWidth / 2])
+  |> angledLine(angle = 0, length = blockLength, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = blockWidth, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
+  |> close()
+  |> subtract2d(tool = circle(center = [0, 0], radius = bearingOuterDiameter / 2))
+plateBody = extrude(plateSketch, length = stockThickness)
+  |> appearance(%, color = "#1e62eb")
+  |> fillet(
+       radius = boltDiameter * 1 / 3,
+       tags = [
+         getNextAdjacentEdge(rectangleSegmentB001),
+         getNextAdjacentEdge(rectangleSegmentA001),
+         getNextAdjacentEdge(rectangleSegmentC001),
+         getNextAdjacentEdge(rectangleSegmentD001)
+       ],
+     )
+
+// Define hole positions
+holePositions = [
+  [-boltSpacingX / 2, -boltSpacingY / 2],
+  [-boltSpacingX / 2, boltSpacingY / 2],
+  [boltSpacingX / 2, -boltSpacingY / 2],
+  [boltSpacingX / 2, boltSpacingY / 2]
+]
+
+// Function to create a counterbored hole
+fn counterbore(@holePosition) {
+  cbBore = startSketchOn(plateBody, face = END)
+    |> circle(center = holePosition, radius = counterboreDiameter / 2)
+    |> extrude(length = -counterboreDepth)
+  cbBolt = startSketchOn(cbBore, face = START)
+    |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
+    |> extrude(length = -stockThickness + counterboreDepth)
+
+  return {  }
+}
+
+// Place a counterbored hole at each bolt hole position
+map(holePositions, f = counterbore)
+",
+    "file-2.kcl": "// Pillow Block Bearing
+// A bearing pillow block, also known as a plummer block or pillow block bearing, is a pedestal used to provide support for a rotating shaft with the help of compatible bearings and various accessories. Housing a bearing, the pillow block provides a secure and stable foundation that allows the shaft to rotate smoothly within its machinery setup. These components are essential in a wide range of mechanical systems and machinery, playing a key role in reducing friction and supporting radial and axial loads.
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import parts and parameters
+import * from "parameters.kcl"
+import "ball-bearing.kcl" as ballBearing
+import "block.kcl" as block
+
+// Render each part
+ballBearing
+block
+",
+    "file-3.kcl": "// Global parameters for the pillow block bearing
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Export parameters
+export boltSpacingX = 5
+export boltSpacingY = 3
+export boltDiameter = 3 / 8
+export counterboreDiameter = 3 / 4
+export counterboreDepth = 3 / 16
+export stockThickness = .5
+export bearingBoreDiameter = 1 + 3 / 4
+export bearingOuterDiameter = bearingBoreDiameter * 1.5
+export sphereDia = (bearingOuterDiameter - bearingBoreDiameter) / 4
+export chainWidth = sphereDia / 2
+export chainThickness = sphereDia / 8
+export linkDiameter = sphereDia / 4
+",
+    "main.kcl": "// Pillow Block Bearing
+// The ball bearing for the pillow block bearing assembly
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import Parameters
+import * from "parameters.kcl"
+
+// Create the sketch of one of the balls. The ball diameter is sized as a fraction of the difference between inner and outer radius of the bearing
+ballsSketch = startSketchOn(offsetPlane(XY, offset = stockThickness / 2))
+  |> startProfile(at = [bearingBoreDiameter / 2 + 0.1, 0.001])
+  |> arc(angleEnd = 0, angleStart = 180, radius = sphereDia / 2)
+  |> close()
+
+// Revolve the ball to make a sphere and pattern around the inside wall
+balls = revolve(ballsSketch, axis = X)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = 16,
+       rotateDuplicates = true,
+     )
+
+// Create the sketch for the chain around the balls
+chainSketch = startSketchOn(offsetPlane(XY, offset = stockThickness / 2))
+  |> startProfile(at = [
+       bearingBoreDiameter / 2 + 0.1 + sphereDia / 2 - (chainWidth / 2),
+       0.125 * sin(60deg)
+     ])
+  |> arc(angleEnd = 60, angleStart = 120, radius = sphereDia / 2)
+  |> line(end = [0, chainThickness])
+  |> line(end = [-chainWidth, 0])
+  |> close()
+
+// Revolve the chain sketch
+chainHead = revolve(chainSketch, axis = X)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = 16,
+       rotateDuplicates = true,
+     )
+
+// Create the sketch for the links in between the chains
+linkSketch = startSketchOn(XZ)
+  |> circle(
+       center = [
+         bearingBoreDiameter / 2 + 0.1 + sphereDia / 2,
+         stockThickness / 2
+       ],
+       radius = linkDiameter / 2,
+     )
+
+// Create the walls of the bearing
+bearingBody = startSketchOn(XZ)
+bearingUpper = startProfile(
+       bearingBody,
+       at = [
+         bearingOuterDiameter / 2 - .07,
+         stockThickness
+       ],
+     )
+  |> angledLine(angle = -91, length = 0.05)
+  |> xLine(length = -(bearingOuterDiameter / 2 - (bearingBoreDiameter / 2)) + .145)
+  |> yLine(endAbsolute = 0.105)
+  |> xLine(length = -0.025)
+  |> angledLine(angle = 91, endAbsoluteY = profileStartY(%))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(angle = 360, axis = Y)
+  |> appearance(%, color = "#121212")
+
+bearingLower = startProfile(bearingBody, at = [bearingBoreDiameter / 2, 0.025])
+  |> xLine(length = 0.05)
+  |> angledLine(angle = 75, length = 0.04, tag = $seg01)
+  |> xLine(length = 0.05)
+  |> angledLine(angle = -75, length = segLen(seg01))
+  |> xLine(endAbsolute = bearingOuterDiameter / 2)
+  |> yLine(length = stockThickness)
+  |> xLine(length = -0.07)
+  |> angledLine(angle = -91, endAbsoluteY = profileStartY(%) + .075)
+  |> xLine(endAbsolute = profileStartX(%) + .05)
+  |> angledLine(angle = 91, endAbsoluteY = stockThickness * 1.25)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(angle = 360, axis = Y)
+  |> appearance(%, color = "#f0f0f0")
+
+// Revolve the link sketch
+revolve(linkSketch, axis = Y, angle = 360 / 16)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = 16,
+       rotateDuplicates = true,
+     )
+",
+  },
+  "kcl_version": "0.2.77",
+  "project_name": "test-project",
+  "prompt": "Change this to red please, #ff0000",
+  "source_ranges": [
+    {
+      "file": "ball-bearing.kcl",
+      "prompt": "The users main selection is the wall of a general-sweep (that is an extrusion, revolve, sweep or loft).
+The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, face = segmentTag)"
+But it's also worth bearing in mind that the user may have intended to select the sweep itself, not this individual wall, see later source ranges for more context. about the sweep",
+      "range": {
+        "end": {
+          "column": 35,
+          "line": 82,
+        },
+        "start": {
+          "column": 5,
+          "line": 82,
+        },
+      },
+    },
+    {
+      "file": "ball-bearing.kcl",
+      "prompt": "This is the sweep's source range from the user's main selection of the end cap.",
+      "range": {
+        "end": {
+          "column": 35,
+          "line": 90,
+        },
+        "start": {
+          "column": 5,
+          "line": 90,
+        },
+      },
+    },
+  ],
+}
+`;
+
 exports[`When prompting modify with TTC, prompt: > make this neon green please, use #39FF14 1`] = `
 {
   "expectedFiles": {
@@ -88,32 +518,32 @@ b
   "prompt": "make this neon green please, use #39FF14",
   "source_ranges": [
     {
-      "file": "b.kcl",
+      "file": "main.kcl",
       "prompt": "The users main selection is the wall of a general-sweep (that is an extrusion, revolve, sweep or loft).
 The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, face = segmentTag)"
 But it's also worth bearing in mind that the user may have intended to select the sweep itself, not this individual wall, see later source ranges for more context. about the sweep",
       "range": {
         "end": {
-          "column": 6,
-          "line": 8,
+          "column": 32,
+          "line": 6,
         },
         "start": {
           "column": 5,
-          "line": 4,
+          "line": 6,
         },
       },
     },
     {
-      "file": "b.kcl",
+      "file": "main.kcl",
       "prompt": "This is the sweep's source range from the user's main selection of the end cap.",
       "range": {
         "end": {
-          "column": 31,
-          "line": 14,
+          "column": 46,
+          "line": 10,
         },
         "start": {
-          "column": 0,
-          "line": 14,
+          "column": 13,
+          "line": 10,
         },
       },
     },

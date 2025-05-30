@@ -1,28 +1,53 @@
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { VITE_KC_DEV_TOKEN } from '@src/env'
-import { isArray } from '@src/lib/utils'
+import { getModuleIdByFileName, isArray } from '@src/lib/utils'
 import { vi } from 'vitest'
 import { assertParse } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
+import path from 'path'
+import fs from 'node:fs'
+import type { Selections } from '@src/lib/selections'
+
+export function loadSampleProject(fileName: string): {
+  [fileName: string]: string
+} {
+  // public/kcl-samples/pillow-block-bearing/main.kcl
+  const projectPath = path.join('public', 'kcl-samples', fileName)
+  // load in all .kcl files in this directory using fs (sync)
+  const files: { [fileName: string]: string } = {}
+  const dir = path.dirname(projectPath)
+  const fileNames = fs.readdirSync(dir)
+
+  for (const file of fileNames) {
+    if (file.endsWith('.kcl')) {
+      const content = fs.readFileSync(path.join(dir, file), 'utf-8')
+      files[file] = content
+    }
+  }
+
+  return files
+}
+
+type TestCase = {
+  testName: string
+  prompt: string
+  inputFiles: { [fileName: string]: string }
+  expectedFiles: { [fileName: string]: string }
+  artifactSearchSnippet?: { fileName: string; content: string; type: string }
+}
 
 function createCaseData({
   prompt,
   inputFiles,
   artifactSearchSnippet,
   expectFilesCallBack,
-}: {
-  prompt: string
-  inputFiles: { [fileName: string]: string }
-  artifactSearchSnippet: string
+  testName,
+}: Omit<TestCase, 'expectedFiles'> & {
   expectFilesCallBack: (input: { fileName: string; content: string }) => string
-}): {
-  prompt: string
-  inputFiles: { [fileName: string]: string }
-  artifactSearchSnippet: string
-  expectedFiles: { [fileName: string]: string }
-} {
+}): TestCase {
   return {
+    testName,
     prompt,
     inputFiles,
     artifactSearchSnippet,
@@ -35,10 +60,16 @@ function createCaseData({
   }
 }
 
-const cases = [
+const cases: TestCase[] = [
+  //   // Add the static test case
   createCaseData({
+    testName: 'change color',
     prompt: 'make this neon green please, use #39FF14',
-    artifactSearchSnippet: 'line(end = [19.66, -116.4])',
+    artifactSearchSnippet: {
+      content: 'line(end = [19.66, -116.4])',
+      fileName: 'main.kcl',
+      type: 'wall',
+    },
     expectFilesCallBack: ({ fileName, content }) => {
       if (fileName !== 'main.kcl') return content
       return content.replace(
@@ -87,6 +118,25 @@ b
 extrude(sketch003, length = 20)
 `,
     },
+  }),
+
+  // Load pillow block files and add as another test case
+  createCaseData({
+    testName: 'pillow block test',
+    artifactSearchSnippet: {
+      fileName: 'ball-bearing.kcl',
+      content: 'yLine(length = stockThickness)',
+      type: 'wall',
+    },
+    prompt: 'Change this to red please, #ff0000',
+    inputFiles: loadSampleProject('pillow-block-bearing/main.kcl'),
+    expectFilesCallBack: ({ fileName, content }) =>
+      fileName === 'ball-bearing.kcl'
+        ? content.replace(
+            'appearance(%, color = "#f0f0f0")',
+            'appearance(%, color = "#ff0000")'
+          )
+        : content,
   }),
 ]
 
@@ -449,37 +499,74 @@ describe('When prompting modify with TTC, prompt:', () => {
 
           expect(kclManager.errors).toEqual([])
 
-          // Test that we can work with the imported content
-          const indexOfInterest = mainFile.indexOf(artifactSearchSnippet)
-          const artifact = [...kclManager.artifactGraph].find(
-            ([id, artifact]) => {
-              const codeRefs = getCodeRefsByArtifactId(
-                id,
-                kclManager.artifactGraph
-              )
-              return (
-                artifact?.type === 'wall' &&
-                codeRefs &&
-                codeRefs.find((ref) => {
-                  return (
-                    ref.range[0] <= indexOfInterest &&
-                    ref.range[1] >= indexOfInterest
-                  )
-                })
+          let selections: Selections = {
+            graphSelections: [],
+            otherSelections: [],
+          }
+
+          if (artifactSearchSnippet) {
+            let moduleId = getModuleIdByFileName(
+              artifactSearchSnippet.fileName,
+              kclManager.execState.filenames
+            )
+            if (artifactSearchSnippet.fileName === 'main.kcl') {
+              moduleId = 0
+            }
+            const moduleContent = inputFiles[artifactSearchSnippet.fileName]
+            if (moduleId === -1) {
+              throw new Error(
+                `Module ID not found for file: ${artifactSearchSnippet.fileName}`
               )
             }
-          )?.[1]
+            if (!moduleContent) {
+              throw new Error(
+                `Module content not found for file: ${artifactSearchSnippet.fileName}`
+              )
+            }
+            const indexOfInterest = moduleContent.indexOf(
+              artifactSearchSnippet.content
+            )
 
-          if (!artifact) {
-            throw new Error('Artifact not found')
+            const artifacts = [...kclManager.artifactGraph].filter(
+              ([id, artifact]) => {
+                const codeRefs = getCodeRefsByArtifactId(
+                  id,
+                  kclManager.artifactGraph
+                )
+                return (
+                  artifact?.type === artifactSearchSnippet.type &&
+                  codeRefs &&
+                  codeRefs.find((ref) => {
+                    return (
+                      ref.range[0] <= indexOfInterest &&
+                      ref.range[1] >= indexOfInterest &&
+                      ref.range[2] === moduleId
+                    )
+                  })
+                )
+              }
+            )
+            const artifact = artifacts?.[0]?.[1]
+
+            if (!artifact) {
+              throw new Error('Artifact not found')
+            }
+            const codeRef = (getCodeRefsByArtifactId(
+              artifact.id,
+              kclManager.artifactGraph
+            ) || [])[0]
+            if (!codeRef) {
+              throw new Error('Code reference not found for the artifact')
+            }
+
+            selections.graphSelections = [
+              {
+                artifact,
+                codeRef,
+              },
+            ]
           }
-          const codeRef = (getCodeRefsByArtifactId(
-            artifact.id,
-            kclManager.artifactGraph
-          ) || [])[0]
-          if (!codeRef) {
-            throw new Error('Code reference not found for the artifact')
-          }
+          // Test that we can work with the imported content
 
           // Test direct call to promptToEditFlow instead of going through state machine
           const { promptToEditFlow } = await import('@src/lib/promptToEdit')
@@ -503,15 +590,7 @@ describe('When prompting modify with TTC, prompt:', () => {
           // Call promptToEditFlow directly
           const resultPromise = promptToEditFlow({
             prompt,
-            selections: {
-              graphSelections: [
-                {
-                  artifact,
-                  codeRef,
-                },
-              ],
-              otherSelections: [],
-            },
+            selections,
             projectFiles,
             token: mockToken,
             artifactGraph: kclManager.artifactGraph,
@@ -554,7 +633,6 @@ describe('When prompting modify with TTC, prompt:', () => {
           try {
             await resultPromise
           } catch {
-            // console.log('promptToEditFlow resulted in error:', error)
             // most likely get a auth error here for TTC, we don't actually care about the response.
             // just capturing the request
           }
