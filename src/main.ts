@@ -80,12 +80,15 @@ console.log('Environment vars', process.env)
 console.log('Parsed CLI args', args)
 
 // SSL/TSL: this is the self signed certificate support
-app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
-  // On certificate error we disable default behaviour (stop loading the page)
-  // and we then say "it is all fine - true" to the callback
-  event.preventDefault();
-  callback(true);
-});
+app.on(
+  'certificate-error',
+  (event, webContents, url, error, certificate, callback) => {
+    // On certificate error we disable default behaviour (stop loading the page)
+    // and we then say "it is all fine - true" to the callback
+    event.preventDefault()
+    callback(true)
+  }
+)
 
 /// Register our application to handle all "zoo-studio:" protocols.
 const singleInstanceLock = app.requestSingleInstanceLock()

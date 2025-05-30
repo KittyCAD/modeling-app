@@ -1,4 +1,4 @@
-import { sceneInfra } from "@src/lib/singletons"
+import { sceneInfra } from '@src/lib/singletons'
 import { Matrix4, Vector3 } from 'three'
 // @ts-ignore
 import * as THREE from 'three'
@@ -240,7 +240,8 @@ class _3DMouse implements _3DconnexionMiddleware {
     this.spaceMouse = new _3Dconnexion(this)
     this.spaceMouse.debug = this.debug
     if (!this.spaceMouse.connect()) {
-      if (this.debug) console.log('[_3DMouse] Cannot connect to 3Dconnexion NL-Proxy')
+      if (this.debug)
+        console.log('[_3DMouse] Cannot connect to 3Dconnexion NL-Proxy')
     }
   }
 
@@ -352,6 +353,4 @@ class _3DMouse implements _3DconnexionMiddleware {
   }
 }
 
-export {
-  _3DMouse
-}
+export { _3DMouse }

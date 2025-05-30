@@ -53,7 +53,7 @@ import {
 } from '@src/lib/constants'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import { VITE_KC_SITE_BASE_URL } from '@src/env'
-import { _3DMouse } from "@src/lib/externalMouse/external-mouse"
+import { _3DMouse } from '@src/lib/externalMouse/external-mouse'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -61,7 +61,6 @@ sceneInfra.camControls.engineStreamActor = engineStreamActor
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
-
 
 let once = false
 
