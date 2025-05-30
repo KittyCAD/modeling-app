@@ -41,11 +41,6 @@ async fn inner_mirror_2d(
 ) -> Result<Vec<Sketch>, KclError> {
     let mut starting_sketches = sketches.clone();
 
-    // Update all to have a mirror.
-    starting_sketches.iter_mut().for_each(|sketch| {
-        sketch.mirror = Some(exec_state.next_uuid());
-    });
-
     if args.ctx.no_engine_commands().await {
         return Ok(starting_sketches);
     }
@@ -128,9 +123,6 @@ async fn inner_mirror_2d(
     // using the IDs we already have.
     // We only do this with mirrors because otherwise it is a waste of a websocket call.
     for i in 0..starting_sketches.len() {
-        // Record the mirror ID.
-        starting_sketches[i].mirror = Some(mirrored_ids[i]);
-
         if starting_sketches[i].id != mirrored_ids[i] {
             // Mirroring created a new path. The mirrored Sketch is a clone of
             // the original with a new ID.

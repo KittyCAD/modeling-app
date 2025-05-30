@@ -255,8 +255,6 @@ pub(crate) async fn do_post_extrude<'a>(
 
     let any_edge_id = if let Some(id) = edge_id {
         id
-    } else if let Some(edge_id) = sketch.mirror {
-        edge_id
     } else {
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
         // So, let's just use the first one.
