@@ -28,8 +28,13 @@ export function removeConstrainingValuesInfo({
       updatedSelectionRanges: Selections
     }
   | Error {
-  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
+  const paths = pathToNodes
+    ? pathToNodes
+    : selectionRanges.graphSelections.map(({ codeRef }) => {
+        return codeRef.pathToNode
+      })
+  const _nodes = paths.map((pathToNode) => {
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
     if (tmp instanceof Error) return tmp
     return tmp.node
   })
