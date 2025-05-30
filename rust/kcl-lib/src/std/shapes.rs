@@ -1,7 +1,6 @@
 //! Standard library shapes.
 
 use anyhow::Result;
-use kcl_derive_docs::stdlib;
 use kcmc::{
     each_cmd as mcmd,
     length_unit::LengthUnit,
@@ -143,26 +142,6 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
     })
 }
 
-/// Construct a circle derived from 3 points.
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XY)
-///   |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5])
-///   |> extrude(length = 5)
-/// ```
-#[stdlib {
-    name = "circleThreePoint",
-    unlabeled_first = true,
-    args = {
-        sketch_surface_or_group = {docs = "Plane or surface to sketch on."},
-        p1 = {docs = "1st point to derive the circle."},
-        p2 = {docs = "2nd point to derive the circle."},
-        p3 = {docs = "3rd point to derive the circle."},
-        tag = {docs = "Identifier for the circle to reference elsewhere."},
-    },
-    tags = ["sketch"]
-}]
-
 // Similar to inner_circle, but needs to retain 3-point information in the
 // path so it can be used for other features, otherwise it's lost.
 async fn inner_circle_three_point(
@@ -281,44 +260,6 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     })
 }
 
-/// Create a regular polygon with the specified number of sides that is either inscribed or circumscribed around a circle of the specified radius.
-///
-/// ```no_run
-/// // Create a regular hexagon inscribed in a circle of radius 10
-/// hex = startSketchOn(XY)
-///   |> polygon(
-///     radius = 10,
-///     numSides = 6,
-///     center = [0, 0],
-///     inscribed = true,
-///   )
-///
-/// example = extrude(hex, length = 5)
-/// ```
-///
-/// ```no_run
-/// // Create a square circumscribed around a circle of radius 5
-/// square = startSketchOn(XY)
-///   |> polygon(
-///     radius = 5.0,
-///     numSides = 4,
-///     center = [10, 10],
-///     inscribed = false,
-///   )
-/// example = extrude(square, length = 5)
-/// ```
-#[stdlib {
-    name = "polygon",
-    unlabeled_first = true,
-    args = {
-        sketch_surface_or_group = { docs = "Plane or surface to sketch on" },
-        radius = { docs = "The radius of the polygon", include_in_snippet = true },
-        num_sides = { docs = "The number of sides in the polygon", include_in_snippet = true },
-        center = { docs = "The center point of the polygon", snippet_value_array = ["0", "0"] },
-        inscribed = { docs = "Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius" },
-    },
-    tags = ["sketch"]
-}]
 #[allow(clippy::too_many_arguments)]
 async fn inner_polygon(
     sketch_surface_or_group: SketchOrSurface,

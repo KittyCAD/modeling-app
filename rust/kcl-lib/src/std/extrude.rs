@@ -3,7 +3,6 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use kcl_derive_docs::stdlib;
 use kcmc::{
     each_cmd as mcmd,
     length_unit::LengthUnit,
@@ -52,113 +51,6 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     Ok(result.into())
 }
 
-/// Extend a 2-dimensional sketch through a third dimension in order to
-/// create new 3-dimensional volume, or if extruded into an existing volume,
-/// cut into an existing solid.
-///
-/// You can provide more than one sketch to extrude, and they will all be
-/// extruded in the same direction.
-///
-/// ```no_run
-/// example = startSketchOn(XZ)
-///   |> startProfile(at = [0, 0])
-///   |> line(end = [10, 0])
-///   |> arc(
-///     angleStart = 120,
-///     angleEnd = 0,
-///     radius = 5,
-///   )
-///   |> line(end = [5, 0])
-///   |> line(end = [0, 10])
-///   |> bezierCurve(
-///        control1 = [-10, 0],
-///        control2 = [2, 10],
-///        end = [-5, 10],
-///      )
-///   |> line(end = [-5, -2])
-///   |> close()
-///   |> extrude(length = 10)
-/// ```
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [-10, 0])
-///   |> arc(
-///     angleStart = 120,
-///     angleEnd = -60,
-///     radius = 5,
-///   )
-///   |> line(end = [10, 0])
-///   |> line(end = [5, 0])
-///   |> bezierCurve(
-///        control1 = [-3, 0],
-///        control2 = [2, 10],
-///        end = [-5, 10],
-///      )
-///   |> line(end = [-4, 10])
-///   |> line(end = [-5, -2])
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 10)
-/// ```
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [-10, 0])
-///   |> arc(
-///     angleStart = 120,
-///     angleEnd = -60,
-///     radius = 5,
-///   )
-///   |> line(end = [10, 0])
-///   |> line(end = [5, 0])
-///   |> bezierCurve(
-///        control1 = [-3, 0],
-///        control2 = [2, 10],
-///        end = [-5, 10],
-///      )
-///   |> line(end = [-4, 10])
-///   |> line(end = [-5, -2])
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 20, symmetric = true)
-/// ```
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [-10, 0])
-///   |> arc(
-///     angleStart = 120,
-///     angleEnd = -60,
-///     radius = 5,
-///   )
-///   |> line(end = [10, 0])
-///   |> line(end = [5, 0])
-///   |> bezierCurve(
-///        control1 = [-3, 0],
-///        control2 = [2, 10],
-///        end = [-5, 10],
-///      )
-///   |> line(end = [-4, 10])
-///   |> line(end = [-5, -2])
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 10, bidirectionalLength = 50)
-/// ```
-#[stdlib {
-    name = "extrude",
-    feature_tree_operation = true,
-    unlabeled_first = true,
-    args = {
-        sketches = { docs = "Which sketch or sketches should be extruded"},
-        length = { docs = "How far to extrude the given sketches"},
-        symmetric = { docs = "If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch." },
-        bidirectional_length = { docs = "If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored."},
-        tag_start = { docs = "A named tag for the face at the start of the extrusion, i.e. the original sketch" },
-        tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch" },
-    },
-    tags = ["sketch"]
-}]
 #[allow(clippy::too_many_arguments)]
 async fn inner_extrude(
     sketches: Vec<Sketch>,

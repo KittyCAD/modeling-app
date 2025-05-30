@@ -45,7 +45,6 @@ pub type StdFn = fn(
 
 lazy_static! {
     static ref CORE_FNS: Vec<Box<dyn StdLibFn>> = vec![
-        Box::new(crate::std::extrude::Extrude),
         Box::new(crate::std::segment::SegEnd),
         Box::new(crate::std::segment::SegEndX),
         Box::new(crate::std::segment::SegEndY),
@@ -57,8 +56,6 @@ lazy_static! {
         Box::new(crate::std::segment::SegLen),
         Box::new(crate::std::segment::SegAng),
         Box::new(crate::std::segment::TangentToEnd),
-        Box::new(crate::std::shapes::CircleThreePoint),
-        Box::new(crate::std::shapes::Polygon),
         Box::new(crate::std::sketch::InvoluteCircular),
         Box::new(crate::std::sketch::Line),
         Box::new(crate::std::sketch::XLine),
@@ -75,12 +72,6 @@ lazy_static! {
         Box::new(crate::std::sketch::TangentialArc),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Subtract2D),
-        Box::new(crate::std::patterns::PatternLinear2D),
-        Box::new(crate::std::patterns::PatternCircular2D),
-        Box::new(crate::std::sweep::Sweep),
-        Box::new(crate::std::loft::Loft),
-        Box::new(crate::std::assert::Assert),
-        Box::new(crate::std::assert::AssertIs)
     ];
 }
 
@@ -233,6 +224,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
             StdFnProps::default("std::offsetPlane").include_in_feature_tree(),
         ),
+        ("prelude", "assert") => (
+            |e, a| Box::pin(crate::std::assert::assert(e, a)),
+            StdFnProps::default("std::assert"),
+        ),
+        ("prelude", "assertIs") => (
+            |e, a| Box::pin(crate::std::assert::assert_is(e, a)),
+            StdFnProps::default("std::assertIs"),
+        ),
         ("solid", "fillet") => (
             |e, a| Box::pin(crate::std::fillet::fillet(e, a)),
             StdFnProps::default("std::solid::fillet").include_in_feature_tree(),
@@ -301,6 +300,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::shapes::circle(e, a)),
             StdFnProps::default("std::sketch::circle"),
         ),
+        ("sketch", "extrude") => (
+            |e, a| Box::pin(crate::std::extrude::extrude(e, a)),
+            StdFnProps::default("std::sketch::extrude").include_in_feature_tree(),
+        ),
         ("sketch", "patternTransform2d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
             StdFnProps::default("std::sketch::patternTransform2d"),
@@ -308,6 +311,22 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch", "revolve") => (
             |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
             StdFnProps::default("std::sketch::revolve").include_in_feature_tree(),
+        ),
+        ("sketch", "sweep") => (
+            |e, a| Box::pin(crate::std::sweep::sweep(e, a)),
+            StdFnProps::default("std::sketch::sweep").include_in_feature_tree(),
+        ),
+        ("sketch", "loft") => (
+            |e, a| Box::pin(crate::std::loft::loft(e, a)),
+            StdFnProps::default("std::sketch::loft").include_in_feature_tree(),
+        ),
+        ("sketch", "polygon") => (
+            |e, a| Box::pin(crate::std::shapes::polygon(e, a)),
+            StdFnProps::default("std::sketch::polygon"),
+        ),
+        ("sketch", "circleThreePoint") => (
+            |e, a| Box::pin(crate::std::shapes::circle_three_point(e, a)),
+            StdFnProps::default("std::sketch::circleThreePoint"),
         ),
         ("sketch", "getCommonEdge") => (
             |e, a| Box::pin(crate::std::edge::get_common_edge(e, a)),
@@ -324,6 +343,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch", "getPreviousAdjacentEdge") => (
             |e, a| Box::pin(crate::std::edge::get_previous_adjacent_edge(e, a)),
             StdFnProps::default("std::sketch::getPreviousAdjacentEdge"),
+        ),
+        ("sketch", "patternLinear2d") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_linear_2d(e, a)),
+            StdFnProps::default("std::sketch::patternLinear2d"),
+        ),
+        ("sketch", "patternCircular2d") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_circular_2d(e, a)),
+            StdFnProps::default("std::sketch::patternCircular2d"),
         ),
         ("appearance", "hexString") => (
             |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),
