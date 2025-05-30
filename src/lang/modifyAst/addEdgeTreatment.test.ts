@@ -801,6 +801,32 @@ extrude001 = extrude(sketch001, length = -15)`
           expectedCode
         )
       }, 10_000)
+      it(`should delete a piped ${edgeTreatmentType} from a revolve`, async () => {
+        const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [8, -6])
+  |> yLine(length = 12)
+  |> xLine(length = 16)
+  |> yLine(length = -12, tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+revolve001 = revolve(profile001, angle = 360, axis = Y)
+  |> ${edgeTreatmentType}(${parameterName} = 5, tags = [getCommonEdge(faces = [seg01, seg02])])`
+        const edgeTreatmentSnippet = `${edgeTreatmentType}(${parameterName} = 5, tags = [getCommonEdge(faces = [seg01, seg02])])`
+        const expectedCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [8, -6])
+  |> yLine(length = 12)
+  |> xLine(length = 16)
+  |> yLine(length = -12, tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+revolve001 = revolve(profile001, angle = 360, axis = Y)`
+
+        await runDeleteEdgeTreatmentTest(
+          code,
+          edgeTreatmentSnippet,
+          expectedCode
+        )
+      }, 10_000)
       it(`should delete a standalone assigned ${edgeTreatmentType} from a single segment`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
