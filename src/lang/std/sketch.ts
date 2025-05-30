@@ -3949,7 +3949,6 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
   const name = lineCall?.callee?.name.name
   switch (name) {
     case 'line':
-    case 'tangentialArc':
       if (findKwArg(ARG_END, lineCall) !== undefined) {
         return false
       }
@@ -3970,6 +3969,8 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
       return new Error(
         `${name} call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
       )
+    case 'tangentialArc':
+      return findKwArg(ARG_END_ABSOLUTE, lineCall) !== undefined
     case 'angledLineThatIntersects':
     case 'arc':
     case 'circle':
