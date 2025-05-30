@@ -107,6 +107,8 @@ export function useNetworkStatus() {
       nextOverallState = NetworkHealthState.Ok
     } else if (pingEMA && pingEMA > THRESHOLD_WEAK) {
       nextOverallState = NetworkHealthState.Weak
+    } else {
+      nextOverallState = NetworkHealthState.Ok
     }
 
     if (nextOverallState === overallState) return
