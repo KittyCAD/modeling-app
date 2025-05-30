@@ -12,6 +12,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use super::shapes::get_radius;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use crate::{
@@ -31,8 +32,6 @@ use crate::{
         },
     },
 };
-
-use super::shapes::get_radius;
 
 /// A tag for a face.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1543,6 +1542,11 @@ pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
 /// Construct a line segment from the current origin back to the profile's
 /// origin, ensuring the resulting 2-dimensional sketch is not open-ended.
+///
+/// If you want to perform some 3-dimensional operation on a sketch, like
+/// extrude or sweep, you must `close` it first. `close` must be called even
+/// if the end point of the last segment is coincident with the sketch
+/// starting point.
 ///
 /// ```no_run
 /// startSketchOn(XZ)
