@@ -11,6 +11,9 @@ import {
   engineViewIsometricWithoutGeometryPresent,
   engineViewIsometricWithGeometryPresent,
 } from '@src/lib/utils'
+import { AxisNames } from '@src/lib/constants'
+import { v4 } from 'uuid'
+const uuidv4 = v4
 
 /**
  * Reset the camera position to a baseline, which is isometric for
@@ -21,6 +24,7 @@ import {
  * debugging e2e tests
  */
 export async function resetCameraPosition() {
+
   // We need a padding of 0.1 for zoom_to_fit for all E2E tests since they were originally
   // written with zoom_to_fit with padding 0.1
   const padding = 0.1
@@ -31,6 +35,20 @@ export async function resetCameraPosition() {
     const cameraProjection =
       settingsActor.getSnapshot().context.modeling.cameraProjection.current
 
+    sceneInfra.camControls
+      .updateCameraToAxis(AxisNames.NEG_Y)
+    /**
+     * HACK: We need to update the gizmo, the command above doesn't trigger gizmo
+     * to render which makes the axis point in an old direction.
+     */
+    await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    return
     // We need to keep the users projection setting when resetting their camera
     if (cameraProjection === 'perspective') {
       await sceneInfra.camControls.usePerspectiveCamera()

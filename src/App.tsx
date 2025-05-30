@@ -53,30 +53,17 @@ import {
 } from '@src/lib/constants'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import { VITE_KC_SITE_BASE_URL } from '@src/env'
-import { _3DMouse } from '@src/lib/externalMouse/external-mouse'
+
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
 
 maybeWriteToDisk()
   .then(() => {})
-  .catch(() => {})
-
-let once = false
+.catch(() => {})
 
 export function App() {
-  if (!once) {
-    const the3DMouse = new _3DMouse({
-      // Name needs to be registered in the python proxy server!
-      name: 'zoo-design-studio',
-      debug: false,
-      canvasId: 'webgl',
-    })
 
-    window.the3DMouse = the3DMouse
-    the3DMouse.init3DMouse()
-    once = true
-  }
   useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)

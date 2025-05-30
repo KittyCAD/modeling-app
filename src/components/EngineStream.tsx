@@ -36,8 +36,9 @@ import { useRouteLoaderData } from 'react-router-dom'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-
+import { _3DMouseThreeJS } from '@src/lib/externalMouse/external-mouse-threejs'
 const TIME_1_SECOND = 1000
+let once = false
 
 export const EngineStream = (props: {
   pool: string | null
@@ -190,6 +191,21 @@ export const EngineStream = (props: {
             projectDirectoryWithoutEndingSlash: project.path,
           })
         }
+
+
+        if (!once) {
+          const the3DMouse = new _3DMouseThreeJS({
+            // Name needs to be registered in the python proxy server!
+            name: 'zoo-design-studio',
+            debug: false,
+            canvasId: 'webgl',
+          })
+      
+          window.the3DMouse = the3DMouse
+          the3DMouse.init3DMouse()
+          once = true
+        }
+        
       })
       .catch(trap)
   }

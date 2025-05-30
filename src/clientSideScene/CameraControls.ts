@@ -284,6 +284,19 @@ export class CameraControls {
 
     const cb = ({ data, type }: CallBackParam) => {
       const camSettings = data.settings
+      if (camSettings && type) {
+        const value = [
+          camSettings.pos.x,
+          camSettings.pos.y,
+          camSettings.pos.z
+        ]
+        value?.push(type)
+        if (!window.engineCamera) {
+          window.engineCamera = [value]
+        } {
+          window.engineCamera.push(value)
+        }
+      }
       this.camera.position.set(
         camSettings.pos.x,
         camSettings.pos.y,
@@ -1332,7 +1345,7 @@ function calculateNearFarFromFOV(fov: number) {
   return { z_near: 0.01, z_far: 1000 }
 }
 
-function convertThreeCamValuesToEngineCam({
+export function convertThreeCamValuesToEngineCam({
   target,
   position,
   quaternion,
