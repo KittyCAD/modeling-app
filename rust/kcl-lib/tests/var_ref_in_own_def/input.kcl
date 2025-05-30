@@ -1,0 +1,2 @@
+// This won't work, because `x` is being referenced in its own definition.
+x = cos(x)

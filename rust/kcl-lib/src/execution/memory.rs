@@ -367,10 +367,10 @@ impl ProgramMemory {
 
         let name = var.trim_start_matches(TYPE_PREFIX).trim_start_matches(MODULE_PREFIX);
 
-        Err(KclError::UndefinedValue(KclErrorDetails::new(
-            format!("`{name}` is not defined"),
-            vec![source_range],
-        )))
+        Err(KclError::UndefinedValue {
+            undefined_name: Some(name.to_owned()),
+            details: KclErrorDetails::new(format!("`{name}` is not defined"), vec![source_range]),
+        })
     }
 
     /// Iterate over all key/value pairs in the specified environment which satisfy the provided
@@ -488,10 +488,10 @@ impl ProgramMemory {
             };
         }
 
-        Err(KclError::UndefinedValue(KclErrorDetails::new(
-            format!("`{}` is not defined", var),
-            vec![],
-        )))
+        Err(KclError::UndefinedValue {
+            undefined_name: Some(var.to_owned()),
+            details: KclErrorDetails::new(format!("`{}` is not defined", var), vec![]),
+        })
     }
 }
 
