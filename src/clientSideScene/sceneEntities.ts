@@ -3588,8 +3588,7 @@ export class SceneEntities {
     })
 
     if (!resp) {
-      console.warn('No response')
-      return {} as Models['GetSketchModePlane_type']
+      return Promise.reject('no response')
     }
 
     if (isArray(resp)) {

@@ -114,9 +114,6 @@ export function App() {
     // by the Projects view.
     billingActor.send({ type: BillingTransition.Update, apiToken: authToken })
 
-    // Tell engineStream to wait for dependencies to start streaming.
-    engineStreamActor.send({ type: EngineStreamTransition.WaitForDependencies })
-
     // When leaving the modeling scene, cut the engine stream.
     return () => {
       // When leaving the modeling scene, cut the engine stream.
