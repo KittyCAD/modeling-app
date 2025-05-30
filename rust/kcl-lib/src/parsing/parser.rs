@@ -3141,7 +3141,7 @@ fn binding_name(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
 
 /// Either a positional or keyword function call.
 fn fn_call_pos_or_kw(i: &mut TokenSlice) -> ModalResult<Expr> {
-    alt((fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),)).parse_next(i)
+    fn_call_kw.map(Box::new).map(Expr::CallExpressionKw).parse_next(i)
 }
 
 fn labelled_fn_call(i: &mut TokenSlice) -> ModalResult<Expr> {
@@ -3209,6 +3209,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         Keyword(Token),
     }
     let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
+    println!("Parsing args");
     let args: Vec<_> = repeat(
         0..,
         alt((
@@ -3219,6 +3220,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         )),
     )
     .parse_next(i)?;
+    println!("Parsed args");
     let (args, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = args.into_iter().enumerate().try_fold(
         (Vec::new(), BTreeMap::new()),
         |(mut args, mut non_code_nodes), (index, e)| {
@@ -3270,7 +3272,24 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
     )?;
     ignore_whitespace(i);
     opt(comma_sep).parse_next(i)?;
-    let end = close_paren.parse_next(i)?.end;
+    println!("Parsing end paren");
+    let end = match close_paren.parse_next(i) {
+        Ok(tok) => tok.end,
+        Err(e) => {
+            if let Some(tok) = i.next_token() {
+                return Err(ErrMode::Cut(
+                    CompilationError::fatal(
+                        SourceRange::from(&tok),
+                        format!("There was an unexpected {}. Try removing it.", tok.value),
+                    )
+                    .into(),
+                ));
+            } else {
+                return Err(e);
+            }
+        }
+    };
+    println!("Parsed end paren");
 
     // Validate there aren't any duplicate labels.
     let mut counted_labels = IndexMap::with_capacity(args.len());
@@ -5186,6 +5205,25 @@ bar = 1
                 "failed test {i}: {program}"
             );
         }
+    }
+
+    #[test]
+    fn test_sensible_error_when_unexpected_token_in_fn_call() {
+        let program_source = "1
+|> extrude(
+  length=depth,
+})";
+        let expected_src_start = program_source.find("}").expect("Program should have an extraneous }");
+        let tokens = crate::parsing::token::lex(program_source, ModuleId::default()).unwrap();
+        ParseContext::init();
+        let err = program.parse(tokens.as_slice()).unwrap_err();
+        let cause = err
+            .inner()
+            .cause
+            .as_ref()
+            .expect("Found an error, but there was no cause. Add a cause.");
+        assert_eq!(cause.message, "There was an unexpected }. Try removing it.",);
+        assert_eq!(cause.source_range.start(), expected_src_start);
     }
 
     #[test]
