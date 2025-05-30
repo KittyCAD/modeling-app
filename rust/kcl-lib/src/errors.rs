@@ -107,8 +107,11 @@ pub enum KclError {
     Unexpected(KclErrorDetails),
     #[error("value already defined: {0:?}")]
     ValueAlreadyDefined(KclErrorDetails),
-    #[error("undefined value: {0:?}")]
-    UndefinedValue(KclErrorDetails),
+    #[error("undefined value: {details:?}")]
+    UndefinedValue {
+        details: KclErrorDetails,
+        undefined_name: Option<String>,
+    },
     #[error("invalid expression: {0:?}")]
     InvalidExpression(KclErrorDetails),
     #[error("engine: {0:?}")]
@@ -304,7 +307,7 @@ impl miette::Diagnostic for ReportWithOutputs {
             KclError::Io(_) => "I/O",
             KclError::Unexpected(_) => "Unexpected",
             KclError::ValueAlreadyDefined(_) => "ValueAlreadyDefined",
-            KclError::UndefinedValue(_) => "UndefinedValue",
+            KclError::UndefinedValue { .. } => "UndefinedValue",
             KclError::InvalidExpression(_) => "InvalidExpression",
             KclError::Engine(_) => "Engine",
             KclError::Internal(_) => "Internal",
@@ -354,7 +357,7 @@ impl miette::Diagnostic for Report {
             KclError::Io(_) => "I/O",
             KclError::Unexpected(_) => "Unexpected",
             KclError::ValueAlreadyDefined(_) => "ValueAlreadyDefined",
-            KclError::UndefinedValue(_) => "UndefinedValue",
+            KclError::UndefinedValue { .. } => "UndefinedValue",
             KclError::InvalidExpression(_) => "InvalidExpression",
             KclError::Engine(_) => "Engine",
             KclError::Internal(_) => "Internal",
@@ -432,7 +435,7 @@ impl KclError {
             KclError::Io(_) => "i/o",
             KclError::Unexpected(_) => "unexpected",
             KclError::ValueAlreadyDefined(_) => "value already defined",
-            KclError::UndefinedValue(_) => "undefined value",
+            KclError::UndefinedValue { .. } => "undefined value",
             KclError::InvalidExpression(_) => "invalid expression",
             KclError::Engine(_) => "engine",
             KclError::Internal(_) => "internal",
@@ -449,7 +452,7 @@ impl KclError {
             KclError::Io(e) => e.source_ranges.clone(),
             KclError::Unexpected(e) => e.source_ranges.clone(),
             KclError::ValueAlreadyDefined(e) => e.source_ranges.clone(),
-            KclError::UndefinedValue(e) => e.source_ranges.clone(),
+            KclError::UndefinedValue { details, .. } => details.source_ranges.clone(),
             KclError::InvalidExpression(e) => e.source_ranges.clone(),
             KclError::Engine(e) => e.source_ranges.clone(),
             KclError::Internal(e) => e.source_ranges.clone(),
@@ -467,7 +470,7 @@ impl KclError {
             KclError::Io(e) => &e.message,
             KclError::Unexpected(e) => &e.message,
             KclError::ValueAlreadyDefined(e) => &e.message,
-            KclError::UndefinedValue(e) => &e.message,
+            KclError::UndefinedValue { details, .. } => &details.message,
             KclError::InvalidExpression(e) => &e.message,
             KclError::Engine(e) => &e.message,
             KclError::Internal(e) => &e.message,
@@ -484,7 +487,7 @@ impl KclError {
             | KclError::Io(e)
             | KclError::Unexpected(e)
             | KclError::ValueAlreadyDefined(e)
-            | KclError::UndefinedValue(e)
+            | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression(e)
             | KclError::Engine(e)
             | KclError::Internal(e) => e.backtrace.clone(),
@@ -502,7 +505,7 @@ impl KclError {
             | KclError::Io(e)
             | KclError::Unexpected(e)
             | KclError::ValueAlreadyDefined(e)
-            | KclError::UndefinedValue(e)
+            | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression(e)
             | KclError::Engine(e)
             | KclError::Internal(e) => {
@@ -531,7 +534,7 @@ impl KclError {
             | KclError::Io(e)
             | KclError::Unexpected(e)
             | KclError::ValueAlreadyDefined(e)
-            | KclError::UndefinedValue(e)
+            | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression(e)
             | KclError::Engine(e)
             | KclError::Internal(e) => {
@@ -555,7 +558,7 @@ impl KclError {
             | KclError::Io(e)
             | KclError::Unexpected(e)
             | KclError::ValueAlreadyDefined(e)
-            | KclError::UndefinedValue(e)
+            | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression(e)
             | KclError::Engine(e)
             | KclError::Internal(e) => {
