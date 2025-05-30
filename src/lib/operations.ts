@@ -959,6 +959,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  mirror2d: {
+    label: 'Mirror 2D',
+    icon: 'mirror',
+  },
   revolve: {
     label: 'Revolve',
     icon: 'revolve',
