@@ -251,6 +251,11 @@ impl<'a> Stream for TokenSlice<'a> {
         Some(token)
     }
 
+    /// Split off the next token from the input
+    fn peek_token(&self) -> Option<Self::Token> {
+        Some(self.first()?.clone())
+    }
+
     fn offset_for<P>(&self, predicate: P) -> Option<usize>
     where
         P: Fn(Self::Token) -> bool,
@@ -276,6 +281,17 @@ impl<'a> Stream for TokenSlice<'a> {
         };
         self.start += offset;
         next
+    }
+
+    /// Split off a slice of tokens from the input
+    fn peek_slice(&self, offset: usize) -> Self::Slice {
+        assert!(self.start + offset <= self.end);
+
+        TokenSlice {
+            stream: self.stream,
+            start: self.start,
+            end: self.start + offset,
+        }
     }
 
     fn checkpoint(&self) -> Self::Checkpoint {

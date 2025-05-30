@@ -205,7 +205,7 @@ Prepare these system dependencies:
 
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
-Only Ubunu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
+Only Ubuntu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
 If you don't run Ubuntu locally or in a VM, you may use a GitHub Codespace.
 ```
 npm run playwright -- install chrome
@@ -213,13 +213,20 @@ npm run test:snapshots
 ```
 You may use `-- --update-snapshots` as needed.
 
-#### Electron flow tests (Chromium on Ubuntu, macOS, Windows)
+#### Desktop tests (Electron on all platforms)
 
 ```
 npm run playwright -- install chromium
-npm run test:playwright:electron:local
+npm run test:e2e:desktop:local
 ```
+
 You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file.spec.ts` for a test file.
+
+#### Web tests (Google Chrome on all platforms)
+
+```
+npm run test:e2e:web
+```
 
 #### Debugger
 

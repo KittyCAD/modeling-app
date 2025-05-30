@@ -31,18 +31,127 @@
 @(impl = std_rust)
 export fn circle(
   /// Sketch to extend, or plane or surface to sketch on.
-  @sketch_or_surface: Sketch | Plane | Face,
+  @sketchOrSurface: Sketch | Plane | Face,
   /// The center of the circle.
   @(snippetArray = ["0", "0"])
   center: Point2d,
   /// The radius of the circle. Incompatible with `diameter`.
   radius?: number(Length),
   /// The diameter of the circle. Incompatible with `radius`.
-  @(include_in_snippet = true)
+  @(includeInSnippet = true)
   diameter?: number(Length),
   /// Create a new tag which refers to this circle.
   tag?: tag,
 ): Sketch {}
+
+/// Extend a 2-dimensional sketch through a third dimension in order to
+/// create new 3-dimensional volume, or if extruded into an existing volume,
+/// cut into an existing solid.
+///
+/// You can provide more than one sketch to extrude, and they will all be
+/// extruded in the same direction.
+///
+/// ```kcl
+/// example = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> arc(
+///     angleStart = 120,
+///     angleEnd = 0,
+///     radius = 5,
+///   )
+///   |> line(end = [5, 0])
+///   |> line(end = [0, 10])
+///   |> bezierCurve(
+///        control1 = [-10, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
+///   |> line(end = [-5, -2])
+///   |> close()
+///   |> extrude(length = 10)
+/// ```
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [-10, 0])
+///   |> arc(
+///     angleStart = 120,
+///     angleEnd = -60,
+///     radius = 5,
+///   )
+///   |> line(end = [10, 0])
+///   |> line(end = [5, 0])
+///   |> bezierCurve(
+///        control1 = [-3, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
+///   |> line(end = [-4, 10])
+///   |> line(end = [-5, -2])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [-10, 0])
+///   |> arc(
+///     angleStart = 120,
+///     angleEnd = -60,
+///     radius = 5,
+///   )
+///   |> line(end = [10, 0])
+///   |> line(end = [5, 0])
+///   |> bezierCurve(
+///        control1 = [-3, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
+///   |> line(end = [-4, 10])
+///   |> line(end = [-5, -2])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 20, symmetric = true)
+/// ```
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [-10, 0])
+///   |> arc(
+///     angleStart = 120,
+///     angleEnd = -60,
+///     radius = 5,
+///   )
+///   |> line(end = [10, 0])
+///   |> line(end = [5, 0])
+///   |> bezierCurve(
+///        control1 = [-3, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
+///   |> line(end = [-4, 10])
+///   |> line(end = [-5, -2])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10, bidirectionalLength = 50)
+/// ```
+@(impl = std_rust)
+export fn extrude(
+  /// Which sketch or sketches should be extruded.
+  @sketches: [Sketch; 1+],
+  /// How far to extrude the given sketches.
+  length: number(Length),
+  /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
+  symmetric?: bool,
+  /// If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.
+  bidirectionalLength?: number(Length),
+  /// A named tag for the face at the start of the extrusion, i.e. the original sketch.
+  tagStart?: tag,
+  /// A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch.
+  tagEnd?: tag,
+): [Solid; 1+] {}
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
 ///
@@ -57,7 +166,7 @@ export fn circle(
 /// You can provide more than one sketch to revolve, and they will all be
 /// revolved around the same axis.
 ///
-/// ```
+/// ```kcl
 /// part001 = startSketchOn(XY)
 ///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
@@ -71,7 +180,7 @@ export fn circle(
 ///     |> revolve(axis = Y) // default angle is 360
 /// ```
 ///
-/// ```
+/// ```kcl
 /// // A donut shape.
 /// sketch001 = startSketchOn(XY)
 ///     |> circle( center = [15, 0], radius = 5 )
@@ -81,7 +190,7 @@ export fn circle(
 ///     )
 /// ```
 ///
-/// ```
+/// ```kcl
 /// part001 = startSketchOn(XY)
 ///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
@@ -95,7 +204,7 @@ export fn circle(
 ///     |> revolve(axis = Y, angle = 180)
 /// ```
 ///
-/// ```
+/// ```kcl
 /// part001 = startSketchOn(XY)
 ///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
@@ -117,7 +226,7 @@ export fn circle(
 ///     |> extrude(length = 5)
 /// ```
 ///
-/// ```
+/// ```kcl
 /// box = startSketchOn(XY)
 ///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
@@ -134,7 +243,7 @@ export fn circle(
 ///     )
 /// ```
 ///
-/// ```
+/// ```kcl
 /// box = startSketchOn(XY)
 ///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
@@ -151,7 +260,7 @@ export fn circle(
 ///     )
 /// ```
 ///
-/// ```
+/// ```kcl
 /// box = startSketchOn(XY)
 ///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
@@ -169,7 +278,7 @@ export fn circle(
 ///     )
 /// ```
 ///
-/// ```
+/// ```kcl
 /// sketch001 = startSketchOn(XY)
 ///   |> startProfile(at = [10, 0])
 ///   |> line(end = [5, -5])
@@ -186,7 +295,7 @@ export fn circle(
 /// )
 /// ```
 ///
-/// ```
+/// ```kcl
 /// // Revolve two sketches around the same axis.
 ///
 /// sketch001 = startSketchOn(XY)
@@ -210,7 +319,7 @@ export fn circle(
 /// )
 /// ```
 ///
-/// ```
+/// ```kcl
 /// // Revolve around a path that has not been extruded.
 ///
 /// profile001 = startSketchOn(XY)
@@ -225,7 +334,7 @@ export fn circle(
 ///     |> revolve(angle = 90, axis = revolveAxis)
 /// ```
 ///
-/// ```
+/// ```kcl
 /// // Revolve around a path that has not been extruded or closed.
 ///
 /// profile001 = startSketchOn(XY)
@@ -238,7 +347,7 @@ export fn circle(
 ///     |> revolve(angle = 90, axis = revolveAxis)
 /// ```
 ///
-/// ```
+/// ```kcl
 /// // Symmetrically revolve around a path.
 ///
 /// profile001 = startSketchOn(XY)
@@ -251,7 +360,7 @@ export fn circle(
 ///     |> revolve(angle = 90, axis = revolveAxis, symmetric = true)
 /// ```
 ///
-/// ```
+/// ```kcl
 /// // Bidirectional revolve around a path.
 ///
 /// profile001 = startSketchOn(XY)
@@ -306,4 +415,483 @@ export fn patternTransform2d(
   transform: fn(number(Count)): {},
   /// If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.
   useOriginal?: boolean = false,
+): [Sketch; 1+] {}
+
+/// Get the opposite edge to the edge given.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> angledLine(
+///        angle = 60,
+///        length = 10,
+///      )
+///   |> angledLine(
+///        angle = 120,
+///        length = 10,
+///      )
+///   |> line(end = [-10, 0])
+///   |> angledLine(
+///        angle = 240,
+///        length = 10,
+///        tag = $referenceEdge,
+///      )
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+///   |> fillet(
+///     radius = 3,
+///     tags = [getOppositeEdge(referenceEdge)],
+///   )
+/// ```
+@(impl = std_rust)
+export fn getOppositeEdge(
+  /// The tag of the edge you want to find the opposite edge of.
+  @edge: tag,
+): Edge {}
+
+/// Get the next adjacent edge to the edge given.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> angledLine(
+///        angle = 60,
+///        length = 10,
+///      )
+///   |> angledLine(
+///        angle = 120,
+///        length = 10,
+///      )
+///   |> line(end = [-10, 0])
+///   |> angledLine(
+///        angle = 240,
+///        length = 10,
+///        tag = $referenceEdge,
+///      )
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+///   |> fillet(
+///     radius = 3,
+///     tags = [getNextAdjacentEdge(referenceEdge)],
+///   )
+/// ```
+@(impl = std_rust)
+export fn getNextAdjacentEdge(
+  /// The tag of the edge you want to find the next adjacent edge of.
+  @edge: tag,
+): Edge {}
+
+/// Get the previous adjacent edge to the edge given.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> angledLine(
+///        angle = 60,
+///        length = 10,
+///      )
+///   |> angledLine(
+///        angle = 120,
+///        length = 10,
+///      )
+///   |> line(end = [-10, 0])
+///   |> angledLine(
+///        angle = 240,
+///        length = 10,
+///        tag = $referenceEdge,
+///      )
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+///   |> fillet(
+///     radius = 3,
+///     tags = [getPreviousAdjacentEdge(referenceEdge)],
+///   )
+/// ```
+@(impl = std_rust)
+export fn getPreviousAdjacentEdge(
+  /// The tag of the edge you want to find the previous adjacent edge of.
+  @edge: tag,
+): Edge {}
+
+/// Get the shared edge between two faces.
+///
+/// ```kcl
+/// // Get an edge shared between two faces, created after a chamfer.
+///
+/// scale = 20
+/// part001 = startSketchOn(XY)
+///     |> startProfile(at = [0, 0])
+///     |> line(end = [0, scale])
+///     |> line(end = [scale, 0])
+///     |> line(end = [0, -scale])
+///     |> close(tag = $line0)
+///     |> extrude(length = 20, tagEnd = $end0)
+///     // We tag the chamfer to reference it later.
+///     |> chamfer(length = 10, tags = [getOppositeEdge(line0)], tag = $chamfer0)
+///
+/// // Get the shared edge between the chamfer and the extrusion.
+/// commonEdge = getCommonEdge(faces = [chamfer0, end0])
+///
+/// // Chamfer the shared edge.
+/// // TODO: uncomment this when ssi for fillets lands
+/// // chamfer(part001, length = 5, tags = [commonEdge])
+/// ```
+@(impl = std_rust)
+export fn getCommonEdge(
+  /// The tags of the faces you want to find the common edge between.
+  faces: [tag; 2],
+): Edge {}
+
+/// Construct a circle derived from 3 points.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XY)
+///   |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5])
+///   |> extrude(length = 5)
+/// ```
+@(impl = std_rust)
+export fn circleThreePoint(
+  /// Plane or surface to sketch on.
+  @sketchOrSurface: Sketch | Plane | Face,
+  /// 1st point to derive the circle.
+  p1: Point2d,
+  /// 2nd point to derive the circle.
+  p2: Point2d,
+  /// 3rd point to derive the circle.
+  p3: Point2d,
+  /// Identifier for the circle to reference elsewhere.
+  tag?: tag,
+): Sketch {}
+
+/// Create a regular polygon with the specified number of sides that is either inscribed or circumscribed around a circle of the specified radius.
+///
+/// ```kcl
+/// // Create a regular hexagon inscribed in a circle of radius 10
+/// hex = startSketchOn(XY)
+///   |> polygon(
+///     radius = 10,
+///     numSides = 6,
+///     center = [0, 0],
+///     inscribed = true,
+///   )
+///
+/// example = extrude(hex, length = 5)
+/// ```
+///
+/// ```kcl
+/// // Create a square circumscribed around a circle of radius 5
+/// square = startSketchOn(XY)
+///   |> polygon(
+///     radius = 5.0,
+///     numSides = 4,
+///     center = [10, 10],
+///     inscribed = false,
+///   )
+/// example = extrude(square, length = 5)
+/// ```
+@(impl = std_rust)
+export fn polygon(
+  /// Plane or surface to sketch on.
+  @sketchOrSurface: Sketch | Plane | Face,
+  /// The radius of the polygon.
+  radius: number(Length),
+  /// The number of sides in the polygon.
+  numSides: number(Count),
+  /// The center point of the polygon.
+  @(snippetArray = ["0", "0"])
+  center: Point2d,
+  /// Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius.
+  inscribed?: bool = true,
+): Sketch {}
+
+/// Extrude a sketch along a path.
+///
+/// This, like extrude, is able to create a 3-dimensional solid from a
+/// 2-dimensional sketch. However, unlike extrude, this creates a solid
+/// by using the extent of the sketch as its path. This is useful for
+/// creating more complex shapes that can't be created with a simple
+/// extrusion.
+///
+/// You can provide more than one sketch to sweep, and they will all be
+/// swept along the same path.
+///
+/// ```kcl
+/// // Create a pipe using a sweep.
+///
+/// // Create a path for the sweep.
+/// sweepPath = startSketchOn(XZ)
+///     |> startProfile(at = [0.05, 0.05])
+///     |> line(end = [0, 7])
+///     |> tangentialArc(angle = 90, radius = 5)
+///     |> line(end = [-3, 0])
+///     |> tangentialArc(angle = -90, radius = 5)
+///     |> line(end = [0, 7])
+///
+/// // Create a hole for the pipe.
+/// pipeHole = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 1.5,
+///     )
+///
+/// sweepSketch = startSketchOn(XY)
+///     |> circle(
+///         center = [0, 0],
+///         radius = 2,
+///         )              
+///     |> subtract2d(tool = pipeHole)
+///     |> sweep(path = sweepPath)   
+/// ```
+///
+/// ```kcl
+/// // Create a spring by sweeping around a helix path.
+///
+/// // Create a helix around the Z axis.
+/// helixPath = helix(
+///     angleStart = 0,
+///     ccw = true,
+///     revolutions = 4,
+///     length = 10,
+///     radius = 5,
+///     axis = Z,
+///  )
+///
+///
+/// // Create a spring by sweeping around the helix path.
+/// springSketch = startSketchOn(XZ)
+///     |> circle( center = [5, 0], radius = 1)
+///     |> sweep(path = helixPath)
+/// ```
+///
+/// ```kcl
+/// // Sweep two sketches along the same path.
+///
+/// sketch001 = startSketchOn(XY)
+/// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
+///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001) - 90,
+///         length = 50.61,
+///     )
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001),
+///         length = -segLen(rectangleSegmentA001),
+///     )
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
+///
+/// sketch002 = startSketchOn(YZ)
+/// sweepPath = startProfile(sketch002, at = [0, 0])
+///     |> yLine(length = 231.81)
+///     |> tangentialArc(radius = 80, angle = -90)
+///     |> xLine(length = 384.93)
+///
+/// sweep([rectangleSketch, circleSketch], path = sweepPath)
+/// ```
+///
+/// ```kcl
+/// // Sectionally sweep one sketch along the path
+///
+/// sketch001 = startSketchOn(XY)
+/// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
+///
+/// sketch002 = startSketchOn(YZ)
+/// sweepPath = startProfile(sketch002, at = [0, 0])
+///     |> yLine(length = 231.81)
+///     |> tangentialArc(radius = 80, angle = -90)
+///     |> xLine(length = 384.93)
+///
+/// sweep(circleSketch, path = sweepPath, sectional = true)
+/// ```
+@(impl = std_rust)
+export fn sweep(
+  /// The sketch or set of sketches that should be swept in space.
+  @sketches: [Sketch; 1+],
+  /// The path to sweep the sketch along.
+  path: Sketch | Helix,
+  /// If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components.
+  sectional?: bool,
+  /// Tolerance for this operation.
+  tolerance?: number(Length),
+  /// What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'.
+  relativeTo?: string = 'trajectoryCurve',
+  /// A named tag for the face at the start of the sweep, i.e. the original sketch.
+  tagStart?: tag,
+  /// A named tag for the face at the end of the sweep.
+  tagEnd?: tag,
+): [Solid; 1+] {}
+
+/// Create a 3D surface or solid by interpolating between two or more sketches.
+///
+/// The sketches need to closed and on the same plane.
+///
+/// ```kcl
+/// // Loft a square and a triangle.
+/// squareSketch = startSketchOn(XY)
+///     |> startProfile(at = [-100, 200])
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// triangleSketch = startSketchOn(offsetPlane(XY, offset = 75))
+///     |> startProfile(at = [0, 125])
+///     |> line(end = [-15, -30])
+///     |> line(end = [30, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// loft([triangleSketch, squareSketch])
+/// ```
+///
+/// ```kcl
+/// // Loft a square, a circle, and another circle.
+/// squareSketch = startSketchOn(XY)
+///     |> startProfile(at = [-100, 200])
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// circleSketch0 = startSketchOn(offsetPlane(XY, offset = 75))
+///     |> circle( center = [0, 100], radius = 50 )
+///
+/// circleSketch1 = startSketchOn(offsetPlane(XY, offset = 150))
+///     |> circle( center = [0, 100], radius = 20 )
+///
+/// loft([squareSketch, circleSketch0, circleSketch1])
+/// ```
+///
+/// ```kcl
+/// // Loft a square, a circle, and another circle with options.
+/// squareSketch = startSketchOn(XY)
+///     |> startProfile(at = [-100, 200])
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// circleSketch0 = startSketchOn(offsetPlane(XY, offset = 75))
+///     |> circle( center = [0, 100], radius = 50 )
+///
+/// circleSketch1 = startSketchOn(offsetPlane(XY, offset = 150))
+///     |> circle( center = [0, 100], radius = 20 )
+///
+/// loft([squareSketch, circleSketch0, circleSketch1],
+///     baseCurveIndex = 0,
+///     bezApproximateRational = false,
+///     tolerance = 0.000001,
+///     vDegree = 2,
+/// )
+/// ```
+@(impl = std_rust)
+export fn loft(
+  /// Which sketches to loft. Must include at least 2 sketches.
+  @sketches: [Sketch; 2+],
+  /// Degree of the interpolation. Must be greater than zero. For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction.
+  vDegree?: number(Count) = 2,
+  /// Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios. Over time, this field won't be necessary.
+  bezApproximateRational?: bool = false,
+  /// This can be set to override the automatically determined topological base curve, which is usually the first section encountered.
+  baseCurveIndex?: number(Count),
+  /// Tolerance for the loft operation.
+  tolerance?: number(Length),
+  /// A named tag for the face at the start of the loft, i.e. the original sketch.
+  tagStart?: tag,
+  /// A named tag for the face at the end of the loft.
+  tagEnd?: tag,
+): Solid {}
+
+/// Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
+/// of distance between each repetition, some specified number of times.
+///
+/// ```kcl
+/// /// Pattern using a named axis.
+///
+/// exampleSketch = startSketchOn(XZ)
+///   |> circle(center = [0, 0], radius = 1)
+///   |> patternLinear2d(
+///        axis = X,
+///        instances = 7,
+///        distance = 4
+///      )
+///
+/// example = extrude(exampleSketch, length = 1)
+/// ```
+///
+/// ```kcl
+/// /// Pattern using a raw axis.
+///
+/// exampleSketch = startSketchOn(XZ)
+///   |> circle(center = [0, 0], radius = 1)
+///   |> patternLinear2d(
+///        axis = [1, 0],
+///        instances = 7,
+///        distance = 4
+///      )
+///
+/// example = extrude(exampleSketch, length = 1)
+/// ```
+@(impl = std_rust)
+export fn patternLinear2d(
+  /// The sketch(es) to duplicate.
+  @sketches: [Sketch; 1+],
+  /// The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect.
+  instances: number(Count),
+  /// Distance between each repetition. Also known as 'spacing'.
+  distance: number(Length),
+  /// The axis of the pattern. A 2D vector.
+  @(snippetArray = ["1", "0"])
+  axis: Axis2d | Point2d,
+  /// If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.
+  useOriginal?: bool = false,
+): [Sketch; 1+] {}
+
+/// Repeat a 2-dimensional sketch some number of times along a partial or
+/// complete circle some specified number of times. Each object may
+/// additionally be rotated along the circle, ensuring orientation of the
+/// solid with respect to the center of the circle is maintained.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [.5, 25])
+///   |> line(end = [0, 5])
+///   |> line(end = [-1, 0])
+///   |> line(end = [0, -5])
+///   |> close()
+///   |> patternCircular2d(
+///        center = [0, 0],
+///        instances = 13,
+///        arcDegrees = 360,
+///        rotateDuplicates = true
+///      )
+///
+/// example = extrude(exampleSketch, length = 1)
+/// ```
+@(impl = std_rust)
+export fn patternCircular2d(
+  /// The sketch(es) to duplicate.
+  @sketches: [Sketch; 1+],
+  /// The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect.
+  instances: number(Count),
+  /// The center about which to make the pattern. This is a 2D vector.
+  @(snippetArray = ["0", "0"])
+  center: Point2d,
+  /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
+  arcDegrees?: number(Angle) = 360deg,
+  /// Whether or not to rotate the duplicates as they are copied.
+  rotateDuplicates?: bool = true,
+  /// If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.
+  useOriginal?: bool = false,
 ): [Sketch; 1+] {}

@@ -84,7 +84,7 @@ test.describe('Testing loading external models', () => {
    */
   test(
     'Desktop: should create new file by default, creates a second file with automatic unique name',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ editor, context, page, scene, cmdBar, toolbar }) => {
       if (runningOnWindows()) {
       }
@@ -196,7 +196,7 @@ test.describe('Testing loading external models', () => {
   externalModelCases.map(({ modelName, deconflictedModelName, modelPath }) => {
     test(
       `Load external models from local drive - ${modelName}`,
-      { tag: ['@electron'] },
+      { tag: ['@desktop'] },
       async ({ page, homePage, scene, toolbar, cmdBar, tronApp }) => {
         if (!tronApp) {
           fail()

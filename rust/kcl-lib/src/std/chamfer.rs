@@ -21,7 +21,7 @@ pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::Primitive(PrimitiveType::Solid), exec_state)?;
     let length: TyF64 = args.get_kw_arg_typed("length", &RuntimeType::length(), exec_state)?;
-    let tags = args.kw_arg_array_and_source::<EdgeReference>("tags")?;
+    let tags = args.kw_arg_edge_array_and_source("tags")?;
     let tag = args.get_kw_arg_opt("tag")?;
 
     super::fillet::validate_unique(&tags)?;

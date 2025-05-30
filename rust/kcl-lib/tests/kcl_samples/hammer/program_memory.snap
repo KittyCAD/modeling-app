@@ -79,7 +79,7 @@ description: Variables in memory after executing hammer.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 292.09999999999997,
+            "z": 292.1,
             "units": {
               "type": "Mm"
             }

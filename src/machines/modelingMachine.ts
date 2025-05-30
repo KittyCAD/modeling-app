@@ -2803,7 +2803,10 @@ export const modelingMachine = setup({
             nodeToEdit,
             'VariableDeclaration'
           )
-          if (err(variableNode)) {
+          if (
+            err(variableNode) ||
+            variableNode.node.type !== 'VariableDeclaration'
+          ) {
             console.error('Error extracting name')
           } else {
             variableName = variableNode.node.declaration.id.name

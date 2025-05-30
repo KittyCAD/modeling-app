@@ -104,6 +104,7 @@ import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
 import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
 import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -1516,6 +1517,9 @@ export const ModelingMachineProvider = ({
   // Allow ctrl+alt+c to center to selection
   useHotkeys(['mod + alt + c'], () => {
     modelingSend({ type: 'Center camera on selection' })
+  })
+  useHotkeys(['mod + alt + x'], () => {
+    resetCameraPosition().catch(reportRejection)
   })
 
   useModelingMachineCommands({

@@ -1815,7 +1815,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.77"
+version = "0.1.78"
 dependencies = [
  "anyhow",
  "clap",
@@ -1826,7 +1826,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.77"
+version = "0.1.78"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1845,7 +1845,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.77"
+version = "0.1.78"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -1855,7 +1855,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.77"
+version = "0.2.78"
 dependencies = [
  "anyhow",
  "clap",
@@ -1876,7 +1876,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.77"
+version = "0.1.78"
 dependencies = [
  "anyhow",
  "clap",
@@ -1896,7 +1896,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.77"
+version = "0.2.78"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1966,14 +1966,14 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "web-time",
- "winnow 0.6.24",
+ "winnow",
  "zduny-wasm-timer",
  "zip",
 ]
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.77"
+version = "0.3.78"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -1988,7 +1988,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.77"
+version = "0.1.78"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2001,7 +2001,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.77"
+version = "0.1.78"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2015,7 +2015,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.77"
+version = "0.1.78"
 dependencies = [
  "anyhow",
  "bson",
@@ -4258,7 +4258,7 @@ dependencies = [
  "serde",
  "serde_spanned",
  "toml_datetime",
- "winnow 0.7.4",
+ "winnow",
 ]
 
 [[package]]
@@ -5057,18 +5057,9 @@ checksum = "271414315aff87387382ec3d271b52d7ae78726f5d44ac98b4f4030c91880486"
 
 [[package]]
 name = "winnow"
-version = "0.6.24"
+version = "0.7.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c8d71a593cc5c42ad7876e2c1fda56f314f3754c084128833e64f1345ff8a03a"
-dependencies = [
- "memchr",
-]
-
-[[package]]
-name = "winnow"
-version = "0.7.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e97b544156e9bebe1a0ffbc03484fc1ffe3100cbce3ffb17eac35f7cdd7ab36"
+checksum = "c06928c8748d81b05c9be96aad92e1b6ff01833332f281e8cfca3be4b35fc9ec"
 dependencies = [
  "memchr",
 ]

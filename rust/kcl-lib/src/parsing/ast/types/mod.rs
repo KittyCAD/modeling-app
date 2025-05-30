@@ -1950,6 +1950,10 @@ impl CallExpressionKw {
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        if let Some(unlabeled) = &mut self.unlabeled {
+            unlabeled.replace_value(source_range, new_value.clone());
+        }
+
         for arg in &mut self.arguments {
             arg.arg.replace_value(source_range, new_value.clone());
         }
@@ -1958,6 +1962,10 @@ impl CallExpressionKw {
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         self.callee.rename(old_name, new_name);
+
+        if let Some(unlabeled) = &mut self.unlabeled {
+            unlabeled.rename_identifiers(old_name, new_name);
+        }
 
         for arg in &mut self.arguments {
             arg.arg.rename_identifiers(old_name, new_name);
@@ -3320,7 +3328,7 @@ pub enum Type {
     },
     // Union/enum types
     Union {
-        tys: NodeList<PrimitiveType>,
+        tys: NodeList<Type>,
     },
     // An object type.
     Object {
@@ -3336,7 +3344,7 @@ impl fmt::Display for Type {
                 write!(f, "[{ty}")?;
                 match len {
                     ArrayLen::None => {}
-                    ArrayLen::NonEmpty => write!(f, "; 1+")?,
+                    ArrayLen::Minimum(n) => write!(f, "; {n}+")?,
                     ArrayLen::Known(n) => write!(f, "; {n}")?,
                 }
                 write!(f, "]")
@@ -4343,7 +4351,7 @@ startSketchOn(XY)
     }
 
     #[test]
-    fn module_name() {
+    fn test_module_name() {
         #[track_caller]
         fn assert_mod_name(stmt: &str, name: &str) {
             let tokens = crate::parsing::token::lex(stmt, ModuleId::default()).unwrap();
@@ -4356,5 +4364,37 @@ startSketchOn(XY)
         assert_mod_name("import 'main.kcl'", "main");
         assert_mod_name("import 'foo/main.kcl'", "foo");
         assert_mod_name("import 'foo\\bar\\main.kcl'", "bar");
+    }
+
+    #[test]
+    fn test_rename_in_math_in_std_function() {
+        let code = r#"rise = 4.5
+run = 8
+angle = atan(rise / run)"#;
+        let mut program = crate::parsing::top_level_parse(code).unwrap();
+
+        // We want to rename `run` to `run2`.
+        let run = program.body.get(1).unwrap().clone();
+        let BodyItem::VariableDeclaration(var_decl) = &run else {
+            panic!("expected a variable declaration")
+        };
+        let Expr::Literal(lit) = &var_decl.declaration.init else {
+            panic!("expected a literal");
+        };
+        assert_eq!(lit.raw, "8");
+
+        // Rename it.
+        program.rename_symbol("yoyo", var_decl.as_source_range().start() + 1);
+
+        // Recast the program to a string.
+        let formatted = program.recast(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"rise = 4.5
+yoyo = 8
+angle = atan(rise / yoyo)
+"#
+        );
     }
 }

@@ -28,6 +28,8 @@ use crate::{
     ModuleId,
 };
 
+use super::fillet::EdgeReference;
+
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`";
 
@@ -214,10 +216,10 @@ impl Args {
 
     /// Get a labelled keyword arg, check it's an array, and return all items in the array
     /// plus their source range.
-    pub(crate) fn kw_arg_array_and_source<'a, T>(&'a self, label: &str) -> Result<Vec<(T, SourceRange)>, KclError>
-    where
-        T: FromKclValue<'a>,
-    {
+    pub(crate) fn kw_arg_edge_array_and_source(
+        &self,
+        label: &str,
+    ) -> Result<Vec<(EdgeReference, SourceRange)>, KclError> {
         let Some(arg) = self.kw_args.labeled.get(label) else {
             let err = KclError::Semantic(KclErrorDetails::new(
                 format!("This function requires a keyword argument '{label}'"),
@@ -225,28 +227,15 @@ impl Args {
             ));
             return Err(err);
         };
-        let Some(array) = arg.value.as_array() else {
-            let err = KclError::Semantic(KclErrorDetails::new(
-                format!(
-                    "Expected an array of {} but found {}",
-                    tynm::type_name::<T>(),
-                    arg.value.human_friendly_type()
-                ),
-                vec![arg.source_range],
-            ));
-            return Err(err);
-        };
-        array
+        arg.value
+            .clone()
+            .into_array()
             .iter()
             .map(|item| {
                 let source = SourceRange::from(item);
                 let val = FromKclValue::from_kcl_val(item).ok_or_else(|| {
                     KclError::Semantic(KclErrorDetails::new(
-                        format!(
-                            "Expected a {} but found {}",
-                            tynm::type_name::<T>(),
-                            arg.value.human_friendly_type()
-                        ),
+                        format!("Expected an Edge but found {}", arg.value.human_friendly_type()),
                         arg.source_ranges(),
                     ))
                 })?;
@@ -255,27 +244,16 @@ impl Args {
             .collect::<Result<Vec<_>, _>>()
     }
 
-    /// Get the unlabeled keyword argument. If not set, returns Err.  If it
-    /// can't be converted to the given type, returns Err.
-    pub(crate) fn get_unlabeled_kw_arg<'a, T>(&'a self, label: &str) -> Result<T, KclError>
-    where
-        T: FromKclValue<'a>,
-    {
-        let arg = self
-            .unlabeled_kw_arg_unconverted()
-            .ok_or(KclError::Semantic(KclErrorDetails::new(
-                format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
-                vec![self.source_range],
-            )))?;
-
-        T::from_kcl_val(&arg.value).ok_or_else(|| {
-            let expected_type_name = tynm::type_name::<T>();
-            let actual_type_name = arg.value.human_friendly_type();
-            let message = format!("This function expected the input argument to be of type {expected_type_name} but it's actually of type {actual_type_name}");
-            KclError::Semantic(KclErrorDetails::new(
-                message,
-                arg.source_ranges(),
-            ))
+    pub(crate) fn get_unlabeled_kw_arg_array_and_type(
+        &self,
+        label: &str,
+        exec_state: &mut ExecState,
+    ) -> Result<(Vec<KclValue>, RuntimeType), KclError> {
+        let value = self.get_unlabeled_kw_arg_typed(label, &RuntimeType::any_array(), exec_state)?;
+        Ok(match value {
+            KclValue::HomArray { value, ty } => (value, ty),
+            KclValue::Tuple { value, .. } => (value, RuntimeType::any()),
+            val => (vec![val], RuntimeType::any()),
         })
     }
 
@@ -331,7 +309,7 @@ impl Args {
 
         T::from_kcl_val(&arg).ok_or_else(|| {
             KclError::Internal(KclErrorDetails::new(
-                "Mismatch between type coercion and value extraction (this isn't your fault).\nTo assist in bug-reporting, expected type: {ty:?}; actual value: {arg:?}".to_owned(),
+                format!("Mismatch between type coercion and value extraction (this isn't your fault).\nTo assist in bug-reporting, expected type: {ty:?}; actual value: {arg:?}"),
                 vec![self.source_range],
            ))
         })
@@ -728,7 +706,7 @@ impl<'a> FromKclValue<'a> for Vec<TagIdentifier> {
 
 impl<'a> FromKclValue<'a> for Vec<KclValue> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        arg.as_array().map(|v| v.to_vec())
+        Some(arg.clone().into_array())
     }
 }
 
@@ -1039,7 +1017,8 @@ macro_rules! impl_from_kcl_for_vec {
     ($typ:path) => {
         impl<'a> FromKclValue<'a> for Vec<$typ> {
             fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-                arg.as_array()?
+                arg.clone()
+                    .into_array()
                     .iter()
                     .map(|value| FromKclValue::from_kcl_val(value))
                     .collect::<Option<_>>()
@@ -1054,6 +1033,8 @@ impl_from_kcl_for_vec!(crate::execution::Metadata);
 impl_from_kcl_for_vec!(super::fillet::EdgeReference);
 impl_from_kcl_for_vec!(ExtrudeSurface);
 impl_from_kcl_for_vec!(TyF64);
+impl_from_kcl_for_vec!(Solid);
+impl_from_kcl_for_vec!(Sketch);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
@@ -1379,27 +1360,9 @@ impl<'a> FromKclValue<'a> for Box<Solid> {
     }
 }
 
-impl<'a> FromKclValue<'a> for Vec<Solid> {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::HomArray { value, .. } = arg else {
-            return None;
-        };
-        value.iter().map(Solid::from_kcl_val).collect()
-    }
-}
-
-impl<'a> FromKclValue<'a> for Vec<Sketch> {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::HomArray { value, .. } = arg else {
-            return None;
-        };
-        value.iter().map(Sketch::from_kcl_val).collect()
-    }
-}
-
 impl<'a> FromKclValue<'a> for &'a FunctionSource {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        arg.get_function()
+        arg.as_function()
     }
 }
 

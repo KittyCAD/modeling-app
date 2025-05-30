@@ -43,7 +43,7 @@ async function insertPartIntoAssembly(
 test.describe('Point-and-click assemblies tests', () => {
   test(
     `Insert kcl parts into assembly as whole module import`,
-    { tag: ['@electron', '@macos', '@windows'] },
+    { tag: ['@desktop', '@macos', '@windows'] },
     async ({
       context,
       page,
@@ -188,7 +188,7 @@ test.describe('Point-and-click assemblies tests', () => {
         await page.waitForTimeout(10000)
         await editor.expectEditor.toContain(
           `
-          import "nested/twice/main.kcl" as main 
+          import "nested/twice/main.kcl" as main
           `,
           { shouldNormalise: true }
         )
@@ -198,7 +198,7 @@ test.describe('Point-and-click assemblies tests', () => {
 
   test(
     `Can still translate, rotate, and delete inserted parts even with non standard code`,
-    { tag: ['@electron', '@macos', '@windows'] },
+    { tag: ['@desktop', '@macos', '@windows'] },
     async ({
       context,
       page,
@@ -394,7 +394,7 @@ test.describe('Point-and-click assemblies tests', () => {
 
   test(
     `Insert the bracket part into an assembly and transform it`,
-    { tag: ['@electron', '@macos', '@windows'] },
+    { tag: ['@desktop', '@macos', '@windows'] },
     async ({
       context,
       page,
@@ -585,7 +585,7 @@ test.describe('Point-and-click assemblies tests', () => {
 
   test(
     `Insert foreign parts into assembly and delete them`,
-    { tag: ['@electron', '@macos', '@windows'] },
+    { tag: ['@desktop', '@macos', '@windows'] },
     async ({
       context,
       page,
@@ -736,7 +736,7 @@ test.describe('Point-and-click assemblies tests', () => {
 
   test(
     'Assembly gets reexecuted when imported models are updated externally',
-    { tag: ['@electron', '@macos', '@windows'] },
+    { tag: ['@desktop', '@macos', '@windows'] },
     async ({ context, page, homePage, scene, toolbar, cmdBar, tronApp }) => {
       if (!tronApp) {
         fail()
@@ -826,7 +826,7 @@ foreign
 
   test(
     `Point-and-click clone`,
-    { tag: ['@electron', '@macos', '@windows'] },
+    { tag: ['@desktop', '@macos', '@windows'] },
     async ({
       context,
       page,
