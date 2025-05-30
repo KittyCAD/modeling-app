@@ -6,6 +6,90 @@ import { assertParse } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 
+function createCaseData({
+  prompt,
+  inputFiles,
+  artifactSearchSnippet,
+  expectFilesCallBack,
+}: {
+  prompt: string
+  inputFiles: { [fileName: string]: string }
+  artifactSearchSnippet: string
+  expectFilesCallBack: (input: { fileName: string; content: string }) => string
+}): {
+  prompt: string
+  inputFiles: { [fileName: string]: string }
+  artifactSearchSnippet: string
+  expectedFiles: { [fileName: string]: string }
+} {
+  return {
+    prompt,
+    inputFiles,
+    artifactSearchSnippet,
+    expectedFiles: Object.fromEntries(
+      Object.entries(inputFiles).map(([fileName, content]) => [
+        fileName,
+        expectFilesCallBack({ fileName, content }),
+      ])
+    ),
+  }
+}
+
+const cases = [
+  createCaseData({
+    prompt: 'make this neon green please, use #39FF14',
+    artifactSearchSnippet: 'line(end = [19.66, -116.4])',
+    expectFilesCallBack: ({ fileName, content }) => {
+      if (fileName !== 'main.kcl') return content
+      return content.replace(
+        'extrude001 = extrude(profile001, length = 200)',
+        `extrude001 = extrude(profile001, length = 200)
+  |> appearance(color = "#39FF14")`
+      )
+    },
+    inputFiles: {
+      'main.kcl': `import "b.kcl" as b
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [57.81, 250.51])
+  |> line(end = [121.13, 56.63], tag = $seg02)
+  |> line(end = [83.37, -34.61], tag = $seg01)
+  |> line(end = [19.66, -116.4])
+  |> line(end = [-221.8, -41.69])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 200)
+sketch002 = startSketchOn(XZ)
+  |> startProfile(at = [-73.64, -42.89])
+  |> xLine(length = 173.71)
+  |> line(end = [-22.12, -94.4])
+  |> line(end = [-22.12, -50.4])
+  |> line(end = [-22.12, -94.4])
+  |> line(end = [-22.12, -50.4])
+  |> xLine(length = -156.98)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(sketch002, length = 50)
+b
+`,
+      'b.kcl': `sketch003 = startSketchOn(XY)
+  |> startProfile(at = [52.92, 157.81])
+  |> angledLine(angle = 0, length = 176.4, tag = $rectangleSegmentA001)
+  |> angledLine(
+       angle = segAng(rectangleSegmentA001) - 90,
+       length = 53.4,
+       tag = $rectangleSegmentB001,
+     )
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
+  |> line(end = [-22.12, -50.4])
+  |> line(end = [-22.12, -94.4])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude(sketch003, length = 20)
+`,
+    },
+  }),
+]
+
 // Store original method to restore in afterAll
 
 beforeAll(async () => {
@@ -79,8 +163,8 @@ interface FetchSpyOptions {
 function createFetchSpy(options: FetchSpyOptions = {}) {
   const capturedRequests: CapturedRequest[] = []
   const allFetchCalls: string[] = []
-  const originalFetch = global.fetch
 
+  // Create a mock fetch that handles the specific text-to-cad endpoints
   const mockFetch = vi.fn(
     async (url: string | URL | Request, init?: RequestInit) => {
       const urlString = url.toString()
@@ -222,7 +306,7 @@ function createFetchSpy(options: FetchSpyOptions = {}) {
         }
       }
 
-      // Default mocks for text-to-cad endpoint
+      // Mock text-to-cad iteration endpoint
       if (
         urlString.includes('text-to-cad') &&
         urlString.includes('iteration')
@@ -238,12 +322,34 @@ function createFetchSpy(options: FetchSpyOptions = {}) {
           }
         )
       }
-      // For all other requests, call the original fetch
-      return originalFetch(url, init)
+
+      // Mock the async operations status endpoint
+      if (urlString.includes('async/operations/')) {
+        return new Response(
+          JSON.stringify({
+            id: '550e8400-e29b-41d4-a716-446655440000',
+            status: 'completed',
+            outputs: {
+              'main.kcl': 'mocked KCL content with appearance applied',
+            },
+          }),
+          {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        )
+      }
+
+      // For any other requests, return a basic successful response to avoid network errors
+      return new Response(JSON.stringify({ mocked: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
   ) as typeof global.fetch
 
-  global.fetch = mockFetch
+  // Use vi.stubGlobal for comprehensive mocking
+  vi.stubGlobal('fetch', mockFetch)
 
   return {
     getCapturedRequests: () => capturedRequests,
@@ -254,7 +360,7 @@ function createFetchSpy(options: FetchSpyOptions = {}) {
     getAllFetchCalls: () => allFetchCalls,
     clearCapturedRequests: () => capturedRequests.splice(0),
     restore: () => {
-      global.fetch = originalFetch
+      vi.unstubAllGlobals()
     },
   }
 }
@@ -319,196 +425,145 @@ async function setupTestProjectWithImports(testFiles: Record<string, string>) {
   }
 }
 
-describe('when testing with file imports', () => {
-  it('should handle KCL files that import other KCL files and capture text-to-cad requests', async () => {
-    const fileWithImport = `import "b.kcl" as b
-sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [57.81, 250.51])
-  |> line(end = [121.13, 56.63], tag = $seg02)
-  |> line(end = [83.37, -34.61], tag = $seg01)
-  |> line(end = [19.66, -116.4])
-  |> line(end = [-221.8, -41.69])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = 200)
-sketch002 = startSketchOn(XZ)
-  |> startProfile(at = [-73.64, -42.89])
-  |> xLine(length = 173.71)
-  |> line(end = [-22.12, -94.4])
-  |> line(end = [-22.12, -50.4])
-  |> line(end = [-22.12, -94.4])
-  |> line(end = [-22.12, -50.4])
-  |> xLine(length = -156.98)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude002 = extrude(sketch002, length = 50)
-b
-`
+describe('When prompting modify with TTC, prompt:', () => {
+  cases.forEach(
+    ({ prompt, inputFiles, artifactSearchSnippet, expectedFiles }) => {
+      it(`${prompt}`, async () => {
+        const mainFile = inputFiles['main.kcl']
 
-    const importedFile = `sketch003 = startSketchOn(XY)
-  |> startProfile(at = [52.92, 157.81])
-  |> angledLine(angle = 0, length = 176.4, tag = $rectangleSegmentA001)
-  |> angledLine(
-       angle = segAng(rectangleSegmentA001) - 90,
-       length = 53.4,
-       tag = $rectangleSegmentB001,
-     )
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
-  |> line(end = [-22.12, -50.4])
-  |> line(end = [-22.12, -94.4])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude(sketch003, length = 20)
-`
+        const { cleanup } = await setupTestProjectWithImports(inputFiles)
 
-    const { cleanup } = await setupTestProjectWithImports({
-      'b.kcl': importedFile,
-      'main.kcl': fileWithImport,
-    })
+        // Set up fetch spy to capture requests
+        const fetchSpy = createFetchSpy()
 
-    // Set up fetch spy to capture requests
-    const fetchSpy = createFetchSpy()
+        // Set up mock token for authentication
+        const mockToken = 'test-token-123'
+        localStorage.setItem('TOKEN_PERSIST_KEY', mockToken)
 
-    // Set up mock token for authentication
-    const mockToken = 'test-token-123'
-    localStorage.setItem('TOKEN_PERSIST_KEY', mockToken)
+        try {
+          // Parse and execute the main file with imports
+          const ast = assertParse(mainFile)
 
-    try {
-      // Parse and execute the main file with imports
-      const ast = assertParse(fileWithImport)
+          // Execute the AST - the fileSystemManager.dir will be used for import resolution
+          await kclManager.executeAst({ ast })
 
-      // Execute the AST - the fileSystemManager.dir will be used for import resolution
-      await kclManager.executeAst({ ast })
+          expect(kclManager.errors).toEqual([])
 
-      expect(kclManager.errors).toEqual([])
+          // Test that we can work with the imported content
+          const indexOfInterest = mainFile.indexOf(artifactSearchSnippet)
+          const artifact = [...kclManager.artifactGraph].find(
+            ([id, artifact]) => {
+              const codeRefs = getCodeRefsByArtifactId(
+                id,
+                kclManager.artifactGraph
+              )
+              return (
+                artifact?.type === 'wall' &&
+                codeRefs &&
+                codeRefs.find((ref) => {
+                  return (
+                    ref.range[0] <= indexOfInterest &&
+                    ref.range[1] >= indexOfInterest
+                  )
+                })
+              )
+            }
+          )?.[1]
 
-      // Test that we can work with the imported content
-      const indexOfInterest = fileWithImport.indexOf(
-        'line(end = [19.66, -116.4])'
-      )
-      const artifact = [...kclManager.artifactGraph].find(([id, artifact]) => {
-        const codeRefs = getCodeRefsByArtifactId(id, kclManager.artifactGraph)
-        return (
-          artifact?.type === 'wall' &&
-          codeRefs &&
-          codeRefs.find((ref) => {
-            return (
-              ref.range[0] <= indexOfInterest && ref.range[1] >= indexOfInterest
-            )
-          })
-        )
-      })?.[1]
+          if (!artifact) {
+            throw new Error('Artifact not found')
+          }
+          const codeRef = (getCodeRefsByArtifactId(
+            artifact.id,
+            kclManager.artifactGraph
+          ) || [])[0]
+          if (!codeRef) {
+            throw new Error('Code reference not found for the artifact')
+          }
 
-      if (!artifact) {
-        throw new Error('Artifact not found')
-      }
-      const codeRef = (getCodeRefsByArtifactId(
-        artifact.id,
-        kclManager.artifactGraph
-      ) || [])[0]
-      if (!codeRef) {
-        throw new Error('Code reference not found for the artifact')
-      }
+          // Test direct call to promptToEditFlow instead of going through state machine
+          const { promptToEditFlow } = await import('@src/lib/promptToEdit')
 
-      // Test direct call to promptToEditFlow instead of going through state machine
-      const { promptToEditFlow } = await import('@src/lib/promptToEdit')
+          // Create project files that match what the state machine would create
+          const projectFiles = Object.entries(inputFiles).map(
+            ([filename, content]) => ({
+              type: 'kcl' as const,
+              relPath: filename,
+              absPath: filename,
+              fileContents: content,
+              execStateFileNamesIndex: Number(
+                Object.entries(kclManager.execState.filenames).find(
+                  ([_, value]) =>
+                    value && value.type === 'Local' && value.value === filename
+                )?.[0] || 0
+              ),
+            })
+          )
 
-      // Create project files that match what the state machine would create
-      const projectFiles = [
-        {
-          type: 'kcl' as const,
-          relPath: 'main.kcl',
-          absPath: 'main.kcl',
-          fileContents: fileWithImport,
-          execStateFileNamesIndex: 0,
-        },
-        {
-          type: 'kcl' as const,
-          relPath: 'b.kcl',
-          absPath: 'b.kcl',
-          fileContents: importedFile,
-          execStateFileNamesIndex: Number(
-            Object.entries(kclManager.execState.filenames).find(
-              ([index, value]) => {
-                if (!value) return false
-                if (value.type === 'Local' && value.value === 'b.kcl')
-                  return true
-                return false
-              }
-            )?.[0] || 0
-          ),
-        },
-      ]
-
-      // Call promptToEditFlow directly
-      const resultPromise = promptToEditFlow({
-        prompt: 'please make this green',
-        selections: {
-          graphSelections: [
-            {
-              artifact,
-              codeRef,
+          // Call promptToEditFlow directly
+          const resultPromise = promptToEditFlow({
+            prompt,
+            selections: {
+              graphSelections: [
+                {
+                  artifact,
+                  codeRef,
+                },
+              ],
+              otherSelections: [],
             },
-          ],
-          otherSelections: [],
-        },
-        projectFiles,
-        token: mockToken,
-        artifactGraph: kclManager.artifactGraph,
-        projectName: 'test-project',
-        filePath: 'main.kcl',
-      })
+            projectFiles,
+            token: mockToken,
+            artifactGraph: kclManager.artifactGraph,
+            projectName: 'test-project',
+            filePath: 'main.kcl',
+          })
 
-      // Wait for the request to be made
-      await waitForCondition(
-        () => {
-          const requests = fetchSpy.getCapturedRequests()
-          return requests.length > 0
-        },
-        10000,
-        500
-      )
+          // Wait for the request to be made
+          await waitForCondition(
+            () => {
+              const requests = fetchSpy.getCapturedRequests()
+              return requests.length > 0
+            },
+            10000,
+            500
+          )
 
-      // Get and verify the captured request
-      const capturedRequests = fetchSpy.getCapturedRequests()
-      fetchSpy.getAllFetchCalls()
+          // Get and verify the captured request
+          const capturedRequests = fetchSpy.getCapturedRequests()
+          fetchSpy.getAllFetchCalls()
 
-      if (capturedRequests.length === 0) {
-        console.log(
-          'No text-to-cad requests were captured. This might indicate an error in the flow.'
-        )
-        expect(capturedRequests).toHaveLength(1) // This will fail and show what was captured
-      } else {
-        const request = capturedRequests[0]
-        const textToCadPayload = {
-          ...request.body,
-          expectedFiles: {
-            'main.kcl': fileWithImport.replace(
-              'extrude001 = extrude(profile001, length = 200)',
-              `extrude001 = extrude(profile001, length = 200)
-  |> appearance(color = "#00ff00")`
-            ),
-            'b.kcl': importedFile,
-          },
-          // Normalize file names to make snapshots deterministic
-          files: request.body.files,
+          if (capturedRequests.length === 0) {
+            console.log(
+              'No text-to-cad requests were captured. This might indicate an error in the flow.'
+            )
+            expect(capturedRequests).toHaveLength(1) // This will fail and show what was captured
+          } else {
+            const request = capturedRequests[0]
+            const textToCadPayload = {
+              ...request.body,
+              // Normalize file names to make snapshots deterministic
+              files: request.body.files,
+              expectedFiles,
+            }
+
+            expect(textToCadPayload).toMatchSnapshot()
+          }
+
+          // Wait for the promise to resolve or reject
+          try {
+            await resultPromise
+          } catch {
+            // console.log('promptToEditFlow resulted in error:', error)
+            // most likely get a auth error here for TTC, we don't actually care about the response.
+            // just capturing the request
+          }
+        } finally {
+          fetchSpy.restore()
+          localStorage.removeItem('TOKEN_PERSIST_KEY')
+          await cleanup()
         }
-
-        expect(textToCadPayload).toMatchSnapshot()
-      }
-
-      // Wait for the promise to resolve or reject
-      try {
-        await resultPromise
-      } catch {
-        // console.log('promptToEditFlow resulted in error:', error)
-        // most likely get a auth error here for TTC, we don't actually care about the response.
-        // just capturing the request
-      }
-    } finally {
-      fetchSpy.restore()
-      localStorage.removeItem('TOKEN_PERSIST_KEY')
-      await cleanup()
+      }, 20_000) // Increase timeout to 20 seconds
     }
-  }, 20_000) // Increase timeout to 20 seconds
+  )
 })

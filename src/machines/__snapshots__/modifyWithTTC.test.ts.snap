@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`when testing with file imports > should handle KCL files that import other KCL files and capture text-to-cad requests 1`] = `
+exports[`When prompting modify with TTC, prompt: > make this neon green please, use #39FF14 1`] = `
 {
   "expectedFiles": {
     "b.kcl": "sketch003 = startSketchOn(XY)
@@ -28,7 +28,7 @@ profile001 = startProfile(sketch001, at = [57.81, 250.51])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 200)
-  |> appearance(color = "#00ff00")
+  |> appearance(color = "#39FF14")
 sketch002 = startSketchOn(XZ)
   |> startProfile(at = [-73.64, -42.89])
   |> xLine(length = 173.71)
@@ -85,7 +85,7 @@ b
   },
   "kcl_version": "0.2.77",
   "project_name": "test-project",
-  "prompt": "please make this green",
+  "prompt": "make this neon green please, use #39FF14",
   "source_ranges": [
     {
       "file": "b.kcl",
