@@ -2072,8 +2072,8 @@ notPipeSub = 1 |> identity(!%))";
             // a runtime error instead.
             parse_execute(code11).await.unwrap_err(),
             KclError::Syntax(KclErrorDetails::new(
-                "Unexpected token: |>".to_owned(),
-                vec![SourceRange::new(44, 46, ModuleId::default())],
+                "There was an unexpected !. Try removing it.".to_owned(),
+                vec![SourceRange::new(56, 57, ModuleId::default())],
             ))
         );
 

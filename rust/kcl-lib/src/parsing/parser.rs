@@ -4446,8 +4446,8 @@ z(-[["#,
         assert_err(
             r#"z
 (--#"#,
-            "Unexpected token: (",
-            [2, 3],
+            "There was an unexpected -. Try removing it.",
+            [3, 4],
         );
     }
 
