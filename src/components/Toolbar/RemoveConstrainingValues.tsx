@@ -15,25 +15,14 @@ import type { Selection, Selections } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 
-export function removeConstrainingValuesInfo({
-  selectionRanges,
-  pathToNodes,
-}: {
-  selectionRanges: Selections
-  pathToNodes?: Array<PathToNode>
-}):
+export function removeConstrainingValuesInfo(pathToNodes: Array<PathToNode>):
   | {
       transforms: TransformInfo[]
       enabled: boolean
       updatedSelectionRanges: Selections
     }
   | Error {
-  const paths = pathToNodes
-    ? pathToNodes
-    : selectionRanges.graphSelections.map(({ codeRef }) => {
-        return codeRef.pathToNode
-      })
-  const _nodes = paths.map((pathToNode) => {
+  const _nodes = pathToNodes.map((pathToNode) => {
     const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
     if (tmp instanceof Error) return tmp
     return tmp.node
@@ -42,19 +31,17 @@ export function removeConstrainingValuesInfo({
   if (err(_err1)) return _err1
   const nodes = _nodes as Expr[]
 
-  const updatedSelectionRanges = pathToNodes
-    ? {
-        otherSelections: [],
-        graphSelections: nodes.map(
-          (node): Selection => ({
-            codeRef: codeRefFromRange(
-              topLevelRange(node.start, node.end),
-              kclManager.ast
-            ),
-          })
+  const updatedSelectionRanges = {
+    otherSelections: [],
+    graphSelections: nodes.map(
+      (node): Selection => ({
+        codeRef: codeRefFromRange(
+          topLevelRange(node.start, node.end),
+          kclManager.ast
         ),
-      }
-    : selectionRanges
+      })
+    ),
+  }
   const isAllTooltips = nodes.every(
     (node) =>
       node?.type === 'CallExpressionKw' &&
@@ -83,10 +70,12 @@ export function applyRemoveConstrainingValues({
       pathToNodeMap: PathToNodeMap
     }
   | Error {
-  const constraint = removeConstrainingValuesInfo({
-    selectionRanges,
-    pathToNodes,
-  })
+  pathToNodes =
+    pathToNodes ||
+    selectionRanges.graphSelections.map(({ codeRef }) => {
+      return codeRef.pathToNode
+    })
+  const constraint = removeConstrainingValuesInfo(pathToNodes)
   if (err(constraint)) return constraint
   const { transforms, updatedSelectionRanges } = constraint
 
