@@ -752,10 +752,13 @@ export const modelingMachine = setup({
       event,
     }) => {
       if (event.type !== 'Constrain remove constraints') return false
-      const info = removeConstrainingValuesInfo({
-        selectionRanges,
-        pathToNodes: event.data && [event.data],
-      })
+
+      const pathToNodes = event.data
+        ? [event.data]
+        : selectionRanges.graphSelections.map(({ codeRef }) => {
+            return codeRef.pathToNode
+          })
+      const info = removeConstrainingValuesInfo(pathToNodes)
       if (err(info)) return false
       return info.enabled
     },
