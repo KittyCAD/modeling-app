@@ -670,6 +670,9 @@ class EngineConnection extends EventTarget {
                   },
                 },
               }
+              this.dispatchEvent(
+                new CustomEvent(EngineConnectionEvents.Offline, {})
+              )
               this.disconnectAll()
               break
 
