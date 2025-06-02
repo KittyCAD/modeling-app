@@ -269,7 +269,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   getModelExtents(): BoundingBox {
     // Yes.
     const unit = 100
-    return [-unit/2, -unit/2, -unit/2, unit/2, unit/2, unit/2]
+    return [-unit / 2, -unit / 2, -unit / 2, unit / 2, unit / 2, unit / 2]
   }
 
   getPerspective(): boolean {
@@ -509,13 +509,12 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     const t1 = sceneInfra.camControls.target.clone()
     const t2 = diff?.clone().add(t1.clone())
 
-
     sceneInfra.camControls.throttledUpdateEngineCamera({
-          isPerspective: true,
-          position: this.camera?.position.clone(),
-          quaternion: this.camera?.quaternion.clone(),
-          zoom: this.camera?.zoom,
-          target: t2//sceneInfra.camControls.target.clone(),
+      isPerspective: true,
+      position: this.camera?.position.clone(),
+      quaternion: this.camera?.quaternion.clone(),
+      zoom: this.camera?.zoom,
+      target: t2, //sceneInfra.camControls.target.clone(),
     })
     // await engineCommandManager.sendSceneCommand({
     //   type: 'modeling_cmd_req',
