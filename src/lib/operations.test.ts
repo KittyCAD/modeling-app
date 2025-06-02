@@ -3,6 +3,7 @@ import { topLevelRange } from '@src/lang/util'
 
 import {
   assertParse,
+  defaultNodePath,
   defaultSourceRange,
   type SourceRange,
 } from '@src/lang/wasm'
@@ -14,6 +15,7 @@ function stdlib(name: string): Operation {
     name,
     unlabeledArg: null,
     labeledArgs: {},
+    nodePath: defaultNodePath(),
     sourceRange: defaultSourceRange(),
     isError: false,
   }
@@ -29,6 +31,7 @@ function userCall(name: string): Operation {
       unlabeledArg: null,
       labeledArgs: {},
     },
+    nodePath: defaultNodePath(),
     sourceRange: defaultSourceRange(),
   }
 }
@@ -47,6 +50,7 @@ function moduleBegin(name: string): Operation {
       name,
       moduleId: 0,
     },
+    nodePath: defaultNodePath(),
     sourceRange: defaultSourceRange(),
   }
 }

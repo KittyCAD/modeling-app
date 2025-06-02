@@ -850,11 +850,14 @@ impl ExecutorContext {
                         // We only want to display the top-level module imports in
                         // the Feature Tree, not transitive imports.
                         if universe_map.contains_key(value) {
+                            use crate::NodePath;
+
                             exec_state.push_op(Operation::GroupBegin {
                                 group: Group::ModuleInstance {
                                     name: value.file_name().unwrap_or_default(),
                                     module_id,
                                 },
+                                node_path: NodePath::placeholder(),
                                 source_range,
                             });
                             // Due to concurrent execution, we cannot easily
@@ -1059,6 +1062,11 @@ impl ExecutorContext {
         // Don't early return!  We need to build other outputs regardless of
         // whether execution failed.
 
+        // Because of execution caching, we may start with operations from a
+        // previous run.
+        #[cfg(feature = "artifact-graph")]
+        let start_op = exec_state.global.artifacts.operations.len();
+
         self.eval_prelude(exec_state, SourceRange::from(program).start_as_range())
             .await?;
 
@@ -1071,6 +1079,34 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await;
+
+        #[cfg(feature = "artifact-graph")]
+        {
+            // Fill in NodePath for operations.
+            let cached_body_items = exec_state.global.artifacts.cached_body_items();
+            for op in exec_state.global.artifacts.operations.iter_mut().skip(start_op) {
+                match op {
+                    Operation::StdLibCall {
+                        node_path,
+                        source_range,
+                        ..
+                    }
+                    | Operation::GroupBegin {
+                        node_path,
+                        source_range,
+                        ..
+                    } => {
+                        if node_path.is_empty() {
+                            use crate::NodePath;
+
+                            *node_path =
+                                NodePath::from_range(program, cached_body_items, *source_range).unwrap_or_default();
+                        }
+                    }
+                    Operation::GroupEnd => {}
+                }
+            }
+        }
 
         // Ensure all the async commands completed.
         self.engine.ensure_async_commands_completed().await?;

@@ -16,6 +16,14 @@ pub struct NodePath {
     pub steps: Vec<Step>,
 }
 
+impl NodePath {
+    /// Placeholder for when the AST isn't available to create a real path.  It
+    /// will be filled in later.
+    pub(crate) fn placeholder() -> Self {
+        Self::default()
+    }
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, Eq, Hash, ts_rs::TS)]
 #[ts(export_to = "NodePath.ts")]
 #[serde(tag = "type")]

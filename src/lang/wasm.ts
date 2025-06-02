@@ -175,6 +175,12 @@ function bestSourceRange(error: RustKclError): SourceRange {
   return sourceRangeFromRust(error.details.sourceRanges[0])
 }
 
+export function defaultNodePath(): NodePath {
+  return {
+    steps: [],
+  }
+}
+
 const splitErrors = (
   input: CompilationError[]
 ): { errors: CompilationError[]; warnings: CompilationError[] } => {
