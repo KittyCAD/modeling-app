@@ -246,7 +246,6 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
 
 interface LastWindowConfig {
   bounds: Electron.Rectangle
-  screen?: number
 }
 
 const userDataPath = app.getPath('userData')
