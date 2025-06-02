@@ -101,6 +101,8 @@ if (!singleInstanceLock && !IS_PLAYWRIGHT) {
   registerStartupListeners()
 }
 
+const LOCALSTORAGE_LAST_WINDOW_SIZE = 'lastWindowSize'
+
 const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   let newWindow
 
@@ -112,8 +114,28 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     const primaryDisplay = screen.getPrimaryDisplay()
     const { width, height } = primaryDisplay.workAreaSize
 
-    const windowWidth = Math.max(500, width - 150)
-    const windowHeight = Math.max(400, height - 100)
+    // Use 90% vertical screen space, 16:9 aspect ratio for the width,
+    // but ensure it fits within the screen width with a bit of padding
+    let windowHeight = Math.round(height * 0.9)
+    let windowWidth = Math.min(Math.round(windowHeight * (16 / 9)), width - 50)
+
+    // If size was saved in localStorage, use that
+    let lastWindowSizeSerialized = localStorage.getItem(
+      LOCALSTORAGE_LAST_WINDOW_SIZE
+    )
+    if (lastWindowSizeSerialized) {
+      try {
+        const lastWindowSize = JSON.parse(lastWindowSizeSerialized)
+        const lastWidth = lastWindowSize?.width
+        const lastHeight = lastWindowSize?.height
+        if (lastWidth > 0 && lastHeight > 0) {
+          windowWidth = lastWidth
+          windowHeight = lastHeight
+        }
+      } catch (e) {
+        console.error('Error parsing last window size from localStorage', e)
+      }
+    }
 
     const x = primaryDisplay.workArea.x + Math.floor((width - windowWidth) / 2)
     const y =
@@ -139,6 +161,19 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
       backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
     })
   }
+
+  newWindow.on('resized', () => {
+    // resized triggers when the resizing stops (mouse is released)
+    // -> save the new size to localStorage
+    console.log('resized', newWindow.width, newWindow.height)
+    localStorage.setItem(
+      LOCALSTORAGE_LAST_WINDOW_SIZE,
+      JSON.stringify({
+        width: newWindow.getSize()[0],
+        height: newWindow.getSize()[1],
+      })
+    )
+  })
 
   // Deep Link: Case of a cold start from Windows or Linux
   const pathOrUrl = getPathOrUrlFromArgs(args)
@@ -249,6 +284,7 @@ app.on('ready', (event, data) => {
 // electron/electron.d.ts has done type = App, making declaration merging not
 // possible :(
 app.resizeWindow = async (width: number, height: number) => {
+  console.log('resizewindow', width, height)
   return mainWindow?.setSize(width, height)
 }
 
@@ -261,6 +297,7 @@ ipcMain.handle('app.testProperty', (event, propertyName) => {
 })
 
 ipcMain.handle('app.resizeWindow', (event, data) => {
+  console.log('ipcMain resizeWindow', data)
   return mainWindow?.setSize(data[0], data[1])
 })
 
