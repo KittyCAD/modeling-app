@@ -431,6 +431,10 @@ impl KclError {
         KclError::Semantic { details }
     }
 
+    pub fn new_value_already_defined(details: KclErrorDetails) -> KclError {
+        KclError::ValueAlreadyDefined { details }
+    }
+
     pub fn new_syntax(details: KclErrorDetails) -> KclError {
         KclError::Syntax { details }
     }

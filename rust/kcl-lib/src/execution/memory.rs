@@ -646,7 +646,7 @@ impl Stack {
     pub fn add(&mut self, key: String, value: KclValue, source_range: SourceRange) -> Result<(), KclError> {
         let env = self.memory.get_env(self.current_env.index());
         if env.contains_key(&key) {
-            return Err(KclError::ValueAlreadyDefined(KclErrorDetails::new(
+            return Err(KclError::new_value_already_defined(KclErrorDetails::new(
                 format!("Cannot redefine `{}`", key),
                 vec![source_range],
             )));
