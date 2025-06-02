@@ -318,10 +318,13 @@ impl Node<CallExpressionKw> {
                     if let KclValue::Function { meta, .. } = func {
                         source_ranges = meta.iter().map(|m| m.source_range).collect();
                     };
-                    KclError::new_undefined_value(KclErrorDetails::new(
-                        format!("Result of user-defined function {} is undefined", fn_name),
-                        source_ranges,
-                    ))
+                    KclError::new_undefined_value(
+                        KclErrorDetails::new(
+                            format!("Result of user-defined function {} is undefined", fn_name),
+                            source_ranges,
+                        ),
+                        None,
+                    )
                 })?;
 
                 Ok(result)
