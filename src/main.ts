@@ -310,7 +310,6 @@ app.on('ready', (event, data) => {
 // electron/electron.d.ts has done type = App, making declaration merging not
 // possible :(
 app.resizeWindow = async (width: number, height: number) => {
-  console.log('resizewindow', width, height)
   return mainWindow?.setSize(width, height)
 }
 
@@ -323,7 +322,6 @@ ipcMain.handle('app.testProperty', (event, propertyName) => {
 })
 
 ipcMain.handle('app.resizeWindow', (event, data) => {
-  console.log('ipcMain resizeWindow', data)
   return mainWindow?.setSize(data[0], data[1])
 })
 
