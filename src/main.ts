@@ -38,6 +38,7 @@ import {
   disableMenu,
   enableMenu,
 } from '@src/menu'
+import fs from 'fs'
 
 // If we're on Windows, pull the local system TLS CAs in
 require('win-ca')
@@ -119,22 +120,11 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     let windowHeight = Math.round(height * 0.9)
     let windowWidth = Math.min(Math.round(windowHeight * (16 / 9)), width - 50)
 
-    // If size was saved in localStorage, use that
-    let lastWindowSizeSerialized = localStorage.getItem(
-      LOCALSTORAGE_LAST_WINDOW_SIZE
-    )
-    if (lastWindowSizeSerialized) {
-      try {
-        const lastWindowSize = JSON.parse(lastWindowSizeSerialized)
-        const lastWidth = lastWindowSize?.width
-        const lastHeight = lastWindowSize?.height
-        if (lastWidth > 0 && lastHeight > 0) {
-          windowWidth = lastWidth
-          windowHeight = lastHeight
-        }
-      } catch (e) {
-        console.error('Error parsing last window size from localStorage', e)
-      }
+    // If size was saved already, use it
+    const lastWindowConfig = loadLastWindowConfig()
+    if (lastWindowConfig) {
+      windowWidth = lastWindowConfig.width
+      windowHeight = lastWindowConfig.height
     }
 
     const x = primaryDisplay.workArea.x + Math.floor((width - windowWidth) / 2)
@@ -166,13 +156,10 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     // resized triggers when the resizing stops (mouse is released)
     // -> save the new size to localStorage
     console.log('resized', newWindow.width, newWindow.height)
-    localStorage.setItem(
-      LOCALSTORAGE_LAST_WINDOW_SIZE,
-      JSON.stringify({
-        width: newWindow.getSize()[0],
-        height: newWindow.getSize()[1],
-      })
-    )
+    saveLastWindowConfig({
+      width: newWindow.getSize()[0],
+      height: newWindow.getSize()[1],
+    })
   })
 
   // Deep Link: Case of a cold start from Windows or Linux
@@ -255,6 +242,33 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   }
 
   return newWindow
+}
+
+interface LastWindowConfig {
+  width: number
+  height: number
+  screen?: number
+}
+const userDataPath = app.getPath('userData')
+const wndowConfigPath = path.join(userDataPath, 'window_config.json')
+
+const loadLastWindowConfig = (): LastWindowConfig | null => {
+  try {
+    const data = fs.readFileSync(wndowConfigPath, 'utf8')
+    const config = JSON.parse(data) as LastWindowConfig
+    if (config.width > 0 && config.height > 0) {
+      return config
+    }
+  } catch (e) {
+    console.log("Can't load window_config.json", e)
+  }
+  return null
+}
+
+const saveLastWindowConfig = (config: LastWindowConfig) => {
+  fs.writeFileSync(wndowConfigPath, JSON.stringify(config), {
+    encoding: 'utf8',
+  })
 }
 
 // Quit when all windows are closed, even on macOS. There, it's common
