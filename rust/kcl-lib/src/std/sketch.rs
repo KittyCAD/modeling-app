@@ -2412,6 +2412,82 @@ async fn inner_subtract_2d(
     Ok(sketch)
 }
 
+pub async fn elliptic_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::length(), exec_state)?;
+    let y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::length(), exec_state)?;
+    let major_radius: TyF64 = args.get_kw_arg_typed("majorRadius", &RuntimeType::count(), exec_state)?;
+    let minor_radius: TyF64 = args.get_kw_arg_typed("minorRadius", &RuntimeType::count(), exec_state)?;
+
+    let elliptic_point = inner_elliptic_point(x, y, major_radius, minor_radius, &args).await?;
+
+    args.make_kcl_val_from_point(elliptic_point, exec_state.length_unit().into())
+}
+
+/// ```no_run
+/// point = ellipticPoint(x = 5, majorRadius = 2, minorRadius = 1)
+///```
+#[stdlib {
+    name = "ellipticPoint",
+    unlabeled_first = false,
+    args = {
+        major_radius = { docs = "The major radius a of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1." },
+        minor_radius = { docs = "The minor radius b of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1." },
+        x = { docs = "The x value of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Will calculate the point y that satisfies the equation and returns (x, y). Incompatible with `y`."},
+        y = { docs = "The y value of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Will calculate the point x that satisfies the equation and returns (x, y). Incompatible with `x`."},
+    },
+    tags = ["sketch"]
+}]
+async fn inner_elliptic_point(
+    x: Option<TyF64>,
+    y: Option<TyF64>,
+    major_radius: TyF64,
+    minor_radius: TyF64,
+    args: &Args,
+) -> Result<[f64; 2], KclError> {
+    let major_radius = major_radius.n;
+    let minor_radius = minor_radius.n;
+    if let Some(x) = x {
+        if x.n > major_radius {
+            Err(KclError::Type(KclErrorDetails::new(
+                format!(
+                    "Invalid input. The x value, {} cannot be larger than the major radius {}.",
+                    x.n, major_radius
+                )
+                .to_owned(),
+                vec![args.source_range],
+            )))
+        } else {
+            Ok((
+                x.n,
+                minor_radius * (1.0 - x.n.powf(2.0) / major_radius.powf(2.0)).sqrt(),
+            )
+                .into())
+        }
+    } else if let Some(y) = y {
+        if y.n > minor_radius {
+            Err(KclError::Type(KclErrorDetails::new(
+                format!(
+                    "Invalid input. The y value, {} cannot be larger than the major radius {}.",
+                    y.n, major_radius
+                )
+                .to_owned(),
+                vec![args.source_range],
+            )))
+        } else {
+            Ok((
+                major_radius * (1.0 - y.n.powf(2.0) / minor_radius.powf(2.0)).sqrt(),
+                y.n,
+            )
+                .into())
+        }
+    } else {
+        Err(KclError::Type(KclErrorDetails::new(
+            "Invalid input. Must have either x or y, cannot have both or neither.".to_owned(),
+            vec![args.source_range],
+        )))
+    }
+}
+
 /// Draw an elliptical arc.
 pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch =
@@ -2554,16 +2630,90 @@ pub(crate) async fn inner_elliptic(
     Ok(new_sketch)
 }
 
+pub async fn hyperbolic_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::length(), exec_state)?;
+    let y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::length(), exec_state)?;
+    let semi_major: TyF64 = args.get_kw_arg_typed("semiMajor", &RuntimeType::count(), exec_state)?;
+    let semi_minor: TyF64 = args.get_kw_arg_typed("semiMinor", &RuntimeType::count(), exec_state)?;
+
+    let hyperbolic_point = inner_hyperbolic_point(x, y, semi_major, semi_minor, &args).await?;
+
+    args.make_kcl_val_from_point(hyperbolic_point, exec_state.length_unit().into())
+}
+
+/// ```no_run
+/// point = hyperbolicPoint(x = 5, semiMajor = 2, semiMinor = 1)
+///```
+#[stdlib {
+    name = "hyperbolicPoint",
+    unlabeled_first = false,
+    args = {
+        semi_major = { docs = "The semi major value a of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
+        semi_minor = { docs = "The semi minor value b of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
+        x = { docs = "The x value of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1. Will calculate the point y that satisfies the equation and returns (x, y). Incompatible with `y`."},
+        y = { docs = "The y value of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1. Will calculate the point x that satisfies the equation and returns (x, y). Incompatible with `x`."},
+    },
+    tags = ["sketch"]
+}]
+async fn inner_hyperbolic_point(
+    x: Option<TyF64>,
+    y: Option<TyF64>,
+    semi_major: TyF64,
+    semi_minor: TyF64,
+    args: &Args,
+) -> Result<[f64; 2], KclError> {
+    let semi_major = semi_major.n;
+    let semi_minor = semi_minor.n;
+    if let Some(x) = x {
+        if x.n < semi_major {
+            Err(KclError::Type(KclErrorDetails::new(
+                format!(
+                    "Invalid input. The x value, {}, cannot be less than the semi major value, {}.",
+                    x.n, semi_major
+                )
+                .to_owned(),
+                vec![args.source_range],
+            )))
+        } else {
+            Ok((x.n, semi_minor * (x.n.powf(2.0) / semi_major.powf(2.0) - 1.0).sqrt()).into())
+        }
+    } else if let Some(y) = y {
+        Ok((semi_major * (y.n.powf(2.0) / semi_minor.powf(2.0) + 1.0).sqrt(), y.n).into())
+    } else {
+        Err(KclError::Type(KclErrorDetails::new(
+            "Invalid input. Must have either x or y, cannot have both or neither.".to_owned(),
+            vec![args.source_range],
+        )))
+    }
+}
+
 pub async fn hyperbolic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch = args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let sketch =
+        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
     let semi_major: TyF64 = args.get_kw_arg_typed("semiMajor", &RuntimeType::length(), exec_state)?;
     let semi_minor: TyF64 = args.get_kw_arg_typed("semiMinor", &RuntimeType::length(), exec_state)?;
-    let interior: [TyF64; 2] = args.get_kw_arg_typed("interior", &RuntimeType::point2d(), exec_state)?;
-    let end: [TyF64; 2] = args.get_kw_arg_typed("end", &RuntimeType::point2d(), exec_state)?;
+    let interior: Option<[TyF64; 2]> = args.get_kw_arg_opt_typed("interior", &RuntimeType::point2d(), exec_state)?;
+    let end: Option<[TyF64; 2]> = args.get_kw_arg_opt_typed("end", &RuntimeType::point2d(), exec_state)?;
+    let interior_absolute: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt_typed("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let end_absolute: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let new_sketch = inner_hyperbolic(sketch, semi_major, semi_minor, interior, end, tag, exec_state, args).await?;
+    let new_sketch = inner_hyperbolic(
+        sketch,
+        semi_major,
+        semi_minor,
+        interior,
+        end,
+        interior_absolute,
+        end_absolute,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -2592,20 +2742,53 @@ fn hyperbolic_tangent(point: Point2d, semi_major: f64, semi_minor: f64) -> [f64;
         sketch = { docs = "Which sketch should this path be added to?" },
         semi_major = { docs = "The tangent of the conic at the start point (the end of the previous path segement)" },
         semi_minor = { docs = "The tangent of the conic at the end point" },
-        interior = { docs = "Any point between the arc's start and end?" },
-        end = { docs = "Where should this arc end?" },
+        interior = { docs = "A point that lies on the conic segment. This point is relative to the start of the segment. Requires `end`. Incompatible with `interior_absolute` and `end_absolute`." },
+        interior_absolute = { docs = "A point that lies on the conic. Requires `end_absolute`. Incompatible with `interior` and `end`." },
+        end = { docs = "Where should this arc end? This point is relative to the start of the segment. Requires `interior`. Incompatible with `interior_absolute` and `end_absolute`." },
+        end_absolute = { docs = "Where should this arc end? Requires `interior_absolute`. Incompatible with `interior` and `end`." },
         tag = { docs = "Create a new tag which refers to this line"},
     },
     tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
-pub(crate) async fn inner_hyperbolic(sketch: Sketch, semi_major: TyF64, semi_minor: TyF64, interior: [TyF64; 2], end: [TyF64; 2], tag: Option<TagNode>, exec_state: &mut ExecState, args: Args
+pub(crate) async fn inner_hyperbolic(
+    sketch: Sketch,
+    semi_major: TyF64,
+    semi_minor: TyF64,
+    interior: Option<[TyF64; 2]>,
+    end: Option<[TyF64; 2]>,
+    interior_absolute: Option<[TyF64; 2]>,
+    end_absolute: Option<[TyF64; 2]>,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
     let id = exec_state.next_uuid();
 
-    let (interior, _) =  untype_point(interior);
-    let (end, _) = untype_point(end);
+    let (interior, end, relative, error) = match (interior, end, interior_absolute, end_absolute) {
+        (Some(interior), Some(end), None, None) => (Some(interior), Some(end), true, None),
+        (None, None, Some(interior_absolute), Some(end_absolute)) => {
+            (Some(interior_absolute), Some(end_absolute), false, None)
+        }
+        _ => (
+            None,
+            None,
+            false,
+            Some(KclError::Type(KclErrorDetails::new(
+                "Invalid combination of arguments. Either provide (end, interior) or (endAbsolute, interiorAbsolute)"
+                    .to_owned(),
+                vec![args.source_range],
+            ))),
+        ),
+    };
+
+    if let Some(err) = error {
+        return Err(err);
+    }
+
+    let (interior, _) = untype_point(interior.unwrap());
+    let (end, _) = untype_point(end.unwrap());
     let end_point = Point2d {
         x: end[0],
         y: end[1],
@@ -2614,7 +2797,7 @@ pub(crate) async fn inner_hyperbolic(sketch: Sketch, semi_major: TyF64, semi_min
 
     let semi_major_u = semi_major.to_length_units(from.units);
     let semi_minor_u = semi_minor.to_length_units(from.units);
-        
+
     let start_tangent = hyperbolic_tangent(from, semi_major_u, semi_minor_u);
     let end_tangent = hyperbolic_tangent(end_point, semi_major_u, semi_minor_u);
 
@@ -2627,10 +2810,11 @@ pub(crate) async fn inner_hyperbolic(sketch: Sketch, semi_major: TyF64, semi_min
                 end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
                 end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
                 interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
-                relative: false,
+                relative,
             },
         }),
-    ).await?;
+    )
+    .await?;
 
     let current_path = Path::Conic {
         base: BasePath {
@@ -2653,11 +2837,56 @@ pub(crate) async fn inner_hyperbolic(sketch: Sketch, semi_major: TyF64, semi_min
     new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
-
 }
 
+/// Calculate the point on a parabola given the coefficient of the parabola and either x or y
+pub async fn parabolic_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::length(), exec_state)?;
+    let y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::length(), exec_state)?;
+    let coefficient: TyF64 = args.get_kw_arg_typed("coefficient", &RuntimeType::count(), exec_state)?;
+
+    let parabolic_point = inner_parabolic_point(x, y, coefficient, &args).await?;
+
+    args.make_kcl_val_from_point(parabolic_point, exec_state.length_unit().into())
+}
+
+/// ```no_run
+/// point001 = parabolicPoint(x = 5, coefficient = 0.1)
+/// point002 = parabolicPoint(y = 2.5, coefficient = 0.1)
+/// assert(point001[0], isEqualTo = point002[0])
+/// assert(point001[1], isEqualTo = point002[1])
+///```
+#[stdlib {
+    name = "parabolicPoint",
+    unlabeled_first = false,
+    args = {
+        coefficient = { docs = "The coefficient a of the parabolic equation y = ax^2." },
+        x = { docs = "The x value of the parabolic equation y = ax^2. Will calculate the point y that satisfies the equation and returns (x, y). Incompatible with `y`."},
+        y = { docs = "The y value of the parabolic equation y = ax^2. Will calculate the point x that satisfies the equation and returns (x, y). Incompatible with `x`."},
+    },
+    tags = ["sketch"]
+}]
+async fn inner_parabolic_point(
+    x: Option<TyF64>,
+    y: Option<TyF64>,
+    coefficient: TyF64,
+    args: &Args,
+) -> Result<[f64; 2], KclError> {
+    let coefficient = coefficient.n;
+    if let Some(x) = x {
+        Ok((x.n, coefficient * x.n.powf(2.0)).into())
+    } else if let Some(y) = y {
+        Ok(((y.n / coefficient).sqrt(), y.n).into())
+    } else {
+        Err(KclError::Type(KclErrorDetails::new(
+            "Invalid input. Must have either x or y, cannot have both or neither.".to_owned(),
+            vec![args.source_range],
+        )))
+    }
+}
 pub async fn parabolic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch = args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let sketch =
+        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
     let coefficient: TyF64 = args.get_kw_arg_typed("coefficient", &RuntimeType::count(), exec_state)?;
     let interior: [TyF64; 2] = args.get_kw_arg_typed("interior", &RuntimeType::point2d(), exec_state)?;
@@ -2696,12 +2925,19 @@ fn parabolic_tangent(point: Point2d, coefficient: f64) -> [f64; 2] {
     },
     tags = ["sketch"]
 }]
-pub(crate) async fn inner_parabolic(sketch: Sketch, coefficient: TyF64, interior: [TyF64; 2], end: [TyF64; 2], tag: Option<TagNode>, exec_state: &mut ExecState, args: Args
+pub(crate) async fn inner_parabolic(
+    sketch: Sketch,
+    coefficient: TyF64,
+    interior: [TyF64; 2],
+    end: [TyF64; 2],
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
     let id = exec_state.next_uuid();
 
-    let (interior, _) =  untype_point(interior);
+    let (interior, _) = untype_point(interior);
     let (end, _) = untype_point(end);
     let end_point = Point2d {
         x: end[0],
@@ -2724,7 +2960,8 @@ pub(crate) async fn inner_parabolic(sketch: Sketch, coefficient: TyF64, interior
                 relative: false,
             },
         }),
-    ).await?;
+    )
+    .await?;
 
     let current_path = Path::Conic {
         base: BasePath {
@@ -2747,14 +2984,15 @@ pub(crate) async fn inner_parabolic(sketch: Sketch, coefficient: TyF64, interior
     new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
-
 }
 
 /// Draw a conic section
 pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch = args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let sketch =
+        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
-    let start_tangent: Option<[TyF64; 2]> = args.get_kw_arg_opt_typed("startTangent", &RuntimeType::point2d(), exec_state)?;
+    let start_tangent: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt_typed("startTangent", &RuntimeType::point2d(), exec_state)?;
     let end_tangent: [TyF64; 2] = args.get_kw_arg_typed("endTangent", &RuntimeType::point2d(), exec_state)?;
     let end: [TyF64; 2] = args.get_kw_arg_typed("end", &RuntimeType::point2d(), exec_state)?;
     let interior: [TyF64; 2] = args.get_kw_arg_typed("interior", &RuntimeType::point2d(), exec_state)?;
@@ -2765,7 +3003,6 @@ pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         value: Box::new(new_sketch),
     })
 }
-
 
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
@@ -2793,20 +3030,33 @@ pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
-pub(crate) async fn inner_conic(sketch: Sketch, start_tangent: Option<[TyF64; 2]>, end: [TyF64; 2], end_tangent: [TyF64; 2], interior: [TyF64; 2], tag: Option<TagNode>, exec_state: &mut ExecState, args: Args
+pub(crate) async fn inner_conic(
+    sketch: Sketch,
+    start_tangent: Option<[TyF64; 2]>,
+    end: [TyF64; 2],
+    end_tangent: [TyF64; 2],
+    interior: [TyF64; 2],
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
     let id = exec_state.next_uuid();
-    let (end_tangent, _) =  untype_point(end_tangent);
-    let (end, _) =  untype_point(end);
-    let (interior, _) =  untype_point(interior);
+    let (end_tangent, _) = untype_point(end_tangent);
+    let (end, _) = untype_point(end);
+    let (interior, _) = untype_point(interior);
 
-    let (start_tangent, _) =  if let Some(start_tangent) = start_tangent {
+    let (start_tangent, _) = if let Some(start_tangent) = start_tangent {
         untype_point(start_tangent)
     } else {
-        let previous_point = sketch.get_tangential_info_from_paths().tan_previous_point(from.ignore_units());
+        let previous_point = sketch
+            .get_tangential_info_from_paths()
+            .tan_previous_point(from.ignore_units());
         let from = from.ignore_units();
-        ([from[0] - previous_point[0], from[1] - previous_point[1]], NumericType::Any)
+        (
+            [from[0] - previous_point[0], from[1] - previous_point[1]],
+            NumericType::Any,
+        )
     };
 
     args.batch_modeling_cmd(
@@ -2821,8 +3071,9 @@ pub(crate) async fn inner_conic(sketch: Sketch, start_tangent: Option<[TyF64; 2]
                 relative: false,
             },
         }),
-    ).await?;
-    
+    )
+    .await?;
+
     let current_path = Path::Conic {
         base: BasePath {
             from: from.ignore_units(),

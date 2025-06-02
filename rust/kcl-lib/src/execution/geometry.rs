@@ -1156,7 +1156,7 @@ pub enum Path {
     Conic {
         #[serde(flatten)]
         base: BasePath,
-    }
+    },
 }
 
 /// What kind of path is this?
@@ -1409,8 +1409,11 @@ impl Path {
                 _minor_radius: *minor_radius,
                 ccw: *ccw,
             },
-            Path::Conic { .. } |
-            Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {
+            Path::Conic { .. }
+            | Path::ToPoint { .. }
+            | Path::Horizontal { .. }
+            | Path::AngledLineTo { .. }
+            | Path::Base { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)
             }
