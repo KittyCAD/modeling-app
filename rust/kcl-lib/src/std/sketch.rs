@@ -65,13 +65,13 @@ impl FaceTag {
         match self {
             FaceTag::Tag(ref t) => args.get_adjacent_face_to_tag(exec_state, t, must_be_planar).await,
             FaceTag::StartOrEnd(StartOrEnd::Start) => solid.start_cap_id.ok_or_else(|| {
-                KclError::Type(KclErrorDetails::new(
+                KclError::new_type(KclErrorDetails::new(
                     "Expected a start face".to_string(),
                     vec![args.source_range],
                 ))
             }),
             FaceTag::StartOrEnd(StartOrEnd::End) => solid.end_cap_id.ok_or_else(|| {
-                KclError::Type(KclErrorDetails::new(
+                KclError::new_type(KclErrorDetails::new(
                     "Expected an end face".to_string(),
                     vec![args.source_range],
                 ))
@@ -603,7 +603,7 @@ async fn inner_angled_line(
         .filter(|x| x.is_some())
         .count();
     if options_given > 1 {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             " one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given".to_string(),
             vec![args.source_range],
         )));
@@ -631,11 +631,11 @@ async fn inner_angled_line(
         (None, None, None, None, Some(end_absolute_y)) => {
             inner_angled_line_to_y(angle_degrees, end_absolute_y, sketch, tag, exec_state, args).await
         }
-        (None, None, None, None, None) => Err(KclError::Type(KclErrorDetails::new(
+        (None, None, None, None, None) => Err(KclError::new_type(KclErrorDetails::new(
             "One of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` must be given".to_string(),
             vec![args.source_range],
         ))),
-        _ => Err(KclError::Type(KclErrorDetails::new(
+        _ => Err(KclError::new_type(KclErrorDetails::new(
             "Only One of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given".to_owned(),
             vec![args.source_range],
         ))),
@@ -709,14 +709,14 @@ async fn inner_angled_line_of_x_length(
     args: Args,
 ) -> Result<Sketch, KclError> {
     if angle_degrees.abs() == 270.0 {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "Cannot have an x constrained angle of 270 degrees".to_string(),
             vec![args.source_range],
         )));
     }
 
     if angle_degrees.abs() == 90.0 {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "Cannot have an x constrained angle of 90 degrees".to_string(),
             vec![args.source_range],
         )));
@@ -741,14 +741,14 @@ async fn inner_angled_line_to_x(
     let from = sketch.current_pen_position()?;
 
     if angle_degrees.abs() == 270.0 {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "Cannot have an x constrained angle of 270 degrees".to_string(),
             vec![args.source_range],
         )));
     }
 
     if angle_degrees.abs() == 90.0 {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "Cannot have an x constrained angle of 90 degrees".to_string(),
             vec![args.source_range],
         )));
@@ -776,14 +776,14 @@ async fn inner_angled_line_of_y_length(
     args: Args,
 ) -> Result<Sketch, KclError> {
     if angle_degrees.abs() == 0.0 {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "Cannot have a y constrained angle of 0 degrees".to_string(),
             vec![args.source_range],
         )));
     }
 
     if angle_degrees.abs() == 180.0 {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "Cannot have a y constrained angle of 180 degrees".to_string(),
             vec![args.source_range],
         )));
@@ -808,14 +808,14 @@ async fn inner_angled_line_to_y(
     let from = sketch.current_pen_position()?;
 
     if angle_degrees.abs() == 0.0 {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "Cannot have a y constrained angle of 0 degrees".to_string(),
             vec![args.source_range],
         )));
     }
 
     if angle_degrees.abs() == 180.0 {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "Cannot have a y constrained angle of 180 degrees".to_string(),
             vec![args.source_range],
         )));
@@ -892,7 +892,7 @@ pub async fn inner_angled_line_that_intersects(
 ) -> Result<Sketch, KclError> {
     let intersect_path = args.get_tag_engine_info(exec_state, &intersect_tag)?;
     let path = intersect_path.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails::new(
+        KclError::new_type(KclErrorDetails::new(
             format!("Expected an intersect path with a path, found `{:?}`", intersect_path),
             vec![args.source_range],
         ))
@@ -1193,7 +1193,7 @@ async fn inner_start_sketch_on(
         }
         SketchData::Solid(solid) => {
             let Some(tag) = face else {
-                return Err(KclError::Type(KclErrorDetails::new(
+                return Err(KclError::new_type(KclErrorDetails::new(
                     "Expected a tag for the face to sketch on".to_string(),
                     vec![args.source_range],
                 )));
@@ -1717,7 +1717,7 @@ pub(crate) async fn inner_arc(
             absolute_arc(&args, id, exec_state, sketch, from, interior_absolute, end_absolute, tag).await
         }
         _ => {
-            Err(KclError::Type(KclErrorDetails::new(
+            Err(KclError::new_type(KclErrorDetails::new(
                 "Invalid combination of arguments. Either provide (angleStart, angleEnd, radius) or (endAbsolute, interiorAbsolute)".to_owned(),
                 vec![args.source_range],
             )))
@@ -1804,7 +1804,7 @@ pub async fn relative_arc(
     let radius = radius.to_length_units(from.units);
     let (center, end) = arc_center_and_end(from.ignore_units(), a_start, a_end, radius);
     if a_start == a_end {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "Arc start and end angles must be different".to_string(),
             vec![args.source_range],
         )));

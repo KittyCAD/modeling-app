@@ -595,7 +595,7 @@ impl KclValue {
     /// If this KCL value is a bool, retrieve it.
     pub fn get_bool(&self) -> Result<bool, KclError> {
         self.as_bool().ok_or_else(|| {
-            KclError::Type(KclErrorDetails::new(
+            KclError::new_type(KclErrorDetails::new(
                 format!("Expected bool, found {}", self.human_friendly_type()),
                 self.into(),
             ))

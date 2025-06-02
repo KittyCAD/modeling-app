@@ -123,7 +123,7 @@ impl Args {
         }
 
         T::from_kcl_val(&arg.value).map(Some).ok_or_else(|| {
-            KclError::Type(KclErrorDetails::new(
+            KclError::new_type(KclErrorDetails::new(
                 format!(
                     "The arg {label} was given, but it was the wrong type. It should be type {} but it was {}",
                     tynm::type_name::<T>(),
@@ -354,14 +354,14 @@ impl Args {
             exec_state.stack().get_from_call_stack(&tag.value, self.source_range)?
         {
             let info = t.get_info(epoch).ok_or_else(|| {
-                KclError::Type(KclErrorDetails::new(
+                KclError::new_type(KclErrorDetails::new(
                     format!("Tag `{}` does not have engine info", tag.value),
                     vec![self.source_range],
                 ))
             })?;
             Ok(info)
         } else {
-            Err(KclError::Type(KclErrorDetails::new(
+            Err(KclError::new_type(KclErrorDetails::new(
                 format!("Tag `{}` does not exist", tag.value),
                 vec![self.source_range],
             )))
@@ -493,7 +493,7 @@ impl Args {
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
         if tag.value.is_empty() {
-            return Err(KclError::Type(KclErrorDetails::new(
+            return Err(KclError::new_type(KclErrorDetails::new(
                 "Expected a non-empty tag for the face".to_string(),
                 vec![self.source_range],
             )));
@@ -502,7 +502,7 @@ impl Args {
         let engine_info = self.get_tag_engine_info_check_surface(exec_state, tag)?;
 
         let surface = engine_info.surface.as_ref().ok_or_else(|| {
-            KclError::Type(KclErrorDetails::new(
+            KclError::new_type(KclErrorDetails::new(
                 format!("Tag `{}` does not have a surface", tag.value),
                 vec![self.source_range],
             ))
@@ -521,7 +521,7 @@ impl Args {
                 }
             }
             // The must be planar check must be called before the arc check.
-            ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails::new(
+            ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::new_type(KclErrorDetails::new(
                 format!("Tag `{}` is a non-planar surface", tag.value),
                 vec![self.source_range],
             )))),
@@ -548,7 +548,7 @@ impl Args {
                 }
             }
             // The must be planar check must be called before the fillet check.
-            ExtrudeSurface::Fillet(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails::new(
+            ExtrudeSurface::Fillet(_) if must_be_planar => Some(Err(KclError::new_type(KclErrorDetails::new(
                 format!("Tag `{}` is a non-planar surface", tag.value),
                 vec![self.source_range],
             )))),
@@ -568,7 +568,7 @@ impl Args {
         }
 
         // If we still haven't found the face, return an error.
-        Err(KclError::Type(KclErrorDetails::new(
+        Err(KclError::new_type(KclErrorDetails::new(
             format!("Expected a face with the tag `{}`", tag.value),
             vec![self.source_range],
         )))

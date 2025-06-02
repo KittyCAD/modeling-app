@@ -417,6 +417,10 @@ impl KclError {
         })
     }
 
+    pub fn new_type(details: KclErrorDetails) -> KclError {
+        KclError::Type { details }
+    }
+
     /// Get the error message.
     pub fn get_message(&self) -> String {
         format!("{}: {}", self.error_type(), self.message())
