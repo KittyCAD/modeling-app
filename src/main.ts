@@ -158,6 +158,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   newWindow.on('close', () => {
     const bounds = newWindow.getBounds()
     saveLastWindowConfig({
+      version: '0.1', // Version of the config file, so we add migrations if we break it later
       bounds,
     })
   })
@@ -246,6 +247,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
 
 interface LastWindowConfig {
   bounds: Electron.Rectangle
+  version: string // "0.1"
 }
 
 const userDataPath = app.getPath('userData')
