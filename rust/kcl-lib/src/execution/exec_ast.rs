@@ -164,7 +164,7 @@ impl ExecutorContext {
                                 let mut mod_value = mem.get_from(&mod_name, env_ref, import_item.into(), 0).cloned();
 
                                 if value.is_err() && ty.is_err() && mod_value.is_err() {
-                                    return Err(KclError::UndefinedValue(KclErrorDetails::new(
+                                    return Err(KclError::new_undefined_value(KclErrorDetails::new(
                                         format!("{} is not defined in module", import_item.name.name),
                                         vec![SourceRange::from(&import_item.name)],
                                     )));
@@ -913,7 +913,7 @@ impl Node<MemberExpression> {
                 if let Some(value) = map.get(&property) {
                     Ok(value.to_owned())
                 } else {
-                    Err(KclError::UndefinedValue(KclErrorDetails::new(
+                    Err(KclError::new_undefined_value(KclErrorDetails::new(
                         format!("Property '{property}' not found in object"),
                         vec![self.clone().into()],
                     )))
@@ -938,7 +938,7 @@ impl Node<MemberExpression> {
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
                 } else {
-                    Err(KclError::UndefinedValue(KclErrorDetails::new(
+                    Err(KclError::new_undefined_value(KclErrorDetails::new(
                         format!("The array doesn't have any item at index {index}"),
                         vec![self.clone().into()],
                     )))

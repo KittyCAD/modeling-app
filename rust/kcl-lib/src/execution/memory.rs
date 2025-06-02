@@ -367,7 +367,7 @@ impl ProgramMemory {
 
         let name = var.trim_start_matches(TYPE_PREFIX).trim_start_matches(MODULE_PREFIX);
 
-        Err(KclError::UndefinedValue(KclErrorDetails::new(
+        Err(KclError::new_undefined_value(KclErrorDetails::new(
             format!("`{name}` is not defined"),
             vec![source_range],
         )))
@@ -488,7 +488,7 @@ impl ProgramMemory {
             };
         }
 
-        Err(KclError::UndefinedValue(KclErrorDetails::new(
+        Err(KclError::new_undefined_value(KclErrorDetails::new(
             format!("`{}` is not defined", var),
             vec![],
         )))

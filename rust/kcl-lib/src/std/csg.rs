@@ -23,7 +23,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
 
     if solids.len() < 2 {
-        return Err(KclError::UndefinedValue(KclErrorDetails::new(
+        return Err(KclError::new_undefined_value(KclErrorDetails::new(
             "At least two solids are required for a union operation.".to_string(),
             vec![args.source_range],
         )));
@@ -88,7 +88,7 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
 
     if solids.len() < 2 {
-        return Err(KclError::UndefinedValue(KclErrorDetails::new(
+        return Err(KclError::new_undefined_value(KclErrorDetails::new(
             "At least two solids are required for an intersect operation.".to_string(),
             vec![args.source_range],
         )));
