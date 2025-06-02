@@ -534,7 +534,7 @@ profile001 = startProfile(sketch001, at = [-484.34, 484.95])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 `
-        const targetURL = `?create-file&name=test&units=mm&code=${encodeURIComponent(btoa(code))}&ask-open-desktop`
+        const targetURL = `?create-file=true&name=test&units=mm&code=${encodeURIComponent(btoa(code))}&ask-open-desktop=true`
         await page.goto(page.url() + targetURL)
         expect(page.url()).toContain(targetURL)
       })
