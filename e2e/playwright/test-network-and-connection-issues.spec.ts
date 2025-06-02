@@ -14,8 +14,10 @@ test.describe('Test network related behaviors', () => {
     'simulate network down and network little widget',
     { tag: '@skipLocalEngine' },
     async ({ page, homePage }) => {
-      const networkToggleConnectedText = page.getByText('Connected')
-      const networkToggleWeakText = page.getByText('Network health (Weak)')
+      const networkToggleConnectedText = page.getByText(
+        'Network health (Strong)'
+      )
+      const networkToggleWeakText = page.getByText('Network health (Ok)')
 
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -98,8 +100,10 @@ test.describe('Test network related behaviors', () => {
     { tag: '@skipLocalEngine' },
     async ({ page, homePage, toolbar, scene, cmdBar }) => {
       const networkToggle = page.getByTestId('network-toggle')
-      const networkToggleConnectedText = page.getByText('Connected')
-      const networkToggleWeakText = page.getByText('Network health (Weak)')
+      const networkToggleConnectedText = page.getByText(
+        'Network health (Strong)'
+      )
+      const networkToggleWeakText = page.getByText('Network health (Ok)')
 
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -282,8 +286,10 @@ profile001 = startProfile(sketch001, at = [12.34, -12.34])
     { tag: ['@desktop', '@skipLocalEngine'] },
     async ({ page, homePage, scene, cmdBar, toolbar, tronApp }) => {
       const networkToggle = page.getByTestId('network-toggle')
-      const networkToggleConnectedText = page.getByText('Connected')
-      const networkToggleWeakText = page.getByText('Network health (Weak)')
+      const networkToggleConnectedText = page.getByText(
+        'Network health (Strong)'
+      )
+      const networkToggleWeakText = page.getByText('Network health (Ok)')
 
       if (!tronApp) {
         fail()
