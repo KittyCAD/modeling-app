@@ -253,7 +253,7 @@ impl ExecutorContext {
                                     .memory
                                     .get_from(name, env_ref, source_range, 0)
                                     .map_err(|_err| {
-                                        KclError::Internal(KclErrorDetails::new(
+                                        KclError::new_internal(KclErrorDetails::new(
                                             format!("{} is not defined in module (but was exported?)", name),
                                             vec![source_range],
                                         ))
@@ -1846,7 +1846,7 @@ d = b + c
                 crate::engine::conn_mock::EngineConnection::new()
                     .await
                     .map_err(|err| {
-                        KclError::Internal(KclErrorDetails::new(
+                        KclError::new_internal(KclErrorDetails::new(
                             format!("Failed to create mock engine connection: {}", err),
                             vec![SourceRange::default()],
                         ))

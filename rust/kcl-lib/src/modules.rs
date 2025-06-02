@@ -202,7 +202,7 @@ impl ModulePath {
                     ModulePath::Std { .. } => {
                         let message = format!("Cannot import a non-std KCL file from std: {path}.");
                         debug_assert!(false, "{}", &message);
-                        return Err(KclError::Internal(KclErrorDetails::new(message, vec![])));
+                        return Err(KclError::new_internal(KclErrorDetails::new(message, vec![])));
                     }
                 };
 
@@ -217,7 +217,7 @@ impl ModulePath {
         if path.len() != 2 || path[0] != "std" {
             let message = format!("Invalid std import path: {path:?}.");
             debug_assert!(false, "{}", &message);
-            return Err(KclError::Internal(KclErrorDetails::new(message, vec![])));
+            return Err(KclError::new_internal(KclErrorDetails::new(message, vec![])));
         }
 
         Ok(ModulePath::Std { value: path[1].clone() })

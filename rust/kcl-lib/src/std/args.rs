@@ -308,7 +308,7 @@ impl Args {
         })?;
 
         T::from_kcl_val(&arg).ok_or_else(|| {
-            KclError::Internal(KclErrorDetails::new(
+            KclError::new_internal(KclErrorDetails::new(
                 format!("Mismatch between type coercion and value extraction (this isn't your fault).\nTo assist in bug-reporting, expected type: {ty:?}; actual value: {arg:?}"),
                 vec![self.source_range],
            ))

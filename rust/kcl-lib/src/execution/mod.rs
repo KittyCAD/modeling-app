@@ -858,7 +858,7 @@ impl ExecutorContext {
 
             for module in modules {
                 let Some((import_stmt, module_id, module_path, repr)) = universe.get(&module) else {
-                    return Err(KclErrorWithOutputs::no_outputs(KclError::Internal(
+                    return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
                         KclErrorDetails::new(format!("Module {module} not found in universe"), Default::default()),
                     )));
                 };
@@ -920,7 +920,7 @@ impl ExecutorContext {
 
                             result.map(|val| ModuleRepr::Foreign(geom.clone(), val))
                         }
-                        ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::Internal(KclErrorDetails::new(
+                        ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
                             format!("Module {module_path} not found in universe"),
                             vec![source_range],
                         ))),
@@ -1283,7 +1283,7 @@ impl ExecutorContext {
             .await?;
 
         let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
-            return Err(KclError::Internal(crate::errors::KclErrorDetails::new(
+            return Err(KclError::new_internal(crate::errors::KclErrorDetails::new(
                 format!("Expected Export response, got {resp:?}",),
                 vec![SourceRange::default()],
             )));
@@ -1303,7 +1303,7 @@ impl ExecutorContext {
                     coords: *kittycad_modeling_cmds::coord::KITTYCAD,
                     created: if deterministic_time {
                         Some("2021-01-01T00:00:00Z".parse().map_err(|e| {
-                            KclError::Internal(crate::errors::KclErrorDetails::new(
+                            KclError::new_internal(crate::errors::KclErrorDetails::new(
                                 format!("Failed to parse date: {}", e),
                                 vec![SourceRange::default()],
                             ))
@@ -1383,7 +1383,7 @@ pub(crate) async fn parse_execute_with_project_dir(
     let exec_ctxt = ExecutorContext {
         engine: Arc::new(Box::new(
             crate::engine::conn_mock::EngineConnection::new().await.map_err(|err| {
-                KclError::Internal(crate::errors::KclErrorDetails::new(
+                KclError::new_internal(crate::errors::KclErrorDetails::new(
                     format!("Failed to create mock engine connection: {}", err),
                     vec![SourceRange::default()],
                 ))

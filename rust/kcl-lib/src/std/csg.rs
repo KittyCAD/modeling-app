@@ -66,7 +66,7 @@ pub(crate) async fn inner_union(
         modeling_response: OkModelingCmdResponse::BooleanUnion(BooleanUnion { extra_solid_ids }),
     } = result
     else {
-        return Err(KclError::Internal(KclErrorDetails::new(
+        return Err(KclError::new_internal(KclErrorDetails::new(
             "Failed to get the result of the union operation.".to_string(),
             vec![args.source_range],
         )));
@@ -131,7 +131,7 @@ pub(crate) async fn inner_intersect(
         modeling_response: OkModelingCmdResponse::BooleanIntersection(BooleanIntersection { extra_solid_ids }),
     } = result
     else {
-        return Err(KclError::Internal(KclErrorDetails::new(
+        return Err(KclError::new_internal(KclErrorDetails::new(
             "Failed to get the result of the intersection operation.".to_string(),
             vec![args.source_range],
         )));
@@ -193,7 +193,7 @@ pub(crate) async fn inner_subtract(
         modeling_response: OkModelingCmdResponse::BooleanSubtract(BooleanSubtract { extra_solid_ids }),
     } = result
     else {
-        return Err(KclError::Internal(KclErrorDetails::new(
+        return Err(KclError::new_internal(KclErrorDetails::new(
             "Failed to get the result of the subtract operation.".to_string(),
             vec![args.source_range],
         )));

@@ -500,7 +500,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     let tag_id = if let Some(t) = value.sketch.tags.get(&tag.name) {
                         let mut t = t.clone();
                         let Some(info) = t.get_cur_info() else {
-                            return Err(KclError::Internal(KclErrorDetails::new(
+                            return Err(KclError::new_internal(KclErrorDetails::new(
                                 format!("Tag {} does not have path info", tag.name),
                                 vec![tag.into()],
                             )));

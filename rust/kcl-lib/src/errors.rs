@@ -410,11 +410,16 @@ impl KclErrorDetails {
 
 impl KclError {
     pub fn internal(message: String) -> KclError {
-        KclError::Internal(KclErrorDetails {
-            source_ranges: Default::default(),
-            backtrace: Default::default(),
-            message,
-        })
+        KclError::Internal {
+            details: KclErrorDetails {
+                source_ranges: Default::default(),
+                backtrace: Default::default(),
+                message,
+            },
+        }
+    }
+    pub fn new_internal(details: KclErrorDetails) -> KclError {
+        KclError::Internal { details }
     }
 
     pub fn new_type(details: KclErrorDetails) -> KclError {
@@ -649,7 +654,7 @@ impl From<String> for KclError {
 #[cfg(feature = "pyo3")]
 impl From<pyo3::PyErr> for KclError {
     fn from(error: pyo3::PyErr) -> Self {
-        KclError::Internal(KclErrorDetails {
+        KclError::new_internal(KclErrorDetails {
             source_ranges: vec![],
             backtrace: Default::default(),
             message: error.to_string(),

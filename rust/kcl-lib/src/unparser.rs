@@ -883,7 +883,7 @@ pub async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::PathBuf
 #[cfg(not(target_arch = "wasm32"))]
 pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -> Result<(), anyhow::Error> {
     let files = walk_dir(&dir.to_path_buf()).await.map_err(|err| {
-        crate::KclError::Internal(crate::errors::KclErrorDetails::new(
+        crate::KclError::new_internal(crate::errors::KclErrorDetails::new(
             format!("Failed to walk directory `{}`: {:?}", dir.display(), err),
             vec![crate::SourceRange::default()],
         ))

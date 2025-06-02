@@ -276,7 +276,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 {
                     let duration = instant::Duration::from_millis(1);
                     wasm_timer::Delay::new(duration).await.map_err(|err| {
-                        KclError::Internal(KclErrorDetails::new(
+                        KclError::new_internal(KclErrorDetails::new(
                             format!("Failed to sleep: {:?}", err),
                             vec![source_range],
                         ))
