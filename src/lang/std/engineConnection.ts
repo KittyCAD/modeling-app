@@ -2002,16 +2002,6 @@ export class EngineCommandManager extends EventTarget {
           command.cmd.type === ('default_camera_perspective_settings' as any))
       )
     ) {
-      if (command.cmd && command.cmd.window) {
-        const value = this.sceneInfra?.camControls.camera.position.toArray()
-        value?.push(command.cmd.type)
-        if (!window.clientCamera) {
-          window.clientCamera = [value]
-        }
-        {
-          window.clientCamera.push(value)
-        }
-      }
       // highlight_set_entity, mouse_move and camera_drag_move are sent over the unreliable channel and are too noisy
       this.addCommandLog({
         type: CommandLogType.SendScene,
@@ -2039,16 +2029,6 @@ export class EngineCommandManager extends EventTarget {
       ;(cmd as any).sequence = this.outSequence
       this.outSequence++
       this.engineConnection?.unreliableSend(command)
-      if (command.cmd && command.cmd.window) {
-        const value = this.sceneInfra?.camControls.camera.position.toArray()
-        value?.push(command.cmd.type)
-        if (!window.clientCamera) {
-          window.clientCamera = [value]
-        }
-        {
-          window.clientCamera.push(value)
-        }
-      }
       return Promise.resolve(null)
     } else if (
       cmd.type === 'highlight_set_entity' &&

@@ -59,7 +59,9 @@ export function configurationToSettingsPayload(
         : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
-      streamIdleMode: toUndefinedIfNull(60000000),
+      streamIdleMode: toUndefinedIfNull(
+        configuration?.settings?.app?.stream_idle_mode
+      ),
       allowOrbitInSketchMode:
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       projectDirectory: configuration?.settings?.project?.directory,
