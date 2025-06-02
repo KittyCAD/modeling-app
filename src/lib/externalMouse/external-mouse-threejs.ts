@@ -1,15 +1,8 @@
-import { Matrix4, Vector3, PerspectiveCamera, OrthographicCamera } from 'three'
+import type { Vector3 } from 'three'
+import { PerspectiveCamera, OrthographicCamera } from 'three'
 import { sceneInfra, engineCommandManager } from '@src/lib/singletons'
 import { uuidv4 } from '@src/lib/utils'
 import * as THREE from 'three'
-import { convertThreeCamValuesToEngineCam } from '@src/clientSideScene/CameraControls'
-import type {
-  CameraViewState_type,
-  Point3d_type,
-  Point4d_type,
-  WorldCoordinateSystem_type,
-} from '@kittycad/lib/dist/types/src/models'
-
 declare global {
   var _3Dconnexion: any
   interface Window {
@@ -51,7 +44,7 @@ type ViewExtents = [Left, Bottom, FrustumFar, Right, Top, FrustrumNear]
 
 // this function fills the action and images structures that are exposed
 // to the 3Dconnexion button configuration editor
-function getApplicationCommands(buttonBank, images) {
+function getApplicationCommands(buttonBank: any, images: any) {
   // Add a couple of categiores / menus / tabs to the buttonbank/menubar/toolbar
   // Use the categories to group actions so that the user can find them easily
   var fileNode = buttonBank.push(
@@ -108,7 +101,7 @@ interface _3DconnexionMocked {
   connect(): boolean
   debug: boolean
   create3dmouse(canvas: HTMLElement | null, name: string): void
-  update3dcontroller(any): void
+  update3dcontroller(options: any): void
   delete3dmouse(): void
 }
 
@@ -132,13 +125,12 @@ interface _3DconnexionMiddleware {
   getUnitsToMeters?(): number
   getLookAt?(): Position | null
   getViewRotatable?(): boolean
-  getLookAt(): null
 
   // hit test properties
   setLookFrom?(p: Position): void
   setLookDirection?(p: Position): void
   setLookAperture?(a: number): void
-  setSelectionOnly(b: boolean): void
+  setSelectionOnly?(b: boolean): void
 
   // Commands
   setActiveCommand(id: any): void
@@ -165,6 +157,7 @@ interface _3DMouseConfiguration {
   debug: boolean
   name: string
   canvasId: string
+  camera: PerspectiveCamera | OrthographicCamera
 }
 
 interface Model {
@@ -175,12 +168,7 @@ interface Model {
 }
 
 class _3DMouseThreeJS implements _3DconnexionMiddleware {
-  /**
-   * Debug class vars
-   */
-  timesToPrint: number = 2
-
-  spaceMouse: _3DconnexionMocked
+  spaceMouse: _3DconnexionMocked | null = null
   debug: boolean
   name: string
   canvasId: string
@@ -193,7 +181,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
    * Feels useless to support an orthographic camera. We should only need a camera API
    * to proxy the orientation and position?
    */
-  camera: PerspectiveCamera | OrthographicCamera | null = null
+  camera: PerspectiveCamera | OrthographicCamera
 
   /**
    * These maybe dummy values because to move the camera the basic 6DOF we should
@@ -210,12 +198,12 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   /**
    * canvas.offsetWidth
    */
-  viewportWidth: number
+  viewportWidth: number = 0
 
   /**
    * canvas.offsetHeight
    */
-  viewportHeight: number
+  viewportHeight: number = 0
 
   /**
    * Camera view matrix state
@@ -224,37 +212,35 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
    * with the position and rotation of the camera. This is only required for the
    * view matrix. They maybe dummy values...
    */
-  fov: number
-  frustumNear: number
-  frustumFar: number
-  left: number
-  right: number
-  bottom: number
-  top: number
+  fov: number = 0
+  frustumNear: number = 0
+  frustumFar: number = 0
+  left: number = 0
+  right: number = 0
+  bottom: number = 0
+  top: number = 0
 
   constructor(configuration: _3DMouseConfiguration) {
-    // no op for now
-    console.log('_3DMouse has a no op constructor')
-
     this.name = configuration.name
     this.debug = configuration.debug
     this.canvasId = configuration.canvasId
+    this.camera = configuration.camera
 
     if (!_3Dconnexion) {
       console.error('Unable to find _3Dconnexion library')
     }
   }
+
   // custom
   deleteScene(): void {
+    if (!this.spaceMouse) {
+      console.error('spaceMouse is missing unable to delete3dmouse')
+      return
+    }
     this.spaceMouse.delete3dmouse()
   }
 
   // callbacks
-
-  getLookAt(): null {
-    return null
-  }
-
   getCoordinateSystem(): SixteenNumbers {
     // In this sample the cs has X to the right, Y-up, and Z out of the screen
     return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
@@ -265,25 +251,37 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
   }
 
-  /** TODO: Does this even matter?  */
+  /**
+   * This is critical to compute to the rotation part of the viewMatrix from the navigation library
+   * The new affine viewMatrix will be a rotation about the model's extent's center position followed by a translation.
+   * It takes the center point of this min,max AABB then applies the rotational diffierence to this pivot point.
+   */
   getModelExtents(): BoundingBox {
-    // Yes.
+    // This is called after onStartMotion
     const unit = 100
     return [-unit / 2, -unit / 2, -unit / 2, unit / 2, unit / 2, unit / 2]
   }
 
   getPerspective(): boolean {
-    // Yes.
+    // This is called after onStartMotion
     return true
   }
 
-  getViewMatrix = function () {
-    // Yes.
+  getViewMatrix() {
+    // This is called after onStartMotion
     // THREE.js matrices are column major (same as openGL)
     return this.camera.matrixWorld.toArray()
   }
 
   getFov(): number {
+    if (this.camera instanceof PerspectiveCamera === false) {
+      console.error(
+        'Camera is not a perspective camera, unable to get the FOV of this camera.'
+      )
+      // try to brick it during runtime on purpose
+      return -1
+    }
+
     const fov =
       2 *
       Math.atan(
@@ -296,6 +294,13 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   }
 
   getViewExtents(): ViewExtents {
+    if (this.camera instanceof OrthographicCamera === false) {
+      console.error(
+        'Camera is not orthographic camera, unable to get the viewExtents'
+      )
+      // try to brick it during runtime on purpose
+      return [0, 0, 0, 0, 0, 0]
+    }
     return [
       this.camera.left,
       this.camera.bottom,
@@ -307,7 +312,14 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   }
 
   getViewFrustum(): ViewExtents {
-    const tan_halffov = Math.tan((gl.fov * Math.PI) / 360.0)
+    if (this.camera instanceof PerspectiveCamera === false) {
+      console.error(
+        'Camera is not a perspective camera, unable to get the view frustum of this camera.'
+      )
+      // try to brick it during runtime on purpose
+      return [0, 0, 0, 0, 0, 0]
+    }
+    const tan_halffov = Math.tan((this.camera.fov * Math.PI) / 360.0)
     const bottom = -this.camera.near * tan_halffov
     const left = bottom * this.camera.aspect
     if (this.debug)
@@ -333,12 +345,13 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     return performance.now()
   }
 
-  shouldPrint(): void {
-    var a = new Error()
-    console.log('SHOULD PRINT', a.stack)
-  }
-
   setViewExtents(viewExtents: ViewExtents): void {
+    if (this.camera instanceof OrthographicCamera === false) {
+      console.error(
+        'Camera is not orthographic camera, unable to set the viewExtents'
+      )
+      return
+    }
     this.camera.left = viewExtents[0]
     this.camera.bottom = viewExtents[1]
     this.camera.right = viewExtents[3]
@@ -349,20 +362,30 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   // 3D mouse initialization
   init3DMouse(): void {
     this.spaceMouse = new _3Dconnexion(this)
-    this.spaceMouse.debug = this.debug
-    if (!this.spaceMouse.connect()) {
-      if (this.debug) console.log('Cannot connect to 3Dconnexion NL-Proxy')
+    if (this.spaceMouse) {
+      // set the debug flag in the wrapper library
+      this.spaceMouse.debug = this.debug
+      if (!this.spaceMouse.connect()) {
+        console.error('Cannot connect to 3Dconnexion NL-Proxy')
+      }
+    } else {
+      console.error('failed to create a _3Dconnexion class.')
     }
   }
 
   // init3DMouse needs onConnect
   onConnect(): void {
-    // TODO: Fix this API usage.
-    // const canvas = document.getElementById(this.canvasId)
-    const canvas = document.querySelector('[data-engine]')
+    const canvas: HTMLCanvasElement | null =
+      document.querySelector('[data-engine]')
 
     if (!canvas) {
-      console.error('[_3DMouse] no canvas found', canvas)
+      console.error('[_3DMouse] no canvas found, failed onConnect', canvas)
+      return
+    }
+
+    if (!this.spaceMouse) {
+      console.error('spaceMouse is not defined, failed onConnect')
+      return
     }
 
     const clientCamera = sceneInfra.camControls.camera
@@ -370,44 +393,27 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     /**
      * initialize the camera intrinsics
      */
+
     this.viewportWidth = canvas.width
     this.viewportHeight = canvas.height
-    /** TODO: Fov is only on perspective cameras */
-    this.fov = clientCamera.fov || 45
+
+    /** Make fov -1 on purpose */
+    this.fov = clientCamera instanceof PerspectiveCamera ? clientCamera.fov : -1
     this.frustumNear = clientCamera.near
     this.frustumFar = clientCamera.far
-    /** TODO: Only on ortho */
-    this.left = clientCamera.left || 1
-    /** TODO: Only on ortho */
+
+    /** Make left 0 on purpose */
+    this.left =
+      clientCamera instanceof OrthographicCamera ? clientCamera.left : 0
     this.right = -this.left
     this.bottom =
       (-(this.right - this.left) * this.viewportHeight) / this.viewportWidth / 2
     this.top = -this.bottom
 
     this.camera = sceneInfra.camControls.camera.clone()
-    // this.camera = new THREE.PerspectiveCamera(this.fov, this.frustumNear, this.frustumFar)
-    // this.camera.position.set(clientCamera.position.x, clientCamera.position.y, clientCamera.position.z)
-    // this.camera.lookAt(sceneInfra.camControls.target)
     this.camera.updateMatrix()
     this.camera.updateMatrixWorld()
     this.camera.updateProjectionMatrix()
-    /**
-     * seems legit?
-     */
-    // console.log('debug initial camera intrinsics')
-    // console.log('viewportWidth: ', this.viewportWidth)
-    // console.log('viewportHeight: ', this.viewportHeight)
-    // console.log('fov: ', this.fov)
-    // console.log('frustumNear: ', this.frustumNear)
-    // console.log('frustumFar: ', this.frustumFar)
-    // console.log('left: ', this.left)
-    // console.log('right: ', this.right)
-    // console.log('bottom: ', this.bottom)
-    // console.log('top: ', this.top)
-    console.log('STARTING POSITION', this.camera.position)
-    console.log('STARTING LOOKAT', sceneInfra.camControls.target)
-
-    /** TODO: camera.lookAt() ? */
 
     this.spaceMouse.create3dmouse(canvas, this.name)
   }
@@ -417,6 +423,11 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   }
 
   on3dmouseCreated(): void {
+    if (!this.spaceMouse) {
+      console.error('spaceMouse is not defined, failed on3dmouseCreated')
+      return
+    }
+
     // global reference from window
     const actionTree = new _3Dconnexion.ActionTree()
     const actionImages = new _3Dconnexion.ImageCache()
@@ -427,6 +438,10 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     })
 
     actionImages.onload = () => {
+      if (!this.spaceMouse) {
+        console.error('spaceMouse is not defined, failed on3dmouseCreated')
+        return
+      }
       this.spaceMouse.update3dcontroller({ images: actionImages.images })
     }
 
@@ -457,52 +472,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   }
 
   async sendToEngine() {
-    const clientCamera = sceneInfra.camControls.camera
-
-    const value = this.camera?.position.toArray()
-    value?.push('set_view_matrix')
-    if (!window.mouseCamera) {
-      window.mouseCamera = [value]
-    }
-    {
-      window.mouseCamera.push(value)
-    }
-
-    // const cameraViewState: CameraViewState_type = {
-    //   eye_offset: 0,
-    //   /** TODO: Only perspective has FOV, if ortho do 45? */
-    //   fov_y: clientCamera.fov || 45,
-    //   /** Always true */
-    //   ortho_scale_enabled: true,
-    //   /** TODO: ?? */
-    //   ortho_scale_factor: 1.4,
-    //   /**
-    //    * right_handed_up_z
-    //    * right_handed_up_y
-    //    */
-    //   world_coord_system: 'right_handed_up_z',
-    //   is_ortho: false,
-    //   pivot_position: {x: this.camera?.position.x, y: this.camera?.position.y, z: this.camera?.position.z},
-    //   pivot_rotation: {x: this.camera?.quaternion.x, y: this.camera?.quaternion.y, z:this.camera?.quaternion.z, w: this.camera?.quaternion.w},
-    // }
-
-    // // console.log(clientCamera)
-    // // console.log(cameraViewState)
-    // // is not directly compatible with the engine API
-    // await engineCommandManager.sendSceneCommand({
-    //   type: 'modeling_cmd_req',
-    //   cmd_id: uuidv4(),
-    //   cmd: {
-    //     type: 'default_camera_set_view',
-    //     view: {
-    //       ...cameraViewState,
-    //     },
-    //   },
-    // })
-    // console.log('positon', this.camera?.position)
-    // console.log('lookAtPoint',lookAtPoint)
-
-    // Works for translation, kevin
+    /** TODO: Kevin, this does not work for rotational component since the lookAt is broken. Translation only is okay */
     const c1 = sceneInfra.camControls.camera.position.clone()
     const c2 = this.camera?.position.clone()
     const diff = c2?.clone()?.sub(c1.clone())
@@ -516,29 +486,15 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
       zoom: this.camera?.zoom,
       target: t2, //sceneInfra.camControls.target.clone(),
     })
+
+    /** TODO: How to sync state after the throttled call? in the callback?*/
     // await engineCommandManager.sendSceneCommand({
     //   type: 'modeling_cmd_req',
     //   cmd_id: uuidv4(),
     //   cmd: {
-    //     type: 'default_camera_look_at',
-    //     ...convertThreeCamValuesToEngineCam({
-    //       isPerspective: true,
-    //       position: this.camera?.position.clone(),
-    //       quaternion: this.camera?.quaternion.clone(),
-    //       zoom: this.camera?.zoom,
-    //       target: t2, //sceneInfra.camControls.target.clone(),
-    //     }),
+    //     type: 'default_camera_get_settings',
     //   },
     // })
-
-    // // /** TODO: Immediately sync camera state? */
-    await engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
   }
 
   setViewMatrix(viewMatrix: SixteenNumbers): void {
@@ -553,12 +509,6 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
       this.camera.quaternion,
       this.camera.scale
     )
-    // console.log(this.camera.position, this.camera.quaternion, this.camera.scale)
-    // this.sendToEngine()
-    // if (this.timesToPrint) {
-    //   console.log('set_view_matrix', this.camera?.position.toArray())
-    //   this.timesToPrint -= 1
-    // }
 
     this.camera.updateMatrixWorld(true)
     this.sendToEngine()
@@ -587,7 +537,12 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     }
   }
 
-  render(time): void {
+  render(time: number): void {
+    if (!this.spaceMouse) {
+      console.error('spaceMouse is not defined, failed render')
+      return
+    }
+
     if (this.animating) {
       this.spaceMouse.update3dcontroller({
         frame: { time: time },
@@ -597,7 +552,6 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   }
 
   onStopMotion(): void {
-    console.log('stopped!')
     this.animating = false
   }
 }

@@ -284,10 +284,6 @@ export class CameraControls {
 
     const cb = ({ data, type }: CallBackParam) => {
       const camSettings = data.settings
-      if (camSettings && type) {
-        const value = [camSettings.pos.x, camSettings.pos.y, camSettings.pos.z]
-        value?.push(type)
-      }
       this.camera.position.set(
         camSettings.pos.x,
         camSettings.pos.y,

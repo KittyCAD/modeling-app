@@ -34,19 +34,21 @@ export async function resetCameraPosition() {
     const cameraProjection =
       settingsActor.getSnapshot().context.modeling.cameraProjection.current
 
-    sceneInfra.camControls.updateCameraToAxis(AxisNames.NEG_Y)
-    /**
-     * HACK: We need to update the gizmo, the command above doesn't trigger gizmo
-     * to render which makes the axis point in an old direction.
-     */
-    await engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
-    return
+    // TODO: Kevin remove after debugging
+    // sceneInfra.camControls.updateCameraToAxis(AxisNames.NEG_Y)
+    // /**
+    //  * HACK: We need to update the gizmo, the command above doesn't trigger gizmo
+    //  * to render which makes the axis point in an old direction.
+    //  */
+    // await engineCommandManager.sendSceneCommand({
+    //   type: 'modeling_cmd_req',
+    //   cmd_id: uuidv4(),
+    //   cmd: {
+    //     type: 'default_camera_get_settings',
+    //   },
+    // })
+    // return
+
     // We need to keep the users projection setting when resetting their camera
     if (cameraProjection === 'perspective') {
       await sceneInfra.camControls.usePerspectiveCamera()

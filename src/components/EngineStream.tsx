@@ -198,6 +198,7 @@ export const EngineStream = (props: {
             name: 'zoo-design-studio',
             debug: false,
             canvasId: 'webgl',
+            camera: sceneInfra.camControls.camera.clone(),
           })
 
           window.the3DMouse = the3DMouse
