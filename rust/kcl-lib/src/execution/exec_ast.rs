@@ -307,7 +307,7 @@ impl ExecutorContext {
                     // During the evaluation of the variable's LHS, set context that this is all happening inside a variable
                     // declaration, for the given name. This helps improve user-facing error messages.
                     exec_state.mod_local.being_declared = Some(variable_declaration.inner.name().to_owned());
-                    let value = self
+                    let rhs_result = self
                         .execute_expr(
                             &variable_declaration.declaration.init,
                             exec_state,
@@ -315,12 +315,14 @@ impl ExecutorContext {
                             annotations,
                             StatementKind::Declaration { name: &var_name },
                         )
-                        .await?;
+                        .await;
+                    // Declaration over, so unset this context.
                     exec_state.mod_local.being_declared = None;
+                    let rhs = rhs_result?;
 
                     exec_state
                         .mut_stack()
-                        .add(var_name.clone(), value.clone(), source_range)?;
+                        .add(var_name.clone(), rhs.clone(), source_range)?;
 
                     // Track exports.
                     if let ItemVisibility::Export = variable_declaration.visibility {
@@ -334,7 +336,7 @@ impl ExecutorContext {
                         }
                     }
                     // Variable declaration can be the return value of a module.
-                    last_expr = matches!(body_type, BodyType::Root).then_some(value);
+                    last_expr = matches!(body_type, BodyType::Root).then_some(rhs);
                 }
                 BodyItem::TypeDeclaration(ty) => {
                     let metadata = Metadata::from(&**ty);
