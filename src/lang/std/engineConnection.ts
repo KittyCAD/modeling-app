@@ -95,24 +95,18 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
   [ConnectionError.LongLoadingTime]:
     'Loading is taking longer than expected...',
   [ConnectionError.VeryLongLoadingTime]:
-    'Loading seems stuck. Do you have a firewall turned on?',
+    "It's possible there's a connection issue.",
   [ConnectionError.ICENegotiate]: 'ICE negotiation failed.',
-  [ConnectionError.DataChannelError]: 'The data channel signaled an error.',
-  [ConnectionError.WebSocketError]: 'The websocket signaled an error.',
-  [ConnectionError.LocalDescriptionInvalid]:
-    'The local description is invalid.',
-  [ConnectionError.MissingAuthToken]:
-    'Your authorization token is missing; please login again.',
-  [ConnectionError.BadAuthToken]:
-    'Your authorization token is invalid; please login again.',
-  [ConnectionError.TooManyConnections]:
-    'There are too many open engine connections associated with your account.',
-  [ConnectionError.Outage]:
-    'We seem to be experiencing an outage. Please visit [status.zoo.dev](https://status.zoo.dev) for updates.',
+  [ConnectionError.DataChannelError]: 'Data channel error.',
+  [ConnectionError.WebSocketError]: 'Websocket error.',
+  [ConnectionError.LocalDescriptionInvalid]: 'Local description invalid',
+  [ConnectionError.MissingAuthToken]: 'Missing authorization token',
+  [ConnectionError.BadAuthToken]: 'Bad authorization token',
+  [ConnectionError.TooManyConnections]: 'Too many connections',
+  [ConnectionError.Outage]: 'Outage',
   [ConnectionError.PeerConnectionRemoteDisconnected]:
-    'The remote end has disconnected.',
-  [ConnectionError.Unknown]:
-    'An unexpected error occurred. Please report this to us.',
+    'Peer connection disconnected',
+  [ConnectionError.Unknown]: 'Unknown',
 }
 
 export const WEBSOCKET_READYSTATE_TEXT: Record<number, string> = {
