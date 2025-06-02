@@ -994,7 +994,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   },
   scale: {
     label: 'Scale',
-    icon: 'arrowUp',
+    icon: 'scale',
   },
   shell: {
     label: 'Shell',
