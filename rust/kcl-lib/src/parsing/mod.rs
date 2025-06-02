@@ -51,7 +51,7 @@ pub fn parse_tokens(mut tokens: TokenStream) -> ParseResult {
         } else {
             format!("found unknown tokens [{}]", token_list.join(", "))
         };
-        return KclError::Lexical(KclErrorDetails::new(message, source_ranges)).into();
+        return KclError::new_lexical(KclErrorDetails::new(message, source_ranges)).into();
     }
 
     // Important, to not call this before the unknown tokens check.

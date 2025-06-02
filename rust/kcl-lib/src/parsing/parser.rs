@@ -4412,7 +4412,7 @@ secondExtrude = startSketchOn(XY)
     #[test]
     fn test_parse_parens_unicode() {
         let result = crate::parsing::top_level_parse("(ޜ");
-        let KclError::Lexical(details) = result.0.unwrap_err() else {
+        let KclError::new_lexical(details) = result.0.unwrap_err() else {
             panic!();
         };
         // TODO: Better errors when program cannot tokenize.

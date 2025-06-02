@@ -435,8 +435,16 @@ impl KclError {
         KclError::Syntax { details }
     }
 
+    pub fn new_io(details: KclErrorDetails) -> KclError {
+        KclError::Io { details }
+    }
+
     pub fn new_engine(details: KclErrorDetails) -> KclError {
         KclError::Engine { details }
+    }
+
+    pub fn new_lexical(details: KclErrorDetails) -> KclError {
+        KclError::Lexical { details }
     }
 
     pub fn new_undefined_value(details: KclErrorDetails) -> KclError {
