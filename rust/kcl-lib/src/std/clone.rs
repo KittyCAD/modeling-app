@@ -84,7 +84,7 @@ async fn inner_clone(
     fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
         .await
         .map_err(|e| {
-            KclError::Internal(KclErrorDetails::new(
+            KclError::new_internal(KclErrorDetails::new(
                 format!("failed to fix tags and references: {:?}", e),
                 vec![args.source_range],
             ))

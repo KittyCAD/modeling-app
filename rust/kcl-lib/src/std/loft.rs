@@ -68,7 +68,7 @@ async fn inner_loft(
 ) -> Result<Box<Solid>, KclError> {
     // Make sure we have at least two sketches.
     if sketches.len() < 2 {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             format!(
                 "Loft requires at least two sketches, but only {} were provided.",
                 sketches.len()

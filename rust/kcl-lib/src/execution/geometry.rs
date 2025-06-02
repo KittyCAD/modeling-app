@@ -469,7 +469,7 @@ impl TryFrom<PlaneData> for PlaneInfo {
             PlaneData::NegYZ => PlaneName::NegYz,
             PlaneData::Plane(_) => {
                 // We will never get here since we already checked for PlaneData::Plane.
-                return Err(KclError::Internal(KclErrorDetails::new(
+                return Err(KclError::new_internal(KclErrorDetails::new(
                     format!("PlaneData {:?} not found", value),
                     Default::default(),
                 )));
@@ -477,7 +477,7 @@ impl TryFrom<PlaneData> for PlaneInfo {
         };
 
         let info = DEFAULT_PLANE_INFO.get(&name).ok_or_else(|| {
-            KclError::Internal(KclErrorDetails::new(
+            KclError::new_internal(KclErrorDetails::new(
                 format!("Plane {} not found", name),
                 Default::default(),
             ))
