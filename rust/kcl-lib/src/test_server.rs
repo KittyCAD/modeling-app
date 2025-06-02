@@ -93,7 +93,7 @@ async fn do_execute_and_snapshot(
     for e in exec_state.errors() {
         if e.severity.is_err() {
             return Err(ExecErrorWithState::new(
-                KclErrorWithOutputs::no_outputs(KclError::Semantic(e.clone().into())).into(),
+                KclErrorWithOutputs::no_outputs(KclError::new_semantic(e.clone().into())).into(),
                 exec_state.clone(),
             ));
         }
@@ -164,7 +164,7 @@ pub async fn execute_and_export_step(
     for e in exec_state.errors() {
         if e.severity.is_err() {
             return Err(ExecErrorWithState::new(
-                KclErrorWithOutputs::no_outputs(KclError::Semantic(e.clone().into())).into(),
+                KclErrorWithOutputs::no_outputs(KclError::new_semantic(e.clone().into())).into(),
                 exec_state.clone(),
             ));
         }

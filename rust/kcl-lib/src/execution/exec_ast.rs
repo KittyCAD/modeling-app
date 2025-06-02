@@ -131,7 +131,7 @@ impl ExecutorContext {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
                     if !matches!(body_type, BodyType::Root) {
-                        return Err(KclError::Semantic(KclErrorDetails::new(
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
                             "Imports are only supported at the top-level of a file.".to_owned(),
                             vec![import_stmt.into()],
                         )));
@@ -164,7 +164,7 @@ impl ExecutorContext {
                                 let mut mod_value = mem.get_from(&mod_name, env_ref, import_item.into(), 0).cloned();
 
                                 if value.is_err() && ty.is_err() && mod_value.is_err() {
-                                    return Err(KclError::UndefinedValue(KclErrorDetails::new(
+                                    return Err(KclError::new_undefined_value(KclErrorDetails::new(
                                         format!("{} is not defined in module", import_item.name.name),
                                         vec![SourceRange::from(&import_item.name)],
                                     )));
@@ -172,7 +172,7 @@ impl ExecutorContext {
 
                                 // Check that the item is allowed to be imported (in at least one namespace).
                                 if value.is_ok() && !module_exports.contains(&import_item.name.name) {
-                                    value = Err(KclError::Semantic(KclErrorDetails::new(
+                                    value = Err(KclError::new_semantic(KclErrorDetails::new(
                                         format!(
                                             "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
                                             import_item.name.name
@@ -182,7 +182,7 @@ impl ExecutorContext {
                                 }
 
                                 if ty.is_ok() && !module_exports.contains(&ty_name) {
-                                    ty = Err(KclError::Semantic(KclErrorDetails::new(format!(
+                                    ty = Err(KclError::new_semantic(KclErrorDetails::new(format!(
                                         "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
                                         import_item.name.name
                                     ),
@@ -190,7 +190,7 @@ impl ExecutorContext {
                                 }
 
                                 if mod_value.is_ok() && !module_exports.contains(&mod_name) {
-                                    mod_value = Err(KclError::Semantic(KclErrorDetails::new(format!(
+                                    mod_value = Err(KclError::new_semantic(KclErrorDetails::new(format!(
                                         "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
                                         import_item.name.name
                                     ),
@@ -253,7 +253,7 @@ impl ExecutorContext {
                                     .memory
                                     .get_from(name, env_ref, source_range, 0)
                                     .map_err(|_err| {
-                                        KclError::Internal(KclErrorDetails::new(
+                                        KclError::new_internal(KclErrorDetails::new(
                                             format!("{} is not defined in module (but was exported?)", name),
                                             vec![source_range],
                                         ))
@@ -336,7 +336,7 @@ impl ExecutorContext {
                             let std_path = match &exec_state.mod_local.path {
                                 ModulePath::Std { value } => value,
                                 ModulePath::Local { .. } | ModulePath::Main => {
-                                    return Err(KclError::Semantic(KclErrorDetails::new(
+                                    return Err(KclError::new_semantic(KclErrorDetails::new(
                                         "User-defined types are not yet supported.".to_owned(),
                                         vec![metadata.source_range],
                                     )));
@@ -352,7 +352,7 @@ impl ExecutorContext {
                                 .mut_stack()
                                 .add(name_in_mem.clone(), value, metadata.source_range)
                                 .map_err(|_| {
-                                    KclError::Semantic(KclErrorDetails::new(
+                                    KclError::new_semantic(KclErrorDetails::new(
                                         format!("Redefinition of type {}.", ty.name.name),
                                         vec![metadata.source_range],
                                     ))
@@ -373,7 +373,7 @@ impl ExecutorContext {
                                             exec_state,
                                             metadata.source_range,
                                         )
-                                        .map_err(|e| KclError::Semantic(e.into()))?,
+                                        .map_err(|e| KclError::new_semantic(e.into()))?,
                                     ),
                                     meta: vec![metadata],
                                 };
@@ -382,7 +382,7 @@ impl ExecutorContext {
                                     .mut_stack()
                                     .add(name_in_mem.clone(), value, metadata.source_range)
                                     .map_err(|_| {
-                                        KclError::Semantic(KclErrorDetails::new(
+                                        KclError::new_semantic(KclErrorDetails::new(
                                             format!("Redefinition of type {}.", ty.name.name),
                                             vec![metadata.source_range],
                                         ))
@@ -393,7 +393,7 @@ impl ExecutorContext {
                                 }
                             }
                             None => {
-                                return Err(KclError::Semantic(KclErrorDetails::new(
+                                return Err(KclError::new_semantic(KclErrorDetails::new(
                                     "User-defined types are not yet supported.".to_owned(),
                                     vec![metadata.source_range],
                                 )))
@@ -407,7 +407,7 @@ impl ExecutorContext {
                     let metadata = Metadata::from(return_statement);
 
                     if matches!(body_type, BodyType::Root) {
-                        return Err(KclError::Semantic(KclErrorDetails::new(
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
                             "Cannot return from outside a function.".to_owned(),
                             vec![metadata.source_range],
                         )));
@@ -426,7 +426,7 @@ impl ExecutorContext {
                         .mut_stack()
                         .add(memory::RETURN_NAME.to_owned(), value, metadata.source_range)
                         .map_err(|_| {
-                            KclError::Semantic(KclErrorDetails::new(
+                            KclError::new_semantic(KclErrorDetails::new(
                                 "Multiple returns from a single function.".to_owned(),
                                 vec![metadata.source_range],
                             ))
@@ -531,7 +531,7 @@ impl ExecutorContext {
                     *cache = Some((val, er, items.clone()));
                     (er, items)
                 }),
-            ModuleRepr::Foreign(geom, _) => Err(KclError::Semantic(KclErrorDetails::new(
+            ModuleRepr::Foreign(geom, _) => Err(KclError::new_semantic(KclErrorDetails::new(
                 "Cannot import items from foreign modules".to_owned(),
                 vec![geom.source_range],
             ))),
@@ -605,12 +605,12 @@ impl ExecutorContext {
         exec_state.global.mod_loader.leave_module(path);
 
         result.map_err(|err| {
-            if let KclError::ImportCycle(_) = err {
+            if let KclError::ImportCycle { .. } = err {
                 // It was an import cycle.  Keep the original message.
                 err.override_source_ranges(vec![source_range])
             } else {
                 // TODO would be great to have line/column for the underlying error here
-                KclError::Semantic(KclErrorDetails::new(
+                KclError::new_semantic(KclErrorDetails::new(
                     format!(
                         "Error loading imported file ({path}). Open it to view more details.\n  {}",
                         err.message()
@@ -677,7 +677,7 @@ impl ExecutorContext {
                             meta: vec![metadata.to_owned()],
                         }
                     } else {
-                        return Err(KclError::Semantic(KclErrorDetails::new(
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
                             "Rust implementation of functions is restricted to the standard library".to_owned(),
                             vec![metadata.source_range],
                         )));
@@ -704,7 +704,7 @@ impl ExecutorContext {
                         "you cannot declare variable {name} as %, because % can only be used in function calls"
                     );
 
-                    return Err(KclError::Semantic(KclErrorDetails::new(
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
                         message,
                         vec![pipe_substitution.into()],
                     )));
@@ -712,7 +712,7 @@ impl ExecutorContext {
                 StatementKind::Expression => match exec_state.mod_local.pipe_value.clone() {
                     Some(x) => x,
                     None => {
-                        return Err(KclError::Semantic(KclErrorDetails::new(
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
                             "cannot use % outside a pipe expression".to_owned(),
                             vec![pipe_substitution.into()],
                         )));
@@ -761,7 +761,7 @@ fn apply_ascription(
     source_range: SourceRange,
 ) -> Result<KclValue, KclError> {
     let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
-        .map_err(|e| KclError::Semantic(e.into()))?;
+        .map_err(|e| KclError::new_semantic(e.into()))?;
 
     value.coerce(&ty, false, exec_state).map_err(|_| {
         let suggestion = if ty == RuntimeType::length() {
@@ -771,7 +771,7 @@ fn apply_ascription(
         } else {
             ""
         };
-        KclError::Semantic(KclErrorDetails::new(
+        KclError::new_semantic(KclErrorDetails::new(
             format!(
                 "could not coerce value of type {} to type {ty}{suggestion}",
                 value.human_friendly_type()
@@ -804,7 +804,7 @@ impl Node<Name> {
         ctx: &ExecutorContext,
     ) -> Result<&'a KclValue, KclError> {
         if self.abs_path {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Absolute paths (names beginning with `::` are not yet supported)".to_owned(),
                 self.as_source_ranges(),
             )));
@@ -825,7 +825,7 @@ impl Node<Name> {
             let value = match mem_spec {
                 Some((env, exports)) => {
                     if !exports.contains(&p.name) {
-                        return Err(KclError::Semantic(KclErrorDetails::new(
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
                             format!("Item {} not found in module's exported items", p.name),
                             p.as_source_ranges(),
                         )));
@@ -842,7 +842,7 @@ impl Node<Name> {
             };
 
             let KclValue::Module { value: module_id, .. } = value else {
-                return Err(KclError::Semantic(KclErrorDetails::new(
+                return Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
                         "Identifier in path must refer to a module, found {}",
                         value.human_friendly_type()
@@ -888,7 +888,7 @@ impl Node<Name> {
 
         // Either item or module is defined, but not exported.
         debug_assert!((item_value.is_ok() && !item_exported) || (mod_value.is_ok() && !mod_exported));
-        Err(KclError::Semantic(KclErrorDetails::new(
+        Err(KclError::new_semantic(KclErrorDetails::new(
             format!("Item {} not found in module's exported items", self.name.name),
             self.name.as_source_ranges(),
         )))
@@ -913,14 +913,14 @@ impl Node<MemberExpression> {
                 if let Some(value) = map.get(&property) {
                     Ok(value.to_owned())
                 } else {
-                    Err(KclError::UndefinedValue(KclErrorDetails::new(
+                    Err(KclError::new_undefined_value(KclErrorDetails::new(
                         format!("Property '{property}' not found in object"),
                         vec![self.clone().into()],
                     )))
                 }
             }
             (KclValue::Object { .. }, Property::String(property), true) => {
-                Err(KclError::Semantic(KclErrorDetails::new(
+                Err(KclError::new_semantic(KclErrorDetails::new(
                     format!("Cannot index object with string; use dot notation instead, e.g. `obj.{property}`"),
                     vec![self.clone().into()],
                 )))
@@ -928,7 +928,7 @@ impl Node<MemberExpression> {
             (KclValue::Object { .. }, p, _) => {
                 let t = p.type_name();
                 let article = article_for(t);
-                Err(KclError::Semantic(KclErrorDetails::new(
+                Err(KclError::new_semantic(KclErrorDetails::new(
                     format!("Only strings can be used as the property of an object, but you're using {article} {t}",),
                     vec![self.clone().into()],
                 )))
@@ -938,7 +938,7 @@ impl Node<MemberExpression> {
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
                 } else {
-                    Err(KclError::UndefinedValue(KclErrorDetails::new(
+                    Err(KclError::new_undefined_value(KclErrorDetails::new(
                         format!("The array doesn't have any item at index {index}"),
                         vec![self.clone().into()],
                     )))
@@ -950,7 +950,7 @@ impl Node<MemberExpression> {
             (KclValue::HomArray { .. }, p, _) => {
                 let t = p.type_name();
                 let article = article_for(t);
-                Err(KclError::Semantic(KclErrorDetails::new(
+                Err(KclError::new_semantic(KclErrorDetails::new(
                     format!("Only integers >= 0 can be used as the index of an array, but you're using {article} {t}",),
                     vec![self.clone().into()],
                 )))
@@ -971,7 +971,7 @@ impl Node<MemberExpression> {
             (being_indexed, _, _) => {
                 let t = being_indexed.human_friendly_type();
                 let article = article_for(&t);
-                Err(KclError::Semantic(KclErrorDetails::new(
+                Err(KclError::new_semantic(KclErrorDetails::new(
                     format!("Only arrays can be indexed, but you're trying to index {article} {t}"),
                     vec![self.clone().into()],
                 )))
@@ -1049,7 +1049,7 @@ impl Node<BinaryExpression> {
                 meta: _,
             } = left_value
             else {
-                return Err(KclError::Semantic(KclErrorDetails::new(
+                return Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
                         "Cannot apply logical operator to non-boolean value: {}",
                         left_value.human_friendly_type()
@@ -1062,7 +1062,7 @@ impl Node<BinaryExpression> {
                 meta: _,
             } = right_value
             else {
-                return Err(KclError::Semantic(KclErrorDetails::new(
+                return Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
                         "Cannot apply logical operator to non-boolean value: {}",
                         right_value.human_friendly_type()
@@ -1168,7 +1168,7 @@ impl Node<UnaryExpression> {
                 meta: _,
             } = value
             else {
-                return Err(KclError::Semantic(KclErrorDetails::new(
+                return Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
                         "Cannot apply unary operator ! to non-boolean value: {}",
                         value.human_friendly_type()
@@ -1189,7 +1189,7 @@ impl Node<UnaryExpression> {
 
         let value = &self.argument.get_result(exec_state, ctx).await?;
         let err = || {
-            KclError::Semantic(KclErrorDetails::new(
+            KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "You can only negate numbers, planes, or lines, but this is a {}",
                     value.human_friendly_type()
@@ -1292,7 +1292,7 @@ pub(crate) async fn execute_pipe_body(
     ctx: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
     let Some((first, body)) = body.split_first() else {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             "Pipe expressions cannot be empty".to_owned(),
             vec![source_range],
         )));
@@ -1330,7 +1330,7 @@ async fn inner_execute_pipe_body(
 ) -> Result<KclValue, KclError> {
     for expression in body {
         if let Expr::TagDeclarator(_) = expression {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("This cannot be in a PipeExpression: {:?}", expression),
                 vec![expression.into()],
             )));
@@ -1404,7 +1404,7 @@ impl Node<ArrayRangeExpression> {
             .await?;
         let (start, start_ty) = start_val
             .as_int_with_ty()
-            .ok_or(KclError::Semantic(KclErrorDetails::new(
+            .ok_or(KclError::new_semantic(KclErrorDetails::new(
                 format!("Expected int but found {}", start_val.human_friendly_type()),
                 vec![self.into()],
             )))?;
@@ -1412,24 +1412,26 @@ impl Node<ArrayRangeExpression> {
         let end_val = ctx
             .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
-        let (end, end_ty) = end_val.as_int_with_ty().ok_or(KclError::Semantic(KclErrorDetails::new(
-            format!("Expected int but found {}", end_val.human_friendly_type()),
-            vec![self.into()],
-        )))?;
+        let (end, end_ty) = end_val
+            .as_int_with_ty()
+            .ok_or(KclError::new_semantic(KclErrorDetails::new(
+                format!("Expected int but found {}", end_val.human_friendly_type()),
+                vec![self.into()],
+            )))?;
 
         if start_ty != end_ty {
             let start = start_val.as_ty_f64().unwrap_or(TyF64 { n: 0.0, ty: start_ty });
             let start = fmt::human_display_number(start.n, start.ty);
             let end = end_val.as_ty_f64().unwrap_or(TyF64 { n: 0.0, ty: end_ty });
             let end = fmt::human_display_number(end.n, end.ty);
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Range start and end must be of the same type, but found {start} and {end}"),
                 vec![self.into()],
             )));
         }
 
         if end < start {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Range start is greater than range end: {start} .. {end}"),
                 vec![self.into()],
             )));
@@ -1493,7 +1495,7 @@ fn article_for<S: AsRef<str>>(s: S) -> &'static str {
 fn number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<TyF64, KclError> {
     v.as_ty_f64().ok_or_else(|| {
         let actual_type = v.human_friendly_type();
-        KclError::Semantic(KclErrorDetails::new(
+        KclError::new_semantic(KclErrorDetails::new(
             format!("Expected a number, but found {actual_type}",),
             vec![source_range],
         ))
@@ -1585,13 +1587,13 @@ impl Property {
                         if let Some(x) = crate::try_f64_to_usize(value) {
                             Ok(Property::UInt(x))
                         } else {
-                            Err(KclError::Semantic(KclErrorDetails::new(
+                            Err(KclError::new_semantic(KclErrorDetails::new(
                                 format!("{value} is not a valid index, indices must be whole numbers >= 0"),
                                 property_sr,
                             )))
                         }
                     }
-                    _ => Err(KclError::Semantic(KclErrorDetails::new(
+                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
                         "Only numbers (>= 0) can be indexes".to_owned(),
                         vec![sr],
                     ))),
@@ -1602,7 +1604,8 @@ impl Property {
 }
 
 fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -> Result<Property, KclError> {
-    let make_err = |message: String| Err::<Property, _>(KclError::Semantic(KclErrorDetails::new(message, property_sr)));
+    let make_err =
+        |message: String| Err::<Property, _>(KclError::new_semantic(KclErrorDetails::new(message, property_sr)));
     match value {
         KclValue::Number{value: num, .. } => {
             let num = *num;
@@ -1846,7 +1849,7 @@ d = b + c
                 crate::engine::conn_mock::EngineConnection::new()
                     .await
                     .map_err(|err| {
-                        KclError::Internal(KclErrorDetails::new(
+                        KclError::new_internal(KclErrorDetails::new(
                             format!("Failed to create mock engine connection: {}", err),
                             vec![SourceRange::default()],
                         ))
