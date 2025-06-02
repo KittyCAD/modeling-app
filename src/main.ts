@@ -124,10 +124,14 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     // If size was saved already, use it
     const lastWindowConfig = loadLastWindowConfig()
     if (lastWindowConfig?.bounds) {
-      windowWidth = lastWindowConfig.bounds.width
-      windowHeight = lastWindowConfig.bounds.height
-      x = lastWindowConfig.bounds.x
-      y = lastWindowConfig.bounds.y
+      // Only use bounds if the window is still visible on any of the displays
+      // (one screen could have been disconnected since config was saved).
+      if (isBoundsVisibile(lastWindowConfig.bounds)) {
+        windowWidth = lastWindowConfig.bounds.width
+        windowHeight = lastWindowConfig.bounds.height
+        x = lastWindowConfig.bounds.x
+        y = lastWindowConfig.bounds.y
+      }
     }
 
     newWindow = new BrowserWindow({
@@ -264,6 +268,18 @@ const loadLastWindowConfig = (): LastWindowConfig | null => {
 const saveLastWindowConfig = (config: LastWindowConfig) => {
   fs.writeFileSync(wndowConfigPath, JSON.stringify(config), {
     encoding: 'utf8',
+  })
+}
+
+const isBoundsVisibile = (bounds: Electron.Rectangle): boolean => {
+  return screen.getAllDisplays().some((display) => {
+    const displayBounds = display.bounds
+    return !(
+      bounds.x >= displayBounds.x + displayBounds.width ||
+      bounds.x + bounds.width <= displayBounds.x ||
+      bounds.y >= displayBounds.y + displayBounds.height ||
+      bounds.y + bounds.height <= displayBounds.y
+    )
   })
 }
 
