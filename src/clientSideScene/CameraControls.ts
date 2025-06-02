@@ -186,7 +186,7 @@ export class CameraControls {
   }, 1000 / 30)
 
   throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
-    console.log('three',threeValues)
+    console.log('three', threeValues)
     const cmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),

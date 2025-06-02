@@ -268,13 +268,6 @@ class _3DMouse implements _3DconnexionMiddleware {
     this.top = -this.bottom
 
     this.spaceMouse.create3dmouse(canvas, this.name)
-    console.log(this.fov)
-    console.log(this.frustumNear)
-    console.log(this.frustumFar)
-    console.log(this.left)
-    console.log(this.right)
-    console.log(this.bottom)
-    console.log(this.top)
   }
 
   onDisconnect(reason: string): void {

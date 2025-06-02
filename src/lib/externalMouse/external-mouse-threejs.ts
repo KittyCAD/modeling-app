@@ -269,7 +269,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   getModelExtents(): BoundingBox {
     // Yes.
     const unit = 100
-    return [-unit, -unit, -unit, unit, unit, unit]
+    return [-unit/2, -unit/2, -unit/2, unit/2, unit/2, unit/2]
   }
 
   getPerspective(): boolean {
@@ -502,6 +502,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     // console.log('positon', this.camera?.position)
     // console.log('lookAtPoint',lookAtPoint)
 
+    // Works for translation, kevin
     const c1 = sceneInfra.camControls.camera.position.clone()
     const c2 = this.camera?.position.clone()
     const diff = c2?.clone()?.sub(c1.clone())
@@ -509,30 +510,29 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     const t2 = diff?.clone().add(t1.clone())
 
 
-    // sceneInfra.camControls.throttledUpdateEngineCamera({
-    //           ...convertThreeCamValuesToEngineCam({
-    //       isPerspective: true,
-    //       position: this.camera?.position.clone(),
-    //       quaternion: this.camera?.quaternion.clone(),
-    //       zoom: this.camera?.zoom,
-    //       target: t2//sceneInfra.camControls.target.clone(),
-    // })
-    await engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        ...convertThreeCamValuesToEngineCam({
+    sceneInfra.camControls.throttledUpdateEngineCamera({
           isPerspective: true,
           position: this.camera?.position.clone(),
           quaternion: this.camera?.quaternion.clone(),
           zoom: this.camera?.zoom,
           target: t2//sceneInfra.camControls.target.clone(),
-        }),
-      },
     })
+    // await engineCommandManager.sendSceneCommand({
+    //   type: 'modeling_cmd_req',
+    //   cmd_id: uuidv4(),
+    //   cmd: {
+    //     type: 'default_camera_look_at',
+    //     ...convertThreeCamValuesToEngineCam({
+    //       isPerspective: true,
+    //       position: this.camera?.position.clone(),
+    //       quaternion: this.camera?.quaternion.clone(),
+    //       zoom: this.camera?.zoom,
+    //       target: t2, //sceneInfra.camControls.target.clone(),
+    //     }),
+    //   },
+    // })
 
-    // /** TODO: Immediately sync camera state? */
+    // // /** TODO: Immediately sync camera state? */
     await engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
