@@ -86,6 +86,8 @@ function CommandBarTextareaInput({
               formRef.current?.dispatchEvent(
                 new Event('submit', { bubbles: true })
               )
+            } else if (event.key === 'Escape') {
+              commandBarActor.send({ type: 'Close' })
             }
           }}
           autoFocus
@@ -109,6 +111,8 @@ const useTextareaAutoGrow = (ref: RefObject<HTMLTextAreaElement>) => {
     }
 
     if (ref.current === null) return
+    // Run initially to set all this stuff at the start
+    listener()
     ref.current.addEventListener('input', listener)
 
     return () => {

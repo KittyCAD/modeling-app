@@ -139,7 +139,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -48.8134,
+          "x": -48.813,
           "y": 60.325,
           "z": 0.0
         },
@@ -173,7 +173,7 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 62.6782,
+          "y": 62.678,
           "z": 0.0
         },
         "relative": false
@@ -189,7 +189,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 45.7466,
+          "x": 45.747,
           "y": 0.0,
           "z": 0.0
         },
@@ -222,8 +222,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 14.9029,
-          "y": -55.6185,
+          "x": 14.903,
+          "y": -55.619,
           "z": 0.0
         },
         "relative": true
@@ -322,8 +322,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -14.9029,
-          "y": 55.6185,
+          "x": -14.903,
+          "y": 55.619,
           "z": 0.0
         },
         "relative": true
@@ -356,7 +356,7 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 65.8532,
+          "y": 65.853,
           "z": 0.0
         },
         "relative": false
@@ -372,7 +372,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -45.7466,
+          "x": -45.747,
           "y": 0.0,
           "z": 0.0
         },
@@ -405,8 +405,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -14.9029,
-          "y": -55.6185,
+          "x": -14.903,
+          "y": -55.619,
           "z": 0.0
         },
         "relative": true
@@ -539,64 +539,20 @@ description: Artifact commands sheet-metal-bracket.kcl
       "object_id": "[uuid]",
       "edge_id": null,
       "edge_ids": [
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
         "[uuid]"
       ],
       "radius": 12.7,
       "tolerance": 0.0000001,
       "cut_type": "fillet",
       "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
+      "extra_face_ids": [
+        "[uuid]",
+        "[uuid]",
         "[uuid]"
-      ],
-      "radius": 12.7,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
-        "[uuid]"
-      ],
-      "radius": 12.7,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
-        "[uuid]"
-      ],
-      "radius": 12.7,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
+      ]
     }
   },
   {
@@ -1119,7 +1075,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -23.0187,
+        "x": -23.019,
         "y": 31.75,
         "z": 0.0
       }

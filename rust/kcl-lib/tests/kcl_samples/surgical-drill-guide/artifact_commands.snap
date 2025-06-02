@@ -174,7 +174,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "type": "line",
         "end": {
           "x": -25.0,
-          "y": 43.3013,
+          "y": 43.301,
           "z": 0.0
         },
         "relative": true
@@ -190,7 +190,7 @@ description: Artifact commands surgical-drill-guide.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -5.1962,
+          "x": -5.196,
           "y": -3.0,
           "z": 0.0
         },
@@ -208,7 +208,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "type": "line",
         "end": {
           "x": 25.0,
-          "y": -43.3013,
+          "y": -43.301,
           "z": 0.0
         },
         "relative": true
@@ -224,7 +224,7 @@ description: Artifact commands surgical-drill-guide.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": 11.6913,
+          "x": 11.691,
           "y": -6.75,
           "z": 0.0
         },
@@ -359,7 +359,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "type": "arc",
         "center": {
           "x": 0.0,
-          "y": 53.1513
+          "y": 53.151
         },
         "radius": 15.789473684210527,
         "start": {
@@ -381,8 +381,8 @@ description: Artifact commands surgical-drill-guide.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 15.7895,
-        "y": 53.1513,
+        "x": 15.789,
+        "y": 53.151,
         "z": 0.0
       }
     }
@@ -556,7 +556,7 @@ description: Artifact commands surgical-drill-guide.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 15.7895,
+        "x": 15.789,
         "y": 150.0,
         "z": 0.0
       }
@@ -678,7 +678,7 @@ description: Artifact commands surgical-drill-guide.kcl
       "type": "make_plane",
       "origin": {
         "x": 0.0,
-        "y": -28.4952,
+        "y": -28.495,
         "z": 0.0
       },
       "x_axis": {
@@ -744,7 +744,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "type": "arc",
         "center": {
           "x": 0.0,
-          "y": 53.1513
+          "y": 53.151
         },
         "radius": 15.789473684210527,
         "start": {
@@ -766,8 +766,8 @@ description: Artifact commands surgical-drill-guide.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 15.7895,
-        "y": 53.1513,
+        "x": 15.789,
+        "y": 53.151,
         "z": 0.0
       }
     }
@@ -885,7 +885,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "type": "arc",
         "center": {
           "x": 0.0,
-          "y": 53.1513
+          "y": 53.151
         },
         "radius": 2.0,
         "start": {
@@ -908,7 +908,7 @@ description: Artifact commands surgical-drill-guide.kcl
       "path": "[uuid]",
       "to": {
         "x": 2.0,
-        "y": 53.1513,
+        "y": 53.151,
         "z": 0.0
       }
     }
@@ -1042,7 +1042,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "type": "arc",
         "center": {
           "x": 0.0,
-          "y": 53.1513
+          "y": 53.151
         },
         "radius": 1.0,
         "start": {
@@ -1065,7 +1065,7 @@ description: Artifact commands surgical-drill-guide.kcl
       "path": "[uuid]",
       "to": {
         "x": 1.0,
-        "y": 53.1513,
+        "y": 53.151,
         "z": 0.0
       }
     }
@@ -1147,7 +1147,7 @@ description: Artifact commands surgical-drill-guide.kcl
       "type": "make_plane",
       "origin": {
         "x": 0.0,
-        "y": -47.4952,
+        "y": -47.495,
         "z": 0.0
       },
       "x_axis": {
@@ -1213,7 +1213,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "type": "arc",
         "center": {
           "x": 0.0,
-          "y": 53.1513
+          "y": 53.151
         },
         "radius": 16.216216216216214,
         "start": {
@@ -1235,8 +1235,8 @@ description: Artifact commands surgical-drill-guide.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 16.2162,
-        "y": 53.1513,
+        "x": 16.216,
+        "y": 53.151,
         "z": 0.0
       }
     }
@@ -1316,7 +1316,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "type": "arc",
         "center": {
           "x": 0.0,
-          "y": 53.1513
+          "y": 53.151
         },
         "radius": 2.0,
         "start": {
@@ -1339,7 +1339,7 @@ description: Artifact commands surgical-drill-guide.kcl
       "path": "[uuid]",
       "to": {
         "x": 2.0,
-        "y": 53.1513,
+        "y": 53.151,
         "z": 0.0
       }
     }
@@ -1435,30 +1435,16 @@ description: Artifact commands surgical-drill-guide.kcl
       "object_id": "[uuid]",
       "edge_id": null,
       "edge_ids": [
+        "[uuid]",
         "[uuid]"
       ],
       "radius": 1.0,
       "tolerance": 0.0000001,
       "cut_type": "fillet",
       "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
+      "extra_face_ids": [
         "[uuid]"
-      ],
-      "radius": 1.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
+      ]
     }
   },
   {
@@ -1597,7 +1583,7 @@ description: Artifact commands surgical-drill-guide.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 15.7895,
+        "x": 15.789,
         "y": 150.0,
         "z": 0.0
       }
@@ -2066,7 +2052,7 @@ description: Artifact commands surgical-drill-guide.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 16.2162,
+        "x": 16.216,
         "y": 150.0,
         "z": 0.0
       }
@@ -2266,30 +2252,16 @@ description: Artifact commands surgical-drill-guide.kcl
       "object_id": "[uuid]",
       "edge_id": null,
       "edge_ids": [
+        "[uuid]",
         "[uuid]"
       ],
       "radius": 1.0,
       "tolerance": 0.0000001,
       "cut_type": "fillet",
       "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
+      "extra_face_ids": [
         "[uuid]"
-      ],
-      "radius": 1.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
+      ]
     }
   },
   {

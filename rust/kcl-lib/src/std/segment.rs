@@ -16,7 +16,7 @@ use crate::{
 
 /// Returns the point at the end of the given segment.
 pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
     let pt = inner_segment_end(&tag, exec_state, args.clone())?;
 
     args.make_kcl_val_from_point([pt[0].n, pt[1].n], pt[0].ty.clone())
@@ -49,7 +49,6 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```
 #[stdlib {
     name = "segEnd",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -59,10 +58,10 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[TyF64; 2], KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
     let (p, ty) = path.end_point_components();
     // Docs generation isn't smart enough to handle ([f64; 2], NumericType).
@@ -73,7 +72,7 @@ fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args
 
 /// Returns the segment end of x.
 pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
     let result = inner_segment_end_x(&tag, exec_state, args.clone())?;
 
     Ok(args.make_user_val_from_f64_with_type(result))
@@ -94,7 +93,6 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// ```
 #[stdlib {
     name = "segEndX",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -104,10 +102,10 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
 
     Ok(TyF64::new(path.get_base().to[0], path.get_base().units.into()))
@@ -115,7 +113,7 @@ fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
 
 /// Returns the segment end of y.
 pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
     let result = inner_segment_end_y(&tag, exec_state, args.clone())?;
 
     Ok(args.make_user_val_from_f64_with_type(result))
@@ -137,7 +135,6 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// ```
 #[stdlib {
     name = "segEndY",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -147,10 +144,10 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
 
     Ok(path.get_to()[1].clone())
@@ -158,7 +155,7 @@ fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
 
 /// Returns the point at the start of the given segment.
 pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
     let pt = inner_segment_start(&tag, exec_state, args.clone())?;
 
     args.make_kcl_val_from_point([pt[0].n, pt[1].n], pt[0].ty.clone())
@@ -191,7 +188,6 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// ```
 #[stdlib {
     name = "segStart",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -201,10 +197,10 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[TyF64; 2], KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
     let (p, ty) = path.start_point_components();
     // Docs generation isn't smart enough to handle ([f64; 2], NumericType).
@@ -215,7 +211,7 @@ fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
 
 /// Returns the segment start of x.
 pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
     let result = inner_segment_start_x(&tag, exec_state, args.clone())?;
 
     Ok(args.make_user_val_from_f64_with_type(result))
@@ -236,7 +232,6 @@ pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 #[stdlib {
     name = "segStartX",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -246,10 +241,10 @@ pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
 fn inner_segment_start_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
 
     Ok(path.get_from()[0].clone())
@@ -257,7 +252,7 @@ fn inner_segment_start_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: 
 
 /// Returns the segment start of y.
 pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
     let result = inner_segment_start_y(&tag, exec_state, args.clone())?;
 
     Ok(args.make_user_val_from_f64_with_type(result))
@@ -279,7 +274,6 @@ pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 #[stdlib {
     name = "segStartY",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -289,10 +283,10 @@ pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
 fn inner_segment_start_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
 
     Ok(path.get_from()[1].clone())
@@ -322,7 +316,6 @@ pub async fn last_segment_x(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```
 #[stdlib {
     name = "lastSegX",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "The sketch whose line segment is being queried"},
@@ -334,10 +327,10 @@ fn inner_last_segment_x(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
         .paths
         .last()
         .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
-                source_ranges: vec![args.source_range],
-            })
+            KclError::Type(KclErrorDetails::new(
+                format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
+                vec![args.source_range],
+            ))
         })?
         .get_base();
 
@@ -369,7 +362,6 @@ pub async fn last_segment_y(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```
 #[stdlib {
     name = "lastSegY",
-    keywords = true,
     unlabeled_first = true,
     args = {
         sketch = { docs = "The sketch whose line segment is being queried"},
@@ -381,10 +373,10 @@ fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
         .paths
         .last()
         .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
-                source_ranges: vec![args.source_range],
-            })
+            KclError::Type(KclErrorDetails::new(
+                format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
+                vec![args.source_range],
+            ))
         })?
         .get_base();
 
@@ -393,7 +385,7 @@ fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
 
 /// Returns the length of the segment.
 pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
     let result = inner_segment_length(&tag, exec_state, args.clone())?;
     Ok(args.make_user_val_from_f64_with_type(result))
 }
@@ -419,7 +411,6 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```
 #[stdlib {
     name = "segLen",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -429,10 +420,10 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
 fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
 
     Ok(path.length())
@@ -440,7 +431,7 @@ fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: A
 
 /// Returns the angle of the segment.
 pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
 
     let result = inner_segment_angle(&tag, exec_state, args.clone())?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
@@ -463,7 +454,6 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// ```
 #[stdlib {
     name = "segAng",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -473,10 +463,10 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
 
     let result = between(path.get_base().from, path.get_base().to);
@@ -486,7 +476,7 @@ fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
 
 /// Returns the angle coming out of the end of the segment in degrees.
 pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
+    let tag: TagIdentifier = args.get_unlabeled_kw_arg_typed("tag", &RuntimeType::tag_identifier(), exec_state)?;
 
     let result = inner_tangent_to_end(&tag, exec_state, args.clone()).await?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
@@ -565,7 +555,6 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```
 #[stdlib {
     name = "tangentToEnd",
-    keywords = true,
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
@@ -575,10 +564,10 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 async fn inner_tangent_to_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
+        KclError::Type(KclErrorDetails::new(
+            format!("Expected a line segment with a path, found `{:?}`", line),
+            vec![args.source_range],
+        ))
     })?;
 
     let from = untype_point(path.get_to()).0;

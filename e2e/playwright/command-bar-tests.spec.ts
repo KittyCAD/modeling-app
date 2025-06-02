@@ -36,7 +36,10 @@ test.describe('Command bar tests', () => {
     await u.closeDebugPanel()
 
     // Click the line of code for xLine.
-    await page.getByText(`close()`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+    await page.getByText(`startProfile(at = [-10, -10])`).click()
+
+    // Wait for the selection to register (TODO: we need a definitive way to wait for this)
+    await page.waitForTimeout(200)
 
     await toolbar.extrudeButton.click()
     await cmdBar.expectState({
@@ -45,10 +48,10 @@ test.describe('Command bar tests', () => {
       currentArgKey: 'sketches',
       currentArgValue: '',
       headerArguments: {
-        Sketches: '',
+        Profiles: '',
         Length: '',
       },
-      highlightedHeaderArg: 'sketches',
+      highlightedHeaderArg: 'Profiles',
     })
     await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
@@ -56,7 +59,7 @@ test.describe('Command bar tests', () => {
       stage: 'review',
       commandName: 'Extrude',
       headerArguments: {
-        Sketches: '1 segment',
+        Profiles: '1 profile',
         Length: '5',
       },
     })
@@ -286,7 +289,7 @@ test.describe('Command bar tests', () => {
     await cmdBar.cmdOptions.getByText('Extrude').click()
 
     // Assert that we're on the selection step
-    await expect(page.getByRole('button', { name: 'sketches' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Profiles' })).toBeDisabled()
     // Select a face
     await page.mouse.move(700, 200)
     await page.mouse.click(700, 200)
@@ -516,7 +519,7 @@ test.describe('Command bar tests', () => {
     `Zoom to fit to shared model on web`,
     { tag: ['@web'] },
     async ({ page, scene }) => {
-      if (process.env.PLATFORM !== 'web') {
+      if (process.env.TARGET !== 'web') {
         // This test is web-only
         // TODO: re-enable on CI as part of a new @web test suite
         return
@@ -680,6 +683,35 @@ c = 3 + a`
         Value: '',
       },
       highlightedHeaderArg: 'value',
+    })
+  })
+
+  test('Text-to-CAD command can be closed with escape while in prompt', async ({
+    page,
+    homePage,
+    cmdBar,
+  }) => {
+    await homePage.expectState({
+      projectCards: [],
+      sortBy: 'last-modified-desc',
+    })
+    await homePage.textToCadBtn.click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Text-to-CAD Create',
+      currentArgKey: 'prompt',
+      currentArgValue: '',
+      headerArguments: {
+        Method: 'New project',
+        NewProjectName: 'untitled',
+        Prompt: '',
+      },
+      highlightedHeaderArg: 'prompt',
+    })
+    await page.keyboard.press('Escape')
+    await cmdBar.toBeClosed()
+    await cmdBar.expectState({
+      stage: 'commandBarClosed',
     })
   })
 })

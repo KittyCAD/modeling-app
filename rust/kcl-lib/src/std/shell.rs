@@ -20,7 +20,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let thickness: TyF64 = args.get_kw_arg_typed("thickness", &RuntimeType::length(), exec_state)?;
     let faces = args.get_kw_arg_typed(
         "faces",
-        &RuntimeType::Array(Box::new(RuntimeType::tag()), ArrayLen::NonEmpty),
+        &RuntimeType::Array(Box::new(RuntimeType::tag()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
 
@@ -36,17 +36,17 @@ async fn inner_shell(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     if faces.is_empty() {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "You must shell at least one face".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Type(KclErrorDetails::new(
+            "You must shell at least one face".to_owned(),
+            vec![args.source_range],
+        )));
     }
 
     if solids.is_empty() {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "You must shell at least one solid".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Type(KclErrorDetails::new(
+            "You must shell at least one solid".to_owned(),
+            vec![args.source_range],
+        )));
     }
 
     let mut face_ids = Vec::new();
@@ -63,20 +63,19 @@ async fn inner_shell(
     }
 
     if face_ids.is_empty() {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "Expected at least one valid face".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Type(KclErrorDetails::new(
+            "Expected at least one valid face".to_owned(),
+            vec![args.source_range],
+        )));
     }
 
     // Make sure all the solids have the same id, as we are going to shell them all at
     // once.
     if !solids.iter().all(|eg| eg.id == solids[0].id) {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "All solids stem from the same root object, like multiple sketch on face extrusions, etc."
-                .to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Type(KclErrorDetails::new(
+            "All solids stem from the same root object, like multiple sketch on face extrusions, etc.".to_owned(),
+            vec![args.source_range],
+        )));
     }
 
     args.batch_modeling_cmd(

@@ -110,7 +110,7 @@ description: Artifact commands socket-head-cap-screw.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.9751,
+        "x": 3.975,
         "y": 0.0,
         "z": 0.0
       }
@@ -198,30 +198,16 @@ description: Artifact commands socket-head-cap-screw.kcl
       "object_id": "[uuid]",
       "edge_id": null,
       "edge_ids": [
+        "[uuid]",
         "[uuid]"
       ],
       "radius": 0.508,
       "tolerance": 0.0000001,
       "cut_type": "fillet",
       "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
+      "extra_face_ids": [
         "[uuid]"
-      ],
-      "radius": 0.508,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
+      ]
     }
   },
   {
@@ -253,8 +239,8 @@ description: Artifact commands socket-head-cap-screw.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.9844,
-        "y": 1.1457,
+        "x": 1.984,
+        "y": 1.146,
         "z": 0.0
       }
     }
@@ -283,7 +269,7 @@ description: Artifact commands socket-head-cap-screw.kcl
         "type": "line",
         "end": {
           "x": -0.0,
-          "y": -2.2914,
+          "y": -2.291,
           "z": 0.0
         },
         "relative": true
@@ -299,8 +285,8 @@ description: Artifact commands socket-head-cap-screw.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.9844,
-          "y": -1.1457,
+          "x": -1.984,
+          "y": -1.146,
           "z": 0.0
         },
         "relative": true
@@ -316,8 +302,8 @@ description: Artifact commands socket-head-cap-screw.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.9844,
-          "y": 1.1457,
+          "x": -1.984,
+          "y": 1.146,
           "z": 0.0
         },
         "relative": true
@@ -334,7 +320,7 @@ description: Artifact commands socket-head-cap-screw.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 2.2914,
+          "y": 2.291,
           "z": 0.0
         },
         "relative": true
@@ -350,8 +336,8 @@ description: Artifact commands socket-head-cap-screw.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.9844,
-          "y": 1.1457,
+          "x": 1.984,
+          "y": 1.146,
           "z": 0.0
         },
         "relative": true

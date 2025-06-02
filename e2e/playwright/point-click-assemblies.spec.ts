@@ -43,7 +43,7 @@ async function insertPartIntoAssembly(
 test.describe('Point-and-click assemblies tests', () => {
   test(
     `Insert kcl parts into assembly as whole module import`,
-    { tag: ['@electron', '@macos', '@windows'] },
+    { tag: ['@desktop', '@macos', '@windows'] },
     async ({
       context,
       page,
@@ -70,22 +70,28 @@ test.describe('Point-and-click assemblies tests', () => {
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
         await context.folderSetupFn(async (dir) => {
-          const bracketDir = path.join(dir, projectName)
-          await fsp.mkdir(bracketDir, { recursive: true })
+          const projDir = path.join(dir, projectName)
+          const nestedProjDir = path.join(dir, projectName, 'nested', 'twice')
+          await fsp.mkdir(projDir, { recursive: true })
+          await fsp.mkdir(nestedProjDir, { recursive: true })
           await Promise.all([
             fsp.copyFile(
               executorInputPath('cylinder.kcl'),
-              path.join(bracketDir, 'cylinder.kcl')
+              path.join(projDir, 'cylinder.kcl')
+            ),
+            fsp.copyFile(
+              executorInputPath('cylinder.kcl'),
+              path.join(nestedProjDir, 'main.kcl')
             ),
             fsp.copyFile(
               executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
-              path.join(bracketDir, 'bracket.kcl')
+              path.join(projDir, 'bracket.kcl')
             ),
             fsp.copyFile(
               testsInputPath('cube.step'),
-              path.join(bracketDir, 'cube.step')
+              path.join(projDir, 'cube.step')
             ),
-            fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
+            fsp.writeFile(path.join(projDir, 'main.kcl'), ''),
           ])
         })
         await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -167,13 +173,32 @@ test.describe('Point-and-click assemblies tests', () => {
         await expect(
           page.getByText('This file is already imported')
         ).toBeVisible()
+        await cmdBar.closeCmdBar()
+      })
+
+      await test.step('Insert a nested kcl part', async () => {
+        await insertPartIntoAssembly(
+          'nested/twice/main.kcl',
+          'main',
+          toolbar,
+          cmdBar,
+          page
+        )
+        await toolbar.openPane('code')
+        await page.waitForTimeout(10000)
+        await editor.expectEditor.toContain(
+          `
+          import "nested/twice/main.kcl" as main
+          `,
+          { shouldNormalise: true }
+        )
       })
     }
   )
 
   test(
     `Can still translate, rotate, and delete inserted parts even with non standard code`,
-    { tag: ['@electron', '@macos', '@windows'] },
+    { tag: ['@desktop', '@macos', '@windows'] },
     async ({
       context,
       page,
@@ -369,7 +394,7 @@ test.describe('Point-and-click assemblies tests', () => {
 
   test(
     `Insert the bracket part into an assembly and transform it`,
-    { tag: ['@electron', '@macos', '@windows'] },
+    { tag: ['@desktop', '@macos', '@windows'] },
     async ({
       context,
       page,
@@ -560,7 +585,7 @@ test.describe('Point-and-click assemblies tests', () => {
 
   test(
     `Insert foreign parts into assembly and delete them`,
-    { tag: ['@electron', '@macos', '@windows'] },
+    { tag: ['@desktop', '@macos', '@windows'] },
     async ({
       context,
       page,
@@ -711,7 +736,7 @@ test.describe('Point-and-click assemblies tests', () => {
 
   test(
     'Assembly gets reexecuted when imported models are updated externally',
-    { tag: ['@electron', '@macos', '@windows'] },
+    { tag: ['@desktop', '@macos', '@windows'] },
     async ({ context, page, homePage, scene, toolbar, cmdBar, tronApp }) => {
       if (!tronApp) {
         fail()
@@ -801,7 +826,7 @@ foreign
 
   test(
     `Point-and-click clone`,
-    { tag: ['@electron', '@macos', '@windows'] },
+    { tag: ['@desktop', '@macos', '@windows'] },
     async ({
       context,
       page,

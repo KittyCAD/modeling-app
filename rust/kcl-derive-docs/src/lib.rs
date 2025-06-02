@@ -2,16 +2,16 @@
 // automated enforcement.
 #![allow(clippy::style)]
 
+mod example_tests;
 #[cfg(test)]
 mod tests;
 mod unbox;
 
-use std::{collections::HashMap, fs};
+use std::collections::HashMap;
 
 use convert_case::Casing;
 use inflector::{cases::camelcase::to_camel_case, Inflector};
 use once_cell::sync::Lazy;
-use proc_macro2::Span;
 use quote::{format_ident, quote, quote_spanned, ToTokens};
 use regex::Regex;
 use serde::Deserialize;
@@ -28,8 +28,13 @@ pub fn stdlib(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> p
 }
 
 #[proc_macro_attribute]
-pub fn for_each_std_mod(_attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    do_for_each_std_mod(item.into()).into()
+pub fn for_each_example_test(_attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    example_tests::do_for_each_example_test(item.into()).into()
+}
+
+#[proc_macro_attribute]
+pub fn for_all_example_test(_attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    example_tests::do_for_all_example_test(item.into()).into()
 }
 
 /// Describes an argument of a stdlib function.
@@ -42,6 +47,14 @@ struct ArgMetadata {
     /// Does not do anything if the argument is already required.
     #[serde(default)]
     include_in_snippet: bool,
+
+    /// The snippet should suggest this value for the arg.
+    #[serde(default)]
+    snippet_value: Option<String>,
+
+    /// The snippet should suggest this value for the arg.
+    #[serde(default)]
+    snippet_value_array: Option<Vec<String>>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -69,11 +82,6 @@ struct StdlibMetadata {
     #[serde(default)]
     feature_tree_operation: bool,
 
-    /// If true, expects keyword arguments.
-    /// If false, expects positional arguments.
-    #[serde(default)]
-    keywords: bool,
-
     /// If true, the first argument is unlabeled.
     /// If false, all arguments require labels.
     #[serde(default)]
@@ -90,34 +98,6 @@ fn do_stdlib(
 ) -> Result<(proc_macro2::TokenStream, Vec<Error>), Error> {
     let metadata = from_tokenstream(&attr)?;
     do_stdlib_inner(metadata, attr, item)
-}
-
-fn do_for_each_std_mod(item: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
-    let item: syn::ItemFn = syn::parse2(item.clone()).unwrap();
-    let mut result = proc_macro2::TokenStream::new();
-    for name in fs::read_dir("kcl-lib/std").unwrap().filter_map(|e| {
-        let e = e.unwrap();
-        let filename = e.file_name();
-        filename.to_str().unwrap().strip_suffix(".kcl").map(str::to_owned)
-    }) {
-        for i in 0..10_usize {
-            let mut item = item.clone();
-            item.sig.ident = syn::Ident::new(&format!("{}_{}_shard_{i}", item.sig.ident, name), Span::call_site());
-            let stmts = &item.block.stmts;
-            let block = quote! {
-                {
-                    const STD_MOD_NAME: &str = #name;
-                    const SHARD: usize = #i;
-                    const SHARD_COUNT: usize = 10;
-                    #(#stmts)*
-                }
-            };
-            item.block = Box::new(syn::parse2(block).unwrap());
-            result.extend(Some(item.into_token_stream()));
-        }
-    }
-
-    result
 }
 
 fn do_output(res: Result<(proc_macro2::TokenStream, Vec<Error>), Error>) -> proc_macro::TokenStream {
@@ -307,12 +287,6 @@ fn do_stdlib_inner(
         quote! { false }
     };
 
-    let uses_keyword_arguments = if metadata.keywords {
-        quote! { true }
-    } else {
-        quote! { false }
-    };
-
     let docs_crate = get_crate(None);
 
     // When the user attaches this proc macro to a function with the wrong type
@@ -341,6 +315,10 @@ fn do_stdlib_inner(
         }
         .trim_start_matches('_')
         .to_string();
+        // These aren't really KCL args, they're just state that each stdlib function's impl needs.
+        if arg_name == "exec_state" || arg_name == "args" {
+            continue;
+        }
 
         let ty = match arg {
             syn::FnArg::Receiver(pat) => pat.ty.as_ref().into_token_stream(),
@@ -351,27 +329,24 @@ fn do_stdlib_inner(
 
         let ty_string = rust_type_to_openapi_type(&ty_string);
         let required = !ty_ident.to_string().starts_with("Option <");
-        let arg_meta = metadata.args.get(&arg_name);
-        let description = if let Some(s) = arg_meta.map(|arg| &arg.docs) {
-            quote! { #s }
-        } else if metadata.keywords && ty_string != "Args" && ty_string != "ExecState" {
-            errors.push(Error::new_spanned(
-                &arg,
-                "Argument was not documented in the args block",
-            ));
+        let Some(arg_meta) = metadata.args.get(&arg_name) else {
+            errors.push(Error::new_spanned(arg, format!("arg {arg_name} not found")));
             continue;
-        } else {
-            quote! { String::new() }
         };
-        let include_in_snippet = required || arg_meta.map(|arg| arg.include_in_snippet).unwrap_or_default();
+        let description = arg_meta.docs.clone();
+        let include_in_snippet = required || arg_meta.include_in_snippet;
+        let snippet_value = arg_meta.snippet_value.clone();
+        let snippet_value_array = arg_meta.snippet_value_array.clone();
+        if snippet_value.is_some() && snippet_value_array.is_some() {
+            errors.push(Error::new_spanned(arg, format!("arg {arg_name} has set both snippet_value and snippet_value array, but at most one of these may be set. Please delete one of them.")));
+        }
         let label_required = !(i == 0 && metadata.unlabeled_first);
         let camel_case_arg_name = to_camel_case(&arg_name);
         if ty_string != "ExecState" && ty_string != "Args" {
             let schema = quote! {
                 generator.root_schema_for::<#ty_ident>()
             };
-            arg_types.push(quote! {
-                #docs_crate::StdLibFnArg {
+            let q0 = quote! {
                     name: #camel_case_arg_name.to_string(),
                     type_: #ty_string.to_string(),
                     schema: #schema,
@@ -379,6 +354,32 @@ fn do_stdlib_inner(
                     label_required: #label_required,
                     description: #description.to_string(),
                     include_in_snippet: #include_in_snippet,
+            };
+            let q1 = if let Some(snippet_value) = snippet_value {
+                quote! {
+                    snippet_value: Some(#snippet_value.to_owned()),
+                }
+            } else {
+                quote! {
+                    snippet_value: None,
+                }
+            };
+            let q2 = if let Some(snippet_value_array) = snippet_value_array {
+                quote! {
+                    snippet_value_array: Some(vec![
+                        #(#snippet_value_array.to_owned()),*
+                    ]),
+                }
+            } else {
+                quote! {
+                    snippet_value_array: None,
+                }
+            };
+            arg_types.push(quote! {
+                #docs_crate::StdLibFnArg {
+                #q0
+                #q1
+                #q2
                 }
             });
         }
@@ -442,6 +443,8 @@ fn do_stdlib_inner(
                 label_required: true,
                 description: String::new(),
                 include_in_snippet: true,
+                snippet_value: None,
+                snippet_value_array: None,
             })
         }
     } else {
@@ -506,10 +509,6 @@ fn do_stdlib_inner(
 
             fn tags(&self) -> Vec<String> {
                 vec![#(#tags),*]
-            }
-
-            fn keyword_arguments(&self) -> bool {
-                #uses_keyword_arguments
             }
 
             fn args(&self, inline_subschemas: bool) -> Vec<#docs_crate::StdLibFnArg> {

@@ -18,12 +18,14 @@ import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
 import type { ArtifactGraph } from '@src/lang/wasm'
+import type { BacktraceItem } from '@rust/kcl-lib/bindings/BacktraceItem'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {
   kind: ExtractKind<RustKclError> | 'name'
   sourceRange: SourceRange
   msg: string
+  kclBacktrace: BacktraceItem[]
   nonFatal: CompilationError[]
   operations: Operation[]
   artifactCommands: ArtifactCommand[]
@@ -35,7 +37,8 @@ export class KCLError extends Error {
     kind: ExtractKind<RustKclError> | 'name',
     msg: string,
     sourceRange: SourceRange,
-    nonFatal: CompilationError[] = [],
+    kclBacktrace: BacktraceItem[],
+    nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
@@ -46,6 +49,7 @@ export class KCLError extends Error {
     this.kind = kind
     this.msg = msg
     this.sourceRange = sourceRange
+    this.kclBacktrace = kclBacktrace
     this.nonFatal = nonFatal
     this.operations = operations
     this.artifactCommands = artifactCommands
@@ -60,6 +64,7 @@ export class KCLLexicalError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
+    kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
@@ -71,6 +76,7 @@ export class KCLLexicalError extends KCLError {
       'lexical',
       msg,
       sourceRange,
+      kclBacktrace,
       nonFatal,
       operations,
       artifactCommands,
@@ -86,6 +92,7 @@ export class KCLInternalError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
+    kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
@@ -97,6 +104,7 @@ export class KCLInternalError extends KCLError {
       'internal',
       msg,
       sourceRange,
+      kclBacktrace,
       nonFatal,
       operations,
       artifactCommands,
@@ -112,6 +120,7 @@ export class KCLSyntaxError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
+    kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
@@ -123,6 +132,7 @@ export class KCLSyntaxError extends KCLError {
       'syntax',
       msg,
       sourceRange,
+      kclBacktrace,
       nonFatal,
       operations,
       artifactCommands,
@@ -138,6 +148,7 @@ export class KCLSemanticError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
+    kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
@@ -149,6 +160,7 @@ export class KCLSemanticError extends KCLError {
       'semantic',
       msg,
       sourceRange,
+      kclBacktrace,
       nonFatal,
       operations,
       artifactCommands,
@@ -164,6 +176,7 @@ export class KCLTypeError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
+    kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
@@ -175,6 +188,7 @@ export class KCLTypeError extends KCLError {
       'type',
       msg,
       sourceRange,
+      kclBacktrace,
       nonFatal,
       operations,
       artifactCommands,
@@ -190,6 +204,7 @@ export class KCLIoError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
+    kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
@@ -201,6 +216,7 @@ export class KCLIoError extends KCLError {
       'io',
       msg,
       sourceRange,
+      kclBacktrace,
       nonFatal,
       operations,
       artifactCommands,
@@ -216,6 +232,7 @@ export class KCLUnexpectedError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
+    kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
@@ -227,6 +244,7 @@ export class KCLUnexpectedError extends KCLError {
       'unexpected',
       msg,
       sourceRange,
+      kclBacktrace,
       nonFatal,
       operations,
       artifactCommands,
@@ -242,6 +260,7 @@ export class KCLValueAlreadyDefined extends KCLError {
   constructor(
     key: string,
     sourceRange: SourceRange,
+    kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
@@ -253,6 +272,7 @@ export class KCLValueAlreadyDefined extends KCLError {
       'name',
       `Key ${key} was already defined elsewhere`,
       sourceRange,
+      kclBacktrace,
       nonFatal,
       operations,
       artifactCommands,
@@ -268,6 +288,7 @@ export class KCLUndefinedValueError extends KCLError {
   constructor(
     key: string,
     sourceRange: SourceRange,
+    kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
@@ -279,6 +300,7 @@ export class KCLUndefinedValueError extends KCLError {
       'name',
       `Key ${key} has not been defined`,
       sourceRange,
+      kclBacktrace,
       nonFatal,
       operations,
       artifactCommands,
@@ -305,6 +327,7 @@ export function lspDiagnosticsToKclErrors(
           'unexpected',
           message,
           [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, 0],
+          [],
           [],
           [],
           [],
@@ -336,16 +359,44 @@ export function kclErrorsToDiagnostics(
   let nonFatal: CodeMirrorDiagnostic[] = []
   const errs = errors
     ?.filter((err) => isTopLevelModule(err.sourceRange))
-    .map((err): CodeMirrorDiagnostic => {
+    .flatMap((err) => {
+      const diagnostics: CodeMirrorDiagnostic[] = []
+      let message = err.msg
+      if (err.kclBacktrace.length > 0) {
+        // Show the backtrace in the error message.
+        for (let i = 0; i < err.kclBacktrace.length; i++) {
+          const item = err.kclBacktrace[i]
+          if (
+            i > 0 &&
+            isTopLevelModule(item.sourceRange) &&
+            item.sourceRange[0] !== err.sourceRange[0] &&
+            item.sourceRange[1] !== err.sourceRange[1]
+          ) {
+            diagnostics.push({
+              from: item.sourceRange[0],
+              to: item.sourceRange[1],
+              message: 'Part of the error backtrace',
+              severity: 'hint',
+            })
+          }
+          if (i === err.kclBacktrace.length - 1 && !item.fnName) {
+            // The top-level doesn't have a name.
+            break
+          }
+          const name = item.fnName ? `${item.fnName}()` : '(anonymous)'
+          message += `\n${name}`
+        }
+      }
       if (err.nonFatal.length > 0) {
         nonFatal = nonFatal.concat(compilationErrorsToDiagnostics(err.nonFatal))
       }
-      return {
+      diagnostics.push({
         from: err.sourceRange[0],
         to: err.sourceRange[1],
-        message: err.msg,
+        message,
         severity: 'error',
-      }
+      })
+      return diagnostics
     })
   return errs.concat(nonFatal)
 }

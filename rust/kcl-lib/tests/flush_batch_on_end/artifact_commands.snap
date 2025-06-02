@@ -110,7 +110,7 @@ description: Artifact commands flush_batch_on_end.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 6.9453,
+        "x": 6.945,
         "y": 0.0,
         "z": 0.0
       }
@@ -186,7 +186,7 @@ description: Artifact commands flush_batch_on_end.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 4.6228,
+        "x": 4.623,
         "y": 0.0,
         "z": 0.0
       }

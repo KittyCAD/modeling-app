@@ -57,7 +57,7 @@ sketch003 = startSketchOn(plane001)
 test.describe('Feature Tree pane', () => {
   test(
     'User can go to definition and go to function definition',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, homePage, scene, editor, toolbar, cmdBar, page }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
@@ -150,7 +150,7 @@ test.describe('Feature Tree pane', () => {
 
   test(
     `User can edit sketch (but not on offset plane yet) from the feature tree`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, homePage, scene, editor, toolbar, page }) => {
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)

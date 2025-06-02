@@ -15,7 +15,13 @@ import {
   getSweepEdgeCodeRef,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
-import { type PipeExpression, sourceRangeFromRust } from '@src/lang/wasm'
+import {
+  type CallExpressionKw,
+  type PipeExpression,
+  type Program,
+  sourceRangeFromRust,
+  type VariableDeclaration,
+} from '@src/lang/wasm'
 import type {
   HelixModes,
   ModelingCommandSchema,
@@ -66,7 +72,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     name: 'Extrude',
     groupId: 'modeling',
   }
-  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+  if (operation.type !== 'StdLibCall') {
     return { reason: 'Wrong operation type' }
   }
 
@@ -123,7 +129,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
+    operation.type !== 'StdLibCall' ||
     !operation.labeledArgs ||
     (!isChamfer && !isFillet)
   ) {
@@ -225,7 +231,7 @@ const prepareToEditShell: PrepareToEditCallback =
     }
 
     if (
-      (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
+      operation.type !== 'StdLibCall' ||
       !operation.labeledArgs ||
       !operation.unlabeledArg ||
       !('thickness' in operation.labeledArgs) ||
@@ -346,7 +352,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
+    operation.type !== 'StdLibCall' ||
     !operation.labeledArgs ||
     !operation.unlabeledArg ||
     !('offset' in operation.labeledArgs) ||
@@ -412,7 +418,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
 }
 
 /**
- * Gather up the argument values for the Revolve command
+ * Gather up the argument values for the sweep command
  * to be used in the command bar edit flow.
  */
 const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
@@ -420,7 +426,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     name: 'Sweep',
     groupId: 'modeling',
   }
-  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+  if (operation.type !== 'StdLibCall') {
     return { reason: 'Wrong operation type' }
   }
 
@@ -515,7 +521,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     name: 'Helix',
     groupId: 'modeling',
   }
-  if (operation.type !== 'KclStdLibCall' || !operation.labeledArgs) {
+  if (operation.type !== 'StdLibCall' || !operation.labeledArgs) {
     return { reason: 'Wrong operation type or arguments' }
   }
 
@@ -768,11 +774,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     name: 'Revolve',
     groupId: 'modeling',
   }
-  if (
-    !artifact ||
-    operation.type !== 'KclStdLibCall' ||
-    !operation.labeledArgs
-  ) {
+  if (!artifact || operation.type !== 'StdLibCall' || !operation.labeledArgs) {
     return { reason: 'Wrong operation type or artifact' }
   }
 
@@ -865,14 +867,14 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   }
 
   // angle kcl arg
-  if (!('angle' in operation.labeledArgs) || !operation.labeledArgs.angle) {
-    return { reason: "Couldn't find angle argument" }
-  }
+  // Default to '360' if not present
   const angle = await stringToKclExpression(
-    codeManager.code.slice(
-      operation.labeledArgs.angle.sourceRange[0],
-      operation.labeledArgs.angle.sourceRange[1]
-    )
+    'angle' in operation.labeledArgs && operation.labeledArgs.angle
+      ? codeManager.code.slice(
+          operation.labeledArgs.angle.sourceRange[0],
+          operation.labeledArgs.angle.sourceRange[1]
+        )
+      : '360deg'
   )
   if (err(angle) || 'errors' in angle) {
     return { reason: 'Error in angle argument retrieval' }
@@ -1041,8 +1043,6 @@ export function getOperationLabel(op: Operation): string {
   switch (op.type) {
     case 'StdLibCall':
       return stdLibMap[op.name]?.label ?? op.name
-    case 'KclStdLibCall':
-      return stdLibMap[op.name]?.label ?? op.name
     case 'GroupBegin':
       if (op.group.type === 'FunctionCall') {
         return op.group.name ?? 'anonymous'
@@ -1067,8 +1067,6 @@ export function getOperationIcon(op: Operation): CustomIconName {
   switch (op.type) {
     case 'StdLibCall':
       return stdLibMap[op.name]?.icon ?? 'questionMark'
-    case 'KclStdLibCall':
-      return stdLibMap[op.name]?.icon ?? 'questionMark'
     case 'GroupBegin':
       if (op.group.type === 'ModuleInstance') {
         return 'import' // TODO: Use insert icon.
@@ -1080,6 +1078,71 @@ export function getOperationIcon(op: Operation): CustomIconName {
       const _exhaustiveCheck: never = op
       return 'questionMark' // unreachable
   }
+}
+
+/**
+ * If the result of the operation is assigned to a variable, returns the
+ * variable name.
+ */
+export function getOperationVariableName(
+  op: Operation,
+  program: Program
+): string | undefined {
+  if (
+    op.type !== 'StdLibCall' &&
+    !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall')
+  ) {
+    return undefined
+  }
+  // Find the AST node.
+  const range = sourceRangeFromRust(op.sourceRange)
+  const pathToNode = getNodePathFromSourceRange(program, range)
+  if (pathToNode.length === 0) {
+    return undefined
+  }
+  const call = getNodeFromPath<CallExpressionKw>(
+    program,
+    pathToNode,
+    'CallExpressionKw'
+  )
+  if (err(call) || call.node.type !== 'CallExpressionKw') {
+    return undefined
+  }
+  // Find the var name from the variable declaration.
+  const varDec = getNodeFromPath<VariableDeclaration>(
+    program,
+    pathToNode,
+    'VariableDeclaration'
+  )
+  if (err(varDec)) {
+    return undefined
+  }
+  if (varDec.node.type !== 'VariableDeclaration') {
+    // There's no variable declaration for this call.
+    return undefined
+  }
+  const varName = varDec.node.declaration.id.name
+  // If the operation is a simple assignment, we can use the variable name.
+  if (varDec.node.declaration.init === call.node) {
+    return varName
+  }
+  // If the AST node is in a pipe expression, we can only use the variable
+  // name if it's the last operation in the pipe.
+  const pipe = getNodeFromPath<PipeExpression>(
+    program,
+    pathToNode,
+    'PipeExpression'
+  )
+  if (err(pipe)) {
+    return undefined
+  }
+  if (
+    pipe.node.type === 'PipeExpression' &&
+    pipe.node.body[pipe.node.body.length - 1] === call.node
+  ) {
+    return varName
+  }
+  return undefined
 }
 
 /**
@@ -1173,7 +1236,7 @@ export async function enterEditFlow({
   operation,
   artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+  if (operation.type !== 'StdLibCall') {
     return new Error(
       'Feature tree editing not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
@@ -1211,7 +1274,7 @@ export async function enterEditFlow({
 export async function enterAppearanceFlow({
   operation,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+  if (operation.type !== 'StdLibCall') {
     return new Error(
       'Appearance setting not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
@@ -1245,7 +1308,7 @@ export async function enterTranslateFlow({
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
-    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
+    operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
   if (!isModuleImport && !isSupportedStdLibCall) {
     return new Error(
@@ -1307,7 +1370,7 @@ export async function enterRotateFlow({
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
-    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
+    operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
   if (!isModuleImport && !isSupportedStdLibCall) {
     return new Error(
@@ -1369,7 +1432,7 @@ export async function enterCloneFlow({
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
-    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
+    operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
   if (!isModuleImport && !isSupportedStdLibCall) {
     return new Error(

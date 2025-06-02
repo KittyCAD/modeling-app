@@ -35,31 +35,28 @@ impl Default for TypedPath {
 
 impl From<&String> for TypedPath {
     fn from(path: &String) -> Self {
-        #[cfg(target_arch = "wasm32")]
-        {
-            TypedPath(typed_path::TypedPath::derive(path).to_path_buf())
-        }
-        #[cfg(not(target_arch = "wasm32"))]
-        {
-            TypedPath(std::path::PathBuf::from(path))
-        }
+        TypedPath::new(path)
     }
 }
 
 impl From<&str> for TypedPath {
     fn from(path: &str) -> Self {
+        TypedPath::new(path)
+    }
+}
+
+impl TypedPath {
+    pub fn new(path: &str) -> Self {
         #[cfg(target_arch = "wasm32")]
         {
             TypedPath(typed_path::TypedPath::derive(path).to_path_buf())
         }
         #[cfg(not(target_arch = "wasm32"))]
         {
-            TypedPath(std::path::PathBuf::from(path))
+            TypedPath(normalise_import(path))
         }
     }
-}
 
-impl TypedPath {
     pub fn extension(&self) -> Option<&str> {
         #[cfg(target_arch = "wasm32")]
         {
@@ -82,6 +79,17 @@ impl TypedPath {
         #[cfg(not(target_arch = "wasm32"))]
         {
             TypedPath(self.0.join(path))
+        }
+    }
+
+    pub fn join_typed(&self, path: &TypedPath) -> Self {
+        #[cfg(target_arch = "wasm32")]
+        {
+            TypedPath(self.0.join(path.0.to_path()))
+        }
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            TypedPath(self.0.join(&path.0))
         }
     }
 
@@ -204,5 +212,21 @@ impl schemars::JsonSchema for TypedPath {
     fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
         // TODO: Actually generate a reasonable schema.
         gen.subschema_for::<std::path::PathBuf>()
+    }
+}
+
+/// Turn `nested\foo\bar\main.kcl` or `nested/foo/bar/main.kcl`
+/// into a PathBuf that works on the host OS.
+///
+/// * Does **not** touch `..` or symlinks – call `canonicalize()` if you need that.
+/// * Returns an owned `PathBuf` only when normalisation was required.
+fn normalise_import<S: AsRef<str>>(raw: S) -> std::path::PathBuf {
+    let s = raw.as_ref();
+    // On Unix we need to swap `\` → `/`.  On Windows we leave it alone.
+    // (Windows happily consumes `/`)
+    if cfg!(unix) && s.contains('\\') {
+        std::path::PathBuf::from(s.replace('\\', "/"))
+    } else {
+        std::path::Path::new(s).to_path_buf()
     }
 }

@@ -1,0 +1,27 @@
+@settings(defaultLengthUnit = mm)
+
+sketch001 = startSketchOn(YZ)
+
+sketch001Profile000 = startProfile(sketch001, at = [0.0, 20])
+  |> xLine(length = 2.25)
+  |> line(end = [0.75, -0.75])
+  |> yLine(length = -38.5)
+  |> line(end = [-0.75, -0.75])
+  |> xLine(length = -2.25)
+  |> yLine(length = 40)
+  |> close()
+
+revolve000 = revolve(sketch001Profile000, axis = Y, angle = 360)
+
+sketch003 = startSketchOn(YZ)
+
+sketch003Profile000 = startProfile(sketch003, at = [0.65, 20.1])
+  |> yLine(length = -1.5)
+  |> xLine(length = -1.1)
+  |> yLine(length = 1.5)
+  |> xLine(length = 1.1)
+  |> close()
+
+cut000Extrude = extrude([sketch003Profile000], length = 10, bidirectionalLength = 10)
+
+cut000 = subtract(revolve000, tools = cut000Extrude)

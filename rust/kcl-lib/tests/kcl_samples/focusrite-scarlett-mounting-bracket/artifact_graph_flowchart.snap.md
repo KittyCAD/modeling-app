@@ -219,19 +219,9 @@ flowchart LR
   128["SweepEdge Adjacent"]
   129["EdgeCut Fillet<br>[1449, 1708, 0]"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-  130["EdgeCut Fillet<br>[1449, 1708, 0]"]
-    %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-  131["EdgeCut Fillet<br>[1449, 1708, 0]"]
-    %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-  132["EdgeCut Fillet<br>[1449, 1708, 0]"]
-    %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-  133["EdgeCut Fillet<br>[2472, 2617, 0]"]
+  130["EdgeCut Fillet<br>[2472, 2617, 0]"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 8 }]
-  134["EdgeCut Fillet<br>[2472, 2617, 0]"]
-    %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 8 }]
-  135["EdgeCut Fillet<br>[3300, 3445, 0]"]
-    %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 8 }]
-  136["EdgeCut Fillet<br>[3300, 3445, 0]"]
+  131["EdgeCut Fillet<br>[3300, 3445, 0]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 8 }]
   1 --- 6
   2 --- 7
@@ -540,12 +530,7 @@ flowchart LR
   103 <--x 82
   104 <--x 82
   105 <--x 82
-  106 <--x 135
-  107 <--x 136
-  110 <--x 130
-  111 <--x 131
-  114 <--x 129
-  115 <--x 132
-  123 <--x 134
-  124 <--x 133
+  106 <--x 131
+  115 <--x 129
+  124 <--x 130
 ```

@@ -37,7 +37,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
-    let symmetric = args.get_kw_arg_opt("symmetric")?;
+    let symmetric = args.get_kw_arg_opt_typed("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_angle: Option<TyF64> =
         args.get_kw_arg_opt_typed("bidirectionalAngle", &RuntimeType::angle(), exec_state)?;
 
@@ -75,10 +75,10 @@ async fn inner_revolve(
         // We don't use validate() here because we want to return a specific error message that is
         // nice and we use the other data in the docs, so we still need use the derive above for the json schema.
         if !(-360.0..=360.0).contains(&angle) || angle == 0.0 {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected angle to be between -360 and 360 and not 0, found `{}`", angle),
-                source_ranges: vec![args.source_range],
-            }));
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                format!("Expected angle to be between -360 and 360 and not 0, found `{}`", angle),
+                vec![args.source_range],
+            )));
         }
     }
 
@@ -87,35 +87,35 @@ async fn inner_revolve(
         // We don't use validate() here because we want to return a specific error message that is
         // nice and we use the other data in the docs, so we still need use the derive above for the json schema.
         if !(-360.0..=360.0).contains(&bidirectional_angle) || bidirectional_angle == 0.0 {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!(
+            return Err(KclError::Semantic(KclErrorDetails::new(
+                format!(
                     "Expected bidirectional angle to be between -360 and 360 and not 0, found `{}`",
                     bidirectional_angle
                 ),
-                source_ranges: vec![args.source_range],
-            }));
+                vec![args.source_range],
+            )));
         }
 
         if let Some(angle) = angle {
             let ang = angle.signum() * bidirectional_angle + angle;
             if !(-360.0..=360.0).contains(&ang) {
-                return Err(KclError::Semantic(KclErrorDetails {
-                    message: format!(
+                return Err(KclError::Semantic(KclErrorDetails::new(
+                    format!(
                         "Combined angle and bidirectional must be between -360 and 360, found '{}'",
                         ang
                     ),
-                    source_ranges: vec![args.source_range],
-                }));
+                    vec![args.source_range],
+                )));
             }
         }
     }
 
     if symmetric.unwrap_or(false) && bidirectional_angle.is_some() {
-        return Err(KclError::Semantic(KclErrorDetails {
-            source_ranges: vec![args.source_range],
-            message: "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
                 .to_owned(),
-        }));
+            vec![args.source_range],
+        )));
     }
 
     let angle = Angle::from_degrees(angle.unwrap_or(360.0));
@@ -182,6 +182,11 @@ async fn inner_revolve(
         // If an edge lies on the axis of revolution it will not exist after the revolve, so
         // it cannot be used to retrieve data about the solid
         for path in sketch.paths.clone() {
+            if !path.is_straight_line() {
+                edge_id = Some(path.get_id());
+                break;
+            }
+
             let from = path.get_from();
             let to = path.get_to();
 
@@ -196,7 +201,6 @@ async fn inner_revolve(
         solids.push(
             do_post_extrude(
                 sketch,
-                #[cfg(feature = "artifact-graph")]
                 id.into(),
                 TyF64::new(0.0, NumericType::mm()),
                 false,

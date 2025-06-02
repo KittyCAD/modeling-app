@@ -11,10 +11,11 @@ Contains frequently used constants, functions for interacting with the KittyCAD 
 
 The standard library is organised into modules (listed below), but most things are always available in KCL programs. 
 
-You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL guide](). 
+You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL guide](https://zoo.dev/docs/kcl-book/intro.html). 
 
 ## Modules
 
+* [`appearance::appearance`](/docs/kcl-std/modules/std-appearance)
 * [`array`](/docs/kcl-std/modules/std-array)
 * [`math`](/docs/kcl-std/modules/std-math)
 * [`sketch`](/docs/kcl-std/modules/std-sketch)
@@ -35,11 +36,9 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`Y`](/docs/kcl-std/consts/std-Y)
 * [`YZ`](/docs/kcl-std/consts/std-YZ)
 * [`Z`](/docs/kcl-std/consts/std-Z)
-* [`appearance`](/docs/kcl-std/appearance)
-* [`assert`](/docs/kcl-std/assert)
-* [`assertIs`](/docs/kcl-std/assertIs)
+* [`assert`](/docs/kcl-std/functions/std-assert)
+* [`assertIs`](/docs/kcl-std/functions/std-assertIs)
 * [`clone`](/docs/kcl-std/functions/std-clone)
 * [`helix`](/docs/kcl-std/functions/std-helix)
 * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
-* [`patternLinear2d`](/docs/kcl-std/patternLinear2d)
 

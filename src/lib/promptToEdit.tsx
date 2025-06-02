@@ -415,6 +415,7 @@ export async function promptToEditFlow({
   token,
   artifactGraph,
   projectName,
+  filePath,
 }: {
   prompt: string
   selections: Selections
@@ -422,6 +423,7 @@ export async function promptToEditFlow({
   token?: string
   artifactGraph: ArtifactGraph
   projectName: string
+  filePath: string | undefined
 }) {
   const result = await doPromptEdit({
     prompt,
@@ -498,6 +500,7 @@ export async function promptToEditFlow({
     await writeOverFilesAndExecute({
       requestedFiles,
       projectName,
+      filePath,
     })
   } else {
     const newCode = result.outputs['main.kcl']

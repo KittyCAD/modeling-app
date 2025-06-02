@@ -13,7 +13,10 @@ import {
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
-import { commandBarActor } from '@src/lib/singletons'
+import { commandBarActor, useAuthState } from '@src/lib/singletons'
+import { showCodeReplaceToast } from '@src/components/CodeReplaceToast'
+import { findKclSample } from '@src/lib/kclSamples'
+import { webSafePathSplit } from '@src/lib/paths'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -31,6 +34,7 @@ export type CreateFileSchemaMethodOptional = Omit<
  * "?cmd=<some-command-name>&groupId=<some-group-id>"
  */
 export function useQueryParamEffects() {
+  const authState = useAuthState()
   const [searchParams, setSearchParams] = useSearchParams()
   const shouldInvokeCreateFile = searchParams.has(CREATE_FILE_URL_PARAM)
   const shouldInvokeGenericCmd =
@@ -41,7 +45,7 @@ export function useQueryParamEffects() {
    * Watches for legacy `?create-file` hook, which share links currently use.
    */
   useEffect(() => {
-    if (shouldInvokeCreateFile) {
+    if (shouldInvokeCreateFile && authState.matches('loggedIn')) {
       const argDefaultValues = buildCreateFileCommandArgs(searchParams)
       commandBarActor.send({
         type: 'Find and select command',
@@ -56,29 +60,96 @@ export function useQueryParamEffects() {
       searchParams.delete(CREATE_FILE_URL_PARAM)
       setSearchParams(searchParams)
     }
-  }, [shouldInvokeCreateFile, setSearchParams])
+  }, [shouldInvokeCreateFile, setSearchParams, authState])
 
   /**
    * Generic commands are triggered by query parameters
    * with the pattern: `?cmd=<command-name>&groupId=<group-id>`
    */
   useEffect(() => {
-    if (shouldInvokeGenericCmd) {
-      const commandData = buildGenericCommandArgs(searchParams)
-      if (!commandData) {
-        return
-      }
+    if (!shouldInvokeGenericCmd || !authState.matches('loggedIn')) return
+
+    const commandData = buildGenericCommandArgs(searchParams)
+    if (!commandData) return
+
+    // Process regular commands
+    if (commandData.name !== 'add-kcl-file-to-project' || isDesktop()) {
       commandBarActor.send({
         type: 'Find and select command',
         data: commandData,
       })
+      cleanupQueryParams()
+      return
+    }
 
+    // From here we're only handling 'add-kcl-file-to-project' on web
+
+    // Get the sample path from command arguments
+    const samplePath = commandData.argDefaultValues?.sample
+    if (!samplePath) {
+      console.error('No sample path found in command arguments')
+      cleanupQueryParams()
+      return
+    }
+
+    // Find the KCL sample details
+    const kclSample = findKclSample(samplePath)
+    if (!kclSample) {
+      console.error('KCL sample not found for path:', samplePath)
+      cleanupQueryParams()
+      return
+    } else if (kclSample.files.length > 1) {
+      console.error(
+        'KCL sample has multiple files, only the first one will be used'
+      )
+      cleanupQueryParams()
+      return
+    }
+
+    // Get the first part of the path (project directory)
+    const pathParts = webSafePathSplit(samplePath)
+    const projectPathPart = pathParts[0]
+
+    // Get the first file from the sample
+    const firstFile = kclSample.files[0]
+    if (!firstFile) {
+      console.error('No files found in KCL sample')
+      cleanupQueryParams()
+      return
+    }
+
+    // Build the URL to the sample file
+    const sampleCodeUrl = `/kcl-samples/${encodeURIComponent(
+      projectPathPart
+    )}/${encodeURIComponent(firstFile)}`
+
+    // Fetch the sample code and show the toast
+    fetch(sampleCodeUrl)
+      .then((response) => {
+        if (!response.ok) {
+          return Promise.reject(
+            new Error(
+              `Failed to fetch sample: ${response.status} ${response.statusText}`
+            )
+          )
+        }
+        return response.text()
+      })
+      .then((code) => {
+        showCodeReplaceToast(code)
+      })
+      .catch((error) => {
+        console.error('Error loading KCL sample:', error)
+      })
+
+    cleanupQueryParams()
+
+    // Helper function to clean up query parameters
+    function cleanupQueryParams() {
       // Delete all the query parameters that aren't reserved
       searchParams.delete(CMD_NAME_QUERY_PARAM)
       searchParams.delete(CMD_GROUP_QUERY_PARAM)
-      const keysToDelete = searchParams
-        .entries()
-        .toArray()
+      const keysToDelete = [...searchParams.entries()]
         // Filter out known keys
         .filter(([key]) => {
           const reservedKeys = [
@@ -96,7 +167,7 @@ export function useQueryParamEffects() {
       }
       setSearchParams(searchParams)
     }
-  }, [shouldInvokeGenericCmd, setSearchParams])
+  }, [shouldInvokeGenericCmd, setSearchParams, authState])
 }
 
 function buildCreateFileCommandArgs(searchParams: URLSearchParams) {
@@ -123,8 +194,7 @@ function buildGenericCommandArgs(searchParams: URLSearchParams) {
     return
   }
 
-  const filteredParams = searchParams
-    .entries()
+  const filteredParams = [...searchParams.entries()]
     // Filter out known keys
     .filter(
       ([key]) =>

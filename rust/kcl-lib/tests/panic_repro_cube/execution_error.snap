@@ -6,10 +6,23 @@ KCL Semantic error
 
   × semantic: This function expected the input argument to be tag identifier
   │ but it's actually of type tag
-    ╭─[43:25]
+    ╭─[43:5]
  42 │     // these double wrapped functions are the point of this test
  43 │     getNextAdjacentEdge(getNextAdjacentEdge(seg01)),
-    ·                         ─────────────┬────────────
-    ·                                      ╰── tests/panic_repro_cube/input.kcl
+    ·     ───────────────────────┬───────────────────────┬
+    ·                            │                       ╰── tests/panic_repro_cube/input.kcl
+    ·                            ╰── tests/panic_repro_cube/input.kcl
  44 │     getNextAdjacentEdge(getNextAdjacentEdge(seg02))
     ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: This function expected the input argument to be tag
+        │ identifier but it's actually of type tag
+          ╭─[43:25]
+       42 │     // these double wrapped functions are the point of this test
+       43 │     getNextAdjacentEdge(getNextAdjacentEdge(seg01)),
+          ·                         ─────────────┬────────────
+          ·                                      ╰── tests/panic_repro_cube/
+      input.kcl
+       44 │     getNextAdjacentEdge(getNextAdjacentEdge(seg02))
+          ╰────

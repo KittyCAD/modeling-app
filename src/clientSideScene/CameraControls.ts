@@ -43,6 +43,7 @@ import {
   uuidv4,
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -124,6 +125,8 @@ export class CameraControls {
   interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
+  // TODO: proper dependency injection
+  getSettings: (() => SettingsType) | null = null
 
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
   _setting_allowOrbitInSketchMode = false
@@ -964,8 +967,50 @@ export class CameraControls {
     })
   }
 
+  /**
+   * A helper function that will override this.oldCameraState
+   * with the current setting's camera projection. If these are desynced
+   * that is okay but when the camera restores we want the user to be in the correct
+   * camera projection which is the settings value. Not this old state.
+   *
+   * Gotcha: This is not to be confused with Named Views, those have correct state.
+   */
+  overrideOldCameraStateToPreventDesync() {
+    if (!this.getSettings) {
+      return
+    }
+
+    // Engine idle disconnection happened, we saved off the camera state
+    // If the settings camera projection is different from the saved camera state we need to override it.
+    const settings = this.getSettings()
+    const cameraProjection = settings.modeling.cameraProjection.current
+    const isOrtho = cameraProjection === 'orthographic' ? true : false
+
+    if (this.oldCameraState) {
+      // Leave a log to know when this desyncs
+      console.log(`restoring camera projection setting:${cameraProjection}`)
+      console.log(
+        `oldCameraState projection:${isOrtho ? 'orthographic' : 'perspective'}, ortho_scaled_enabled:${this.oldCameraState.ortho_scale_enabled}`
+      )
+
+      if (this.oldCameraState.is_ortho !== isOrtho) {
+        console.log(
+          'oldCameraState is_ortho desynced',
+          this.oldCameraState.is_ortho,
+          isOrtho
+        )
+      }
+
+      this.oldCameraState.is_ortho = isOrtho
+      // Always keep this enabled!
+      this.oldCameraState.ortho_scale_enabled = true
+    }
+  }
+
   async restoreRemoteCameraStateAndTriggerSync() {
     if (this.oldCameraState) {
+      // Always write settings.modeling.cameraProjection to the restored camera view
+      this.overrideOldCameraStateToPreventDesync()
       await this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),

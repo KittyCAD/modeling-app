@@ -1997,7 +1997,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "goundSize",
+            "name": "groundSize",
             "start": 0,
             "type": "Identifier"
           },
@@ -2138,7 +2138,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "name": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "goundSize",
+                        "name": "groundSize",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -2887,17 +2887,6 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": null,
-                    "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
-                    }
                   }
                 ],
                 "callee": {
@@ -2975,17 +2964,6 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": null,
-                    "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
                     }
                   }
                 ],
@@ -3072,17 +3050,6 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": null,
-                    "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
                     }
                   }
                 ],
