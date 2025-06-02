@@ -431,6 +431,10 @@ impl KclError {
         KclError::Semantic { details }
     }
 
+    pub fn new_engine(details: KclErrorDetails) -> KclError {
+        KclError::Engine { details }
+    }
+
     pub fn new_undefined_value(details: KclErrorDetails) -> KclError {
         KclError::UndefinedValue { details }
     }
