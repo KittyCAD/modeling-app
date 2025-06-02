@@ -10,6 +10,9 @@ description: Operations executed pattern_circular_in_module.kcl
       "name": "thing.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -20,6 +23,17 @@ description: Operations executed pattern_circular_in_module.kcl
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -34,6 +48,9 @@ description: Operations executed pattern_circular_in_module.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -88,6 +105,9 @@ description: Operations executed pattern_circular_in_module.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },

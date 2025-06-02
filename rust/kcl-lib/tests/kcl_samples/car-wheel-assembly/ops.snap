@@ -10,6 +10,9 @@ description: Operations executed car-wheel-assembly.kcl
       "name": "car-wheel.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -18,6 +21,9 @@ description: Operations executed car-wheel-assembly.kcl
       "type": "ModuleInstance",
       "name": "car-rotor.kcl",
       "moduleId": 0
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -28,6 +34,9 @@ description: Operations executed car-wheel-assembly.kcl
       "name": "brake-caliper.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -37,6 +46,9 @@ description: Operations executed car-wheel-assembly.kcl
       "name": "lug-nut.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -45,6 +57,9 @@ description: Operations executed car-wheel-assembly.kcl
       "type": "ModuleInstance",
       "name": "car-tire.kcl",
       "moduleId": 0
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -138,6 +153,21 @@ description: Operations executed car-wheel-assembly.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 6
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 1
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -279,6 +309,21 @@ description: Operations executed car-wheel-assembly.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 8
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 1
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -343,6 +388,21 @@ description: Operations executed car-wheel-assembly.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 9
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 1
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -351,6 +411,9 @@ description: Operations executed car-wheel-assembly.kcl
       "type": "ModuleInstance",
       "name": "parameters.kcl",
       "moduleId": 0
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },

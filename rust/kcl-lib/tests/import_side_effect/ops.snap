@@ -10,6 +10,9 @@ description: Operations executed import_side_effect.kcl
       "name": "export_side_effect.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {

@@ -10,6 +10,9 @@ description: Operations executed import_glob.kcl
       "name": "export_constant.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {

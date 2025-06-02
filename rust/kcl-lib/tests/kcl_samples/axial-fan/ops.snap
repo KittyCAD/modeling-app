@@ -10,6 +10,9 @@ description: Operations executed axial-fan.kcl
       "name": "fan-housing.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -19,6 +22,9 @@ description: Operations executed axial-fan.kcl
       "name": "motor.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -27,6 +33,9 @@ description: Operations executed axial-fan.kcl
       "type": "ModuleInstance",
       "name": "fan.kcl",
       "moduleId": 0
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },

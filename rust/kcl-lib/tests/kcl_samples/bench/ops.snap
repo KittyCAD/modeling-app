@@ -10,22 +10,8 @@ description: Operations executed bench.kcl
       "name": "bench-parts.kcl",
       "moduleId": 0
     },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "divider",
-      "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {}
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -43,6 +29,45 @@ description: Operations executed bench.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 7
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "divider",
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 8
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -74,6 +99,20 @@ description: Operations executed bench.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 8
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -90,6 +129,17 @@ description: Operations executed bench.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 9
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -120,6 +170,20 @@ description: Operations executed bench.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 9
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -155,6 +219,17 @@ description: Operations executed bench.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -184,6 +259,20 @@ description: Operations executed bench.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -219,6 +308,17 @@ description: Operations executed bench.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 11
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -248,6 +348,20 @@ description: Operations executed bench.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 11
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -283,6 +397,17 @@ description: Operations executed bench.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 12
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -312,6 +437,20 @@ description: Operations executed bench.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 12
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -347,6 +486,17 @@ description: Operations executed bench.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 13
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -381,6 +531,17 @@ description: Operations executed bench.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -394,6 +555,9 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -407,6 +571,9 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -420,6 +587,9 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -433,6 +603,9 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -446,6 +619,9 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -459,6 +635,9 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -476,22 +655,8 @@ description: Operations executed bench.kcl
       },
       "labeledArgs": {}
     },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "dividerSketch",
-      "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {}
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -509,6 +674,29 @@ description: Operations executed bench.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": []
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "dividerSketch",
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -542,37 +730,8 @@ description: Operations executed bench.kcl
         "sourceRange": []
       }
     },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 2.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -606,22 +765,43 @@ description: Operations executed bench.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "dividerSketch",
-      "functionSourceRange": [],
-      "unlabeledArg": {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
         "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 2.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": []
-      },
-      "labeledArgs": {}
+      }
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -640,6 +820,9 @@ description: Operations executed bench.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -656,6 +839,29 @@ description: Operations executed bench.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": []
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "dividerSketch",
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -689,37 +895,8 @@ description: Operations executed bench.kcl
         "sourceRange": []
       }
     },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": -2.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -752,6 +929,44 @@ description: Operations executed bench.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": []
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -2.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -797,49 +1012,8 @@ description: Operations executed bench.kcl
         "sourceRange": []
       }
     },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "shell",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "faces": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "String",
-              "value": "end"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "thickness": {
-        "value": {
-          "type": "Number",
-          "value": 1.5,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -885,6 +1059,56 @@ description: Operations executed bench.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": []
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "shell",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "faces": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "String",
+              "value": "end"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "thickness": {
+        "value": {
+          "type": "Number",
+          "value": 1.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -929,49 +1153,8 @@ description: Operations executed bench.kcl
         "sourceRange": []
       }
     },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "shell",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "faces": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "String",
-              "value": "start"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "thickness": {
-        "value": {
-          "type": "Number",
-          "value": 1.5,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -1016,6 +1199,56 @@ description: Operations executed bench.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": []
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "shell",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "faces": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "String",
+              "value": "start"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "thickness": {
+        "value": {
+          "type": "Number",
+          "value": 1.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -1030,6 +1263,9 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1043,6 +1279,9 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1095,6 +1334,9 @@ description: Operations executed bench.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1126,6 +1368,9 @@ description: Operations executed bench.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -1179,6 +1424,9 @@ description: Operations executed bench.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1211,6 +1459,9 @@ description: Operations executed bench.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1224,6 +1475,9 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1241,6 +1495,9 @@ description: Operations executed bench.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1290,6 +1547,9 @@ description: Operations executed bench.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1303,6 +1563,9 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1320,6 +1583,9 @@ description: Operations executed bench.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1363,6 +1629,9 @@ description: Operations executed bench.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1376,6 +1645,9 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1389,6 +1661,9 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1402,6 +1677,9 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1415,6 +1693,9 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1432,6 +1713,9 @@ description: Operations executed bench.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1448,6 +1732,9 @@ description: Operations executed bench.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -1479,6 +1766,9 @@ description: Operations executed bench.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1508,6 +1798,9 @@ description: Operations executed bench.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -1543,6 +1836,9 @@ description: Operations executed bench.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1577,35 +1873,8 @@ description: Operations executed bench.kcl
         }
       }
     },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "offsetPlane",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 20.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -1637,6 +1906,42 @@ description: Operations executed bench.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": []
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "offsetPlane",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": 20.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1662,6 +1967,9 @@ description: Operations executed bench.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -1686,6 +1994,9 @@ description: Operations executed bench.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },

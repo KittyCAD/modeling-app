@@ -10,6 +10,9 @@ description: Operations executed import_function_not_sketch.kcl
       "name": "my_functions.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {

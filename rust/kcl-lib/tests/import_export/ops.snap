@@ -10,6 +10,9 @@ description: Operations executed import_export.kcl
       "name": "export_1.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {

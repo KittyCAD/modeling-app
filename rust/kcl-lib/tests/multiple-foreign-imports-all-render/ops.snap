@@ -10,6 +10,9 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "name": "cube.step",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -19,6 +22,9 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "name": "othercube.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
@@ -27,6 +33,9 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "type": "ModuleInstance",
       "name": "anothercube.kcl",
       "moduleId": 0
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },
@@ -58,6 +67,21 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 4
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 1
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -87,6 +111,21 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 5
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 1
+        }
+      ]
     },
     "sourceRange": []
   },

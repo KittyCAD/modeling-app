@@ -10,6 +10,9 @@ description: Operations executed nested_main_kcl.kcl
       "name": "main.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {

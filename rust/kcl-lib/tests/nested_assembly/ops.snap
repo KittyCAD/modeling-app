@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Operations executed nested_main_kcl.kcl
+description: Operations executed nested_assembly.kcl
 ---
 [
   {
@@ -9,6 +9,9 @@ description: Operations executed nested_main_kcl.kcl
       "type": "ModuleInstance",
       "name": "main.kcl",
       "moduleId": 0
+    },
+    "nodePath": {
+      "steps": []
     },
     "sourceRange": []
   },

@@ -10,6 +10,9 @@ description: Operations executed import_foreign.kcl
       "name": "cube.gltf",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": []
+    },
     "sourceRange": []
   },
   {
