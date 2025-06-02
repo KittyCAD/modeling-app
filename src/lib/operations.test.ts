@@ -1,3 +1,4 @@
+import type { NodePath } from '@rust/kcl-lib/bindings/NodePath'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { topLevelRange } from '@src/lang/util'
 
@@ -5,6 +6,7 @@ import {
   assertParse,
   defaultNodePath,
   defaultSourceRange,
+  nodePathFromRange,
   type SourceRange,
 } from '@src/lang/wasm'
 import { filterOperations, getOperationVariableName } from '@src/lib/operations'
@@ -180,6 +182,12 @@ function rangeOfText(fullCode: string, target: string): SourceRange {
   return topLevelRange(start, start + target.length)
 }
 
+async function buildNodePath(code: string, target: string): Promise<NodePath> {
+  const sourceRange = rangeOfText(code, target)
+  const program = assertParse(code)
+  return (await nodePathFromRange(program, sourceRange)) ?? defaultNodePath()
+}
+
 describe('variable name of operations', () => {
   it('finds the variable name with simple assignment', async () => {
     const op = stdlib('stdLibFn')
@@ -187,8 +195,8 @@ describe('variable name of operations', () => {
       throw new Error('Expected operation to be a StdLibCall')
     }
     const code = `myVar = stdLibFn()`
-    // Make the source range match the code.
-    op.sourceRange = rangeOfText(code, 'stdLibFn()')
+    // Make the path match the code.
+    op.nodePath = await buildNodePath(code, 'stdLibFn()')
 
     const program = assertParse(code)
     const variableName = getOperationVariableName(op, program)
@@ -204,8 +212,8 @@ describe('variable name of operations', () => {
   return 0
 }
 `
-    // Make the source range match the code.
-    op.sourceRange = rangeOfText(code, 'stdLibFn()')
+    // Make the path match the code.
+    op.nodePath = await buildNodePath(code, 'stdLibFn()')
 
     const program = assertParse(code)
     const variableName = getOperationVariableName(op, program)
@@ -219,8 +227,8 @@ describe('variable name of operations', () => {
     const code = `myVar = foo()
   |> stdLibFn()
 `
-    // Make the source range match the code.
-    op.sourceRange = rangeOfText(code, 'stdLibFn()')
+    // Make the path match the code.
+    op.nodePath = await buildNodePath(code, 'stdLibFn()')
 
     const program = assertParse(code)
     const variableName = getOperationVariableName(op, program)
@@ -235,8 +243,8 @@ describe('variable name of operations', () => {
   |> stdLibFn()
   |> bar()
 `
-    // Make the source range match the code.
-    op.sourceRange = rangeOfText(code, 'stdLibFn()')
+    // Make the path match the code.
+    op.nodePath = await buildNodePath(code, 'stdLibFn()')
 
     const program = assertParse(code)
     const variableName = getOperationVariableName(op, program)

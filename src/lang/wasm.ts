@@ -446,7 +446,7 @@ export async function rustImplPathToNode(
   return pathToNodeFromRustNodePath(nodePath)
 }
 
-async function nodePathFromRange(
+export async function nodePathFromRange(
   ast: Program,
   range: SourceRange
 ): Promise<NodePath | null> {
@@ -574,7 +574,7 @@ export async function coreDump(
   }
 }
 
-function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
+export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
   const pathToNode: PathToNode = []
   for (const step of nodePath.steps) {
     switch (step.type) {
