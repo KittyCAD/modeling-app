@@ -250,11 +250,11 @@ interface LastWindowConfig {
 }
 
 const userDataPath = app.getPath('userData')
-const wndowConfigPath = path.join(userDataPath, 'window_config.json')
+const windowConfigPath = path.join(userDataPath, 'window_config.json')
 
 const loadLastWindowConfig = (): LastWindowConfig | null => {
   try {
-    const data = fs.readFileSync(wndowConfigPath, 'utf8')
+    const data = fs.readFileSync(windowConfigPath, 'utf8')
     const config = JSON.parse(data) as LastWindowConfig
     if (config.bounds) {
       return config
@@ -266,7 +266,7 @@ const loadLastWindowConfig = (): LastWindowConfig | null => {
 }
 
 const saveLastWindowConfig = (config: LastWindowConfig) => {
-  fs.writeFileSync(wndowConfigPath, JSON.stringify(config), {
+  fs.writeFileSync(windowConfigPath, JSON.stringify(config), {
     encoding: 'utf8',
   })
 }
