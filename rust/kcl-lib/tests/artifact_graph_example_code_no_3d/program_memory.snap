@@ -239,8 +239,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           },
           "ccw": false,
           "center": [
-            15.5403,
-            -1.1745
+            15.54,
+            -1.175
           ],
           "from": [
             15.49,
@@ -263,8 +263,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           },
           "ccw": true,
           "center": [
-            -7.6164,
-            0.5757
+            -7.616,
+            0.576
           ],
           "from": [
             0.0,

@@ -4,59 +4,59 @@ description: Operations executed helical-gear.kcl
 ---
 [
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "offsetPlane",
     "unlabeledArg": {
       "value": {
@@ -86,7 +86,7 @@ description: Operations executed helical-gear.kcl
     "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "offsetPlane",
     "unlabeledArg": {
       "value": {
@@ -116,7 +116,7 @@ description: Operations executed helical-gear.kcl
     "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "offsetPlane",
     "unlabeledArg": {
       "value": {
@@ -156,7 +156,7 @@ description: Operations executed helical-gear.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.5708,
+            "value": 1.571,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -168,7 +168,7 @@ description: Operations executed helical-gear.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 19.7335,
+            "value": 19.734,
             "ty": {
               "type": "Default",
               "len": {
@@ -208,7 +208,7 @@ description: Operations executed helical-gear.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 19.7335,
+            "value": 19.734,
             "ty": {
               "type": "Default",
               "len": {
@@ -248,7 +248,7 @@ description: Operations executed helical-gear.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 19.7335,
+            "value": 19.734,
             "ty": {
               "type": "Default",
               "len": {
@@ -276,7 +276,7 @@ description: Operations executed helical-gear.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.7038,
+            "value": 1.704,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -408,7 +408,7 @@ description: Operations executed helical-gear.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 19.7335,
+            "value": 19.734,
             "ty": {
               "type": "Default",
               "len": {
@@ -436,7 +436,7 @@ description: Operations executed helical-gear.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.7632,
+            "value": 1.763,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -448,7 +448,7 @@ description: Operations executed helical-gear.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 19.7335,
+            "value": 19.734,
             "ty": {
               "type": "Default",
               "len": {
@@ -476,7 +476,7 @@ description: Operations executed helical-gear.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.6552,
+            "value": 1.655,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -488,7 +488,7 @@ description: Operations executed helical-gear.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 19.7335,
+            "value": 19.734,
             "ty": {
               "type": "Default",
               "len": {
@@ -506,6 +506,17 @@ description: Operations executed helical-gear.kcl
     "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "subtract2d",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "tool": {
         "value": {
@@ -517,20 +528,20 @@ description: Operations executed helical-gear.kcl
         "sourceRange": []
       }
     },
-    "name": "subtract2d",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "subtract2d",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "tool": {
         "value": {
@@ -542,20 +553,20 @@ description: Operations executed helical-gear.kcl
         "sourceRange": []
       }
     },
-    "name": "subtract2d",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "subtract2d",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "tool": {
         "value": {
@@ -567,18 +578,7 @@ description: Operations executed helical-gear.kcl
         "sourceRange": []
       }
     },
-    "name": "subtract2d",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "type": "GroupBegin",
@@ -665,10 +665,8 @@ description: Operations executed helical-gear.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "loft",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "loft",
     "unlabeledArg": {
       "value": {
         "type": "Array",
@@ -694,7 +692,9 @@ description: Operations executed helical-gear.kcl
         ]
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
     "type": "GroupBegin",

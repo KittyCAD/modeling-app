@@ -18,7 +18,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
   },
   "distanceToInsideEdge": {
     "type": "Number",
-    "value": 1.2847,
+    "value": 1.285,
     "ty": {
       "type": "Known",
       "type": "Length",
@@ -237,7 +237,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             },
             "from": [
               0.0,
-              1.2552
+              31.881
             ],
             "tag": {
               "commentStart": 653,
@@ -247,12 +247,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "seg01"
             },
             "to": [
-              0.4232,
-              1.2552
+              10.75,
+              31.881
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -262,14 +262,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             },
             "ccw": false,
             "center": [
-              0.4232,
-              0.7874
+              10.75,
+              20.0
             ],
             "from": [
-              0.4232,
-              1.2552
+              10.75,
+              31.881
             ],
-            "radius": 0.46776574803149606,
+            "radius": 11.88125,
             "tag": {
               "commentStart": 763,
               "end": 769,
@@ -278,12 +278,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "seg09"
             },
             "to": [
-              0.891,
-              0.7874
+              22.631,
+              20.0
             ],
             "type": "Arc",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -292,8 +292,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              0.891,
-              0.7874
+              22.631,
+              20.0
             ],
             "tag": {
               "commentStart": 829,
@@ -303,12 +303,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "seg03"
             },
             "to": [
-              0.891,
-              -0.3937
+              22.631,
+              -10.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -317,8 +317,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              0.891,
-              -0.3937
+              22.631,
+              -10.0
             ],
             "tag": {
               "commentStart": 882,
@@ -328,12 +328,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "seg07"
             },
             "to": [
-              1.2847,
-              -0.3937
+              32.631,
+              -10.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -342,8 +342,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              1.2847,
-              -0.3937
+              32.631,
+              -10.0
             ],
             "tag": {
               "commentStart": 984,
@@ -353,12 +353,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "seg02"
             },
             "to": [
-              1.2847,
-              0.4307
+              32.631,
+              10.941
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -367,8 +367,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              1.2847,
-              0.4307
+              32.631,
+              10.941
             ],
             "tag": {
               "commentStart": 1061,
@@ -378,12 +378,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "seg06"
             },
             "to": [
-              4.0406,
-              0.4307
+              102.631,
+              10.941
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -392,8 +392,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              4.0406,
-              0.4307
+              102.631,
+              10.941
             ],
             "tag": {
               "commentStart": 1118,
@@ -403,12 +403,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "seg08"
             },
             "to": [
-              4.0406,
-              1.2181
+              102.631,
+              30.941
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -417,8 +417,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              4.0406,
-              1.2181
+              102.631,
+              30.941
             ],
             "tag": {
               "commentStart": 1177,
@@ -428,12 +428,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "seg05"
             },
             "to": [
-              1.2847,
-              1.2181
+              32.631,
+              30.941
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -442,8 +442,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              1.2847,
-              1.2181
+              32.631,
+              30.941
             ],
             "tag": {
               "commentStart": 1252,
@@ -453,12 +453,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "seg10"
             },
             "to": [
-              1.2847,
-              1.6489
+              32.631,
+              41.881
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -467,8 +467,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              1.2847,
-              1.6489
+              32.631,
+              41.881
             ],
             "tag": {
               "commentStart": 1294,
@@ -479,11 +479,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             },
             "to": [
               0.0,
-              1.6489
+              41.881
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -493,16 +493,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             },
             "from": [
               0.0,
-              1.6489
+              41.881
             ],
             "tag": null,
             "to": [
-              -1.2847,
-              1.6489
+              -32.631,
+              41.881
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -511,17 +511,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -1.2847,
-              1.6489
+              -32.631,
+              41.881
             ],
             "tag": null,
             "to": [
-              -1.2847,
-              1.2181
+              -32.631,
+              30.941
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -530,17 +530,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -1.2847,
-              1.2181
+              -32.631,
+              30.941
             ],
             "tag": null,
             "to": [
-              -4.0406,
-              1.2181
+              -102.631,
+              30.941
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -549,17 +549,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -4.0406,
-              1.2181
+              -102.631,
+              30.941
             ],
             "tag": null,
             "to": [
-              -4.0406,
-              0.4307
+              -102.631,
+              10.941
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -568,17 +568,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -4.0406,
-              0.4307
+              -102.631,
+              10.941
             ],
             "tag": null,
             "to": [
-              -1.2847,
-              0.4307
+              -32.631,
+              10.941
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -587,17 +587,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -1.2847,
-              0.4307
+              -32.631,
+              10.941
             ],
             "tag": null,
             "to": [
-              -1.2847,
-              -0.3937
+              -32.631,
+              -10.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -606,17 +606,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -1.2847,
-              -0.3937
+              -32.631,
+              -10.0
             ],
             "tag": null,
             "to": [
-              -0.891,
-              -0.3937
+              -22.631,
+              -10.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -625,17 +625,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -0.891,
-              -0.3937
+              -22.631,
+              -10.0
             ],
             "tag": null,
             "to": [
-              -0.891,
-              0.7874
+              -22.631,
+              20.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -645,22 +645,22 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             },
             "ccw": false,
             "center": [
-              -0.4232,
-              0.7874
+              -10.75,
+              20.0
             ],
             "from": [
-              -0.891,
-              0.7874
+              -22.631,
+              20.0
             ],
-            "radius": 0.46776574803149606,
+            "radius": 11.88125,
             "tag": null,
             "to": [
-              -0.4232,
-              1.2552
+              -10.75,
+              31.881
             ],
             "type": "Arc",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -669,17 +669,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -0.4232,
-              1.2552
+              -10.75,
+              31.881
             ],
             "tag": null,
             "to": [
               0.0,
-              1.2552
+              31.881
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -689,16 +689,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             },
             "from": [
               0.0,
-              1.2552
+              31.881
             ],
             "tag": null,
             "to": [
               0.0,
-              1.2552
+              31.881
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           }
         ],
@@ -735,14 +735,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "start": {
           "from": [
             0.0,
-            1.2552
+            31.881
           ],
           "to": [
             0.0,
-            1.2552
+            31.881
           ],
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           },
           "tag": null,
           "__geoMeta": {
@@ -795,14 +795,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         }
       },
-      "height": 0.1968503937007874,
+      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
-        "type": "Inches"
+        "type": "Mm"
       },
       "sectional": false
     }
@@ -871,7 +871,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              1.2847,
+              32.631,
               0.0
             ],
             "tag": {
@@ -882,12 +882,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "rectangleSegmentA002"
             },
             "to": [
-              0.891,
+              22.631,
               0.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -896,7 +896,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              0.891,
+              22.631,
               0.0
             ],
             "tag": {
@@ -907,12 +907,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "rectangleSegmentB002"
             },
             "to": [
-              0.891,
-              -0.3937
+              22.631,
+              -10.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -921,8 +921,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              0.891,
-              -0.3937
+              22.631,
+              -10.0
             ],
             "tag": {
               "commentStart": 2237,
@@ -932,12 +932,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "rectangleSegmentC002"
             },
             "to": [
-              1.2847,
-              -0.3937
+              32.631,
+              -10.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -946,17 +946,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              1.2847,
-              -0.3937
+              32.631,
+              -10.0
             ],
             "tag": null,
             "to": [
-              1.2847,
+              32.631,
               0.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -965,17 +965,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              1.2847,
+              32.631,
               0.0
             ],
             "tag": null,
             "to": [
-              1.2847,
+              32.631,
               0.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           }
         ],
@@ -1210,7 +1210,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   },
                   "from": [
                     0.0,
-                    1.2552
+                    31.881
                   ],
                   "tag": {
                     "commentStart": 653,
@@ -1220,12 +1220,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg01"
                   },
                   "to": [
-                    0.4232,
-                    1.2552
+                    10.75,
+                    31.881
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1235,14 +1235,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   },
                   "ccw": false,
                   "center": [
-                    0.4232,
-                    0.7874
+                    10.75,
+                    20.0
                   ],
                   "from": [
-                    0.4232,
-                    1.2552
+                    10.75,
+                    31.881
                   ],
-                  "radius": 0.46776574803149606,
+                  "radius": 11.88125,
                   "tag": {
                     "commentStart": 763,
                     "end": 769,
@@ -1251,12 +1251,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg09"
                   },
                   "to": [
-                    0.891,
-                    0.7874
+                    22.631,
+                    20.0
                   ],
                   "type": "Arc",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1265,8 +1265,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.891,
-                    0.7874
+                    22.631,
+                    20.0
                   ],
                   "tag": {
                     "commentStart": 829,
@@ -1276,12 +1276,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg03"
                   },
                   "to": [
-                    0.891,
-                    -0.3937
+                    22.631,
+                    -10.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1290,8 +1290,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.891,
-                    -0.3937
+                    22.631,
+                    -10.0
                   ],
                   "tag": {
                     "commentStart": 882,
@@ -1301,12 +1301,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg07"
                   },
                   "to": [
-                    1.2847,
-                    -0.3937
+                    32.631,
+                    -10.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1315,8 +1315,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2847,
-                    -0.3937
+                    32.631,
+                    -10.0
                   ],
                   "tag": {
                     "commentStart": 984,
@@ -1326,12 +1326,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg02"
                   },
                   "to": [
-                    1.2847,
-                    0.4307
+                    32.631,
+                    10.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1340,8 +1340,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2847,
-                    0.4307
+                    32.631,
+                    10.941
                   ],
                   "tag": {
                     "commentStart": 1061,
@@ -1351,12 +1351,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg06"
                   },
                   "to": [
-                    4.0406,
-                    0.4307
+                    102.631,
+                    10.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1365,8 +1365,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.0406,
-                    0.4307
+                    102.631,
+                    10.941
                   ],
                   "tag": {
                     "commentStart": 1118,
@@ -1376,12 +1376,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg08"
                   },
                   "to": [
-                    4.0406,
-                    1.2181
+                    102.631,
+                    30.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1390,8 +1390,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.0406,
-                    1.2181
+                    102.631,
+                    30.941
                   ],
                   "tag": {
                     "commentStart": 1177,
@@ -1401,12 +1401,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg05"
                   },
                   "to": [
-                    1.2847,
-                    1.2181
+                    32.631,
+                    30.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1415,8 +1415,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2847,
-                    1.2181
+                    32.631,
+                    30.941
                   ],
                   "tag": {
                     "commentStart": 1252,
@@ -1426,12 +1426,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg10"
                   },
                   "to": [
-                    1.2847,
-                    1.6489
+                    32.631,
+                    41.881
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1440,8 +1440,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2847,
-                    1.6489
+                    32.631,
+                    41.881
                   ],
                   "tag": {
                     "commentStart": 1294,
@@ -1452,11 +1452,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   },
                   "to": [
                     0.0,
-                    1.6489
+                    41.881
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1466,16 +1466,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   },
                   "from": [
                     0.0,
-                    1.6489
+                    41.881
                   ],
                   "tag": null,
                   "to": [
-                    -1.2847,
-                    1.6489
+                    -32.631,
+                    41.881
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1484,17 +1484,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.2847,
-                    1.6489
+                    -32.631,
+                    41.881
                   ],
                   "tag": null,
                   "to": [
-                    -1.2847,
-                    1.2181
+                    -32.631,
+                    30.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1503,17 +1503,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.2847,
-                    1.2181
+                    -32.631,
+                    30.941
                   ],
                   "tag": null,
                   "to": [
-                    -4.0406,
-                    1.2181
+                    -102.631,
+                    30.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1522,17 +1522,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.0406,
-                    1.2181
+                    -102.631,
+                    30.941
                   ],
                   "tag": null,
                   "to": [
-                    -4.0406,
-                    0.4307
+                    -102.631,
+                    10.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1541,17 +1541,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.0406,
-                    0.4307
+                    -102.631,
+                    10.941
                   ],
                   "tag": null,
                   "to": [
-                    -1.2847,
-                    0.4307
+                    -32.631,
+                    10.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1560,17 +1560,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.2847,
-                    0.4307
+                    -32.631,
+                    10.941
                   ],
                   "tag": null,
                   "to": [
-                    -1.2847,
-                    -0.3937
+                    -32.631,
+                    -10.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1579,17 +1579,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.2847,
-                    -0.3937
+                    -32.631,
+                    -10.0
                   ],
                   "tag": null,
                   "to": [
-                    -0.891,
-                    -0.3937
+                    -22.631,
+                    -10.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1598,17 +1598,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.891,
-                    -0.3937
+                    -22.631,
+                    -10.0
                   ],
                   "tag": null,
                   "to": [
-                    -0.891,
-                    0.7874
+                    -22.631,
+                    20.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1618,22 +1618,22 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -0.4232,
-                    0.7874
+                    -10.75,
+                    20.0
                   ],
                   "from": [
-                    -0.891,
-                    0.7874
+                    -22.631,
+                    20.0
                   ],
-                  "radius": 0.46776574803149606,
+                  "radius": 11.88125,
                   "tag": null,
                   "to": [
-                    -0.4232,
-                    1.2552
+                    -10.75,
+                    31.881
                   ],
                   "type": "Arc",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1642,17 +1642,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.4232,
-                    1.2552
+                    -10.75,
+                    31.881
                   ],
                   "tag": null,
                   "to": [
                     0.0,
-                    1.2552
+                    31.881
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1662,16 +1662,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   },
                   "from": [
                     0.0,
-                    1.2552
+                    31.881
                   ],
                   "tag": null,
                   "to": [
                     0.0,
-                    1.2552
+                    31.881
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 }
               ],
@@ -1708,14 +1708,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "start": {
                 "from": [
                   0.0,
-                  1.2552
+                  31.881
                 ],
                 "to": [
                   0.0,
-                  1.2552
+                  31.881
                 ],
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 },
                 "tag": null,
                 "__geoMeta": {
@@ -1768,32 +1768,32 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
-                "type": "Inches"
+                "type": "Mm"
               }
             },
-            "height": 0.1968503937007874,
+            "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             },
             "sectional": false
           },
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         "start": {
           "from": [
-            1.2847,
+            32.631,
             0.0
           ],
           "to": [
-            1.2847,
+            32.631,
             0.0
           ],
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           },
           "tag": null,
           "__geoMeta": {
@@ -1818,14 +1818,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         }
       },
-      "height": 0.5118110236220472,
+      "height": 13.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
-        "type": "Inches"
+        "type": "Mm"
       },
       "sectional": false
     }
@@ -1894,7 +1894,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -1.2847,
+              -32.631,
               0.0
             ],
             "tag": {
@@ -1905,12 +1905,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "rectangleSegmentA001"
             },
             "to": [
-              -0.891,
+              -22.631,
               0.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -1919,7 +1919,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -0.891,
+              -22.631,
               0.0
             ],
             "tag": {
@@ -1930,12 +1930,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "rectangleSegmentB001"
             },
             "to": [
-              -0.891,
-              -0.3937
+              -22.631,
+              -10.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -1944,8 +1944,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -0.891,
-              -0.3937
+              -22.631,
+              -10.0
             ],
             "tag": {
               "commentStart": 2841,
@@ -1955,12 +1955,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "rectangleSegmentC001"
             },
             "to": [
-              -1.2847,
-              -0.3937
+              -32.631,
+              -10.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -1969,17 +1969,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -1.2847,
-              -0.3937
+              -32.631,
+              -10.0
             ],
             "tag": null,
             "to": [
-              -1.2847,
+              -32.631,
               0.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -1988,17 +1988,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -1.2847,
+              -32.631,
               0.0
             ],
             "tag": null,
             "to": [
-              -1.2847,
+              -32.631,
               0.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           }
         ],
@@ -2233,7 +2233,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   },
                   "from": [
                     0.0,
-                    1.2552
+                    31.881
                   ],
                   "tag": {
                     "commentStart": 653,
@@ -2243,12 +2243,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg01"
                   },
                   "to": [
-                    0.4232,
-                    1.2552
+                    10.75,
+                    31.881
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2258,14 +2258,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   },
                   "ccw": false,
                   "center": [
-                    0.4232,
-                    0.7874
+                    10.75,
+                    20.0
                   ],
                   "from": [
-                    0.4232,
-                    1.2552
+                    10.75,
+                    31.881
                   ],
-                  "radius": 0.46776574803149606,
+                  "radius": 11.88125,
                   "tag": {
                     "commentStart": 763,
                     "end": 769,
@@ -2274,12 +2274,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg09"
                   },
                   "to": [
-                    0.891,
-                    0.7874
+                    22.631,
+                    20.0
                   ],
                   "type": "Arc",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2288,8 +2288,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.891,
-                    0.7874
+                    22.631,
+                    20.0
                   ],
                   "tag": {
                     "commentStart": 829,
@@ -2299,12 +2299,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg03"
                   },
                   "to": [
-                    0.891,
-                    -0.3937
+                    22.631,
+                    -10.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2313,8 +2313,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.891,
-                    -0.3937
+                    22.631,
+                    -10.0
                   ],
                   "tag": {
                     "commentStart": 882,
@@ -2324,12 +2324,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg07"
                   },
                   "to": [
-                    1.2847,
-                    -0.3937
+                    32.631,
+                    -10.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2338,8 +2338,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2847,
-                    -0.3937
+                    32.631,
+                    -10.0
                   ],
                   "tag": {
                     "commentStart": 984,
@@ -2349,12 +2349,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg02"
                   },
                   "to": [
-                    1.2847,
-                    0.4307
+                    32.631,
+                    10.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2363,8 +2363,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2847,
-                    0.4307
+                    32.631,
+                    10.941
                   ],
                   "tag": {
                     "commentStart": 1061,
@@ -2374,12 +2374,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg06"
                   },
                   "to": [
-                    4.0406,
-                    0.4307
+                    102.631,
+                    10.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2388,8 +2388,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.0406,
-                    0.4307
+                    102.631,
+                    10.941
                   ],
                   "tag": {
                     "commentStart": 1118,
@@ -2399,12 +2399,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg08"
                   },
                   "to": [
-                    4.0406,
-                    1.2181
+                    102.631,
+                    30.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2413,8 +2413,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.0406,
-                    1.2181
+                    102.631,
+                    30.941
                   ],
                   "tag": {
                     "commentStart": 1177,
@@ -2424,12 +2424,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg05"
                   },
                   "to": [
-                    1.2847,
-                    1.2181
+                    32.631,
+                    30.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2438,8 +2438,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2847,
-                    1.2181
+                    32.631,
+                    30.941
                   ],
                   "tag": {
                     "commentStart": 1252,
@@ -2449,12 +2449,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "seg10"
                   },
                   "to": [
-                    1.2847,
-                    1.6489
+                    32.631,
+                    41.881
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2463,8 +2463,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2847,
-                    1.6489
+                    32.631,
+                    41.881
                   ],
                   "tag": {
                     "commentStart": 1294,
@@ -2475,11 +2475,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   },
                   "to": [
                     0.0,
-                    1.6489
+                    41.881
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2489,16 +2489,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   },
                   "from": [
                     0.0,
-                    1.6489
+                    41.881
                   ],
                   "tag": null,
                   "to": [
-                    -1.2847,
-                    1.6489
+                    -32.631,
+                    41.881
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2507,17 +2507,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.2847,
-                    1.6489
+                    -32.631,
+                    41.881
                   ],
                   "tag": null,
                   "to": [
-                    -1.2847,
-                    1.2181
+                    -32.631,
+                    30.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2526,17 +2526,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.2847,
-                    1.2181
+                    -32.631,
+                    30.941
                   ],
                   "tag": null,
                   "to": [
-                    -4.0406,
-                    1.2181
+                    -102.631,
+                    30.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2545,17 +2545,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.0406,
-                    1.2181
+                    -102.631,
+                    30.941
                   ],
                   "tag": null,
                   "to": [
-                    -4.0406,
-                    0.4307
+                    -102.631,
+                    10.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2564,17 +2564,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.0406,
-                    0.4307
+                    -102.631,
+                    10.941
                   ],
                   "tag": null,
                   "to": [
-                    -1.2847,
-                    0.4307
+                    -32.631,
+                    10.941
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2583,17 +2583,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.2847,
-                    0.4307
+                    -32.631,
+                    10.941
                   ],
                   "tag": null,
                   "to": [
-                    -1.2847,
-                    -0.3937
+                    -32.631,
+                    -10.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2602,17 +2602,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.2847,
-                    -0.3937
+                    -32.631,
+                    -10.0
                   ],
                   "tag": null,
                   "to": [
-                    -0.891,
-                    -0.3937
+                    -22.631,
+                    -10.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2621,17 +2621,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.891,
-                    -0.3937
+                    -22.631,
+                    -10.0
                   ],
                   "tag": null,
                   "to": [
-                    -0.891,
-                    0.7874
+                    -22.631,
+                    20.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2641,22 +2641,22 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -0.4232,
-                    0.7874
+                    -10.75,
+                    20.0
                   ],
                   "from": [
-                    -0.891,
-                    0.7874
+                    -22.631,
+                    20.0
                   ],
-                  "radius": 0.46776574803149606,
+                  "radius": 11.88125,
                   "tag": null,
                   "to": [
-                    -0.4232,
-                    1.2552
+                    -10.75,
+                    31.881
                   ],
                   "type": "Arc",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2665,17 +2665,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.4232,
-                    1.2552
+                    -10.75,
+                    31.881
                   ],
                   "tag": null,
                   "to": [
                     0.0,
-                    1.2552
+                    31.881
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -2685,16 +2685,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   },
                   "from": [
                     0.0,
-                    1.2552
+                    31.881
                   ],
                   "tag": null,
                   "to": [
                     0.0,
-                    1.2552
+                    31.881
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 }
               ],
@@ -2731,14 +2731,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "start": {
                 "from": [
                   0.0,
-                  1.2552
+                  31.881
                 ],
                 "to": [
                   0.0,
-                  1.2552
+                  31.881
                 ],
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 },
                 "tag": null,
                 "__geoMeta": {
@@ -2791,32 +2791,32 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
-                "type": "Inches"
+                "type": "Mm"
               }
             },
-            "height": 0.1968503937007874,
+            "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             },
             "sectional": false
           },
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         "start": {
           "from": [
-            -1.2847,
+            -32.631,
             0.0
           ],
           "to": [
-            -1.2847,
+            -32.631,
             0.0
           ],
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           },
           "tag": null,
           "__geoMeta": {
@@ -2841,14 +2841,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         }
       },
-      "height": 0.5118110236220472,
+      "height": 13.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
-        "type": "Inches"
+        "type": "Mm"
       },
       "sectional": false
     }
@@ -2917,7 +2917,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -1.2847,
+              -32.631,
               0.0
             ],
             "tag": {
@@ -2928,12 +2928,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "rectangleSegmentA003"
             },
             "to": [
-              1.2847,
+              32.631,
               0.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -2942,7 +2942,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              1.2847,
+              32.631,
               0.0
             ],
             "tag": {
@@ -2953,12 +2953,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "rectangleSegmentB003"
             },
             "to": [
-              1.2847,
-              -0.3937
+              32.631,
+              -10.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -2967,8 +2967,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              1.2847,
-              -0.3937
+              32.631,
+              -10.0
             ],
             "tag": {
               "commentStart": 3450,
@@ -2978,12 +2978,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "value": "rectangleSegmentC003"
             },
             "to": [
-              -1.2847,
-              -0.3937
+              -32.631,
+              -10.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -2992,17 +2992,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -1.2847,
-              -0.3937
+              -32.631,
+              -10.0
             ],
             "tag": null,
             "to": [
-              -1.2847,
+              -32.631,
               0.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -3011,17 +3011,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "sourceRange": []
             },
             "from": [
-              -1.2847,
+              -32.631,
               0.0
             ],
             "tag": null,
             "to": [
-              -1.2847,
+              -32.631,
               0.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           }
         ],
@@ -3108,7 +3108,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2847,
+                    32.631,
                     0.0
                   ],
                   "tag": {
@@ -3119,12 +3119,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "rectangleSegmentA002"
                   },
                   "to": [
-                    0.891,
+                    22.631,
                     0.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -3133,7 +3133,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.891,
+                    22.631,
                     0.0
                   ],
                   "tag": {
@@ -3144,12 +3144,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "rectangleSegmentB002"
                   },
                   "to": [
-                    0.891,
-                    -0.3937
+                    22.631,
+                    -10.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -3158,8 +3158,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.891,
-                    -0.3937
+                    22.631,
+                    -10.0
                   ],
                   "tag": {
                     "commentStart": 2237,
@@ -3169,12 +3169,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "value": "rectangleSegmentC002"
                   },
                   "to": [
-                    1.2847,
-                    -0.3937
+                    32.631,
+                    -10.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -3183,17 +3183,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2847,
-                    -0.3937
+                    32.631,
+                    -10.0
                   ],
                   "tag": null,
                   "to": [
-                    1.2847,
+                    32.631,
                     0.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -3202,17 +3202,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2847,
+                    32.631,
                     0.0
                   ],
                   "tag": null,
                   "to": [
-                    1.2847,
+                    32.631,
                     0.0
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 }
               ],
@@ -3447,7 +3447,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         },
                         "from": [
                           0.0,
-                          1.2552
+                          31.881
                         ],
                         "tag": {
                           "commentStart": 653,
@@ -3457,12 +3457,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "value": "seg01"
                         },
                         "to": [
-                          0.4232,
-                          1.2552
+                          10.75,
+                          31.881
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3472,14 +3472,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         },
                         "ccw": false,
                         "center": [
-                          0.4232,
-                          0.7874
+                          10.75,
+                          20.0
                         ],
                         "from": [
-                          0.4232,
-                          1.2552
+                          10.75,
+                          31.881
                         ],
-                        "radius": 0.46776574803149606,
+                        "radius": 11.88125,
                         "tag": {
                           "commentStart": 763,
                           "end": 769,
@@ -3488,12 +3488,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "value": "seg09"
                         },
                         "to": [
-                          0.891,
-                          0.7874
+                          22.631,
+                          20.0
                         ],
                         "type": "Arc",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3502,8 +3502,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          0.891,
-                          0.7874
+                          22.631,
+                          20.0
                         ],
                         "tag": {
                           "commentStart": 829,
@@ -3513,12 +3513,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "value": "seg03"
                         },
                         "to": [
-                          0.891,
-                          -0.3937
+                          22.631,
+                          -10.0
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3527,8 +3527,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          0.891,
-                          -0.3937
+                          22.631,
+                          -10.0
                         ],
                         "tag": {
                           "commentStart": 882,
@@ -3538,12 +3538,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "value": "seg07"
                         },
                         "to": [
-                          1.2847,
-                          -0.3937
+                          32.631,
+                          -10.0
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3552,8 +3552,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          1.2847,
-                          -0.3937
+                          32.631,
+                          -10.0
                         ],
                         "tag": {
                           "commentStart": 984,
@@ -3563,12 +3563,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "value": "seg02"
                         },
                         "to": [
-                          1.2847,
-                          0.4307
+                          32.631,
+                          10.941
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3577,8 +3577,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          1.2847,
-                          0.4307
+                          32.631,
+                          10.941
                         ],
                         "tag": {
                           "commentStart": 1061,
@@ -3588,12 +3588,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "value": "seg06"
                         },
                         "to": [
-                          4.0406,
-                          0.4307
+                          102.631,
+                          10.941
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3602,8 +3602,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          4.0406,
-                          0.4307
+                          102.631,
+                          10.941
                         ],
                         "tag": {
                           "commentStart": 1118,
@@ -3613,12 +3613,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "value": "seg08"
                         },
                         "to": [
-                          4.0406,
-                          1.2181
+                          102.631,
+                          30.941
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3627,8 +3627,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          4.0406,
-                          1.2181
+                          102.631,
+                          30.941
                         ],
                         "tag": {
                           "commentStart": 1177,
@@ -3638,12 +3638,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "value": "seg05"
                         },
                         "to": [
-                          1.2847,
-                          1.2181
+                          32.631,
+                          30.941
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3652,8 +3652,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          1.2847,
-                          1.2181
+                          32.631,
+                          30.941
                         ],
                         "tag": {
                           "commentStart": 1252,
@@ -3663,12 +3663,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "value": "seg10"
                         },
                         "to": [
-                          1.2847,
-                          1.6489
+                          32.631,
+                          41.881
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3677,8 +3677,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          1.2847,
-                          1.6489
+                          32.631,
+                          41.881
                         ],
                         "tag": {
                           "commentStart": 1294,
@@ -3689,11 +3689,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         },
                         "to": [
                           0.0,
-                          1.6489
+                          41.881
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3703,16 +3703,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         },
                         "from": [
                           0.0,
-                          1.6489
+                          41.881
                         ],
                         "tag": null,
                         "to": [
-                          -1.2847,
-                          1.6489
+                          -32.631,
+                          41.881
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3721,17 +3721,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          -1.2847,
-                          1.6489
+                          -32.631,
+                          41.881
                         ],
                         "tag": null,
                         "to": [
-                          -1.2847,
-                          1.2181
+                          -32.631,
+                          30.941
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3740,17 +3740,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          -1.2847,
-                          1.2181
+                          -32.631,
+                          30.941
                         ],
                         "tag": null,
                         "to": [
-                          -4.0406,
-                          1.2181
+                          -102.631,
+                          30.941
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3759,17 +3759,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          -4.0406,
-                          1.2181
+                          -102.631,
+                          30.941
                         ],
                         "tag": null,
                         "to": [
-                          -4.0406,
-                          0.4307
+                          -102.631,
+                          10.941
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3778,17 +3778,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          -4.0406,
-                          0.4307
+                          -102.631,
+                          10.941
                         ],
                         "tag": null,
                         "to": [
-                          -1.2847,
-                          0.4307
+                          -32.631,
+                          10.941
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3797,17 +3797,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          -1.2847,
-                          0.4307
+                          -32.631,
+                          10.941
                         ],
                         "tag": null,
                         "to": [
-                          -1.2847,
-                          -0.3937
+                          -32.631,
+                          -10.0
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3816,17 +3816,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          -1.2847,
-                          -0.3937
+                          -32.631,
+                          -10.0
                         ],
                         "tag": null,
                         "to": [
-                          -0.891,
-                          -0.3937
+                          -22.631,
+                          -10.0
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3835,17 +3835,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          -0.891,
-                          -0.3937
+                          -22.631,
+                          -10.0
                         ],
                         "tag": null,
                         "to": [
-                          -0.891,
-                          0.7874
+                          -22.631,
+                          20.0
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3855,22 +3855,22 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         },
                         "ccw": false,
                         "center": [
-                          -0.4232,
-                          0.7874
+                          -10.75,
+                          20.0
                         ],
                         "from": [
-                          -0.891,
-                          0.7874
+                          -22.631,
+                          20.0
                         ],
-                        "radius": 0.46776574803149606,
+                        "radius": 11.88125,
                         "tag": null,
                         "to": [
-                          -0.4232,
-                          1.2552
+                          -10.75,
+                          31.881
                         ],
                         "type": "Arc",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3879,17 +3879,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          -0.4232,
-                          1.2552
+                          -10.75,
+                          31.881
                         ],
                         "tag": null,
                         "to": [
                           0.0,
-                          1.2552
+                          31.881
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       },
                       {
@@ -3899,16 +3899,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         },
                         "from": [
                           0.0,
-                          1.2552
+                          31.881
                         ],
                         "tag": null,
                         "to": [
                           0.0,
-                          1.2552
+                          31.881
                         ],
                         "type": "ToPoint",
                         "units": {
-                          "type": "Inches"
+                          "type": "Mm"
                         }
                       }
                     ],
@@ -3945,14 +3945,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "start": {
                       "from": [
                         0.0,
-                        1.2552
+                        31.881
                       ],
                       "to": [
                         0.0,
-                        1.2552
+                        31.881
                       ],
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       },
                       "tag": null,
                       "__geoMeta": {
@@ -4005,32 +4005,32 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
                     "units": {
-                      "type": "Inches"
+                      "type": "Mm"
                     }
                   },
-                  "height": 0.1968503937007874,
+                  "height": 5.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   },
                   "sectional": false
                 },
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               "start": {
                 "from": [
-                  1.2847,
+                  32.631,
                   0.0
                 ],
                 "to": [
-                  1.2847,
+                  32.631,
                   0.0
                 ],
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 },
                 "tag": null,
                 "__geoMeta": {
@@ -4055,32 +4055,32 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
-                "type": "Inches"
+                "type": "Mm"
               }
             },
-            "height": 0.5118110236220472,
+            "height": 13.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             },
             "sectional": false
           },
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         "start": {
           "from": [
-            -1.2847,
+            -32.631,
             0.0
           ],
           "to": [
-            -1.2847,
+            -32.631,
             0.0
           ],
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           },
           "tag": null,
           "__geoMeta": {
@@ -4105,14 +4105,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         }
       },
-      "height": 0.15748031496062992,
+      "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
-        "type": "Inches"
+        "type": "Mm"
       },
       "sectional": false
     }
@@ -4264,7 +4264,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           "from": [
             0.0,
-            1.2552
+            31.881
           ],
           "tag": {
             "commentStart": 653,
@@ -4274,12 +4274,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "seg01"
           },
           "to": [
-            0.4232,
-            1.2552
+            10.75,
+            31.881
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4289,14 +4289,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           "ccw": false,
           "center": [
-            0.4232,
-            0.7874
+            10.75,
+            20.0
           ],
           "from": [
-            0.4232,
-            1.2552
+            10.75,
+            31.881
           ],
-          "radius": 0.46776574803149606,
+          "radius": 11.88125,
           "tag": {
             "commentStart": 763,
             "end": 769,
@@ -4305,12 +4305,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "seg09"
           },
           "to": [
-            0.891,
-            0.7874
+            22.631,
+            20.0
           ],
           "type": "Arc",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4319,8 +4319,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            0.891,
-            0.7874
+            22.631,
+            20.0
           ],
           "tag": {
             "commentStart": 829,
@@ -4330,12 +4330,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "seg03"
           },
           "to": [
-            0.891,
-            -0.3937
+            22.631,
+            -10.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4344,8 +4344,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            0.891,
-            -0.3937
+            22.631,
+            -10.0
           ],
           "tag": {
             "commentStart": 882,
@@ -4355,12 +4355,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "seg07"
           },
           "to": [
-            1.2847,
-            -0.3937
+            32.631,
+            -10.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4369,8 +4369,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            1.2847,
-            -0.3937
+            32.631,
+            -10.0
           ],
           "tag": {
             "commentStart": 984,
@@ -4380,12 +4380,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "seg02"
           },
           "to": [
-            1.2847,
-            0.4307
+            32.631,
+            10.941
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4394,8 +4394,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            1.2847,
-            0.4307
+            32.631,
+            10.941
           ],
           "tag": {
             "commentStart": 1061,
@@ -4405,12 +4405,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "seg06"
           },
           "to": [
-            4.0406,
-            0.4307
+            102.631,
+            10.941
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4419,8 +4419,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            4.0406,
-            0.4307
+            102.631,
+            10.941
           ],
           "tag": {
             "commentStart": 1118,
@@ -4430,12 +4430,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "seg08"
           },
           "to": [
-            4.0406,
-            1.2181
+            102.631,
+            30.941
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4444,8 +4444,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            4.0406,
-            1.2181
+            102.631,
+            30.941
           ],
           "tag": {
             "commentStart": 1177,
@@ -4455,12 +4455,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "seg05"
           },
           "to": [
-            1.2847,
-            1.2181
+            32.631,
+            30.941
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4469,8 +4469,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            1.2847,
-            1.2181
+            32.631,
+            30.941
           ],
           "tag": {
             "commentStart": 1252,
@@ -4480,12 +4480,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "seg10"
           },
           "to": [
-            1.2847,
-            1.6489
+            32.631,
+            41.881
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4494,8 +4494,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            1.2847,
-            1.6489
+            32.631,
+            41.881
           ],
           "tag": {
             "commentStart": 1294,
@@ -4506,11 +4506,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           "to": [
             0.0,
-            1.6489
+            41.881
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4520,16 +4520,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           "from": [
             0.0,
-            1.6489
+            41.881
           ],
           "tag": null,
           "to": [
-            -1.2847,
-            1.6489
+            -32.631,
+            41.881
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4538,17 +4538,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -1.2847,
-            1.6489
+            -32.631,
+            41.881
           ],
           "tag": null,
           "to": [
-            -1.2847,
-            1.2181
+            -32.631,
+            30.941
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4557,17 +4557,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -1.2847,
-            1.2181
+            -32.631,
+            30.941
           ],
           "tag": null,
           "to": [
-            -4.0406,
-            1.2181
+            -102.631,
+            30.941
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4576,17 +4576,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -4.0406,
-            1.2181
+            -102.631,
+            30.941
           ],
           "tag": null,
           "to": [
-            -4.0406,
-            0.4307
+            -102.631,
+            10.941
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4595,17 +4595,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -4.0406,
-            0.4307
+            -102.631,
+            10.941
           ],
           "tag": null,
           "to": [
-            -1.2847,
-            0.4307
+            -32.631,
+            10.941
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4614,17 +4614,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -1.2847,
-            0.4307
+            -32.631,
+            10.941
           ],
           "tag": null,
           "to": [
-            -1.2847,
-            -0.3937
+            -32.631,
+            -10.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4633,17 +4633,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -1.2847,
-            -0.3937
+            -32.631,
+            -10.0
           ],
           "tag": null,
           "to": [
-            -0.891,
-            -0.3937
+            -22.631,
+            -10.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4652,17 +4652,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -0.891,
-            -0.3937
+            -22.631,
+            -10.0
           ],
           "tag": null,
           "to": [
-            -0.891,
-            0.7874
+            -22.631,
+            20.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4672,22 +4672,22 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           "ccw": false,
           "center": [
-            -0.4232,
-            0.7874
+            -10.75,
+            20.0
           ],
           "from": [
-            -0.891,
-            0.7874
+            -22.631,
+            20.0
           ],
-          "radius": 0.46776574803149606,
+          "radius": 11.88125,
           "tag": null,
           "to": [
-            -0.4232,
-            1.2552
+            -10.75,
+            31.881
           ],
           "type": "Arc",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4696,17 +4696,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -0.4232,
-            1.2552
+            -10.75,
+            31.881
           ],
           "tag": null,
           "to": [
             0.0,
-            1.2552
+            31.881
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4716,16 +4716,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           "from": [
             0.0,
-            1.2552
+            31.881
           ],
           "tag": null,
           "to": [
             0.0,
-            1.2552
+            31.881
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         }
       ],
@@ -4762,14 +4762,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "start": {
         "from": [
           0.0,
-          1.2552
+          31.881
         ],
         "to": [
           0.0,
-          1.2552
+          31.881
         ],
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         },
         "tag": null,
         "__geoMeta": {
@@ -4822,7 +4822,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
-        "type": "Inches"
+        "type": "Mm"
       }
     }
   },
@@ -4838,7 +4838,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            1.2847,
+            32.631,
             0.0
           ],
           "tag": {
@@ -4849,12 +4849,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "rectangleSegmentA002"
           },
           "to": [
-            0.891,
+            22.631,
             0.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4863,7 +4863,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            0.891,
+            22.631,
             0.0
           ],
           "tag": {
@@ -4874,12 +4874,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "rectangleSegmentB002"
           },
           "to": [
-            0.891,
-            -0.3937
+            22.631,
+            -10.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4888,8 +4888,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            0.891,
-            -0.3937
+            22.631,
+            -10.0
           ],
           "tag": {
             "commentStart": 2237,
@@ -4899,12 +4899,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "rectangleSegmentC002"
           },
           "to": [
-            1.2847,
-            -0.3937
+            32.631,
+            -10.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4913,17 +4913,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            1.2847,
-            -0.3937
+            32.631,
+            -10.0
           ],
           "tag": null,
           "to": [
-            1.2847,
+            32.631,
             0.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -4932,17 +4932,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            1.2847,
+            32.631,
             0.0
           ],
           "tag": null,
           "to": [
-            1.2847,
+            32.631,
             0.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         }
       ],
@@ -5177,7 +5177,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "from": [
                   0.0,
-                  1.2552
+                  31.881
                 ],
                 "tag": {
                   "commentStart": 653,
@@ -5187,12 +5187,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg01"
                 },
                 "to": [
-                  0.4232,
-                  1.2552
+                  10.75,
+                  31.881
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5202,14 +5202,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "ccw": false,
                 "center": [
-                  0.4232,
-                  0.7874
+                  10.75,
+                  20.0
                 ],
                 "from": [
-                  0.4232,
-                  1.2552
+                  10.75,
+                  31.881
                 ],
-                "radius": 0.46776574803149606,
+                "radius": 11.88125,
                 "tag": {
                   "commentStart": 763,
                   "end": 769,
@@ -5218,12 +5218,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg09"
                 },
                 "to": [
-                  0.891,
-                  0.7874
+                  22.631,
+                  20.0
                 ],
                 "type": "Arc",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5232,8 +5232,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.891,
-                  0.7874
+                  22.631,
+                  20.0
                 ],
                 "tag": {
                   "commentStart": 829,
@@ -5243,12 +5243,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  0.891,
-                  -0.3937
+                  22.631,
+                  -10.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5257,8 +5257,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.891,
-                  -0.3937
+                  22.631,
+                  -10.0
                 ],
                 "tag": {
                   "commentStart": 882,
@@ -5268,12 +5268,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg07"
                 },
                 "to": [
-                  1.2847,
-                  -0.3937
+                  32.631,
+                  -10.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5282,8 +5282,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2847,
-                  -0.3937
+                  32.631,
+                  -10.0
                 ],
                 "tag": {
                   "commentStart": 984,
@@ -5293,12 +5293,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  1.2847,
-                  0.4307
+                  32.631,
+                  10.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5307,8 +5307,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2847,
-                  0.4307
+                  32.631,
+                  10.941
                 ],
                 "tag": {
                   "commentStart": 1061,
@@ -5318,12 +5318,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg06"
                 },
                 "to": [
-                  4.0406,
-                  0.4307
+                  102.631,
+                  10.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5332,8 +5332,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  4.0406,
-                  0.4307
+                  102.631,
+                  10.941
                 ],
                 "tag": {
                   "commentStart": 1118,
@@ -5343,12 +5343,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg08"
                 },
                 "to": [
-                  4.0406,
-                  1.2181
+                  102.631,
+                  30.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5357,8 +5357,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  4.0406,
-                  1.2181
+                  102.631,
+                  30.941
                 ],
                 "tag": {
                   "commentStart": 1177,
@@ -5368,12 +5368,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg05"
                 },
                 "to": [
-                  1.2847,
-                  1.2181
+                  32.631,
+                  30.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5382,8 +5382,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2847,
-                  1.2181
+                  32.631,
+                  30.941
                 ],
                 "tag": {
                   "commentStart": 1252,
@@ -5393,12 +5393,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg10"
                 },
                 "to": [
-                  1.2847,
-                  1.6489
+                  32.631,
+                  41.881
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5407,8 +5407,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2847,
-                  1.6489
+                  32.631,
+                  41.881
                 ],
                 "tag": {
                   "commentStart": 1294,
@@ -5419,11 +5419,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "to": [
                   0.0,
-                  1.6489
+                  41.881
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5433,16 +5433,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "from": [
                   0.0,
-                  1.6489
+                  41.881
                 ],
                 "tag": null,
                 "to": [
-                  -1.2847,
-                  1.6489
+                  -32.631,
+                  41.881
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5451,17 +5451,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -1.2847,
-                  1.6489
+                  -32.631,
+                  41.881
                 ],
                 "tag": null,
                 "to": [
-                  -1.2847,
-                  1.2181
+                  -32.631,
+                  30.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5470,17 +5470,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -1.2847,
-                  1.2181
+                  -32.631,
+                  30.941
                 ],
                 "tag": null,
                 "to": [
-                  -4.0406,
-                  1.2181
+                  -102.631,
+                  30.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5489,17 +5489,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -4.0406,
-                  1.2181
+                  -102.631,
+                  30.941
                 ],
                 "tag": null,
                 "to": [
-                  -4.0406,
-                  0.4307
+                  -102.631,
+                  10.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5508,17 +5508,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -4.0406,
-                  0.4307
+                  -102.631,
+                  10.941
                 ],
                 "tag": null,
                 "to": [
-                  -1.2847,
-                  0.4307
+                  -32.631,
+                  10.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5527,17 +5527,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -1.2847,
-                  0.4307
+                  -32.631,
+                  10.941
                 ],
                 "tag": null,
                 "to": [
-                  -1.2847,
-                  -0.3937
+                  -32.631,
+                  -10.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5546,17 +5546,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -1.2847,
-                  -0.3937
+                  -32.631,
+                  -10.0
                 ],
                 "tag": null,
                 "to": [
-                  -0.891,
-                  -0.3937
+                  -22.631,
+                  -10.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5565,17 +5565,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.891,
-                  -0.3937
+                  -22.631,
+                  -10.0
                 ],
                 "tag": null,
                 "to": [
-                  -0.891,
-                  0.7874
+                  -22.631,
+                  20.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5585,22 +5585,22 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.4232,
-                  0.7874
+                  -10.75,
+                  20.0
                 ],
                 "from": [
-                  -0.891,
-                  0.7874
+                  -22.631,
+                  20.0
                 ],
-                "radius": 0.46776574803149606,
+                "radius": 11.88125,
                 "tag": null,
                 "to": [
-                  -0.4232,
-                  1.2552
+                  -10.75,
+                  31.881
                 ],
                 "type": "Arc",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5609,17 +5609,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.4232,
-                  1.2552
+                  -10.75,
+                  31.881
                 ],
                 "tag": null,
                 "to": [
                   0.0,
-                  1.2552
+                  31.881
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -5629,16 +5629,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "from": [
                   0.0,
-                  1.2552
+                  31.881
                 ],
                 "tag": null,
                 "to": [
                   0.0,
-                  1.2552
+                  31.881
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               }
             ],
@@ -5675,14 +5675,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "start": {
               "from": [
                 0.0,
-                1.2552
+                31.881
               ],
               "to": [
                 0.0,
-                1.2552
+                31.881
               ],
               "units": {
-                "type": "Inches"
+                "type": "Mm"
               },
               "tag": null,
               "__geoMeta": {
@@ -5735,32 +5735,32 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
-          "height": 0.1968503937007874,
+          "height": 5.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           },
           "sectional": false
         },
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         }
       },
       "start": {
         "from": [
-          1.2847,
+          32.631,
           0.0
         ],
         "to": [
-          1.2847,
+          32.631,
           0.0
         ],
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         },
         "tag": null,
         "__geoMeta": {
@@ -5785,7 +5785,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
-        "type": "Inches"
+        "type": "Mm"
       }
     }
   },
@@ -5801,7 +5801,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -1.2847,
+            -32.631,
             0.0
           ],
           "tag": {
@@ -5812,12 +5812,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "rectangleSegmentA001"
           },
           "to": [
-            -0.891,
+            -22.631,
             0.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -5826,7 +5826,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -0.891,
+            -22.631,
             0.0
           ],
           "tag": {
@@ -5837,12 +5837,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "rectangleSegmentB001"
           },
           "to": [
-            -0.891,
-            -0.3937
+            -22.631,
+            -10.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -5851,8 +5851,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -0.891,
-            -0.3937
+            -22.631,
+            -10.0
           ],
           "tag": {
             "commentStart": 2841,
@@ -5862,12 +5862,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "rectangleSegmentC001"
           },
           "to": [
-            -1.2847,
-            -0.3937
+            -32.631,
+            -10.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -5876,17 +5876,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -1.2847,
-            -0.3937
+            -32.631,
+            -10.0
           ],
           "tag": null,
           "to": [
-            -1.2847,
+            -32.631,
             0.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -5895,17 +5895,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -1.2847,
+            -32.631,
             0.0
           ],
           "tag": null,
           "to": [
-            -1.2847,
+            -32.631,
             0.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         }
       ],
@@ -6140,7 +6140,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "from": [
                   0.0,
-                  1.2552
+                  31.881
                 ],
                 "tag": {
                   "commentStart": 653,
@@ -6150,12 +6150,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg01"
                 },
                 "to": [
-                  0.4232,
-                  1.2552
+                  10.75,
+                  31.881
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6165,14 +6165,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "ccw": false,
                 "center": [
-                  0.4232,
-                  0.7874
+                  10.75,
+                  20.0
                 ],
                 "from": [
-                  0.4232,
-                  1.2552
+                  10.75,
+                  31.881
                 ],
-                "radius": 0.46776574803149606,
+                "radius": 11.88125,
                 "tag": {
                   "commentStart": 763,
                   "end": 769,
@@ -6181,12 +6181,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg09"
                 },
                 "to": [
-                  0.891,
-                  0.7874
+                  22.631,
+                  20.0
                 ],
                 "type": "Arc",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6195,8 +6195,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.891,
-                  0.7874
+                  22.631,
+                  20.0
                 ],
                 "tag": {
                   "commentStart": 829,
@@ -6206,12 +6206,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  0.891,
-                  -0.3937
+                  22.631,
+                  -10.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6220,8 +6220,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.891,
-                  -0.3937
+                  22.631,
+                  -10.0
                 ],
                 "tag": {
                   "commentStart": 882,
@@ -6231,12 +6231,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg07"
                 },
                 "to": [
-                  1.2847,
-                  -0.3937
+                  32.631,
+                  -10.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6245,8 +6245,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2847,
-                  -0.3937
+                  32.631,
+                  -10.0
                 ],
                 "tag": {
                   "commentStart": 984,
@@ -6256,12 +6256,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  1.2847,
-                  0.4307
+                  32.631,
+                  10.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6270,8 +6270,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2847,
-                  0.4307
+                  32.631,
+                  10.941
                 ],
                 "tag": {
                   "commentStart": 1061,
@@ -6281,12 +6281,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg06"
                 },
                 "to": [
-                  4.0406,
-                  0.4307
+                  102.631,
+                  10.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6295,8 +6295,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  4.0406,
-                  0.4307
+                  102.631,
+                  10.941
                 ],
                 "tag": {
                   "commentStart": 1118,
@@ -6306,12 +6306,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg08"
                 },
                 "to": [
-                  4.0406,
-                  1.2181
+                  102.631,
+                  30.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6320,8 +6320,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  4.0406,
-                  1.2181
+                  102.631,
+                  30.941
                 ],
                 "tag": {
                   "commentStart": 1177,
@@ -6331,12 +6331,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg05"
                 },
                 "to": [
-                  1.2847,
-                  1.2181
+                  32.631,
+                  30.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6345,8 +6345,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2847,
-                  1.2181
+                  32.631,
+                  30.941
                 ],
                 "tag": {
                   "commentStart": 1252,
@@ -6356,12 +6356,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg10"
                 },
                 "to": [
-                  1.2847,
-                  1.6489
+                  32.631,
+                  41.881
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6370,8 +6370,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2847,
-                  1.6489
+                  32.631,
+                  41.881
                 ],
                 "tag": {
                   "commentStart": 1294,
@@ -6382,11 +6382,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "to": [
                   0.0,
-                  1.6489
+                  41.881
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6396,16 +6396,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "from": [
                   0.0,
-                  1.6489
+                  41.881
                 ],
                 "tag": null,
                 "to": [
-                  -1.2847,
-                  1.6489
+                  -32.631,
+                  41.881
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6414,17 +6414,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -1.2847,
-                  1.6489
+                  -32.631,
+                  41.881
                 ],
                 "tag": null,
                 "to": [
-                  -1.2847,
-                  1.2181
+                  -32.631,
+                  30.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6433,17 +6433,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -1.2847,
-                  1.2181
+                  -32.631,
+                  30.941
                 ],
                 "tag": null,
                 "to": [
-                  -4.0406,
-                  1.2181
+                  -102.631,
+                  30.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6452,17 +6452,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -4.0406,
-                  1.2181
+                  -102.631,
+                  30.941
                 ],
                 "tag": null,
                 "to": [
-                  -4.0406,
-                  0.4307
+                  -102.631,
+                  10.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6471,17 +6471,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -4.0406,
-                  0.4307
+                  -102.631,
+                  10.941
                 ],
                 "tag": null,
                 "to": [
-                  -1.2847,
-                  0.4307
+                  -32.631,
+                  10.941
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6490,17 +6490,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -1.2847,
-                  0.4307
+                  -32.631,
+                  10.941
                 ],
                 "tag": null,
                 "to": [
-                  -1.2847,
-                  -0.3937
+                  -32.631,
+                  -10.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6509,17 +6509,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -1.2847,
-                  -0.3937
+                  -32.631,
+                  -10.0
                 ],
                 "tag": null,
                 "to": [
-                  -0.891,
-                  -0.3937
+                  -22.631,
+                  -10.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6528,17 +6528,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.891,
-                  -0.3937
+                  -22.631,
+                  -10.0
                 ],
                 "tag": null,
                 "to": [
-                  -0.891,
-                  0.7874
+                  -22.631,
+                  20.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6548,22 +6548,22 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.4232,
-                  0.7874
+                  -10.75,
+                  20.0
                 ],
                 "from": [
-                  -0.891,
-                  0.7874
+                  -22.631,
+                  20.0
                 ],
-                "radius": 0.46776574803149606,
+                "radius": 11.88125,
                 "tag": null,
                 "to": [
-                  -0.4232,
-                  1.2552
+                  -10.75,
+                  31.881
                 ],
                 "type": "Arc",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6572,17 +6572,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.4232,
-                  1.2552
+                  -10.75,
+                  31.881
                 ],
                 "tag": null,
                 "to": [
                   0.0,
-                  1.2552
+                  31.881
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6592,16 +6592,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "from": [
                   0.0,
-                  1.2552
+                  31.881
                 ],
                 "tag": null,
                 "to": [
                   0.0,
-                  1.2552
+                  31.881
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               }
             ],
@@ -6638,14 +6638,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "start": {
               "from": [
                 0.0,
-                1.2552
+                31.881
               ],
               "to": [
                 0.0,
-                1.2552
+                31.881
               ],
               "units": {
-                "type": "Inches"
+                "type": "Mm"
               },
               "tag": null,
               "__geoMeta": {
@@ -6698,32 +6698,32 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
-          "height": 0.1968503937007874,
+          "height": 5.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           },
           "sectional": false
         },
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         }
       },
       "start": {
         "from": [
-          -1.2847,
+          -32.631,
           0.0
         ],
         "to": [
-          -1.2847,
+          -32.631,
           0.0
         ],
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         },
         "tag": null,
         "__geoMeta": {
@@ -6748,7 +6748,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
-        "type": "Inches"
+        "type": "Mm"
       }
     }
   },
@@ -6764,7 +6764,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -1.2847,
+            -32.631,
             0.0
           ],
           "tag": {
@@ -6775,12 +6775,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "rectangleSegmentA003"
           },
           "to": [
-            1.2847,
+            32.631,
             0.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -6789,7 +6789,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            1.2847,
+            32.631,
             0.0
           ],
           "tag": {
@@ -6800,12 +6800,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "rectangleSegmentB003"
           },
           "to": [
-            1.2847,
-            -0.3937
+            32.631,
+            -10.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -6814,8 +6814,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            1.2847,
-            -0.3937
+            32.631,
+            -10.0
           ],
           "tag": {
             "commentStart": 3450,
@@ -6825,12 +6825,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "rectangleSegmentC003"
           },
           "to": [
-            -1.2847,
-            -0.3937
+            -32.631,
+            -10.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -6839,17 +6839,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -1.2847,
-            -0.3937
+            -32.631,
+            -10.0
           ],
           "tag": null,
           "to": [
-            -1.2847,
+            -32.631,
             0.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -6858,17 +6858,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "sourceRange": []
           },
           "from": [
-            -1.2847,
+            -32.631,
             0.0
           ],
           "tag": null,
           "to": [
-            -1.2847,
+            -32.631,
             0.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         }
       ],
@@ -6955,7 +6955,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2847,
+                  32.631,
                   0.0
                 ],
                 "tag": {
@@ -6966,12 +6966,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "rectangleSegmentA002"
                 },
                 "to": [
-                  0.891,
+                  22.631,
                   0.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -6980,7 +6980,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.891,
+                  22.631,
                   0.0
                 ],
                 "tag": {
@@ -6991,12 +6991,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "rectangleSegmentB002"
                 },
                 "to": [
-                  0.891,
-                  -0.3937
+                  22.631,
+                  -10.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -7005,8 +7005,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.891,
-                  -0.3937
+                  22.631,
+                  -10.0
                 ],
                 "tag": {
                   "commentStart": 2237,
@@ -7016,12 +7016,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "rectangleSegmentC002"
                 },
                 "to": [
-                  1.2847,
-                  -0.3937
+                  32.631,
+                  -10.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -7030,17 +7030,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2847,
-                  -0.3937
+                  32.631,
+                  -10.0
                 ],
                 "tag": null,
                 "to": [
-                  1.2847,
+                  32.631,
                   0.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -7049,17 +7049,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2847,
+                  32.631,
                   0.0
                 ],
                 "tag": null,
                 "to": [
-                  1.2847,
+                  32.631,
                   0.0
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               }
             ],
@@ -7294,7 +7294,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "from": [
                         0.0,
-                        1.2552
+                        31.881
                       ],
                       "tag": {
                         "commentStart": 653,
@@ -7304,12 +7304,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg01"
                       },
                       "to": [
-                        0.4232,
-                        1.2552
+                        10.75,
+                        31.881
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7319,14 +7319,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "ccw": false,
                       "center": [
-                        0.4232,
-                        0.7874
+                        10.75,
+                        20.0
                       ],
                       "from": [
-                        0.4232,
-                        1.2552
+                        10.75,
+                        31.881
                       ],
-                      "radius": 0.46776574803149606,
+                      "radius": 11.88125,
                       "tag": {
                         "commentStart": 763,
                         "end": 769,
@@ -7335,12 +7335,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg09"
                       },
                       "to": [
-                        0.891,
-                        0.7874
+                        22.631,
+                        20.0
                       ],
                       "type": "Arc",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7349,8 +7349,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        0.891,
-                        0.7874
+                        22.631,
+                        20.0
                       ],
                       "tag": {
                         "commentStart": 829,
@@ -7360,12 +7360,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg03"
                       },
                       "to": [
-                        0.891,
-                        -0.3937
+                        22.631,
+                        -10.0
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7374,8 +7374,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        0.891,
-                        -0.3937
+                        22.631,
+                        -10.0
                       ],
                       "tag": {
                         "commentStart": 882,
@@ -7385,12 +7385,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg07"
                       },
                       "to": [
-                        1.2847,
-                        -0.3937
+                        32.631,
+                        -10.0
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7399,8 +7399,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        1.2847,
-                        -0.3937
+                        32.631,
+                        -10.0
                       ],
                       "tag": {
                         "commentStart": 984,
@@ -7410,12 +7410,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg02"
                       },
                       "to": [
-                        1.2847,
-                        0.4307
+                        32.631,
+                        10.941
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7424,8 +7424,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        1.2847,
-                        0.4307
+                        32.631,
+                        10.941
                       ],
                       "tag": {
                         "commentStart": 1061,
@@ -7435,12 +7435,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg06"
                       },
                       "to": [
-                        4.0406,
-                        0.4307
+                        102.631,
+                        10.941
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7449,8 +7449,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        4.0406,
-                        0.4307
+                        102.631,
+                        10.941
                       ],
                       "tag": {
                         "commentStart": 1118,
@@ -7460,12 +7460,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg08"
                       },
                       "to": [
-                        4.0406,
-                        1.2181
+                        102.631,
+                        30.941
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7474,8 +7474,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        4.0406,
-                        1.2181
+                        102.631,
+                        30.941
                       ],
                       "tag": {
                         "commentStart": 1177,
@@ -7485,12 +7485,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg05"
                       },
                       "to": [
-                        1.2847,
-                        1.2181
+                        32.631,
+                        30.941
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7499,8 +7499,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        1.2847,
-                        1.2181
+                        32.631,
+                        30.941
                       ],
                       "tag": {
                         "commentStart": 1252,
@@ -7510,12 +7510,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg10"
                       },
                       "to": [
-                        1.2847,
-                        1.6489
+                        32.631,
+                        41.881
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7524,8 +7524,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        1.2847,
-                        1.6489
+                        32.631,
+                        41.881
                       ],
                       "tag": {
                         "commentStart": 1294,
@@ -7536,11 +7536,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "to": [
                         0.0,
-                        1.6489
+                        41.881
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7550,16 +7550,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "from": [
                         0.0,
-                        1.6489
+                        41.881
                       ],
                       "tag": null,
                       "to": [
-                        -1.2847,
-                        1.6489
+                        -32.631,
+                        41.881
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7568,17 +7568,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -1.2847,
-                        1.6489
+                        -32.631,
+                        41.881
                       ],
                       "tag": null,
                       "to": [
-                        -1.2847,
-                        1.2181
+                        -32.631,
+                        30.941
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7587,17 +7587,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -1.2847,
-                        1.2181
+                        -32.631,
+                        30.941
                       ],
                       "tag": null,
                       "to": [
-                        -4.0406,
-                        1.2181
+                        -102.631,
+                        30.941
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7606,17 +7606,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -4.0406,
-                        1.2181
+                        -102.631,
+                        30.941
                       ],
                       "tag": null,
                       "to": [
-                        -4.0406,
-                        0.4307
+                        -102.631,
+                        10.941
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7625,17 +7625,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -4.0406,
-                        0.4307
+                        -102.631,
+                        10.941
                       ],
                       "tag": null,
                       "to": [
-                        -1.2847,
-                        0.4307
+                        -32.631,
+                        10.941
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7644,17 +7644,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -1.2847,
-                        0.4307
+                        -32.631,
+                        10.941
                       ],
                       "tag": null,
                       "to": [
-                        -1.2847,
-                        -0.3937
+                        -32.631,
+                        -10.0
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7663,17 +7663,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -1.2847,
-                        -0.3937
+                        -32.631,
+                        -10.0
                       ],
                       "tag": null,
                       "to": [
-                        -0.891,
-                        -0.3937
+                        -22.631,
+                        -10.0
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7682,17 +7682,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -0.891,
-                        -0.3937
+                        -22.631,
+                        -10.0
                       ],
                       "tag": null,
                       "to": [
-                        -0.891,
-                        0.7874
+                        -22.631,
+                        20.0
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7702,22 +7702,22 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "ccw": false,
                       "center": [
-                        -0.4232,
-                        0.7874
+                        -10.75,
+                        20.0
                       ],
                       "from": [
-                        -0.891,
-                        0.7874
+                        -22.631,
+                        20.0
                       ],
-                      "radius": 0.46776574803149606,
+                      "radius": 11.88125,
                       "tag": null,
                       "to": [
-                        -0.4232,
-                        1.2552
+                        -10.75,
+                        31.881
                       ],
                       "type": "Arc",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7726,17 +7726,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -0.4232,
-                        1.2552
+                        -10.75,
+                        31.881
                       ],
                       "tag": null,
                       "to": [
                         0.0,
-                        1.2552
+                        31.881
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     },
                     {
@@ -7746,16 +7746,16 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "from": [
                         0.0,
-                        1.2552
+                        31.881
                       ],
                       "tag": null,
                       "to": [
                         0.0,
-                        1.2552
+                        31.881
                       ],
                       "type": "ToPoint",
                       "units": {
-                        "type": "Inches"
+                        "type": "Mm"
                       }
                     }
                   ],
@@ -7792,14 +7792,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "start": {
                     "from": [
                       0.0,
-                      1.2552
+                      31.881
                     ],
                     "to": [
                       0.0,
-                      1.2552
+                      31.881
                     ],
                     "units": {
-                      "type": "Inches"
+                      "type": "Mm"
                     },
                     "tag": null,
                     "__geoMeta": {
@@ -7852,32 +7852,32 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
-                "height": 0.1968503937007874,
+                "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 },
                 "sectional": false
               },
               "units": {
-                "type": "Inches"
+                "type": "Mm"
               }
             },
             "start": {
               "from": [
-                1.2847,
+                32.631,
                 0.0
               ],
               "to": [
-                1.2847,
+                32.631,
                 0.0
               ],
               "units": {
-                "type": "Inches"
+                "type": "Mm"
               },
               "tag": null,
               "__geoMeta": {
@@ -7902,32 +7902,32 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
-          "height": 0.5118110236220472,
+          "height": 13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           },
           "sectional": false
         },
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         }
       },
       "start": {
         "from": [
-          -1.2847,
+          -32.631,
           0.0
         ],
         "to": [
-          -1.2847,
+          -32.631,
           0.0
         ],
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         },
         "tag": null,
         "__geoMeta": {
@@ -7952,7 +7952,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
-        "type": "Inches"
+        "type": "Mm"
       }
     }
   },
@@ -7971,7 +7971,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
   },
   "templateDiameter": {
     "type": "Number",
-    "value": 0.6875,
+    "value": 0.688,
     "ty": {
       "type": "Known",
       "type": "Length",
@@ -7980,7 +7980,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
   },
   "templateGap": {
     "type": "Number",
-    "value": 0.0741,
+    "value": 0.074,
     "ty": {
       "type": "Known",
       "type": "Length",

@@ -11,12 +11,13 @@ import {
   getPlaywrightDownloadDir,
   getUtils,
   isOutOfViewInScrollContainer,
+  runningOnWindows,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'projects reload if a new one is created, deleted, or renamed externally',
-  { tag: ['@electron', '@macos', '@windows'] },
+  { tag: ['@desktop', '@macos', '@windows'] },
   async ({ context, page }, testInfo) => {
     let externalCreatedProjectName = 'external-created-project'
 
@@ -62,7 +63,7 @@ test(
 
 test(
   'click help/keybindings from home page',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ page }, testInfo) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -80,7 +81,7 @@ test(
 
 test(
   'click help/keybindings from project page',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -111,7 +112,7 @@ test(
 
 test(
   'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ scene, cmdBar, context, page, editor }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -183,7 +184,7 @@ test(
 
 test(
   'open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -243,7 +244,7 @@ test(
 
 test(
   'open a file in a project works and renders, open empty file, it should clear the scene',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -309,7 +310,7 @@ test(
 
 test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -381,7 +382,7 @@ test(
 
 test(
   'when code with error first loads you get errors in console',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page, editor }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(path.join(dir, 'broken-code'), { recursive: true })
@@ -415,7 +416,7 @@ test.describe('Can export from electron app', () => {
   for (const method of exportMethods) {
     test(
       `Can export using ${method}`,
-      { tag: ['@electron', '@skipLocalEngine'] },
+      { tag: ['@desktop', '@skipLocalEngine'] },
       async ({ scene, cmdBar, context, page, tronApp }, testInfo) => {
         if (!tronApp) {
           fail()
@@ -506,7 +507,7 @@ test.describe('Can export from electron app', () => {
 })
 test(
   'Rename and delete projects, also spam arrow keys when renaming',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
@@ -722,7 +723,7 @@ test(
 
 test(
   'pressing "delete" on home screen should do nothing',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page, homePage }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
@@ -752,7 +753,7 @@ test(
 test.describe(`Project management commands`, () => {
   test(
     `Rename from project page`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page, scene, cmdBar }, testInfo) => {
       const projectName = `my_project_to_rename`
       await context.folderSetupFn(async (dir) => {
@@ -814,7 +815,7 @@ test.describe(`Project management commands`, () => {
 
   test(
     `Delete from project page`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page, scene, cmdBar }, testInfo) => {
       const projectName = `my_project_to_delete`
       await context.folderSetupFn(async (dir) => {
@@ -868,7 +869,7 @@ test.describe(`Project management commands`, () => {
   )
   test(
     `Rename from home page`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page, homePage, scene, cmdBar }, testInfo) => {
       const projectName = `my_project_to_rename`
       await context.folderSetupFn(async (dir) => {
@@ -926,7 +927,7 @@ test.describe(`Project management commands`, () => {
   )
   test(
     `Delete from home page`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page, scene, cmdBar }, testInfo) => {
       const projectName = `my_project_to_delete`
       await context.folderSetupFn(async (dir) => {
@@ -1102,7 +1103,7 @@ test(`Create a few projects using the default project name`, async ({
 
 test(
   'File in the file pane should open with a single click',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, homePage, page }, testInfo) => {
     const projectName = 'router-template-slate'
     await context.folderSetupFn(async (dir) => {
@@ -1144,7 +1145,7 @@ test(
 
 test(
   'Nested directories in project without main.kcl do not create main.kcl',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     let testDir: string | undefined
     await context.folderSetupFn(async (dir) => {
@@ -1201,7 +1202,7 @@ test(
 
 test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
@@ -1279,7 +1280,7 @@ test(
 
 test(
   'Can load a file with CRLF line endings',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page, scene, cmdBar }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const routerTemplateDir = path.join(dir, 'router-template-slate')
@@ -1311,7 +1312,7 @@ test(
 
 test(
   'Can sort projects on home page',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
@@ -1418,7 +1419,7 @@ test(
 
 test(
   'When the project folder is empty, user can create new project and open it.',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ page }, testInfo) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1514,7 +1515,7 @@ extrude001 = extrude(sketch001, length = 200)`)
 
 test(
   'Opening a project should successfully load the stream, (regression test that this also works when switching between projects)',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page, cmdBar, homePage, scene }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(path.join(dir, 'router-template-slate'), {
@@ -1627,7 +1628,7 @@ test(
 
 test(
   'You can change the root projects directory and nothing is lost',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page, tronApp, homePage }, testInfo) => {
     if (!tronApp) {
       fail()
@@ -1734,7 +1735,7 @@ test(
 
 test(
   'Search projects on desktop home',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['basic bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
@@ -1790,7 +1791,7 @@ test(
 
 test(
   'file pane is scrollable when there are many files',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const testDir = path.join(dir, 'testProject')
@@ -1891,7 +1892,7 @@ test(
 
 test(
   'select all in code editor does not actually select all, just what is visible (regression)',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       // rust/kcl-lib/e2e/executor/inputs/mike_stress_test.kcl
@@ -1949,7 +1950,7 @@ test(
 
 test(
   'Settings persist across restarts',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ page, toolbar }, testInfo) => {
     await test.step('We can change a user setting like theme', async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1979,10 +1980,9 @@ test(
   }
 )
 
-// Flaky
 test(
   'Original project name persist after onboarding',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ page, toolbar }, testInfo) => {
     const nextButton = page.getByTestId('onboarding-next')
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -2022,7 +2022,7 @@ test(
 
 test(
   'project name with foreign characters should open',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'العربية')
@@ -2061,6 +2061,129 @@ test(
           timeout: 10_000,
         })
         .toBeLessThan(15)
+    })
+  }
+)
+
+test(
+  'import from nested directory',
+  { tag: ['@desktop', '@windows', '@macos'] },
+  async ({ scene, cmdBar, context, page }) => {
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, 'bracket')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      const nestedDir = path.join(bracketDir, 'nested')
+      await fsp.mkdir(nestedDir, { recursive: true })
+
+      await fsp.copyFile(
+        executorInputPath('cylinder-inches.kcl'),
+        path.join(nestedDir, 'main.kcl')
+      )
+      await fsp.writeFile(
+        path.join(bracketDir, 'main.kcl'),
+        runningOnWindows()
+          ? `import 'nested\\main.kcl' as thing\n\nthing`
+          : `import 'nested/main.kcl' as thing\n\nthing`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    const u = await getUtils(page)
+
+    const pointOnModel = { x: 630, y: 280 }
+
+    await test.step('Opening the bracket project should load the stream', async () => {
+      // expect to see the text bracket
+      await expect(page.getByText('bracket')).toBeVisible()
+
+      await page.getByText('bracket').click()
+
+      await scene.settled(cmdBar)
+
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeEnabled({
+        timeout: 20_000,
+      })
+
+      // gray at this pixel means the stream has loaded in the most
+      // user way we can verify it (pixel color)
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [125, 125, 125]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(15)
+    })
+  }
+)
+
+test(
+  'segment position changes persist after dragging and reopening project',
+  { tag: '@desktop' },
+  async ({ scene, cmdBar, context, page, editor, toolbar }, testInfo) => {
+    const projectName = 'segment-drag-test'
+
+    await context.folderSetupFn(async (dir) => {
+      const projectDir = path.join(dir, projectName)
+      await fsp.mkdir(projectDir, { recursive: true })
+      await fsp.writeFile(
+        path.join(projectDir, 'main.kcl'),
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [0, 6])
+  |> line(end = [10, 0])
+  |> line(end = [-8, -5])
+`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+    const u = await getUtils(page)
+
+    await test.step('Opening the project and entering sketch mode', async () => {
+      await expect(page.getByText(projectName)).toBeVisible()
+      await page.getByText(projectName).click()
+
+      await scene.settled(cmdBar)
+
+      // go to sketch mode
+      await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+
+      // Without this, "add axis n grid" action runs after editing the sketch and invokes codeManager.writeToFile()
+      // so we wait for that action to run first before we start editing the sketch and making sure it's saving
+      // because of those edits.
+      await page.waitForTimeout(2000)
+    })
+
+    const changedLine = 'line(end = [-6.54, -4.99])'
+
+    await test.step('Dragging the line endpoint to modify it', async () => {
+      // Get the last line's endpoint position
+      const lineEnd = await u.getBoundingBox('[data-overlay-index="3"]')
+
+      await page.mouse.move(lineEnd.x, lineEnd.y - 5)
+      await page.mouse.down()
+      await page.mouse.move(lineEnd.x + 80, lineEnd.y)
+      await page.mouse.up()
+
+      await editor.expectEditor.toContain(changedLine)
+
+      // Exit sketch mode
+      await page.keyboard.press('Escape')
+      await page.waitForTimeout(100)
+    })
+
+    await test.step('Going back to dashboard', async () => {
+      await page.getByTestId('app-logo').click()
+      await page.waitForTimeout(1000)
+    })
+
+    await test.step('Reopening the project and verifying changes are saved', async () => {
+      await page.getByText(projectName).click()
+      await scene.settled(cmdBar)
+
+      // Check if new line coordinates were saved
+      await editor.expectEditor.toContain(changedLine)
     })
   }
 )

@@ -34,9 +34,9 @@ pub(crate) type Universe = HashMap<String, DependencyInfo>;
 pub fn import_graph(progs: &Universe, ctx: &ExecutorContext) -> Result<Vec<Vec<String>>, KclError> {
     let mut graph = Graph::new();
 
-    for (name, (_, _, _, repr)) in progs.iter() {
+    for (name, (_, _, path, repr)) in progs.iter() {
         graph.extend(
-            import_dependencies(repr, ctx)?
+            import_dependencies(path, repr, ctx)?
                 .into_iter()
                 .map(|(dependency, _, _)| (name.clone(), dependency))
                 .collect::<Vec<_>>(),
@@ -96,11 +96,11 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>, KclEr
         if stage_modules.is_empty() {
             waiting_modules.sort();
 
-            return Err(KclError::ImportCycle(KclErrorDetails {
-                message: format!("circular import of modules not allowed: {}", waiting_modules.join(", ")),
+            return Err(KclError::ImportCycle(KclErrorDetails::new(
+                format!("circular import of modules not allowed: {}", waiting_modules.join(", ")),
                 // TODO: we can get the right import lines from the AST, but we don't
-                source_ranges: vec![SourceRange::default()],
-            }));
+                vec![SourceRange::default()],
+            )));
         }
 
         // not strictly needed here, but perhaps helpful to avoid thinking
@@ -120,37 +120,46 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>, KclEr
 
 type ImportDependencies = Vec<(String, AstNode<ImportStatement>, ModulePath)>;
 
-pub(crate) fn import_dependencies(repr: &ModuleRepr, ctx: &ExecutorContext) -> Result<ImportDependencies, KclError> {
+pub(crate) fn import_dependencies(
+    path: &ModulePath,
+    repr: &ModuleRepr,
+    ctx: &ExecutorContext,
+) -> Result<ImportDependencies, KclError> {
     let ModuleRepr::Kcl(prog, _) = repr else {
         // It has no dependencies, so return an empty list.
         return Ok(vec![]);
     };
 
     let ret = Arc::new(Mutex::new(vec![]));
-    fn walk(ret: Arc<Mutex<ImportDependencies>>, node: Node<'_>, ctx: &ExecutorContext) -> Result<(), KclError> {
+    fn walk(
+        ret: Arc<Mutex<ImportDependencies>>,
+        node: Node<'_>,
+        import_from: &ModulePath,
+        ctx: &ExecutorContext,
+    ) -> Result<(), KclError> {
         if let Node::ImportStatement(is) = node {
             // We only care about Kcl and Foreign imports for now.
-            let resolved_path = ModulePath::from_import_path(&is.path, &ctx.settings.project_directory);
+            let resolved_path = ModulePath::from_import_path(&is.path, &ctx.settings.project_directory, import_from)?;
             match &is.path {
                 ImportPath::Kcl { filename } => {
                     // We need to lock the mutex to push the dependency.
                     // This is a bit of a hack, but it works for now.
                     ret.lock()
                         .map_err(|err| {
-                            KclError::Internal(KclErrorDetails {
-                                message: format!("Failed to lock mutex: {}", err),
-                                source_ranges: Default::default(),
-                            })
+                            KclError::Internal(KclErrorDetails::new(
+                                format!("Failed to lock mutex: {}", err),
+                                Default::default(),
+                            ))
                         })?
                         .push((filename.to_string(), is.clone(), resolved_path));
                 }
                 ImportPath::Foreign { path } => {
                     ret.lock()
                         .map_err(|err| {
-                            KclError::Internal(KclErrorDetails {
-                                message: format!("Failed to lock mutex: {}", err),
-                                source_ranges: Default::default(),
-                            })
+                            KclError::Internal(KclErrorDetails::new(
+                                format!("Failed to lock mutex: {}", err),
+                                Default::default(),
+                            ))
                         })?
                         .push((path.to_string(), is.clone(), resolved_path));
                 }
@@ -160,19 +169,19 @@ pub(crate) fn import_dependencies(repr: &ModuleRepr, ctx: &ExecutorContext) -> R
         }
 
         for child in node.children().iter() {
-            walk(ret.clone(), *child, ctx)?;
+            walk(ret.clone(), *child, import_from, ctx)?;
         }
 
         Ok(())
     }
 
-    walk(ret.clone(), prog.into(), ctx)?;
+    walk(ret.clone(), prog.into(), path, ctx)?;
 
     let ret = ret.lock().map_err(|err| {
-        KclError::Internal(KclErrorDetails {
-            message: format!("Failed to lock mutex: {}", err),
-            source_ranges: Default::default(),
-        })
+        KclError::Internal(KclErrorDetails::new(
+            format!("Failed to lock mutex: {}", err),
+            Default::default(),
+        ))
     })?;
 
     Ok(ret.clone())
@@ -182,11 +191,12 @@ pub(crate) fn import_dependencies(repr: &ModuleRepr, ctx: &ExecutorContext) -> R
 /// only `repr`'s non-transitive imports.
 pub(crate) async fn import_universe(
     ctx: &ExecutorContext,
+    path: &ModulePath,
     repr: &ModuleRepr,
     out: &mut Universe,
     exec_state: &mut ExecState,
 ) -> Result<UniverseMap, KclError> {
-    let modules = import_dependencies(repr, ctx)?;
+    let modules = import_dependencies(path, repr, ctx)?;
     let mut module_imports = HashMap::new();
     for (filename, import_stmt, module_path) in modules {
         match &module_path {
@@ -208,21 +218,21 @@ pub(crate) async fn import_universe(
         let source_range = SourceRange::from(&import_stmt);
         let attrs = &import_stmt.outer_attrs;
         let module_id = ctx
-            .open_module(&import_stmt.path, attrs, exec_state, source_range)
+            .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
             .await?;
 
         let repr = {
             let Some(module_info) = exec_state.get_module(module_id) else {
-                return Err(KclError::Internal(KclErrorDetails {
-                    message: format!("Module {} not found", module_id),
-                    source_ranges: vec![import_stmt.into()],
-                }));
+                return Err(KclError::Internal(KclErrorDetails::new(
+                    format!("Module {} not found", module_id),
+                    vec![import_stmt.into()],
+                )));
             };
             module_info.repr.clone()
         };
 
-        out.insert(filename, (import_stmt, module_id, module_path, repr.clone()));
-        Box::pin(import_universe(ctx, &repr, out, exec_state)).await?;
+        out.insert(filename, (import_stmt, module_id, module_path.clone(), repr.clone()));
+        Box::pin(import_universe(ctx, &module_path, &repr, out, exec_state)).await?;
     }
 
     Ok(module_imports)

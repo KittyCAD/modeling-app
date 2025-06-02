@@ -3,7 +3,6 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use kcl_derive_docs::stdlib;
 use kcmc::{
     each_cmd as mcmd,
     length_unit::LengthUnit,
@@ -17,11 +16,12 @@ use kittycad_modeling_cmds::{self as kcmc};
 use uuid::Uuid;
 
 use super::args::TyF64;
-#[cfg(feature = "artifact-graph")]
-use crate::execution::ArtifactId;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSurface, Solid},
+    execution::{
+        types::RuntimeType, ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSurface,
+        Solid,
+    },
     parsing::ast::types::TagNode,
     std::Args,
 };
@@ -30,7 +30,7 @@ use crate::{
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let length: TyF64 = args.get_kw_arg_typed("length", &RuntimeType::length(), exec_state)?;
-    let symmetric = args.get_kw_arg_opt("symmetric")?;
+    let symmetric = args.get_kw_arg_opt_typed("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_length: Option<TyF64> =
         args.get_kw_arg_opt_typed("bidirectionalLength", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
@@ -51,114 +51,6 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     Ok(result.into())
 }
 
-/// Extend a 2-dimensional sketch through a third dimension in order to
-/// create new 3-dimensional volume, or if extruded into an existing volume,
-/// cut into an existing solid.
-///
-/// You can provide more than one sketch to extrude, and they will all be
-/// extruded in the same direction.
-///
-/// ```no_run
-/// example = startSketchOn(XZ)
-///   |> startProfile(at = [0, 0])
-///   |> line(end = [10, 0])
-///   |> arc(
-///     angleStart = 120,
-///     angleEnd = 0,
-///     radius = 5,
-///   )
-///   |> line(end = [5, 0])
-///   |> line(end = [0, 10])
-///   |> bezierCurve(
-///        control1 = [-10, 0],
-///        control2 = [2, 10],
-///        end = [-5, 10],
-///      )
-///   |> line(end = [-5, -2])
-///   |> close()
-///   |> extrude(length = 10)
-/// ```
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [-10, 0])
-///   |> arc(
-///     angleStart = 120,
-///     angleEnd = -60,
-///     radius = 5,
-///   )
-///   |> line(end = [10, 0])
-///   |> line(end = [5, 0])
-///   |> bezierCurve(
-///        control1 = [-3, 0],
-///        control2 = [2, 10],
-///        end = [-5, 10],
-///      )
-///   |> line(end = [-4, 10])
-///   |> line(end = [-5, -2])
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 10)
-/// ```
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [-10, 0])
-///   |> arc(
-///     angleStart = 120,
-///     angleEnd = -60,
-///     radius = 5,
-///   )
-///   |> line(end = [10, 0])
-///   |> line(end = [5, 0])
-///   |> bezierCurve(
-///        control1 = [-3, 0],
-///        control2 = [2, 10],
-///        end = [-5, 10],
-///      )
-///   |> line(end = [-4, 10])
-///   |> line(end = [-5, -2])
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 20, symmetric = true)
-/// ```
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [-10, 0])
-///   |> arc(
-///     angleStart = 120,
-///     angleEnd = -60,
-///     radius = 5,
-///   )
-///   |> line(end = [10, 0])
-///   |> line(end = [5, 0])
-///   |> bezierCurve(
-///        control1 = [-3, 0],
-///        control2 = [2, 10],
-///        end = [-5, 10],
-///      )
-///   |> line(end = [-4, 10])
-///   |> line(end = [-5, -2])
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 10, bidirectionalLength = 50)
-/// ```
-#[stdlib {
-    name = "extrude",
-    feature_tree_operation = true,
-    keywords = true,
-    unlabeled_first = true,
-    args = {
-        sketches = { docs = "Which sketch or sketches should be extruded"},
-        length = { docs = "How far to extrude the given sketches"},
-        symmetric = { docs = "If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch." },
-        bidirectional_length = { docs = "If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored."},
-        tag_start = { docs = "A named tag for the face at the start of the extrusion, i.e. the original sketch" },
-        tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch" },
-    },
-    tags = ["sketch"]
-}]
 #[allow(clippy::too_many_arguments)]
 async fn inner_extrude(
     sketches: Vec<Sketch>,
@@ -174,11 +66,11 @@ async fn inner_extrude(
     let mut solids = Vec::new();
 
     if symmetric.unwrap_or(false) && bidirectional_length.is_some() {
-        return Err(KclError::Semantic(KclErrorDetails {
-            source_ranges: vec![args.source_range],
-            message: "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
                 .to_owned(),
-        }));
+            vec![args.source_range],
+        )));
     }
 
     let bidirection = bidirectional_length.map(|l| LengthUnit(l.to_mm()));
@@ -210,7 +102,6 @@ async fn inner_extrude(
         solids.push(
             do_post_extrude(
                 sketch,
-                #[cfg(feature = "artifact-graph")]
                 id.into(),
                 length.clone(),
                 false,
@@ -238,7 +129,7 @@ pub(crate) struct NamedCapTags<'a> {
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn do_post_extrude<'a>(
     sketch: &Sketch,
-    #[cfg(feature = "artifact-graph")] solid_id: ArtifactId,
+    solid_id: ArtifactId,
     length: TyF64,
     sectional: bool,
     named_cap_tags: &'a NamedCapTags<'a>,
@@ -262,10 +153,10 @@ pub(crate) async fn do_post_extrude<'a>(
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
         // So, let's just use the first one.
         let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: "Expected a non-empty sketch".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
+            return Err(KclError::Type(KclErrorDetails::new(
+                "Expected a non-empty sketch".to_owned(),
+                vec![args.source_range],
+            )));
         };
         any_edge_id
     };
@@ -387,13 +278,13 @@ pub(crate) async fn do_post_extrude<'a>(
     // Add the tags for the start or end caps.
     if let Some(tag_start) = named_cap_tags.start {
         let Some(start_cap_id) = start_cap_id else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
+            return Err(KclError::Type(KclErrorDetails::new(
+                format!(
                     "Expected a start cap ID for tag `{}` for extrusion of sketch {:?}",
                     tag_start.name, sketch.id
                 ),
-                source_ranges: vec![args.source_range],
-            }));
+                vec![args.source_range],
+            )));
         };
 
         new_value.push(ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
@@ -407,13 +298,13 @@ pub(crate) async fn do_post_extrude<'a>(
     }
     if let Some(tag_end) = named_cap_tags.end {
         let Some(end_cap_id) = end_cap_id else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
+            return Err(KclError::Type(KclErrorDetails::new(
+                format!(
                     "Expected an end cap ID for tag `{}` for extrusion of sketch {:?}",
                     tag_end.name, sketch.id
                 ),
-                source_ranges: vec![args.source_range],
-            }));
+                vec![args.source_range],
+            )));
         };
 
         new_value.push(ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
@@ -431,7 +322,6 @@ pub(crate) async fn do_post_extrude<'a>(
         // that we passed in to the function, but it's actually the id of the
         // sketch.
         id: sketch.id,
-        #[cfg(feature = "artifact-graph")]
         artifact_id: solid_id,
         value: new_value,
         meta: sketch.meta.clone(),

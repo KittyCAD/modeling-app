@@ -157,7 +157,7 @@ description: Artifact commands parametric_with_tan_arc.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -0.3618,
+          "y": -0.362,
           "z": 0.0
         },
         "relative": true

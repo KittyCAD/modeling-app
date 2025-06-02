@@ -21,6 +21,7 @@ import {
   filterOperations,
   getOperationIcon,
   getOperationLabel,
+  getOperationVariableName,
   stdLibMap,
 } from '@src/lib/operations'
 import { editorManager, kclManager, rustContext } from '@src/lib/singletons'
@@ -236,6 +237,7 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
 const OperationItemWrapper = ({
   icon,
   name,
+  variableName,
   visibilityToggle,
   menuItems,
   errors,
@@ -246,6 +248,7 @@ const OperationItemWrapper = ({
 }: React.HTMLAttributes<HTMLButtonElement> & {
   icon: CustomIconName
   name: string
+  variableName?: string
   visibilityToggle?: VisibilityToggleProps
   customSuffix?: JSX.Element
   menuItems?: ComponentProps<typeof ContextMenu>['items']
@@ -264,8 +267,15 @@ const OperationItemWrapper = ({
         className={`reset flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : 'border-none cursor-default'} ${className}`}
       >
         <CustomIcon name={icon} className="w-5 h-5 block" />
-        <div className="flex items-baseline">
-          <div className="mr-2">{name}</div>
+        <div className="flex items-baseline align-baseline">
+          <div className="mr-2">
+            {name}
+            {variableName && (
+              <span className="ml-2 opacity-50 text-[11px] font-semibold">
+                {variableName}
+              </span>
+            )}
+          </div>
           {customSuffix && customSuffix}
         </div>
       </button>
@@ -290,6 +300,11 @@ const OperationItem = (props: {
 }) => {
   const kclContext = useKclContext()
   const name = getOperationLabel(props.item)
+
+  const variableName = useMemo(() => {
+    return getOperationVariableName(props.item, kclContext.ast)
+  }, [props.item, kclContext.ast])
+
   const errors = useMemo(() => {
     return kclContext.diagnostics.filter(
       (diag) =>
@@ -317,10 +332,7 @@ const OperationItem = (props: {
    * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
    */
   function enterEditFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall'
-    ) {
+    if (props.item.type === 'StdLibCall') {
       props.send({
         type: 'enterEditFlow',
         data: {
@@ -332,10 +344,7 @@ const OperationItem = (props: {
   }
 
   function enterAppearanceFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall'
-    ) {
+    if (props.item.type === 'StdLibCall') {
       props.send({
         type: 'enterAppearanceFlow',
         data: {
@@ -347,11 +356,7 @@ const OperationItem = (props: {
   }
 
   function enterTranslateFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall' ||
-      props.item.type === 'GroupBegin'
-    ) {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
         type: 'enterTranslateFlow',
         data: {
@@ -363,11 +368,7 @@ const OperationItem = (props: {
   }
 
   function enterRotateFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall' ||
-      props.item.type === 'GroupBegin'
-    ) {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
         type: 'enterRotateFlow',
         data: {
@@ -379,11 +380,7 @@ const OperationItem = (props: {
   }
 
   function enterCloneFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall' ||
-      props.item.type === 'GroupBegin'
-    ) {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
         type: 'enterCloneFlow',
         data: {
@@ -395,11 +392,7 @@ const OperationItem = (props: {
   }
 
   function deleteOperation() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'GroupBegin' ||
-      props.item.type === 'KclStdLibCall'
-    ) {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
         type: 'deleteOperation',
         data: {
@@ -454,8 +447,7 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall'
+      ...(props.item.type === 'StdLibCall'
         ? [
             <ContextMenuItem
               disabled={!stdLibMap[props.item.name]?.prepareToEdit}
@@ -473,9 +465,7 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall' ||
-      props.item.type === 'GroupBegin'
+      ...(props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin'
         ? [
             <ContextMenuItem
               onClick={enterTranslateFlow}
@@ -524,6 +514,7 @@ const OperationItem = (props: {
     <OperationItemWrapper
       icon={getOperationIcon(props.item)}
       name={name}
+      variableName={variableName}
       menuItems={menuItems}
       onClick={selectOperation}
       onDoubleClick={enterEditFlow}

@@ -4,19 +4,30 @@ description: Operations executed hex-nut.kcl
 ---
 [
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "subtract2d",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "tool": {
         "value": {
@@ -28,9 +39,11 @@ description: Operations executed hex-nut.kcl
         "sourceRange": []
       }
     },
-    "name": "subtract2d",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
         "type": "Sketch",
@@ -39,9 +52,7 @@ description: Operations executed hex-nut.kcl
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -60,18 +71,7 @@ description: Operations executed hex-nut.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "type": "GroupBegin",
@@ -84,7 +84,7 @@ description: Operations executed hex-nut.kcl
         "innerDia": {
           "value": {
             "type": "Number",
-            "value": 0.3125,
+            "value": 0.313,
             "ty": {
               "type": "Default",
               "len": {

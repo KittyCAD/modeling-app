@@ -29,27 +29,27 @@ plateRevolve = startSketchOn(YZ)
   |> close()
   |> revolve(axis = Y, angle = 65, symmetric = true)
 
-// Create a hole sketch with the size and location of each bolt hole
-holeSketch = startSketchOn(XZ)
-hole01 = circle(holeSketch, center = [0, 12.25], radius = boltSize / 2)
-  |> extrude(length = -100)
-hole02 = circle(holeSketch, center = [0, 29.5], radius = boltSize / 2)
-  |> extrude(length = -100)
-hole03 = circle(holeSketch, center = [0, 46.25], radius = boltSize / 2)
-  |> extrude(length = -100)
-hole04 = circle(holeSketch, center = [0, 77], radius = boltSize / 2)
-  |> extrude(length = -100)
-hole05 = circle(holeSketch, center = [0, 100], radius = boltSize / 2)
-  |> extrude(length = -100)
-hole06 = circle(holeSketch, center = [0, 130], radius = boltSize / 2)
-  |> extrude(length = -100)
-hole07 = circle(holeSketch, center = [-20, 130], radius = boltSize / 2)
-  |> extrude(length = -100)
-hole08 = circle(holeSketch, center = [20, 130], radius = boltSize / 2)
-  |> extrude(length = -100)
+// Define a function to create and extrude holes
+fn holeFn(@center) {
+  return startSketchOn(XZ)
+    |> circle(center = center, diameter = boltSize)
+    |> extrude(length = -100)
+}
 
-// Cut each guiding clearance hole from the bone plate
-solid001 = subtract([plateRevolve], tools = union([hole01, hole02]))
-solid002 = subtract([solid001], tools = union([hole03, hole04]))
-solid003 = subtract([solid002], tools = union([hole05, hole06]))
-solid004 = subtract([solid003], tools = union([hole07, hole08]))
+// Create a hole sketch with the size and location of each bolt hole
+holeCenters = [
+  [0, 12.25],
+  [0, 29.5],
+  [0, 46.25],
+  [0, 77],
+  [0, 100],
+  [0, 130],
+  [-20, 130],
+  [20, 130]
+]
+
+// Use map to apply the hole creation function to the list of center coordinates
+holes = map(holeCenters, f = holeFn)
+
+// Cut each guiding clearance hole from the bone plate using a single subtract operation
+solid = subtract([plateRevolve], tools = holes)

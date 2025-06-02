@@ -4,19 +4,30 @@ description: Operations executed surgical-drill-guide.kcl
 ---
 [
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -56,9 +67,24 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "startSketchOn",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
         "type": "Sketch",
@@ -67,22 +93,7 @@ description: Operations executed surgical-drill-guide.kcl
         }
       },
       "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -101,34 +112,23 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "offsetPlane",
     "unlabeledArg": {
       "value": {
@@ -158,6 +158,17 @@ description: Operations executed surgical-drill-guide.kcl
     "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -176,34 +187,11 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
-    "labeledArgs": {
-      "tools": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "subtract",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "subtract",
     "unlabeledArg": {
       "value": {
         "type": "Array",
@@ -217,13 +205,23 @@ description: Operations executed surgical-drill-guide.kcl
         ]
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {
+      "tools": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "union",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "union",
     "unlabeledArg": {
       "value": {
         "type": "Array",
@@ -243,23 +241,25 @@ description: Operations executed surgical-drill-guide.kcl
         ]
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "offsetPlane",
     "unlabeledArg": {
       "value": {
@@ -272,7 +272,7 @@ description: Operations executed surgical-drill-guide.kcl
       "offset": {
         "value": {
           "type": "Number",
-          "value": 28.4952,
+          "value": 28.495,
           "ty": {
             "type": "Known",
             "type": "Length",
@@ -285,6 +285,17 @@ description: Operations executed surgical-drill-guide.kcl
     "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -310,20 +321,20 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
-        "type": "Sketch",
+        "type": "Solid",
         "value": {
           "artifactId": "[uuid]"
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "face": {
         "value": {
@@ -333,20 +344,20 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
-        "type": "Solid",
+        "type": "Sketch",
         "value": {
           "artifactId": "[uuid]"
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -372,21 +383,10 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "chamfer",
     "unlabeledArg": {
       "value": {
@@ -401,7 +401,7 @@ description: Operations executed surgical-drill-guide.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 0.6667,
+          "value": 0.667,
           "ty": {
             "type": "Default",
             "len": {
@@ -430,6 +430,17 @@ description: Operations executed surgical-drill-guide.kcl
     "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "startSketchOn",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "face": {
         "value": {
@@ -439,20 +450,20 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
-        "type": "Solid",
+        "type": "Sketch",
         "value": {
           "artifactId": "[uuid]"
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -471,34 +482,23 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "offsetPlane",
     "unlabeledArg": {
       "value": {
@@ -511,7 +511,7 @@ description: Operations executed surgical-drill-guide.kcl
       "offset": {
         "value": {
           "type": "Number",
-          "value": 47.4952,
+          "value": 47.495,
           "ty": {
             "type": "Known",
             "type": "Length",
@@ -524,6 +524,17 @@ description: Operations executed surgical-drill-guide.kcl
     "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "subtract2d",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "tool": {
         "value": {
@@ -535,9 +546,11 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "subtract2d",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
         "type": "Sketch",
@@ -546,9 +559,7 @@ description: Operations executed surgical-drill-guide.kcl
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -581,21 +592,10 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "fillet",
     "unlabeledArg": {
       "value": {
@@ -643,20 +643,20 @@ description: Operations executed surgical-drill-guide.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "offsetPlane",
     "unlabeledArg": {
       "value": {
@@ -686,6 +686,17 @@ description: Operations executed surgical-drill-guide.kcl
     "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -704,20 +715,20 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
-        "type": "Sketch",
+        "type": "Solid",
         "value": {
           "artifactId": "[uuid]"
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "face": {
         "value": {
@@ -727,20 +738,20 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
-        "type": "Solid",
+        "type": "Sketch",
         "value": {
           "artifactId": "[uuid]"
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -766,21 +777,10 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "chamfer",
     "unlabeledArg": {
       "value": {
@@ -795,7 +795,7 @@ description: Operations executed surgical-drill-guide.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 1.0667,
+          "value": 1.067,
           "ty": {
             "type": "Default",
             "len": {
@@ -824,6 +824,17 @@ description: Operations executed surgical-drill-guide.kcl
     "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "startSketchOn",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "face": {
         "value": {
@@ -833,20 +844,20 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
-        "type": "Solid",
+        "type": "Sketch",
         "value": {
           "artifactId": "[uuid]"
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -865,34 +876,23 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "offsetPlane",
     "unlabeledArg": {
       "value": {
@@ -922,6 +922,17 @@ description: Operations executed surgical-drill-guide.kcl
     "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "subtract2d",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "tool": {
         "value": {
@@ -933,9 +944,11 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "subtract2d",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
         "type": "Sketch",
@@ -944,9 +957,7 @@ description: Operations executed surgical-drill-guide.kcl
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -979,21 +990,10 @@ description: Operations executed surgical-drill-guide.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "fillet",
     "unlabeledArg": {
       "value": {

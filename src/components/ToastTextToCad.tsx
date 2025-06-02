@@ -35,11 +35,19 @@ import {
 } from '@src/machines/systemIO/utils'
 import {
   useProjectDirectoryPath,
+  useRequestedFileName,
   useRequestedProjectName,
 } from '@src/machines/systemIO/hooks'
 import { commandBarActor } from '@src/lib/singletons'
 import type { FileMeta } from '@src/lib/types'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
+import {
+  Marked,
+  type MarkedOptions,
+  escape,
+  unescape,
+} from '@ts-stack/markdown'
+import { SafeRenderer } from '@src/lib/markdown'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -98,13 +106,26 @@ export function ToastTextToCadError({
   projectName: string
   newProjectName: string
 }) {
+  const markedOptions: MarkedOptions = {
+    gfm: true,
+    breaks: true,
+    sanitize: true,
+    unescape,
+    escape,
+  }
   return (
     <div className="flex flex-col justify-between gap-6">
       <section>
         <h2>Text-to-CAD failed</h2>
-        <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-          {message}
-        </p>
+        <div
+          className="parsed-markdown mt-4 text-sm text-chalkboard-70 dark:text-chalkboard-30 max-h-60 overflow-y-auto whitespace-normal"
+          dangerouslySetInnerHTML={{
+            __html: Marked.parse(message, {
+              renderer: new SafeRenderer(markedOptions),
+              ...markedOptions,
+            }),
+          }}
+        />
       </section>
       <div className="flex justify-between gap-8">
         <ActionButton
@@ -158,6 +179,7 @@ export function ToastTextToCadSuccess({
   projectName,
   fileName,
   isProjectNew,
+  rootProjectName,
 }: {
   toastId: string
   data: TextToCad_type & { fileName: string }
@@ -169,6 +191,7 @@ export function ToastTextToCadSuccess({
   projectName: string
   fileName: string
   isProjectNew: boolean
+  rootProjectName: string
 }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -360,26 +383,23 @@ export function ToastTextToCadSuccess({
               if (isDesktop()) {
                 // Delete the file from the project
 
-                if (projectName && fileName) {
-                  // You are in the new workflow for text to cad at the global application level
-                  if (isProjectNew) {
-                    // Delete the entire project if it was newly created from text to CAD
-                    systemIOActor.send({
-                      type: SystemIOMachineEvents.deleteProject,
-                      data: {
-                        requestedProjectName: projectName,
-                      },
-                    })
-                  } else {
-                    // Only delete the file if the project was preexisting
-                    systemIOActor.send({
-                      type: SystemIOMachineEvents.deleteKCLFile,
-                      data: {
-                        requestedProjectName: projectName,
-                        requestedFileName: fileName,
-                      },
-                    })
-                  }
+                if (isProjectNew) {
+                  // Delete the entire project if it was newly created from text to CAD
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.deleteProject,
+                    data: {
+                      requestedProjectName: rootProjectName,
+                    },
+                  })
+                } else if (projectName && fileName) {
+                  // deletes the folder when inside the modeling page
+                  // The TTC Create will make a subdir, delete that dir with the main.kcl as well
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.deleteProject,
+                    data: {
+                      requestedProjectName: projectName,
+                    },
+                  })
                 }
               }
 
@@ -498,7 +518,14 @@ export function ToastPromptToEditCadSuccess({
   token?: string
 }) {
   const modelId = data.id
-  const requestedProjectName = useRequestedProjectName()
+  const possibleRequestedProjectName = useRequestedProjectName()
+  const possibleRequestedFileName = useRequestedFileName()
+
+  // Depends on navigation method
+  const requestedProjectName = {
+    name:
+      possibleRequestedProjectName.name || possibleRequestedFileName.project,
+  }
 
   return (
     <div className="flex gap-4 min-w-80">
@@ -548,6 +575,7 @@ export function ToastPromptToEditCadSuccess({
                   await writeOverFilesAndExecute({
                     requestedFiles: requestedFiles,
                     projectName: requestedProjectName.name,
+                    filePath: possibleRequestedFileName.file,
                   })
                 } else {
                   codeManager.updateCodeEditor(oldCode)
@@ -588,18 +616,32 @@ export function ToastPromptToEditCadSuccess({
 export const writeOverFilesAndExecute = async ({
   requestedFiles,
   projectName,
+  filePath,
 }: {
   requestedFiles: RequestedKCLFile[]
   projectName: string
+  filePath?: string | undefined
 }) => {
-  systemIOActor.send({
-    type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
-    data: {
-      files: requestedFiles,
-      requestedProjectName: projectName,
-      override: true,
-    },
-  })
+  if (filePath) {
+    systemIOActor.send({
+      type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+      data: {
+        files: requestedFiles,
+        requestedProjectName: projectName,
+        requestedFileNameWithExtension: filePath,
+        override: true,
+      },
+    })
+  } else {
+    systemIOActor.send({
+      type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
+      data: {
+        files: requestedFiles,
+        requestedProjectName: projectName,
+        override: true,
+      },
+    })
+  }
 
   // to await the result of the send event above
   await waitForIdleState({ systemIOActor })

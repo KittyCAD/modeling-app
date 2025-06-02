@@ -995,8 +995,8 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
-    // click "line(end = [1.32, 0.38])"
-    await page.getByText(`line(end = [1.32, 0.38])`).click()
+    // click profile in code
+    await page.getByText(`startProfile(at = [-0.45, 0.87])`).click()
     await page.waitForTimeout(100)
     await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
       { timeout: 10_000 }
@@ -1014,14 +1014,14 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
     // click extrude
     await toolbar.extrudeButton.click()
 
-    // sketch selection should already have been made. "Sketches: 1 face" only show up when the selection has been made already
+    // sketch selection should already have been made.
     // otherwise the cmdbar would be waiting for a selection.
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'arguments',
       currentArgKey: 'length',
       currentArgValue: '5',
-      headerArguments: { Sketches: '1 segment', Length: '' },
+      headerArguments: { Profiles: '1 profile', Length: '' },
       highlightedHeaderArg: 'length',
       commandName: 'Extrude',
     })
@@ -1733,7 +1733,7 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
       await page.waitForTimeout(600)
     })
 
-    const codeFromTangentialArc = `  |> tangentialArc(endAbsolute = [39.49, 88.22])`
+    const codeFromTangentialArc = `  |> tangentialArc(end = [-10.82, 144.95])`
     await test.step('check that tangential tool does not snap to other profile starts', async () => {
       await toolbar.selectTangentialArc()
       await page.waitForTimeout(1000)
@@ -1755,7 +1755,7 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
       // check pixel is now gray at tanArcLocation to verify code has executed
       await scene.expectPixelColor([26, 26, 26], tanArcLocation, 15)
       await editor.expectEditor.not.toContain(
-        `tangentialArc(endAbsolute = [39.49, 88.22])`
+        `tangentialArc(end = [-10.82, 144.95])`
       )
     })
 
@@ -1955,7 +1955,7 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
 
       await endArcStartLine()
       await editor.expectEditor.toContain(
-        `|> tangentialArc(endAbsolute = [16.61, 4.14])`
+        `|> tangentialArc(end = [2.98, -7.52])`
       )
 
       // Add a three-point arc segment
@@ -3181,7 +3181,7 @@ test.describe('Redirecting to home page and back to the original file should cle
 sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [191.39, 191.39])
-  |> tangentialArc(endAbsolute = [287.08, 95.69], tag = $seg01)
+  |> tangentialArc(end = [95.69, -95.7], tag = $seg01)
   |> angledLine(angle = tangentToEnd(seg01), length = 135.34)
   |> arc(interiorAbsolute = [191.39, -95.69], endAbsolute = [287.08, -95.69], tag = $seg02)
   |> angledLine(angle = tangentToEnd(seg02) + turns::HALF_TURN, length = 270.67)

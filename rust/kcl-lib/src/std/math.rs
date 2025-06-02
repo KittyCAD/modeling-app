@@ -56,13 +56,13 @@ pub async fn sqrt(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::num_any(), exec_state)?;
 
     if input.n < 0.0 {
-        return Err(KclError::Semantic(KclErrorDetails {
-            source_ranges: vec![args.source_range],
-            message: format!(
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            format!(
                 "Attempt to take square root (`sqrt`) of a number less than zero ({})",
                 input.n
             ),
-        }));
+            vec![args.source_range],
+        )));
     }
 
     let result = input.n.sqrt();
@@ -106,7 +106,7 @@ pub async fn ceil(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 pub async fn min(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let nums: Vec<TyF64> = args.get_unlabeled_kw_arg_typed(
         "input",
-        &RuntimeType::Array(Box::new(RuntimeType::num_any()), ArrayLen::NonEmpty),
+        &RuntimeType::Array(Box::new(RuntimeType::num_any()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
     let (nums, ty) = NumericType::combine_eq_array(&nums);
@@ -131,7 +131,7 @@ pub async fn min(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 pub async fn max(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let nums: Vec<TyF64> = args.get_unlabeled_kw_arg_typed(
         "input",
-        &RuntimeType::Array(Box::new(RuntimeType::num_any()), ArrayLen::NonEmpty),
+        &RuntimeType::Array(Box::new(RuntimeType::num_any()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
     let (nums, ty) = NumericType::combine_eq_array(&nums);

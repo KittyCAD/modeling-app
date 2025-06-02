@@ -42,13 +42,14 @@ import {
   TutorialRequestToast,
 } from '@src/routes/Onboarding/utils'
 import { reportRejection } from '@src/lib/trap'
-import { DownloadAppToast } from '@src/components/DownloadAppBanner'
+import { DownloadAppToast } from '@src/components/DownloadAppToast'
+import { WasmErrToast } from '@src/components/WasmErrToast'
 import openWindow from '@src/lib/openWindow'
 import {
   APP_DOWNLOAD_PATH,
-  CREATE_FILE_URL_PARAM,
   DOWNLOAD_APP_TOAST_ID,
   ONBOARDING_TOAST_ID,
+  WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import { VITE_KC_SITE_BASE_URL } from '@src/env'
@@ -127,9 +128,12 @@ export function App() {
     const onboardingStatus =
       settings.app.onboardingStatus.current ||
       settings.app.onboardingStatus.default
-    const needsOnboarded = needsToOnboard(location, onboardingStatus)
+    const needsOnboarded =
+      !isDesktop() &&
+      searchParams.size === 0 &&
+      needsToOnboard(location, onboardingStatus)
 
-    if (!isDesktop() && needsOnboarded) {
+    if (needsOnboarded) {
       toast.success(
         () =>
           TutorialRequestToast({
@@ -145,13 +149,13 @@ export function App() {
         }
       )
     }
-  }, [location, settings.app.onboardingStatus, navigate])
+  }, [settings.app.onboardingStatus])
 
   useEffect(() => {
     const needsDownloadAppToast =
       !isDesktop() &&
       !isPlaywright() &&
-      !searchParams.has(CREATE_FILE_URL_PARAM) &&
+      searchParams.size === 0 &&
       !settings.app.dismissWebBanner.current
     if (needsDownloadAppToast) {
       toast.success(
@@ -180,6 +184,25 @@ export function App() {
       )
     }
   }, [])
+
+  useEffect(() => {
+    const needsWasmInitFailedToast = !isDesktop() && kclManager.wasmInitFailed
+    if (needsWasmInitFailedToast) {
+      toast.success(
+        () =>
+          WasmErrToast({
+            onDismiss: () => {
+              toast.dismiss(WASM_INIT_FAILED_TOAST_ID)
+            },
+          }),
+        {
+          id: WASM_INIT_FAILED_TOAST_ID,
+          duration: Number.POSITIVE_INFINITY,
+          icon: null,
+        }
+      )
+    }
+  }, [kclManager.wasmInitFailed])
 
   // Only create the native file menus on desktop
   useEffect(() => {

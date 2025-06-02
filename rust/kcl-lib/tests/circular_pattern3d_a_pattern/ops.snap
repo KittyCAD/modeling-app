@@ -4,19 +4,30 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
 ---
 [
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -35,20 +46,20 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "patternLinear3d",
     "unlabeledArg": {
       "value": {
-        "type": "Sketch",
+        "type": "Solid",
         "value": {
           "artifactId": "[uuid]"
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "axis": {
         "value": {
@@ -118,45 +129,77 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
           "type": "Number",
           "value": 7.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
       }
     },
-    "name": "patternLinear3d",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "patternCircular3d",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "arcDegrees": {
         "value": {
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -260,13 +303,8 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
           "type": "Number",
           "value": 41.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -279,58 +317,6 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
         "sourceRange": []
       }
     },
-    "name": "patternCircular3d",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   }
 ]

@@ -78,7 +78,7 @@ description: Artifact commands router-template-slate.kcl
       "path": "[uuid]",
       "to": {
         "x": 0.0,
-        "y": 28.1188,
+        "y": 28.119,
         "z": 0.0
       }
     }
@@ -148,8 +148,8 @@ description: Artifact commands router-template-slate.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 18.8688,
-          "y": -12.4938,
+          "x": 18.869,
+          "y": -12.494,
           "z": 0.0
         },
         "relative": false
@@ -166,7 +166,7 @@ description: Artifact commands router-template-slate.kcl
         "type": "line",
         "end": {
           "x": 30.75,
-          "y": -12.4938,
+          "y": -12.494,
           "z": 0.0
         },
         "relative": false
@@ -200,7 +200,7 @@ description: Artifact commands router-template-slate.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -122.4938,
+          "y": -122.494,
           "z": 0.0
         },
         "relative": false
@@ -250,7 +250,7 @@ description: Artifact commands router-template-slate.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 11.8813,
+          "x": 11.881,
           "y": 0.0,
           "z": 0.0
         },
@@ -268,7 +268,7 @@ description: Artifact commands router-template-slate.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 32.4938,
+          "y": 32.494,
           "z": 0.0
         },
         "relative": true
@@ -310,7 +310,7 @@ description: Artifact commands router-template-slate.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 28.1188,
+          "y": 28.119,
           "z": 0.0
         },
         "relative": false
@@ -405,7 +405,7 @@ description: Artifact commands router-template-slate.kcl
       "path": "[uuid]",
       "to": {
         "x": -20.75,
-        "y": -12.4938,
+        "y": -12.494,
         "z": 0.0
       }
     }
@@ -485,7 +485,7 @@ description: Artifact commands router-template-slate.kcl
         "type": "line",
         "end": {
           "x": -20.75,
-          "y": -12.4938,
+          "y": -12.494,
           "z": 0.0
         },
         "relative": false
@@ -576,7 +576,7 @@ description: Artifact commands router-template-slate.kcl
       "path": "[uuid]",
       "to": {
         "x": 20.75,
-        "y": -12.4938,
+        "y": -12.494,
         "z": 0.0
       }
     }
@@ -656,7 +656,7 @@ description: Artifact commands router-template-slate.kcl
         "type": "line",
         "end": {
           "x": 20.75,
-          "y": -12.4938,
+          "y": -12.494,
           "z": 0.0
         },
         "relative": false

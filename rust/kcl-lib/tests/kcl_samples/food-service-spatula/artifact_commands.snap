@@ -109,8 +109,8 @@ description: Artifact commands food-service-spatula.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -24.8334,
-        "y": 22.9972,
+        "x": -24.833,
+        "y": 22.997,
         "z": 0.0
       }
     }
@@ -122,8 +122,8 @@ description: Artifact commands food-service-spatula.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -25.1666,
-        "y": -13.0028,
+        "x": -25.167,
+        "y": -13.003,
         "z": 0.0
       }
     }
@@ -423,8 +423,8 @@ description: Artifact commands food-service-spatula.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": 0.3331,
-          "y": 9.9944,
+          "x": 0.333,
+          "y": 9.994,
           "z": 0.0
         },
         "angle_snap_increment": null
@@ -440,8 +440,8 @@ description: Artifact commands food-service-spatula.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": -0.3331,
-          "y": 9.9944,
+          "x": -0.333,
+          "y": 9.994,
           "z": 0.0
         },
         "angle_snap_increment": null
@@ -625,17 +625,17 @@ description: Artifact commands food-service-spatula.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 35.2426,
+          "x": 35.243,
           "y": -0.0
         },
         "radius": 110.0,
         "start": {
           "unit": "degrees",
-          "value": 163.0876
+          "value": 163.088
         },
         "end": {
           "unit": "degrees",
-          "value": 196.9124
+          "value": 196.912
         },
         "relative": false
       }
@@ -771,30 +771,16 @@ description: Artifact commands food-service-spatula.kcl
       "object_id": "[uuid]",
       "edge_id": null,
       "edge_ids": [
+        "[uuid]",
         "[uuid]"
       ],
       "radius": 5.0,
       "tolerance": 0.0000001,
       "cut_type": "fillet",
       "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
+      "extra_face_ids": [
         "[uuid]"
-      ],
-      "radius": 5.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
+      ]
     }
   },
   {
@@ -917,8 +903,8 @@ description: Artifact commands food-service-spatula.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 31.8198,
-          "y": 31.8198,
+          "x": 31.82,
+          "y": 31.82,
           "z": 0.0
         },
         "relative": true
@@ -934,7 +920,7 @@ description: Artifact commands food-service-spatula.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 140.9539,
+          "x": 140.954,
           "y": 51.303,
           "z": 0.0
         },
@@ -951,8 +937,8 @@ description: Artifact commands food-service-spatula.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.7101,
-          "y": 4.6985,
+          "x": -1.71,
+          "y": 4.698,
           "z": 0.0
         },
         "relative": true
@@ -968,8 +954,8 @@ description: Artifact commands food-service-spatula.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -141.9955,
-          "y": -51.6821,
+          "x": -141.996,
+          "y": -51.682,
           "z": 0.0
         },
         "relative": true
@@ -985,8 +971,8 @@ description: Artifact commands food-service-spatula.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -36.1391,
-          "y": -36.1391,
+          "x": -36.139,
+          "y": -36.139,
           "z": 0.0
         },
         "relative": true
@@ -1002,7 +988,7 @@ description: Artifact commands food-service-spatula.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 7.0711,
+          "x": 7.071,
           "y": 0.0,
           "z": 0.0
         },
@@ -1086,30 +1072,16 @@ description: Artifact commands food-service-spatula.kcl
       "object_id": "[uuid]",
       "edge_id": null,
       "edge_ids": [
+        "[uuid]",
         "[uuid]"
       ],
       "radius": 4.0,
       "tolerance": 0.0000001,
       "cut_type": "fillet",
       "strategy": "automatic",
-      "extra_face_ids": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": null,
-      "edge_ids": [
+      "extra_face_ids": [
         "[uuid]"
-      ],
-      "radius": 4.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "strategy": "automatic",
-      "extra_face_ids": []
+      ]
     }
   },
   {
@@ -1138,14 +1110,14 @@ description: Artifact commands food-service-spatula.kcl
     "command": {
       "type": "make_plane",
       "origin": {
-        "x": 208.5938,
+        "x": 208.594,
         "y": 0.0,
-        "z": 75.9219
+        "z": 75.922
       },
       "x_axis": {
         "x": 0.342,
         "y": -0.0,
-        "z": -0.9397
+        "z": -0.94
       },
       "y_axis": {
         "x": 0.0,
@@ -1167,7 +1139,7 @@ description: Artifact commands food-service-spatula.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.9397,
+        "x": 0.94,
         "y": -0.0,
         "z": 0.342
       }
@@ -1180,7 +1152,7 @@ description: Artifact commands food-service-spatula.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -26.8067,
+        "x": -26.807,
         "y": -10.0,
         "z": 0.0
       }
@@ -1235,7 +1207,7 @@ description: Artifact commands food-service-spatula.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -22.8067,
+          "x": -22.807,
           "y": -7.0
         },
         "radius": 3.0,
@@ -1277,7 +1249,7 @@ description: Artifact commands food-service-spatula.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -22.8067,
+          "x": -22.807,
           "y": 7.0
         },
         "radius": 3.0,
@@ -1319,7 +1291,7 @@ description: Artifact commands food-service-spatula.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -26.8067,
+          "x": -26.807,
           "y": 7.0
         },
         "radius": 3.0,
@@ -1361,7 +1333,7 @@ description: Artifact commands food-service-spatula.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -26.8067,
+          "x": -26.807,
           "y": -7.0
         },
         "radius": 3.0,
@@ -1395,7 +1367,7 @@ description: Artifact commands food-service-spatula.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.9397,
+        "x": 0.94,
         "y": -0.0,
         "z": 0.342
       }

@@ -105,14 +105,19 @@ export class CmdBarFixture {
   expectState = async (expected: CmdBarSerialised) => {
     return expect.poll(() => this._serialiseCmdBar()).toEqual(expected)
   }
-  /** The method will use buttons OR press enter randomly to progress the cmdbar,
-   * this could have unexpected results depending on what's focused
-   *
-   * TODO: This method assumes the user has a valid input to the current stage,
+  /**
+   * This method is used to progress the command bar to the next step, defaulting to clicking the next button.
+   * Optionally, with the `shouldUseKeyboard` parameter, it will hit `Enter` to progress.
+   * * TODO: This method assumes the user has a valid input to the current stage,
    * and assumes we are past the `pickCommand` step.
    */
-  progressCmdBar = async (shouldFuzzProgressMethod = true) => {
+  progressCmdBar = async (shouldUseKeyboard = false) => {
     await this.page.waitForTimeout(2000)
+    if (shouldUseKeyboard) {
+      await this.page.keyboard.press('Enter')
+      return
+    }
+
     const arrowButton = this.page.getByRole('button', {
       name: 'arrow right Continue',
     })
@@ -146,9 +151,7 @@ export class CmdBarFixture {
     await this.cmdBarOpenBtn.click()
     await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()
     if (selectCmd === 'promptToEdit') {
-      const promptEditCommand = this.page.getByText(
-        'Use Zoo AI to edit your parts and code.'
-      )
+      const promptEditCommand = this.selectOption({ name: 'Text-to-CAD Edit' })
       await expect(promptEditCommand.first()).toBeVisible()
       await promptEditCommand.first().scrollIntoViewIfNeeded()
       await promptEditCommand.first().click()
@@ -308,6 +311,11 @@ export class CmdBarFixture {
   async toBeOpened() {
     // Check that the command bar is opened
     await expect(this.cmdBarElement).toBeVisible({ timeout: 10_000 })
+  }
+
+  async toBeClosed() {
+    // Check that the command bar is closed
+    await expect(this.cmdBarElement).not.toBeVisible({ timeout: 10_000 })
   }
 
   async expectArgValue(value: string) {

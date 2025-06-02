@@ -92,23 +92,11 @@ impl crate::docs::StdLibFn for Import {
         vec![]
     }
 
-    fn keyword_arguments(&self) -> bool {
-        false
-    }
-
     fn args(&self, inline_subschemas: bool) -> Vec<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        vec![crate::docs::StdLibFnArg {
-            name: "args".to_string(),
-            type_: "kittycad::types::InputFormat".to_string(),
-            schema: generator.root_schema_for::<Option<kittycad::types::InputFormat>>(),
-            required: false,
-            label_required: true,
-            description: String::new().to_string(),
-            include_in_snippet: false,
-        }]
+        vec![]
     }
 
     fn return_value(&self, inline_subschemas: bool) -> Option<crate::docs::StdLibFnArg> {
@@ -124,6 +112,8 @@ impl crate::docs::StdLibFn for Import {
             label_required: true,
             description: String::new(),
             include_in_snippet: true,
+            snippet_value: None,
+            snippet_value_array: None,
         })
     }
 

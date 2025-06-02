@@ -4,20 +4,20 @@ description: Operations executed french-press.kcl
 ---
 [
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "revolve",
     "unlabeledArg": {
       "value": {
@@ -119,10 +119,8 @@ description: Operations executed french-press.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Object",
@@ -306,9 +304,22 @@ description: Operations executed french-press.kcl
         }
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -327,33 +338,29 @@ description: Operations executed french-press.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "patternCircular3d",
     "unlabeledArg": {
       "value": {
-        "type": "Sketch",
+        "type": "Solid",
         "value": {
           "artifactId": "[uuid]"
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "arcDegrees": {
         "value": {
           "type": "Number",
           "value": 360.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Angle",
+            "type": "Degrees"
           }
         },
         "sourceRange": []
@@ -457,13 +464,8 @@ description: Operations executed french-press.kcl
           "type": "Number",
           "value": 4.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -476,34 +478,23 @@ description: Operations executed french-press.kcl
         "sourceRange": []
       }
     },
-    "name": "patternCircular3d",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "offsetPlane",
     "unlabeledArg": {
       "value": {
@@ -533,6 +524,17 @@ description: Operations executed french-press.kcl
     "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -551,20 +553,20 @@ description: Operations executed french-press.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
-        "type": "Sketch",
+        "type": "Solid",
         "value": {
           "artifactId": "[uuid]"
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "face": {
         "value": {
@@ -574,41 +576,11 @@ description: Operations executed french-press.kcl
         "sourceRange": []
       }
     },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": -0.05,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
         "type": "Array",
@@ -634,23 +606,42 @@ description: Operations executed french-press.kcl
         ]
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -0.05,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "revolve",
     "unlabeledArg": {
       "value": {
@@ -736,20 +727,20 @@ description: Operations executed french-press.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "revolve",
     "unlabeledArg": {
       "value": {
@@ -835,20 +826,20 @@ description: Operations executed french-press.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "offsetPlane",
     "unlabeledArg": {
       "value": {
@@ -878,6 +869,17 @@ description: Operations executed french-press.kcl
     "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "subtract2d",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "tool": {
         "value": {
@@ -889,9 +891,11 @@ description: Operations executed french-press.kcl
         "sourceRange": []
       }
     },
-    "name": "subtract2d",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
         "type": "Sketch",
@@ -900,9 +904,7 @@ description: Operations executed french-press.kcl
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -921,9 +923,204 @@ description: Operations executed french-press.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "startSketchOn",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "face": {
+        "value": {
+          "type": "String",
+          "value": "end"
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -0.05,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "startSketchOn",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "face": {
+        "value": {
+          "type": "String",
+          "value": "end"
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -0.05,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "startSketchOn",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
         "type": "Sketch",
@@ -932,202 +1129,7 @@ description: Operations executed french-press.kcl
         }
       },
       "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "face": {
-        "value": {
-          "type": "String",
-          "value": "end"
-        },
-        "sourceRange": []
-      }
     },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": -0.05,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "face": {
-        "value": {
-          "type": "String",
-          "value": "end"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": -0.05,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
-  },
-  {
     "labeledArgs": {
       "length": {
         "value": {
@@ -1146,21 +1148,10 @@ description: Operations executed french-press.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "shell",
     "unlabeledArg": {
       "value": {
@@ -1204,20 +1195,20 @@ description: Operations executed french-press.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "revolve",
     "unlabeledArg": {
       "value": {
@@ -1303,20 +1294,20 @@ description: Operations executed french-press.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "offsetPlane",
     "unlabeledArg": {
       "value": {
@@ -1346,6 +1337,17 @@ description: Operations executed french-press.kcl
     "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -1364,17 +1366,6 @@ description: Operations executed french-press.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   }
 ]

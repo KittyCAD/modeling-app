@@ -157,8 +157,8 @@ description: Artifact commands angled_line.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 3.7618,
-          "y": -11.7631,
+          "x": 3.762,
+          "y": -11.763,
           "z": 0.0
         },
         "relative": true

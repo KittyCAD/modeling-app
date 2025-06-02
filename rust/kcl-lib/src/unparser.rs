@@ -583,14 +583,16 @@ impl ArrayRangeExpression {
         let s1 = self.start_element.recast(options, 0, ExprContext::Other);
         let s2 = self.end_element.recast(options, 0, ExprContext::Other);
 
+        let range_op = if self.end_inclusive { ".." } else { "..<" };
+
         // Format these items into a one-line array. Put spaces around the `..` if either expression
         // is non-trivial. This is a bit arbitrary but people seem to like simple ranges to be formatted
         // tightly, but this is a misleading visual representation of the precedence if the range
         // components are compound expressions.
         if expr_is_trivial(&self.start_element) && expr_is_trivial(&self.end_element) {
-            format!("[{s1}..{s2}]")
+            format!("[{s1}{range_op}{s2}]")
         } else {
-            format!("[{s1} .. {s2}]")
+            format!("[{s1} {range_op} {s2}]")
         }
 
         // Assume a range expression fits on one line.
@@ -881,10 +883,10 @@ pub async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::PathBuf
 #[cfg(not(target_arch = "wasm32"))]
 pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -> Result<(), anyhow::Error> {
     let files = walk_dir(&dir.to_path_buf()).await.map_err(|err| {
-        crate::KclError::Internal(crate::errors::KclErrorDetails {
-            message: format!("Failed to walk directory `{}`: {:?}", dir.display(), err),
-            source_ranges: vec![crate::SourceRange::default()],
-        })
+        crate::KclError::Internal(crate::errors::KclErrorDetails::new(
+            format!("Failed to walk directory `{}`: {:?}", dir.display(), err),
+            vec![crate::SourceRange::default()],
+        ))
     })?;
 
     let futures = files
@@ -1425,6 +1427,7 @@ c = "dsfds": A | B | C
 d = [1]: [number]
 e = foo: [number; 3]
 f = [1, 2, 3]: [number; 1+]
+f = [1, 2, 3]: [number; 3+]
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -2451,6 +2454,7 @@ thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
 @(impl = primitive)
 export type bar(unit, baz)
 type baz = Foo | Bar
+type UnionOfArrays = [Foo] | [Bar] | Foo | { a: T, b: Foo | Bar | [Baz] }
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
         let recasted = program.recast(&Default::default(), 0);
@@ -2793,6 +2797,14 @@ yo = 'bing'
   // this is also a comment
 }
 "#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(recasted, code);
+    }
+
+    #[test]
+    fn array_range_end_exclusive() {
+        let code = "myArray = [0..<4]\n";
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast(&FormatOptions::new(), 0);
         assert_eq!(recasted, code);

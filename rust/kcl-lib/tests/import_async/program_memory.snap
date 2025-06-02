@@ -3,6 +3,10 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing import_async.kcl
 ---
 {
+  "__mod_screw": {
+    "type": "Module",
+    "value": 1
+  },
   "helicalGear": {
     "type": "Function",
     "value": null
@@ -13,9 +17,5 @@ description: Variables in memory after executing import_async.kcl
     "value": [
       "2-5-long-m8-chc-screw.stl"
     ]
-  },
-  "screw": {
-    "type": "Module",
-    "value": 1
   }
 }

@@ -1,8 +1,8 @@
 import type {
   ArtifactCommand,
-  ArtifactId,
   ArtifactGraph as RustArtifactGraph,
 } from '@rust/kcl-lib/bindings/Artifact'
+import type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 import type { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
@@ -75,7 +75,6 @@ export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
   Artifact,
   ArtifactCommand,
-  ArtifactId,
   Cap as CapArtifact,
   CodeRef,
   CompositeSolid as CompositeSolidArtifact,
@@ -88,6 +87,7 @@ export type {
   SweepEdge,
   Wall as WallArtifact,
 } from '@rust/kcl-lib/bindings/Artifact'
+export type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 export type { BinaryExpression } from '@rust/kcl-lib/bindings/BinaryExpression'
 export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
 export type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
@@ -164,17 +164,15 @@ function bestSourceRange(error: RustKclError): SourceRange {
   }
 
   // When there's an error, the call stack is unwound, and the locations are
-  // built up from deepest location to shallowest. So the shallowest call is
-  // last. That's the most useful to the user.
-  for (let i = error.sourceRanges.length - 1; i >= 0; i--) {
-    const range = error.sourceRanges[i]
+  // built up from deepest location to shallowest. So the deepest call is first.
+  for (const range of error.sourceRanges) {
     // Skip ranges pointing into files that aren't the top-level module.
     if (isTopLevelModule(range)) {
       return sourceRangeFromRust(range)
     }
   }
-  // We didn't find a top-level module range, so just use the last one.
-  return sourceRangeFromRust(error.sourceRanges[error.sourceRanges.length - 1])
+  // We didn't find a top-level module range, so just use the first one.
+  return sourceRangeFromRust(error.sourceRanges[0])
 }
 
 const splitErrors = (
@@ -245,6 +243,7 @@ export const parse = (code: string | Error): ParseResult | Error => {
       parsed.kind,
       parsed.msg,
       bestSourceRange(parsed),
+      [],
       [],
       [],
       [],
@@ -362,31 +361,24 @@ function rustArtifactGraphToMap(
   return map
 }
 
-// TODO: In the future, make the parameter be a KclValue.
 export function sketchFromKclValueOptional(
-  obj: any,
+  obj: KclValue | undefined,
   varName: string | null
 ): Sketch | Reason {
-  if (obj?.value?.type === 'Sketch') return obj.value
-  if (obj?.value?.type === 'Solid') return obj.value.sketch
   if (obj?.type === 'Sketch') return obj.value
   if (obj?.type === 'Solid') return obj.value.sketch
   if (!varName) {
     varName = 'a KCL value'
   }
-  const actualType = obj?.value?.type ?? obj?.type
-  if (actualType) {
-    return new Reason(
-      `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
-    )
-  } else {
-    return new Reason(`Expected ${varName} to be a sketch, but it wasn't.`)
-  }
+
+  const actualType = obj?.type ?? 'unknown'
+  return new Reason(
+    `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
+  )
 }
 
-// TODO: In the future, make the parameter be a KclValue.
 export function sketchFromKclValue(
-  obj: any,
+  obj: KclValue | undefined,
   varName: string | null
 ): Sketch | Error {
   const result = sketchFromKclValueOptional(obj, varName)
@@ -402,6 +394,7 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
     parsed.error.kind,
     parsed.error.msg,
     bestSourceRange(parsed.error),
+    parsed.error.backtrace,
     parsed.nonFatal,
     parsed.operations,
     parsed.artifactCommands,

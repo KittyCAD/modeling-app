@@ -8,12 +8,12 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::ArtifactId;
 use crate::{
     engine::{PlaneName, DEFAULT_PLANE_INFO},
     errors::{KclError, KclErrorDetails},
-    execution::{types::NumericType, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
+    execution::{
+        types::NumericType, ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, UnitLen,
+    },
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
     std::{args::TyF64, sketch::PlaneData},
 };
@@ -256,7 +256,6 @@ pub struct Helix {
     /// The id of the helix.
     pub value: uuid::Uuid,
     /// The artifact ID.
-    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     /// Number of revolutions.
     pub revolutions: f64,
@@ -278,7 +277,6 @@ pub struct Plane {
     /// The id of the plane.
     pub id: uuid::Uuid,
     /// The artifact ID.
-    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     // The code for the plane either a string or custom.
     pub value: PlaneType,
@@ -471,18 +469,18 @@ impl TryFrom<PlaneData> for PlaneInfo {
             PlaneData::NegYZ => PlaneName::NegYz,
             PlaneData::Plane(_) => {
                 // We will never get here since we already checked for PlaneData::Plane.
-                return Err(KclError::Internal(KclErrorDetails {
-                    message: format!("PlaneData {:?} not found", value),
-                    source_ranges: Default::default(),
-                }));
+                return Err(KclError::Internal(KclErrorDetails::new(
+                    format!("PlaneData {:?} not found", value),
+                    Default::default(),
+                )));
             }
         };
 
         let info = DEFAULT_PLANE_INFO.get(&name).ok_or_else(|| {
-            KclError::Internal(KclErrorDetails {
-                message: format!("Plane {} not found", name),
-                source_ranges: Default::default(),
-            })
+            KclError::Internal(KclErrorDetails::new(
+                format!("Plane {} not found", name),
+                Default::default(),
+            ))
         })?;
 
         Ok(info.clone())
@@ -508,7 +506,6 @@ impl Plane {
         let id = exec_state.next_uuid();
         Ok(Plane {
             id,
-            #[cfg(feature = "artifact-graph")]
             artifact_id: id.into(),
             info: PlaneInfo::try_from(value.clone())?,
             value: value.into(),
@@ -530,7 +527,6 @@ pub struct Face {
     /// The id of the face.
     pub id: uuid::Uuid,
     /// The artifact ID.
-    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     /// The tag of the face.
     pub value: String,
@@ -584,7 +580,6 @@ pub struct Sketch {
     pub tags: IndexMap<String, TagIdentifier>,
     /// The original id of the sketch. This stays the same even if the sketch is
     /// is sketched on face etc.
-    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     #[ts(skip)]
     pub original_id: uuid::Uuid,
@@ -748,7 +743,6 @@ pub struct Solid {
     /// The id of the solid.
     pub id: uuid::Uuid,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
-    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
@@ -1353,6 +1347,11 @@ impl Path {
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)
             }
         }
+    }
+
+    /// i.e. not a curve
+    pub(crate) fn is_straight_line(&self) -> bool {
+        matches!(self, Path::AngledLineTo { .. } | Path::ToPoint { .. })
     }
 }
 

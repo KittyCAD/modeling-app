@@ -1,12 +1,11 @@
-import fs from 'fs'
-import { join } from 'path'
 import type { Page } from '@playwright/test'
 
 import { createProject, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 
 test.describe('Text-to-CAD tests', () => {
-  test('basic lego happy case', async ({ page, homePage }) => {
+  test('basic lego happy case', async ({ page, homePage, cmdBar }) => {
     const u = await getUtils(page)
 
     await test.step('Set up', async () => {
@@ -15,7 +14,11 @@ test.describe('Text-to-CAD tests', () => {
       await u.waitForPageLoad()
     })
 
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'a 2x4 lego',
+      cmdBar
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -56,6 +59,7 @@ test.describe('Text-to-CAD tests', () => {
   test('success model, then ignore success toast, user can create new prompt from command bar', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -64,7 +68,11 @@ test.describe('Text-to-CAD tests', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x6 lego')
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'a 2x6 lego',
+      cmdBar
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -82,7 +90,11 @@ test.describe('Text-to-CAD tests', () => {
     await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     // Can send a new prompt from the command bar.
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'a 2x4 lego',
+      cmdBar
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -100,6 +112,7 @@ test.describe('Text-to-CAD tests', () => {
   test('you can reject text-to-cad output and it does nothing', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -108,7 +121,11 @@ test.describe('Text-to-CAD tests', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'a 2x4 lego',
+      cmdBar
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -141,6 +158,7 @@ test.describe('Text-to-CAD tests', () => {
   test('sending a bad prompt fails, can dismiss', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -150,7 +168,11 @@ test.describe('Text-to-CAD tests', () => {
     await u.waitForPageLoad()
 
     const randomPrompt = `aslkdfja;` + Date.now() + `FFFFEIWJF`
-    await sendPromptFromCommandBarTriggeredByButton(page, randomPrompt)
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      randomPrompt,
+      cmdBar
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -188,6 +210,7 @@ test.describe('Text-to-CAD tests', () => {
   test('sending a bad prompt fails, can start over from toast', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -197,7 +220,7 @@ test.describe('Text-to-CAD tests', () => {
     await u.waitForPageLoad()
 
     const badPrompt = 'akjsndladf lajbhflauweyfaaaljhr472iouafyvsssssss'
-    await sendPromptFromCommandBarTriggeredByButton(page, badPrompt)
+    await sendPromptFromCommandBarAndSetExistingProject(page, badPrompt, cmdBar)
 
     // Find the toast.
     // Look out for the toast message
@@ -256,6 +279,7 @@ test.describe('Text-to-CAD tests', () => {
   test('sending a bad prompt fails, can ignore toast, can start over from command bar', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -265,7 +289,7 @@ test.describe('Text-to-CAD tests', () => {
     await u.waitForPageLoad()
 
     const badPrompt = 'akjsndladflajbhflauweyf15;'
-    await sendPromptFromCommandBarTriggeredByButton(page, badPrompt)
+    await sendPromptFromCommandBarAndSetExistingProject(page, badPrompt, cmdBar)
 
     // Find the toast.
     // Look out for the toast message
@@ -292,7 +316,11 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.getByText(`Text-to-CAD failed`)).toBeVisible()
 
     // They should be able to try again from the command bar.
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'a 2x4 lego',
+      cmdBar
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -310,17 +338,40 @@ test.describe('Text-to-CAD tests', () => {
   test('ensure you can shift+enter in the prompt box', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.goToModelingScene()
+    const projectName = await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
     const promptWithNewline = `a 2x4\nlego`
 
-    await page.getByTestId('text-to-cad').click()
+    await test.step('Get to the prompt step to test', async () => {
+      await cmdBar.openCmdBar()
+      await cmdBar.selectOption({ name: 'Text-to-CAD Create' }).click()
+
+      await cmdBar.currentArgumentInput.fill('existing')
+      await cmdBar.progressCmdBar()
+
+      await cmdBar.currentArgumentInput.fill(projectName)
+      await cmdBar.progressCmdBar()
+
+      await cmdBar.expectState({
+        commandName: 'Text-to-CAD Create',
+        stage: 'arguments',
+        currentArgKey: 'prompt',
+        currentArgValue: '',
+        highlightedHeaderArg: 'prompt',
+        headerArguments: {
+          Method: 'Existing project',
+          ProjectName: projectName,
+          Prompt: '',
+        },
+      })
+    })
 
     // Type the prompt.
     await page.keyboard.type('a 2x4')
@@ -350,96 +401,10 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.getByText(promptWithNewline)).toBeVisible()
   })
 
-  // This will be fine once greg makes prompt at top of file deterministic
-  test('can do many at once and get many prompts back, and interact with many', async ({
-    page,
-    homePage,
-  }) => {
-    // Let this test run longer since we've seen it timeout.
-    test.setTimeout(180_000)
-
-    const u = await getUtils(page)
-
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-
-    await homePage.goToModelingScene()
-    await u.waitForPageLoad()
-
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
-
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x8 lego')
-
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x10 lego')
-
-    // Find the toast.
-    // Look out for the toast message
-    const submittingToastMessage = page.getByText(
-      `Submitting to Text-to-CAD API...`
-    )
-    await expect(submittingToastMessage.first()).toBeVisible()
-
-    const generatingToastMessage = page.getByText(
-      `Generating parametric model...`
-    )
-    await expect(generatingToastMessage.first()).toBeVisible({
-      timeout: 10_000,
-    })
-
-    const successToastMessage = page.getByText(`Text-to-CAD successful`)
-    // We should have three success toasts.
-    await expect(successToastMessage).toHaveCount(3, { timeout: 25_000 })
-
-    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
-    await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
-    await expect(page.getByText(`a 2x10 lego`)).toBeVisible()
-
-    // Ensure if you reject one, the others stay.
-    const rejectButton = page.getByRole('button', { name: 'Reject' })
-    await expect(rejectButton.first()).toBeVisible()
-    // Click the reject button on the first toast.
-    await rejectButton.first().click()
-
-    // The first toast should disappear, but not the others.
-    await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
-    await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
-    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
-
-    // Ensure you can copy the code for one of the models remaining.
-    const copyToClipboardButton = page.getByRole('button', {
-      name: 'Accept',
-    })
-    await expect(copyToClipboardButton.first()).toBeVisible()
-    // Click the button.
-    await copyToClipboardButton.first().click()
-
-    // Do NOT do AI tests like this: "Expect the code to be pasted."
-    // Reason: AI tests are NONDETERMINISTIC. Thus we need to be as most
-    // general as we can for the assertion.
-    // We can use Kolmogorov complexity as a measurement of the
-    // "probably most minimal version of this program" to have a lower
-    // bound to work with. It is completely by feel because there are
-    // no proofs that any program is its smallest self.
-    const code2x8 = await page.locator('.cm-content').innerText()
-    await expect(code2x8.length).toBeGreaterThan(249)
-
-    // Ensure the final toast remains.
-    await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
-    await expect(page.getByText(`Prompt: "a 2x8 lego`)).not.toBeVisible()
-    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
-
-    // Ensure you can copy the code for the final model.
-    await expect(copyToClipboardButton).toBeVisible()
-    // Click the button.
-    await copyToClipboardButton.click()
-
-    // Expect the code to be pasted.
-    const code2x4 = await page.locator('.cm-content').innerText()
-    await expect(code2x4.length).toBeGreaterThan(249)
-  })
-
   test('can do many at once with errors, clicking dismiss error does not dismiss all', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -448,11 +413,16 @@ test.describe('Text-to-CAD tests', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
-
-    await sendPromptFromCommandBarTriggeredByButton(
+    await sendPromptFromCommandBarAndSetExistingProject(
       page,
-      'alkjsdnlajshdbfjlhsbdf a;askjdnf'
+      'a 2x4 lego',
+      cmdBar
+    )
+
+    await sendPromptFromCommandBarAndSetExistingProject(
+      page,
+      'alkjsdnlajshdbfjlhsbdf a;askjdnf',
+      cmdBar
     )
 
     // Find the toast.
@@ -526,7 +496,9 @@ async function _sendPromptFromCommandBar(page: Page, promptStr: string) {
     const cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
 
-    const textToCadCommand = page.getByText('Use the Zoo Text-to-CAD API')
+    const textToCadCommand = page.getByRole('option', {
+      name: 'Text-to-CAD Create',
+    })
     await expect(textToCadCommand.first()).toBeVisible()
     // Click the Text-to-CAD command
     await textToCadCommand.first().scrollIntoViewIfNeeded()
@@ -544,95 +516,62 @@ async function _sendPromptFromCommandBar(page: Page, promptStr: string) {
   })
 }
 
-async function sendPromptFromCommandBarTriggeredByButton(
+async function sendPromptFromCommandBarAndSetExistingProject(
   page: Page,
-  promptStr: string
+  promptStr: string,
+  cmdBar: CmdBarFixture,
+  projectName = 'testDefault'
 ) {
   await page.waitForTimeout(1000)
   await test.step(`Send prompt from command bar: ${promptStr}`, async () => {
-    await page.getByTestId('text-to-cad').click()
+    await cmdBar.openCmdBar()
+    await cmdBar.selectOption({ name: 'Text-to-CAD Create' }).click()
 
-    // Enter the prompt.
-    const prompt = page.getByRole('textbox', { name: 'Prompt' })
-    await expect(prompt.first()).toBeVisible()
+    await cmdBar.expectState({
+      commandName: 'Text-to-CAD Create',
+      stage: 'arguments',
+      currentArgKey: 'method',
+      currentArgValue: '',
+      highlightedHeaderArg: 'method',
+      headerArguments: {
+        Method: '',
+        Prompt: '',
+      },
+    })
+    await cmdBar.currentArgumentInput.fill('existing')
+    await cmdBar.progressCmdBar()
 
-    // Type the prompt.
-    await page.keyboard.type(promptStr)
-    await page.waitForTimeout(200)
-    await page.keyboard.press('Enter')
+    await cmdBar.expectState({
+      commandName: 'Text-to-CAD Create',
+      stage: 'arguments',
+      currentArgKey: 'projectName',
+      currentArgValue: '',
+      highlightedHeaderArg: 'projectName',
+      headerArguments: {
+        Method: 'Existing project',
+        ProjectName: '',
+        Prompt: '',
+      },
+    })
+    await cmdBar.currentArgumentInput.fill(projectName)
+    await cmdBar.progressCmdBar()
+
+    await cmdBar.expectState({
+      commandName: 'Text-to-CAD Create',
+      stage: 'arguments',
+      currentArgKey: 'prompt',
+      currentArgValue: '',
+      highlightedHeaderArg: 'prompt',
+      headerArguments: {
+        Method: 'Existing project',
+        ProjectName: projectName,
+        Prompt: '',
+      },
+    })
+    await cmdBar.currentArgumentInput.fill(promptStr)
+    await cmdBar.progressCmdBar()
   })
 }
-
-test(
-  'Text-to-CAD functionality',
-  { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
-    const projectName = 'project-000'
-    const prompt = 'lego 2x4'
-    const textToCadFileName = 'lego-2x4.kcl'
-
-    const { dir } = await context.folderSetupFn(async () => {})
-
-    const fileExists = () =>
-      fs.existsSync(join(dir, projectName, textToCadFileName))
-
-    const { openFilePanel, openKclCodePanel, waitForPageLoad } = await getUtils(
-      page,
-      test
-    )
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    // Locators
-    const projectMenuButton = page
-      .getByTestId('project-sidebar-toggle')
-      .filter({ hasText: projectName })
-    const textToCadFileButton = page.getByRole('listitem').filter({
-      has: page.getByRole('button', { name: textToCadFileName }),
-    })
-    const textToCadComment = page.getByText(
-      `// Generated by Text-to-CAD: ${prompt}`
-    )
-
-    // Create and navigate to the project
-    await createProject({ name: 'project-000', page })
-
-    // Wait for Start Sketch otherwise you will not have access Text-to-CAD command
-    await waitForPageLoad()
-    await openFilePanel()
-    await openKclCodePanel()
-
-    await test.step(`Test file creation`, async () => {
-      await sendPromptFromCommandBarTriggeredByButton(page, prompt)
-      // File is considered created if it shows up in the Project Files pane
-      await expect(textToCadFileButton).toBeVisible({ timeout: 20_000 })
-      expect(fileExists()).toBeTruthy()
-    })
-
-    await test.step(`Test file navigation`, async () => {
-      await expect(projectMenuButton).toContainText('main.kcl')
-      await textToCadFileButton.click()
-      // File can be navigated and loaded assuming a specific KCL comment is loaded into the KCL code pane
-      await expect(textToCadComment).toBeVisible({ timeout: 20_000 })
-      await expect(projectMenuButton).toContainText(textToCadFileName)
-    })
-
-    await test.step(`Test file deletion on rejection`, async () => {
-      const rejectButton = page.getByRole('button', { name: 'Reject' })
-      // A file is created and can be navigated to while this prompt is still opened
-      // Click the "Reject" button within the prompt and it will delete the file.
-      await rejectButton.click()
-
-      const submittingToastMessage = page.getByText(
-        `Successfully deleted file "lego-2x4.kcl"`
-      )
-      await expect(submittingToastMessage).toBeVisible()
-      expect(fileExists()).toBeFalsy()
-      // Confirm we've navigated back to the main.kcl file after deletion
-      await expect(projectMenuButton).toContainText('main.kcl')
-    })
-  }
-)
 
 /**
  * Below there are twelve (12) tests for testing the navigation and file creation
@@ -701,7 +640,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> New Project -> Stay in home page -> Reject -> Project should be deleted',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
@@ -739,7 +678,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> New Project -> Stay in home page -> Accept -> should navigate to file',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -785,7 +724,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> Existing Project -> Stay in home page -> Reject -> should delete single file',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ homePage, page }, testInfo) => {
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
@@ -828,7 +767,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> Existing Project -> Stay in home page -> Accept -> should navigate to file',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ homePage, page }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -867,19 +806,19 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       )
       await expect(page.getByTestId('app-header-file-name')).toBeVisible()
       await expect(page.getByTestId('app-header-file-name')).toContainText(
-        '2x2x2-cube.kcl'
+        'main.kcl'
       )
 
       await u.openFilePanel()
       await expect(
-        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
+        page.getByTestId('file-tree-item').getByText('2x2x2-cube')
       ).toBeVisible()
     }
   )
 
   test(
     'Home Page -> Text To CAD -> New Project -> Navigate to the project -> Reject -> should go to home page',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ homePage, page }, testInfo) => {
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
@@ -925,7 +864,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> New Project -> Navigate to the project -> Accept -> should stay in same file',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ homePage, page }, testInfo) => {
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
@@ -968,7 +907,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> Existing Project -> Navigate to the project -> Reject -> should load main.kcl',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ homePage, page }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -1023,7 +962,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> Existing Project -> Navigate to the project -> Accept -> should load 2x2x2-cube.kcl',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ homePage, page }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -1067,20 +1006,20 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       )
       await expect(page.getByTestId('app-header-file-name')).toBeVisible()
       await expect(page.getByTestId('app-header-file-name')).toContainText(
-        '2x2x2-cube.kcl'
+        'main.kcl'
       )
 
       // Check file is created
       await u.openFilePanel()
       await expect(
-        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
+        page.getByTestId('file-tree-item').getByText('2x2x2-cube')
       ).toBeVisible()
     }
   )
 
   test(
     'Home Page -> Text To CAD -> New Project -> Navigate to different project -> Reject -> should stay in project',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ homePage, page }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -1157,7 +1096,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> New Project -> Navigate to different project -> Accept -> should go to new project',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, homePage }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -1226,7 +1165,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> Existing Project -> Navigate to different project -> Reject -> should stay in same project',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, homePage }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -1301,7 +1240,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
   test(
     'Home Page -> Text To CAD -> Existing Project -> Navigate to different project -> Accept -> should navigate to new project',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, homePage }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
@@ -1359,13 +1298,13 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       )
       await expect(page.getByTestId('app-header-file-name')).toBeVisible()
       await expect(page.getByTestId('app-header-file-name')).toContainText(
-        '2x2x2-cube.kcl'
+        'main.kcl'
       )
 
       // Check file is created
       await u.openFilePanel()
       await expect(
-        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
+        page.getByTestId('file-tree-item').getByText('2x2x2-cube')
       ).toBeVisible()
       await expect(
         page.getByTestId('file-tree-item').getByText('main.kcl')

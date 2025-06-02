@@ -1,0 +1,115 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed t-slot-rail.kcl
+---
+[
+  {
+    "type": "StdLibCall",
+    "name": "startSketchOn",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "subtract2d",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "tool": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -2.0,
+          "ty": {
+            "type": "Known",
+            "type": "Length",
+            "type": "Feet"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "railTslot",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "railHeight": {
+          "value": {
+            "type": "Number",
+            "value": 1.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "railLength": {
+          "value": {
+            "type": "Number",
+            "value": 2.0,
+            "ty": {
+              "type": "Known",
+              "type": "Length",
+              "type": "Feet"
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  }
+]

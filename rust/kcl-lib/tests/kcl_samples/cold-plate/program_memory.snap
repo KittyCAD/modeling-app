@@ -65,7 +65,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "p1": [
@@ -82,7 +82,7 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "tag": null,
                 "to": [
-                  3.3125,
+                  3.313,
                   1.25
                 ],
                 "type": "ArcThreePoint",
@@ -96,12 +96,12 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.3125,
+                  3.313,
                   1.25
                 ],
                 "tag": null,
                 "to": [
-                  3.3125,
+                  3.313,
                   0.625
                 ],
                 "type": "ToPoint",
@@ -115,7 +115,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.3125,
+                  3.313,
                   0.625
                 ],
                 "p1": [
@@ -132,7 +132,7 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.6875,
+                  2.688,
                   0.625
                 ],
                 "type": "ArcThreePoint",
@@ -146,12 +146,12 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875,
+                  2.688,
                   0.625
                 ],
                 "tag": null,
                 "to": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "type": "ToPoint",
@@ -165,12 +165,12 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "tag": null,
                 "to": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "type": "ToPoint",
@@ -211,11 +211,11 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "start": {
               "from": [
-                2.6875,
+                2.688,
                 1.25
               ],
               "to": [
-                2.6875,
+                2.688,
                 1.25
               ],
               "units": {
@@ -288,7 +288,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "p1": [
@@ -305,7 +305,7 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "tag": null,
                 "to": [
-                  3.3125,
+                  3.313,
                   1.25
                 ],
                 "type": "ArcThreePoint",
@@ -319,12 +319,12 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.3125,
+                  3.313,
                   1.25
                 ],
                 "tag": null,
                 "to": [
-                  3.3125,
+                  3.313,
                   0.625
                 ],
                 "type": "ToPoint",
@@ -338,7 +338,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.3125,
+                  3.313,
                   0.625
                 ],
                 "p1": [
@@ -355,7 +355,7 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.6875,
+                  2.688,
                   0.625
                 ],
                 "type": "ArcThreePoint",
@@ -369,12 +369,12 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875,
+                  2.688,
                   0.625
                 ],
                 "tag": null,
                 "to": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "type": "ToPoint",
@@ -388,12 +388,12 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "tag": null,
                 "to": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "type": "ToPoint",
@@ -434,11 +434,11 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "start": {
               "from": [
-                2.6875,
+                2.688,
                 1.25
               ],
               "to": [
-                2.6875,
+                2.688,
                 1.25
               ],
               "units": {
@@ -511,7 +511,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "p1": [
@@ -528,7 +528,7 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "tag": null,
                 "to": [
-                  3.3125,
+                  3.313,
                   1.25
                 ],
                 "type": "ArcThreePoint",
@@ -542,12 +542,12 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.3125,
+                  3.313,
                   1.25
                 ],
                 "tag": null,
                 "to": [
-                  3.3125,
+                  3.313,
                   0.625
                 ],
                 "type": "ToPoint",
@@ -561,7 +561,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.3125,
+                  3.313,
                   0.625
                 ],
                 "p1": [
@@ -578,7 +578,7 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.6875,
+                  2.688,
                   0.625
                 ],
                 "type": "ArcThreePoint",
@@ -592,12 +592,12 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875,
+                  2.688,
                   0.625
                 ],
                 "tag": null,
                 "to": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "type": "ToPoint",
@@ -611,12 +611,12 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "tag": null,
                 "to": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "type": "ToPoint",
@@ -657,11 +657,11 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "start": {
               "from": [
-                2.6875,
+                2.688,
                 1.25
               ],
               "to": [
-                2.6875,
+                2.688,
                 1.25
               ],
               "units": {
@@ -734,7 +734,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "p1": [
@@ -751,7 +751,7 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "tag": null,
                 "to": [
-                  3.3125,
+                  3.313,
                   1.25
                 ],
                 "type": "ArcThreePoint",
@@ -765,12 +765,12 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.3125,
+                  3.313,
                   1.25
                 ],
                 "tag": null,
                 "to": [
-                  3.3125,
+                  3.313,
                   0.625
                 ],
                 "type": "ToPoint",
@@ -784,7 +784,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.3125,
+                  3.313,
                   0.625
                 ],
                 "p1": [
@@ -801,7 +801,7 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.6875,
+                  2.688,
                   0.625
                 ],
                 "type": "ArcThreePoint",
@@ -815,12 +815,12 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875,
+                  2.688,
                   0.625
                 ],
                 "tag": null,
                 "to": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "type": "ToPoint",
@@ -834,12 +834,12 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "tag": null,
                 "to": [
-                  2.6875,
+                  2.688,
                   1.25
                 ],
                 "type": "ToPoint",
@@ -880,11 +880,11 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "start": {
               "from": [
-                2.6875,
+                2.688,
                 1.25
               ],
               "to": [
-                2.6875,
+                2.688,
                 1.25
               ],
               "units": {
@@ -935,7 +935,7 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "tag": null,
             "to": [
-              0.6875,
+              0.688,
               1.25
             ],
             "type": "ToPoint",
@@ -949,12 +949,12 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              0.6875,
+              0.688,
               1.25
             ],
             "tag": null,
             "to": [
-              0.6875,
+              0.688,
               0.625
             ],
             "type": "ToPoint",
@@ -973,12 +973,12 @@ description: Variables in memory after executing cold-plate.kcl
               0.625
             ],
             "from": [
-              0.6875,
+              0.688,
               0.625
             ],
             "tag": null,
             "to": [
-              1.3125,
+              1.313,
               0.625
             ],
             "type": "TangentialArc",
@@ -992,12 +992,12 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              1.3125,
+              1.313,
               0.625
             ],
             "tag": null,
             "to": [
-              1.3125,
+              1.313,
               1.25
             ],
             "type": "ToPoint",
@@ -1011,7 +1011,7 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              1.3125,
+              1.313,
               1.25
             ],
             "tag": {
@@ -1022,7 +1022,7 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "seg07"
             },
             "to": [
-              2.6875,
+              2.688,
               1.25
             ],
             "type": "ToPoint",
@@ -1036,7 +1036,7 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              2.6875,
+              2.688,
               1.25
             ],
             "tag": {
@@ -1047,7 +1047,7 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "seg09"
             },
             "to": [
-              2.6875,
+              2.688,
               0.625
             ],
             "type": "ToPoint",
@@ -1066,12 +1066,12 @@ description: Variables in memory after executing cold-plate.kcl
               0.625
             ],
             "from": [
-              2.6875,
+              2.688,
               0.625
             ],
             "tag": null,
             "to": [
-              3.3125,
+              3.313,
               0.625
             ],
             "type": "TangentialArc",
@@ -1085,7 +1085,7 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              3.3125,
+              3.313,
               0.625
             ],
             "tag": {
@@ -1096,7 +1096,7 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "seg08"
             },
             "to": [
-              3.3125,
+              3.313,
               1.25
             ],
             "type": "ToPoint",
@@ -1110,7 +1110,7 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              3.3125,
+              3.313,
               1.25
             ],
             "tag": null,
@@ -1134,7 +1134,7 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "tag": null,
             "to": [
-              4.0469,
+              4.047,
               1.047
             ],
             "type": "ToPoint",
@@ -1149,11 +1149,11 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "ccw": true,
             "center": [
-              4.6558,
-              1.1876
+              4.656,
+              1.188
             ],
             "from": [
-              4.0469,
+              4.047,
               1.047
             ],
             "tag": {
@@ -1164,8 +1164,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "seg01"
             },
             "to": [
-              4.6558,
-              0.5626
+              4.656,
+              0.563
             ],
             "type": "TangentialArc",
             "units": {
@@ -1178,13 +1178,13 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              4.6558,
-              0.5626
+              4.656,
+              0.563
             ],
             "tag": null,
             "to": [
-              5.6558,
-              0.5626
+              5.656,
+              0.563
             ],
             "type": "ToPoint",
             "units": {
@@ -1197,12 +1197,12 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              5.6558,
-              0.5626
+              5.656,
+              0.563
             ],
             "tag": null,
             "to": [
-              5.6558,
+              5.656,
               0.0
             ],
             "type": "ToPoint",
@@ -1216,7 +1216,7 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              5.6558,
+              5.656,
               0.0
             ],
             "tag": null,
@@ -1680,13 +1680,13 @@ description: Variables in memory after executing cold-plate.kcl
               0.625
             ],
             "from": [
-              -2.6875,
+              -2.688,
               0.625
             ],
             "radius": 0.3125,
             "tag": null,
             "to": [
-              -2.6875,
+              -2.688,
               0.625
             ],
             "type": "Circle",
@@ -1699,7 +1699,7 @@ description: Variables in memory after executing cold-plate.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "origin": {
-            "x": -186.68999999999997,
+            "x": -186.69,
             "y": 0.0,
             "z": 0.0,
             "units": {
@@ -1727,11 +1727,11 @@ description: Variables in memory after executing cold-plate.kcl
         },
         "start": {
           "from": [
-            -2.6875,
+            -2.688,
             0.625
           ],
           "to": [
-            -2.6875,
+            -2.688,
             0.625
           ],
           "units": {

@@ -62,8 +62,8 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "tag": null,
             "to": [
-              -2.6811,
-              3.6862
+              -2.681,
+              3.686
             ],
             "type": "TangentialArc",
             "units": {
@@ -77,12 +77,12 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": false,
             "center": [
-              -2.8245,
+              -2.824,
               3.891
             ],
             "from": [
-              -2.6811,
-              3.6862
+              -2.681,
+              3.686
             ],
             "tag": {
               "commentStart": 3388,
@@ -92,8 +92,8 @@ description: Variables in memory after executing helium-tank.kcl
               "value": "seg04"
             },
             "to": [
-              -3.0707,
-              3.9344
+              -3.071,
+              3.934
             ],
             "type": "TangentialArc",
             "units": {
@@ -106,13 +106,13 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              -3.0707,
-              3.9344
+              -3.071,
+              3.934
             ],
             "tag": null,
             "to": [
-              -2.8474,
-              5.2006
+              -2.847,
+              5.201
             ],
             "type": "ToPoint",
             "units": {
@@ -126,12 +126,12 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": false,
             "center": [
-              -2.6012,
-              5.1572
+              -2.601,
+              5.157
             ],
             "from": [
-              -2.8474,
-              5.2006
+              -2.847,
+              5.201
             ],
             "tag": {
               "commentStart": 3521,
@@ -141,8 +141,8 @@ description: Variables in memory after executing helium-tank.kcl
               "value": "seg05"
             },
             "to": [
-              -2.6012,
-              5.4072
+              -2.601,
+              5.407
             ],
             "type": "TangentialArc",
             "units": {
@@ -155,13 +155,13 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              -2.6012,
-              5.4072
+              -2.601,
+              5.407
             ],
             "tag": null,
             "to": [
               0.0,
-              5.4072
+              5.407
             ],
             "type": "ToPoint",
             "units": {
@@ -175,7 +175,7 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "from": [
               0.0,
-              5.4072
+              5.407
             ],
             "tag": null,
             "to": [
@@ -302,8 +302,8 @@ description: Variables in memory after executing helium-tank.kcl
           ],
           "tag": null,
           "to": [
-            -2.7528,
-            3.7886
+            -2.753,
+            3.789
           ],
           "type": "TangentialArc",
           "units": {
@@ -317,12 +317,12 @@ description: Variables in memory after executing helium-tank.kcl
           },
           "ccw": false,
           "center": [
-            -2.8245,
+            -2.824,
             3.891
           ],
           "from": [
-            -2.7528,
-            3.7886
+            -2.753,
+            3.789
           ],
           "tag": {
             "commentStart": 2738,
@@ -332,8 +332,8 @@ description: Variables in memory after executing helium-tank.kcl
             "value": "seg06"
           },
           "to": [
-            -2.9476,
-            3.9127
+            -2.948,
+            3.913
           ],
           "type": "TangentialArc",
           "units": {
@@ -346,13 +346,13 @@ description: Variables in memory after executing helium-tank.kcl
             "sourceRange": []
           },
           "from": [
-            -2.9476,
-            3.9127
+            -2.948,
+            3.913
           ],
           "tag": null,
           "to": [
-            -2.7243,
-            5.1789
+            -2.724,
+            5.179
           ],
           "type": "ToPoint",
           "units": {
@@ -366,12 +366,12 @@ description: Variables in memory after executing helium-tank.kcl
           },
           "ccw": false,
           "center": [
-            -2.6012,
-            5.1572
+            -2.601,
+            5.157
           ],
           "from": [
-            -2.7243,
-            5.1789
+            -2.724,
+            5.179
           ],
           "tag": {
             "commentStart": 2887,
@@ -381,8 +381,8 @@ description: Variables in memory after executing helium-tank.kcl
             "value": "seg07"
           },
           "to": [
-            -2.6012,
-            5.2822
+            -2.601,
+            5.282
           ],
           "type": "TangentialArc",
           "units": {
@@ -395,13 +395,13 @@ description: Variables in memory after executing helium-tank.kcl
             "sourceRange": []
           },
           "from": [
-            -2.6012,
-            5.2822
+            -2.601,
+            5.282
           ],
           "tag": null,
           "to": [
             0.0,
-            5.2822
+            5.282
           ],
           "type": "ToPoint",
           "units": {
@@ -415,7 +415,7 @@ description: Variables in memory after executing helium-tank.kcl
           },
           "from": [
             0.0,
-            5.2822
+            5.282
           ],
           "tag": null,
           "to": [
@@ -539,8 +539,8 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "tag": null,
             "to": [
-              -2.6811,
-              3.6862
+              -2.681,
+              3.686
             ],
             "type": "TangentialArc",
             "units": {
@@ -554,12 +554,12 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": false,
             "center": [
-              -2.8245,
+              -2.824,
               3.891
             ],
             "from": [
-              -2.6811,
-              3.6862
+              -2.681,
+              3.686
             ],
             "tag": {
               "commentStart": 3388,
@@ -569,8 +569,8 @@ description: Variables in memory after executing helium-tank.kcl
               "value": "seg04"
             },
             "to": [
-              -3.0707,
-              3.9344
+              -3.071,
+              3.934
             ],
             "type": "TangentialArc",
             "units": {
@@ -583,13 +583,13 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              -3.0707,
-              3.9344
+              -3.071,
+              3.934
             ],
             "tag": null,
             "to": [
-              -2.8474,
-              5.2006
+              -2.847,
+              5.201
             ],
             "type": "ToPoint",
             "units": {
@@ -603,12 +603,12 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": false,
             "center": [
-              -2.6012,
-              5.1572
+              -2.601,
+              5.157
             ],
             "from": [
-              -2.8474,
-              5.2006
+              -2.847,
+              5.201
             ],
             "tag": {
               "commentStart": 3521,
@@ -618,8 +618,8 @@ description: Variables in memory after executing helium-tank.kcl
               "value": "seg05"
             },
             "to": [
-              -2.6012,
-              5.4072
+              -2.601,
+              5.407
             ],
             "type": "TangentialArc",
             "units": {
@@ -632,13 +632,13 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              -2.6012,
-              5.4072
+              -2.601,
+              5.407
             ],
             "tag": null,
             "to": [
               0.0,
-              5.4072
+              5.407
             ],
             "type": "ToPoint",
             "units": {
@@ -652,7 +652,7 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "from": [
               0.0,
-              5.4072
+              5.407
             ],
             "tag": null,
             "to": [
@@ -784,8 +784,8 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "tag": null,
             "to": [
-              -2.6811,
-              3.6862
+              -2.681,
+              3.686
             ],
             "type": "TangentialArc",
             "units": {
@@ -799,12 +799,12 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": false,
             "center": [
-              -2.8245,
+              -2.824,
               3.891
             ],
             "from": [
-              -2.6811,
-              3.6862
+              -2.681,
+              3.686
             ],
             "tag": {
               "commentStart": 3388,
@@ -814,8 +814,8 @@ description: Variables in memory after executing helium-tank.kcl
               "value": "seg04"
             },
             "to": [
-              -3.0707,
-              3.9344
+              -3.071,
+              3.934
             ],
             "type": "TangentialArc",
             "units": {
@@ -828,13 +828,13 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              -3.0707,
-              3.9344
+              -3.071,
+              3.934
             ],
             "tag": null,
             "to": [
-              -2.8474,
-              5.2006
+              -2.847,
+              5.201
             ],
             "type": "ToPoint",
             "units": {
@@ -848,12 +848,12 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": false,
             "center": [
-              -2.6012,
-              5.1572
+              -2.601,
+              5.157
             ],
             "from": [
-              -2.8474,
-              5.2006
+              -2.847,
+              5.201
             ],
             "tag": {
               "commentStart": 3521,
@@ -863,8 +863,8 @@ description: Variables in memory after executing helium-tank.kcl
               "value": "seg05"
             },
             "to": [
-              -2.6012,
-              5.4072
+              -2.601,
+              5.407
             ],
             "type": "TangentialArc",
             "units": {
@@ -877,13 +877,13 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              -2.6012,
-              5.4072
+              -2.601,
+              5.407
             ],
             "tag": null,
             "to": [
               0.0,
-              5.4072
+              5.407
             ],
             "type": "ToPoint",
             "units": {
@@ -897,7 +897,7 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "from": [
               0.0,
-              5.4072
+              5.407
             ],
             "tag": null,
             "to": [
@@ -1027,17 +1027,17 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": true,
             "center": [
-              0.1667,
+              0.167,
               1.675
             ],
             "from": [
-              0.1771,
+              0.177,
               1.675
             ],
             "radius": 0.010416666666666666,
             "tag": null,
             "to": [
-              0.1771,
+              0.177,
               1.675
             ],
             "type": "Circle",
@@ -1051,7 +1051,7 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "origin": {
             "x": 0.0,
-            "y": 120.31578947368422,
+            "y": 120.316,
             "z": 0.0,
             "units": {
               "type": "Mm"
@@ -1078,15 +1078,15 @@ description: Variables in memory after executing helium-tank.kcl
         },
         "start": {
           "from": [
-            0.1771,
-            1.675
+            2.125,
+            20.1
           ],
           "to": [
-            0.1771,
-            1.675
+            2.125,
+            20.1
           ],
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           },
           "tag": null,
           "__geoMeta": {
@@ -1097,14 +1097,14 @@ description: Variables in memory after executing helium-tank.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Feet"
+          "type": "Inches"
         }
       },
-      "height": -0.4166666666666667,
+      "height": -5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
-        "type": "Feet"
+        "type": "Inches"
       },
       "sectional": false
     }
@@ -1136,17 +1136,17 @@ description: Variables in memory after executing helium-tank.kcl
             "ccw": true,
             "center": [
               0.0,
-              0.0775
+              0.078
             ],
             "from": [
-              4.7368,
-              0.0775
+              4.737,
+              0.078
             ],
             "radius": 4.736842105263158,
             "tag": null,
             "to": [
-              4.7368,
-              0.0775
+              4.737,
+              0.078
             ],
             "type": "Circle",
             "units": {
@@ -1186,12 +1186,12 @@ description: Variables in memory after executing helium-tank.kcl
         },
         "start": {
           "from": [
-            4.7368,
-            0.0775
+            4.737,
+            0.078
           ],
           "to": [
-            4.7368,
-            0.0775
+            4.737,
+            0.078
           ],
           "units": {
             "type": "Inches"
@@ -1302,17 +1302,17 @@ description: Variables in memory after executing helium-tank.kcl
             "ccw": true,
             "center": [
               0.0,
-              0.0625
+              0.063
             ],
             "from": [
               4.75,
-              0.0625
+              0.063
             ],
             "radius": 4.75,
             "tag": null,
             "to": [
               4.75,
-              0.0625
+              0.063
             ],
             "type": "Circle",
             "units": {
@@ -1353,11 +1353,11 @@ description: Variables in memory after executing helium-tank.kcl
         "start": {
           "from": [
             4.75,
-            0.0625
+            0.063
           ],
           "to": [
             4.75,
-            0.0625
+            0.063
           ],
           "units": {
             "type": "Inches"
@@ -1573,17 +1573,17 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              0.0521,
-              2.5
+              0.625,
+              30.0
             ],
             "tag": null,
             "to": [
-              0.0521,
-              2.45
+              0.625,
+              29.4
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1592,17 +1592,17 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              0.0521,
-              2.45
+              0.625,
+              29.4
             ],
             "tag": null,
             "to": [
-              0.0604,
-              2.45
+              0.725,
+              29.4
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1612,21 +1612,21 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": false,
             "center": [
-              0.0604,
-              2.4417
+              0.725,
+              29.3
             ],
             "from": [
-              0.0604,
-              2.45
+              0.725,
+              29.4
             ],
             "tag": null,
             "to": [
-              0.0682,
-              2.4388
+              0.819,
+              29.266
             ],
             "type": "TangentialArc",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1636,21 +1636,21 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": true,
             "center": [
-              0.1152,
-              2.4217
+              1.383,
+              29.061
             ],
             "from": [
-              0.0682,
-              2.4388
+              0.819,
+              29.266
             ],
             "tag": null,
             "to": [
-              0.0682,
-              2.4046
+              0.819,
+              28.855
             ],
             "type": "TangentialArc",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1660,21 +1660,21 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": false,
             "center": [
-              0.0604,
-              2.4018
+              0.725,
+              28.821
             ],
             "from": [
-              0.0682,
-              2.4046
+              0.819,
+              28.855
             ],
             "tag": null,
             "to": [
-              0.0604,
-              2.3934
+              0.725,
+              28.721
             ],
             "type": "TangentialArc",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1684,21 +1684,21 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": true,
             "center": [
-              0.0604,
-              2.3851
+              0.725,
+              28.621
             ],
             "from": [
-              0.0604,
-              2.3934
+              0.725,
+              28.721
             ],
             "tag": null,
             "to": [
-              0.0604,
-              2.3768
+              0.725,
+              28.521
             ],
             "type": "TangentialArc",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1708,12 +1708,12 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": false,
             "center": [
-              0.0604,
-              2.0622
+              0.725,
+              24.746
             ],
             "from": [
-              0.0604,
-              2.3768
+              0.725,
+              28.521
             ],
             "tag": {
               "commentStart": 843,
@@ -1723,12 +1723,12 @@ description: Variables in memory after executing helium-tank.kcl
               "value": "seg01"
             },
             "to": [
-              0.375,
-              2.0622
+              4.5,
+              24.746
             ],
             "type": "TangentialArc",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1737,8 +1737,8 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              0.375,
-              2.0622
+              4.5,
+              24.746
             ],
             "tag": {
               "commentStart": 922,
@@ -1748,12 +1748,12 @@ description: Variables in memory after executing helium-tank.kcl
               "value": "seg09"
             },
             "to": [
-              0.375,
-              0.125
+              4.5,
+              1.5
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1763,12 +1763,12 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": false,
             "center": [
-              0.2083,
-              0.125
+              2.5,
+              1.5
             ],
             "from": [
-              0.375,
-              0.125
+              4.5,
+              1.5
             ],
             "tag": {
               "commentStart": 980,
@@ -1778,12 +1778,12 @@ description: Variables in memory after executing helium-tank.kcl
               "value": "seg02"
             },
             "to": [
-              0.2083,
-              -0.0417
+              2.5,
+              -0.5
             ],
             "type": "TangentialArc",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1792,8 +1792,8 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              0.2083,
-              -0.0417
+              2.5,
+              -0.5
             ],
             "tag": {
               "commentStart": 1061,
@@ -1803,12 +1803,12 @@ description: Variables in memory after executing helium-tank.kcl
               "value": "seg08"
             },
             "to": [
-              0.0001,
-              -0.0417
+              0.001,
+              -0.5
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1817,17 +1817,17 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              0.0001,
-              -0.0417
+              0.001,
+              -0.5
             ],
             "tag": null,
             "to": [
-              0.0001,
-              -0.0312
+              0.001,
+              -0.375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1836,17 +1836,17 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              0.0001,
-              -0.0312
+              0.001,
+              -0.375
             ],
             "tag": null,
             "to": [
-              0.2083,
-              -0.0312
+              2.5,
+              -0.375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1856,21 +1856,21 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": true,
             "center": [
-              0.2083,
-              0.125
+              2.5,
+              1.5
             ],
             "from": [
-              0.2083,
-              -0.0312
+              2.5,
+              -0.375
             ],
             "tag": null,
             "to": [
-              0.3646,
-              0.125
+              4.375,
+              1.5
             ],
             "type": "TangentialArc",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1879,17 +1879,17 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              0.3646,
-              0.125
+              4.375,
+              1.5
             ],
             "tag": null,
             "to": [
-              0.3646,
-              2.0622
+              4.375,
+              24.746
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1899,21 +1899,21 @@ description: Variables in memory after executing helium-tank.kcl
             },
             "ccw": true,
             "center": [
-              0.1083,
-              2.0622
+              1.3,
+              24.746
             ],
             "from": [
-              0.3646,
-              2.0622
+              4.375,
+              24.746
             ],
             "tag": null,
             "to": [
-              0.1083,
-              2.3184
+              1.3,
+              27.821
             ],
             "type": "TangentialArc",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1922,17 +1922,17 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              0.1083,
-              2.3184
+              1.3,
+              27.821
             ],
             "tag": null,
             "to": [
-              0.0438,
-              2.3184
+              0.525,
+              27.821
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1941,17 +1941,17 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              0.0438,
-              2.3184
+              0.525,
+              27.821
             ],
             "tag": null,
             "to": [
-              0.0438,
-              2.5
+              0.525,
+              30.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1960,17 +1960,17 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              0.0438,
-              2.5
+              0.525,
+              30.0
             ],
             "tag": null,
             "to": [
-              0.0521,
-              2.5
+              0.625,
+              30.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           },
           {
@@ -1979,17 +1979,17 @@ description: Variables in memory after executing helium-tank.kcl
               "sourceRange": []
             },
             "from": [
-              0.0521,
-              2.5
+              0.625,
+              30.0
             ],
             "tag": null,
             "to": [
-              0.0521,
-              2.5
+              0.625,
+              30.0
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Feet"
+              "type": "Inches"
             }
           }
         ],
@@ -2025,15 +2025,15 @@ description: Variables in memory after executing helium-tank.kcl
         },
         "start": {
           "from": [
-            0.0521,
-            2.5
+            0.625,
+            30.0
           ],
           "to": [
-            0.0521,
-            2.5
+            0.625,
+            30.0
           ],
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           },
           "tag": null,
           "__geoMeta": {
@@ -2062,14 +2062,14 @@ description: Variables in memory after executing helium-tank.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Feet"
+          "type": "Inches"
         }
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
-        "type": "Feet"
+        "type": "Inches"
       },
       "sectional": false
     }
@@ -2086,17 +2086,17 @@ description: Variables in memory after executing helium-tank.kcl
             "sourceRange": []
           },
           "from": [
-            0.0521,
-            2.5
+            0.625,
+            30.0
           ],
           "tag": null,
           "to": [
-            0.0521,
-            2.45
+            0.625,
+            29.4
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2105,17 +2105,17 @@ description: Variables in memory after executing helium-tank.kcl
             "sourceRange": []
           },
           "from": [
-            0.0521,
-            2.45
+            0.625,
+            29.4
           ],
           "tag": null,
           "to": [
-            0.0604,
-            2.45
+            0.725,
+            29.4
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2125,21 +2125,21 @@ description: Variables in memory after executing helium-tank.kcl
           },
           "ccw": false,
           "center": [
-            0.0604,
-            2.4417
+            0.725,
+            29.3
           ],
           "from": [
-            0.0604,
-            2.45
+            0.725,
+            29.4
           ],
           "tag": null,
           "to": [
-            0.0682,
-            2.4388
+            0.819,
+            29.266
           ],
           "type": "TangentialArc",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2149,21 +2149,21 @@ description: Variables in memory after executing helium-tank.kcl
           },
           "ccw": true,
           "center": [
-            0.1152,
-            2.4217
+            1.383,
+            29.061
           ],
           "from": [
-            0.0682,
-            2.4388
+            0.819,
+            29.266
           ],
           "tag": null,
           "to": [
-            0.0682,
-            2.4046
+            0.819,
+            28.855
           ],
           "type": "TangentialArc",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2173,21 +2173,21 @@ description: Variables in memory after executing helium-tank.kcl
           },
           "ccw": false,
           "center": [
-            0.0604,
-            2.4018
+            0.725,
+            28.821
           ],
           "from": [
-            0.0682,
-            2.4046
+            0.819,
+            28.855
           ],
           "tag": null,
           "to": [
-            0.0604,
-            2.3934
+            0.725,
+            28.721
           ],
           "type": "TangentialArc",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2197,21 +2197,21 @@ description: Variables in memory after executing helium-tank.kcl
           },
           "ccw": true,
           "center": [
-            0.0604,
-            2.3851
+            0.725,
+            28.621
           ],
           "from": [
-            0.0604,
-            2.3934
+            0.725,
+            28.721
           ],
           "tag": null,
           "to": [
-            0.0604,
-            2.3768
+            0.725,
+            28.521
           ],
           "type": "TangentialArc",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2221,12 +2221,12 @@ description: Variables in memory after executing helium-tank.kcl
           },
           "ccw": false,
           "center": [
-            0.0604,
-            2.0622
+            0.725,
+            24.746
           ],
           "from": [
-            0.0604,
-            2.3768
+            0.725,
+            28.521
           ],
           "tag": {
             "commentStart": 843,
@@ -2236,12 +2236,12 @@ description: Variables in memory after executing helium-tank.kcl
             "value": "seg01"
           },
           "to": [
-            0.375,
-            2.0622
+            4.5,
+            24.746
           ],
           "type": "TangentialArc",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2250,8 +2250,8 @@ description: Variables in memory after executing helium-tank.kcl
             "sourceRange": []
           },
           "from": [
-            0.375,
-            2.0622
+            4.5,
+            24.746
           ],
           "tag": {
             "commentStart": 922,
@@ -2261,12 +2261,12 @@ description: Variables in memory after executing helium-tank.kcl
             "value": "seg09"
           },
           "to": [
-            0.375,
-            0.125
+            4.5,
+            1.5
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2276,12 +2276,12 @@ description: Variables in memory after executing helium-tank.kcl
           },
           "ccw": false,
           "center": [
-            0.2083,
-            0.125
+            2.5,
+            1.5
           ],
           "from": [
-            0.375,
-            0.125
+            4.5,
+            1.5
           ],
           "tag": {
             "commentStart": 980,
@@ -2291,12 +2291,12 @@ description: Variables in memory after executing helium-tank.kcl
             "value": "seg02"
           },
           "to": [
-            0.2083,
-            -0.0417
+            2.5,
+            -0.5
           ],
           "type": "TangentialArc",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2305,8 +2305,8 @@ description: Variables in memory after executing helium-tank.kcl
             "sourceRange": []
           },
           "from": [
-            0.2083,
-            -0.0417
+            2.5,
+            -0.5
           ],
           "tag": {
             "commentStart": 1061,
@@ -2316,12 +2316,12 @@ description: Variables in memory after executing helium-tank.kcl
             "value": "seg08"
           },
           "to": [
-            0.0001,
-            -0.0417
+            0.001,
+            -0.5
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2330,17 +2330,17 @@ description: Variables in memory after executing helium-tank.kcl
             "sourceRange": []
           },
           "from": [
-            0.0001,
-            -0.0417
+            0.001,
+            -0.5
           ],
           "tag": null,
           "to": [
-            0.0001,
-            -0.0312
+            0.001,
+            -0.375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2349,17 +2349,17 @@ description: Variables in memory after executing helium-tank.kcl
             "sourceRange": []
           },
           "from": [
-            0.0001,
-            -0.0312
+            0.001,
+            -0.375
           ],
           "tag": null,
           "to": [
-            0.2083,
-            -0.0312
+            2.5,
+            -0.375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2369,21 +2369,21 @@ description: Variables in memory after executing helium-tank.kcl
           },
           "ccw": true,
           "center": [
-            0.2083,
-            0.125
+            2.5,
+            1.5
           ],
           "from": [
-            0.2083,
-            -0.0312
+            2.5,
+            -0.375
           ],
           "tag": null,
           "to": [
-            0.3646,
-            0.125
+            4.375,
+            1.5
           ],
           "type": "TangentialArc",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2392,17 +2392,17 @@ description: Variables in memory after executing helium-tank.kcl
             "sourceRange": []
           },
           "from": [
-            0.3646,
-            0.125
+            4.375,
+            1.5
           ],
           "tag": null,
           "to": [
-            0.3646,
-            2.0622
+            4.375,
+            24.746
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2412,21 +2412,21 @@ description: Variables in memory after executing helium-tank.kcl
           },
           "ccw": true,
           "center": [
-            0.1083,
-            2.0622
+            1.3,
+            24.746
           ],
           "from": [
-            0.3646,
-            2.0622
+            4.375,
+            24.746
           ],
           "tag": null,
           "to": [
-            0.1083,
-            2.3184
+            1.3,
+            27.821
           ],
           "type": "TangentialArc",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2435,17 +2435,17 @@ description: Variables in memory after executing helium-tank.kcl
             "sourceRange": []
           },
           "from": [
-            0.1083,
-            2.3184
+            1.3,
+            27.821
           ],
           "tag": null,
           "to": [
-            0.0438,
-            2.3184
+            0.525,
+            27.821
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2454,17 +2454,17 @@ description: Variables in memory after executing helium-tank.kcl
             "sourceRange": []
           },
           "from": [
-            0.0438,
-            2.3184
+            0.525,
+            27.821
           ],
           "tag": null,
           "to": [
-            0.0438,
-            2.5
+            0.525,
+            30.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2473,17 +2473,17 @@ description: Variables in memory after executing helium-tank.kcl
             "sourceRange": []
           },
           "from": [
-            0.0438,
-            2.5
+            0.525,
+            30.0
           ],
           "tag": null,
           "to": [
-            0.0521,
-            2.5
+            0.625,
+            30.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         },
         {
@@ -2492,17 +2492,17 @@ description: Variables in memory after executing helium-tank.kcl
             "sourceRange": []
           },
           "from": [
-            0.0521,
-            2.5
+            0.625,
+            30.0
           ],
           "tag": null,
           "to": [
-            0.0521,
-            2.5
+            0.625,
+            30.0
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           }
         }
       ],
@@ -2538,15 +2538,15 @@ description: Variables in memory after executing helium-tank.kcl
       },
       "start": {
         "from": [
-          0.0521,
-          2.5
+          0.625,
+          30.0
         ],
         "to": [
-          0.0521,
-          2.5
+          0.625,
+          30.0
         ],
         "units": {
-          "type": "Feet"
+          "type": "Inches"
         },
         "tag": null,
         "__geoMeta": {
@@ -2575,7 +2575,7 @@ description: Variables in memory after executing helium-tank.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
-        "type": "Feet"
+        "type": "Inches"
       }
     }
   },
@@ -2628,7 +2628,7 @@ description: Variables in memory after executing helium-tank.kcl
               0.0
             ],
             "from": [
-              0.6579,
+              0.658,
               0.0
             ],
             "radius": 0.6578947368421053,
@@ -2640,7 +2640,7 @@ description: Variables in memory after executing helium-tank.kcl
               "value": "seg03"
             },
             "to": [
-              0.6579,
+              0.658,
               0.0
             ],
             "type": "Circle",
@@ -2681,11 +2681,11 @@ description: Variables in memory after executing helium-tank.kcl
         },
         "start": {
           "from": [
-            0.6579,
+            0.658,
             0.0
           ],
           "to": [
-            0.6579,
+            0.658,
             0.0
           ],
           "units": {
@@ -2791,7 +2791,7 @@ description: Variables in memory after executing helium-tank.kcl
               0.0
             ],
             "from": [
-              0.6579,
+              0.658,
               0.0
             ],
             "radius": 0.6578947368421053,
@@ -2803,7 +2803,7 @@ description: Variables in memory after executing helium-tank.kcl
               "value": "seg03"
             },
             "to": [
-              0.6579,
+              0.658,
               0.0
             ],
             "type": "Circle",
@@ -2844,11 +2844,11 @@ description: Variables in memory after executing helium-tank.kcl
         },
         "start": {
           "from": [
-            0.6579,
+            0.658,
             0.0
           ],
           "to": [
-            0.6579,
+            0.658,
             0.0
           ],
           "units": {
@@ -2935,13 +2935,13 @@ description: Variables in memory after executing helium-tank.kcl
               2.525
             ],
             "from": [
-              0.0347,
+              0.035,
               2.525
             ],
             "radius": 0.034722222222222224,
             "tag": null,
             "to": [
-              0.0347,
+              0.035,
               2.525
             ],
             "type": "Circle",
@@ -2982,15 +2982,15 @@ description: Variables in memory after executing helium-tank.kcl
         },
         "start": {
           "from": [
-            0.0347,
-            2.525
+            0.417,
+            30.3
           ],
           "to": [
-            0.0347,
-            2.525
+            0.417,
+            30.3
           ],
           "units": {
-            "type": "Feet"
+            "type": "Inches"
           },
           "tag": null,
           "__geoMeta": {
@@ -3001,14 +3001,14 @@ description: Variables in memory after executing helium-tank.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Feet"
+          "type": "Inches"
         }
       },
-      "height": 0.10833333333333334,
+      "height": 1.3,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
-        "type": "Feet"
+        "type": "Inches"
       },
       "sectional": false
     }

@@ -4,19 +4,30 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
 ---
 [
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -35,21 +46,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "fillet",
     "unlabeledArg": {
       "value": {
@@ -93,7 +93,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
     "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "fillet",
     "unlabeledArg": {
       "value": {
@@ -108,7 +108,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       "radius": {
         "value": {
           "type": "Number",
-          "value": 0.5707,
+          "value": 0.571,
           "ty": {
             "type": "Default",
             "len": {
@@ -137,6 +137,17 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
     "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "startSketchOn",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "face": {
         "value": {
@@ -147,20 +158,20 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "sourceRange": []
       }
     },
-    "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
-        "type": "Solid",
+        "type": "Sketch",
         "value": {
           "artifactId": "[uuid]"
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -179,17 +190,6 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   }
 ]

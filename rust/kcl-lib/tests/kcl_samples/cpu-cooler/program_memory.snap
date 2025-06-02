@@ -3,6 +3,30 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing cpu-cooler.kcl
 ---
 {
+  "__mod_fan": {
+    "type": "Module",
+    "value": 4
+  },
+  "__mod_fanHousing": {
+    "type": "Module",
+    "value": 2
+  },
+  "__mod_heatSink": {
+    "type": "Module",
+    "value": 5
+  },
+  "__mod_motor": {
+    "type": "Module",
+    "value": 3
+  },
+  "__mod_mountingWire": {
+    "type": "Module",
+    "value": 6
+  },
+  "__mod_removableSticker": {
+    "type": "Module",
+    "value": 7
+  },
   "bendRadius": {
     "type": "Number",
     "value": 15.0,
@@ -15,10 +39,6 @@ description: Variables in memory after executing cpu-cooler.kcl
         "type": "Degrees"
       }
     }
-  },
-  "fan": {
-    "type": "Module",
-    "value": 4
   },
   "fanHeight": {
     "type": "Number",
@@ -33,10 +53,6 @@ description: Variables in memory after executing cpu-cooler.kcl
       }
     }
   },
-  "fanHousing": {
-    "type": "Module",
-    "value": 2
-  },
   "fanSize": {
     "type": "Number",
     "value": 120.0,
@@ -50,10 +66,6 @@ description: Variables in memory after executing cpu-cooler.kcl
       }
     }
   },
-  "heatSink": {
-    "type": "Module",
-    "value": 5
-  },
   "heatSinkDepth": {
     "type": "Number",
     "value": 55.0,
@@ -66,10 +78,6 @@ description: Variables in memory after executing cpu-cooler.kcl
         "type": "Degrees"
       }
     }
-  },
-  "motor": {
-    "type": "Module",
-    "value": 3
   },
   "mountingHoleSize": {
     "type": "Number",
@@ -96,14 +104,6 @@ description: Variables in memory after executing cpu-cooler.kcl
         "type": "Degrees"
       }
     }
-  },
-  "mountingWire": {
-    "type": "Module",
-    "value": 6
-  },
-  "removableSticker": {
-    "type": "Module",
-    "value": 7
   },
   "sheetThickness": {
     "type": "Number",

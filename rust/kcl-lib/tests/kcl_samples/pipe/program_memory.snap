@@ -97,13 +97,13 @@ description: Variables in memory after executing pipe.kcl
                     0.0
                   ],
                   "from": [
-                    1.1875,
+                    1.188,
                     0.0
                   ],
                   "radius": 1.1875,
                   "tag": null,
                   "to": [
-                    1.1875,
+                    1.188,
                     0.0
                   ],
                   "type": "Circle",
@@ -144,11 +144,11 @@ description: Variables in memory after executing pipe.kcl
               },
               "start": {
                 "from": [
-                  1.1875,
+                  1.188,
                   0.0
                 ],
                 "to": [
-                  1.1875,
+                  1.188,
                   0.0
                 ],
                 "units": {
@@ -241,13 +241,13 @@ description: Variables in memory after executing pipe.kcl
               0.0
             ],
             "from": [
-              1.1875,
+              1.188,
               0.0
             ],
             "radius": 1.1875,
             "tag": null,
             "to": [
-              1.1875,
+              1.188,
               0.0
             ],
             "type": "Circle",
@@ -288,11 +288,11 @@ description: Variables in memory after executing pipe.kcl
         },
         "start": {
           "from": [
-            1.1875,
+            1.188,
             0.0
           ],
           "to": [
-            1.1875,
+            1.188,
             0.0
           ],
           "units": {

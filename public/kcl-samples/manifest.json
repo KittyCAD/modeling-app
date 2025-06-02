@@ -1,16 +1,6 @@
 [
   {
     "file": "main.kcl",
-    "pathFromProjectDirectoryToFirstFile": "80-20-rail/main.kcl",
-    "multipleFiles": false,
-    "title": "80/20 Rail",
-    "description": "An 80/20 extruded aluminum linear rail. T-slot profile adjustable by profile height, rail length, and origin position",
-    "files": [
-      "main.kcl"
-    ]
-  },
-  {
-    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "axial-fan/main.kcl",
     "multipleFiles": true,
     "title": "PC Fan",
@@ -29,6 +19,16 @@
     "multipleFiles": false,
     "title": "Ball Bearing",
     "description": "A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "ball-joint-rod-end/main.kcl",
+    "multipleFiles": false,
+    "title": "ball joint rod end",
+    "description": "A ball joint rod end is a mechanical linkage component that consists of a spherical ball housed within a socket, connected to a threaded rod, allowing rotational movement in multiple directions while providing a secure connection point between two parts of a mechanical system. Commonly used in steering systems and suspension components.",
     "files": [
       "main.kcl"
     ]
@@ -76,6 +76,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "brake-rotor/main.kcl",
+    "multipleFiles": false,
+    "title": "Brake Rotor",
+    "description": "A 320mm vented brake disc (rotor), with straight vanes, 30mm thick. The disc bell should accommodate 5 M12 wheel studs on a 114.3mm pitch circle diameter.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "car-wheel-assembly/main.kcl",
     "multipleFiles": true,
     "title": "Car Wheel Assembly",
@@ -88,6 +98,16 @@
       "lug-nut.kcl",
       "main.kcl",
       "parameters.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "clock/main.kcl",
+    "multipleFiles": false,
+    "title": "Clock",
+    "description": "A clock with roman numerals",
+    "files": [
+      "main.kcl"
     ]
   },
   {
@@ -624,6 +644,26 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "t-slot-rail/main.kcl",
+    "multipleFiles": false,
+    "title": "T-Slotted Framing Rail",
+    "description": "A T-slotted framing rail, or T-slot extrusion, is a rectangular or square aluminum profile with a \"T\" shaped slot along one or more sides. These slots allow for easy attachment of various hardware components like brackets, connectors, and fasteners, making it a versatile and customizable framing system.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "telemetry-antenna/main.kcl",
+    "multipleFiles": false,
+    "title": "Aircraft telemetry antenna plate",
+    "description": "Consists of a circular base plate 3 inches in diameter and 0.08 inches thick, with a tapered monopole antenna mounted at the top with a base diameter of 0.65 inches and height of 1.36 inches. Also consists of a mounting base and connector at the bottom of the plate. The plate also has 6 countersunk holes at a defined pitch circle diameter.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "thermal-block-insert/main.kcl",
     "multipleFiles": false,
     "title": "Thermal Block Insert",
@@ -638,6 +678,16 @@
     "multipleFiles": false,
     "title": "Tooling Nest Block",
     "description": "A tooling nest block is a block-shaped tool made from high-carbon steel. It features an assortment of conical or hemispherical indentions, which are used to form or shape metal, particularly in crafting bells or jewelry",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "truss-structure/main.kcl",
+    "multipleFiles": false,
+    "title": "Truss Structure",
+    "description": "A truss structure is a framework composed of triangular units made from straight members connected at joints, often called nodes. Trusses are widely used in architecture, civil engineering, and construction for their ability to support large loads with minimal material.",
     "files": [
       "main.kcl"
     ]

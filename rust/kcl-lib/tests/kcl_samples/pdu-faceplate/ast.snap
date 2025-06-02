@@ -3271,7 +3271,7 @@ description: Result of parsing pdu-faceplate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "swtichWidth",
+            "name": "switchWidth",
             "start": 0,
             "type": "Identifier"
           },
@@ -3385,7 +3385,7 @@ description: Result of parsing pdu-faceplate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "swtichPlateWidth",
+            "name": "switchPlateWidth",
             "start": 0,
             "type": "Identifier"
           },
@@ -3586,7 +3586,7 @@ description: Result of parsing pdu-faceplate.kcl
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "name": "swtichPlateWidth",
+                                "name": "switchPlateWidth",
                                 "start": 0,
                                 "type": "Identifier"
                               },
@@ -3768,7 +3768,7 @@ description: Result of parsing pdu-faceplate.kcl
                       "name": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "swtichPlateWidth",
+                        "name": "switchPlateWidth",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -4257,7 +4257,7 @@ description: Result of parsing pdu-faceplate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "swtichButtonWidth",
+            "name": "switchButtonWidth",
             "start": 0,
             "type": "Identifier"
           },
@@ -4339,7 +4339,7 @@ description: Result of parsing pdu-faceplate.kcl
                             "name": {
                               "commentStart": 0,
                               "end": 0,
-                              "name": "swtichButtonWidth",
+                              "name": "switchButtonWidth",
                               "start": 0,
                               "type": "Identifier"
                             },
@@ -4994,7 +4994,7 @@ description: Result of parsing pdu-faceplate.kcl
                       "name": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "swtichButtonWidth",
+                        "name": "switchButtonWidth",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -5329,7 +5329,7 @@ description: Result of parsing pdu-faceplate.kcl
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "swtichWidth",
+                    "name": "switchWidth",
                     "start": 0,
                     "type": "Identifier"
                   },

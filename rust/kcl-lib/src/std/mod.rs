@@ -45,8 +45,6 @@ pub type StdFn = fn(
 
 lazy_static! {
     static ref CORE_FNS: Vec<Box<dyn StdLibFn>> = vec![
-        Box::new(crate::std::appearance::Appearance),
-        Box::new(crate::std::extrude::Extrude),
         Box::new(crate::std::segment::SegEnd),
         Box::new(crate::std::segment::SegEndX),
         Box::new(crate::std::segment::SegEndY),
@@ -58,8 +56,6 @@ lazy_static! {
         Box::new(crate::std::segment::SegLen),
         Box::new(crate::std::segment::SegAng),
         Box::new(crate::std::segment::TangentToEnd),
-        Box::new(crate::std::shapes::CircleThreePoint),
-        Box::new(crate::std::shapes::Polygon),
         Box::new(crate::std::sketch::InvoluteCircular),
         Box::new(crate::std::sketch::Line),
         Box::new(crate::std::sketch::XLine),
@@ -76,26 +72,6 @@ lazy_static! {
         Box::new(crate::std::sketch::TangentialArc),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Subtract2D),
-        Box::new(crate::std::patterns::PatternLinear2D),
-        Box::new(crate::std::patterns::PatternLinear3D),
-        Box::new(crate::std::patterns::PatternCircular2D),
-        Box::new(crate::std::patterns::PatternCircular3D),
-        Box::new(crate::std::patterns::PatternTransform),
-        Box::new(crate::std::patterns::PatternTransform2D),
-        Box::new(crate::std::edge::GetOppositeEdge),
-        Box::new(crate::std::edge::GetNextAdjacentEdge),
-        Box::new(crate::std::edge::GetPreviousAdjacentEdge),
-        Box::new(crate::std::edge::GetCommonEdge),
-        Box::new(crate::std::sweep::Sweep),
-        Box::new(crate::std::loft::Loft),
-        Box::new(crate::std::assert::Assert),
-        Box::new(crate::std::assert::AssertIs),
-        Box::new(crate::std::transform::Scale),
-        Box::new(crate::std::transform::Translate),
-        Box::new(crate::std::transform::Rotate),
-        Box::new(crate::std::csg::Intersect),
-        Box::new(crate::std::csg::Union),
-        Box::new(crate::std::csg::Subtract),
     ];
 }
 
@@ -224,10 +200,6 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::math::leg_angle_y(e, a)),
             StdFnProps::default("std::math::legAngY"),
         ),
-        ("sketch", "circle") => (
-            |e, a| Box::pin(crate::std::shapes::circle(e, a)),
-            StdFnProps::default("std::sketch::circle"),
-        ),
         ("prelude", "helix") => (
             |e, a| Box::pin(crate::std::helix::helix(e, a)),
             StdFnProps::default("std::helix").include_in_feature_tree(),
@@ -236,13 +208,29 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a)),
             StdFnProps::default("std::transform::mirror2d"),
         ),
-        ("sketch", "revolve") => (
-            |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
-            StdFnProps::default("std::sketch::revolve").include_in_feature_tree(),
+        ("transform", "translate") => (
+            |e, a| Box::pin(crate::std::transform::translate(e, a)),
+            StdFnProps::default("std::transform::translate"),
+        ),
+        ("transform", "rotate") => (
+            |e, a| Box::pin(crate::std::transform::rotate(e, a)),
+            StdFnProps::default("std::transform::rotate"),
+        ),
+        ("transform", "scale") => (
+            |e, a| Box::pin(crate::std::transform::scale(e, a)),
+            StdFnProps::default("std::transform::scale"),
         ),
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
             StdFnProps::default("std::offsetPlane").include_in_feature_tree(),
+        ),
+        ("prelude", "assert") => (
+            |e, a| Box::pin(crate::std::assert::assert(e, a)),
+            StdFnProps::default("std::assert"),
+        ),
+        ("prelude", "assertIs") => (
+            |e, a| Box::pin(crate::std::assert::assert_is(e, a)),
+            StdFnProps::default("std::assertIs"),
         ),
         ("solid", "fillet") => (
             |e, a| Box::pin(crate::std::fillet::fillet(e, a)),
@@ -259,6 +247,34 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("solid", "hollow") => (
             |e, a| Box::pin(crate::std::shell::hollow(e, a)),
             StdFnProps::default("std::solid::hollow").include_in_feature_tree(),
+        ),
+        ("solid", "union") => (
+            |e, a| Box::pin(crate::std::csg::union(e, a)),
+            StdFnProps::default("std::solid::union").include_in_feature_tree(),
+        ),
+        ("solid", "intersect") => (
+            |e, a| Box::pin(crate::std::csg::intersect(e, a)),
+            StdFnProps::default("std::solid::intersect").include_in_feature_tree(),
+        ),
+        ("solid", "subtract") => (
+            |e, a| Box::pin(crate::std::csg::subtract(e, a)),
+            StdFnProps::default("std::solid::subtract").include_in_feature_tree(),
+        ),
+        ("solid", "patternTransform") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_transform(e, a)),
+            StdFnProps::default("std::solid::patternTransform").include_in_feature_tree(),
+        ),
+        ("solid", "patternLinear3d") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_linear_3d(e, a)),
+            StdFnProps::default("std::solid::patternLinear3d").include_in_feature_tree(),
+        ),
+        ("solid", "patternCircular3d") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_circular_3d(e, a)),
+            StdFnProps::default("std::solid::patternCircular3d").include_in_feature_tree(),
+        ),
+        ("solid", "appearance") => (
+            |e, a| Box::pin(crate::std::appearance::appearance(e, a)),
+            StdFnProps::default("std::solid::appearance"),
         ),
         ("array", "map") => (
             |e, a| Box::pin(crate::std::array::map(e, a)),
@@ -280,7 +296,69 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::clone::clone(e, a)),
             StdFnProps::default("std::clone").include_in_feature_tree(),
         ),
-        _ => unreachable!(),
+        ("sketch", "circle") => (
+            |e, a| Box::pin(crate::std::shapes::circle(e, a)),
+            StdFnProps::default("std::sketch::circle"),
+        ),
+        ("sketch", "extrude") => (
+            |e, a| Box::pin(crate::std::extrude::extrude(e, a)),
+            StdFnProps::default("std::sketch::extrude").include_in_feature_tree(),
+        ),
+        ("sketch", "patternTransform2d") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
+            StdFnProps::default("std::sketch::patternTransform2d"),
+        ),
+        ("sketch", "revolve") => (
+            |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
+            StdFnProps::default("std::sketch::revolve").include_in_feature_tree(),
+        ),
+        ("sketch", "sweep") => (
+            |e, a| Box::pin(crate::std::sweep::sweep(e, a)),
+            StdFnProps::default("std::sketch::sweep").include_in_feature_tree(),
+        ),
+        ("sketch", "loft") => (
+            |e, a| Box::pin(crate::std::loft::loft(e, a)),
+            StdFnProps::default("std::sketch::loft").include_in_feature_tree(),
+        ),
+        ("sketch", "polygon") => (
+            |e, a| Box::pin(crate::std::shapes::polygon(e, a)),
+            StdFnProps::default("std::sketch::polygon"),
+        ),
+        ("sketch", "circleThreePoint") => (
+            |e, a| Box::pin(crate::std::shapes::circle_three_point(e, a)),
+            StdFnProps::default("std::sketch::circleThreePoint"),
+        ),
+        ("sketch", "getCommonEdge") => (
+            |e, a| Box::pin(crate::std::edge::get_common_edge(e, a)),
+            StdFnProps::default("std::sketch::getCommonEdge"),
+        ),
+        ("sketch", "getNextAdjacentEdge") => (
+            |e, a| Box::pin(crate::std::edge::get_next_adjacent_edge(e, a)),
+            StdFnProps::default("std::sketch::getNextAdjacentEdge"),
+        ),
+        ("sketch", "getOppositeEdge") => (
+            |e, a| Box::pin(crate::std::edge::get_opposite_edge(e, a)),
+            StdFnProps::default("std::sketch::revolve"),
+        ),
+        ("sketch", "getPreviousAdjacentEdge") => (
+            |e, a| Box::pin(crate::std::edge::get_previous_adjacent_edge(e, a)),
+            StdFnProps::default("std::sketch::getPreviousAdjacentEdge"),
+        ),
+        ("sketch", "patternLinear2d") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_linear_2d(e, a)),
+            StdFnProps::default("std::sketch::patternLinear2d"),
+        ),
+        ("sketch", "patternCircular2d") => (
+            |e, a| Box::pin(crate::std::patterns::pattern_circular_2d(e, a)),
+            StdFnProps::default("std::sketch::patternCircular2d"),
+        ),
+        ("appearance", "hexString") => (
+            |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),
+            StdFnProps::default("std::appearance::hexString"),
+        ),
+        (module, fn_name) => {
+            panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
+        }
     }
 }
 
@@ -328,14 +406,14 @@ impl StdLib {
         self.fns.get(name).cloned()
     }
 
-    pub fn get_either(&self, name: &Name) -> FunctionKind {
+    pub fn get_rust_function(&self, name: &Name) -> Option<Box<dyn StdLibFn>> {
         if let Some(name) = name.local_ident() {
             if let Some(f) = self.get(name.inner) {
-                return FunctionKind::Core(f);
+                return Some(f);
             }
         }
 
-        FunctionKind::UserDefined
+        None
     }
 
     pub fn contains_key(&self, key: &str) -> bool {
@@ -347,12 +425,6 @@ impl Default for StdLib {
     fn default() -> Self {
         Self::new()
     }
-}
-
-#[derive(Debug)]
-pub enum FunctionKind {
-    Core(Box<dyn StdLibFn>),
-    UserDefined,
 }
 
 /// The default tolerance for modeling commands in [`kittycad_modeling_cmds::length_unit::LengthUnit`].

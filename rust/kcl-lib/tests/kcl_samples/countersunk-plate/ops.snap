@@ -4,17 +4,17 @@ description: Operations executed countersunk-plate.kcl
 ---
 [
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
     "type": "GroupBegin",
@@ -27,7 +27,7 @@ description: Operations executed countersunk-plate.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.1972,
+            "value": 1.197,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -39,7 +39,7 @@ description: Operations executed countersunk-plate.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 1.6625,
+            "value": 1.663,
             "ty": {
               "type": "Default",
               "len": {
@@ -57,6 +57,17 @@ description: Operations executed countersunk-plate.kcl
     "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "subtract2d",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "tool": {
         "value": {
@@ -68,9 +79,11 @@ description: Operations executed countersunk-plate.kcl
         "sourceRange": []
       }
     },
-    "name": "subtract2d",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
         "type": "Sketch",
@@ -79,9 +92,7 @@ description: Operations executed countersunk-plate.kcl
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -100,9 +111,57 @@ description: Operations executed countersunk-plate.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "startSketchOn",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "face": {
+        "value": {
+          "type": "String",
+          "value": "end"
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "startSketchOn",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "face": {
+        "value": {
+          "type": "String",
+          "value": "end"
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
         "type": "Sketch",
@@ -111,55 +170,7 @@ description: Operations executed countersunk-plate.kcl
         }
       },
       "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "face": {
-        "value": {
-          "type": "String",
-          "value": "end"
-        },
-        "sourceRange": []
-      }
     },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "face": {
-        "value": {
-          "type": "String",
-          "value": "end"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
     "labeledArgs": {
       "length": {
         "value": {
@@ -178,9 +189,11 @@ description: Operations executed countersunk-plate.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": []
+  },
+  {
     "type": "StdLibCall",
+    "name": "extrude",
     "unlabeledArg": {
       "value": {
         "type": "Sketch",
@@ -189,9 +202,7 @@ description: Operations executed countersunk-plate.kcl
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -210,21 +221,10 @@ description: Operations executed countersunk-plate.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "chamfer",
     "unlabeledArg": {
       "value": {
@@ -269,7 +269,7 @@ description: Operations executed countersunk-plate.kcl
     "sourceRange": []
   },
   {
-    "type": "KclStdLibCall",
+    "type": "StdLibCall",
     "name": "chamfer",
     "unlabeledArg": {
       "value": {

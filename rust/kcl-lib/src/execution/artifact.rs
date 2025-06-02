@@ -2,24 +2,31 @@ use fnv::FnvHashMap;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::{
     self as kcmc,
-    id::ModelingCmdId,
     ok_response::OkModelingCmdResponse,
     shared::ExtrusionFaceCapType,
     websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
     EnableSketchMode, ModelingCmd,
 };
-use schemars::JsonSchema;
 use serde::{ser::SerializeSeq, Serialize};
 use uuid::Uuid;
 
 use crate::{
     errors::KclErrorDetails,
+    execution::ArtifactId,
     parsing::ast::types::{Node, Program},
     KclError, NodePath, SourceRange,
 };
 
 #[cfg(test)]
 mod mermaid_tests;
+
+macro_rules! internal_error {
+    ($range:expr, $($rest:tt)*) => {{
+        let message = format!($($rest)*);
+        debug_assert!(false, "{}", &message);
+        return Err(KclError::Internal(KclErrorDetails::new(message, vec![$range])));
+    }};
+}
 
 /// A command that may create or update artifacts on the TS side.  Because
 /// engine commands are batched, we don't have the response yet when these are
@@ -55,52 +62,6 @@ impl PartialOrd for ArtifactCommand {
         }
         #[cfg(not(test))]
         self.cmd_id.partial_cmp(&other.cmd_id)
-    }
-}
-
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS, JsonSchema)]
-#[ts(export_to = "Artifact.ts")]
-pub struct ArtifactId(Uuid);
-
-impl ArtifactId {
-    pub fn new(uuid: Uuid) -> Self {
-        Self(uuid)
-    }
-}
-
-impl From<Uuid> for ArtifactId {
-    fn from(uuid: Uuid) -> Self {
-        Self::new(uuid)
-    }
-}
-
-impl From<&Uuid> for ArtifactId {
-    fn from(uuid: &Uuid) -> Self {
-        Self::new(*uuid)
-    }
-}
-
-impl From<ArtifactId> for Uuid {
-    fn from(id: ArtifactId) -> Self {
-        id.0
-    }
-}
-
-impl From<&ArtifactId> for Uuid {
-    fn from(id: &ArtifactId) -> Self {
-        id.0
-    }
-}
-
-impl From<ModelingCmdId> for ArtifactId {
-    fn from(id: ModelingCmdId) -> Self {
-        Self::new(*id.as_ref())
-    }
-}
-
-impl From<&ModelingCmdId> for ArtifactId {
-    fn from(id: &ModelingCmdId) -> Self {
-        Self::new(*id.as_ref())
     }
 }
 
@@ -988,12 +949,10 @@ fn artifacts_to_update(
         ModelingCmd::StartPath(_) => {
             let mut return_arr = Vec::new();
             let current_plane_id = path_to_plane_id_map.get(&artifact_command.cmd_id).ok_or_else(|| {
-                KclError::Internal(KclErrorDetails {
-                    message: format!(
-                        "Expected a current plane ID when processing StartPath command, but we have none: {id:?}"
-                    ),
-                    source_ranges: vec![range],
-                })
+                KclError::Internal(KclErrorDetails::new(
+                    format!("Expected a current plane ID when processing StartPath command, but we have none: {id:?}"),
+                    vec![range],
+                ))
             })?;
             return_arr.push(Artifact::Path(Path {
                 id,
@@ -1041,7 +1000,10 @@ fn artifacts_to_update(
             let path_id = ArtifactId::new(match cmd {
                 ModelingCmd::ClosePath(c) => c.path_id,
                 ModelingCmd::ExtendPath(e) => e.path.into(),
-                _ => unreachable!(),
+                _ => internal_error!(
+                    range,
+                    "Close or extend path command variant not handled: id={id:?}, cmd={cmd:?}"
+                ),
             });
             let mut return_arr = Vec::new();
             return_arr.push(Artifact::Segment(Segment {
@@ -1072,6 +1034,69 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
+        ModelingCmd::EntityMirror(kcmc::EntityMirror {
+            ids: original_path_ids, ..
+        })
+        | ModelingCmd::EntityMirrorAcrossEdge(kcmc::EntityMirrorAcrossEdge {
+            ids: original_path_ids, ..
+        }) => {
+            let face_edge_infos = match response {
+                OkModelingCmdResponse::EntityMirror(resp) => &resp.entity_face_edge_ids,
+                OkModelingCmdResponse::EntityMirrorAcrossEdge(resp) => &resp.entity_face_edge_ids,
+                _ => internal_error!(
+                    range,
+                    "Mirror response variant not handled: id={id:?}, cmd={cmd:?}, response={response:?}"
+                ),
+            };
+            if original_path_ids.len() != face_edge_infos.len() {
+                internal_error!(range, "EntityMirror or EntityMirrorAcrossEdge response has different number face edge info than original mirrored paths: id={id:?}, cmd={cmd:?}, response={response:?}");
+            }
+            let mut return_arr = Vec::new();
+            for (face_edge_info, original_path_id) in face_edge_infos.iter().zip(original_path_ids) {
+                let original_path_id = ArtifactId::new(*original_path_id);
+                let path_id = ArtifactId::new(face_edge_info.object_id);
+                // The path may be an existing path that was extended or a new
+                // path.
+                let mut path = if let Some(Artifact::Path(path)) = artifacts.get(&path_id) {
+                    // Existing path.
+                    path.clone()
+                } else {
+                    // It's a new path.  We need the original path to get some
+                    // of its info.
+                    let Some(Artifact::Path(original_path)) = artifacts.get(&original_path_id) else {
+                        // We couldn't find the original path. This is a bug.
+                        internal_error!(range, "Couldn't find original path for mirror2d: original_path_id={original_path_id:?}, cmd={cmd:?}");
+                    };
+                    Path {
+                        id: path_id,
+                        plane_id: original_path.plane_id,
+                        seg_ids: Vec::new(),
+                        sweep_id: None,
+                        solid2d_id: None,
+                        code_ref: code_ref.clone(),
+                        composite_solid_id: None,
+                    }
+                };
+
+                face_edge_info.edges.iter().for_each(|edge_id| {
+                    let edge_id = ArtifactId::new(*edge_id);
+                    return_arr.push(Artifact::Segment(Segment {
+                        id: edge_id,
+                        path_id: path.id,
+                        surface_id: None,
+                        edge_ids: Vec::new(),
+                        edge_cut_id: None,
+                        code_ref: code_ref.clone(),
+                        common_surface_ids: Vec::new(),
+                    }));
+                    // Add the edge ID to the path.
+                    path.seg_ids.push(edge_id);
+                });
+
+                return_arr.push(Artifact::Path(path));
+            }
+            return Ok(return_arr);
+        }
         ModelingCmd::Extrude(kcmc::Extrude { target, .. })
         | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
         | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
@@ -1081,7 +1106,7 @@ fn artifacts_to_update(
                 ModelingCmd::Revolve(_) => SweepSubType::Revolve,
                 ModelingCmd::RevolveAboutEdge(_) => SweepSubType::RevolveAboutEdge,
                 ModelingCmd::Sweep(_) => SweepSubType::Sweep,
-                _ => unreachable!(),
+                _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}",),
             };
             let mut return_arr = Vec::new();
             let target = ArtifactId::from(target);
@@ -1112,10 +1137,10 @@ fn artifacts_to_update(
                 // TODO: Using the first one.  Make sure to revisit this
                 // choice, don't think it matters for now.
                 path_id: ArtifactId::new(*loft_cmd.section_ids.first().ok_or_else(|| {
-                    KclError::Internal(KclErrorDetails {
-                        message: format!("Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"),
-                        source_ranges: vec![range],
-                    })
+                    KclError::Internal(KclErrorDetails::new(
+                        format!("Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"),
+                        vec![range],
+                    ))
                 })?),
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
@@ -1155,12 +1180,12 @@ fn artifacts_to_update(
                 };
                 last_path = Some(path);
                 let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                    KclError::Internal(KclErrorDetails {
-                        message:format!(
+                    KclError::Internal(KclErrorDetails::new(
+                        format!(
                             "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
                         ),
-                        source_ranges: vec![range],
-                    })
+                        vec![range],
+                    ))
                 })?;
                 let extra_artifact = exec_artifacts.values().find(|a| {
                     if let Artifact::StartSketchOnFace(s) = a {
@@ -1209,12 +1234,12 @@ fn artifacts_to_update(
                         continue;
                     };
                     let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                        KclError::Internal(KclErrorDetails {
-                            message:format!(
+                        KclError::Internal(KclErrorDetails::new(
+                            format!(
                                 "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
                             ),
-                            source_ranges: vec![range],
-                        })
+                            vec![range],
+                        ))
                     })?;
                     let extra_artifact = exec_artifacts.values().find(|a| {
                         if let Artifact::StartSketchOnFace(s) = a {
@@ -1346,7 +1371,13 @@ fn artifacts_to_update(
             let edge_id = if let Some(edge_id) = cmd.edge_id {
                 ArtifactId::new(edge_id)
             } else {
-                cmd.edge_ids.first().unwrap().into()
+                let Some(edge_id) = cmd.edge_ids.first() else {
+                    internal_error!(
+                        range,
+                        "Solid3dFilletEdge command has no edge ID: id={id:?}, cmd={cmd:?}"
+                    );
+                };
+                edge_id.into()
             };
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
@@ -1415,7 +1446,10 @@ fn artifacts_to_update(
                     let solid_ids = union.solid_ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>();
                     (CompositeSolidSubType::Union, solid_ids, Vec::new())
                 }
-                _ => unreachable!(),
+                _ => internal_error!(
+                    range,
+                    "Boolean or composite command variant not handled: id={id:?}, cmd={cmd:?}"
+                ),
             };
 
             let mut new_solid_ids = vec![id];

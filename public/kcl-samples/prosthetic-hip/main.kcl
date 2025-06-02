@@ -33,14 +33,9 @@ stemLoftProfile2 = startSketchOn(offsetPlane(XY, offset = 75))
 // Draw the third profile for the lofted femur
 p3Z = 110
 p3A = 25
-plane003 = {
-  origin = [0, 0.0, p3Z],
-  xAxis = [cos(p3A), 0, sin(p3A)],
-  yAxis = [0.0, 1.0, 0.0]
-}
 l3 = 32
 r3 = 4
-stemLoftProfile3 = startSketchOn(plane003)
+stemLoftProfile3 = startSketchOn(XY)
   |> startProfile(at = [-15.5, -l3 / 2])
   |> yLine(length = l3, tag = $seg03)
   |> tangentialArc(angle = -120, radius = r3)
@@ -49,18 +44,14 @@ stemLoftProfile3 = startSketchOn(plane003)
   |> angledLine(angle = 30, length = -segLen(seg03))
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-
+  |> translate(z = p3Z)
+  |> rotate(pitch = -p3A)
 // Draw the fourth profile for the lofted femur
 p4Z = 130
 p4A = 36.5
-plane004 = {
-  origin = [0, 0.0, p4Z],
-  xAxis = [cos(p4A), 0, sin(p4A)],
-  yAxis = [0.0, 1.0, 0.0]
-}
 l4 = 16
 r4 = 5
-stemLoftProfile4 = startSketchOn(plane004)
+stemLoftProfile4 = startSketchOn(XY)
   |> startProfile(at = [-23, -l4 / 2])
   |> yLine(length = l4, tag = $seg04)
   |> tangentialArc(angle = -120, radius = r4)
@@ -69,18 +60,14 @@ stemLoftProfile4 = startSketchOn(plane004)
   |> angledLine(angle = 30, length = -segLen(seg04))
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-
+  |> translate(z = p4Z)
+  |> rotate(pitch = -p4A)
 // Draw the first profile for the femoral stem
 p5Z = 140
 p5A = 36.5
-plane005 = {
-  origin = [0, 0.0, p5Z],
-  xAxis = [cos(p5A), 0, sin(p5A)],
-  yAxis = [0.0, 1.0, 0.0]
-}
 l5 = 1.6
 r5 = 1.6
-stemLoftProfile5 = startSketchOn(plane005)
+stemLoftProfile5 = startSketchOn(XY)
   |> startProfile(at = [-19.5, -l5 / 2])
   |> yLine(length = l5, tag = $seg05)
   |> tangentialArc(angle = -120, radius = r5)
@@ -89,18 +76,14 @@ stemLoftProfile5 = startSketchOn(plane005)
   |> angledLine(angle = 30, length = -segLen(seg05))
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-
+  |> translate(z = p5Z)
+  |> rotate(pitch = -p5A)
 // Draw the second profile for the femoral stem
 p6Z = 145
 p6A = 36.5
-plane006 = {
-  origin = [0, 0.0, p6Z],
-  xAxis = [cos(p6A), 0, sin(p6A)],
-  yAxis = [0.0, 1.0, 0.0]
-}
 l6 = 1
 r6 = 3
-stemLoftProfile6 = startSketchOn(plane006)
+stemLoftProfile6 = startSketchOn(XY)
   |> startProfile(at = [-23.4, -l6 / 2])
   |> yLine(length = l6, tag = $seg06)
   |> tangentialArc(angle = -120, radius = r6)
@@ -109,27 +92,24 @@ stemLoftProfile6 = startSketchOn(plane006)
   |> angledLine(angle = 30, length = -segLen(seg06))
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-
-// Draw the third profile for the femoral stem
-stemTab = clone(stemLoftProfile6)
-  |> extrude(%, length = 6)
-
+  |> translate(z = p6Z)
+  |> rotate(pitch = -p6A)
 // Loft the femur using all profiles in sequence
-
 femur = loft([
   stemLoftProfile1,
   stemLoftProfile2,
   stemLoftProfile3,
   stemLoftProfile4
 ])
-
 // Loft the femoral stem
 femoralStem = loft([
   clone(stemLoftProfile4),
   stemLoftProfile5,
-  stemLoftProfile6
+  clone(stemLoftProfile6)
 ])
-
+// Draw the third profile for the femoral stem
+stemTab = stemLoftProfile6
+  |> extrude(length = 6)
 // Revolve a hollow socket to represent the femoral head
 femoralHead = startSketchOn(XZ)
   |> startProfile(at = [4, 0])

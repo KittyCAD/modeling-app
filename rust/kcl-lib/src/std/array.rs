@@ -1,12 +1,9 @@
 use indexmap::IndexMap;
 
-use super::{
-    args::{Arg, KwArgs},
-    Args,
-};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
+        fn_call::{Arg, Args, KwArgs},
         kcl_value::{FunctionSource, KclValue},
         types::RuntimeType,
         ExecState,
@@ -17,7 +14,7 @@ use crate::{
 
 /// Apply a function to each element of an array.
 pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let array: Vec<KclValue> = args.get_unlabeled_kw_arg("array")?;
+    let array: Vec<KclValue> = args.get_unlabeled_kw_arg_typed("array", &RuntimeType::any_array(), exec_state)?;
     let f: &FunctionSource = args.get_kw_arg("f")?;
     let new_array = inner_map(array, f, exec_state, &args).await?;
     Ok(KclValue::HomArray {
@@ -61,19 +58,19 @@ async fn call_map_closure(
     let output = map_fn.call_kw(None, exec_state, ctxt, args, source_range).await?;
     let source_ranges = vec![source_range];
     let output = output.ok_or_else(|| {
-        KclError::Semantic(KclErrorDetails {
-            message: "Map function must return a value".to_string(),
+        KclError::Semantic(KclErrorDetails::new(
+            "Map function must return a value".to_owned(),
             source_ranges,
-        })
+        ))
     })?;
     Ok(output)
 }
 
 /// For each item in an array, update a value.
 pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let array: Vec<KclValue> = args.get_unlabeled_kw_arg("array")?;
+    let array: Vec<KclValue> = args.get_unlabeled_kw_arg_typed("array", &RuntimeType::any_array(), exec_state)?;
     let f: &FunctionSource = args.get_kw_arg("f")?;
-    let initial: KclValue = args.get_kw_arg("initial")?;
+    let initial: KclValue = args.get_kw_arg_typed("initial", &RuntimeType::any(), exec_state)?;
     inner_reduce(array, initial, f, exec_state, &args).await
 }
 
@@ -121,69 +118,31 @@ async fn call_reduce_closure(
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
     let out = transform_fn_return.ok_or_else(|| {
-        KclError::Semantic(KclErrorDetails {
-            message: "Reducer function must return a value".to_string(),
-            source_ranges: source_ranges.clone(),
-        })
+        KclError::Semantic(KclErrorDetails::new(
+            "Reducer function must return a value".to_string(),
+            source_ranges.clone(),
+        ))
     })?;
     Ok(out)
 }
 
-pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let array = args.get_unlabeled_kw_arg("array")?;
-    let item: KclValue = args.get_kw_arg("item")?;
+pub async fn push(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (mut array, ty) = args.get_unlabeled_kw_arg_array_and_type("array", exec_state)?;
+    let item: KclValue = args.get_kw_arg_typed("item", &RuntimeType::any(), exec_state)?;
 
-    let KclValue::HomArray { value: values, ty } = array else {
-        let meta = vec![args.source_range];
-        let actual_type = array.human_friendly_type();
-        return Err(KclError::Semantic(KclErrorDetails {
-            source_ranges: meta,
-            message: format!("You can't push to a value of type {actual_type}, only an array"),
-        }));
-    };
-    let ty = if item.has_type(&ty) {
-        ty
-    } else {
-        // The user pushed an item with a type that differs from the array's
-        // element type.
-        RuntimeType::any()
-    };
-
-    let new_array = inner_push(values, item);
-
-    Ok(KclValue::HomArray { value: new_array, ty })
-}
-
-fn inner_push(mut array: Vec<KclValue>, item: KclValue) -> Vec<KclValue> {
     array.push(item);
-    array
+
+    Ok(KclValue::HomArray { value: array, ty })
 }
 
-pub async fn pop(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let array = args.get_unlabeled_kw_arg("array")?;
-    let KclValue::HomArray { value: values, ty } = array else {
-        let meta = vec![args.source_range];
-        let actual_type = array.human_friendly_type();
-        return Err(KclError::Semantic(KclErrorDetails {
-            source_ranges: meta,
-            message: format!("You can't pop from a value of type {actual_type}, only an array"),
-        }));
-    };
-
-    let new_array = inner_pop(values, &args)?;
-    Ok(KclValue::HomArray { value: new_array, ty })
-}
-
-fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<Vec<KclValue>, KclError> {
+pub async fn pop(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (mut array, ty) = args.get_unlabeled_kw_arg_array_and_type("array", exec_state)?;
     if array.is_empty() {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Cannot pop from an empty array".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::Semantic(KclErrorDetails::new(
+            "Cannot pop from an empty array".to_string(),
+            vec![args.source_range],
+        )));
     }
-
-    // Create a new array with all elements except the last one
-    let new_array = array[..array.len() - 1].to_vec();
-
-    Ok(new_array)
+    array.pop();
+    Ok(KclValue::HomArray { value: array, ty })
 }

@@ -4,19 +4,30 @@ description: Operations executed multi_transform.kcl
 ---
 [
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
     "type": "StdLibCall",
+    "name": "startSketchOn",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -35,18 +46,7 @@ description: Operations executed multi_transform.kcl
         "sourceRange": []
       }
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "type": "GroupBegin",
@@ -91,19 +91,25 @@ description: Operations executed multi_transform.kcl
     "sourceRange": []
   },
   {
+    "type": "StdLibCall",
+    "name": "patternTransform",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "instances": {
         "value": {
           "type": "Number",
           "value": 3.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -115,18 +121,7 @@ description: Operations executed multi_transform.kcl
         "sourceRange": []
       }
     },
-    "name": "patternTransform",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "type": "GroupEnd"
