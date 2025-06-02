@@ -1799,7 +1799,7 @@ foo
         let err = result.unwrap_err();
         assert_eq!(
             err,
-            KclError::Syntax(KclErrorDetails::new(
+            KclError::new_syntax(KclErrorDetails::new(
                 "Unexpected token: #".to_owned(),
                 vec![SourceRange::new(14, 15, ModuleId::default())],
             )),
@@ -2058,7 +2058,7 @@ notTagIdentifier = !myTag";
             // TODO: We don't currently parse this, but we should.  It should be
             // a runtime error instead.
             parse_execute(code10).await.unwrap_err(),
-            KclError::Syntax(KclErrorDetails::new(
+            KclError::new_syntax(KclErrorDetails::new(
                 "Unexpected token: !".to_owned(),
                 vec![SourceRange::new(10, 11, ModuleId::default())],
             ))
@@ -2071,7 +2071,7 @@ notPipeSub = 1 |> identity(!%))";
             // TODO: We don't currently parse this, but we should.  It should be
             // a runtime error instead.
             parse_execute(code11).await.unwrap_err(),
-            KclError::Syntax(KclErrorDetails::new(
+            KclError::new_syntax(KclErrorDetails::new(
                 "There was an unexpected !. Try removing it.".to_owned(),
                 vec![SourceRange::new(56, 57, ModuleId::default())],
             ))

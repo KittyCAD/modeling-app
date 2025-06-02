@@ -110,7 +110,7 @@ impl ParseResult {
         let (p, errs) = self.0?;
 
         if let Some(err) = errs.iter().find(|e| e.severity.is_err()) {
-            return Err(KclError::Syntax(err.clone().into()));
+            return Err(KclError::new_syntax(err.clone().into()));
         }
         match p {
             Some(p) => Ok(p),
