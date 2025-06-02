@@ -126,7 +126,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     if (lastWindowConfig?.bounds) {
       // Only use bounds if the window is still visible on any of the displays
       // (one screen could have been disconnected since config was saved).
-      if (isBoundsVisibile(lastWindowConfig.bounds)) {
+      if (isBoundsVisible(lastWindowConfig.bounds)) {
         windowWidth = lastWindowConfig.bounds.width
         windowHeight = lastWindowConfig.bounds.height
         x = lastWindowConfig.bounds.x
@@ -270,7 +270,7 @@ const saveLastWindowConfig = (config: LastWindowConfig) => {
   })
 }
 
-const isBoundsVisibile = (bounds: Electron.Rectangle): boolean => {
+const isBoundsVisible = (bounds: Electron.Rectangle): boolean => {
   return screen.getAllDisplays().some((display) => {
     const displayBounds = display.bounds
     return !(
