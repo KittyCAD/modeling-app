@@ -4,7 +4,8 @@ description: Error from executing pattern_into_union.kcl
 ---
 KCL Engine error
 
-  × engine: More than 2 solids were passed to the low-level CSG method
+  × engine: The Zoo engine cannot handle this 3D union yet.  Please report
+  │ this as an issue
     ╭─[67:1]
  66 │ 
  67 │ union([base,endTabs])
@@ -14,7 +15,8 @@ KCL Engine error
     ╰────
   ╰─▶ KCL Engine error
       
-        × engine: More than 2 solids were passed to the low-level CSG method
+        × engine: The Zoo engine cannot handle this 3D union yet.  Please
+        │ report this as an issue
           ╭─[67:1]
        66 │
        67 │ union([base,endTabs])
