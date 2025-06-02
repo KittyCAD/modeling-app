@@ -96,7 +96,7 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>, KclEr
         if stage_modules.is_empty() {
             waiting_modules.sort();
 
-            return Err(KclError::ImportCycle(KclErrorDetails::new(
+            return Err(KclError::new_import_cycle(KclErrorDetails::new(
                 format!("circular import of modules not allowed: {}", waiting_modules.join(", ")),
                 // TODO: we can get the right import lines from the AST, but we don't
                 vec![SourceRange::default()],

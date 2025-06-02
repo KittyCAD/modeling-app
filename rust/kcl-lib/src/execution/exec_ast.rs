@@ -605,7 +605,7 @@ impl ExecutorContext {
         exec_state.global.mod_loader.leave_module(path);
 
         result.map_err(|err| {
-            if let KclError::ImportCycle(_) = err {
+            if let KclError::ImportCycle { .. } = err {
                 // It was an import cycle.  Keep the original message.
                 err.override_source_ranges(vec![source_range])
             } else {
@@ -1412,10 +1412,12 @@ impl Node<ArrayRangeExpression> {
         let end_val = ctx
             .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
-        let (end, end_ty) = end_val.as_int_with_ty().ok_or(KclError::new_semantic(KclErrorDetails::new(
-            format!("Expected int but found {}", end_val.human_friendly_type()),
-            vec![self.into()],
-        )))?;
+        let (end, end_ty) = end_val
+            .as_int_with_ty()
+            .ok_or(KclError::new_semantic(KclErrorDetails::new(
+                format!("Expected int but found {}", end_val.human_friendly_type()),
+                vec![self.into()],
+            )))?;
 
         if start_ty != end_ty {
             let start = start_val.as_ty_f64().unwrap_or(TyF64 { n: 0.0, ty: start_ty });
@@ -1602,7 +1604,8 @@ impl Property {
 }
 
 fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -> Result<Property, KclError> {
-    let make_err = |message: String| Err::<Property, _>(KclError::new_semantic(KclErrorDetails::new(message, property_sr)));
+    let make_err =
+        |message: String| Err::<Property, _>(KclError::new_semantic(KclErrorDetails::new(message, property_sr)));
     match value {
         KclValue::Number{value: num, .. } => {
             let num = *num;

@@ -276,7 +276,7 @@ impl ExecState {
     }
 
     pub(super) fn circular_import_error(&self, path: &ModulePath, source_range: SourceRange) -> KclError {
-        KclError::ImportCycle(KclErrorDetails::new(
+        KclError::new_import_cycle(KclErrorDetails::new(
             format!(
                 "circular import of modules is not allowed: {} -> {}",
                 self.global

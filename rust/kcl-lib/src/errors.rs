@@ -423,6 +423,10 @@ impl KclError {
         KclError::Internal { details }
     }
 
+    pub fn new_import_cycle(details: KclErrorDetails) -> KclError {
+        KclError::ImportCycle { details }
+    }
+
     pub fn new_semantic(details: KclErrorDetails) -> KclError {
         KclError::Semantic { details }
     }
