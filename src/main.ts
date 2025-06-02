@@ -102,10 +102,8 @@ if (!singleInstanceLock && !IS_PLAYWRIGHT) {
   registerStartupListeners()
 }
 
-const LOCALSTORAGE_LAST_WINDOW_SIZE = 'lastWindowSize'
-
 const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
-  let newWindow
+  let newWindow: BrowserWindow | null = null
 
   if (reuse) {
     newWindow = mainWindow
@@ -120,16 +118,17 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     let windowHeight = Math.round(height * 0.9)
     let windowWidth = Math.min(Math.round(windowHeight * (16 / 9)), width - 50)
 
+    let x = primaryDisplay.workArea.x + Math.floor((width - windowWidth) / 2)
+    let y = primaryDisplay.workArea.y + Math.floor((height - windowHeight) / 2)
+
     // If size was saved already, use it
     const lastWindowConfig = loadLastWindowConfig()
-    if (lastWindowConfig) {
-      windowWidth = lastWindowConfig.width
-      windowHeight = lastWindowConfig.height
+    if (lastWindowConfig?.bounds) {
+      windowWidth = lastWindowConfig.bounds.width
+      windowHeight = lastWindowConfig.bounds.height
+      x = lastWindowConfig.bounds.x
+      y = lastWindowConfig.bounds.y
     }
-
-    const x = primaryDisplay.workArea.x + Math.floor((width - windowWidth) / 2)
-    const y =
-      primaryDisplay.workArea.y + Math.floor((height - windowHeight) / 2)
 
     newWindow = new BrowserWindow({
       autoHideMenuBar: false,
@@ -152,13 +151,10 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     })
   }
 
-  newWindow.on('resized', () => {
-    // resized triggers when the resizing stops (mouse is released)
-    // -> save the new size to localStorage
-    console.log('resized', newWindow.width, newWindow.height)
+  newWindow.on('close', () => {
+    const bounds = newWindow.getBounds()
     saveLastWindowConfig({
-      width: newWindow.getSize()[0],
-      height: newWindow.getSize()[1],
+      bounds,
     })
   })
 
@@ -245,10 +241,10 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
 }
 
 interface LastWindowConfig {
-  width: number
-  height: number
+  bounds: Electron.Rectangle
   screen?: number
 }
+
 const userDataPath = app.getPath('userData')
 const wndowConfigPath = path.join(userDataPath, 'window_config.json')
 
@@ -256,7 +252,7 @@ const loadLastWindowConfig = (): LastWindowConfig | null => {
   try {
     const data = fs.readFileSync(wndowConfigPath, 'utf8')
     const config = JSON.parse(data) as LastWindowConfig
-    if (config.width > 0 && config.height > 0) {
+    if (config.bounds) {
       return config
     }
   } catch (e) {
