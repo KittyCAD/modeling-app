@@ -418,8 +418,13 @@ impl KclError {
             },
         }
     }
+
     pub fn new_internal(details: KclErrorDetails) -> KclError {
         KclError::Internal { details }
+    }
+
+    pub fn new_semantic(details: KclErrorDetails) -> KclError {
+        KclError::Semantic { details }
     }
 
     pub fn new_type(details: KclErrorDetails) -> KclError {

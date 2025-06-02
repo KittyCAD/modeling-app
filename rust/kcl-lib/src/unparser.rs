@@ -912,7 +912,7 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
                     if ce.severity != crate::errors::Severity::Warning {
                         let report = crate::Report {
                             kcl_source: contents.to_string(),
-                            error: crate::KclError::Semantic(ce.clone().into()),
+                            error: crate::KclError::new_semantic(ce.clone().into()),
                             filename: file.to_string_lossy().to_string(),
                         };
                         let report = miette::Report::new(report);

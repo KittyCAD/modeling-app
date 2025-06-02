@@ -92,7 +92,7 @@ async fn inner_fillet(
         }));
     }
     if tags.is_empty() {
-        return Err(KclError::Semantic(KclErrorDetails {
+        return Err(KclError::new_semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
             message: "You must fillet at least one tag".to_owned(),
             backtrace: Default::default(),

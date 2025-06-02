@@ -156,7 +156,7 @@ impl Args {
         T: FromKclValue<'a>,
     {
         self.get_kw_arg_opt(label)?.ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails::new(
+            KclError::new_semantic(KclErrorDetails::new(
                 format!("This function requires a keyword argument '{label}'"),
                 vec![self.source_range],
             ))
@@ -173,7 +173,7 @@ impl Args {
         T: for<'a> FromKclValue<'a>,
     {
         let Some(arg) = self.kw_args.labeled.get(label) else {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("This function requires a keyword argument '{label}'"),
                 vec![self.source_range],
             )));
@@ -207,7 +207,7 @@ impl Args {
             if message.contains("one or more Solids or imported geometry but it's actually of type Sketch") {
                 message = format!("{message}. {ERROR_STRING_SKETCH_TO_SOLID_HELPER}");
             }
-            KclError::Semantic(KclErrorDetails::new(message, arg.source_ranges()))
+            KclError::new_semantic(KclErrorDetails::new(message, arg.source_ranges()))
         })?;
 
         // TODO unnecessary cloning
@@ -221,7 +221,7 @@ impl Args {
         label: &str,
     ) -> Result<Vec<(EdgeReference, SourceRange)>, KclError> {
         let Some(arg) = self.kw_args.labeled.get(label) else {
-            let err = KclError::Semantic(KclErrorDetails::new(
+            let err = KclError::new_semantic(KclErrorDetails::new(
                 format!("This function requires a keyword argument '{label}'"),
                 vec![self.source_range],
             ));
@@ -234,7 +234,7 @@ impl Args {
             .map(|item| {
                 let source = SourceRange::from(item);
                 let val = FromKclValue::from_kcl_val(item).ok_or_else(|| {
-                    KclError::Semantic(KclErrorDetails::new(
+                    KclError::new_semantic(KclErrorDetails::new(
                         format!("Expected an Edge but found {}", arg.value.human_friendly_type()),
                         arg.source_ranges(),
                     ))
@@ -270,7 +270,7 @@ impl Args {
     {
         let arg = self
             .unlabeled_kw_arg_unconverted()
-            .ok_or(KclError::Semantic(KclErrorDetails::new(
+            .ok_or(KclError::new_semantic(KclErrorDetails::new(
                 format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
                 vec![self.source_range],
             )))?;
@@ -304,7 +304,7 @@ impl Args {
             if message.contains("one or more Solids or imported geometry but it's actually of type Sketch") {
                 message = format!("{message}. {ERROR_STRING_SKETCH_TO_SOLID_HELPER}");
             }
-            KclError::Semantic(KclErrorDetails::new(message, arg.source_ranges()))
+            KclError::new_semantic(KclErrorDetails::new(message, arg.source_ranges()))
         })?;
 
         T::from_kcl_val(&arg).ok_or_else(|| {
@@ -593,13 +593,13 @@ where
 {
     fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
         let Some(arg) = args.args.get(i) else {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Expected an argument at index {i}"),
                 vec![args.source_range],
             )));
         };
         let Some(val) = T::from_kcl_val(&arg.value) else {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Argument at index {i} was supposed to be type {} but found {}",
                     tynm::type_name::<T>(),
@@ -622,7 +622,7 @@ where
             return Ok(None);
         }
         let Some(val) = T::from_kcl_val(&arg.value) else {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Argument at index {i} was supposed to be type Option<{}> but found {}",
                     tynm::type_name::<T>(),

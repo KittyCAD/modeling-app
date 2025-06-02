@@ -389,7 +389,7 @@ impl MetaSettings {
                     self.kcl_version = value;
                 }
                 name => {
-                    return Err(KclError::Semantic(KclErrorDetails::new(
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
                         format!(
                             "Unexpected settings key: `{name}`; expected one of `{}`, `{}`",
                             annotations::SETTINGS_UNIT_LENGTH,

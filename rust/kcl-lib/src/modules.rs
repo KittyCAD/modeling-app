@@ -163,7 +163,7 @@ impl ModulePath {
             ModulePath::Std { value: name } => Ok(ModuleSource {
                 source: read_std(name)
                     .ok_or_else(|| {
-                        KclError::Semantic(KclErrorDetails::new(
+                        KclError::new_semantic(KclErrorDetails::new(
                             format!("Cannot find standard library module to import: std::{name}."),
                             vec![source_range],
                         ))

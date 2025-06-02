@@ -66,7 +66,7 @@ async fn inner_pattern_transform<'a>(
     // Build the vec of transforms, one for each repetition.
     let mut transform_vec = Vec::with_capacity(usize::try_from(instances).unwrap());
     if instances < 1 {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             MUST_HAVE_ONE_INSTANCE.to_owned(),
             vec![args.source_range],
         )));
@@ -96,7 +96,7 @@ async fn inner_pattern_transform_2d<'a>(
     // Build the vec of transforms, one for each repetition.
     let mut transform_vec = Vec::with_capacity(usize::try_from(instances).unwrap());
     if instances < 1 {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             MUST_HAVE_ONE_INSTANCE.to_owned(),
             vec![args.source_range],
         )));
@@ -222,7 +222,7 @@ async fn make_transform<T: GeometryTrait>(
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
     let transform_fn_return = transform_fn_return.ok_or_else(|| {
-        KclError::Semantic(KclErrorDetails::new(
+        KclError::new_semantic(KclErrorDetails::new(
             "Transform function must return a value".to_string(),
             source_ranges.clone(),
         ))
@@ -233,7 +233,7 @@ async fn make_transform<T: GeometryTrait>(
             let transforms: Vec<_> = value
                 .into_iter()
                 .map(|val| {
-                    val.into_object().ok_or(KclError::Semantic(KclErrorDetails::new(
+                    val.into_object().ok_or(KclError::new_semantic(KclErrorDetails::new(
                         "Transform function must return a transform object".to_string(),
                         source_ranges.clone(),
                     )))
@@ -242,7 +242,7 @@ async fn make_transform<T: GeometryTrait>(
             transforms
         }
         _ => {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Transform function must return a transform object".to_string(),
                 source_ranges.clone(),
             )))
@@ -265,7 +265,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         Some(KclValue::Bool { value: true, .. }) => true,
         Some(KclValue::Bool { value: false, .. }) => false,
         Some(_) => {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 "The 'replicate' key must be a bool".to_string(),
                 source_ranges.clone(),
             )));
@@ -297,7 +297,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
     let mut rotation = Rotation::default();
     if let Some(rot) = transform.get("rotation") {
         let KclValue::Object { value: rot, meta: _ } = rot else {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 "The 'rotation' key must be an object (with optional fields 'angle', 'axis' and 'origin')".to_owned(),
                 source_ranges.clone(),
             )));
@@ -311,7 +311,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
                     rotation.angle = Angle::from_degrees(*number);
                 }
                 _ => {
-                    return Err(KclError::Semantic(KclErrorDetails::new(
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
                         "The 'rotation.angle' key must be a number (of degrees)".to_owned(),
                         source_ranges.clone(),
                     )));
@@ -345,7 +345,7 @@ fn array_to_point3d(
 ) -> Result<[TyF64; 3], KclError> {
     val.coerce(&RuntimeType::point3d(), true, exec_state)
         .map_err(|e| {
-            KclError::Semantic(KclErrorDetails::new(
+            KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Expected an array of 3 numbers (i.e., a 3D point), found {}",
                     e.found
@@ -365,7 +365,7 @@ fn array_to_point2d(
 ) -> Result<[TyF64; 2], KclError> {
     val.coerce(&RuntimeType::point2d(), true, exec_state)
         .map_err(|e| {
-            KclError::Semantic(KclErrorDetails::new(
+            KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Expected an array of 2 numbers (i.e., a 2D point), found {}",
                     e.found
@@ -534,7 +534,7 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 
     let axis = axis.to_point2d();
     if axis[0].n == 0.0 && axis[1].n == 0.0 {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             "The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place."
                 .to_owned(),
             vec![args.source_range],
@@ -594,7 +594,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 
     let axis = axis.to_point3d();
     if axis[0].n == 0.0 && axis[1].n == 0.0 && axis[2].n == 0.0 {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             "The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place."
                 .to_owned(),
             vec![args.source_range],
@@ -803,7 +803,7 @@ async fn inner_pattern_circular_2d(
         .await?;
 
         let Geometries::Sketches(new_sketches) = geometries else {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Expected a vec of sketches".to_string(),
                 vec![args.source_range],
             )));
@@ -901,7 +901,7 @@ async fn inner_pattern_circular_3d(
         .await?;
 
         let Geometries::Solids(new_solids) = geometries else {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Expected a vec of solids".to_string(),
                 vec![args.source_range],
             )));
@@ -926,7 +926,7 @@ async fn pattern_circular(
             return Ok(Geometries::from(geometry));
         }
         RepetitionsNeeded::Invalid => {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 MUST_HAVE_ONE_INSTANCE.to_owned(),
                 vec![args.source_range],
             )));
