@@ -27,8 +27,6 @@ use serde::{Deserialize, Serialize};
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::artifact::build_artifact_graph;
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
@@ -817,28 +815,7 @@ impl ExecutorContext {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         for modules in import_graph::import_graph(&universe, self)
-            .map_err(|err| {
-                let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                    .global
-                    .path_to_source_id
-                    .iter()
-                    .map(|(k, v)| ((*v), k.clone()))
-                    .collect();
-
-                KclErrorWithOutputs::new(
-                    err,
-                    exec_state.errors().to_vec(),
-                    #[cfg(feature = "artifact-graph")]
-                    exec_state.global.operations.clone(),
-                    #[cfg(feature = "artifact-graph")]
-                    exec_state.global.artifact_commands.clone(),
-                    #[cfg(feature = "artifact-graph")]
-                    exec_state.global.artifact_graph.clone(),
-                    module_id_to_module_path,
-                    exec_state.global.id_to_source.clone(),
-                    default_planes.clone(),
-                )
-            })?
+            .map_err(|err| exec_state.error_with_outputs(err, default_planes.clone()))?
             .into_iter()
         {
             #[cfg(not(target_arch = "wasm32"))]
@@ -860,7 +837,6 @@ impl ExecutorContext {
                 let module_path = module_path.clone();
                 let source_range = SourceRange::from(import_stmt);
 
-                #[cfg(feature = "artifact-graph")]
                 match &module_path {
                     ModulePath::Main => {
                         // This should never happen.
@@ -869,7 +845,7 @@ impl ExecutorContext {
                         // We only want to display the top-level module imports in
                         // the Feature Tree, not transitive imports.
                         if universe_map.contains_key(value) {
-                            exec_state.global.operations.push(Operation::GroupBegin {
+                            exec_state.push_op(Operation::GroupBegin {
                                 group: Group::ModuleInstance {
                                     name: value.file_name().unwrap_or_default(),
                                     module_id,
@@ -879,7 +855,7 @@ impl ExecutorContext {
                             // Due to concurrent execution, we cannot easily
                             // group operations by module. So we leave the
                             // group empty and close it immediately.
-                            exec_state.global.operations.push(Operation::GroupEnd);
+                            exec_state.push_op(Operation::GroupEnd);
                         }
                     }
                     ModulePath::Std { .. } => {
@@ -924,7 +900,6 @@ impl ExecutorContext {
                 #[cfg(target_arch = "wasm32")]
                 {
                     wasm_bindgen_futures::spawn_local(async move {
-                        //set.spawn(async move {
                         let mut exec_state = exec_state;
                         let exec_ctxt = exec_ctxt;
 
@@ -994,26 +969,7 @@ impl ExecutorContext {
                         exec_state.global.module_infos[&module_id].restore_repr(repr);
                     }
                     Err(e) => {
-                        let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                            .global
-                            .path_to_source_id
-                            .iter()
-                            .map(|(k, v)| ((*v), k.clone()))
-                            .collect();
-
-                        return Err(KclErrorWithOutputs::new(
-                            e,
-                            exec_state.errors().to_vec(),
-                            #[cfg(feature = "artifact-graph")]
-                            exec_state.global.operations.clone(),
-                            #[cfg(feature = "artifact-graph")]
-                            exec_state.global.artifact_commands.clone(),
-                            #[cfg(feature = "artifact-graph")]
-                            exec_state.global.artifact_graph.clone(),
-                            module_id_to_module_path,
-                            exec_state.global.id_to_source.clone(),
-                            default_planes,
-                        ));
+                        return Err(exec_state.error_with_outputs(e, default_planes));
                     }
                 }
             }
@@ -1044,29 +1000,7 @@ impl ExecutorContext {
             exec_state,
         )
         .await
-        .map_err(|err| {
-            println!("Error: {err:?}");
-            let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                .global
-                .path_to_source_id
-                .iter()
-                .map(|(k, v)| ((*v), k.clone()))
-                .collect();
-
-            KclErrorWithOutputs::new(
-                err,
-                exec_state.errors().to_vec(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.operations.clone(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.artifact_commands.clone(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.artifact_graph.clone(),
-                module_id_to_module_path,
-                exec_state.global.id_to_source.clone(),
-                default_planes,
-            )
-        })?;
+        .map_err(|err| exec_state.error_with_outputs(err, default_planes))?;
 
         Ok((universe, root_imports))
     }
@@ -1099,28 +1033,7 @@ impl ExecutorContext {
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
-        let env_ref = result.map_err(|e| {
-            let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                .global
-                .path_to_source_id
-                .iter()
-                .map(|(k, v)| ((*v), k.clone()))
-                .collect();
-
-            KclErrorWithOutputs::new(
-                e,
-                exec_state.errors().to_vec(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.operations.clone(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.artifact_commands.clone(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.artifact_graph.clone(),
-                module_id_to_module_path,
-                exec_state.global.id_to_source.clone(),
-                default_planes.clone(),
-            )
-        })?;
+        let env_ref = result.map_err(|e| exec_state.error_with_outputs(e, default_planes))?;
 
         if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();
@@ -1137,7 +1050,7 @@ impl ExecutorContext {
     async fn execute_and_build_graph(
         &self,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
-        #[cfg_attr(not(feature = "artifact-graph"), expect(unused))] cached_body_items: usize,
+        cached_body_items: usize,
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<EnvironmentRef, KclError> {
@@ -1164,40 +1077,12 @@ impl ExecutorContext {
         // and should be dropped.
         self.engine.clear_queues().await;
 
-        #[cfg(feature = "artifact-graph")]
+        match exec_state
+            .build_artifact_graph(&self.engine, program, cached_body_items)
+            .await
         {
-            let new_commands = self.engine.take_artifact_commands().await;
-            let new_responses = self.engine.take_responses().await;
-            let initial_graph = exec_state.global.artifact_graph.clone();
-
-            // Build the artifact graph.
-            let graph_result = build_artifact_graph(
-                &new_commands,
-                &new_responses,
-                program,
-                cached_body_items,
-                &mut exec_state.global.artifacts,
-                initial_graph,
-            );
-            // Move the artifact commands and responses into ExecState to
-            // simplify cache management and error creation.
-            exec_state.global.artifact_commands.extend(new_commands);
-            exec_state.global.artifact_responses.extend(new_responses);
-
-            match graph_result {
-                Ok(artifact_graph) => {
-                    exec_state.global.artifact_graph = artifact_graph;
-                    exec_result.map(|(_, env_ref, _)| env_ref)
-                }
-                Err(err) => {
-                    // Prefer the exec error.
-                    exec_result.and(Err(err))
-                }
-            }
-        }
-        #[cfg(not(feature = "artifact-graph"))]
-        {
-            exec_result.map(|(_, env_ref, _)| env_ref)
+            Ok(_) => exec_result.map(|(_, env_ref, _)| env_ref),
+            Err(err) => exec_result.and(Err(err)),
         }
     }
 
