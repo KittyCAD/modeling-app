@@ -645,7 +645,23 @@ impl ExecutorContext {
             Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state),
             Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
             Expr::Name(name) => {
-                let value = name.get_result(exec_state, self).await?.clone();
+                let being_declared = exec_state.mod_local.being_declared.clone();
+                let value = name
+                    .get_result(exec_state, self)
+                    .await
+                    .map_err(|e| match e {
+                        KclError::UndefinedValue {
+                            name,
+                            mut details,
+                        } => {
+                            if let Some(being_declared) = &being_declared{
+                                details.message = format!("You can't use `{}` because you're currently trying to define it. Use a different variable here instead.", being_declared);
+                            }
+                            KclError::UndefinedValue { details, name}
+                        }
+                        e => e,
+                    })?
+                    .clone();
                 if let KclValue::Module { value: module_id, meta } = value {
                     self.exec_module_for_result(
                         module_id,
