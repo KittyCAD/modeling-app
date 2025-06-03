@@ -367,10 +367,10 @@ impl ProgramMemory {
 
         let name = var.trim_start_matches(TYPE_PREFIX).trim_start_matches(MODULE_PREFIX);
 
-        Err(KclError::UndefinedValue(KclErrorDetails::new(
-            format!("`{name}` is not defined"),
-            vec![source_range],
-        )))
+        Err(KclError::new_undefined_value(
+            KclErrorDetails::new(format!("`{name}` is not defined"), vec![source_range]),
+            Some(name.to_owned()),
+        ))
     }
 
     /// Iterate over all key/value pairs in the specified environment which satisfy the provided
@@ -488,10 +488,10 @@ impl ProgramMemory {
             };
         }
 
-        Err(KclError::UndefinedValue(KclErrorDetails::new(
-            format!("`{}` is not defined", var),
-            vec![],
-        )))
+        Err(KclError::new_undefined_value(
+            KclErrorDetails::new(format!("`{}` is not defined", var), vec![]),
+            Some(var.to_owned()),
+        ))
     }
 }
 
@@ -646,7 +646,7 @@ impl Stack {
     pub fn add(&mut self, key: String, value: KclValue, source_range: SourceRange) -> Result<(), KclError> {
         let env = self.memory.get_env(self.current_env.index());
         if env.contains_key(&key) {
-            return Err(KclError::ValueAlreadyDefined(KclErrorDetails::new(
+            return Err(KclError::new_value_already_defined(KclErrorDetails::new(
                 format!("Cannot redefine `{}`", key),
                 vec![source_range],
             )));

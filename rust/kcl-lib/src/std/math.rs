@@ -56,7 +56,7 @@ pub async fn sqrt(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::num_any(), exec_state)?;
 
     if input.n < 0.0 {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             format!(
                 "Attempt to take square root (`sqrt`) of a number less than zero ({})",
                 input.n

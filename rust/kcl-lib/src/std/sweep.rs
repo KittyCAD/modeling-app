@@ -75,7 +75,7 @@ async fn inner_sweep(
         Some("sketchPlane") => RelativeTo::SketchPlane,
         Some("trajectoryCurve") | None => RelativeTo::TrajectoryCurve,
         Some(_) => {
-            return Err(KclError::Syntax(crate::errors::KclErrorDetails::new(
+            return Err(KclError::new_syntax(crate::errors::KclErrorDetails::new(
                 "If you provide relativeTo, it must either be 'sketchPlane' or 'trajectoryCurve'".to_owned(),
                 vec![args.source_range],
             )))

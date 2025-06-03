@@ -47,7 +47,7 @@ it('formats numbers with units', () => {
 describe('test errFromErrWithOutputs', () => {
   it('converts KclErrorWithOutputs to KclError', () => {
     const blob =
-      '{"error":{"kind":"internal","sourceRanges":[],"backtrace":[],"msg":"Cache busted"},"nonFatal":[],"operations":[],"artifactCommands":[],"artifactGraph":{"map":{}},"filenames":{},"sourceFiles":{},"defaultPlanes":null}'
+      '{"error":{"kind":"internal","details":{"sourceRanges":[],"backtrace":[],"msg":"Cache busted"}},"nonFatal":[],"operations":[],"artifactCommands":[],"artifactGraph":{"map":{}},"filenames":{},"sourceFiles":{},"defaultPlanes":null}'
     const error = errFromErrWithOutputs(blob)
     const errorStr = JSON.stringify(error)
     expect(errorStr).toEqual(

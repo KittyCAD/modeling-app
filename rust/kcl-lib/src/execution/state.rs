@@ -80,6 +80,11 @@ pub(super) struct ModuleState {
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
+    /// The closest variable declaration being executed in any parent node in the AST.
+    /// This is used to provide better error messages, e.g. noticing when the user is trying
+    /// to use the variable `length` inside the RHS of its own definition, like `length = tan(length)`.
+    /// TODO: Make this a reference.
+    pub being_declared: Option<String>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
     /// Settings specified from annotations.
@@ -276,7 +281,7 @@ impl ExecState {
     }
 
     pub(super) fn circular_import_error(&self, path: &ModulePath, source_range: SourceRange) -> KclError {
-        KclError::ImportCycle(KclErrorDetails::new(
+        KclError::new_import_cycle(KclErrorDetails::new(
             format!(
                 "circular import of modules is not allowed: {} -> {}",
                 self.global
@@ -342,6 +347,7 @@ impl ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
             pipe_value: Default::default(),
+            being_declared: Default::default(),
             module_exports: Default::default(),
             explicit_length_units: false,
             path,
@@ -389,7 +395,7 @@ impl MetaSettings {
                     self.kcl_version = value;
                 }
                 name => {
-                    return Err(KclError::Semantic(KclErrorDetails::new(
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
                         format!(
                             "Unexpected settings key: `{name}`; expected one of `{}`, `{}`",
                             annotations::SETTINGS_UNIT_LENGTH,

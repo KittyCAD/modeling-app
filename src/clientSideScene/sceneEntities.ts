@@ -1107,7 +1107,11 @@ export class SceneEntities {
             (lastSegment.type === 'TangentialArc' && segmentName !== 'line') ||
             segmentName === 'tangentialArc'
           ) {
-            resolvedFunctionName = 'tangentialArc'
+            if (snappedPoint[0] === 0 || snappedPoint[1] === 0) {
+              resolvedFunctionName = 'tangentialArcTo'
+            } else {
+              resolvedFunctionName = 'tangentialArc'
+            }
           } else if (snappedToTangent) {
             // Generate tag for previous arc segment and use it for the angle of angledLine:
             //   |> tangentialArc(endAbsolute = [5, -10], tag = $arc001)
@@ -2500,8 +2504,8 @@ export class SceneEntities {
             forward,
             position,
           })
-          await this.codeManager.writeToFile()
         }
+        await this.codeManager.writeToFile()
       },
       onDrag: async ({
         selected,
@@ -3584,8 +3588,7 @@ export class SceneEntities {
     })
 
     if (!resp) {
-      console.warn('No response')
-      return {} as Models['GetSketchModePlane_type']
+      return Promise.reject('no response')
     }
 
     if (isArray(resp)) {
