@@ -79,7 +79,7 @@ impl Context {
 
         self.execute_typed(program_ast_json, path, settings)
             .await
-            .and_then(|outcome|JsValue::from_serde(&outcome).map_err(|e| {
+            .and_then(|outcome| JsValue::from_serde(&outcome).map_err(|e| {
                 // The serde-wasm-bindgen does not work here because of weird HashMap issues.
                 // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
                 KclErrorWithOutputs::no_outputs(KclError::internal(
