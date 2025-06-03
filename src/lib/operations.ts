@@ -11,6 +11,7 @@ import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
   getCapCodeRef,
+  getCodeRefsByArtifactId,
   getEdgeCutConsumedCodeRef,
   getSweepEdgeCodeRef,
   getWallCodeRef,
@@ -1330,11 +1331,23 @@ async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
 
   // 1. Map the unlabeled arguments to solid2d selections
   console.log('operation', operation)
-  const geometryName = codeManager.code.slice(
-    operation.unlabeledArg?.sourceRange[0],
-    operation.unlabeledArg?.sourceRange[1]
+  if (operation.unlabeledArg?.value.type !== 'Solid') {
+    return { reason: "Couldn't retrieve geometry selection" }
+  }
+
+  const refs = getCodeRefsByArtifactId(
+    operation.unlabeledArg?.value?.value?.artifactId,
+    kclManager.artifactGraph
   )
-  console.log('geometryName', geometryName)
+  if (!refs || refs.length === 0) {
+    return { reason: "Couldn't retrieve geometry code refs" }
+  }
+  const selection: Selections = {
+    graphSelections: refs.map((ref) => ({
+      codeRef: ref,
+    })),
+    otherSelections: [],
+  }
 
   // 2. Convert the x, y, z argument from a string to a KCL expression
   const x = await stringToKclExpression(
