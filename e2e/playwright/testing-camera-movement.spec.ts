@@ -4,7 +4,7 @@ import { uuidv4 } from '@src/lib/utils'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
-import type { SceneFixture } from './fixtures/sceneFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 
 test.describe('Testing Camera Movement', () => {
   /**
@@ -153,9 +153,9 @@ test.describe('Testing Camera Movement', () => {
 
             // Scroll zooming doesn't update the debug pane's cam position values,
             // so we have to force a refresh.
-            u.clearCommandLogs()
-            u.sendCustomCmd(refreshCamValuesCmd)
-            u.waitForCmdReceive('default_camera_get_settings')
+            await u.clearCommandLogs()
+            await u.sendCustomCmd(refreshCamValuesCmd)
+            await u.waitForCmdReceive('default_camera_get_settings')
           },
           afterPosition: [0, 42.5, 42.5],
           beforePosition: camInitialPosition,
@@ -226,7 +226,9 @@ test.describe('Testing Camera Movement', () => {
 
             const appLogoBBox = await page.getByTestId('app-logo').boundingBox()
             expect(appLogoBBox).not.toBeNull()
-            if (!appLogoBBox) throw new Error('app logo not found')
+            if (!appLogoBBox) {
+              throw new Error('app logo not found')
+            }
             await page.mouse.move(
               appLogoBBox.x + appLogoBBox.width / 2,
               appLogoBBox.y + appLogoBBox.height / 2
