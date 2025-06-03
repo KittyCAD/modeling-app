@@ -84,7 +84,10 @@ export const ShareButton = memo(function ShareButton() {
 
   return (
     <Popover className="relative flex">
-      <Popover.Button as="div" className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-appForeground">
+      <Popover.Button
+        as="div"
+        className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-appForeground"
+      >
         <button
           type="button"
           onClick={onShareClickFreeOrUnknownRestricted}
