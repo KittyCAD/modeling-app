@@ -398,4 +398,19 @@ mod tests {
             }
         );
     }
+
+    #[test]
+    fn test_node_path_from_range_import() {
+        let code = r#"import "cube.step" as cube
+import "cylinder.kcl" as cylinder
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        // The entire cylinder import statement.
+        assert_eq!(
+            NodePath::from_range(&program.ast, 0, range(27, 60)).unwrap(),
+            NodePath {
+                steps: vec![Step::ProgramBodyItem { index: 1 }],
+            }
+        );
+    }
 }
