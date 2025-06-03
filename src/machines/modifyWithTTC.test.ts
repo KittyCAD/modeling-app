@@ -1,13 +1,93 @@
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { VITE_KC_DEV_TOKEN } from '@src/env'
 import { getModuleIdByFileName, isArray } from '@src/lib/utils'
-import { vi } from 'vitest'
+import { vi, inject } from 'vitest'
 import { assertParse } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import path from 'path'
 import fs from 'node:fs'
 import type { Selections } from '@src/lib/selections'
+
+// Custom JSON snapshot utilities
+const SNAPSHOTS_DIR = path.join(__dirname, '__snapshots__')
+const SNAPSHOTS_FILE = path.join(SNAPSHOTS_DIR, 'modifyWithTTC.test.json')
+
+interface JsonSnapshots {
+  [testName: string]: any
+}
+
+function loadJsonSnapshots(): JsonSnapshots {
+  try {
+    if (fs.existsSync(SNAPSHOTS_FILE)) {
+      const content = fs.readFileSync(SNAPSHOTS_FILE, 'utf-8')
+      return JSON.parse(content)
+    }
+  } catch (error) {
+    console.warn('Failed to load JSON snapshots:', error)
+  }
+  return {}
+}
+
+function saveJsonSnapshots(snapshots: JsonSnapshots): void {
+  try {
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(SNAPSHOTS_DIR)) {
+      fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true })
+    }
+    fs.writeFileSync(SNAPSHOTS_FILE, JSON.stringify(snapshots, null, 2), 'utf-8')
+  } catch (error) {
+    console.error('Failed to save JSON snapshots:', error)
+    throw error
+  }
+}
+
+function expectJsonSnapshot(testName: string, data: any): void {
+  const snapshots = loadJsonSnapshots()
+  const serializedData = JSON.parse(JSON.stringify(data)) // Deep clone to remove any functions/symbols
+  
+  // Try to detect update mode using inject
+  let isUpdateMode = false
+  try {
+    isUpdateMode = inject('vitest:updateSnapshots') || false
+  } catch {
+    // If inject fails, fall back to environment variable approach
+    isUpdateMode = process.env.VITEST_UPDATE_SNAPSHOTS === 'true' ||
+                   process.env.UPDATE_SNAPSHOTS === 'true'
+  }
+  
+  if (isUpdateMode) {
+    // Update mode: save the new snapshot
+    snapshots[testName] = serializedData
+    saveJsonSnapshots(snapshots)
+  } else {
+    // Compare mode: check against existing snapshot
+    if (!(testName in snapshots)) {
+      throw new Error(
+        `Snapshot for "${testName}" not found. ` +
+        `To create or update snapshots, run:\n` +
+        `  npm test -- --run src/machines/modifyWithTTC.test.ts -u\n` +
+        `Or set the UPDATE_SNAPSHOTS environment variable:\n` +
+        `  UPDATE_SNAPSHOTS=true npm test -- --run src/machines/modifyWithTTC.test.ts`
+      )
+    }
+    
+    const existing = snapshots[testName]
+    try {
+      expect(serializedData).toEqual(existing)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      throw new Error(
+        `Snapshot mismatch for "${testName}". ` +
+        `To update snapshots, run:\n` +
+        `  npm test -- --run src/machines/modifyWithTTC.test.ts -u\n` +
+        `Or set the UPDATE_SNAPSHOTS environment variable:\n` +
+        `  UPDATE_SNAPSHOTS=true npm test -- --run src/machines/modifyWithTTC.test.ts\n\n` +
+        `Original error: ${errorMessage}`
+      )
+    }
+  }
+}
 
 export function loadSampleProject(fileName: string): {
   [fileName: string]: string
@@ -659,7 +739,8 @@ describe('When prompting modify with TTC, prompt:', () => {
               expectedFiles,
             }
 
-            expect(textToCadPayload).toMatchSnapshot()
+            // Use custom JSON snapshot instead of Vitest's default format
+            expectJsonSnapshot(prompt, textToCadPayload)
           }
 
           // Wait for the promise to resolve or reject
