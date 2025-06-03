@@ -1,3 +1,4 @@
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -51,10 +52,8 @@ export const EngineStream = (props: {
   const last = useRef<number>(Date.now())
 
   const [firstPlay, setFirstPlay] = useState(true)
-  const [goRestart, setGoRestart] = useState(false)
-  const [timeoutId, setTimeoutId] = useState<
-    ReturnType<typeof setTimeout> | undefined
-  >(undefined)
+  const [isRestartRequestStarting, setIsRestartRequestStarting] =
+    useState(false)
   const [attemptTimes, setAttemptTimes] = useState<[number, number]>([
     0,
     TIME_1_SECOND,
@@ -86,21 +85,18 @@ export const EngineStream = (props: {
   const streamIdleMode = settings.app.streamIdleMode.current
 
   useEffect(() => {
-    // Will cause a useEffect loop if not checked for.
-    if (engineStreamState.context.videoRef.current !== null) return
     engineStreamActor.send({
       type: EngineStreamTransition.SetVideoRef,
       videoRef: { current: videoRef.current },
     })
-  }, [videoRef.current, engineStreamState])
+  }, [videoRef.current])
 
   useEffect(() => {
-    if (engineStreamState.context.canvasRef.current !== null) return
     engineStreamActor.send({
       type: EngineStreamTransition.SetCanvasRef,
       canvasRef: { current: canvasRef.current },
     })
-  }, [canvasRef.current, engineStreamState])
+  }, [canvasRef.current])
 
   useEffect(() => {
     engineStreamActor.send({
@@ -135,6 +131,24 @@ export const EngineStream = (props: {
     })
   }
 
+  useEffect(() => {
+    // Only try to start the stream if we're stopped or think we're done
+    // waiting for dependencies.
+    if (
+      !(
+        engineStreamState.value === EngineStreamState.WaitingForDependencies ||
+        engineStreamState.value === EngineStreamState.Stopped
+      )
+    )
+      return
+
+    // Don't bother trying to connect if the auth token is empty.
+    // We have the checks in the machine but this can cause a hot loop.
+    if (!engineStreamState.context.authToken) return
+
+    startOrReconfigureEngine()
+  }, [engineStreamState, setAppState])
+
   // I would inline this but it needs to be a function for removeEventListener.
   const play = () => {
     engineStreamActor.send({
@@ -160,13 +174,12 @@ export const EngineStream = (props: {
     console.log('scene is ready, execute kcl')
     const kmp = kclManager.executeCode().catch(trap)
 
-    // Reset the restart timeouts
-    setAttemptTimes([0, TIME_1_SECOND])
-
-    console.log(firstPlay)
     if (!firstPlay) return
 
     setFirstPlay(false)
+    // Reset the restart timeouts
+    setAttemptTimes([0, TIME_1_SECOND])
+
     console.log('firstPlay true, zoom to fit')
     kmp
       .then(async () => {
@@ -198,76 +211,51 @@ export const EngineStream = (props: {
     // We do a back-off restart, using a fibonacci sequence, since it
     // has a nice retry time curve (somewhat quick then exponential)
     const attemptRestartIfNecessary = () => {
-      // Timeout already set.
-      if (timeoutId) return
-
-      setTimeoutId(
-        setTimeout(() => {
-          engineStreamState.context.videoRef.current?.pause()
-          engineCommandManager.tearDown()
-          startOrReconfigureEngine()
-          setFirstPlay(true)
-
-          setTimeoutId(undefined)
-          setGoRestart(false)
-        }, attemptTimes[0] + attemptTimes[1])
-      )
+      if (isRestartRequestStarting) return
+      setIsRestartRequestStarting(true)
+      setTimeout(() => {
+        engineStreamState.context.videoRef.current?.pause()
+        engineCommandManager.tearDown()
+        startOrReconfigureEngine()
+        setFirstPlay(false)
+        setIsRestartRequestStarting(false)
+      }, attemptTimes[0] + attemptTimes[1])
       setAttemptTimes([attemptTimes[1], attemptTimes[0] + attemptTimes[1]])
     }
 
-    const onOffline = () => {
-      if (
-        !(
-          EngineConnectionStateType.Disconnected ===
-            engineCommandManager.engineConnection?.state.type ||
-          EngineConnectionStateType.Disconnecting ===
-            engineCommandManager.engineConnection?.state.type
-        )
-      ) {
+    // Poll that we're connected. If not, send a reset signal.
+    // Do not restart if we're in idle mode.
+    const connectionCheckIntervalId = setInterval(() => {
+      // SKIP DURING TESTS BECAUSE IT WILL MESS WITH REUSING THE
+      // ELECTRON INSTANCE.
+      if (isPlaywright()) {
         return
       }
-      engineStreamActor.send({ type: EngineStreamTransition.Stop })
-      attemptRestartIfNecessary()
-    }
 
-    if (
-      !goRestart &&
-      engineStreamState.value === EngineStreamState.WaitingForDependencies
-    ) {
-      setGoRestart(true)
-    }
+      // Don't try try to restart if we're already connected!
+      const hasEngineConnectionInst = engineCommandManager.engineConnection
+      const isDisconnected =
+        engineCommandManager.engineConnection?.state.type ===
+        EngineConnectionStateType.Disconnected
+      const inIdleMode = engineStreamState.value === EngineStreamState.Paused
+      if ((hasEngineConnectionInst && !isDisconnected) || inIdleMode) return
 
-    if (goRestart && !timeoutId) {
       attemptRestartIfNecessary()
-    }
+    }, TIME_1_SECOND)
 
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.EngineRestartRequest,
       attemptRestartIfNecessary
     )
-
-    engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.Offline,
-      onOffline
-    )
-
     return () => {
+      clearInterval(connectionCheckIntervalId)
+
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.EngineRestartRequest,
         attemptRestartIfNecessary
       )
-      engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.Offline,
-        onOffline
-      )
     }
-  }, [
-    engineStreamState,
-    attemptTimes,
-    goRestart,
-    timeoutId,
-    engineCommandManager.engineConnection?.state.type,
-  ])
+  }, [engineStreamState, attemptTimes, isRestartRequestStarting])
 
   useEffect(() => {
     // If engineStreamMachine is already reconfiguring, bail.
@@ -281,7 +269,7 @@ export const EngineStream = (props: {
     const canvas = engineStreamState.context.canvasRef?.current
     if (!canvas) return
 
-    const observer = new ResizeObserver(() => {
+    new ResizeObserver(() => {
       // Prevents:
       // `Uncaught ResizeObserver loop completed with undelivered notifications`
       window.requestAnimationFrame(() => {
@@ -292,19 +280,13 @@ export const EngineStream = (props: {
         if (
           (Math.abs(video.width - window.innerWidth) > 4 ||
             Math.abs(video.height - window.innerHeight) > 4) &&
-          engineStreamState.matches(EngineStreamState.Playing)
+          !engineStreamState.matches(EngineStreamState.WaitingToPlay)
         ) {
           timeoutStart.current = Date.now()
           startOrReconfigureEngine()
         }
       })
-    })
-
-    observer.observe(document.body)
-
-    return () => {
-      observer.disconnect()
-    }
+    }).observe(document.body)
   }, [engineStreamState.value])
 
   /**
@@ -363,21 +345,8 @@ export const EngineStream = (props: {
         timeoutStart.current = null
       } else if (timeoutStart.current) {
         const elapsed = Date.now() - timeoutStart.current
-        // Don't pause if we're already disconnected.
-        if (
-          // It's unnecessary to once again setup an event listener for
-          // offline/online to capture this state, when this state already
-          // exists on the window.navigator object. In hindsight it makes
-          // me (lee) regret we set React state variables such as
-          // isInternetConnected in other files when we could check this
-          // object instead.
-          engineCommandManager.engineConnection?.state.type ===
-            EngineConnectionStateType.ConnectionEstablished &&
-          elapsed >= IDLE_TIME_MS &&
-          engineStreamState.value === EngineStreamState.Playing
-        ) {
+        if (elapsed >= IDLE_TIME_MS) {
           timeoutStart.current = null
-          console.log('PAUSING')
           engineStreamActor.send({ type: EngineStreamTransition.Pause })
         }
       }
@@ -388,7 +357,7 @@ export const EngineStream = (props: {
     return () => {
       window.cancelAnimationFrame(frameId)
     }
-  }, [modelingMachineState, engineStreamState.value])
+  }, [modelingMachineState])
 
   useEffect(() => {
     if (!streamIdleMode) return
@@ -401,18 +370,9 @@ export const EngineStream = (props: {
         return
       }
 
-      engineStreamActor.send({
-        type: EngineStreamTransition.Resume,
-        modelingMachineActorSend,
-        settings: settingsEngine,
-        setAppState,
-        onMediaStream(mediaStream: MediaStream) {
-          engineStreamActor.send({
-            type: EngineStreamTransition.SetMediaStream,
-            mediaStream,
-          })
-        },
-      })
+      if (engineStreamState.value === EngineStreamState.Paused) {
+        startOrReconfigureEngine()
+      }
 
       timeoutStart.current = Date.now()
     }
@@ -511,11 +471,7 @@ export const EngineStream = (props: {
     }
 
     sendSelectEventToEngine(e)
-      .then((result) => {
-        if (!result) {
-          return
-        }
-        const { entity_id } = result
+      .then(({ entity_id }) => {
         if (!entity_id) {
           // No entity selected. This is benign
           return

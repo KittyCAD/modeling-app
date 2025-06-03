@@ -14,7 +14,7 @@ close(
 ): Sketch
 ```
 
-
+If you want to perform some 3-dimensional operation on a sketch, like extrude or sweep, you must `close` it first. `close` must be called even if the end point of the last segment is coincident with the sketch starting point.
 
 ### Arguments
 

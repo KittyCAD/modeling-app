@@ -8,7 +8,7 @@ layout: manual
 Returns the angle coming out of the end of the segment in degrees.
 
 ```kcl
-tangentToEnd(@tag: TagIdentifier): number
+tangentToEnd(@tag: tag): number(Angle)
 ```
 
 
@@ -17,11 +17,11 @@ tangentToEnd(@tag: TagIdentifier): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`TagIdentifier`](/docs/kcl-lang/types#TagIdentifier) | The line segment being queried by its tag | Yes |
+| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | The line segment being queried by its tag. | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number.
+[`number(Angle)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples
@@ -32,7 +32,10 @@ pillSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [20, 0])
   |> tangentialArc(end = [0, 10], tag = $arc1)
-  |> angledLine(angle = tangentToEnd(arc1), length = 20)
+  |> angledLine(
+    angle = tangentToEnd(arc1),
+    length = 20,
+  )
   |> tangentialArc(end = [0, -10])
   |> close()
 
@@ -47,7 +50,10 @@ pillSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 20])
   |> tangentialArc(endAbsolute = [10, 20], tag = $arc1)
-  |> angledLine(angle = tangentToEnd(arc1), length = 20)
+  |> angledLine(
+    angle = tangentToEnd(arc1),
+    length = 20,
+  )
   |> tangentialArc(end = [-10, 0])
   |> close()
 
@@ -60,7 +66,10 @@ pillExtrude = extrude(pillSketch, length = 10)
 rectangleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0], tag = $seg1)
-  |> angledLine(angle = tangentToEnd(seg1), length = 10)
+  |> angledLine(
+    angle = tangentToEnd(seg1),
+    length = 10,
+  )
   |> line(end = [0, 10])
   |> line(end = [-20, 0])
   |> close()
@@ -73,7 +82,11 @@ rectangleExtrude = extrude(rectangleSketch, length = 10)
 ```kcl
 bottom = startSketchOn(XY)
   |> startProfile(at = [0, 0])
-  |> arc(endAbsolute = [10, 10], interiorAbsolute = [5, 1], tag = $arc1)
+  |> arc(
+       endAbsolute = [10, 10],
+       interiorAbsolute = [5, 1],
+       tag = $arc1,
+     )
   |> angledLine(angle = tangentToEnd(arc1), length = 20)
   |> close()
 ```
@@ -82,7 +95,7 @@ bottom = startSketchOn(XY)
 
 ```kcl
 circSketch = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 3, tag = $circ)
+  |> circle(center = [0, 0], radius= 3, tag = $circ)
 
 triangleSketch = startSketchOn(XY)
   |> startProfile(at = [-5, 0])
