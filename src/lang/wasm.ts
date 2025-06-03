@@ -389,7 +389,20 @@ export function sketchFromKclValue(
 }
 
 export const errFromErrWithOutputs = (e: any): KCLError => {
-  const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
+  // `e` is any, so let's figure out something useful to do with it.
+  const parsed: KclErrorWithOutputs = (() => {
+    // No need to parse, it's already an object.
+    if (typeof e === 'object') {
+      return e
+    }
+    // It's a string, so parse it.
+    if (typeof e === 'string') {
+      return JSON.parse(e)
+    }
+    // It can be converted to a string, then parsed.
+    return JSON.parse(e.toString())
+  })()
+
   return new KCLError(
     parsed.error.kind,
     parsed.error.details.msg,

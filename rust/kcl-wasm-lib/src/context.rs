@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{wasm_engine::FileManager, EngineManager, KclError, KclErrorWithOutputs, Program};
+use kcl_lib::{wasm_engine::FileManager, EngineManager, ExecOutcome, KclError, KclErrorWithOutputs, Program};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -56,7 +56,7 @@ impl Context {
             return Ok(kcl_lib::ExecutorContext::new_mock(
                 self.mock_engine.clone(),
                 self.fs.clone(),
-                settings.into(),
+                settings,
             ));
         }
 
@@ -79,11 +79,13 @@ impl Context {
 
         self.execute_typed(program_ast_json, path, settings)
             .await
-            .map_err(|e: KclErrorWithOutputs| {
-                #[cfg(target_arch = "wasm32")]
-                web_sys::console::log_1(&format!("ADAM: rust execute error {e:?}").into());
-                JsValue::from_serde(&e).unwrap()
-            })
+            .and_then(|outcome|JsValue::from_serde(&outcome).map_err(|e| {
+                // The serde-wasm-bindgen does not work here because of weird HashMap issues.
+                // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
+                KclErrorWithOutputs::no_outputs(KclError::internal(
+                    format!("Could not serialize successful KCL result. This is a bug in KCL and not in your code, please report this to Zoo. Details: {e}"),
+                ))}))
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())
     }
 
     async fn execute_typed(
@@ -91,10 +93,8 @@ impl Context {
         program_ast_json: &str,
         path: Option<String>,
         settings: &str,
-    ) -> Result<JsValue, KclErrorWithOutputs> {
+    ) -> Result<ExecOutcome, KclErrorWithOutputs> {
         let program: Program = serde_json::from_str(program_ast_json).map_err(|e| {
-                #[cfg(target_arch = "wasm32")]
-                web_sys::console::log_1(&format!("ADAM: parse error {e:?}").into());
                 let err = KclError::internal(
                     format!("Could not deserialize KCL AST. This is a bug in KCL and not in your code, please report this to Zoo. Details: {e}"),
                 );
@@ -105,17 +105,7 @@ impl Context {
                 .map_err(|e| KclErrorWithOutputs::no_outputs(KclError::internal(
                     format!("Could not create KCL executor context. This is a bug in KCL and not in your code, please report this to Zoo. Details: {e}"),
                 )))?;
-        match ctx.run_with_caching(program).await {
-                // The serde-wasm-bindgen does not work here because of weird HashMap issues.
-                // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
-                Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| KclErrorWithOutputs::no_outputs(KclError::internal(
-                    format!("Could not serialize successful KCL result. This is a bug in KCL and not in your code, please report this to Zoo. Details: {e}"),
-                ))),
-                Err(err) => {
-                    // Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
-                    return Err(err);
-                }
-            }
+        ctx.run_with_caching(program).await
     }
 
     /// Reset the scene and bust the cache.

@@ -70,9 +70,7 @@ export async function executeAst({
 }): Promise<ExecutionResult> {
   try {
     const settings = await jsAppSettings()
-    console.warn('ADAM settings:', settings)
     const execState = await rustContext.execute(ast, settings, path)
-    console.warn('ADAM execState:', execState)
 
     await rustContext.waitForAllEngineCommands()
     return {
@@ -120,7 +118,6 @@ export async function executeAstMock({
 
 function handleExecuteError(e: any): ExecutionResult {
   let isInterrupted = false
-  console.log('ADAM:', e)
   if (e instanceof KCLError) {
     // Detect if it is a force interrupt error which is not a KCL processing error.
     if (e.msg.includes(EXECUTE_AST_INTERRUPT_ERROR_STRING)) {
