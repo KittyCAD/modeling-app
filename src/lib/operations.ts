@@ -901,6 +901,134 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
 }
 
 /**
+ * Gather up the argument values for the translate command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditTranslate: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'Translate',
+    groupId: 'modeling',
+  }
+  const isModuleImport = operation.type === 'GroupBegin'
+  const isSupportedStdLibCall =
+    operation.type === 'StdLibCall' &&
+    stdLibMap[operation.name]?.supportsTransform
+  if (!isModuleImport && !isSupportedStdLibCall) {
+    return {
+      reason: 'Unsupported operation type. Please edit in the code editor.',
+    }
+  }
+
+  const nodeToEdit = getNodePathFromSourceRange(
+    kclManager.ast,
+    sourceRangeFromRust(operation.sourceRange)
+  )
+  let x: KclExpression | undefined = undefined
+  let y: KclExpression | undefined = undefined
+  let z: KclExpression | undefined = undefined
+  const pipeLookupFromOperation = getNodeFromPath<PipeExpression>(
+    kclManager.ast,
+    nodeToEdit,
+    'PipeExpression'
+  )
+  let pipe: PipeExpression | undefined
+  const ast = kclManager.ast
+  if (
+    err(pipeLookupFromOperation) ||
+    pipeLookupFromOperation.node.type !== 'PipeExpression'
+  ) {
+    // Look for the last pipe with the import alias and a call to translate
+    const pipes = findPipesWithImportAlias(ast, nodeToEdit, 'translate')
+    pipe = pipes.at(-1)?.expression
+  } else {
+    pipe = pipeLookupFromOperation.node
+  }
+
+  if (pipe) {
+    const translate = pipe.body.find(
+      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'translate'
+    )
+    if (translate?.type === 'CallExpressionKw') {
+      x = await retrieveArgFromPipedCallExpression(translate, 'x')
+      y = await retrieveArgFromPipedCallExpression(translate, 'y')
+      z = await retrieveArgFromPipedCallExpression(translate, 'z')
+    }
+  }
+
+  // Won't be used since we provide nodeToEdit
+  const selection: Selections = { graphSelections: [], otherSelections: [] }
+  const argDefaultValues = { nodeToEdit, selection, x, y, z }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
+ * Gather up the argument values for the rotate command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditRotate: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'Rotate',
+    groupId: 'modeling',
+  }
+  const isModuleImport = operation.type === 'GroupBegin'
+  const isSupportedStdLibCall =
+    operation.type === 'StdLibCall' &&
+    stdLibMap[operation.name]?.supportsTransform
+  if (!isModuleImport && !isSupportedStdLibCall) {
+    return {
+      reason: 'Unsupported operation type. Please edit in the code editor.',
+    }
+  }
+
+  const nodeToEdit = getNodePathFromSourceRange(
+    kclManager.ast,
+    sourceRangeFromRust(operation.sourceRange)
+  )
+  let roll: KclExpression | undefined = undefined
+  let pitch: KclExpression | undefined = undefined
+  let yaw: KclExpression | undefined = undefined
+  const pipeLookupFromOperation = getNodeFromPath<PipeExpression>(
+    kclManager.ast,
+    nodeToEdit,
+    'PipeExpression'
+  )
+  let pipe: PipeExpression | undefined
+  const ast = kclManager.ast
+  if (
+    err(pipeLookupFromOperation) ||
+    pipeLookupFromOperation.node.type !== 'PipeExpression'
+  ) {
+    // Look for the last pipe with the import alias and a call to rotate
+    const pipes = findPipesWithImportAlias(ast, nodeToEdit, 'rotate')
+    pipe = pipes.at(-1)?.expression
+  } else {
+    pipe = pipeLookupFromOperation.node
+  }
+
+  if (pipe) {
+    const rotate = pipe.body.find(
+      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'rotate'
+    )
+    if (rotate?.type === 'CallExpressionKw') {
+      roll = await retrieveArgFromPipedCallExpression(rotate, 'roll')
+      pitch = await retrieveArgFromPipedCallExpression(rotate, 'pitch')
+      yaw = await retrieveArgFromPipedCallExpression(rotate, 'yaw')
+    }
+  }
+
+  // Won't be used since we provide nodeToEdit
+  const selection: Selections = { graphSelections: [], otherSelections: [] }
+  const argDefaultValues = { nodeToEdit, selection, roll, pitch, yaw }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
  */
@@ -991,6 +1119,8 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   rotate: {
     label: 'Rotate',
     icon: 'rotate',
+    prepareToEdit: prepareToEditRotate,
+    supportsTransform: true,
   },
   scale: {
     label: 'Scale',
@@ -1035,6 +1165,8 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   translate: {
     label: 'Translate',
     icon: 'move',
+    prepareToEdit: prepareToEditTranslate,
+    supportsTransform: true,
   },
   union: {
     label: 'Union',
@@ -1318,124 +1450,28 @@ export async function enterAppearanceFlow({
 export async function enterTranslateFlow({
   operation,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  const isModuleImport = operation.type === 'GroupBegin'
-  const isSupportedStdLibCall =
-    operation.type === 'StdLibCall' &&
-    stdLibMap[operation.name]?.supportsTransform
-  if (!isModuleImport && !isSupportedStdLibCall) {
-    return new Error(
-      'Unsupported operation type. Please edit in the code editor.'
-    )
+  const data = await prepareToEditTranslate({ operation })
+  if ('reason' in data) {
+    return new Error(data.reason)
   }
 
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
-  )
-  let x: KclExpression | undefined = undefined
-  let y: KclExpression | undefined = undefined
-  let z: KclExpression | undefined = undefined
-  const pipeLookupFromOperation = getNodeFromPath<PipeExpression>(
-    kclManager.ast,
-    nodeToEdit,
-    'PipeExpression'
-  )
-  let pipe: PipeExpression | undefined
-  const ast = kclManager.ast
-  if (
-    err(pipeLookupFromOperation) ||
-    pipeLookupFromOperation.node.type !== 'PipeExpression'
-  ) {
-    // Look for the last pipe with the import alias and a call to translate
-    const pipes = findPipesWithImportAlias(ast, nodeToEdit, 'translate')
-    pipe = pipes.at(-1)?.expression
-  } else {
-    pipe = pipeLookupFromOperation.node
-  }
-
-  if (pipe) {
-    const translate = pipe.body.find(
-      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'translate'
-    )
-    if (translate?.type === 'CallExpressionKw') {
-      x = await retrieveArgFromPipedCallExpression(translate, 'x')
-      y = await retrieveArgFromPipedCallExpression(translate, 'y')
-      z = await retrieveArgFromPipedCallExpression(translate, 'z')
-    }
-  }
-
-  // Won't be used since we provide nodeToEdit
-  const selection: Selections = { graphSelections: [], otherSelections: [] }
-  const argDefaultValues = { nodeToEdit, selection, x, y, z }
   return {
     type: 'Find and select command',
-    data: {
-      name: 'Translate',
-      groupId: 'modeling',
-      argDefaultValues,
-    },
+    data,
   }
 }
 
 export async function enterRotateFlow({
   operation,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  const isModuleImport = operation.type === 'GroupBegin'
-  const isSupportedStdLibCall =
-    operation.type === 'StdLibCall' &&
-    stdLibMap[operation.name]?.supportsTransform
-  if (!isModuleImport && !isSupportedStdLibCall) {
-    return new Error(
-      'Unsupported operation type. Please edit in the code editor.'
-    )
+  const data = await prepareToEditRotate({ operation })
+  if ('reason' in data) {
+    return new Error(data.reason)
   }
 
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
-  )
-  let roll: KclExpression | undefined = undefined
-  let pitch: KclExpression | undefined = undefined
-  let yaw: KclExpression | undefined = undefined
-  const pipeLookupFromOperation = getNodeFromPath<PipeExpression>(
-    kclManager.ast,
-    nodeToEdit,
-    'PipeExpression'
-  )
-  let pipe: PipeExpression | undefined
-  const ast = kclManager.ast
-  if (
-    err(pipeLookupFromOperation) ||
-    pipeLookupFromOperation.node.type !== 'PipeExpression'
-  ) {
-    // Look for the last pipe with the import alias and a call to rotate
-    const pipes = findPipesWithImportAlias(ast, nodeToEdit, 'rotate')
-    pipe = pipes.at(-1)?.expression
-  } else {
-    pipe = pipeLookupFromOperation.node
-  }
-
-  if (pipe) {
-    const rotate = pipe.body.find(
-      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'rotate'
-    )
-    if (rotate?.type === 'CallExpressionKw') {
-      roll = await retrieveArgFromPipedCallExpression(rotate, 'roll')
-      pitch = await retrieveArgFromPipedCallExpression(rotate, 'pitch')
-      yaw = await retrieveArgFromPipedCallExpression(rotate, 'yaw')
-    }
-  }
-
-  // Won't be used since we provide nodeToEdit
-  const selection: Selections = { graphSelections: [], otherSelections: [] }
-  const argDefaultValues = { nodeToEdit, selection, roll, pitch, yaw }
   return {
     type: 'Find and select command',
-    data: {
-      name: 'Rotate',
-      groupId: 'modeling',
-      argDefaultValues,
-    },
+    data,
   }
 }
 
