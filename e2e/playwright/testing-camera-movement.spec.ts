@@ -413,8 +413,10 @@ test.describe('Testing Camera Movement', () => {
     })
   })
 
-  test(`Zoom by scroll should not fire
-  while orbiting`, async ({ homePage, page }) => {
+  test(`Zoom by scroll should not fire while orbiting`, async ({
+    homePage,
+    page,
+  }) => {
     /**
      * Currently we only allow zooming by scroll when no other camera movement is happening,
      * set within cameraMouseDragGuards in cameraControls.ts,
@@ -450,20 +452,13 @@ test.describe('Testing Camera Movement', () => {
     const expectedZoomCamZPosition = 32.0
     const expectedOrbitCamZPosition = 64.0
 
-    await test.step(`Test
-  setup`, async () => {
+    await test.step(`Test setup`, async () => {
       await homePage.goToModelingScene()
       await u.waitForPageLoad()
       await u.closeKclCodePanel()
       // This test requires the mouse controls to be set to Solidworks
       await u.openDebugPanel()
-      await test.step(`
-  Set
-  mouse
-  controls
-  setting
-  to
-  Solidworks`, async () => {
+      await test.step(`Set mouse controls setting to Solidworks`, async () => {
         await settingsLink.click()
         await expect(settingsDialogHeading).toBeVisible()
         await userSettingsTab.click()
@@ -480,22 +475,11 @@ test.describe('Testing Camera Movement', () => {
       })
     })
 
-    await test.step(`
-  Test
-  scrolling
-  zoom
-  works`, async () => {
+    await test.step(`Test scrolling zoom works`, async () => {
       await resetCamera()
       await page.mouse.move(orbitMouseStart.x, orbitMouseStart.y)
       await page.mouse.wheel(0, -100)
-      await test.step(`
-  Force
-  a
-  refresh
-  of
-  the
-  camera
-  position`, async () => {
+      await test.step(`Force a refresh of the camera position`, async () => {
         await u.openAndClearDebugPanel()
         await u.sendCustomCmd({
           type: 'modeling_cmd_req',
@@ -514,18 +498,11 @@ test.describe('Testing Camera Movement', () => {
         .toEqual(expectedZoomCamZPosition)
     })
 
-    await test.step(`
-  Test
-  orbiting
-  works`, async () => {
+    await test.step(`Test orbiting works`, async () => {
       await doOrbitWith()
     })
 
-    await test.step(`
-  Test
-  scrolling
-  while orbiting doesn
-  't zoom`, async () => {
+    await test.step(`Test scrolling while orbiting doesn't zoom`, async () => {
       await doOrbitWith(async () => {
         await page.mouse.wheel(0, -100)
       })
