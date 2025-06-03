@@ -72,9 +72,9 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
    * and continue to the web app.
    */
   function continueToWebApp() {
-    const newSearchParams = new URLSearchParams(globalThis.location.search)
-    newSearchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
-    setSearchParams(newSearchParams)
+    //const newSearchParams = new URLSearchParams(globalThis.location.search)
+    searchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
+    setSearchParams(searchParams)
   }
 
   return hasAskToOpenParam ? (

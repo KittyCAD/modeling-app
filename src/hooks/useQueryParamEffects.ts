@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 import { base64ToString } from '@src/lib/base64'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
+  ASK_TO_OPEN_QUERY_PARAM,
   CMD_GROUP_QUERY_PARAM,
   CMD_NAME_QUERY_PARAM,
   CREATE_FILE_URL_PARAM,
@@ -36,8 +37,15 @@ export type CreateFileSchemaMethodOptional = Omit<
 export function useQueryParamEffects() {
   const authState = useAuthState()
   const [searchParams, setSearchParams] = useSearchParams()
-  const shouldInvokeCreateFile = searchParams.has(CREATE_FILE_URL_PARAM)
+  const askToOpen = searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
+  // Let askToOpen be handled by the OpenInDesktopAppHandler component first to avoid racing with it,
+  // only deal with other params after user decided to open in desktop or web.
+  // Without this the "Zoom to fit to shared model on web" test fails, although manualy testing works due
+  // to different timings.
+  const shouldInvokeCreateFile =
+    !askToOpen && searchParams.has(CREATE_FILE_URL_PARAM)
   const shouldInvokeGenericCmd =
+    !askToOpen &&
     searchParams.has(CMD_NAME_QUERY_PARAM) &&
     searchParams.has(CMD_GROUP_QUERY_PARAM)
 
