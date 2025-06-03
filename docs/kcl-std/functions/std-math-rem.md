@@ -1,11 +1,11 @@
 ---
 title: "rem"
 subtitle: "Function in std::math"
-excerpt: ""
+excerpt: "Compute the remainder after dividing `num` by `div`. If `num` is negative, the result will be too."
 layout: manual
 ---
 
-
+Compute the remainder after dividing `num` by `div`. If `num` is negative, the result will be too.
 
 ```kcl
 rem(
@@ -14,8 +14,7 @@ rem(
 ): number
 ```
 
-Compute the remainder after dividing `num` by `div`.
-If `num` is negative, the result will be too.
+
 
 ### Arguments
 

@@ -1,11 +1,11 @@
 ---
 title: "extrude"
 subtitle: "Function in std::sketch"
-excerpt: ""
+excerpt: "Extend a 2-dimensional sketch through a third dimension in order to create new 3-dimensional volume, or if extruded into an existing volume, cut into an existing solid."
 layout: manual
 ---
 
-
+Extend a 2-dimensional sketch through a third dimension in order to create new 3-dimensional volume, or if extruded into an existing volume, cut into an existing solid.
 
 ```kcl
 extrude(
@@ -17,9 +17,6 @@ extrude(
   tagEnd?: tag,
 ): [Solid; 1+]
 ```
-
-Extend a 2-dimensional sketch through a third dimension in order to
-create new 3-dimensional volume, or if extruded into an existing volume,cut into an existing solid.
 
 You can provide more than one sketch to extrude, and they will all be
 extruded in the same direction.

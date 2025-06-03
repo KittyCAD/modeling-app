@@ -175,11 +175,10 @@ impl Backend {
         zoo_client: kittycad::Client,
         can_send_telemetry: bool,
     ) -> Result<Self, String> {
-        let stdlib = crate::std::StdLib::new();
         let kcl_std = crate::docs::kcl_doc::walk_prelude();
-        let stdlib_completions = get_completions_from_stdlib(&stdlib, &kcl_std).map_err(|e| e.to_string())?;
-        let stdlib_signatures = get_signatures_from_stdlib(&stdlib, &kcl_std);
-        let stdlib_args = get_arg_maps_from_stdlib(&stdlib, &kcl_std);
+        let stdlib_completions = get_completions_from_stdlib(&kcl_std).map_err(|e| e.to_string())?;
+        let stdlib_signatures = get_signatures_from_stdlib(&kcl_std);
+        let stdlib_args = get_arg_maps_from_stdlib(&kcl_std);
 
         Ok(Self {
             client,
@@ -1634,16 +1633,8 @@ impl LanguageServer for Backend {
 }
 
 /// Get completions from our stdlib.
-pub fn get_completions_from_stdlib(
-    stdlib: &crate::std::StdLib,
-    kcl_std: &ModData,
-) -> Result<HashMap<String, CompletionItem>> {
+pub fn get_completions_from_stdlib(kcl_std: &ModData) -> Result<HashMap<String, CompletionItem>> {
     let mut completions = HashMap::new();
-    let combined = stdlib.combined();
-
-    for internal_fn in combined.values() {
-        completions.insert(internal_fn.name(), internal_fn.to_completion_item()?);
-    }
 
     for d in kcl_std.all_docs() {
         if let Some(ci) = d.to_completion_item() {
@@ -1660,13 +1651,8 @@ pub fn get_completions_from_stdlib(
 }
 
 /// Get signatures from our stdlib.
-pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &ModData) -> HashMap<String, SignatureHelp> {
+pub fn get_signatures_from_stdlib(kcl_std: &ModData) -> HashMap<String, SignatureHelp> {
     let mut signatures = HashMap::new();
-    let combined = stdlib.combined();
-
-    for internal_fn in combined.values() {
-        signatures.insert(internal_fn.name(), internal_fn.to_signature_help());
-    }
 
     for d in kcl_std.all_docs() {
         if let Some(sig) = d.to_signature_help() {
@@ -1678,42 +1664,30 @@ pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &ModData
 }
 
 /// Get signatures from our stdlib.
-pub fn get_arg_maps_from_stdlib(
-    stdlib: &crate::std::StdLib,
-    kcl_std: &ModData,
-) -> HashMap<String, HashMap<String, String>> {
+pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<String, String>> {
     let mut result = HashMap::new();
-    let combined = stdlib.combined();
 
-    for internal_fn in combined.values() {
-        let arg_map: HashMap<String, String> = internal_fn
-            .args(false)
-            .into_iter()
+    for d in kcl_std.all_docs() {
+        let crate::docs::kcl_doc::DocData::Fn(f) = d else {
+            continue;
+        };
+        let arg_map: HashMap<String, String> = f
+            .args
+            .iter()
             .map(|data| {
                 let mut tip = "```\n".to_owned();
-                tip.push_str(&data.name.clone());
-                if !data.required {
-                    tip.push('?');
-                }
-                if !data.type_.is_empty() {
-                    tip.push_str(": ");
-                    tip.push_str(&data.type_);
-                }
+                tip.push_str(&data.to_string());
                 tip.push_str("\n```");
-                if !data.description.is_empty() {
+                if let Some(docs) = &data.docs {
                     tip.push_str("\n\n");
-                    tip.push_str(&data.description);
+                    tip.push_str(docs);
                 }
-                (data.name, tip)
+                (data.name.clone(), tip)
             })
             .collect();
         if !arg_map.is_empty() {
-            result.insert(internal_fn.name(), arg_map);
+            result.insert(f.name.clone(), arg_map);
         }
-    }
-
-    for _d in kcl_std.all_docs() {
-        // TODO add KCL std fns
     }
 
     result
