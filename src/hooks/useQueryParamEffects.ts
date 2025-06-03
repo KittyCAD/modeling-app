@@ -37,15 +37,15 @@ export type CreateFileSchemaMethodOptional = Omit<
 export function useQueryParamEffects() {
   const authState = useAuthState()
   const [searchParams, setSearchParams] = useSearchParams()
-  const askToOpen = searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
-  // Let askToOpen be handled by the OpenInDesktopAppHandler component first to avoid racing with it,
+  const hasAskToOpen = !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
+  // Let hasAskToOpen be handled by the OpenInDesktopAppHandler component first to avoid racing with it,
   // only deal with other params after user decided to open in desktop or web.
   // Without this the "Zoom to fit to shared model on web" test fails, although manually testing works due
   // to different timings.
   const shouldInvokeCreateFile =
-    !askToOpen && searchParams.has(CREATE_FILE_URL_PARAM)
+    !hasAskToOpen && searchParams.has(CREATE_FILE_URL_PARAM)
   const shouldInvokeGenericCmd =
-    !askToOpen &&
+    !hasAskToOpen &&
     searchParams.has(CMD_NAME_QUERY_PARAM) &&
     searchParams.has(CMD_GROUP_QUERY_PARAM)
 
