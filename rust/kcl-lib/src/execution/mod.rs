@@ -1138,12 +1138,7 @@ impl ExecutorContext {
                         source_range,
                         ..
                     } => {
-                        if node_path.is_empty() {
-                            use crate::NodePath;
-
-                            *node_path =
-                                NodePath::from_range(program, cached_body_items, *source_range).unwrap_or_default();
-                        }
+                        node_path.fill_placeholder(program, cached_body_items, *source_range);
                     }
                     Operation::GroupEnd => {}
                 }
