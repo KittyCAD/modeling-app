@@ -24,7 +24,7 @@ macro_rules! internal_error {
     ($range:expr, $($rest:tt)*) => {{
         let message = format!($($rest)*);
         debug_assert!(false, "{}", &message);
-        return Err(KclError::Internal(KclErrorDetails::new(message, vec![$range])));
+        return Err(KclError::new_internal(KclErrorDetails::new(message, vec![$range])));
     }};
 }
 
@@ -949,7 +949,7 @@ fn artifacts_to_update(
         ModelingCmd::StartPath(_) => {
             let mut return_arr = Vec::new();
             let current_plane_id = path_to_plane_id_map.get(&artifact_command.cmd_id).ok_or_else(|| {
-                KclError::Internal(KclErrorDetails::new(
+                KclError::new_internal(KclErrorDetails::new(
                     format!("Expected a current plane ID when processing StartPath command, but we have none: {id:?}"),
                     vec![range],
                 ))
@@ -1137,7 +1137,7 @@ fn artifacts_to_update(
                 // TODO: Using the first one.  Make sure to revisit this
                 // choice, don't think it matters for now.
                 path_id: ArtifactId::new(*loft_cmd.section_ids.first().ok_or_else(|| {
-                    KclError::Internal(KclErrorDetails::new(
+                    KclError::new_internal(KclErrorDetails::new(
                         format!("Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"),
                         vec![range],
                     ))
@@ -1180,7 +1180,7 @@ fn artifacts_to_update(
                 };
                 last_path = Some(path);
                 let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                    KclError::Internal(KclErrorDetails::new(
+                    KclError::new_internal(KclErrorDetails::new(
                         format!(
                             "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
                         ),
@@ -1234,7 +1234,7 @@ fn artifacts_to_update(
                         continue;
                     };
                     let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                        KclError::Internal(KclErrorDetails::new(
+                        KclError::new_internal(KclErrorDetails::new(
                             format!(
                                 "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
                             ),

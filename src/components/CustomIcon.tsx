@@ -1147,6 +1147,19 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  scale: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="scale"
+    >
+      <path
+        d="M13 10.5H12V8.70703L10 10.707V17H3V10H9.29297L11.293 8H9.5V7H13V10.5ZM17 17H13V16H16V4H4V7H3V3H17V17ZM4 16H9V11H4V16Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   search: (
     <svg
       viewBox="0 0 20 20"

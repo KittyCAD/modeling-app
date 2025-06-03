@@ -8,7 +8,7 @@ layout: manual
 Compute the starting point of the provided line segment.
 
 ```kcl
-segStart(@tag: TagIdentifier): Point2d
+segStart(@tag: tag): Point2d
 ```
 
 
@@ -17,7 +17,7 @@ segStart(@tag: TagIdentifier): Point2d
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`TagIdentifier`](/docs/kcl-lang/types#TagIdentifier) | The line segment being queried by its tag | Yes |
+| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | The line segment being queried by its tag. | Yes |
 
 ### Returns
 
@@ -39,9 +39,9 @@ cube = startSketchOn(XY)
 
 fn cylinder(radius, tag) {
   return startSketchOn(XY)
-    |> startProfile(at = [0, 0])
-    |> circle(radius = radius, center = segStart(tag))
-    |> extrude(length = radius)
+  |> startProfile(at = [0, 0])
+  |> circle( radius = radius, center = segStart(tag) )
+  |> extrude(length = radius)
 }
 
 cylinder(radius = 1, tag = line1)

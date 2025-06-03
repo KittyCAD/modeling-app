@@ -375,22 +375,22 @@ test.describe(
       await expect(u.codeLocator).toHaveText(code)
 
       await toolbar.selectTangentialArc()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(200)
 
       // click to continue profile
       await page.mouse.click(813, 392)
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(300)
 
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArc(endAbsolute = [551.2, -62.01])`
+  |> tangentialArc(end = [184.31, 184.31])`
       await expect(u.codeLocator).toHaveText(code)
 
       // click tangential arc tool again to unequip it
       // it will be available directly in the toolbar since it was last equipped
       await toolbar.tangentialArcBtn.click()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(1000)
 
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
@@ -472,20 +472,20 @@ test.describe(
       await expect(u.codeLocator).toHaveText(code)
 
       await toolbar.selectTangentialArc()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(200)
 
       // click to continue profile
       await page.mouse.click(813, 392)
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(300)
 
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArc(endAbsolute = [551.2, -62.01])`
+  |> tangentialArc(end = [184.31, 184.31])`
       await expect(u.codeLocator).toHaveText(code)
 
       await toolbar.tangentialArcBtn.click()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(1000)
 
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
@@ -823,7 +823,7 @@ test('theme persists', async ({ page, context, homePage }) => {
     uploadThroughput: -1,
   })
 
-  await expect(networkToggle).toContainText('Connected')
+  await expect(networkToggle).toContainText('Network health (Strong)')
 
   await expect(page.getByText('building scene')).not.toBeVisible()
 

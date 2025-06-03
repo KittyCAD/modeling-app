@@ -67,13 +67,258 @@ description: Operations executed walkie-talkie.kcl
     "sourceRange": []
   },
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "button",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+    "type": "StdLibCall",
+    "name": "translate",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "x": {
+        "value": {
+          "type": "Number",
+          "value": -0.65,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "y": {
+        "value": {
+          "type": "Number",
+          "value": -0.2,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "z": {
+        "value": {
+          "type": "Number",
+          "value": 2.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "translate",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "x": {
+        "value": {
+          "type": "Number",
+          "value": 0.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "y": {
+        "value": {
+          "type": "Number",
+          "value": -1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "z": {
+        "value": {
+          "type": "Number",
+          "value": 0.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "translate",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "x": {
+        "value": {
+          "type": "Number",
+          "value": 1.25,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "y": {
+        "value": {
+          "type": "Number",
+          "value": -0.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "z": {
+        "value": {
+          "type": "Number",
+          "value": 0.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "translate",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "x": {
+        "value": {
+          "type": "Number",
+          "value": 0.55,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "y": {
+        "value": {
+          "type": "Number",
+          "value": -0.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "z": {
+        "value": {
+          "type": "Number",
+          "value": 2.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
     },
     "sourceRange": []
   },
@@ -89,13 +334,66 @@ description: Operations executed walkie-talkie.kcl
     "sourceRange": []
   },
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "button",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+    "type": "StdLibCall",
+    "name": "translate",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "x": {
+        "value": {
+          "type": "Number",
+          "value": -0.895,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "y": {
+        "value": {
+          "type": "Number",
+          "value": -1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "z": {
+        "value": {
+          "type": "Number",
+          "value": 1.25,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
     },
     "sourceRange": []
   },
@@ -107,6 +405,362 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "translate",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "x": {
+        "value": {
+          "type": "Number",
+          "value": -0.895,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "y": {
+        "value": {
+          "type": "Number",
+          "value": -1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "z": {
+        "value": {
+          "type": "Number",
+          "value": 0.73,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "button",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "rotate",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "pitch": {
+        "value": {
+          "type": "Number",
+          "value": 180.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "roll": {
+        "value": {
+          "type": "Number",
+          "value": 0.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "yaw": {
+        "value": {
+          "type": "Number",
+          "value": 0.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "translate",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "global": {
+        "value": {
+          "type": "Bool",
+          "value": true
+        },
+        "sourceRange": []
+      },
+      "x": {
+        "value": {
+          "type": "Number",
+          "value": 0.895,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "y": {
+        "value": {
+          "type": "Number",
+          "value": -1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "z": {
+        "value": {
+          "type": "Number",
+          "value": 0.77,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "button",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "rotate",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "pitch": {
+        "value": {
+          "type": "Number",
+          "value": 180.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "roll": {
+        "value": {
+          "type": "Number",
+          "value": 0.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "yaw": {
+        "value": {
+          "type": "Number",
+          "value": 0.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "translate",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "global": {
+        "value": {
+          "type": "Bool",
+          "value": true
+        },
+        "sourceRange": []
+      },
+      "x": {
+        "value": {
+          "type": "Number",
+          "value": 0.895,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "y": {
+        "value": {
+          "type": "Number",
+          "value": -1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "z": {
+        "value": {
+          "type": "Number",
+          "value": 0.25,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
     },
     "sourceRange": []
   },

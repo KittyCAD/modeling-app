@@ -41,7 +41,7 @@ async fn inner_chamfer(
     // If you try and tag multiple edges with a tagged chamfer, we want to return an
     // error to the user that they can only tag one edge at a time.
     if tag.is_some() && tags.len() > 1 {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag.".to_string(),
             vec![args.source_range],
         )));

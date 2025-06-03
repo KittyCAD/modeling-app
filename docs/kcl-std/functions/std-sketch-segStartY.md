@@ -8,7 +8,7 @@ layout: manual
 Compute the starting point of the provided line segment along the 'y' axis.
 
 ```kcl
-segStartY(@tag: TagIdentifier): number
+segStartY(@tag: tag): number(Length)
 ```
 
 
@@ -17,11 +17,11 @@ segStartY(@tag: TagIdentifier): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`TagIdentifier`](/docs/kcl-lang/types#TagIdentifier) | The line segment being queried by its tag | Yes |
+| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | The line segment being queried by its tag. | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number.
+[`number(Length)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples
@@ -32,7 +32,7 @@ exampleSketch = startSketchOn(XZ)
   |> line(end = [20, 0])
   |> line(end = [0, 3], tag = $thing)
   |> line(end = [-10, 0])
-  |> line(end = [0, 20 - segStartY(thing)])
+  |> line(end = [0, 20-segStartY(thing)])
   |> line(end = [-10, 0])
   |> close()
 
