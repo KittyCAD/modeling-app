@@ -5,5 +5,5 @@ export const ACTOR_IDS = {
   ENGINE_STREAM: 'engine_stream',
   COMMAND_BAR: 'command_bar',
   BILLING: 'billing',
-  _3DMOUSE: '3dmouse'
+  _3DMOUSE: '3dmouse',
 } as const

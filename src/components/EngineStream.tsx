@@ -193,16 +193,16 @@ export const EngineStream = (props: {
         }
 
         if (!once) {
-          const the3DMouse = new _3DMouseThreeJS({
-            // Name needs to be registered in the python proxy server!
-            name: 'zoo-design-studio',
-            debug: false,
-            canvasId: 'webgl',
-            camera: sceneInfra.camControls.camera.clone(),
-          })
+          // const the3DMouse = new _3DMouseThreeJS({
+          //   // Name needs to be registered in the python proxy server!
+          //   name: 'zoo-design-studio',
+          //   debug: false,
+          //   canvasId: 'webgl',
+          //   camera: sceneInfra.camControls.camera.clone(),
+          // })
 
-          window.the3DMouse = the3DMouse
-          await the3DMouse.init3DMouse()
+          // window.the3DMouse = the3DMouse
+          // await the3DMouse.init3DMouse()
           once = true
         }
       })

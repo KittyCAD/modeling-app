@@ -34,7 +34,7 @@ import type { AppMachineContext } from '@src/lib/types'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { _3DMouseMachine } from "@src/machines/_3dMouse/_3dMouseMachine"
+import { _3DMouseMachine } from '@src/machines/_3dMouse/_3dMouseMachine'
 
 export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
@@ -118,8 +118,15 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM, COMMAND_BAR, BILLING, _3DMOUSE } =
-  ACTOR_IDS
+const {
+  AUTH,
+  SETTINGS,
+  SYSTEM_IO,
+  ENGINE_STREAM,
+  COMMAND_BAR,
+  BILLING,
+  _3DMOUSE,
+} = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
@@ -127,7 +134,7 @@ const appMachineActors = {
   [ENGINE_STREAM]: engineStreamMachine,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,
-  [_3DMOUSE]: _3DMouseMachine
+  [_3DMOUSE]: _3DMouseMachine,
 } as const
 
 const appMachine = setup({

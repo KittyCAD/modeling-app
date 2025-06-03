@@ -364,7 +364,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
    * invoke this method! I know its not in the constructor... TBD.
    * Everything will initialize after this function call.
    */
-  async init3DMouse(): Promise<void> {
+  async init3DMouse(timeout: number = 15000): Promise<void> {
     /**
      * _3Dconnexion.connect() is buggy, the code is implemented wrong.
      * It is using half async and half sync code.
@@ -385,18 +385,20 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     }
 
     // artifically wait 15 seconds to hope it connects within that timeframe
-      return new Promise((resolve,reject)=> {
-        if (this.spaceMouse) {
-          setTimeout(()=>{
-            if (this.spaceMouse.connected === false) {
-              console.error('Cannot connect to 3Dconnexion NL-Proxy"')
-            }
+    return new Promise((resolve, reject) => {
+      if (this.spaceMouse) {
+        setTimeout(() => {
+          if (this.spaceMouse.connected === false) {
+            console.error('Cannot connect to 3Dconnexion NL-Proxy"')
+          }
 
-            if (this.spaceMouse.session === null) {
-              console.error('Unable to find spaceMouse session to the proxy server')
-            }
-          }, 1000 * 15) // 15 seconds
-        }
+          if (this.spaceMouse.session === null) {
+            console.error(
+              'Unable to find spaceMouse session to the proxy server'
+            )
+          }
+        }, timeout) // 15 seconds
+      }
     })
   }
 
