@@ -11,7 +11,7 @@ use crate::{
 
 async fn _assert(value: bool, message: &str, args: &Args) -> Result<(), KclError> {
     if !value {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             format!("assert failed: {}", message),
             vec![args.source_range],
         )));
@@ -72,14 +72,14 @@ async fn inner_assert(
     .iter()
     .all(|cond| cond.is_none());
     if no_condition_given {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "You must provide at least one condition in this assert (for example, isEqualTo)".to_owned(),
             vec![args.source_range],
         )));
     }
 
     if tolerance.is_some() && is_equal_to.is_none() {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "The `tolerance` arg is only used with `isEqualTo`. Either remove `tolerance` or add an `isEqualTo` arg."
                 .to_owned(),
             vec![args.source_range],

@@ -23,7 +23,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
 
     if solids.len() < 2 {
-        return Err(KclError::UndefinedValue(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             "At least two solids are required for a union operation.".to_string(),
             vec![args.source_range],
         )));
@@ -66,7 +66,7 @@ pub(crate) async fn inner_union(
         modeling_response: OkModelingCmdResponse::BooleanUnion(BooleanUnion { extra_solid_ids }),
     } = result
     else {
-        return Err(KclError::Internal(KclErrorDetails::new(
+        return Err(KclError::new_internal(KclErrorDetails::new(
             "Failed to get the result of the union operation.".to_string(),
             vec![args.source_range],
         )));
@@ -88,7 +88,7 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
 
     if solids.len() < 2 {
-        return Err(KclError::UndefinedValue(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             "At least two solids are required for an intersect operation.".to_string(),
             vec![args.source_range],
         )));
@@ -131,7 +131,7 @@ pub(crate) async fn inner_intersect(
         modeling_response: OkModelingCmdResponse::BooleanIntersection(BooleanIntersection { extra_solid_ids }),
     } = result
     else {
-        return Err(KclError::Internal(KclErrorDetails::new(
+        return Err(KclError::new_internal(KclErrorDetails::new(
             "Failed to get the result of the intersection operation.".to_string(),
             vec![args.source_range],
         )));
@@ -193,7 +193,7 @@ pub(crate) async fn inner_subtract(
         modeling_response: OkModelingCmdResponse::BooleanSubtract(BooleanSubtract { extra_solid_ids }),
     } = result
     else {
-        return Err(KclError::Internal(KclErrorDetails::new(
+        return Err(KclError::new_internal(KclErrorDetails::new(
             "Failed to get the result of the subtract operation.".to_string(),
             vec![args.source_range],
         )));

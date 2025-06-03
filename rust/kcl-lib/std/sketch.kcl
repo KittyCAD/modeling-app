@@ -895,3 +895,304 @@ export fn patternCircular2d(
   /// If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.
   useOriginal?: bool = false,
 ): [Sketch; 1+] {}
+
+/// Compute the ending point of the provided line segment.
+///
+/// ```kcl
+/// w = 15
+/// cube = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [w, 0], tag = $line1)
+///   |> line(end = [0, w], tag = $line2)
+///   |> line(end = [-w, 0], tag = $line3)
+///   |> line(end = [0, -w], tag = $line4)
+///   |> close()
+///   |> extrude(length = 5)
+///
+/// fn cylinder(radius, tag) {
+///   return startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> circle(radius = radius, center = segEnd(tag) )
+///   |> extrude(length = radius)
+/// }
+///
+/// cylinder(radius = 1, tag = line1)
+/// cylinder(radius = 2, tag = line2)
+/// cylinder(radius = 3, tag = line3)
+/// cylinder(radius = 4, tag = line4)
+/// ```
+@(impl = std_rust)
+export fn segEnd(
+  /// The line segment being queried by its tag.
+  @tag: tag,
+): Point2d {}
+
+/// Compute the ending point of the provided line segment along the 'x' axis.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [20, 0], tag = $thing)
+///   |> line(end = [0, 5])
+///   |> line(end = [segEndX(thing), 0])
+///   |> line(end = [-20, 10])
+///   |> close()
+///  
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn segEndX(
+  /// The line segment being queried by its tag.
+  @tag: tag,
+): number(Length) {}
+
+/// Compute the ending point of the provided line segment along the 'y' axis.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [20, 0])
+///   |> line(end = [0, 3], tag = $thing)
+///   |> line(end = [-10, 0])
+///   |> line(end = [0, segEndY(thing)])
+///   |> line(end = [-10, 0])
+///   |> close()
+///  
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn segEndY(
+  /// The line segment being queried by its tag.
+  @tag: tag,
+): number(Length) {}
+
+/// Compute the starting point of the provided line segment.
+///
+/// ```kcl
+/// w = 15
+/// cube = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [w, 0], tag = $line1)
+///   |> line(end = [0, w], tag = $line2)
+///   |> line(end = [-w, 0], tag = $line3)
+///   |> line(end = [0, -w], tag = $line4)
+///   |> close()
+///   |> extrude(length = 5)
+///
+/// fn cylinder(radius, tag) {
+///   return startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> circle( radius = radius, center = segStart(tag) )
+///   |> extrude(length = radius)
+/// }
+///
+/// cylinder(radius = 1, tag = line1)
+/// cylinder(radius = 2, tag = line2)
+/// cylinder(radius = 3, tag = line3)
+/// cylinder(radius = 4, tag = line4)
+/// ```
+@(impl = std_rust)
+export fn segStart(
+  /// The line segment being queried by its tag.
+  @tag: tag,
+): Point2d {}
+
+/// Compute the starting point of the provided line segment along the 'x' axis.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [20, 0], tag = $thing)
+///   |> line(end = [0, 5])
+///   |> line(end = [20 - segStartX(thing), 0])
+///   |> line(end = [-20, 10])
+///   |> close()
+///  
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn segStartX(
+  /// The line segment being queried by its tag.
+  @tag: tag,
+): number(Length) {}
+
+/// Compute the starting point of the provided line segment along the 'y' axis.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [20, 0])
+///   |> line(end = [0, 3], tag = $thing)
+///   |> line(end = [-10, 0])
+///   |> line(end = [0, 20-segStartY(thing)])
+///   |> line(end = [-10, 0])
+///   |> close()
+///  
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn segStartY(
+  /// The line segment being queried by its tag.
+  @tag: tag,
+): number(Length) {}
+
+/// Extract the 'x' axis value of the last line segment in the provided 2-d sketch.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [5, 0])
+///   |> line(end = [20, 5])
+///   |> line(end = [lastSegX(%), 0])
+///   |> line(end = [-15, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn lastSegX(
+  /// The sketch whose line segment is being queried.
+  @sketch: Sketch,
+): number(Length) {}
+
+/// Extract the 'y' axis value of the last line segment in the provided 2-d sketch.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [5, 0])
+///   |> line(end = [20, 5])
+///   |> line(end = [0, lastSegY(%)])
+///   |> line(end = [-15, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn lastSegY(
+  /// The sketch whose line segment is being queried.
+  @sketch: Sketch,
+): number(Length) {}
+
+/// Compute the length of the provided line segment.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> angledLine(
+///     angle = 60,
+///     length = 10,
+///     tag = $thing,
+///   )
+///   |> tangentialArc(angle = -120, radius = 5)
+///   |> angledLine(
+///     angle = -60,
+///     length = segLen(thing),
+///   )
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn segLen(
+  /// The line segment being queried by its tag.
+  @tag: tag,
+): number(Length) {}
+
+/// Compute the angle (in degrees) of the provided line segment.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [5, 10], tag = $seg01)
+///   |> line(end = [-10, 0])
+///   |> angledLine(angle = segAng(seg01), length = 10)
+///   |> line(end = [-10, 0])
+///   |> angledLine(angle = segAng(seg01), length = -15)
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 4)
+/// ```
+@(impl = std_rust)
+export fn segAng(
+  /// The line segment being queried by its tag.
+  @tag: tag,
+): number(Angle) {}
+
+/// Returns the angle coming out of the end of the segment in degrees.
+///
+/// ```kcl
+/// // Horizontal pill.
+/// pillSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [20, 0])
+///   |> tangentialArc(end = [0, 10], tag = $arc1)
+///   |> angledLine(
+///     angle = tangentToEnd(arc1),
+///     length = 20,
+///   )
+///   |> tangentialArc(end = [0, -10])
+///   |> close()
+///
+/// pillExtrude = extrude(pillSketch, length = 10)
+/// ```
+///
+/// ```kcl
+/// // Vertical pill.  Use absolute coordinate for arc.
+/// pillSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [0, 20])
+///   |> tangentialArc(endAbsolute = [10, 20], tag = $arc1)
+///   |> angledLine(
+///     angle = tangentToEnd(arc1),
+///     length = 20,
+///   )
+///   |> tangentialArc(end = [-10, 0])
+///   |> close()
+///
+/// pillExtrude = extrude(pillSketch, length = 10)
+/// ```
+///
+/// ```kcl
+/// rectangleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0], tag = $seg1)
+///   |> angledLine(
+///     angle = tangentToEnd(seg1),
+///     length = 10,
+///   )
+///   |> line(end = [0, 10])
+///   |> line(end = [-20, 0])
+///   |> close()
+///
+/// rectangleExtrude = extrude(rectangleSketch, length = 10)
+/// ```
+///
+/// ```kcl
+/// bottom = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> arc(
+///        endAbsolute = [10, 10],
+///        interiorAbsolute = [5, 1],
+///        tag = $arc1,
+///      )
+///   |> angledLine(angle = tangentToEnd(arc1), length = 20)
+///   |> close()
+/// ```
+///
+/// ```kcl
+/// circSketch = startSketchOn(XY)
+///   |> circle(center = [0, 0], radius= 3, tag = $circ)
+///
+/// triangleSketch = startSketchOn(XY)
+///   |> startProfile(at = [-5, 0])
+///   |> angledLine(angle = tangentToEnd(circ), length = 10)
+///   |> line(end = [-15, 0])
+///   |> close()
+/// ```
+@(impl = std_rust)
+export fn tangentToEnd(
+  /// The line segment being queried by its tag.
+  @tag: tag,
+): number(Angle) {}

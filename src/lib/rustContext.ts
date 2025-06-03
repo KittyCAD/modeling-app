@@ -141,7 +141,7 @@ export default class RustContext {
       )
     } catch (e: any) {
       const parsed: RustKclError = JSON.parse(e.toString())
-      toast.error(parsed.msg, { id: toastId })
+      toast.error(parsed.details.msg, { id: toastId })
       return
     }
   }

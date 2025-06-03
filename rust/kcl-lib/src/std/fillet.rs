@@ -49,7 +49,7 @@ pub(super) fn validate_unique<T: Eq + std::hash::Hash>(tags: &[(T, SourceRange)]
         }
     }
     if !duplicate_tags_source.is_empty() {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "The same edge ID is being referenced multiple times, which is not allowed. Please select a different edge"
                 .to_string(),
             duplicate_tags_source,
@@ -85,14 +85,14 @@ async fn inner_fillet(
     // If you try and tag multiple edges with a tagged fillet, we want to return an
     // error to the user that they can only tag one edge at a time.
     if tag.is_some() && tags.len() > 1 {
-        return Err(KclError::Type(KclErrorDetails {
+        return Err(KclError::new_type(KclErrorDetails {
             message: "You can only tag one edge at a time with a tagged fillet. Either delete the tag for the fillet fn if you don't need it OR separate into individual fillet functions for each tag.".to_string(),
             source_ranges: vec![args.source_range],
             backtrace: Default::default(),
         }));
     }
     if tags.is_empty() {
-        return Err(KclError::Semantic(KclErrorDetails {
+        return Err(KclError::new_semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
             message: "You must fillet at least one tag".to_owned(),
             backtrace: Default::default(),

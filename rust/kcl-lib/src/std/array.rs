@@ -58,7 +58,7 @@ async fn call_map_closure(
     let output = map_fn.call_kw(None, exec_state, ctxt, args, source_range).await?;
     let source_ranges = vec![source_range];
     let output = output.ok_or_else(|| {
-        KclError::Semantic(KclErrorDetails::new(
+        KclError::new_semantic(KclErrorDetails::new(
             "Map function must return a value".to_owned(),
             source_ranges,
         ))
@@ -118,7 +118,7 @@ async fn call_reduce_closure(
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
     let out = transform_fn_return.ok_or_else(|| {
-        KclError::Semantic(KclErrorDetails::new(
+        KclError::new_semantic(KclErrorDetails::new(
             "Reducer function must return a value".to_string(),
             source_ranges.clone(),
         ))
@@ -138,7 +138,7 @@ pub async fn push(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 pub async fn pop(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (mut array, ty) = args.get_unlabeled_kw_arg_array_and_type("array", exec_state)?;
     if array.is_empty() {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             "Cannot pop from an empty array".to_string(),
             vec![args.source_range],
         )));

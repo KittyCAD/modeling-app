@@ -45,17 +45,6 @@ pub type StdFn = fn(
 
 lazy_static! {
     static ref CORE_FNS: Vec<Box<dyn StdLibFn>> = vec![
-        Box::new(crate::std::segment::SegEnd),
-        Box::new(crate::std::segment::SegEndX),
-        Box::new(crate::std::segment::SegEndY),
-        Box::new(crate::std::segment::SegStart),
-        Box::new(crate::std::segment::SegStartX),
-        Box::new(crate::std::segment::SegStartY),
-        Box::new(crate::std::segment::LastSegX),
-        Box::new(crate::std::segment::LastSegY),
-        Box::new(crate::std::segment::SegLen),
-        Box::new(crate::std::segment::SegAng),
-        Box::new(crate::std::segment::TangentToEnd),
         Box::new(crate::std::sketch::InvoluteCircular),
         Box::new(crate::std::sketch::Line),
         Box::new(crate::std::sketch::XLine),
@@ -210,15 +199,15 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("transform", "translate") => (
             |e, a| Box::pin(crate::std::transform::translate(e, a)),
-            StdFnProps::default("std::transform::translate"),
+            StdFnProps::default("std::transform::translate").include_in_feature_tree(),
         ),
         ("transform", "rotate") => (
             |e, a| Box::pin(crate::std::transform::rotate(e, a)),
-            StdFnProps::default("std::transform::rotate"),
+            StdFnProps::default("std::transform::rotate").include_in_feature_tree(),
         ),
         ("transform", "scale") => (
             |e, a| Box::pin(crate::std::transform::scale(e, a)),
-            StdFnProps::default("std::transform::scale"),
+            StdFnProps::default("std::transform::scale").include_in_feature_tree(),
         ),
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
@@ -351,6 +340,50 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch", "patternCircular2d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_circular_2d(e, a)),
             StdFnProps::default("std::sketch::patternCircular2d"),
+        ),
+        ("sketch", "segEnd") => (
+            |e, a| Box::pin(crate::std::segment::segment_end(e, a)),
+            StdFnProps::default("std::sketch::segEnd"),
+        ),
+        ("sketch", "segEndX") => (
+            |e, a| Box::pin(crate::std::segment::segment_end_x(e, a)),
+            StdFnProps::default("std::sketch::segEndX"),
+        ),
+        ("sketch", "segEndY") => (
+            |e, a| Box::pin(crate::std::segment::segment_end_y(e, a)),
+            StdFnProps::default("std::sketch::segEndY"),
+        ),
+        ("sketch", "segStart") => (
+            |e, a| Box::pin(crate::std::segment::segment_start(e, a)),
+            StdFnProps::default("std::sketch::segStart"),
+        ),
+        ("sketch", "segStartX") => (
+            |e, a| Box::pin(crate::std::segment::segment_start_x(e, a)),
+            StdFnProps::default("std::sketch::segStartX"),
+        ),
+        ("sketch", "segStartY") => (
+            |e, a| Box::pin(crate::std::segment::segment_start_y(e, a)),
+            StdFnProps::default("std::sketch::segStartY"),
+        ),
+        ("sketch", "lastSegX") => (
+            |e, a| Box::pin(crate::std::segment::last_segment_x(e, a)),
+            StdFnProps::default("std::sketch::lastSegX"),
+        ),
+        ("sketch", "lastSegY") => (
+            |e, a| Box::pin(crate::std::segment::last_segment_y(e, a)),
+            StdFnProps::default("std::sketch::lastSegY"),
+        ),
+        ("sketch", "segLen") => (
+            |e, a| Box::pin(crate::std::segment::segment_length(e, a)),
+            StdFnProps::default("std::sketch::segLen"),
+        ),
+        ("sketch", "segAng") => (
+            |e, a| Box::pin(crate::std::segment::segment_angle(e, a)),
+            StdFnProps::default("std::sketch::segAng"),
+        ),
+        ("sketch", "tangentToEnd") => (
+            |e, a| Box::pin(crate::std::segment::tangent_to_end(e, a)),
+            StdFnProps::default("std::sketch::tangentToEnd"),
         ),
         ("appearance", "hexString") => (
             |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),
