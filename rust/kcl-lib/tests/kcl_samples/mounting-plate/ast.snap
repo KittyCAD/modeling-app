@@ -311,7 +311,7 @@ description: Result of parsing mounting-plate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "rs",
+            "name": "rectShape",
             "start": 0,
             "type": "Identifier"
           },
@@ -1029,7 +1029,7 @@ description: Result of parsing mounting-plate.kcl
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "rs",
+                  "name": "rectShape",
                   "start": 0,
                   "type": "Identifier"
                 },

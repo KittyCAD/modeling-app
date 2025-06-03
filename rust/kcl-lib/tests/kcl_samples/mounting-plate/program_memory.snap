@@ -87,9 +87,9 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 618,
-            "end": 633,
-            "start": 618,
+            "commentStart": 625,
+            "end": 640,
+            "start": 625,
             "type": "TagDeclarator",
             "value": "basePlateEdge1"
           },
@@ -100,9 +100,9 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 716,
-            "end": 731,
-            "start": 716,
+            "commentStart": 723,
+            "end": 738,
+            "start": 723,
             "type": "TagDeclarator",
             "value": "basePlateEdge2"
           },
@@ -113,9 +113,9 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 821,
-            "end": 836,
-            "start": 821,
+            "commentStart": 828,
+            "end": 843,
+            "start": 828,
             "type": "TagDeclarator",
             "value": "basePlateEdge3"
           },
@@ -126,9 +126,9 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 906,
-            "end": 921,
-            "start": 906,
+            "commentStart": 913,
+            "end": 928,
+            "start": 913,
             "type": "TagDeclarator",
             "value": "basePlateEdge4"
           },
@@ -149,9 +149,9 @@ description: Variables in memory after executing mounting-plate.kcl
               5.0
             ],
             "tag": {
-              "commentStart": 618,
-              "end": 633,
-              "start": 618,
+              "commentStart": 625,
+              "end": 640,
+              "start": 625,
               "type": "TagDeclarator",
               "value": "basePlateEdge1"
             },
@@ -174,9 +174,9 @@ description: Variables in memory after executing mounting-plate.kcl
               5.0
             ],
             "tag": {
-              "commentStart": 716,
-              "end": 731,
-              "start": 716,
+              "commentStart": 723,
+              "end": 738,
+              "start": 723,
               "type": "TagDeclarator",
               "value": "basePlateEdge2"
             },
@@ -199,9 +199,9 @@ description: Variables in memory after executing mounting-plate.kcl
               -5.0
             ],
             "tag": {
-              "commentStart": 821,
-              "end": 836,
-              "start": 821,
+              "commentStart": 828,
+              "end": 843,
+              "start": 828,
               "type": "TagDeclarator",
               "value": "basePlateEdge3"
             },
@@ -224,9 +224,9 @@ description: Variables in memory after executing mounting-plate.kcl
               -5.0
             ],
             "tag": {
-              "commentStart": 906,
-              "end": 921,
-              "start": 906,
+              "commentStart": 913,
+              "end": 928,
+              "start": 913,
               "type": "TagDeclarator",
               "value": "basePlateEdge4"
             },
@@ -453,7 +453,7 @@ description: Variables in memory after executing mounting-plate.kcl
       }
     }
   },
-  "rs": {
+  "rectShape": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -469,9 +469,9 @@ description: Variables in memory after executing mounting-plate.kcl
             5.0
           ],
           "tag": {
-            "commentStart": 618,
-            "end": 633,
-            "start": 618,
+            "commentStart": 625,
+            "end": 640,
+            "start": 625,
             "type": "TagDeclarator",
             "value": "basePlateEdge1"
           },
@@ -494,9 +494,9 @@ description: Variables in memory after executing mounting-plate.kcl
             5.0
           ],
           "tag": {
-            "commentStart": 716,
-            "end": 731,
-            "start": 716,
+            "commentStart": 723,
+            "end": 738,
+            "start": 723,
             "type": "TagDeclarator",
             "value": "basePlateEdge2"
           },
@@ -519,9 +519,9 @@ description: Variables in memory after executing mounting-plate.kcl
             -5.0
           ],
           "tag": {
-            "commentStart": 821,
-            "end": 836,
-            "start": 821,
+            "commentStart": 828,
+            "end": 843,
+            "start": 828,
             "type": "TagDeclarator",
             "value": "basePlateEdge3"
           },
@@ -544,9 +544,9 @@ description: Variables in memory after executing mounting-plate.kcl
             -5.0
           ],
           "tag": {
-            "commentStart": 906,
-            "end": 921,
-            "start": 906,
+            "commentStart": 913,
+            "end": 928,
+            "start": 913,
             "type": "TagDeclarator",
             "value": "basePlateEdge4"
           },
