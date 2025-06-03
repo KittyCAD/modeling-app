@@ -278,6 +278,7 @@ export class SceneInfra {
 
     // RENDERER
     this.renderer = new WebGLRenderer({ antialias: true, alpha: true }) // Enable transparency
+    this.renderer.domElement.id = 'client-side-scene-canvas'
     this.renderer.setSize(window.innerWidth, window.innerHeight)
     this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
 

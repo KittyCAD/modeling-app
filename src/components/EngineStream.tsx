@@ -197,7 +197,7 @@ export const EngineStream = (props: {
           //   // Name needs to be registered in the python proxy server!
           //   name: 'zoo-design-studio',
           //   debug: false,
-          //   canvasId: 'webgl',
+          //   canvasId: 'client-side-scene-canvas',
           //   camera: sceneInfra.camControls.camera.clone(),
           // })
 

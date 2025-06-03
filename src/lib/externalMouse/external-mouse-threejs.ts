@@ -141,7 +141,7 @@ interface _3DconnexionMiddleware {
   onStopMotion(): void
 
   // 3D mouse initialization
-  init3DMouse(): Promise<void>
+  init3DMouse(): Promise<{value: boolean, message: string}>
   onConnect(): void
   onDisconnect(reason: string): void
   on3dmouseCreated(): void
@@ -150,7 +150,7 @@ interface _3DconnexionMiddleware {
   render(time: number): void
 
   // Custom
-  deleteScene(): void
+  destroy(): void
 }
 
 interface _3DMouseConfiguration {
@@ -232,12 +232,10 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   }
 
   // custom
-  deleteScene(): void {
-    if (!this.spaceMouse) {
-      console.error('spaceMouse is missing unable to delete3dmouse')
-      return
+  destroy(): void {
+    if (this.spaceMouse) {
+      this.spaceMouse.delete3dmouse()
     }
-    this.spaceMouse.delete3dmouse()
   }
 
   // callbacks
@@ -364,7 +362,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
    * invoke this method! I know its not in the constructor... TBD.
    * Everything will initialize after this function call.
    */
-  async init3DMouse(timeout: number = 15000): Promise<void> {
+  async init3DMouse(timeout: number = 15000): Promise<{value: boolean, message: string}> {
     /**
      * _3Dconnexion.connect() is buggy, the code is implemented wrong.
      * It is using half async and half sync code.
@@ -384,19 +382,23 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
       this.spaceMouse.debug = this.debug
     }
 
-    // artifically wait 15 seconds to hope it connects within that timeframe
+    // artifically wait to hope it connects within that timeframe
     return new Promise((resolve, reject) => {
       if (this.spaceMouse) {
         setTimeout(() => {
+          let message = '3DConnexion mouse is connected'
+          let success = true
           if (this.spaceMouse.connected === false) {
-            console.error('Cannot connect to 3Dconnexion NL-Proxy"')
+            message = 'Cannot connect to 3Dconnexion NL-Proxy'
+            success = false
+          } else if (this.spaceMouse.session === null) {
+            message = 'Unable to find spaceMouse session to the proxy server'
+            success = false
           }
-
-          if (this.spaceMouse.session === null) {
-            console.error(
-              'Unable to find spaceMouse session to the proxy server'
-            )
-          }
+          resolve({
+            value: success,
+            message
+          })
         }, timeout) // 15 seconds
       }
     })
@@ -404,8 +406,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
 
   // init3DMouse needs onConnect
   onConnect(): void {
-    const canvas: HTMLCanvasElement | null =
-      document.querySelector('[data-engine]')
+    const canvas : HTMLCanvasElement | null = document.querySelector('#'+this.canvasId)
 
     if (!canvas) {
       console.error('[_3DMouse] no canvas found, failed onConnect', canvas)

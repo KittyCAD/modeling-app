@@ -19,7 +19,7 @@ enum _3DMouseMachineStates {
 
 enum _3DMouseMachineEvents {
   connect = 'connect',
-  done_connect = donePrefix + 'connect'
+  done_connect = donePrefix + 'connect',
 }
 
 enum _3DMouseMachineActors {
@@ -29,46 +29,70 @@ enum _3DMouseMachineActors {
 export const _3DMouseMachine = setup({
   types: {
     context: {} as _3DMouseContext,
-    events: {} as | {
-      type: _3DMouseMachineEvents.connect,
-      data: {
-        name: string,
-        debug: boolean,
-        canvasId: string,
-        camera: PerspectiveCamera | OrthographicCamera
-      }
-    } | {
-      type: _3DMouseMachineEvents.done_connect
-        output: _3DMouseThreeJS
-    }
+    events: {} as
+      | {
+          type: _3DMouseMachineEvents.connect
+          data: {
+            name: string
+            debug: boolean
+            canvasId: string
+            camera: PerspectiveCamera | OrthographicCamera
+          }
+        }
+      | {
+          type: _3DMouseMachineEvents.done_connect
+          output: _3DMouseThreeJS
+        },
   },
   actions: {},
   actors: {
     [_3DMouseMachineActors.connect]: fromPromise(
       async ({
-        input
+        input,
       }: {
         input: {
-          context: _3DMouseContext,
-          name: string,
-          debug: boolean,
-          canvasId: string,
+          context: _3DMouseContext
+          name: string
+          debug: boolean
+          canvasId: string
           camera: PerspectiveCamera | OrthographicCamera
         }
       }): Promise<_3DMouseThreeJS> => {
-        if (_3Dconnexion) {
+        /** * Global variable reference from html script tag loading */
+        if (!_3Dconnexion) {
           const message = '_3Dconnexion library missing.'
           console.error(`${prefixForErrors} ${message}`)
-          throw (message)
+          throw message
         }
+
+        /** Check if the canvas is present, it checks in _3DMouseThreeJS as well */
+        const canvas : HTMLCanvasElement | null = document.querySelector('#'+input.canvasId)
+        if (!canvas) {
+          const message = `Unable to find canvas with id: ${input.canvasId}`
+          console.error(`${prefixForErrors} ${message}`)
+          throw message
+        }
+
+        /** Make sure the camera is available */
+        if (!input.camera) {
+          const message = `Unable to find initial client scene camera`
+          console.error(`${prefixForErrors} ${message}`)
+          throw message
+        }
+
         const the3DMouse = new _3DMouseThreeJS({
-            // Name needs to be registered in the python proxy server!
+          // Name needs to be registered in the python proxy server!
           name: input.name,
           debug: input.debug,
           canvasId: input.canvasId,
           camera: input.camera.clone(),
         })
-        await the3DMouse.init3DMouse()
+        const response = await the3DMouse.init3DMouse(1000 * 2)
+        if (response.value === false) {
+          console.error(`${prefixForErrors} ${response.message}`)
+          the3DMouse.destroy()
+          throw response.message
+        }
         return the3DMouse
       }
     ),
@@ -98,7 +122,7 @@ export const _3DMouseMachine = setup({
             name: event.data.name,
             debug: event.data.debug,
             canvasId: event.data.canvasId,
-            camera: event.data.camera
+            camera: event.data.camera,
           }
         },
         onDone: {
@@ -113,7 +137,7 @@ export const _3DMouseMachine = setup({
       on: {},
     },
     [_3DMouseMachineStates.failedToConnect]: {
-      target: _3DMouseMachineStates.waitingToConnect
+      target: _3DMouseMachineStates.waitingToConnect,
     },
   },
 })
