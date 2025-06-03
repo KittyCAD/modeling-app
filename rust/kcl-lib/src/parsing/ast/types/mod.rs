@@ -3230,7 +3230,7 @@ pub enum PrimitiveType {
     /// `fn`, type of functions.
     Function(FunctionType),
     /// An identifier used as a type (not really a primitive type, but whatever).
-    Named { name: Node<Identifier> },
+    Named { id: Node<Identifier> },
 }
 
 impl PrimitiveType {
@@ -3286,7 +3286,7 @@ impl fmt::Display for PrimitiveType {
                 }
                 Ok(())
             }
-            PrimitiveType::Named { name: n } => write!(f, "{}", n.name),
+            PrimitiveType::Named { id: n } => write!(f, "{}", n.name),
         }
     }
 }
