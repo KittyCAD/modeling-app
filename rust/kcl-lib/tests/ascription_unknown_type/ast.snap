@@ -35,15 +35,17 @@ description: Result of parsing ascription_unknown_type.kcl
             "start": 0,
             "ty": {
               "commentStart": 0,
-              "commentStart": 0,
               "end": 0,
-              "end": 0,
-              "name": "NotARealType",
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "NotARealType",
+                "start": 0,
+                "type": "Identifier"
+              },
               "p_type": "Named",
               "start": 0,
-              "start": 0,
-              "type": "Primitive",
-              "type": "Identifier"
+              "type": "Primitive"
             },
             "type": "AscribedExpression",
             "type": "AscribedExpression"
