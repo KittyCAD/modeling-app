@@ -25,13 +25,13 @@ async-recursion = "1.1.1"
 async-trait = { workspace = true }
 base64 = "0.22.1"
 bson = { workspace = true }
-chrono = "0.4.38"
-clap = { version = "4.5.36", default-features = false, optional = true, features = [
+chrono = "0.4.41"
+clap = { version = "4.5.39", default-features = false, optional = true, features = [
     "std",
     "derive",
 ] }
 convert_case = "0.8.0"
-csscolorparser = "0.7.0"
+csscolorparser = "0.7.2"
 dashmap = { workspace = true }
 dhat = { version = "0.3", optional = true }
 fnv = "1.0.7"
@@ -42,7 +42,7 @@ gltf-json = "1.4.1"
 http = { workspace = true }
 image = { version = "0.25.6", default-features = false, features = ["png"] }
 indexmap = { workspace = true, features = ["serde", "rayon"] }
-itertools = "0.13.0"
+itertools = "0.14.0"
 kcl-derive-docs = { version = "0.1", path = "../kcl-derive-docs" }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
@@ -69,11 +69,11 @@ schemars = { version = "0.8.17", features = [
 ] }
 serde = { workspace = true }
 serde_json = { workspace = true }
-sha2 = "0.10.8"
-tabled = { version = "0.18.0", optional = true }
-tempfile = "3.19"
+sha2 = "0.10.9"
+tabled = { version = "0.19.0", optional = true }
+tempfile = "3.20"
 thiserror = "2.0.0"
-toml = "0.8.19"
+toml = "0.8.22"
 ts-rs = { version = "10.1.0", features = [
     "uuid-impl",
     "url-impl",
@@ -82,7 +82,7 @@ ts-rs = { version = "10.1.0", features = [
     "no-serde-warnings",
     "serde-json-impl",
 ] }
-tynm = "0.1.10"
+tynm = "0.2.0"
 url = { version = "2.5.4", features = ["serde"] }
 uuid = { workspace = true, features = ["v4", "v5", "js", "serde"] }
 validator = { version = "0.20.0", features = ["derive"] }
@@ -130,16 +130,16 @@ tabled = ["dep:tabled"]
 [dev-dependencies]
 approx = "0.5"
 base64 = "0.22.1"
-criterion = { version = "0.5.1", features = ["async_tokio"] }
-expectorate = "1.1.0"
+criterion = { version = "0.6.0", features = ["async_tokio"] }
+expectorate = "1.2.0"
 handlebars = "6.3.2"
 image = { version = "0.25.6", default-features = false, features = ["png"] }
-insta = { version = "1.42.2", features = ["json", "filters", "redactions"] }
+insta = { version = "1.43.1", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
-miette = { version = "7.5.0", features = ["fancy"] }
+miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
-tokio = { version = "1.44.2", features = ["rt-multi-thread", "macros", "time"] }
-twenty-twenty = "0.8.0"
+tokio = { version = "1.45.1", features = ["rt-multi-thread", "macros", "time"] }
+twenty-twenty = "0.8.2"
 
 [lints]
 workspace = true
