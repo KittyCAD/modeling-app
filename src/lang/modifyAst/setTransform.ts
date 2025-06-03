@@ -6,8 +6,10 @@ import {
   createLabeledArg,
   createLocalName,
   createPipeExpression,
+  createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodeFromPath, valueOrVariable } from '@src/lang/queryAst'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -16,6 +18,7 @@ import type {
   PathToNode,
   PipeExpression,
   Program,
+  VariableDeclaration,
   VariableDeclarator,
 } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
@@ -24,6 +27,95 @@ import {
   getLastVariable,
 } from '@src/lang/modifyAst/boolean'
 import type { Selections } from '@src/lib/selections'
+import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
+import { KclCommandValue } from '@src/lib/commandTypes'
+import { insertVariableAndOffsetPathToNode } from '../modifyAst'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import { createPathToNode } from './addSweep'
+
+export function addTranslate({
+  ast,
+  artifactGraph,
+  selection,
+  x,
+  y,
+  z,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  selection: Selections
+  x: KclCommandValue
+  y: KclCommandValue
+  z: KclCommandValue
+  nodeToEdit?: PathToNode
+}):
+  | {
+      modifiedAst: Node<Program>
+      pathToNode: PathToNode
+    }
+  | Error {
+  // 1. Clone the ast so we can edit it
+  const modifiedAst = structuredClone(ast)
+
+  // 2. Prepare unlabeled and labeled arguments
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+  const geometryNode = retrievePathToNodeFromTransformSelection(
+    selection,
+    artifactGraph,
+    ast
+  )
+  if (err(geometryNode)) {
+    return geometryNode
+  }
+
+  const geometryName = retrieveGeometryNameFromPath(ast, geometryNode)
+  if (err(geometryName)) {
+    return geometryName
+  }
+
+  const geometryExpr = createLocalName(geometryName)
+  const call = createCallExpressionStdLibKw('translate', geometryExpr, [
+    createLabeledArg('x', valueOrVariable(x)),
+    createLabeledArg('y', valueOrVariable(y)),
+    createLabeledArg('z', valueOrVariable(z)),
+  ])
+
+  // Insert variables for labeled arguments if provided
+  insertVariableAndOffsetPathToNode(x, modifiedAst, nodeToEdit)
+  insertVariableAndOffsetPathToNode(y, modifiedAst, nodeToEdit)
+  insertVariableAndOffsetPathToNode(z, modifiedAst, nodeToEdit)
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  let pathToNode: PathToNode | undefined
+  if (nodeToEdit) {
+    const result = getNodeFromPath<CallExpressionKw>(
+      modifiedAst,
+      nodeToEdit,
+      'CallExpressionKw'
+    )
+    if (err(result)) {
+      return result
+    }
+
+    Object.assign(result.node, call)
+    pathToNode = nodeToEdit
+  } else {
+    const name = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.TRANSLATE
+    )
+    const declaration = createVariableDeclaration(name, call)
+    modifiedAst.body.push(declaration)
+    pathToNode = createPathToNode(modifiedAst)
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
 
 export function setTranslate({
   modifiedAst,
@@ -189,4 +281,37 @@ export function retrievePathToNodeFromTransformSelection(
   }
 
   return pathToNode
+}
+
+export function retrieveGeometryNameFromPath(
+  ast: Node<Program>,
+  pathToNode: PathToNode
+) {
+  const returnEarly = true
+  const geometryNode = getNodeFromPath<
+    VariableDeclaration | ImportStatement | PipeExpression
+  >(
+    ast,
+    pathToNode,
+    ['VariableDeclaration', 'ImportStatement', 'PipeExpression'],
+    returnEarly
+  )
+  if (err(geometryNode)) {
+    return new Error("Couldn't find corresponding path to node")
+  }
+
+  let geometryName: string | undefined
+  if (geometryNode.node.type === 'VariableDeclaration') {
+    geometryName = geometryNode.node.declaration.id.name
+  } else if (
+    geometryNode.node.type === 'ImportStatement' &&
+    geometryNode.node.selector.type === 'None' &&
+    geometryNode.node.selector.alias
+  ) {
+    geometryName = geometryNode.node.selector.alias?.name
+  } else {
+    return new Error("Couldn't find corresponding geometry")
+  }
+
+  return geometryName
 }

@@ -331,7 +331,7 @@ function createSketchExpression(sketches: Expr[]) {
   return sketchesExpr
 }
 
-function createPathToNode(
+export function createPathToNode(
   modifiedAst: Node<Program>,
   toFirstKwarg = true
 ): PathToNode {

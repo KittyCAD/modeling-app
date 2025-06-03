@@ -1324,55 +1324,63 @@ async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
     name: 'Translate',
     groupId: 'modeling',
   }
-  const isModuleImport = operation.type === 'GroupBegin'
-  const isSupportedStdLibCall =
-    operation.type === 'StdLibCall' &&
-    stdLibMap[operation.name]?.supportsTransform
-  if (!isModuleImport && !isSupportedStdLibCall) {
-    return {
-      reason: 'Unsupported operation type. Please edit in the code editor.',
-    }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
   }
 
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
+  // 1. Map the unlabeled arguments to solid2d selections
+  console.log('operation', operation)
+  const geometryName = codeManager.code.slice(
+    operation.unlabeledArg?.sourceRange[0],
+    operation.unlabeledArg?.sourceRange[1]
   )
-  let x: KclExpression | undefined = undefined
-  let y: KclExpression | undefined = undefined
-  let z: KclExpression | undefined = undefined
-  const pipeLookupFromOperation = getNodeFromPath<PipeExpression>(
-    kclManager.ast,
-    nodeToEdit,
-    'PipeExpression'
-  )
-  let pipe: PipeExpression | undefined
-  const ast = kclManager.ast
-  if (
-    err(pipeLookupFromOperation) ||
-    pipeLookupFromOperation.node.type !== 'PipeExpression'
-  ) {
-    // Look for the last pipe with the import alias and a call to translate
-    const pipes = findPipesWithImportAlias(ast, nodeToEdit, 'translate')
-    pipe = pipes.at(-1)?.expression
-  } else {
-    pipe = pipeLookupFromOperation.node
-  }
+  console.log('geometryName', geometryName)
 
-  if (pipe) {
-    const translate = pipe.body.find(
-      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'translate'
+  // 2. Convert the x, y, z argument from a string to a KCL expression
+  const x = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs?.['x']?.sourceRange[0],
+      operation.labeledArgs?.['x']?.sourceRange[1]
     )
-    if (translate?.type === 'CallExpressionKw') {
-      x = await retrieveArgFromPipedCallExpression(translate, 'x')
-      y = await retrieveArgFromPipedCallExpression(translate, 'y')
-      z = await retrieveArgFromPipedCallExpression(translate, 'z')
-    }
+  )
+  if (err(x) || 'errors' in x) {
+    return { reason: "Couldn't retrieve x argument" }
   }
 
-  // Won't be used since we provide nodeToEdit
-  const selection: Selections = { graphSelections: [], otherSelections: [] }
-  const argDefaultValues = { nodeToEdit, selection, x, y, z }
+  const y = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs?.['y']?.sourceRange[0],
+      operation.labeledArgs?.['y']?.sourceRange[1]
+    )
+  )
+  if (err(y) || 'errors' in y) {
+    return { reason: "Couldn't retrieve y argument" }
+  }
+
+  const z = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs?.['z']?.sourceRange[0],
+      operation.labeledArgs?.['z']?.sourceRange[1]
+    )
+  )
+  if (err(z) || 'errors' in z) {
+    return { reason: "Couldn't retrieve z argument" }
+  }
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Translate'] = {
+    selection,
+    x,
+    y,
+    z,
+    nodeToEdit: getNodePathFromSourceRange(
+      kclManager.ast,
+      sourceRangeFromRust(operation.sourceRange)
+    ),
+  }
+
   return {
     ...baseCommand,
     argDefaultValues,
