@@ -164,10 +164,13 @@ impl ExecutorContext {
                                 let mut mod_value = mem.get_from(&mod_name, env_ref, import_item.into(), 0).cloned();
 
                                 if value.is_err() && ty.is_err() && mod_value.is_err() {
-                                    return Err(KclError::new_undefined_value(KclErrorDetails::new(
-                                        format!("{} is not defined in module", import_item.name.name),
-                                        vec![SourceRange::from(&import_item.name)],
-                                    )));
+                                    return Err(KclError::new_undefined_value(
+                                        KclErrorDetails::new(
+                                            format!("{} is not defined in module", import_item.name.name),
+                                            vec![SourceRange::from(&import_item.name)],
+                                        ),
+                                        None,
+                                    ));
                                 }
 
                                 // Check that the item is allowed to be imported (in at least one namespace).
@@ -301,7 +304,10 @@ impl ExecutorContext {
 
                     let annotations = &variable_declaration.outer_attrs;
 
-                    let value = self
+                    // During the evaluation of the variable's LHS, set context that this is all happening inside a variable
+                    // declaration, for the given name. This helps improve user-facing error messages.
+                    exec_state.mod_local.being_declared = Some(variable_declaration.inner.name().to_owned());
+                    let rhs_result = self
                         .execute_expr(
                             &variable_declaration.declaration.init,
                             exec_state,
@@ -309,10 +315,14 @@ impl ExecutorContext {
                             annotations,
                             StatementKind::Declaration { name: &var_name },
                         )
-                        .await?;
+                        .await;
+                    // Declaration over, so unset this context.
+                    exec_state.mod_local.being_declared = None;
+                    let rhs = rhs_result?;
+
                     exec_state
                         .mut_stack()
-                        .add(var_name.clone(), value.clone(), source_range)?;
+                        .add(var_name.clone(), rhs.clone(), source_range)?;
 
                     // Track exports.
                     if let ItemVisibility::Export = variable_declaration.visibility {
@@ -326,7 +336,7 @@ impl ExecutorContext {
                         }
                     }
                     // Variable declaration can be the return value of a module.
-                    last_expr = matches!(body_type, BodyType::Root).then_some(value);
+                    last_expr = matches!(body_type, BodyType::Root).then_some(rhs);
                 }
                 BodyItem::TypeDeclaration(ty) => {
                     let metadata = Metadata::from(&**ty);
@@ -913,10 +923,13 @@ impl Node<MemberExpression> {
                 if let Some(value) = map.get(&property) {
                     Ok(value.to_owned())
                 } else {
-                    Err(KclError::new_undefined_value(KclErrorDetails::new(
-                        format!("Property '{property}' not found in object"),
-                        vec![self.clone().into()],
-                    )))
+                    Err(KclError::new_undefined_value(
+                        KclErrorDetails::new(
+                            format!("Property '{property}' not found in object"),
+                            vec![self.clone().into()],
+                        ),
+                        None,
+                    ))
                 }
             }
             (KclValue::Object { .. }, Property::String(property), true) => {
@@ -938,10 +951,13 @@ impl Node<MemberExpression> {
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
                 } else {
-                    Err(KclError::new_undefined_value(KclErrorDetails::new(
-                        format!("The array doesn't have any item at index {index}"),
-                        vec![self.clone().into()],
-                    )))
+                    Err(KclError::new_undefined_value(
+                        KclErrorDetails::new(
+                            format!("The array doesn't have any item at index {index}"),
+                            vec![self.clone().into()],
+                        ),
+                        None,
+                    ))
                 }
             }
             // Singletons and single-element arrays should be interchangeable, but only indexing by 0 should work.
