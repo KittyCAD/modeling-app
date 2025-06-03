@@ -1319,7 +1319,7 @@ export async function enterAppearanceFlow({
   )
 }
 
-const prepareToEditTranslate: PrepareToEditCallback = async ({ operation }) => {
+async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
   const baseCommand = {
     name: 'Translate',
     groupId: 'modeling',
@@ -1393,7 +1393,7 @@ export async function enterTranslateFlow({
   }
 }
 
-const prepareToEditRotate: PrepareToEditCallback = async ({ operation }) => {
+async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
   const baseCommand = {
     name: 'Rotate',
     groupId: 'modeling',
