@@ -454,7 +454,7 @@ impl Node<Program> {
                         alpha: c.a,
                     },
                 };
-                if colors.borrow().iter().any(|c| *c == color) {
+                if colors.borrow().contains(&color) {
                     return;
                 }
                 colors.borrow_mut().push(color);

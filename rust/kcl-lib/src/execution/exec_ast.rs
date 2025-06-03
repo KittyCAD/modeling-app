@@ -1327,7 +1327,7 @@ pub(crate) async fn execute_pipe_body(
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
     // should use the previous child expression for %.
     // This means there's no more need for the previous pipe_value from the parent AST node above this one.
-    let previous_pipe_value = std::mem::replace(&mut exec_state.mod_local.pipe_value, Some(output));
+    let previous_pipe_value = exec_state.mod_local.pipe_value.replace(output);
     // Evaluate remaining elements.
     let result = inner_execute_pipe_body(exec_state, body, ctx).await;
     // Restore the previous pipe value.
