@@ -1,0 +1,65 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing ascription_unknown_type.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "z",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "expr": {
+              "commentStart": 0,
+              "end": 0,
+              "raw": "10",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 10.0,
+                "suffix": "None"
+              }
+            },
+            "start": 0,
+            "ty": {
+              "commentStart": 0,
+              "commentStart": 0,
+              "end": 0,
+              "end": 0,
+              "name": "NotARealType",
+              "p_type": "Named",
+              "start": 0,
+              "start": 0,
+              "type": "Primitive",
+              "type": "Identifier"
+            },
+            "type": "AscribedExpression",
+            "type": "AscribedExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "start": 0
+  }
+}
