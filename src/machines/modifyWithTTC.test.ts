@@ -35,7 +35,11 @@ function saveJsonSnapshots(snapshots: JsonSnapshots): void {
     if (!fs.existsSync(SNAPSHOTS_DIR)) {
       fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true })
     }
-    fs.writeFileSync(SNAPSHOTS_FILE, JSON.stringify(snapshots, null, 2), 'utf-8')
+    fs.writeFileSync(
+      SNAPSHOTS_FILE,
+      JSON.stringify(snapshots, null, 2),
+      'utf-8'
+    )
   } catch (error) {
     console.error('Failed to save JSON snapshots:', error)
     throw error
@@ -45,17 +49,18 @@ function saveJsonSnapshots(snapshots: JsonSnapshots): void {
 function expectJsonSnapshot(testName: string, data: any): void {
   const snapshots = loadJsonSnapshots()
   const serializedData = JSON.parse(JSON.stringify(data)) // Deep clone to remove any functions/symbols
-  
+
   // Try to detect update mode using inject
   let isUpdateMode = false
   try {
     isUpdateMode = inject('vitest:updateSnapshots') || false
   } catch {
     // If inject fails, fall back to environment variable approach
-    isUpdateMode = process.env.VITEST_UPDATE_SNAPSHOTS === 'true' ||
-                   process.env.UPDATE_SNAPSHOTS === 'true'
+    isUpdateMode =
+      process.env.VITEST_UPDATE_SNAPSHOTS === 'true' ||
+      process.env.UPDATE_SNAPSHOTS === 'true'
   }
-  
+
   if (isUpdateMode) {
     // Update mode: save the new snapshot
     snapshots[testName] = serializedData
@@ -65,25 +70,26 @@ function expectJsonSnapshot(testName: string, data: any): void {
     if (!(testName in snapshots)) {
       throw new Error(
         `Snapshot for "${testName}" not found. ` +
-        `To create or update snapshots, run:\n` +
-        `  npm test -- --run src/machines/modifyWithTTC.test.ts -u\n` +
-        `Or set the UPDATE_SNAPSHOTS environment variable:\n` +
-        `  UPDATE_SNAPSHOTS=true npm test -- --run src/machines/modifyWithTTC.test.ts`
+          `To create or update snapshots, run:\n` +
+          `  npm test -- --run src/machines/modifyWithTTC.test.ts -u\n` +
+          `Or set the UPDATE_SNAPSHOTS environment variable:\n` +
+          `  UPDATE_SNAPSHOTS=true npm test -- --run src/machines/modifyWithTTC.test.ts`
       )
     }
-    
+
     const existing = snapshots[testName]
     try {
       expect(serializedData).toEqual(existing)
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
+      const errorMessage =
+        error instanceof Error ? error.message : String(error)
       throw new Error(
         `Snapshot mismatch for "${testName}". ` +
-        `To update snapshots, run:\n` +
-        `  npm test -- --run src/machines/modifyWithTTC.test.ts -u\n` +
-        `Or set the UPDATE_SNAPSHOTS environment variable:\n` +
-        `  UPDATE_SNAPSHOTS=true npm test -- --run src/machines/modifyWithTTC.test.ts\n\n` +
-        `Original error: ${errorMessage}`
+          `To update snapshots, run:\n` +
+          `  npm test -- --run src/machines/modifyWithTTC.test.ts -u\n` +
+          `Or set the UPDATE_SNAPSHOTS environment variable:\n` +
+          `  UPDATE_SNAPSHOTS=true npm test -- --run src/machines/modifyWithTTC.test.ts\n\n` +
+          `Original error: ${errorMessage}`
       )
     }
   }
