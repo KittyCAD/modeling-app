@@ -11,7 +11,12 @@ description: Operations executed pattern_linear_in_module.kcl
       "moduleId": 0
     },
     "nodePath": {
-      "steps": []
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 0
+        }
+      ]
     },
     "sourceRange": []
   },

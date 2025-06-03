@@ -11,7 +11,12 @@ description: Operations executed import_transform.kcl
       "moduleId": 0
     },
     "nodePath": {
-      "steps": []
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 0
+        }
+      ]
     },
     "sourceRange": []
   },

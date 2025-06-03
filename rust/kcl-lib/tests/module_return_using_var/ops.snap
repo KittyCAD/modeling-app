@@ -11,7 +11,12 @@ description: Operations executed module_return_using_var.kcl
       "moduleId": 0
     },
     "nodePath": {
-      "steps": []
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 0
+        }
+      ]
     },
     "sourceRange": []
   },

@@ -11,7 +11,12 @@ description: Operations executed import_whole_transitive_import.kcl
       "moduleId": 0
     },
     "nodePath": {
-      "steps": []
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 0
+        }
+      ]
     },
     "sourceRange": []
   },

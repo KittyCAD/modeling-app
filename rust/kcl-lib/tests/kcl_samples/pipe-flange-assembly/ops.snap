@@ -11,7 +11,12 @@ description: Operations executed pipe-flange-assembly.kcl
       "moduleId": 0
     },
     "nodePath": {
-      "steps": []
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 0
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -23,7 +28,12 @@ description: Operations executed pipe-flange-assembly.kcl
       "moduleId": 0
     },
     "nodePath": {
-      "steps": []
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -35,7 +45,12 @@ description: Operations executed pipe-flange-assembly.kcl
       "moduleId": 0
     },
     "nodePath": {
-      "steps": []
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 2
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -47,7 +62,12 @@ description: Operations executed pipe-flange-assembly.kcl
       "moduleId": 0
     },
     "nodePath": {
-      "steps": []
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 3
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -59,7 +79,12 @@ description: Operations executed pipe-flange-assembly.kcl
       "moduleId": 0
     },
     "nodePath": {
-      "steps": []
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 4
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -71,7 +96,12 @@ description: Operations executed pipe-flange-assembly.kcl
       "moduleId": 0
     },
     "nodePath": {
-      "steps": []
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 5
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -83,7 +113,12 @@ description: Operations executed pipe-flange-assembly.kcl
       "moduleId": 0
     },
     "nodePath": {
-      "steps": []
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 6
+        }
+      ]
     },
     "sourceRange": []
   },
