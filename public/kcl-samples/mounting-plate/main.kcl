@@ -16,7 +16,7 @@ holeRadius = .25
 holeIndex = .75
 
 sketch001 = startSketchOn(XY)
-rs = startProfile(sketch001, at = [-plateWidth / 2, plateLength / 2])
+rectShape = startProfile(sketch001, at = [-plateWidth / 2, plateLength / 2])
   |> angledLine(angle = 0, length = plateWidth, tag = $basePlateEdge1)
   |> angledLine(angle = segAng(basePlateEdge1) - 90, length = plateLength, tag = $basePlateEdge2)
   |> angledLine(angle = segAng(basePlateEdge1), length = -segLen(basePlateEdge1), tag = $basePlateEdge3)
