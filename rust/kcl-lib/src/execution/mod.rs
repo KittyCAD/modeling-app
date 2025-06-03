@@ -34,6 +34,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         cache::{CacheInformation, CacheResult},
+        import_graph::{Universe, UniverseMap},
         typed_path::TypedPath,
         types::{UnitAngle, UnitLen},
     },
@@ -41,7 +42,6 @@ use crate::{
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
     source_range::SourceRange,
-    walk::{Universe, UniverseMap},
     CompilationError, ExecError, KclErrorWithOutputs,
 };
 
@@ -55,6 +55,7 @@ pub mod fn_call;
 mod geometry;
 mod id_generator;
 mod import;
+mod import_graph;
 pub(crate) mod kcl_value;
 mod memory;
 mod state;
@@ -815,7 +816,7 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        for modules in crate::walk::import_graph(&universe, self)
+        for modules in import_graph::import_graph(&universe, self)
             .map_err(|err| {
                 let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
                     .global
@@ -1035,7 +1036,7 @@ impl ExecutorContext {
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
 
-        let root_imports = crate::walk::import_universe(
+        let root_imports = import_graph::import_universe(
             self,
             &ModulePath::Main,
             &ModuleRepr::Kcl(program.ast.clone(), None),
