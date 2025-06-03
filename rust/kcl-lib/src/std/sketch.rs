@@ -2412,6 +2412,7 @@ async fn inner_subtract_2d(
     Ok(sketch)
 }
 
+/// Calculate the (x, y) point on an ellipse given x or y and the major/minor radii of the ellipse.
 pub async fn elliptic_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::length(), exec_state)?;
     let y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::length(), exec_state)?;
@@ -2424,7 +2425,10 @@ pub async fn elliptic_point(exec_state: &mut ExecState, args: Args) -> Result<Kc
 }
 
 /// ```no_run
-/// point = ellipticPoint(x = 5, majorRadius = 2, minorRadius = 1)
+/// point001 = ellipticPoint(x = 2, majorRadius = 2, minorRadius = 1)
+/// point002 = ellipticPoint(y = 0, majorRadius = 2, minorRadius = 1)
+/// assert(point001[0], isEqualTo = point002[0])
+/// assert(point001[1], isEqualTo = point002[1])
 ///```
 #[stdlib {
     name = "ellipticPoint",
@@ -2450,7 +2454,7 @@ async fn inner_elliptic_point(
         if x.n > major_radius {
             Err(KclError::Type(KclErrorDetails::new(
                 format!(
-                    "Invalid input. The x value, {} cannot be larger than the major radius {}.",
+                    "Invalid input. The x value, {}, cannot be larger than the major radius {}.",
                     x.n, major_radius
                 )
                 .to_owned(),
@@ -2467,7 +2471,7 @@ async fn inner_elliptic_point(
         if y.n > minor_radius {
             Err(KclError::Type(KclErrorDetails::new(
                 format!(
-                    "Invalid input. The y value, {} cannot be larger than the major radius {}.",
+                    "Invalid input. The y value, {}, cannot be larger than the major radius {}.",
                     y.n, major_radius
                 )
                 .to_owned(),
@@ -2482,7 +2486,7 @@ async fn inner_elliptic_point(
         }
     } else {
         Err(KclError::Type(KclErrorDetails::new(
-            "Invalid input. Must have either x or y, cannot have both or neither.".to_owned(),
+            "Invalid input. Must have either x or y, you cannot have both or neither.".to_owned(),
             vec![args.source_range],
         )))
     }
@@ -2538,10 +2542,10 @@ pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     args = {
         sketch = { docs = "Which sketch should this path be added to?" },
         center = { docs = "The center of the ellipse.", include_in_snippet = true },
-        angle_start = { docs = "Where along the circle should this arc start?", include_in_snippet = true },
-        angle_end = { docs = "Where along the circle should this arc end?", include_in_snippet = true },
-        major_radius = { docs = "The length of the ellipse in the x direction", include_in_snippet = true },
-        minor_radius = { docs = "The length of the ellipse in the y direction", include_in_snippet = true },
+        angle_start = { docs = "Where along the elliptic should this arc start?", include_in_snippet = true },
+        angle_end = { docs = "Where along the elliptic should this arc end?", include_in_snippet = true },
+        major_radius = { docs = "The major radius a of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.", include_in_snippet = true },
+        minor_radius = { docs = "The minor radius b of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.", include_in_snippet = true },
         interior_absolute = { docs = "Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
         end_absolute = { docs = "Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
         tag = { docs = "Create a new tag which refers to this line"},
@@ -2574,6 +2578,7 @@ pub(crate) async fn inner_elliptic(
         center_u[1] + minor_radius.to_length_units(from.units) * end_angle.to_radians().sin(),
     ];
 
+    //TODO: (bc) fix the absolute/relative check
     // match (angle_start, angle_end, radius, interior_absolute, end_absolute) {
     //     (Some(angle_start), Some(angle_end), Some(radius), None, None) => {
     //         relative_arc(&args, id, exec_state, sketch, from, angle_start, angle_end, radius, tag).await
@@ -2630,6 +2635,7 @@ pub(crate) async fn inner_elliptic(
     Ok(new_sketch)
 }
 
+/// Calculate the (x, y) point on an hyperbola given x or y and the semi major/minor of the ellipse.
 pub async fn hyperbolic_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::length(), exec_state)?;
     let y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::length(), exec_state)?;
@@ -2687,6 +2693,7 @@ async fn inner_hyperbolic_point(
     }
 }
 
+/// Draw a hyperbolic arc.
 pub async fn hyperbolic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch =
         args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
@@ -2740,8 +2747,8 @@ fn hyperbolic_tangent(point: Point2d, semi_major: f64, semi_minor: f64) -> [f64;
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?" },
-        semi_major = { docs = "The tangent of the conic at the start point (the end of the previous path segement)" },
-        semi_minor = { docs = "The tangent of the conic at the end point" },
+        semi_major = { docs = "The semi major value a of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
+        semi_minor = { docs = "The semi minor value b of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
         interior = { docs = "A point that lies on the conic segment. This point is relative to the start of the segment. Requires `end`. Incompatible with `interior_absolute` and `end_absolute`." },
         interior_absolute = { docs = "A point that lies on the conic. Requires `end_absolute`. Incompatible with `interior` and `end`." },
         end = { docs = "Where should this arc end? This point is relative to the start of the segment. Requires `interior`. Incompatible with `interior_absolute` and `end_absolute`." },
@@ -2843,16 +2850,18 @@ pub(crate) async fn inner_hyperbolic(
 pub async fn parabolic_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::length(), exec_state)?;
     let y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::length(), exec_state)?;
-    let coefficient: TyF64 = args.get_kw_arg_typed("coefficient", &RuntimeType::count(), exec_state)?;
+    let coefficient_a: TyF64 = args.get_kw_arg_typed("a", &RuntimeType::count(), exec_state)?;
+    let coefficient_b: TyF64 = args.get_kw_arg_typed("b", &RuntimeType::count(), exec_state)?;
+    let coefficient_c: TyF64 = args.get_kw_arg_typed("c", &RuntimeType::count(), exec_state)?;
 
-    let parabolic_point = inner_parabolic_point(x, y, coefficient, &args).await?;
+    let parabolic_point = inner_parabolic_point(x, y, coefficient_a, coefficient_b, coefficient_c, &args).await?;
 
     args.make_kcl_val_from_point(parabolic_point, exec_state.length_unit().into())
 }
 
 /// ```no_run
-/// point001 = parabolicPoint(x = 5, coefficient = 0.1)
-/// point002 = parabolicPoint(y = 2.5, coefficient = 0.1)
+/// point001 = parabolicPoint(x = 5, a = 0.1, b = 0, c = 0)
+/// point002 = parabolicPoint(y = 2.5, a = 0.1, b = 0, c = 0)
 /// assert(point001[0], isEqualTo = point002[0])
 /// assert(point001[1], isEqualTo = point002[1])
 ///```
@@ -2860,7 +2869,9 @@ pub async fn parabolic_point(exec_state: &mut ExecState, args: Args) -> Result<K
     name = "parabolicPoint",
     unlabeled_first = false,
     args = {
-        coefficient = { docs = "The coefficient a of the parabolic equation y = ax^2." },
+        a = { docs = "The coefficient a of the parabolic equation y = ax^2 + bx + c." },
+        b = { docs = "The coefficient b of the parabolic equation y = ax^2 + bx + c." },
+        c = { docs = "The coefficient c of the parabolic equation y = ax^2 + bx + c." },
         x = { docs = "The x value of the parabolic equation y = ax^2. Will calculate the point y that satisfies the equation and returns (x, y). Incompatible with `y`."},
         y = { docs = "The y value of the parabolic equation y = ax^2. Will calculate the point x that satisfies the equation and returns (x, y). Incompatible with `x`."},
     },
@@ -2869,14 +2880,19 @@ pub async fn parabolic_point(exec_state: &mut ExecState, args: Args) -> Result<K
 async fn inner_parabolic_point(
     x: Option<TyF64>,
     y: Option<TyF64>,
-    coefficient: TyF64,
+    a: TyF64,
+    b: TyF64,
+    c: TyF64,
     args: &Args,
 ) -> Result<[f64; 2], KclError> {
-    let coefficient = coefficient.n;
+    let a = a.n;
+    let b = b.n;
+    let c = c.n;
     if let Some(x) = x {
-        Ok((x.n, coefficient * x.n.powf(2.0)).into())
+        Ok((x.n, a * x.n.powf(2.0) + b * x.n + c).into())
     } else if let Some(y) = y {
-        Ok(((y.n / coefficient).sqrt(), y.n).into())
+        let det = (b.powf(2.0) - 4.0 * a * (c - y.n)).sqrt();
+        Ok(((-b + det) / (2.0 * a), y.n).into())
     } else {
         Err(KclError::Type(KclErrorDetails::new(
             "Invalid input. Must have either x or y, cannot have both or neither.".to_owned(),
@@ -2884,23 +2900,40 @@ async fn inner_parabolic_point(
         )))
     }
 }
+
+/// Draw a parabolic arc.
 pub async fn parabolic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch =
         args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
-    let coefficient: TyF64 = args.get_kw_arg_typed("coefficient", &RuntimeType::count(), exec_state)?;
-    let interior: [TyF64; 2] = args.get_kw_arg_typed("interior", &RuntimeType::point2d(), exec_state)?;
+    let coefficient_a: Option<TyF64> = args.get_kw_arg_opt_typed("a", &RuntimeType::count(), exec_state)?;
+    let coefficient_b: Option<TyF64> = args.get_kw_arg_opt_typed("b", &RuntimeType::count(), exec_state)?;
+    let coefficient_c: Option<TyF64> = args.get_kw_arg_opt_typed("c", &RuntimeType::count(), exec_state)?;
+    let interior: Option<[TyF64; 2]> = args.get_kw_arg_opt_typed("interior", &RuntimeType::point2d(), exec_state)?;
     let end: [TyF64; 2] = args.get_kw_arg_typed("end", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let new_sketch = inner_parabolic(sketch, coefficient, interior, end, tag, exec_state, args).await?;
+    let new_sketch = inner_parabolic(
+        sketch,
+        coefficient_a,
+        coefficient_b,
+        coefficient_c,
+        interior,
+        end,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
 }
 
-fn parabolic_tangent(point: Point2d, coefficient: f64) -> [f64; 2] {
-    (1.0, 2.0 * coefficient * point.x).into()
+fn parabolic_tangent(point: Point2d, a: f64, b: f64) -> [f64; 2] {
+    //f(x) = ax^2 + bx + c
+    //f'(x) = 2ax + b
+    (1.0, 2.0 * a * point.x + b).into()
 }
 
 /// ```no_run
@@ -2918,7 +2951,9 @@ fn parabolic_tangent(point: Point2d, coefficient: f64) -> [f64; 2] {
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?" },
-        coefficient = { docs = "The tangent of the conic at the end point" },
+        a = { docs = "The coefficient a of the parabolic equation y = ax^2 + bx + c." },
+        b = { docs = "The coefficient b of the parabolic equation y = ax^2 + bx + c." },
+        c = { docs = "The coefficient c of the parabolic equation y = ax^2 + bx + c." },
         interior = { docs = "Any point between the arc's start and end?" },
         end = { docs = "Where should this arc end?" },
         tag = { docs = "Create a new tag which refers to this line"},
@@ -2927,8 +2962,10 @@ fn parabolic_tangent(point: Point2d, coefficient: f64) -> [f64; 2] {
 }]
 pub(crate) async fn inner_parabolic(
     sketch: Sketch,
-    coefficient: TyF64,
-    interior: [TyF64; 2],
+    a: Option<TyF64>,
+    b: Option<TyF64>,
+    c: Option<TyF64>,
+    interior: Option<[TyF64; 2]>,
     end: [TyF64; 2],
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -2937,16 +2974,64 @@ pub(crate) async fn inner_parabolic(
     let from = sketch.current_pen_position()?;
     let id = exec_state.next_uuid();
 
-    let (interior, _) = untype_point(interior);
+    if (a.is_some() && b.is_some() && c.is_some() && interior.is_some())
+        || (a.is_none() && b.is_none() && c.is_none() && interior.is_none())
+    {
+        return Err(KclError::Type(KclErrorDetails::new(
+            "Invalid combination of arguments. Either provide (a, b, c) or (interior)".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
     let (end, _) = untype_point(end);
+    // If interior point is provided use that, or take the middle point between that start and the
+    // end and use that as the interior.
+    let (interior, _) = if let Some(interior) = interior {
+        untype_point(interior)
+    } else {
+        (
+            inner_parabolic_point(
+                Some(TyF64::count(0.5 * (from.x + end[0]))),
+                None,
+                a.clone().unwrap(),
+                b.clone().unwrap(),
+                c.clone().unwrap(),
+                &args,
+            )
+            .await?,
+            NumericType::Any,
+        )
+    };
     let end_point = Point2d {
         x: end[0],
         y: end[1],
         units: from.units,
     };
 
-    let start_tangent = parabolic_tangent(from, coefficient.n);
-    let end_tangent = parabolic_tangent(end_point, coefficient.n);
+    let (a, b, _c) = match (a, b, c) {
+        (Some(a), Some(b), Some(c)) => (a.n, b.n, c.n),
+        _ => {
+            // Any three points is enough to uniquely define a parabola
+            let denom = (from.x - interior[0]) * (from.x - end_point.x) * (interior[0] - end_point.x);
+            let a = (end_point.x * (interior[1] - from.y)
+                + interior[0] * (from.y - end_point.y)
+                + from.x * (end_point.y - interior[1]))
+                / denom;
+            let b = (end_point.x.powf(2.0) * (from.y - interior[1])
+                + interior[0].powf(2.0) * (end_point.y - from.y)
+                + from.x.powf(2.0) * (interior[1] - end_point.y))
+                / denom;
+            let c = (interior[0] * end_point.x * (interior[0] - end_point.x) * from.y
+                + end_point.x * from.x * (end_point.x - from.x) * interior[1]
+                + from.x * interior[0] * (from.x - interior[0]) * end_point.y)
+                / denom;
+
+            (a, b, c)
+        }
+    };
+
+    let start_tangent = parabolic_tangent(from, a, b);
+    let end_tangent = parabolic_tangent(end_point, a, b);
 
     args.batch_modeling_cmd(
         id,
