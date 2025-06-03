@@ -3,187 +3,250 @@ import { uuidv4 } from '@src/lib/utils'
 
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Page } from '@playwright/test'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 
 test.describe('Testing Camera Movement', () => {
-  test('Can move camera reliably', async ({
+  /**
+   * hack that we're implemented our own retry instead of using retries built into playwright.
+   * however each of these camera drags can be flaky, because of udp
+   * and so putting them together means only one needs to fail to make this test extra flaky.
+   * this way we can retry within the test
+   * We could break them out into separate tests, but the longest past of the test is waiting
+   * for the stream to start, so it can be good to bundle related things together.
+   */
+  const bakeInRetries = async ({
+    mouseActions,
+    afterPosition,
+    beforePosition,
+    retryCount = 0,
     page,
-    context,
-    homePage,
     scene,
+  }: {
+    mouseActions: () => Promise<void>
+    beforePosition: [number, number, number]
+    afterPosition: [number, number, number]
+    retryCount?: number
+    page: Page
+    scene: SceneFixture
   }) => {
+    const acceptableCamError = 5
     const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await homePage.goToModelingScene()
-    await scene.connectionEstablished()
+    await test.step('Set up initial camera position', async () =>
+      await scene.moveCameraTo({
+        x: beforePosition[0],
+        y: beforePosition[1],
+        z: beforePosition[2],
+      }))
 
-    await u.openAndClearDebugPanel()
-    await u.closeKclCodePanel()
-
-    const camPos: [number, number, number] = [0, 85, 85]
-    const bakeInRetries = async (
-      mouseActions: any,
-      xyz: [number, number, number],
-      cnt = 0
-    ) => {
-      // hack that we're implemented our own retry instead of using retries built into playwright.
-      // however each of these camera drags can be flaky, because of udp
-      // and so putting them together means only one needs to fail to make this test extra flaky.
-      // this way we can retry within the test
-      // We could break them out into separate tests, but the longest past of the test is waiting
-      // for the stream to start, so it can be good to bundle related things together.
-
-      const camCommand: EngineCommand = {
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          center: { x: 0, y: 0, z: 0 },
-          vantage: { x: camPos[0], y: camPos[1], z: camPos[2] },
-          up: { x: 0, y: 0, z: 1 },
-        },
-      }
-      const updateCamCommand: EngineCommand = {
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_get_settings',
-        },
-      }
-      await u.sendCustomCmd(camCommand)
-      await page.waitForTimeout(100)
-      await u.sendCustomCmd(updateCamCommand)
-      await page.waitForTimeout(100)
-
-      // rotate
-      await u.closeDebugPanel()
-      await page.getByRole('button', { name: 'Start Sketch' }).click()
-      await page.waitForTimeout(100)
-      // const yo = page.getByTestId('cam-x-position').inputValue()
-
-      await u.doAndWaitForImageDiff(async () => {
+    await test.step('Do actions and watch for changes', async () =>
+      u.doAndWaitForImageDiff(async () => {
         await mouseActions()
 
         await u.openAndClearDebugPanel()
-
         await u.closeDebugPanel()
         await page.waitForTimeout(100)
-      }, 300)
+      }, 300))
+
+    await u.openAndClearDebugPanel()
+    await expect(page.getByTestId('cam-x-position')).toBeAttached()
+
+    const vals = await Promise.all([
+      page.getByTestId('cam-x-position').inputValue(),
+      page.getByTestId('cam-y-position').inputValue(),
+      page.getByTestId('cam-z-position').inputValue(),
+    ])
+    const errors = vals.map((v, i) => Math.abs(Number(v) - afterPosition[i]))
+    let shouldRetry = false
+
+    if (errors.some((e) => e > acceptableCamError)) {
+      if (retryCount > 2) {
+        console.log('xVal', vals[0], 'xError', errors[0])
+        console.log('yVal', vals[1], 'yError', errors[1])
+        console.log('zVal', vals[2], 'zError', errors[2])
+
+        throw new Error('Camera position not as expected', {
+          cause: {
+            vals,
+            errors,
+          },
+        })
+      }
+      shouldRetry = true
+    }
+    if (shouldRetry) {
+      await bakeInRetries({
+        mouseActions,
+        afterPosition: afterPosition,
+        beforePosition: beforePosition,
+        retryCount: retryCount + 1,
+        page,
+        scene,
+      })
+    }
+  }
+
+  test(
+    'Can pan and zoom camera reliably',
+    {
+      tag: '@web',
+    },
+    async ({ page, homePage, scene, cmdBar }) => {
+      const u = await getUtils(page)
+      const camInitialPosition: [number, number, number] = [0, 85, 85]
+
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
 
       await u.openAndClearDebugPanel()
-      await page.getByTestId('cam-x-position').isVisible()
+      await u.closeKclCodePanel()
 
-      const vals = await Promise.all([
-        page.getByTestId('cam-x-position').inputValue(),
-        page.getByTestId('cam-y-position').inputValue(),
-        page.getByTestId('cam-z-position').inputValue(),
-      ])
-      const xError = Math.abs(Number(vals[0]) + xyz[0])
-      const yError = Math.abs(Number(vals[1]) + xyz[1])
-      const zError = Math.abs(Number(vals[2]) + xyz[2])
+      await test.step('Pan', async () => {
+        await bakeInRetries({
+          mouseActions: async () => {
+            await page.keyboard.down('Shift')
+            await page.mouse.move(600, 200)
+            await page.mouse.down({ button: 'right' })
+            // Gotcha: remove steps:2 from this 700,200 mouse move. This bricked the test on local host engine.
+            await page.mouse.move(700, 200)
+            await page.mouse.up({ button: 'right' })
+            await page.keyboard.up('Shift')
+            await page.waitForTimeout(200)
+          },
+          afterPosition: [19, 85, 85],
+          beforePosition: camInitialPosition,
+          page,
+          scene,
+        })
+      })
 
-      let shouldRetry = false
+      await test.step('Zoom with click and drag', async () => {
+        await bakeInRetries({
+          mouseActions: async () => {
+            await page.keyboard.down('Control')
+            await page.mouse.move(700, 400)
+            await page.mouse.down({ button: 'right' })
+            await page.mouse.move(700, 300)
+            await page.mouse.up({ button: 'right' })
+            await page.keyboard.up('Control')
+          },
+          afterPosition: [0, 118, 118],
+          beforePosition: camInitialPosition,
+          page,
+          scene,
+        })
+      })
 
-      if (xError > 5 || yError > 5 || zError > 5) {
-        if (cnt > 2) {
-          console.log('xVal', vals[0], 'xError', xError)
-          console.log('yVal', vals[1], 'yError', yError)
-          console.log('zVal', vals[2], 'zError', zError)
-
-          throw new Error('Camera position not as expected')
+      await test.step('Zoom with scrollwheel', async () => {
+        const refreshCamValuesCmd: EngineCommand = {
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_get_settings',
+          },
         }
-        shouldRetry = true
-      }
-      await page.getByRole('button', { name: 'Exit Sketch' }).click()
-      await page.waitForTimeout(100)
-      if (shouldRetry) await bakeInRetries(mouseActions, xyz, cnt + 1)
+        await bakeInRetries({
+          mouseActions: async () => {
+            await page.mouse.move(700, 400)
+            await page.mouse.wheel(0, -150)
+
+            // Scroll zooming doesn't update the debug pane's cam position values,
+            // so we have to force a refresh.
+            await u.openAndClearDebugPanel()
+            await u.sendCustomCmd(refreshCamValuesCmd)
+            await u.waitForCmdReceive('default_camera_get_settings')
+            await u.closeDebugPanel()
+          },
+          afterPosition: [0, 42.5, 42.5],
+          beforePosition: camInitialPosition,
+          page,
+          scene,
+        })
+      })
     }
-    await bakeInRetries(async () => {
-      await page.mouse.move(700, 200)
-      await page.mouse.down({ button: 'right' })
-      await page.waitForTimeout(100)
+  )
 
-      const appLogoBBox = await page.getByTestId('app-logo').boundingBox()
-      expect(appLogoBBox).not.toBeNull()
-      if (!appLogoBBox) throw new Error('app logo not found')
-      await page.mouse.move(
-        appLogoBBox.x + appLogoBBox.width / 2,
-        appLogoBBox.y + appLogoBBox.height / 2
-      )
-      await page.waitForTimeout(100)
-      await page.mouse.move(600, 303)
-      await page.waitForTimeout(100)
-      await page.mouse.up({ button: 'right' })
-    }, [4, -10.5, -120])
+  test(
+    'Can orbit camera reliably',
+    {
+      tag: '@web',
+    },
+    async ({ page, homePage, scene, cmdBar }) => {
+      const u = await getUtils(page)
+      const initialCamPosition: [number, number, number] = [0, 85, 85]
 
-    await bakeInRetries(async () => {
-      await page.keyboard.down('Shift')
-      await page.mouse.move(600, 200)
-      await page.mouse.down({ button: 'right' })
-      // Gotcha: remove steps:2 from this 700,200 mouse move. This bricked the test on local host engine.
-      await page.mouse.move(700, 200)
-      await page.mouse.up({ button: 'right' })
-      await page.keyboard.up('Shift')
-    }, [-19, -85, -85])
+      await homePage.goToModelingScene()
+      // this turns on the debug pane setting as well
+      await scene.settled(cmdBar)
 
-    const camCommand: EngineCommand = {
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        center: { x: 0, y: 0, z: 0 },
-        vantage: { x: camPos[0], y: camPos[1], z: camPos[2] },
-        up: { x: 0, y: 0, z: 1 },
-      },
+      await u.openAndClearDebugPanel()
+      await u.closeKclCodePanel()
+
+      await test.step('Test orbit with spherical mode', async () => {
+        await bakeInRetries({
+          mouseActions: async () => {
+            await page.mouse.move(700, 200)
+            await page.mouse.down({ button: 'right' })
+            await page.waitForTimeout(100)
+
+            const appLogoBBox = await page.getByTestId('app-logo').boundingBox()
+            expect(appLogoBBox).not.toBeNull()
+            if (!appLogoBBox) throw new Error('app logo not found')
+            await page.mouse.move(
+              appLogoBBox.x + appLogoBBox.width / 2,
+              appLogoBBox.y + appLogoBBox.height / 2
+            )
+            await page.waitForTimeout(100)
+            await page.mouse.move(600, 303)
+            await page.waitForTimeout(100)
+            await page.mouse.up({ button: 'right' })
+          },
+          afterPosition: [-4, 10.5, 120],
+          beforePosition: initialCamPosition,
+          page,
+          scene,
+        })
+      })
+
+      await test.step('Test orbit with trackball mode', async () => {
+        await test.step('Set orbitMode to trackball', async () => {
+          await cmdBar.openCmdBar()
+          await cmdBar.selectOption({ name: 'camera orbit' }).click()
+          await cmdBar.selectOption({ name: 'trackball' }).click()
+          await expect(
+            page.getByText(`camera orbit to "trackball"`)
+          ).toBeVisible()
+        })
+
+        await bakeInRetries({
+          mouseActions: async () => {
+            await page.mouse.move(700, 200)
+            await page.mouse.down({ button: 'right' })
+            await page.waitForTimeout(100)
+
+            const appLogoBBox = await page.getByTestId('app-logo').boundingBox()
+            expect(appLogoBBox).not.toBeNull()
+            if (!appLogoBBox) {
+              throw new Error('app logo not found')
+            }
+            await page.mouse.move(
+              appLogoBBox.x + appLogoBBox.width / 2,
+              appLogoBBox.y + appLogoBBox.height / 2
+            )
+            await page.waitForTimeout(100)
+            await page.mouse.move(600, 303)
+            await page.waitForTimeout(100)
+            await page.mouse.up({ button: 'right' })
+          },
+          afterPosition: [18.06, -42.79, 110.87],
+          beforePosition: initialCamPosition,
+          page,
+          scene,
+        })
+      })
     }
-    const updateCamCommand: EngineCommand = {
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    }
-    await u.sendCustomCmd(camCommand)
-    await page.waitForTimeout(100)
-    await u.sendCustomCmd(updateCamCommand)
-    await page.waitForTimeout(100)
-
-    await u.clearCommandLogs()
-    await u.closeDebugPanel()
-
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await page.waitForTimeout(200)
-
-    // zoom
-    await u.doAndWaitForImageDiff(async () => {
-      await page.keyboard.down('Control')
-      await page.mouse.move(700, 400)
-      await page.mouse.down({ button: 'right' })
-      await page.mouse.move(700, 300)
-      await page.mouse.up({ button: 'right' })
-      await page.keyboard.up('Control')
-
-      await u.openDebugPanel()
-      await page.waitForTimeout(300)
-      await u.clearCommandLogs()
-
-      await u.closeDebugPanel()
-    }, 300)
-
-    // zoom with scroll
-    await u.openAndClearDebugPanel()
-    // TODO, it appears we don't get the cam setting back from the engine when the interaction is zoom into `backInRetries` once the information is sent back on zoom
-    // await expect(Math.abs(Number(await page.getByTestId('cam-x-position').inputValue()) + 12)).toBeLessThan(1.5)
-    // await expect(Math.abs(Number(await page.getByTestId('cam-y-position').inputValue()) - 85)).toBeLessThan(1.5)
-    // await expect(Math.abs(Number(await page.getByTestId('cam-z-position').inputValue()) - 85)).toBeLessThan(1.5)
-
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
-
-    await bakeInRetries(async () => {
-      await page.mouse.move(700, 400)
-      await page.mouse.wheel(0, -100)
-    }, [0, -85, -85])
-  })
+  )
 
   // TODO: fix after electron migration is merged
   test('Zoom should be consistent when exiting or entering sketches', async ({
@@ -469,7 +532,7 @@ test.describe('Testing Camera Movement', () => {
         .then((value) => parseFloat(value))
     }
 
-    async function doOrbitWith(callback = async () => {}) {
+    async function doOrbitWith(callback = async () => { }) {
       await resetCamera()
 
       await test.step(`Perform orbit`, async () => {
