@@ -24,8 +24,7 @@ rs = startProfile(sketch001, at = [-plateWidth / 2, plateLength / 2])
   |> close()
 
 // Create the mounting plate extrusion, holes, and fillets
-part = rs
-  |> subtract2d(tool = circle(
+part = subtract2d(rectShape, tool = circle(
        center = [
          -plateWidth / 2 + holeIndex,
          plateLength / 2 - holeIndex
