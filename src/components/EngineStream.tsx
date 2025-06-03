@@ -202,7 +202,7 @@ export const EngineStream = (props: {
           })
 
           window.the3DMouse = the3DMouse
-          the3DMouse.init3DMouse()
+          await the3DMouse.init3DMouse()
           once = true
         }
       })

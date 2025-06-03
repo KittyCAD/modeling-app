@@ -98,7 +98,7 @@ function getApplicationCommands(buttonBank: any, images: any) {
 }
 
 interface _3DconnexionMocked {
-  connect(): boolean
+  connect(): number
   debug: boolean
   create3dmouse(canvas: HTMLElement | null, name: string): void
   update3dcontroller(options: any): void
@@ -141,7 +141,7 @@ interface _3DconnexionMiddleware {
   onStopMotion(): void
 
   // 3D mouse initialization
-  init3DMouse(): void
+  init3DMouse(): Promise<void>
   onConnect(): void
   onDisconnect(reason: string): void
   on3dmouseCreated(): void
@@ -359,18 +359,45 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     this.camera.updateProjectionMatrix()
   }
 
-  // 3D mouse initialization
-  init3DMouse(): void {
+  /**
+   * Entry location, after calling new on this class
+   * invoke this method! I know its not in the constructor... TBD.
+   * Everything will initialize after this function call.
+   */
+  async init3DMouse(): Promise<void> {
+    /**
+     * _3Dconnexion.connect() is buggy, the code is implemented wrong.
+     * It is using half async and half sync code.
+     * The xmlhttprequest calls .open with true for async but they do not handle the async scenario
+     * The timeout is set to 0 though??? why?
+     * It will return 1 if it fails to connect
+     * It will return 1 if it connects
+     * It will return 0 on certain errors
+     * the xmlHttpRequest is not sync and it has no await logic
+     * It would require an N ms timeout wait to see if the libray has connected to the proxy server
+     * Also the convention is backwards, 1 says success and 0 says failure, this is confusing.
+     */
     this.spaceMouse = new _3Dconnexion(this)
+
     if (this.spaceMouse) {
       // set the debug flag in the wrapper library
       this.spaceMouse.debug = this.debug
-      if (!this.spaceMouse.connect()) {
-        console.error('Cannot connect to 3Dconnexion NL-Proxy')
-      }
-    } else {
-      console.error('failed to create a _3Dconnexion class.')
     }
+
+    // artifically wait 15 seconds to hope it connects within that timeframe
+      return new Promise((resolve,reject)=> {
+        if (this.spaceMouse) {
+          setTimeout(()=>{
+            if (this.spaceMouse.connected === false) {
+              console.error('Cannot connect to 3Dconnexion NL-Proxy"')
+            }
+
+            if (this.spaceMouse.session === null) {
+              console.error('Unable to find spaceMouse session to the proxy server')
+            }
+          }, 1000 * 15) // 15 seconds
+        }
+    })
   }
 
   // init3DMouse needs onConnect

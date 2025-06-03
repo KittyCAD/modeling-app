@@ -34,6 +34,7 @@ import type { AppMachineContext } from '@src/lib/types'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import { _3DMouseMachine } from "@src/machines/_3dMouse/_3dMouseMachine"
 
 export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
@@ -117,7 +118,7 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM, COMMAND_BAR, BILLING } =
+const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM, COMMAND_BAR, BILLING, _3DMOUSE } =
   ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
@@ -126,6 +127,7 @@ const appMachineActors = {
   [ENGINE_STREAM]: engineStreamMachine,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,
+  [_3DMOUSE]: _3DMouseMachine
 } as const
 
 const appMachine = setup({
@@ -172,6 +174,9 @@ const appMachine = setup({
         ...BILLING_CONTEXT_DEFAULTS,
         urlUserService: VITE_KC_API_BASE_URL,
       },
+    }),
+    spawnChild(appMachineActors[_3DMOUSE], {
+      systemId: _3DMOUSE,
     }),
   ],
 })
@@ -239,6 +244,12 @@ const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
 export const useCommandBarState = () => {
   return useSelector(commandBarActor, cmdBarStateSelector)
 }
+
+export const _3dMouseActor = appActor.system.get(_3DMOUSE) as ActorRefFrom<
+  (typeof appMachineActors)[typeof _3DMOUSE]
+>
+
+window.dog = _3dMouseActor
 
 // Initialize global commands
 commandBarActor.send({
