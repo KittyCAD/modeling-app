@@ -304,9 +304,10 @@ impl ExecutorContext {
 
                     let annotations = &variable_declaration.outer_attrs;
 
-                    // During the evaluation of the variable's LHS, set context that this is all happening inside a variable
+                    // During the evaluation of the variable's RHS, set context that this is all happening inside a variable
                     // declaration, for the given name. This helps improve user-facing error messages.
-                    exec_state.mod_local.being_declared = Some(variable_declaration.inner.name().to_owned());
+                    let lhs = variable_declaration.inner.name().to_owned();
+                    exec_state.mod_local.being_declared = Some(lhs);
                     let rhs_result = self
                         .execute_expr(
                             &variable_declaration.declaration.init,
@@ -649,18 +650,7 @@ impl ExecutorContext {
                 let value = name
                     .get_result(exec_state, self)
                     .await
-                    .map_err(|e| match e {
-                        KclError::UndefinedValue {
-                            name,
-                            mut details,
-                        } => {
-                            if let Some(being_declared) = &being_declared{
-                                details.message = format!("You can't use `{}` because you're currently trying to define it. Use a different variable here instead.", being_declared);
-                            }
-                            KclError::UndefinedValue { details, name}
-                        }
-                        e => e,
-                    })?
+                    .map_err(|e| var_in_own_ref_err(e, &being_declared))?
                     .clone();
                 if let KclValue::Module { value: module_id, meta } = value {
                     self.exec_module_for_result(
@@ -765,6 +755,24 @@ impl ExecutorContext {
         };
         Ok(item)
     }
+}
+
+/// If the error is about an undefined name, and that name matches the name being defined,
+/// make the error message more specific.
+fn var_in_own_ref_err(e: KclError, being_declared: &Option<String>) -> KclError {
+    let KclError::UndefinedValue { name, mut details } = e else {
+        return e;
+    };
+    // TODO after June 26th: replace this with a let-chain,
+    // which will be available in Rust 1.88
+    // https://rust-lang.github.io/rfcs/2497-if-let-chains.html
+    match (&being_declared, &name) {
+        (Some(name0), Some(name1)) if name0 == name1 => {
+            details.message = format!("You can't use `{name0}` because you're currently trying to define it. Use a different variable here instead.");
+        }
+        _ => {}
+    }
+    KclError::UndefinedValue { details, name }
 }
 
 impl Node<AscribedExpression> {
