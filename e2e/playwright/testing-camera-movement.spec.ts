@@ -153,9 +153,10 @@ test.describe('Testing Camera Movement', () => {
 
             // Scroll zooming doesn't update the debug pane's cam position values,
             // so we have to force a refresh.
-            await u.clearCommandLogs()
+            await u.openAndClearDebugPanel()
             await u.sendCustomCmd(refreshCamValuesCmd)
             await u.waitForCmdReceive('default_camera_get_settings')
+            await u.closeDebugPanel()
           },
           afterPosition: [0, 42.5, 42.5],
           beforePosition: camInitialPosition,
