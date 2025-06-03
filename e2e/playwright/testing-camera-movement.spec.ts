@@ -30,6 +30,7 @@ test.describe('Testing Camera Movement', () => {
     page: Page
     scene: SceneFixture
   }) => {
+    const acceptableCamError = 5
     const u = await getUtils(page)
 
     await test.step('Set up initial camera position', async () =>
@@ -56,24 +57,19 @@ test.describe('Testing Camera Movement', () => {
       page.getByTestId('cam-y-position').inputValue(),
       page.getByTestId('cam-z-position').inputValue(),
     ])
-    const xError = Math.abs(Number(vals[0]) + afterPosition[0])
-    const yError = Math.abs(Number(vals[1]) + afterPosition[1])
-    const zError = Math.abs(Number(vals[2]) + afterPosition[2])
-
+    const errors = vals.map((v, i) => Math.abs(Number(v) - afterPosition[i]))
     let shouldRetry = false
 
-    if (xError > 5 || yError > 5 || zError > 5) {
+    if (errors.some((e) => e > acceptableCamError)) {
       if (retryCount > 2) {
-        console.log('xVal', vals[0], 'xError', xError)
-        console.log('yVal', vals[1], 'yError', yError)
-        console.log('zVal', vals[2], 'zError', zError)
+        console.log('xVal', vals[0], 'xError', errors[0])
+        console.log('yVal', vals[1], 'yError', errors[1])
+        console.log('zVal', vals[2], 'zError', errors[2])
 
         throw new Error('Camera position not as expected', {
           cause: {
             vals,
-            xError,
-            yError,
-            zError,
+            errors,
           },
         })
       }
@@ -118,7 +114,7 @@ test.describe('Testing Camera Movement', () => {
             await page.keyboard.up('Shift')
             await page.waitForTimeout(200)
           },
-          afterPosition: [-19, -85, -85],
+          afterPosition: [19, 85, 85],
           beforePosition: camInitialPosition,
           page,
           scene,
@@ -135,7 +131,7 @@ test.describe('Testing Camera Movement', () => {
             await page.mouse.up({ button: 'right' })
             await page.keyboard.up('Control')
           },
-          afterPosition: [0, -118, -118],
+          afterPosition: [0, 118, 118],
           beforePosition: camInitialPosition,
           page,
           scene,
@@ -161,7 +157,7 @@ test.describe('Testing Camera Movement', () => {
             u.sendCustomCmd(refreshCamValuesCmd)
             u.waitForCmdReceive('default_camera_get_settings')
           },
-          afterPosition: [0, -42.5, -42.5],
+          afterPosition: [0, 42.5, 42.5],
           beforePosition: camInitialPosition,
           page,
           scene,
@@ -205,7 +201,7 @@ test.describe('Testing Camera Movement', () => {
             await page.waitForTimeout(100)
             await page.mouse.up({ button: 'right' })
           },
-          afterPosition: [4, -10.5, -120],
+          afterPosition: [-4, 10.5, 120],
           beforePosition: initialCamPosition,
           page,
           scene,
@@ -240,7 +236,7 @@ test.describe('Testing Camera Movement', () => {
             await page.waitForTimeout(100)
             await page.mouse.up({ button: 'right' })
           },
-          afterPosition: [-18.06, 42.79, -110.87],
+          afterPosition: [18.06, -42.79, 110.87],
           beforePosition: initialCamPosition,
           page,
           scene,
