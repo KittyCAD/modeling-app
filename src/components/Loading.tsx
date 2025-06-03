@@ -18,6 +18,7 @@ import { SafeRenderer } from '@src/lib/markdown'
 import { engineCommandManager } from '@src/lib/singletons'
 
 interface LoadingProps extends React.PropsWithChildren {
+  isDummy?: boolean
   className?: string
   dataTestId?: string
 }
@@ -67,7 +68,12 @@ export const CONNECTION_ERROR_CALL_TO_ACTION_TEXT: Record<
     'An unexpected error occurred. Please report this to us.',
 }
 
-const Loading = ({ children, className, dataTestId }: LoadingProps) => {
+const Loading = ({
+  isDummy,
+  children,
+  className,
+  dataTestId,
+}: LoadingProps) => {
   const [error, setError] = useState<ErrorType>({
     error: ConnectionError.Unset,
   })
@@ -146,6 +152,20 @@ const Loading = ({ children, className, dataTestId }: LoadingProps) => {
       clearTimeout(longerTimer)
     }
   }, [error, setError, isUnrecoverableError])
+
+  // Useful for particular cases where we want a loading spinner but no other
+  // logic, such as when the feature tree is being built.
+  if (isDummy) {
+    return (
+      <div
+        className={`body-bg flex flex-col items-center justify-center ${colorClass} ${className}`}
+        data-testid={dataTestId ? dataTestId : 'loading'}
+      >
+        <Spinner />
+        <p className={`text-base mt-4`}>{children}</p>
+      </div>
+    )
+  }
 
   return (
     <div

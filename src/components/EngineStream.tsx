@@ -579,7 +579,7 @@ export const EngineStream = (props: {
         EngineStreamState.Resuming,
       ].some((s) => s === engineStreamState.value) && (
         <Loading dataTestId="loading-engine" className="fixed inset-0 h-screen">
-          Connecting to engine
+          Connecting to engine...
         </Loading>
       )}
     </div>
