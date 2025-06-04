@@ -272,25 +272,6 @@ flange = subtract([flangeBody], tools = [mountingHoleCylinders])`
   })
 )
 const filletStarterCode: { [fileName: string]: string } = {
-  'othermain.kcl': `sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [18.47, 15.31])
-  |> yLine(length = 28.26, tag = $seg02)
-  |> line(end = [55.52, 21.93], tag = $seg01)
-  |> tangentialArc(endAbsolute = [136.09, 36.87])
-  |> yLine(length = -45.48)
-  |> xLine(length = -13.76, tag = $seg03)
-  |> yLine(length = 8.61)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
-  |> fillet(
-       radius = 1,
-       tags = [
-         getCommonEdge(faces = [seg01, seg02]),
-         getCommonEdge(faces = [seg03, capEnd001])
-       ],
-     )
-`,
   'main.kcl': `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [18.47, 15.31])
   |> yLine(length = 28.26)
