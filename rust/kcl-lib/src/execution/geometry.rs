@@ -24,6 +24,7 @@ type Point3D = kcmc::shared::Point3d<f64>;
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
+#[allow(clippy::large_enum_variant)]
 pub enum Geometry {
     Sketch(Sketch),
     Solid(Solid),
@@ -52,6 +53,7 @@ impl Geometry {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
+#[allow(clippy::large_enum_variant)]
 pub enum GeometryWithImportedGeometry {
     Sketch(Sketch),
     Solid(Solid),
