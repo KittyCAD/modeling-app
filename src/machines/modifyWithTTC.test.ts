@@ -48,6 +48,7 @@ function saveJsonSnapshots(snapshots: JsonSnapshots): void {
 
 function expectJsonSnapshot(testName: string, data: any): void {
   const snapshots = loadJsonSnapshots()
+
   const serializedData = JSON.parse(JSON.stringify(data)) // Deep clone to remove any functions/symbols
 
   // Try to detect update mode using inject
@@ -68,29 +69,87 @@ function expectJsonSnapshot(testName: string, data: any): void {
   } else {
     // Compare mode: check against existing snapshot
     if (!(testName in snapshots)) {
-      throw new Error(
-        `Snapshot for "${testName}" not found. ` +
-          `To create or update snapshots, run:\n` +
-          `  npm test -- --run src/machines/modifyWithTTC.test.ts -u\n` +
-          `Or set the UPDATE_SNAPSHOTS environment variable:\n` +
-          `  UPDATE_SNAPSHOTS=true npm test -- --run src/machines/modifyWithTTC.test.ts`
-      )
+      throw new Error(`Snapshot missing for "${testName}". To update snapshots, run:
+  npm run test:unit -- -u modifyWithTTC.test.ts
+Or set the UPDATE_SNAPSHOTS environment variable:
+  UPDATE_SNAPSHOTS=true npm run test:unit -- modifyWithTTC.test.ts`)
     }
 
-    const existing = snapshots[testName]
+    const expected = snapshots[testName]
+
+    // Enhanced diff logging for debugging platform differences
     try {
-      expect(serializedData).toEqual(existing)
+      expect(serializedData).toEqual(expected)
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error)
-      throw new Error(
-        `Snapshot mismatch for "${testName}". ` +
-          `To update snapshots, run:\n` +
-          `  npm run test:unit -- -u modifyWithTTC.test.ts\n` +
-          `Or set the UPDATE_SNAPSHOTS environment variable:\n` +
-          `  UPDATE_SNAPSHOTS=true npm run test:unit -- modifyWithTTC.test.ts\n\n` +
-          `Original error: ${errorMessage}`
-      )
+      // Comprehensive logging for CI troubleshooting
+      console.log('\n=== SNAPSHOT MISMATCH DEBUG INFO ===')
+      console.log(`Test: "${testName}"`)
+      console.log(`Platform: ${process.platform}`)
+      console.log(`Node version: ${process.version}`)
+
+      // Log source ranges specifically since they're the likely culprit
+      const actualSourceRanges = serializedData.source_ranges || []
+      const expectedSourceRanges = expected.source_ranges || []
+
+      console.log('\n--- SOURCE RANGES COMPARISON ---')
+      console.log('Expected source ranges count:', expectedSourceRanges.length)
+      console.log('Actual source ranges count:', actualSourceRanges.length)
+
+      if (actualSourceRanges.length > 0 && expectedSourceRanges.length > 0) {
+        console.log(
+          '\nFirst expected range:',
+          JSON.stringify(expectedSourceRanges[0], null, 2)
+        )
+        console.log(
+          '\nFirst actual range:',
+          JSON.stringify(actualSourceRanges[0], null, 2)
+        )
+
+        // Compare line/column numbers specifically
+        if (expectedSourceRanges[0]?.range && actualSourceRanges[0]?.range) {
+          console.log('\nLine/Column comparison:')
+          console.log('Expected start:', expectedSourceRanges[0].range.start)
+          console.log('Actual start:', actualSourceRanges[0].range.start)
+          console.log('Expected end:', expectedSourceRanges[0].range.end)
+          console.log('Actual end:', actualSourceRanges[0].range.end)
+        }
+      }
+
+      console.log('\n--- KEYS COMPARISON ---')
+      console.log('Expected keys:', Object.keys(expected).sort())
+      console.log('Actual keys:', Object.keys(serializedData).sort())
+
+      console.log('\n--- FILES COMPARISON ---')
+      const expectedFiles = Object.keys(expected.files || {}).sort()
+      const actualFiles = Object.keys(serializedData.files || {}).sort()
+      console.log('Expected files:', expectedFiles)
+      console.log('Actual files:', actualFiles)
+
+      if (expectedFiles.length > 0 && actualFiles.length > 0) {
+        const firstFile = expectedFiles[0]
+        if (expected.files[firstFile] && serializedData.files[firstFile]) {
+          console.log(
+            `\nFirst file (${firstFile}) content match:`,
+            expected.files[firstFile] === serializedData.files[firstFile]
+          )
+          if (expected.files[firstFile] !== serializedData.files[firstFile]) {
+            console.log('Expected length:', expected.files[firstFile].length)
+            console.log(
+              'Actual length:',
+              serializedData.files[firstFile].length
+            )
+          }
+        }
+      }
+
+      console.log('=====================================\n')
+
+      throw new Error(`Snapshot mismatch for "${testName}". To update snapshots, run:
+  npm run test:unit -- -u modifyWithTTC.test.ts
+Or set the UPDATE_SNAPSHOTS environment variable:
+  UPDATE_SNAPSHOTS=true npm run test:unit -- modifyWithTTC.test.ts
+
+Original error: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
 }
