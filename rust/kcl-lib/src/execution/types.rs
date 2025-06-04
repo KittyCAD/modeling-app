@@ -187,7 +187,7 @@ impl RuntimeType {
                 };
                 RuntimeType::Primitive(PrimitiveType::Number(ty))
             }
-            AstPrimitiveType::Named(name) => Self::from_alias(&name.name, exec_state, source_range)?,
+            AstPrimitiveType::Named { id } => Self::from_alias(&id.name, exec_state, source_range)?,
             AstPrimitiveType::Tag => RuntimeType::Primitive(PrimitiveType::Tag),
             AstPrimitiveType::ImportedGeometry => RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
             AstPrimitiveType::Function(_) => RuntimeType::Primitive(PrimitiveType::Function),

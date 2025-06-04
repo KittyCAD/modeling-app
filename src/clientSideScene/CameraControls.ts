@@ -1315,7 +1315,7 @@ export class CameraControls {
     )
     if (
       initialInteractionType === 'rotate' &&
-      this.engineCommandManager.settings.cameraOrbit === 'trackball'
+      this.getSettings?.().modeling.cameraOrbit.current === 'trackball'
     ) {
       return 'rotatetrackball'
     }
