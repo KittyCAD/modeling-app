@@ -19,9 +19,9 @@ import {
   shell,
   systemPreferences,
 } from 'electron'
-import electronUpdater, { type AppUpdater } from 'electron-updater'
 import { Issuer } from 'openid-client'
 
+import { getAutoUpdater } from '@src/updater'
 import {
   argvFromYargs,
   getPathOrUrlFromArgs,
@@ -441,16 +441,6 @@ ipcMain.handle('disable-menu', (event, data) => {
   const menuId = data.menuId
   disableMenu(menuId)
 })
-
-export function getAutoUpdater(): AppUpdater {
-  // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.
-  // It is a workaround for ESM compatibility issues, see https://github.com/electron-userland/electron-builder/issues/7976.
-  const { autoUpdater } = electronUpdater
-  // Allows us to rollback to a previous version if needed.
-  // See https://github.com/electron-userland/electron-builder/blob/7dbc6c77c340c869d1e7effa22135fc740003a0f/packages/electron-updater/src/AppUpdater.ts#L450-L451
-  autoUpdater.allowDowngrade = true
-  return autoUpdater
-}
 
 app.on('ready', () => {
   // Disable auto updater on non-versioned builds
