@@ -307,6 +307,7 @@ impl ExecutorContext {
                     // During the evaluation of the variable's RHS, set context that this is all happening inside a variable
                     // declaration, for the given name. This helps improve user-facing error messages.
                     let lhs = variable_declaration.inner.name().to_owned();
+                    let prev_being_declared = exec_state.mod_local.being_declared.clone();
                     exec_state.mod_local.being_declared = Some(lhs);
                     let rhs_result = self
                         .execute_expr(
@@ -318,7 +319,7 @@ impl ExecutorContext {
                         )
                         .await;
                     // Declaration over, so unset this context.
-                    exec_state.mod_local.being_declared = None;
+                    exec_state.mod_local.being_declared = prev_being_declared;
                     let rhs = rhs_result?;
 
                     exec_state
@@ -833,6 +834,17 @@ impl BinaryPart {
 
 impl Node<Name> {
     pub(super) async fn get_result<'a>(
+        &self,
+        exec_state: &'a mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<&'a KclValue, KclError> {
+        let being_declared = exec_state.mod_local.being_declared.clone();
+        self.get_result_inner(exec_state, ctx)
+            .await
+            .map_err(|e| var_in_own_ref_err(e, &being_declared))
+    }
+
+    async fn get_result_inner<'a>(
         &self,
         exec_state: &'a mut ExecState,
         ctx: &ExecutorContext,
