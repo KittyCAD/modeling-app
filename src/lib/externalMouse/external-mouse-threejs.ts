@@ -223,7 +223,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
 
   constructor(configuration: _3DMouseConfiguration) {
     this.name = configuration.name
-    this.debug = configuration.debug
+    this.debug = true
     this.canvasId = configuration.canvasId
     this.camera = configuration.camera
 
@@ -236,9 +236,9 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
 
   // custom
   destroy(): void {
-    if (this.spaceMouse) {
-      this.spaceMouse.delete3dmouse()
-    }
+    // if (this.spaceMouse) {
+    //   this.spaceMouse.delete3dmouse()
+    // }
   }
 
   // callbacks
@@ -381,18 +381,24 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
      * Also the convention is backwards, 1 says success and 0 says failure, this is confusing.
      */
     this.spaceMouse = new _3Dconnexion(this)
+    console.log("okay?")
 
     if (this.spaceMouse) {
       // set the debug flag in the wrapper library
       this.spaceMouse.debug = this.debug
-    }
 
+      // Do not even attempt to read the return value from this function
+      // it is not correct nor it is safe. It is an async function written as a sync function
+      // it is broken.
+      this.spaceMouse.connect()
+    }
     // artifically wait to hope it connects within that timeframe
     return new Promise((resolve, reject) => {
       if (this.spaceMouse) {
         setTimeout(() => {
           let message = '3DConnexion mouse is connected'
           let success = true
+          console.log(this.spaceMouse)
           if (this.spaceMouse.connected === false) {
             message = 'Cannot connect to 3Dconnexion NL-Proxy'
             success = false
@@ -411,6 +417,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
 
   // init3DMouse needs onConnect
   onConnect(): void {
+    console.log("trying to do on connect?")
     const canvas: HTMLCanvasElement | null = document.querySelector(
       '#' + this.canvasId
     )

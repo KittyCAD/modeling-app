@@ -6,7 +6,7 @@ import {
   _3DMouseContext,
   _3DMouseMachineStates,
   _3DMouseMachineEvents,
-  _3DMouseMachineActors
+  _3DMouseMachineActors,
 } from '@src/machines/_3dMouse/utils'
 
 function logError(message: string) {
