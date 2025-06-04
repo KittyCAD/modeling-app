@@ -76,7 +76,7 @@ Or set the UPDATE_SNAPSHOTS environment variable:
     }
 
     const expected = snapshots[testName]
-
+    
     // Enhanced diff logging for debugging platform differences
     try {
       expect(serializedData).toEqual(expected)
@@ -86,45 +86,82 @@ Or set the UPDATE_SNAPSHOTS environment variable:
       console.log(`Test: "${testName}"`)
       console.log(`Platform: ${process.platform}`)
       console.log(`Node version: ${process.version}`)
-
+      
       // Log source ranges specifically since they're the likely culprit
       const actualSourceRanges = serializedData.source_ranges || []
       const expectedSourceRanges = expected.source_ranges || []
-
+      
       console.log('\n--- SOURCE RANGES COMPARISON ---')
       console.log('Expected source ranges count:', expectedSourceRanges.length)
       console.log('Actual source ranges count:', actualSourceRanges.length)
-
-      if (actualSourceRanges.length > 0 && expectedSourceRanges.length > 0) {
-        console.log(
-          '\nFirst expected range:',
-          JSON.stringify(expectedSourceRanges[0], null, 2)
-        )
-        console.log(
-          '\nFirst actual range:',
-          JSON.stringify(actualSourceRanges[0], null, 2)
-        )
-
-        // Compare line/column numbers specifically
-        if (expectedSourceRanges[0]?.range && actualSourceRanges[0]?.range) {
-          console.log('\nLine/Column comparison:')
-          console.log('Expected start:', expectedSourceRanges[0].range.start)
-          console.log('Actual start:', actualSourceRanges[0].range.start)
-          console.log('Expected end:', expectedSourceRanges[0].range.end)
-          console.log('Actual end:', actualSourceRanges[0].range.end)
+      
+      // Compare ALL source ranges, not just the first
+      for (let i = 0; i < Math.max(actualSourceRanges.length, expectedSourceRanges.length); i++) {
+        console.log(`\n--- SOURCE RANGE ${i + 1} ---`)
+        const expectedRange = expectedSourceRanges[i]
+        const actualRange = actualSourceRanges[i]
+        
+        if (!expectedRange) {
+          console.log('Expected range: MISSING')
+          console.log('Actual range:', JSON.stringify(actualRange, null, 2))
+        } else if (!actualRange) {
+          console.log('Expected range:', JSON.stringify(expectedRange, null, 2))
+          console.log('Actual range: MISSING')
+        } else {
+          // Deep compare each source range
+          const rangeMatch = JSON.stringify(expectedRange) === JSON.stringify(actualRange)
+          console.log('Range match:', rangeMatch)
+          
+          if (!rangeMatch) {
+            console.log('Expected range:', JSON.stringify(expectedRange, null, 2))
+            console.log('Actual range:', JSON.stringify(actualRange, null, 2))
+            
+            // Compare specific properties
+            console.log('Prompt match:', expectedRange.prompt === actualRange.prompt)
+            console.log('File match:', expectedRange.file === actualRange.file)
+            
+            if (expectedRange.range && actualRange.range) {
+              console.log('Range object match:', JSON.stringify(expectedRange.range) === JSON.stringify(actualRange.range))
+              console.log('Expected start:', expectedRange.range.start)
+              console.log('Actual start:', actualRange.range.start)
+              console.log('Expected end:', expectedRange.range.end)
+              console.log('Actual end:', actualRange.range.end)
+            } else {
+              console.log('Expected has range:', !!expectedRange.range)
+              console.log('Actual has range:', !!actualRange.range)
+            }
+          }
         }
       }
-
+      
+      console.log('\n--- DEEP COMPARISON ---')
+      // Compare each top-level property
+      for (const key of Object.keys(expected)) {
+        const expectedVal = expected[key]
+        const actualVal = serializedData[key]
+        const matches = JSON.stringify(expectedVal) === JSON.stringify(actualVal)
+        console.log(`${key} match:`, matches)
+        
+        if (!matches && key !== 'source_ranges') { // We already logged source_ranges above
+          console.log(`Expected ${key} type:`, typeof expectedVal)
+          console.log(`Actual ${key} type:`, typeof actualVal)
+          if (typeof expectedVal === 'object' && expectedVal !== null) {
+            console.log(`Expected ${key} keys:`, Object.keys(expectedVal))
+            console.log(`Actual ${key} keys:`, Object.keys(actualVal || {}))
+          }
+        }
+      }
+      
       console.log('\n--- KEYS COMPARISON ---')
       console.log('Expected keys:', Object.keys(expected).sort())
       console.log('Actual keys:', Object.keys(serializedData).sort())
-
+      
       console.log('\n--- FILES COMPARISON ---')
       const expectedFiles = Object.keys(expected.files || {}).sort()
       const actualFiles = Object.keys(serializedData.files || {}).sort()
       console.log('Expected files:', expectedFiles)
       console.log('Actual files:', actualFiles)
-
+      
       if (expectedFiles.length > 0 && actualFiles.length > 0) {
         const firstFile = expectedFiles[0]
         if (expected.files[firstFile] && serializedData.files[firstFile]) {
@@ -141,9 +178,17 @@ Or set the UPDATE_SNAPSHOTS environment variable:
           }
         }
       }
-
+      
       console.log('=====================================\n')
-
+      
+      // Log complete JSON for diff comparison
+      console.log('\n=== COMPLETE JSON PAYLOADS FOR DIFF ===')
+      // console.log('\n--- EXPECTED JSON ---')
+      // console.log(JSON.stringify(expected, null, 2))
+      console.log('\n--- ACTUAL JSON ---')
+      console.log(JSON.stringify(serializedData, null, 2))
+      console.log('\n=== END COMPLETE JSON PAYLOADS ===\n')
+      
       throw new Error(`Snapshot mismatch for "${testName}". To update snapshots, run:
   npm run test:unit -- -u modifyWithTTC.test.ts
 Or set the UPDATE_SNAPSHOTS environment variable:
