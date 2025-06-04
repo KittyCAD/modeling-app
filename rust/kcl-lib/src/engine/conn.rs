@@ -67,6 +67,7 @@ pub struct TcpRead {
 
 /// Occurs when client couldn't read from the WebSocket to the engine.
 // #[derive(Debug)]
+#[allow(clippy::large_enum_variant)]
 pub enum WebSocketReadError {
     /// Could not read a message due to WebSocket errors.
     Read(tokio_tungstenite::tungstenite::Error),
