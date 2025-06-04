@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Artifact commands var_ref_in_own_def.kcl
+description: Artifact commands ascription_unknown_type.kcl
 ---
 [
   {
@@ -27,31 +27,6 @@ description: Artifact commands var_ref_in_own_def.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
     }
   }
 ]

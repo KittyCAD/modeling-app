@@ -44,6 +44,7 @@ export function ToastUpdate({
             A new update is available.
             {!IS_NIGHTLY_OR_DEBUG && (
               <span>
+                {' '}
                 You can view the release notes{' '}
                 <a
                   onClick={openExternalBrowserIfDesktop(getReleaseUrl(version))}

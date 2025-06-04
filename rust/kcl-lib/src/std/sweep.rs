@@ -21,6 +21,7 @@ use crate::{
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
 pub enum SweepPath {
     Sketch(Sketch),
     Helix(Box<Helix>),

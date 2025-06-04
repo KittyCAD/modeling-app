@@ -627,26 +627,22 @@ dependencies = [
 
 [[package]]
 name = "criterion"
-version = "0.5.1"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2b12d017a929603d80db1831cd3a24082f8137ce19c69e6447f54f5fc8d692f"
+checksum = "3bf7af66b0989381bd0be551bd7cc91912a655a58c6918420c9527b1fd8b4679"
 dependencies = [
  "anes",
  "cast",
  "ciborium",
  "clap",
  "criterion-plot",
- "futures",
- "is-terminal",
- "itertools 0.10.5",
+ "itertools 0.13.0",
  "num-traits 0.2.19",
- "once_cell",
  "oorandom",
  "plotters",
  "rayon",
  "regex",
  "serde",
- "serde_derive",
  "serde_json",
  "tinytemplate",
  "tokio",
@@ -715,9 +711,9 @@ dependencies = [
 
 [[package]]
 name = "csscolorparser"
-version = "0.7.0"
+version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "46f9a16a848a7fb95dd47ce387ac1ee9a6df879ba784b815537fcd388a1a8288"
+checksum = "5fda6aace1fbef3aa217b27f4c8d7d071ef2a70a5ca51050b1f17d40299d3f16"
 dependencies = [
  "phf",
 ]
@@ -1815,7 +1811,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.78"
+version = "0.1.79"
 dependencies = [
  "anyhow",
  "clap",
@@ -1826,7 +1822,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.78"
+version = "0.1.79"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1845,7 +1841,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.78"
+version = "0.1.79"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -1855,7 +1851,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.78"
+version = "0.2.79"
 dependencies = [
  "anyhow",
  "clap",
@@ -1876,7 +1872,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.78"
+version = "0.1.79"
 dependencies = [
  "anyhow",
  "clap",
@@ -1896,7 +1892,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.78"
+version = "0.2.79"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1973,7 +1969,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.78"
+version = "0.3.79"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -1988,7 +1984,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.78"
+version = "0.1.79"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2001,7 +1997,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.78"
+version = "0.1.79"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2015,7 +2011,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.78"
+version = "0.1.79"
 dependencies = [
  "anyhow",
  "bson",
@@ -4200,9 +4196,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-tungstenite"
-version = "0.24.0"
+version = "0.26.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "edc5f74e248dc973e0dbb7b74c7e0d6fcc301c694ff50049504004ef4d0cdcd9"
+checksum = "7a9daff607c6d2bf6c16fd681ccb7eecc83e4e2cdc1ca067ffaadfca5de7f084"
 dependencies = [
  "futures-util",
  "log",
@@ -4456,21 +4452,20 @@ dependencies = [
 
 [[package]]
 name = "tungstenite"
-version = "0.24.0"
+version = "0.26.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "18e5b8366ee7a95b16d32197d0b2604b43a0be89dc5fac9f8e96ccafbaedda8a"
+checksum = "4793cb5e56680ecbb1d843515b23b6de9a75eb04b66643e256a396d43be33c13"
 dependencies = [
- "byteorder",
  "bytes",
  "data-encoding",
  "http 1.3.1",
  "httparse",
  "log",
- "rand 0.8.5",
+ "rand 0.9.0",
  "rustls",
  "rustls-pki-types",
  "sha1",
- "thiserror 1.0.69",
+ "thiserror 2.0.12",
  "utf-8",
 ]
 
