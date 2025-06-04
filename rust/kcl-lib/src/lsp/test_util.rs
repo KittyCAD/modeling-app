@@ -5,11 +5,10 @@ use tower_lsp::LanguageServer;
 
 // Create a fake kcl lsp server for testing.
 pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
-    let stdlib = crate::std::StdLib::new();
     let kcl_std = crate::docs::kcl_doc::walk_prelude();
-    let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&stdlib, &kcl_std)?;
-    let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&stdlib, &kcl_std);
-    let stdlib_args = crate::lsp::kcl::get_arg_maps_from_stdlib(&stdlib, &kcl_std);
+    let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&kcl_std)?;
+    let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&kcl_std);
+    let stdlib_args = crate::lsp::kcl::get_arg_maps_from_stdlib(&kcl_std);
 
     let zoo_client = crate::engine::new_zoo_client(None, None)?;
 

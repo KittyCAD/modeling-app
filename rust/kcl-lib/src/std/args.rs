@@ -143,9 +143,14 @@ impl Args {
     where
         T: for<'a> FromKclValue<'a>,
     {
-        if self.kw_args.labeled.get(label).is_none() {
-            return Ok(None);
-        };
+        match self.kw_args.labeled.get(label) {
+            None => return Ok(None),
+            Some(a) => {
+                if let KclValue::KclNone { .. } = &a.value {
+                    return Ok(None);
+                }
+            }
+        }
 
         self.get_kw_arg_typed(label, ty, exec_state).map(Some)
     }
@@ -174,7 +179,7 @@ impl Args {
     {
         let Some(arg) = self.kw_args.labeled.get(label) else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("This function requires a keyword argument '{label}'"),
+                format!("This function requires a keyword argument `{label}`"),
                 vec![self.source_range],
             )));
         };
@@ -186,7 +191,7 @@ impl Args {
                 .map(|t| t.to_string())
                 .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
             let msg_base = format!(
-                "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
+                "This function expected its `{label}` argument to be {} but it's actually of type {actual_type_name}",
                 ty.human_friendly_type(),
             );
             let suggestion = match (ty, actual_type) {
