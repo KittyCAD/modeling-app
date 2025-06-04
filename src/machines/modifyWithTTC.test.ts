@@ -86,9 +86,9 @@ function expectJsonSnapshot(testName: string, data: any): void {
       throw new Error(
         `Snapshot mismatch for "${testName}". ` +
           `To update snapshots, run:\n` +
-          `  npm test -- --run src/machines/modifyWithTTC.test.ts -u\n` +
+          `  npm run test:unit -- -u modifyWithTTC.test.ts\n` +
           `Or set the UPDATE_SNAPSHOTS environment variable:\n` +
-          `  UPDATE_SNAPSHOTS=true npm test -- --run src/machines/modifyWithTTC.test.ts\n\n` +
+          `  UPDATE_SNAPSHOTS=true npm run test:unit -- modifyWithTTC.test.ts\n\n` +
           `Original error: ${errorMessage}`
       )
     }
