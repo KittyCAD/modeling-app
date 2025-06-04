@@ -1,11 +1,11 @@
 ---
 title: "shell"
 subtitle: "Function in std::solid"
-excerpt: ""
+excerpt: "Remove volume from a 3-dimensional shape such that a wall of the provided thickness remains, taking volume starting at the provided face, leaving it open in that direction."
 layout: manual
 ---
 
-
+Remove volume from a 3-dimensional shape such that a wall of the provided thickness remains, taking volume starting at the provided face, leaving it open in that direction.
 
 ```kcl
 shell(
@@ -15,8 +15,7 @@ shell(
 ): [Solid]
 ```
 
-Remove volume from a 3-dimensional shape such that a wall of the
-provided thickness remains, taking volume starting at the providedface, leaving it open in that direction.
+
 
 ### Arguments
 

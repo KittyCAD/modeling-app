@@ -1,11 +1,11 @@
 ---
 title: "reduce"
 subtitle: "Function in std::array"
-excerpt: ""
+excerpt: "Take a starting value. Then, for each element of an array, calculate the next value, using the previous value and the element."
 layout: manual
 ---
 
-
+Take a starting value. Then, for each element of an array, calculate the next value, using the previous value and the element.
 
 ```kcl
 reduce(
@@ -15,8 +15,7 @@ reduce(
 ): any
 ```
 
-Take a starting value. Then, for each element of an array, calculate the next value,
-using the previous value and the element.
+
 
 ### Arguments
 
@@ -28,7 +27,7 @@ using the previous value and the element.
 
 ### Returns
 
-[`any`](/docs/kcl-std/types/std-types-any)
+[`any`](/docs/kcl-std/types/std-types-any) - The [`any`](/docs/kcl-std/types/std-types-any) type is the type of all possible values in KCL. I.e., if a function accepts an argument with type [`any`](/docs/kcl-std/types/std-types-any), then it can accept any value.
 
 
 ### Examples
