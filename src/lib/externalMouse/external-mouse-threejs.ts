@@ -141,7 +141,7 @@ interface _3DconnexionMiddleware {
   onStopMotion(): void
 
   // 3D mouse initialization
-  init3DMouse(): Promise<{value: boolean, message: string}>
+  init3DMouse(): Promise<{ value: boolean; message: string }>
   onConnect(): void
   onDisconnect(reason: string): void
   on3dmouseCreated(): void
@@ -362,7 +362,9 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
    * invoke this method! I know its not in the constructor... TBD.
    * Everything will initialize after this function call.
    */
-  async init3DMouse(timeout: number = 15000): Promise<{value: boolean, message: string}> {
+  async init3DMouse(
+    timeout: number = 15000
+  ): Promise<{ value: boolean; message: string }> {
     /**
      * _3Dconnexion.connect() is buggy, the code is implemented wrong.
      * It is using half async and half sync code.
@@ -397,7 +399,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
           }
           resolve({
             value: success,
-            message
+            message,
           })
         }, timeout) // 15 seconds
       }
@@ -406,7 +408,9 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
 
   // init3DMouse needs onConnect
   onConnect(): void {
-    const canvas : HTMLCanvasElement | null = document.querySelector('#'+this.canvasId)
+    const canvas: HTMLCanvasElement | null = document.querySelector(
+      '#' + this.canvasId
+    )
 
     if (!canvas) {
       console.error('[_3DMouse] no canvas found, failed onConnect', canvas)

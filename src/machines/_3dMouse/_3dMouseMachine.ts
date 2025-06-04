@@ -4,10 +4,20 @@ import { OrthographicCamera, PerspectiveCamera } from 'three'
 import { _3DMouseThreeJS } from '@src/lib/externalMouse/external-mouse-threejs'
 
 const donePrefix = 'xstate.done.actor.'
+const errorPrefix = 'xstate.error.actor.'
 const prefixForErrors = '[3dconnexion]'
 
 type _3DMouseContext = {
-  _3dMouse: null
+  _3dMouse: _3DMouseThreeJS | null,
+  /** Use this object for internal retries on behalf of the user */
+  lastConfigurationForConnection: {
+    name: string,
+    debug: boolean,
+    canvasId: string,
+    camera: PerspectiveCamera | OrthographicCamera | null
+  } | null,
+  retries: number,
+  maxRetries: number
 }
 
 enum _3DMouseMachineStates {
@@ -15,15 +25,24 @@ enum _3DMouseMachineStates {
   connecting = 'connecting',
   connected = 'connected',
   failedToConnect = 'failed to connect',
+  /** Automatic reconnection, this will internally transistion.
+   * I do not recommend making an event to transition here from a .send() call
+   */
+  retryConnection = 'retryConnection'
 }
 
 enum _3DMouseMachineEvents {
   connect = 'connect',
   done_connect = donePrefix + 'connect',
+  error_connect = errorPrefix + 'connect'
 }
 
 enum _3DMouseMachineActors {
   connect = 'connect',
+}
+
+function logError(message: string) {
+  console.error(`${prefixForErrors} ${message}`)
 }
 
 export const _3DMouseMachine = setup({
@@ -36,13 +55,17 @@ export const _3DMouseMachine = setup({
             name: string
             debug: boolean
             canvasId: string
-            camera: PerspectiveCamera | OrthographicCamera
+            /** Allow null because of internal retry, it will fail if this is null, we cannot have a default camera*/
+            camera: PerspectiveCamera | OrthographicCamera | null
           }
         }
       | {
           type: _3DMouseMachineEvents.done_connect
           output: _3DMouseThreeJS
-        },
+        }
+      | {
+        type: _3DMouseMachineEvents.error_connect
+      }
   },
   actions: {},
   actors: {
@@ -55,28 +78,30 @@ export const _3DMouseMachine = setup({
           name: string
           debug: boolean
           canvasId: string
-          camera: PerspectiveCamera | OrthographicCamera
+          camera: PerspectiveCamera | OrthographicCamera | null
         }
       }): Promise<_3DMouseThreeJS> => {
         /** * Global variable reference from html script tag loading */
         if (!_3Dconnexion) {
           const message = '_3Dconnexion library missing.'
-          console.error(`${prefixForErrors} ${message}`)
+          logError(message)
           throw message
         }
 
         /** Check if the canvas is present, it checks in _3DMouseThreeJS as well */
-        const canvas : HTMLCanvasElement | null = document.querySelector('#'+input.canvasId)
+        const canvas: HTMLCanvasElement | null = document.querySelector(
+          '#' + input.canvasId
+        )
         if (!canvas) {
           const message = `Unable to find canvas with id: ${input.canvasId}`
-          console.error(`${prefixForErrors} ${message}`)
+          logError(message)
           throw message
         }
 
         /** Make sure the camera is available */
         if (!input.camera) {
           const message = `Unable to find initial client scene camera`
-          console.error(`${prefixForErrors} ${message}`)
+          logError(message)
           throw message
         }
 
@@ -87,12 +112,19 @@ export const _3DMouseMachine = setup({
           canvasId: input.canvasId,
           camera: input.camera.clone(),
         })
+
+        /**
+         * The mouse class has a bug and we cannot properly await the async xmlHttpRequest
+         * we have to poll and hope it connects
+         */
         const response = await the3DMouse.init3DMouse(1000 * 2)
+
         if (response.value === false) {
-          console.error(`${prefixForErrors} ${response.message}`)
+          logError(response.message)
           the3DMouse.destroy()
           throw response.message
         }
+
         return the3DMouse
       }
     ),
@@ -101,17 +133,28 @@ export const _3DMouseMachine = setup({
   initial: _3DMouseMachineStates.waitingToConnect,
   context: () => ({
     _3dMouse: null,
+    lastConfigurationForConnection: null,
+    retries: 0,
+    /** retry 3 times before the user needs to manually click a connect button to retry */
+    maxRetries: 3
   }),
   states: {
     [_3DMouseMachineStates.waitingToConnect]: {
       on: {
         [_3DMouseMachineEvents.connect]: {
           target: _3DMouseMachineStates.connecting,
+          actions: [
+            assign({
+              lastConfigurationForConnection: ({ event }) => {
+                const {name, debug, canvasId, camera } = event.data
+                return { name, debug, canvasId, camera}
+              },
+            }),
+          ]
         },
       },
     },
     [_3DMouseMachineStates.connecting]: {
-      on: {},
       invoke: {
         id: _3DMouseMachineActors.connect,
         src: _3DMouseMachineActors.connect,
@@ -127,6 +170,14 @@ export const _3DMouseMachine = setup({
         },
         onDone: {
           target: _3DMouseMachineStates.connected,
+          actions: [
+            assign({
+              _3dMouse: ({ event }) => {
+                assertEvent(event, _3DMouseMachineEvents.done_connect)
+                return event.output
+              },
+            }),
+          ]
         },
         onError: {
           target: _3DMouseMachineStates.failedToConnect,
@@ -138,6 +189,53 @@ export const _3DMouseMachine = setup({
     },
     [_3DMouseMachineStates.failedToConnect]: {
       target: _3DMouseMachineStates.waitingToConnect,
+      always:[
+        {
+          guard: ({context}) => context.retries < context.maxRetries && context.lastConfigurationForConnection !== null,
+          target: _3DMouseMachineStates.retryConnection,
+          actions: assign({retries: ({context}) => context.retries + 1})
+        },
+        {
+          target: _3DMouseMachineStates.waitingToConnect,
+          /**
+           * After we fail 3 times, go back to the initial state and wait for a connect event that is externally triggered via .send()
+           * force clear the lastConfigurationForConnection
+           */
+          actions: [assign({retries: () => 0}), assign({lastConfigurationForConnection: ()=> null})]
+        }
+      ]
     },
+    [_3DMouseMachineStates.retryConnection]: {
+      invoke: {
+        id: _3DMouseMachineActors.connect,
+        src: _3DMouseMachineActors.connect,
+        input: ({ context, event }) => {
+          assertEvent(event, _3DMouseMachineEvents.error_connect)
+          let {name, debug, canvasId, camera} = context.lastConfigurationForConnection || {name:'', debug: false, canvasId:'', camera: null}
+          logError(`retrying connection automatically, retry:${context.retries} out of ${context.maxRetries}`)
+          return {
+            context,
+            name,
+            debug,
+            canvasId,
+            camera,
+          }
+        },
+        onDone: {
+          target: _3DMouseMachineStates.connected,
+          actions: [
+            assign({
+              _3dMouse: ({ event }) => {
+                assertEvent(event, _3DMouseMachineEvents.done_connect)
+                return event.output
+              },
+            }),
+          ]
+        },
+        onError: {
+          target: _3DMouseMachineStates.failedToConnect,
+        },
+      },
+    }
   },
 })
