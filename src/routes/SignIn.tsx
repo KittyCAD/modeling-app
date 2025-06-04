@@ -10,12 +10,11 @@ import { VITE_KC_API_BASE_URL, VITE_KC_SITE_BASE_URL } from '@src/env'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS } from '@src/lib/paths'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
-import { APP_VERSION } from '@src/routes/utils'
+import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -36,11 +35,7 @@ const SignIn = () => {
   const {
     app: { theme },
   } = useSettings()
-  const signInUrl = `${VITE_KC_SITE_BASE_URL}${
-    PATHS.SIGN_IN
-  }?callbackUrl=${encodeURIComponent(
-    typeof window !== 'undefined' && window.location.href.replace('signin', '')
-  )}`
+  const signInUrl = generateSignInUrl()
   const kclSampleUrl = `${VITE_KC_SITE_BASE_URL}/docs/kcl-samples/car-wheel-assembly`
 
   const getThemeText = useCallback(

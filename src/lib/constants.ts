@@ -218,3 +218,6 @@ export const POOL_QUERY_PARAM = 'pool'
  * @deprecated: supporting old share links with this. For new command URLs, use "cmd"
  */
 export const CREATE_FILE_URL_PARAM = 'create-file'
+/** A query parameter to skip the sign-on view if unnecessary. */
+export const IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM =
+  'immediate-sign-in-if-necessary'
