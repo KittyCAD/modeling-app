@@ -381,7 +381,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
      * Also the convention is backwards, 1 says success and 0 says failure, this is confusing.
      */
     this.spaceMouse = new _3Dconnexion(this)
-    console.log("okay?")
+    console.log('okay?')
 
     if (this.spaceMouse) {
       // set the debug flag in the wrapper library
@@ -417,7 +417,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
 
   // init3DMouse needs onConnect
   onConnect(): void {
-    console.log("trying to do on connect?")
+    console.log('trying to do on connect?')
     const canvas: HTMLCanvasElement | null = document.querySelector(
       '#' + this.canvasId
     )
@@ -578,10 +578,9 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   }
 
   onStartMotion(): void {
-    console.log('started!')
-    if (!this.animating) {
-      this.animating = true
-      window.requestAnimationFrame(this.render.bind(this))
+    // NO OP
+    if (this.debug) {
+      console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} mouse movement started`)
     }
   }
 
@@ -592,17 +591,18 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
       )
       return
     }
-
-    if (this.animating) {
-      this.spaceMouse.update3dcontroller({
-        frame: { time: time },
-      })
-      window.requestAnimationFrame(this.render.bind(this))
-    }
+    // NO OP
   }
 
+  /**
+   * Method called by the Navigation Server after it has invoked onStartMotion() when it will no
+   * longer update the view. onStartMotion() and onStopMotion() occur in pairs.
+   */
   onStopMotion(): void {
-    this.animating = false
+    // NO OP
+    if (this.debug) {
+      console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} mouse movement stopped`)
+    }
   }
 }
 
