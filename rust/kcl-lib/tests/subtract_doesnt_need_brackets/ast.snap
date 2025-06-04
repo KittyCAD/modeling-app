@@ -83,12 +83,20 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "pos",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "pos",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -135,12 +143,20 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "pos",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "pos",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -231,12 +247,20 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "pos",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "pos",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -283,12 +307,20 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "pos",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "pos",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -379,12 +411,20 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "pos",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "pos",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -431,12 +471,20 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "pos",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "pos",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -527,12 +575,20 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "pos",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "pos",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -579,12 +635,20 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "pos",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "pos",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
