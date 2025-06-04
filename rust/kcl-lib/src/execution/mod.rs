@@ -41,7 +41,6 @@ use crate::{
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
     source_range::SourceRange,
-    std::StdLib,
     walk::{Universe, UniverseMap},
     CompilationError, ExecError, KclErrorWithOutputs,
 };
@@ -273,7 +272,6 @@ pub enum ContextType {
 pub struct ExecutorContext {
     pub engine: Arc<Box<dyn EngineManager>>,
     pub fs: Arc<FileManager>,
-    pub stdlib: Arc<StdLib>,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
 }
@@ -412,7 +410,6 @@ impl ExecutorContext {
         Ok(Self {
             engine,
             fs: Arc::new(FileManager::new()),
-            stdlib: Arc::new(StdLib::new()),
             settings,
             context_type: ContextType::Live,
         })
@@ -423,7 +420,6 @@ impl ExecutorContext {
         ExecutorContext {
             engine,
             fs,
-            stdlib: Arc::new(StdLib::new()),
             settings,
             context_type: ContextType::Live,
         }
@@ -436,7 +432,6 @@ impl ExecutorContext {
                 crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
             )),
             fs: Arc::new(FileManager::new()),
-            stdlib: Arc::new(StdLib::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
         }
@@ -447,7 +442,6 @@ impl ExecutorContext {
         ExecutorContext {
             engine,
             fs,
-            stdlib: Arc::new(StdLib::new()),
             settings,
             context_type: ContextType::Mock,
         }
@@ -458,7 +452,6 @@ impl ExecutorContext {
         ExecutorContext {
             engine,
             fs: Arc::new(FileManager::new()),
-            stdlib: Arc::new(StdLib::new()),
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
         }
@@ -1390,7 +1383,6 @@ pub(crate) async fn parse_execute_with_project_dir(
             })?,
         )),
         fs: Arc::new(crate::fs::FileManager::new()),
-        stdlib: Arc::new(crate::std::StdLib::new()),
         settings: ExecutorSettings {
             project_directory,
             ..Default::default()

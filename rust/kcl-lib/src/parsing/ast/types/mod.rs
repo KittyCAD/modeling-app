@@ -25,7 +25,6 @@ pub use crate::parsing::ast::types::{
     none::KclNone,
 };
 use crate::{
-    docs::StdLibFn,
     errors::KclError,
     execution::{
         annotations,
@@ -1969,31 +1968,6 @@ impl CallExpressionKw {
 
         for arg in &mut self.arguments {
             arg.arg.rename_identifiers(old_name, new_name);
-        }
-    }
-}
-
-/// A function declaration.
-#[derive(Debug, Clone, Default, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type")]
-pub enum Function {
-    /// A stdlib function written in Rust (aka core lib).
-    StdLib {
-        /// The function.
-        func: Box<dyn StdLibFn>,
-    },
-    /// A function that is defined in memory.
-    #[default]
-    InMemory,
-}
-
-impl PartialEq for Function {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (Function::StdLib { func: func1 }, Function::StdLib { func: func2 }) => func1.name() == func2.name(),
-            (Function::InMemory, Function::InMemory) => true,
-            _ => false,
         }
     }
 }

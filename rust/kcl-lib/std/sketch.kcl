@@ -7,6 +7,233 @@
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
+/// Start a new 2-dimensional sketch on a specific plane or face.
+///
+/// ### Sketch on Face Behavior
+///
+/// There are some important behaviors to understand when sketching on a face:
+///
+/// The resulting sketch will _include_ the face and thus Solid
+/// that was sketched on. So say you were to export the resulting Sketch / Solid
+/// from a sketch on a face, you would get both the artifact of the sketch
+/// on the face and the parent face / Solid itself.
+///
+/// This is important to understand because if you were to then sketch on the
+/// resulting Solid, it would again include the face and parent Solid that was
+/// sketched on. This could go on indefinitely.
+///
+/// The point is if you want to export the result of a sketch on a face, you
+/// only need to export the final Solid that was created from the sketch on the
+/// face, since it will include all the parent faces and Solids.
+///
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+///
+/// exampleSketch002 = startSketchOn(example, face = END)
+///   |> startProfile(at = [1, 1])
+///   |> line(end = [8, 0])
+///   |> line(end = [0, 8])
+///   |> line(end = [-8, 0])
+///   |> close()
+///
+/// example002 = extrude(exampleSketch002, length = 5)
+///
+/// exampleSketch003 = startSketchOn(example002, face = END)
+///   |> startProfile(at = [2, 2])
+///   |> line(end = [6, 0])
+///   |> line(end = [0, 6])
+///   |> line(end = [-6, 0])
+///   |> close()
+///
+/// example003 = extrude(exampleSketch003, length = 5)
+/// ```
+///
+/// ```kcl
+/// // Sketch on the end of an extruded face by tagging the end face.
+///
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5, tagEnd = $end01)
+///
+/// exampleSketch002 = startSketchOn(example, face = end01)
+///   |> startProfile(at = [1, 1])
+///   |> line(end = [8, 0])
+///   |> line(end = [0, 8])
+///   |> line(end = [-8, 0])
+///   |> close()
+///
+/// example002 = extrude(exampleSketch002, length = 5, tagEnd = $end02)
+///
+/// exampleSketch003 = startSketchOn(example002, face = end02)
+///   |> startProfile(at = [2, 2])
+///   |> line(end = [6, 0])
+///   |> line(end = [0, 6])
+///   |> line(end = [-6, 0])
+///   |> close()
+///
+/// example003 = extrude(exampleSketch003, length = 5)
+/// ```
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10], tag = $sketchingFace)
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+///
+/// exampleSketch002 = startSketchOn(example, face = sketchingFace)
+///   |> startProfile(at = [1, 1])
+///   |> line(end = [8, 0])
+///   |> line(end = [0, 8])
+///   |> line(end = [-8, 0])
+///   |> close(tag = $sketchingFace002)
+///
+/// example002 = extrude(exampleSketch002, length = 10)
+///
+/// exampleSketch003 = startSketchOn(example002, face = sketchingFace002)
+///   |> startProfile(at = [-8, 12])
+///   |> line(end = [0, 6])
+///   |> line(end = [6, 0])
+///   |> line(end = [0, -6])
+///   |> close()
+///
+/// example003 = extrude(exampleSketch003, length = 5)
+/// ```
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [4, 12])
+///   |> line(end = [2, 0])
+///   |> line(end = [0, -6])
+///   |> line(end = [4, -6])
+///   |> line(end = [0, -6])
+///   |> line(end = [-3.75, -4.5])
+///   |> line(end = [0, -5.5])
+///   |> line(end = [-2, 0])
+///   |> close()
+///
+/// example = revolve(exampleSketch, axis = Y, angle = 180)
+///
+/// exampleSketch002 = startSketchOn(example, face = END)
+///   |> startProfile(at = [4.5, -5])
+///   |> line(end = [0, 5])
+///   |> line(end = [5, 0])
+///   |> line(end = [0, -5])
+///   |> close()
+///
+/// example002 = extrude(exampleSketch002, length = 5)
+/// ```
+///
+/// ```kcl
+/// // Sketch on the end of a revolved face by tagging the end face.
+///
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [4, 12])
+///   |> line(end = [2, 0])
+///   |> line(end = [0, -6])
+///   |> line(end = [4, -6])
+///   |> line(end = [0, -6])
+///   |> line(end = [-3.75, -4.5])
+///   |> line(end = [0, -5.5])
+///   |> line(end = [-2, 0])
+///   |> close()
+///
+/// example = revolve(exampleSketch, axis = Y, angle = 180, tagEnd = $end01)
+///
+/// exampleSketch002 = startSketchOn(example, face = end01)
+///   |> startProfile(at = [4.5, -5])
+///   |> line(end = [0, 5])
+///   |> line(end = [5, 0])
+///   |> line(end = [0, -5])
+///   |> close()
+///
+/// example002 = extrude(exampleSketch002, length = 5)
+/// ```
+///
+/// ```kcl
+/// a1 = startSketchOn({
+///     origin = { x = 0, y = 0, z = 0 },
+///     xAxis = { x = 1, y = 0, z = 0 },
+///     yAxis = { x = 0, y = 1, z = 0 },
+///     zAxis = { x = 0, y = 0, z = 1 }
+///   })
+///  |> startProfile(at = [0, 0])
+///  |> line(end = [100.0, 0])
+///  |> yLine(length = -100.0)
+///  |> xLine(length = -100.0)
+///  |> yLine(length = 100.0)
+///  |> close()
+///  |> extrude(length = 3.14)
+/// ```
+@(impl = std_rust)
+export fn startSketchOn(
+  /// Profile whose start is being used.
+  @planeOrSolid: Solid | Plane,
+  /// Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`).
+  face?: tag,
+): Plane | Face {}
+
+/// Start a new profile at a given point.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(-XZ)
+///   |> startProfile(at = [10, 10])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(-XZ)
+///   |> startProfile(at = [-10, 23])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn startProfile(
+  /// What to start the profile on.
+  @startProfileOn: Plane | Face,
+  /// Where to start the profile. An absolute point.
+  @(snippetArray = ["0", "0"])
+  at: Point2d,
+  /// Tag this first starting point.
+  tag?: tag,
+): Sketch {}
+
 /// Construct a 2-dimensional circle, of the specified radius, centered at
 /// the provided (x, y) origin point.
 ///
@@ -1196,3 +1423,498 @@ export fn tangentToEnd(
   /// The line segment being queried by its tag.
   @tag: tag,
 ): number(Angle) {}
+
+/// Extract the provided 2-dimensional sketch's profile's origin value.
+///
+/// ```kcl
+/// sketch001 = startSketchOn(XY)
+///  |> startProfile(at = [5, 2])
+///  |> angledLine(angle = 120, length = 50 , tag = $seg01)
+///  |> angledLine(angle = segAng(seg01) + 120, length = 50 )
+///  |> line(end = profileStart(%))
+///  |> close()
+///  |> extrude(length = 20)
+/// ```
+@(impl = std_rust)
+export fn profileStart(
+  /// Profile whose start is being used.
+  @profile: Sketch,
+): Point2d {}
+
+/// Extract the provided 2-dimensional sketch's profile's origin's 'x' value.
+///
+/// ```kcl
+/// sketch001 = startSketchOn(XY)
+///  |> startProfile(at = [5, 2])
+///  |> angledLine(angle = -26.6, length = 50)
+///  |> angledLine(angle = 90, length = 50)
+///  |> angledLine(angle = 30, endAbsoluteX = profileStartX(%))
+/// ```
+@(impl = std_rust)
+export fn profileStartX(
+  /// Profile whose start is being used.
+  @profile: Sketch,
+): number(Length) {}
+
+/// Extract the provided 2-dimensional sketch's profile's origin's 'y' value.
+///
+/// ```kcl
+/// sketch001 = startSketchOn(XY)
+///  |> startProfile(at = [5, 2])
+///  |> angledLine(angle = -60, length = 14 )
+///  |> angledLine(angle = 30, endAbsoluteY =  profileStartY(%))
+/// ```
+@(impl = std_rust)
+export fn profileStartY(
+  /// Profile whose start is being used.
+  @profile: Sketch,
+): number(Length) {}
+
+/// Extend the current sketch with a new involute circular curve.
+///
+/// ```kcl
+/// a = 10
+/// b = 14
+/// startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60)
+///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60, reverse = true)
+/// ```
+@(impl = std_rust)
+export fn involuteCircular(
+  /// Which sketch should this path be added to?
+  @sketch: Sketch,
+  /// The involute is described between two circles, start_radius is the radius of the inner circle.
+  startRadius: number(Length),
+  /// The involute is described between two circles, end_radius is the radius of the outer circle.
+  endRadius: number(Length),
+  /// The angle to rotate the involute by. A value of zero will produce a curve with a tangent along the x-axis at the start point of the curve.
+  angle: number(Angle),
+  /// If reverse is true, the segment will start from the end of the involute, otherwise it will start from that start.
+  reverse?: bool = false,
+  /// Create a new tag which refers to this line.
+  tag?: tag,
+): Sketch {}
+
+/// Extend the current sketch with a new straight line.
+///
+/// ```kcl
+/// triangle = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   // The END argument means it ends at exactly [10, 0].
+///   // This is an absolute measurement, it is NOT relative to
+///   // the start of the sketch.
+///   |> line(endAbsolute = [10, 0])
+///   |> line(endAbsolute = [0, 10])
+///   |> line(endAbsolute = [-10, 0], tag = $thirdLineOfTriangle)
+///   |> close()
+///   |> extrude(length = 5)
+///
+/// box = startSketchOn(XZ)
+///   |> startProfile(at = [10, 10])
+///   // The 'to' argument means move the pen this much.
+///   // So, [10, 0] is a relative distance away from the current point.
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0], tag = $thirdLineOfBox)
+///   |> close()
+///   |> extrude(length = 5)
+/// ```
+@(impl = std_rust)
+export fn line(
+  /// Which sketch should this path be added to?
+  @sketch: Sketch,
+  /// Which absolute point should this line go to? Incompatible with `end`.
+  endAbsolute?: Point2d,
+  /// How far away (along the X and Y axes) should this line go? Incompatible with `endAbsolute`.
+  @(includeInSnippet = true)
+  end?: Point2d,
+  /// Create a new tag which refers to this line.
+  tag?: tag,
+): Sketch {}
+
+/// Draw a line relative to the current origin to a specified distance away
+/// from the current position along the 'x' axis.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> xLine(length = 15)
+///   |> angledLine(
+///     angle = 80,
+///     length = 15,
+///   )
+///   |> line(end = [8, -10])
+///   |> xLine(length = 10)
+///   |> angledLine(
+///     angle = 120,
+///     length = 30,
+///   )
+///   |> xLine(length = -15)
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+@(impl = std_rust)
+export fn xLine(
+  /// Which sketch should this path be added to?
+  @sketch: Sketch,
+  /// How far away along the X axis should this line go? Incompatible with `endAbsolute`.
+  @(includeInSnippet = true)
+  length?: number(Length),
+  /// Which absolute X value should this line go to? Incompatible with `length`.
+  endAbsolute?: number(Length),
+  /// Create a new tag which refers to this line.
+  tag?: tag,
+): Sketch {}
+
+/// Draw a line relative to the current origin to a specified distance away
+/// from the current position along the 'y' axis.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> yLine(length = 15)
+///   |> angledLine(
+///     angle = 30,
+///     length = 15,
+///   )
+///   |> line(end = [8, -10])
+///   |> yLine(length = -5)
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+@(impl = std_rust)
+export fn yLine(
+  /// Which sketch should this path be added to?
+  @sketch: Sketch,
+  /// How far away along the Y axis should this line go? Incompatible with `endAbsolute`.
+  @(includeInSnippet = true)
+  length?: number(Length),
+  /// Which absolute Y value should this line go to? Incompatible with `length`.
+  endAbsolute?: number(Length),
+  /// Create a new tag which refers to this line.
+  tag?: tag,
+): Sketch {}
+
+/// Draw a line segment relative to the current origin using the polar
+/// measure of some angle and distance.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> yLine(endAbsolute = 15)
+///   |> angledLine(
+///     angle = 30,
+///     length = 15,
+///   )
+///   |> line(end = [8, -10])
+///   |> yLine(endAbsolute = 0)
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+@(impl = std_rust)
+export fn angledLine(
+  /// Which sketch should this path be added to?
+  @sketch: Sketch,
+  /// Which angle should the line be drawn at?
+  angle: number(Angle),
+  /// Draw the line this distance along the given angle. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given.
+  length?: number(Length),
+  /// Draw the line this distance along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given.
+  lengthX?: number(Length),
+  /// Draw the line this distance along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given.
+  lengthY?: number(Length),
+  /// Draw the line along the given angle until it reaches this point along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given.
+  endAbsoluteX?: number(Length),
+  /// Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given.
+  endAbsoluteY?: number(Length),
+  /// Create a new tag which refers to this line.
+  tag?: tag,
+): Sketch {}
+
+/// Draw an angled line from the current origin, constructing a line segment
+/// such that the newly created line intersects the desired target line
+/// segment.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(endAbsolute = [5, 10])
+///   |> line(endAbsolute = [-10, 10], tag = $lineToIntersect)
+///   |> line(endAbsolute = [0, 20])
+///   |> angledLineThatIntersects(
+///        angle = 80,
+///        intersectTag = lineToIntersect,
+///        offset = 10,
+///      )
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+@(impl = std_rust)
+export fn angledLineThatIntersects(
+  /// Which sketch should this path be added to?
+  @sketch: Sketch,
+  /// Which angle should the line be drawn at?
+  angle: number(Angle),
+  /// The tag of the line to intersect with.
+  intersectTag: tag,
+  /// The offset from the intersecting line.
+  offset?: number(Length) = 0mm,
+  /// Create a new tag which refers to this line.
+  tag?: tag,
+): Sketch {}
+
+/// Construct a line segment from the current origin back to the profile's
+/// origin, ensuring the resulting 2-dimensional sketch is not open-ended.
+///
+/// If you want to perform some 3-dimensional operation on a sketch, like
+/// extrude or sweep, you must `close` it first. `close` must be called even
+/// if the end point of the last segment is coincident with the sketch
+/// starting point.
+///
+/// ```kcl
+/// startSketchOn(XZ)
+///    |> startProfile(at = [0, 0])
+///    |> line(end = [10, 10])
+///    |> line(end = [10, 0])
+///    |> close()
+///    |> extrude(length = 10)
+/// ```
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(-XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+@(impl = std_rust)
+export fn close(
+  /// The sketch you want to close.
+  @sketch: Sketch,
+  /// Create a new tag which refers to this line.
+  tag?: tag,
+): Sketch {}
+
+/// Draw a curved line segment along an imaginary circle.
+///
+/// The arc is constructed such that the current position of the sketch is
+/// placed along an imaginary circle of the specified radius, at angleStart
+/// degrees. The resulting arc is the segment of the imaginary circle from
+/// that origin point to angleEnd, radius away from the center of the imaginary
+/// circle.
+///
+/// Unless this makes a lot of sense and feels like what you're looking
+/// for to construct your shape, you're likely looking for tangentialArc.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> arc(
+///        angleStart = 0,
+///        angleEnd = 280,
+///        radius = 16
+///      )
+///   |> close()
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> arc(
+///         endAbsolute = [10,0],
+///         interiorAbsolute = [5,5]
+///      )
+///   |> close()
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+@(impl = std_rust)
+export fn arc(
+  /// Which sketch should this path be added to?
+  @sketch: Sketch,
+  /// Where along the circle should this arc start?
+  @(includeInSnippet = true)
+  angleStart?: number(Angle),
+  /// Where along the circle should this arc end?
+  @(includeInSnippet = true)
+  angleEnd?: number(Angle),
+  /// How large should the circle be? Incompatible with `diameter`.
+  radius?: number(Length),
+  /// How large should the circle be? Incompatible with `radius`.
+  @(includeInSnippet = true)
+  diameter?: number(Length),
+  /// Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd`.
+  interiorAbsolute?: Point2d,
+  /// Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd`.
+  endAbsolute?: Point2d,
+  /// Create a new tag which refers to this arc.
+  tag?: tag,
+): Sketch {}
+
+/// Starting at the current sketch's origin, draw a curved line segment along
+/// some part of an imaginary circle until it reaches the desired (x, y)
+/// coordinates.
+///
+/// When using radius and angle, draw a curved line segment along part of an
+/// imaginary circle. The arc is constructed such that the last line segment is
+/// placed tangent to the imaginary circle of the specified radius. The
+/// resulting arc is the segment of the imaginary circle from that tangent point
+/// for 'angle' degrees along the imaginary circle.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> angledLine(
+///     angle = 45,
+///     length = 10,
+///   )
+///   |> tangentialArc(end = [0, -10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> angledLine(
+///     angle = 60,
+///     length = 10,
+///   )
+///   |> tangentialArc(endAbsolute = [15, 15])
+///   |> line(end = [10, -15])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> angledLine(
+///     angle = 60,
+///     length = 10,
+///   )
+///   |> tangentialArc(radius = 10, angle = -120)
+///   |> angledLine(
+///     angle = -60,
+///     length = 10,
+///   )
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+@(impl = std_rust)
+export fn tangentialArc(
+  /// Which sketch should this path be added to?
+  @sketch: Sketch,
+  /// Which absolute point should this arc go to? Incompatible with `end`, `radius`, and `offset`.
+  endAbsolute?: Point2d,
+  /// How far away (along the X and Y axes) should this arc go? Incompatible with `endAbsolute`, `radius`, and `offset`.
+  @(includeInSnippet = true)
+  end?: Point2d,
+  /// Radius of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute` and `diameter`.
+  radius?: number(Length),
+  /// Diameter of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute` and `radius`.
+  diameter?: number(Length),
+  /// Offset of the arc. `radius` must be given. Incompatible with `end` and `endAbsolute`.
+  angle?: number(Angle),
+  /// Create a new tag which refers to this arc.
+  tag?: tag,
+): Sketch {}
+
+/// Draw a smooth, continuous, curved line segment from the current origin to
+/// the desired (x, y), using a number of control points to shape the curve's
+/// shape.
+///
+/// ```kcl
+/// // Example using relative control points.
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [0, 10])
+///   |> bezierCurve(
+///        control1 = [5, 0],
+///        control2 = [5, 10],
+///        end = [10, 10],
+///      )
+///   |> line(endAbsolute = [10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+///
+/// ```kcl
+/// // Example using absolute control points.
+/// startSketchOn(XY)
+///   |> startProfile(at = [300, 300])
+///   |> bezierCurve(control1Absolute = [600, 300], control2Absolute = [-300, -100], endAbsolute = [600, 600])
+///   |> close()
+///   |> extrude(length = 10)
+/// ```
+@(impl = std_rust)
+export fn bezierCurve(
+  /// Which sketch should this path be added to?
+  @sketch: Sketch,
+  /// First control point for the cubic.
+  control1?: Point2d,
+  /// Second control point for the cubic.
+  control2?: Point2d,
+  /// How far away (along the X and Y axes) should this line go?
+  end?: Point2d,
+  /// First control point for the cubic. Absolute point.
+  control1Absolute?: Point2d,
+  /// Second control point for the cubic. Absolute point.
+  control2Absolute?: Point2d,
+  /// Coordinate on the plane at which this line should end.
+  endAbsolute?: Point2d,
+  /// Create a new tag which refers to this line.
+  tag?: tag,
+): Sketch {}
+
+/// Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [0, 5])
+///   |> line(end = [5, 0])
+///   |> line(end = [0, -5])
+///   |> close()
+///   |> subtract2d(tool =circle( center = [1, 1], radius = .25 ))
+///   |> subtract2d(tool =circle( center = [1, 4], radius = .25 ))
+///
+/// example = extrude(exampleSketch, length = 1)
+/// ```
+///
+/// ```kcl
+/// fn squareHoleSketch() {
+///   squareSketch = startSketchOn(-XZ)
+///     |> startProfile(at = [-1, -1])
+///     |> line(end = [2, 0])
+///     |> line(end = [0, 2])
+///     |> line(end = [-2, 0])
+///     |> close()
+///   return squareSketch
+/// }
+///
+/// exampleSketch = startSketchOn(-XZ)
+///     |> circle( center = [0, 0], radius = 3 )
+///     |> subtract2d(tool = squareHoleSketch())
+/// example = extrude(exampleSketch, length = 1)
+/// ```
+@(impl = std_rust)
+export fn subtract2d(
+  /// Which sketch should this path be added to?
+  @sketch: Sketch,
+  /// The shape(s) which should be cut out of the sketch.
+  tool: [Sketch; 1+],
+): Sketch {}

@@ -3223,7 +3223,6 @@ export function fnNameToToolTipFromSegment(
     case 'tangentialArcTo':
     case 'angledLine':
     case 'startProfile':
-    case 'arcTo':
       return fnName
     default:
       const err = `Unknown sketch line function ${fnName}`

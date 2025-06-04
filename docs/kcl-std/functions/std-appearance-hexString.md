@@ -1,24 +1,23 @@
 ---
 title: "appearance::hexString"
 subtitle: "Function in std::appearance"
-excerpt: ""
+excerpt: "Build a color from its red, green and blue components. These must be between 0 and 255."
 layout: manual
 ---
 
-
+Build a color from its red, green and blue components. These must be between 0 and 255.
 
 ```kcl
 appearance::hexString(@rgb: [number(_); 3]): string
 ```
 
-Build a color from its red, green and blue components.
-These must be between 0 and 255.
+
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `rgb` | [`[number(_); 3]`](/docs/kcl-std/types/std-types-number) |  | Yes |
+| `rgb` | [`[number(_); 3]`](/docs/kcl-std/types/std-types-number) | The red, blue and green components of the color. Must be between 0 and 255. | Yes |
 
 ### Returns
 
