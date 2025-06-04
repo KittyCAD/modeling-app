@@ -63,19 +63,19 @@ interface ThreeCamValues {
 
 export type ReactCameraProperties =
   | {
-    type: 'perspective'
-    fov?: number
-    position: [number, number, number]
-    target: [number, number, number]
-    quaternion: [number, number, number, number]
-  }
+      type: 'perspective'
+      fov?: number
+      position: [number, number, number]
+      target: [number, number, number]
+      quaternion: [number, number, number, number]
+    }
   | {
-    type: 'orthographic'
-    zoom?: number
-    position: [number, number, number]
-    target: [number, number, number]
-    quaternion: [number, number, number, number]
-  }
+      type: 'orthographic'
+      zoom?: number
+      position: [number, number, number]
+      target: [number, number, number]
+      quaternion: [number, number, number, number]
+    }
 
 const lastCmdDelay = 50
 
@@ -273,11 +273,11 @@ export class CameraControls {
     type CallBackParam = Parameters<
       (
         | Subscription<
-          | 'default_camera_zoom'
-          | 'camera_drag_end'
-          | 'default_camera_get_settings'
-          | 'zoom_to_fit'
-        >
+            | 'default_camera_zoom'
+            | 'camera_drag_end'
+            | 'default_camera_get_settings'
+            | 'zoom_to_fit'
+          >
         | UnreliableSubscription<'camera_drag_move'>
       )['callback']
     >[0]
@@ -371,7 +371,7 @@ export class CameraControls {
   }
 
   private _isCamMovingCallback: (isMoving: boolean, isTween: boolean) => void =
-    () => { }
+    () => {}
   setIsCamMovingCallback(cb: (isMoving: boolean, isTween: boolean) => void) {
     this._isCamMovingCallback = cb
   }
@@ -856,7 +856,7 @@ export class CameraControls {
       // zPosition should stay the same
       const xyRadius = Math.sqrt(
         (this.target.x - this.camera.position.x) ** 2 +
-        (this.target.y - this.camera.position.y) ** 2
+          (this.target.y - this.camera.position.y) ** 2
       )
       const xyAngle = Math.atan2(
         this.camera.position.y - this.target.y,
@@ -1272,7 +1272,7 @@ export class CameraControls {
       ],
     }
   }
-  reactCameraPropertiesCallback: (a: ReactCameraProperties) => void = () => { }
+  reactCameraPropertiesCallback: (a: ReactCameraProperties) => void = () => {}
   setReactCameraPropertiesCallback = (
     cb: (a: ReactCameraProperties) => void
   ) => {
