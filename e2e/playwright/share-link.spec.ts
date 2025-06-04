@@ -1,45 +1,51 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { Page } from '@playwright/test'
 
-const isWindows =
-  navigator.platform === 'Windows' || navigator.platform === 'Win32'
+async function navigateAndClickOpenInDesktopApp(
+  page: Page,
+  codeLength: number
+) {
+  const code = Array(codeLength).fill('0').join('')
+  const targetURL = `?create-file=true&browser=test&code=${code}&ask-open-desktop=true`
+  expect(targetURL.length).toEqual(codeLength + 58)
+  await page.goto(page.url() + targetURL)
+  expect(page.url()).toContain(targetURL)
+  const button = page.getByRole('button', { name: 'Open in desktop app' })
+  await button.click()
+}
+
+function getToastError(page: Page) {
+  return page.getByText('The URL is too long to open in the desktop app')
+}
+
 test.describe('Share link tests', () => {
-  ;[
-    {
-      codeLength: 1000,
-      showsErrorOnWindows: false,
-    },
-    {
-      codeLength: 2000,
-      showsErrorOnWindows: true,
-    },
-  ].forEach(({ codeLength, showsErrorOnWindows }) => {
-    test(
-      `Open in desktop app with ${codeLength}-long code ${isWindows && showsErrorOnWindows ? 'shows error' : "doesn't show error"}`,
-      { tag: ['@web'] },
-      async ({ page }) => {
-        if (process.env.TARGET !== 'web') {
-          // This test is web-only
-          // TODO: re-enable on CI as part of a new @web test suite
-          return
-        }
-
-        const code = Array(codeLength).fill('0').join('')
-        const targetURL = `?create-file=true&browser=test&code=${code}&ask-open-desktop=true`
-        expect(targetURL.length).toEqual(codeLength + 58)
-        await page.goto(page.url() + targetURL)
-        expect(page.url()).toContain(targetURL)
-        const button = page.getByRole('button', { name: 'Open in desktop app' })
-        await button.click()
-        const toastError = page.getByText(
-          'The URL is too long to open in the desktop app on Windows'
-        )
-        if (isWindows && showsErrorOnWindows) {
-          await expect(toastError).toBeVisible()
-        } else {
-          await expect(toastError).not.toBeVisible()
-          // TODO: check if we could verify the deep link dialog shows up
-        }
+  test(
+    `Open in desktop app with 2000-long code doesn't show error on non-Windows`,
+    { tag: ['@web'] },
+    async ({ page }) => {
+      if (process.env.TARGET !== 'web' || process.platform === 'win32') {
+        return
       }
-    )
-  })
+      const codeLength = 1000
+      await navigateAndClickOpenInDesktopApp(page, codeLength)
+      expect(getToastError(page)).not.toBeVisible()
+    }
+  )
+
+  test(
+    `Open in desktop app with 1000-long code works on Windows but not with 2000`,
+    { tag: ['@web', '@windows'] },
+    async ({ page }) => {
+      if (process.env.TARGET !== 'web' || process.platform !== 'win32') {
+        return
+      }
+      let codeLength = 1000
+      await navigateAndClickOpenInDesktopApp(page, codeLength)
+      expect(getToastError(page)).not.toBeVisible()
+
+      codeLength = 2000
+      await navigateAndClickOpenInDesktopApp(page, codeLength)
+      expect(getToastError(page)).toBeVisible()
+    }
+  )
 })
