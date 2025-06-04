@@ -1569,13 +1569,8 @@ export class EngineCommandManager extends EventTarget {
           this.codeManager?.currentFilePath || undefined
         )
       } catch (e) {
-        // If this happens shit's actually gone south aka the websocket closed.
-        // Let's restart.
-        console.warn("shit's gone south")
-        console.warn(e)
-        // this.engineConnection?.dispatchEvent(
-        //   new CustomEvent(EngineConnectionEvents.RestartRequest, {})
-        // )
+        // If this happens, the websocket may have closed and we need to restart
+        console.warn('unknown error:', e)
         return
       }
 

@@ -412,11 +412,6 @@ export const engineStreamMachine = setup({
         ],
       },
       on: {
-        // The stream can be paused as it's resuming.
-        [EngineStreamTransition.Pause]: {
-          target: EngineStreamState.Paused,
-        },
-        // The stream can be stopped as it's resuming.
         [EngineStreamTransition.Stop]: {
           target: EngineStreamState.Stopped,
         },
