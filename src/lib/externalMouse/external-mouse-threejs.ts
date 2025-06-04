@@ -2,6 +2,7 @@ import type { Vector3 } from 'three'
 import { PerspectiveCamera, OrthographicCamera } from 'three'
 import { sceneInfra, engineCommandManager } from '@src/lib/singletons'
 import { uuidv4 } from '@src/lib/utils'
+import { EXTERNAL_MOUSE_ERROR_PREFIX } from "@src/lib/constants"
 import * as THREE from 'three'
 declare global {
   var _3Dconnexion: any
@@ -227,7 +228,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     this.camera = configuration.camera
 
     if (!_3Dconnexion) {
-      console.error('Unable to find _3Dconnexion library')
+      console.error(`${EXTERNAL_MOUSE_ERROR_PREFIX} Unable to find _3Dconnexion library`)
     }
   }
 
@@ -274,7 +275,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   getFov(): number {
     if (this.camera instanceof PerspectiveCamera === false) {
       console.error(
-        'Camera is not a perspective camera, unable to get the FOV of this camera.'
+        `${EXTERNAL_MOUSE_ERROR_PREFIX} Camera is not a perspective camera, unable to get the FOV of this camera.`
       )
       // try to brick it during runtime on purpose
       return -1
@@ -294,7 +295,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   getViewExtents(): ViewExtents {
     if (this.camera instanceof OrthographicCamera === false) {
       console.error(
-        'Camera is not orthographic camera, unable to get the viewExtents'
+        `${EXTERNAL_MOUSE_ERROR_PREFIX} Camera is not orthographic camera, unable to get the viewExtents`
       )
       // try to brick it during runtime on purpose
       return [0, 0, 0, 0, 0, 0]
@@ -312,7 +313,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   getViewFrustum(): ViewExtents {
     if (this.camera instanceof PerspectiveCamera === false) {
       console.error(
-        'Camera is not a perspective camera, unable to get the view frustum of this camera.'
+        `${EXTERNAL_MOUSE_ERROR_PREFIX} Camera is not a perspective camera, unable to get the view frustum of this camera.`
       )
       // try to brick it during runtime on purpose
       return [0, 0, 0, 0, 0, 0]
@@ -346,7 +347,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   setViewExtents(viewExtents: ViewExtents): void {
     if (this.camera instanceof OrthographicCamera === false) {
       console.error(
-        'Camera is not orthographic camera, unable to set the viewExtents'
+        `${EXTERNAL_MOUSE_ERROR_PREFIX} Camera is not orthographic camera, unable to set the viewExtents`
       )
       return
     }
@@ -413,12 +414,12 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     )
 
     if (!canvas) {
-      console.error('[_3DMouse] no canvas found, failed onConnect', canvas)
+      console.error(`${EXTERNAL_MOUSE_ERROR_PREFIX} no canvas found, failed onConnect`, canvas)
       return
     }
 
     if (!this.spaceMouse) {
-      console.error('spaceMouse is not defined, failed onConnect')
+      console.error(`${EXTERNAL_MOUSE_ERROR_PREFIX} spaceMouse is not defined, failed onConnect`)
       return
     }
 
@@ -497,8 +498,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   setActiveCommand(id: any): void {
     if (id && id == 'ID_CLOSE') {
       console.log('Id of command to execute= ' + id)
-      this.deleteScene()
-      window.alert('Scene closed.')
+      this.destroy()
       return
     }
     /** TODO: onCommand(id) */
@@ -573,7 +573,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
 
   render(time: number): void {
     if (!this.spaceMouse) {
-      console.error('spaceMouse is not defined, failed render')
+      console.error(`${EXTERNAL_MOUSE_ERROR_PREFIX} spaceMouse is not defined, failed render`)
       return
     }
 

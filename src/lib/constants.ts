@@ -217,3 +217,6 @@ export const POOL_QUERY_PARAM = 'pool'
  * @deprecated: supporting old share links with this. For new command URLs, use "cmd"
  */
 export const CREATE_FILE_URL_PARAM = 'create-file'
+
+/** Error prefix for console.errors when working with the 3dconnexion mouse connection*/
+export const EXTERNAL_MOUSE_ERROR_PREFIX = '[3dconnexion]'
