@@ -119,6 +119,17 @@ export function HelpMenu({
             >
               Release notes
             </HelpMenuItem>
+            {isDesktop() && (
+              <HelpMenuItem
+                as="button"
+                onClick={() => {
+                  close()
+                  window.electron.appCheckForUpdates().catch(reportRejection)
+                }}
+              >
+                Check for updates
+              </HelpMenuItem>
+            )}
             <HelpMenuItem
               as="button"
               onClick={() => {
@@ -140,17 +151,6 @@ export function HelpMenu({
             >
               Replay onboarding tutorial
             </HelpMenuItem>
-            {isDesktop() && (
-              <HelpMenuItem
-                as="button"
-                onClick={() => {
-                  close()
-                  window.electron.appCheckForUpdates().catch(reportRejection)
-                }}
-              >
-                Check for updates
-              </HelpMenuItem>
-            )}
           </>
         )}
       </Popover.Panel>
