@@ -120,7 +120,7 @@ type TestCase = {
   prompt: string
   inputFiles: { [fileName: string]: string }
   expectedFiles: { [fileName: string]: string }
-  artifactSearchSnippet?: { fileName: string; content: string; type: string }
+  artifactSearchSnippet?: { fileName: string; content: string; type: string }[]
 }
 
 function createCaseData({
@@ -151,11 +151,13 @@ const cases: TestCase[] = [
   createCaseData({
     testName: 'change color',
     prompt: 'make this neon green please, use #39FF14',
-    artifactSearchSnippet: {
-      content: 'line(end = [19.66, -116.4])',
-      fileName: 'main.kcl',
-      type: 'wall',
-    },
+    artifactSearchSnippet: [
+      {
+        content: 'line(end = [19.66, -116.4])',
+        fileName: 'main.kcl',
+        type: 'wall',
+      },
+    ],
     expectFilesCallBack: ({ fileName, content }) => {
       if (fileName !== 'main.kcl') return content
       return content.replace(
@@ -209,13 +211,14 @@ extrude(sketch003, length = 20)
   // Load pillow block files and add as another test case
   createCaseData({
     testName: 'change color on imported file',
-    artifactSearchSnippet: {
-      fileName: 'ball-bearing.kcl',
-      content: 'yLine(length = stockThickness)',
-      type: 'wall',
-    },
-    prompt:
-      'Can you please pattern this nut 4 times, the same way the bolt and washer has been done already.',
+    artifactSearchSnippet: [
+      {
+        fileName: 'ball-bearing.kcl',
+        content: 'yLine(length = stockThickness)',
+        type: 'wall',
+      },
+    ],
+    prompt: 'Change this to red please, #ff0000',
     inputFiles: loadSampleProject('pillow-block-bearing/main.kcl'),
     expectFilesCallBack: ({ fileName, content }) =>
       fileName === 'ball-bearing.kcl'
@@ -227,34 +230,125 @@ extrude(sketch003, length = 20)
   }),
 ]
 
-const pipeFlangeAssembly = loadSampleProject('pipe-flange-assembly/main.kcl')
-const originalMain = pipeFlangeAssembly['main.kcl']
-pipeFlangeAssembly['main.kcl'] = pipeFlangeAssembly['main.kcl'].replace(
-  `translate(x = mountingHolePlacementDiameter / 2, y = 0, z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + washerThickness + hexNutThickness))
-  |> patternCircular3d(
-       %,
-       instances = 4,
-       axis = [0, 0, 1],
-       center = [0, 0, 0],
-       arcDegrees = 360,
-       rotateDuplicates = false,
-     )`,
-  'translate(x = mountingHolePlacementDiameter / 2, y = 0, z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + washerThickness + hexNutThickness))'
-)
+const patternHoleStarterCode: { [fileName: string]: string } = {
+  'main.kcl': `flangeHolesR = 6
+flangeBodySketch = startSketchOn(XY)
+flangeBodyProfile = circle(flangeBodySketch, center = [0, 0], radius = 100)
+flangePlate = extrude(flangeBodyProfile, length = 5)
+higherPlane = offsetPlane(XY, offset = 10)
+innerBoreSketch = startSketchOn(higherPlane)
+innerBoreProfile = circle(innerBoreSketch, center = [0, 0], radius = 49.28)
+innerBoreCylinder = extrude(innerBoreProfile, length = -10)
+flangeBody = subtract([flangePlate], tools = [innerBoreCylinder])
+mountingHoleSketch = startSketchOn(higherPlane)
+mountingHoleProfile = circle(mountingHoleSketch, center = [75, 0], radius = flangeHolesR)
+mountingHoleCylinders = extrude(mountingHoleProfile, length = -30)
+`,
+}
 
 cases.push(
   createCaseData({
-    // angledLine(angle = 210, length = hexNutFlatLength)
-    testName: 'try and pattern an inserted part',
-    artifactSearchSnippet: {
-      fileName: '95479a127-hex-nut.kcl',
-      content: 'angledLine(angle = 210, length = hexNutFlatLength)',
-      type: 'wall',
+    testName: 'pattern holes',
+    artifactSearchSnippet: [
+      {
+        fileName: 'main.kcl',
+        content:
+          'circle(mountingHoleSketch, center = [75, 0], radius = flangeHolesR)',
+        type: 'wall',
+      },
+    ],
+    prompt:
+      'pattern this cylinder 6 times around the center of the flange, before subtracting it from the flange',
+    inputFiles: patternHoleStarterCode,
+    expectFilesCallBack: ({ fileName, content }) => {
+      if (fileName !== 'main.kcl') return content
+      return content.replace(
+        'extrude(mountingHoleProfile, length = -30)',
+        `extrude(mountingHoleProfile, length = -30)
+  |> patternCircular3d(instances = 6, axis = Z, center = [0, 0, 0])
+flange = subtract([flangeBody], tools = [mountingHoleCylinders])`
+      )
     },
-    prompt: 'Change this to red please, #ff0000',
-    inputFiles: pipeFlangeAssembly,
-    expectFilesCallBack: ({ fileName, content }) =>
-      fileName === 'main' ? originalMain : content,
+  })
+)
+const filletStarterCode: { [fileName: string]: string } = {
+  'othermain.kcl': `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [18.47, 15.31])
+  |> yLine(length = 28.26, tag = $seg02)
+  |> line(end = [55.52, 21.93], tag = $seg01)
+  |> tangentialArc(endAbsolute = [136.09, 36.87])
+  |> yLine(length = -45.48)
+  |> xLine(length = -13.76, tag = $seg03)
+  |> yLine(length = 8.61)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
+  |> fillet(
+       radius = 1,
+       tags = [
+         getCommonEdge(faces = [seg01, seg02]),
+         getCommonEdge(faces = [seg03, capEnd001])
+       ],
+     )
+`,
+  'main.kcl': `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [18.47, 15.31])
+  |> yLine(length = 28.26)
+  |> line(end = [55.52, 21.93])
+  |> tangentialArc(endAbsolute = [136.09, 36.87])
+  |> yLine(length = -45.48)
+  |> xLine(length = -13.76)
+  |> yLine(length = 8.61)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10)
+`,
+}
+
+cases.push(
+  createCaseData({
+    testName: 'fillet shape',
+    artifactSearchSnippet: [
+      {
+        fileName: 'main.kcl',
+        content: 'yLine(length = 28.26)',
+        type: 'sweepEdge',
+      },
+      {
+        fileName: 'main.kcl',
+        content: 'xLine(length = -13.76)',
+        type: 'sweepEdge',
+      },
+    ],
+    prompt: 'fillet these two edges please',
+    inputFiles: filletStarterCode,
+    expectFilesCallBack: ({ fileName, content }) => {
+      if (fileName !== 'main.kcl') return content
+      let newContent = content.replace(
+        'extrude(profile001, length = 10)',
+        `extrude(profile001, length = 10, tagEnd = $capEnd001)
+  |> fillet(
+       radius = 1,
+       tags = [
+         getCommonEdge(faces = [seg01, seg02]),
+         getCommonEdge(faces = [seg03, capEnd001])
+       ],
+     )`
+      )
+      newContent = newContent.replace(
+        'yLine(length = 28.26)',
+        'yLine(length = 28.26, tag = $seg02)'
+      )
+      newContent = newContent.replace(
+        'line(end = [55.52, 21.93])',
+        'line(end = [55.52, 21.93], tag = $seg01)'
+      )
+      newContent = newContent.replace(
+        'xLine(length = -13.76)',
+        'xLine(length = -13.76, tag = $seg03)'
+      )
+      return newContent
+    },
   })
 )
 
@@ -624,66 +718,64 @@ describe('When prompting modify with TTC, prompt:', () => {
           }
 
           if (artifactSearchSnippet) {
-            let moduleId = getModuleIdByFileName(
-              artifactSearchSnippet.fileName,
-              kclManager.execState.filenames
-            )
-            if (artifactSearchSnippet.fileName === 'main.kcl') {
-              moduleId = 0
-            }
-            const moduleContent = inputFiles[artifactSearchSnippet.fileName]
-            if (moduleId === -1) {
-              throw new Error(
-                `Module ID not found for file: ${artifactSearchSnippet.fileName}`
+            artifactSearchSnippet.forEach((snippet) => {
+              let moduleId = getModuleIdByFileName(
+                snippet.fileName,
+                kclManager.execState.filenames
               )
-            }
-            if (!moduleContent) {
-              throw new Error(
-                `Module content not found for file: ${artifactSearchSnippet.fileName}`
-              )
-            }
-            const indexOfInterest = moduleContent.indexOf(
-              artifactSearchSnippet.content
-            )
-
-            const artifacts = [...kclManager.artifactGraph].filter(
-              ([id, artifact]) => {
-                const codeRefs = getCodeRefsByArtifactId(
-                  id,
-                  kclManager.artifactGraph
-                )
-                return (
-                  artifact?.type === artifactSearchSnippet.type &&
-                  codeRefs &&
-                  codeRefs.find((ref) => {
-                    return (
-                      ref.range[0] <= indexOfInterest &&
-                      ref.range[1] >= indexOfInterest &&
-                      ref.range[2] === moduleId
-                    )
-                  })
+              if (snippet.fileName === 'main.kcl') {
+                moduleId = 0
+              }
+              const moduleContent = inputFiles[snippet.fileName]
+              if (moduleId === -1) {
+                throw new Error(
+                  `Module ID not found for file: ${snippet.fileName}`
                 )
               }
-            )
-            const artifact = artifacts?.[0]?.[1]
+              if (!moduleContent) {
+                throw new Error(
+                  `Module content not found for file: ${snippet.fileName}`
+                )
+              }
+              const indexOfInterest = moduleContent.indexOf(snippet.content)
 
-            if (!artifact) {
-              throw new Error('Artifact not found')
-            }
-            const codeRef = (getCodeRefsByArtifactId(
-              artifact.id,
-              kclManager.artifactGraph
-            ) || [])[0]
-            if (!codeRef) {
-              throw new Error('Code reference not found for the artifact')
-            }
+              const artifacts = [...kclManager.artifactGraph].filter(
+                ([id, artifact]) => {
+                  const codeRefs = getCodeRefsByArtifactId(
+                    id,
+                    kclManager.artifactGraph
+                  )
+                  return (
+                    artifact?.type === snippet.type &&
+                    codeRefs &&
+                    codeRefs.find((ref) => {
+                      return (
+                        ref.range[0] <= indexOfInterest &&
+                        ref.range[1] >= indexOfInterest &&
+                        ref.range[2] === moduleId
+                      )
+                    })
+                  )
+                }
+              )
+              const artifact = artifacts?.[0]?.[1]
 
-            selections.graphSelections = [
-              {
+              if (!artifact) {
+                throw new Error('Artifact not found')
+              }
+              const codeRef = (getCodeRefsByArtifactId(
+                artifact.id,
+                kclManager.artifactGraph
+              ) || [])[0]
+              if (!codeRef) {
+                throw new Error('Code reference not found for the artifact')
+              }
+
+              selections.graphSelections.push({
                 artifact,
                 codeRef,
-              },
-            ]
+              })
+            })
           }
           // Test that we can work with the imported content
 
