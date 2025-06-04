@@ -2072,7 +2072,7 @@ notPipeSub = 1 |> identity(!%))";
             // a runtime error instead.
             parse_execute(code11).await.unwrap_err(),
             KclError::new_syntax(KclErrorDetails::new(
-                "There was an unexpected !. Try removing it.".to_owned(),
+                "There was an unexpected `!`. Try removing it.".to_owned(),
                 vec![SourceRange::new(56, 57, ModuleId::default())],
             ))
         );

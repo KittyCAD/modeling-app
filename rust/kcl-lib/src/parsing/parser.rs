@@ -4451,7 +4451,7 @@ z(-[["#,
         assert_err(
             r#"z
 (--#"#,
-            "There was an unexpected -. Try removing it.",
+            "There was an unexpected `-`. Try removing it.",
             [3, 4],
         );
     }
@@ -5233,7 +5233,7 @@ bar = 1
             .cause
             .as_ref()
             .expect("Found an error, but there was no cause. Add a cause.");
-        assert_eq!(cause.message, "There was an unexpected }. Try removing it.",);
+        assert_eq!(cause.message, "There was an unexpected `}`. Try removing it.",);
         assert_eq!(cause.source_range.start(), expected_src_start);
     }
 
