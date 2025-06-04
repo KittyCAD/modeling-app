@@ -49,10 +49,10 @@ impl FileSystem for FileManager {
         let promise = self
             .manager
             .read_file(path.to_string_lossy())
-            .map_err(|e| KclError::Engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
+            .map_err(|e| KclError::new_engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
 
         let value = JsFuture::from(promise).await.map_err(|e| {
-            KclError::Engine(KclErrorDetails::new(
+            KclError::new_engine(KclErrorDetails::new(
                 format!("Failed to wait for promise from engine: {:?}", e),
                 vec![source_range],
             ))
@@ -67,7 +67,7 @@ impl FileSystem for FileManager {
     async fn read_to_string(&self, path: &TypedPath, source_range: SourceRange) -> Result<String, KclError> {
         let bytes = self.read(path, source_range).await?;
         let string = String::from_utf8(bytes).map_err(|e| {
-            KclError::Engine(KclErrorDetails::new(
+            KclError::new_engine(KclErrorDetails::new(
                 format!("Failed to convert bytes to string: {:?}", e),
                 vec![source_range],
             ))
@@ -80,17 +80,17 @@ impl FileSystem for FileManager {
         let promise = self
             .manager
             .exists(path.to_string_lossy())
-            .map_err(|e| KclError::Engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
+            .map_err(|e| KclError::new_engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
 
         let value = JsFuture::from(promise).await.map_err(|e| {
-            KclError::Engine(KclErrorDetails::new(
+            KclError::new_engine(KclErrorDetails::new(
                 format!("Failed to wait for promise from engine: {:?}", e),
                 vec![source_range],
             ))
         })?;
 
         let it_exists = value.as_bool().ok_or_else(|| {
-            KclError::Engine(KclErrorDetails::new(
+            KclError::new_engine(KclErrorDetails::new(
                 "Failed to convert value to bool".to_string(),
                 vec![source_range],
             ))
@@ -107,24 +107,24 @@ impl FileSystem for FileManager {
         let promise = self
             .manager
             .get_all_files(path.to_string_lossy())
-            .map_err(|e| KclError::Engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
+            .map_err(|e| KclError::new_engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
 
         let value = JsFuture::from(promise).await.map_err(|e| {
-            KclError::Engine(KclErrorDetails::new(
+            KclError::new_engine(KclErrorDetails::new(
                 format!("Failed to wait for promise from javascript: {:?}", e),
                 vec![source_range],
             ))
         })?;
 
         let s = value.as_string().ok_or_else(|| {
-            KclError::Engine(KclErrorDetails::new(
+            KclError::new_engine(KclErrorDetails::new(
                 format!("Failed to get string from response from javascript: `{:?}`", value),
                 vec![source_range],
             ))
         })?;
 
         let files: Vec<String> = serde_json::from_str(&s).map_err(|e| {
-            KclError::Engine(KclErrorDetails::new(
+            KclError::new_engine(KclErrorDetails::new(
                 format!("Failed to parse json from javascript: `{}` `{:?}`", s, e),
                 vec![source_range],
             ))

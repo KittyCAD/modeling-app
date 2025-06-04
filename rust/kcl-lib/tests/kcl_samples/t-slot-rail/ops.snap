@@ -43,6 +43,44 @@ description: Operations executed t-slot-rail.kcl
   },
   {
     "type": "StdLibCall",
+    "name": "scale",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "x": {
+        "value": {
+          "type": "Number",
+          "value": 1.5,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      },
+      "z": {
+        "value": {
+          "type": "Number",
+          "value": 1.5,
+          "ty": {
+            "type": "Known",
+            "type": "Count"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
     "name": "extrude",
     "unlabeledArg": {
       "value": {

@@ -8,7 +8,7 @@ layout: manual
 Compute the length of the provided line segment.
 
 ```kcl
-segLen(@tag: TagIdentifier): number
+segLen(@tag: tag): number(Length)
 ```
 
 
@@ -17,11 +17,11 @@ segLen(@tag: TagIdentifier): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`TagIdentifier`](/docs/kcl-lang/types#TagIdentifier) | The line segment being queried by its tag | Yes |
+| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | The line segment being queried by its tag. | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number.
+[`number(Length)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples
@@ -29,9 +29,16 @@ segLen(@tag: TagIdentifier): number
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 60, length = 10, tag = $thing)
+  |> angledLine(
+    angle = 60,
+    length = 10,
+    tag = $thing,
+  )
   |> tangentialArc(angle = -120, radius = 5)
-  |> angledLine(angle = -60, length = segLen(thing))
+  |> angledLine(
+    angle = -60,
+    length = segLen(thing),
+  )
   |> close()
 
 example = extrude(exampleSketch, length = 5)

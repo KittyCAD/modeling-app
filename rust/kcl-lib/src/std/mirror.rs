@@ -101,7 +101,7 @@ async fn inner_mirror_2d(
                 OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids { entity_ids: child_ids }),
         } = response
         else {
-            return Err(KclError::Internal(KclErrorDetails::new(
+            return Err(KclError::new_internal(KclErrorDetails::new(
                 "Expected a successful response from EntityGetAllChildUuids".to_string(),
                 vec![args.source_range],
             )));
@@ -112,7 +112,7 @@ async fn inner_mirror_2d(
             let child_id = child_ids[1];
             sketch.mirror = Some(child_id);
         } else {
-            return Err(KclError::Type(KclErrorDetails::new(
+            return Err(KclError::new_type(KclErrorDetails::new(
                 "Expected child uuids to be >= 2".to_string(),
                 vec![args.source_range],
             )));

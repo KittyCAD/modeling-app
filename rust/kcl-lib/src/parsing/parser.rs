@@ -979,12 +979,18 @@ fn property_separator(i: &mut TokenSlice) -> ModalResult<()> {
 }
 
 /// Match something that separates the labeled arguments of a fn call.
-fn labeled_arg_separator(i: &mut TokenSlice) -> ModalResult<()> {
+/// Returns the source range of the erroneous separator, if any was found.
+fn labeled_arg_separator(i: &mut TokenSlice) -> ModalResult<Option<SourceRange>> {
     alt((
         // Normally you need a comma.
-        comma_sep,
+        comma_sep.map(|_| None),
         // But, if the argument list is ending, no need for a comma.
-        peek(preceded(opt(whitespace), close_paren)).void(),
+        peek(preceded(opt(whitespace), close_paren)).void().map(|_| None),
+        whitespace.map(|mut tokens| {
+            // Safe to unwrap here because `whitespace` is guaranteed to return at least 1 whitespace.
+            let first_token = tokens.pop().unwrap();
+            Some(SourceRange::from(&first_token))
+        }),
     ))
     .parse_next(i)
 }
@@ -2932,7 +2938,7 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
         (identifier, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(ident, suffix)| {
             let mut result = Node::new(PrimitiveType::Boolean, ident.start, ident.end, ident.module_id);
             result.inner =
-                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named(ident));
+                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named { id: ident });
             result
         }),
     ))
@@ -3135,7 +3141,7 @@ fn binding_name(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
 
 /// Either a positional or keyword function call.
 fn fn_call_pos_or_kw(i: &mut TokenSlice) -> ModalResult<Expr> {
-    alt((fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),)).parse_next(i)
+    fn_call_kw.map(Box::new).map(Expr::CallExpressionKw).parse_next(i)
 }
 
 fn labelled_fn_call(i: &mut TokenSlice) -> ModalResult<Expr> {
@@ -3198,7 +3204,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
     #[allow(clippy::large_enum_variant)]
     enum ArgPlace {
         NonCode(Node<NonCodeNode>),
-        LabeledArg(LabeledArg),
+        LabeledArg((LabeledArg, Option<SourceRange>)),
         UnlabeledArg(Expr),
         Keyword(Token),
     }
@@ -3208,7 +3214,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         alt((
             terminated(non_code_node.map(ArgPlace::NonCode), whitespace),
             terminated(any_keyword.map(ArgPlace::Keyword), whitespace),
-            terminated(labeled_argument, labeled_arg_separator).map(ArgPlace::LabeledArg),
+            (labeled_argument, labeled_arg_separator).map(ArgPlace::LabeledArg),
             expression.map(ArgPlace::UnlabeledArg),
         )),
     )
@@ -3220,7 +3226,16 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                 ArgPlace::NonCode(x) => {
                     non_code_nodes.insert(index, vec![x]);
                 }
-                ArgPlace::LabeledArg(x) => {
+                ArgPlace::LabeledArg((x, bad_token_source_range)) => {
+                    if let Some(bad_token_source_range) = bad_token_source_range {
+                        return Err(ErrMode::Cut(
+                            CompilationError::fatal(
+                                bad_token_source_range,
+                                "Missing comma between arguments, try adding a comma in",
+                            )
+                            .into(),
+                        ));
+                    }
                     args.push(x);
                 }
                 ArgPlace::Keyword(kw) => {
@@ -3255,7 +3270,22 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
     )?;
     ignore_whitespace(i);
     opt(comma_sep).parse_next(i)?;
-    let end = close_paren.parse_next(i)?.end;
+    let end = match close_paren.parse_next(i) {
+        Ok(tok) => tok.end,
+        Err(e) => {
+            if let Some(tok) = i.next_token() {
+                return Err(ErrMode::Cut(
+                    CompilationError::fatal(
+                        SourceRange::from(&tok),
+                        format!("There was an unexpected {}. Try removing it.", tok.value),
+                    )
+                    .into(),
+                ));
+            } else {
+                return Err(e);
+            }
+        }
+    };
 
     // Validate there aren't any duplicate labels.
     let mut counted_labels = IndexMap::with_capacity(args.len());
@@ -3376,8 +3406,7 @@ mod tests {
     fn kw_call_as_operand() {
         let tokens = crate::parsing::token::lex("f(x = 1)", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        let op = operand.parse(tokens).unwrap();
-        println!("{op:#?}");
+        operand.parse(tokens).unwrap();
     }
 
     #[test]
@@ -4383,7 +4412,7 @@ secondExtrude = startSketchOn(XY)
     #[test]
     fn test_parse_parens_unicode() {
         let result = crate::parsing::top_level_parse("(ޜ");
-        let KclError::Lexical(details) = result.0.unwrap_err() else {
+        let KclError::Lexical { details } = result.0.unwrap_err() else {
             panic!();
         };
         // TODO: Better errors when program cannot tokenize.
@@ -4417,8 +4446,8 @@ z(-[["#,
         assert_err(
             r#"z
 (--#"#,
-            "Unexpected token: (",
-            [2, 3],
+            "There was an unexpected -. Try removing it.",
+            [3, 4],
         );
     }
 
@@ -5133,6 +5162,27 @@ bar = 1
         assert_eq!(actual.operator, UnaryOperator::Not);
         crate::parsing::top_level_parse(some_program_string).unwrap(); // Updated import path
     }
+    #[test]
+    fn test_sensible_error_when_missing_comma_between_fn_args() {
+        let program_source = "startSketchOn(XY)
+|> arc(
+    endAbsolute = [0, 50]
+    interiorAbsolute = [-50, 0]
+)";
+        let expected_src_start = program_source.find("]").unwrap();
+        let tokens = crate::parsing::token::lex(program_source, ModuleId::default()).unwrap();
+        ParseContext::init();
+        let err = program
+            .parse(tokens.as_slice())
+            .expect_err("Program succeeded, but it should have failed");
+        let cause = err
+            .inner()
+            .cause
+            .as_ref()
+            .expect("Found an error, but there was no cause. Add a cause.");
+        assert_eq!(cause.message, "Missing comma between arguments, try adding a comma in",);
+        assert_eq!(cause.source_range.start() - 1, expected_src_start);
+    }
 
     #[test]
     fn test_sensible_error_when_missing_rhs_of_kw_arg() {
@@ -5153,13 +5203,31 @@ bar = 1
     }
 
     #[test]
+    fn test_sensible_error_when_unexpected_token_in_fn_call() {
+        let program_source = "1
+|> extrude(
+  length=depth,
+})";
+        let expected_src_start = program_source.find("}").expect("Program should have an extraneous }");
+        let tokens = crate::parsing::token::lex(program_source, ModuleId::default()).unwrap();
+        ParseContext::init();
+        let err = program.parse(tokens.as_slice()).unwrap_err();
+        let cause = err
+            .inner()
+            .cause
+            .as_ref()
+            .expect("Found an error, but there was no cause. Add a cause.");
+        assert_eq!(cause.message, "There was an unexpected }. Try removing it.",);
+        assert_eq!(cause.source_range.start(), expected_src_start);
+    }
+
+    #[test]
     fn test_sensible_error_when_using_keyword_as_arg_label() {
         for (i, program) in ["pow(2, fn = 8)"].into_iter().enumerate() {
             let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
             let err = match fn_call_kw.parse(tokens.as_slice()) {
                 Err(e) => e,
-                Ok(ast) => {
-                    eprintln!("{ast:#?}");
+                Ok(_ast) => {
                     panic!("Expected this to error but it didn't");
                 }
             };

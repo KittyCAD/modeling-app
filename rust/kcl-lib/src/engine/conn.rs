@@ -67,6 +67,7 @@ pub struct TcpRead {
 
 /// Occurs when client couldn't read from the WebSocket to the engine.
 // #[derive(Debug)]
+#[allow(clippy::large_enum_variant)]
 pub enum WebSocketReadError {
     /// Could not read a message due to WebSocket errors.
     Read(tokio_tungstenite::tungstenite::Error),
@@ -206,7 +207,7 @@ impl EngineConnection {
     async fn inner_send_to_engine(request: WebSocketRequest, tcp_write: &mut WebSocketTcpWrite) -> Result<()> {
         let msg = serde_json::to_string(&request).map_err(|e| anyhow!("could not serialize json: {e}"))?;
         tcp_write
-            .send(WsMsg::Text(msg))
+            .send(WsMsg::Text(msg.into()))
             .await
             .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
         Ok(())
@@ -216,19 +217,17 @@ impl EngineConnection {
     async fn inner_send_to_engine_binary(request: WebSocketRequest, tcp_write: &mut WebSocketTcpWrite) -> Result<()> {
         let msg = bson::to_vec(&request).map_err(|e| anyhow!("could not serialize bson: {e}"))?;
         tcp_write
-            .send(WsMsg::Binary(msg))
+            .send(WsMsg::Binary(msg.into()))
             .await
             .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
         Ok(())
     }
 
     pub async fn new(ws: reqwest::Upgraded) -> Result<EngineConnection> {
-        let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig {
+        let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default()
             // 4294967296 bytes, which is around 4.2 GB.
-            max_message_size: Some(usize::MAX),
-            max_frame_size: Some(usize::MAX),
-            ..Default::default()
-        };
+            .max_message_size(Some(usize::MAX))
+            .max_frame_size(Some(usize::MAX));
 
         let ws_stream = tokio_tungstenite::WebSocketStream::from_raw_socket(
             ws,
@@ -439,7 +438,7 @@ impl EngineManager for EngineConnection {
                 request_sent: tx,
             })
             .await
-            .map_err(|e| KclError::Engine(KclErrorDetails::new(format!("Failed to send debug: {}", e), vec![])))?;
+            .map_err(|e| KclError::new_engine(KclErrorDetails::new(format!("Failed to send debug: {}", e), vec![])))?;
 
         let _ = rx.await;
         Ok(())
@@ -474,7 +473,7 @@ impl EngineManager for EngineConnection {
             })
             .await
             .map_err(|e| {
-                KclError::Engine(KclErrorDetails::new(
+                KclError::new_engine(KclErrorDetails::new(
                     format!("Failed to send modeling command: {}", e),
                     vec![source_range],
                 ))
@@ -483,13 +482,13 @@ impl EngineManager for EngineConnection {
         // Wait for the request to be sent.
         rx.await
             .map_err(|e| {
-                KclError::Engine(KclErrorDetails::new(
+                KclError::new_engine(KclErrorDetails::new(
                     format!("could not send request to the engine actor: {e}"),
                     vec![source_range],
                 ))
             })?
             .map_err(|e| {
-                KclError::Engine(KclErrorDetails::new(
+                KclError::new_engine(KclErrorDetails::new(
                     format!("could not send request to the engine: {e}"),
                     vec![source_range],
                 ))
@@ -516,12 +515,12 @@ impl EngineManager for EngineConnection {
                 // Check if we have any pending errors.
                 let pe = self.pending_errors.read().await;
                 if !pe.is_empty() {
-                    return Err(KclError::Engine(KclErrorDetails::new(
+                    return Err(KclError::new_engine(KclErrorDetails::new(
                         pe.join(", ").to_string(),
                         vec![source_range],
                     )));
                 } else {
-                    return Err(KclError::Engine(KclErrorDetails::new(
+                    return Err(KclError::new_engine(KclErrorDetails::new(
                         "Modeling command failed: websocket closed early".to_string(),
                         vec![source_range],
                     )));
@@ -543,7 +542,7 @@ impl EngineManager for EngineConnection {
             }
         }
 
-        Err(KclError::Engine(KclErrorDetails::new(
+        Err(KclError::new_engine(KclErrorDetails::new(
             format!("Modeling command timed out `{}`", id),
             vec![source_range],
         )))

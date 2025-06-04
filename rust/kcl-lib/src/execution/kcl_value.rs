@@ -574,7 +574,7 @@ impl KclValue {
     pub fn get_tag_identifier(&self) -> Result<TagIdentifier, KclError> {
         match self {
             KclValue::TagIdentifier(t) => Ok(*t.clone()),
-            _ => Err(KclError::Semantic(KclErrorDetails::new(
+            _ => Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Not a tag identifier: {:?}", self),
                 self.clone().into(),
             ))),
@@ -585,7 +585,7 @@ impl KclValue {
     pub fn get_tag_declarator(&self) -> Result<TagNode, KclError> {
         match self {
             KclValue::TagDeclarator(t) => Ok((**t).clone()),
-            _ => Err(KclError::Semantic(KclErrorDetails::new(
+            _ => Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Not a tag declarator: {:?}", self),
                 self.clone().into(),
             ))),
@@ -595,7 +595,7 @@ impl KclValue {
     /// If this KCL value is a bool, retrieve it.
     pub fn get_bool(&self) -> Result<bool, KclError> {
         self.as_bool().ok_or_else(|| {
-            KclError::Type(KclErrorDetails::new(
+            KclError::new_type(KclErrorDetails::new(
                 format!("Expected bool, found {}", self.human_friendly_type()),
                 self.into(),
             ))

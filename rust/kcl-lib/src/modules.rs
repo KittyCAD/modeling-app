@@ -58,7 +58,7 @@ impl ModuleLoader {
     }
 
     pub(crate) fn import_cycle_error(&self, path: &ModulePath, source_range: SourceRange) -> KclError {
-        KclError::ImportCycle(KclErrorDetails::new(
+        KclError::new_import_cycle(KclErrorDetails::new(
             format!(
                 "circular import of modules is not allowed: {} -> {}",
                 self.import_stack
@@ -163,7 +163,7 @@ impl ModulePath {
             ModulePath::Std { value: name } => Ok(ModuleSource {
                 source: read_std(name)
                     .ok_or_else(|| {
-                        KclError::Semantic(KclErrorDetails::new(
+                        KclError::new_semantic(KclErrorDetails::new(
                             format!("Cannot find standard library module to import: std::{name}."),
                             vec![source_range],
                         ))
@@ -202,7 +202,7 @@ impl ModulePath {
                     ModulePath::Std { .. } => {
                         let message = format!("Cannot import a non-std KCL file from std: {path}.");
                         debug_assert!(false, "{}", &message);
-                        return Err(KclError::Internal(KclErrorDetails::new(message, vec![])));
+                        return Err(KclError::new_internal(KclErrorDetails::new(message, vec![])));
                     }
                 };
 
@@ -217,7 +217,7 @@ impl ModulePath {
         if path.len() != 2 || path[0] != "std" {
             let message = format!("Invalid std import path: {path:?}.");
             debug_assert!(false, "{}", &message);
-            return Err(KclError::Internal(KclErrorDetails::new(message, vec![])));
+            return Err(KclError::new_internal(KclErrorDetails::new(message, vec![])));
         }
 
         Ok(ModulePath::Std { value: path[1].clone() })
