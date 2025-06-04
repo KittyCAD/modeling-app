@@ -2362,7 +2362,7 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
 
     await test.step('add new profile', async () => {
       await toolbar.rectangleBtn.click()
-      await page.waitForTimeout(200)
+      await page.waitForTimeout(400)
       await rectStart()
       await editor.expectEditor.toContain(
         `profile005 = startProfile(sketch001, at = [15.68, -3.84])`
