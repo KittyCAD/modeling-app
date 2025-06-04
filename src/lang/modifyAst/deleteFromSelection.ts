@@ -112,10 +112,7 @@ export async function deleteFromSelection(
       selection.artifact?.type === 'startSketchOnPlane' ||
       selection.artifact?.type === 'startSketchOnFace'
     ) {
-      const sketchVarDec = getNodePathFromSourceRange(
-        astClone,
-        selection.artifact.codeRef.range
-      )
+      const sketchVarDec = selection.artifact.codeRef.pathToNode
       const sketchBodyIndex = Number(sketchVarDec[1][0])
       astClone.body.splice(sketchBodyIndex, 1)
       return astClone

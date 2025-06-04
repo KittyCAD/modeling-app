@@ -30,7 +30,6 @@ import {
   createTagDeclarator,
 } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   addTagForSketchOnFace,
   sketchLineHelperMapKw,
@@ -301,18 +300,9 @@ function modifyAstWithTagsForEdgeSelection(
       artifactGraph
     )
     if (err(sweepArtifact)) return sweepArtifact
-    const pathToSweepNode = getNodePathFromSourceRange(
-      astClone,
-      sweepArtifact.codeRef.range
-    )
-    if (err(pathToSweepNode)) return pathToSweepNode
 
     // Get path to segment
-    const pathToSegmentNode = getNodePathFromSourceRange(
-      astClone,
-      selection.codeRef.range
-    )
-    if (err(pathToSegmentNode)) return pathToSegmentNode
+    const pathToSegmentNode = selection.codeRef.pathToNode
 
     const segmentNode = getNodeFromPath<CallExpressionKw>(
       astClone,
@@ -322,6 +312,11 @@ function modifyAstWithTagsForEdgeSelection(
     if (err(segmentNode)) return segmentNode
 
     // Check whether selection is a valid segment
+    if (segmentNode.node.type !== 'CallExpressionKw') {
+      return new Error('Selection segment node not found or wrong type', {
+        cause: segmentNode,
+      })
+    }
     if (!(segmentNode.node.callee.name.name in sketchLineHelperMapKw)) {
       return new Error('Selection is not a sketch segment')
     }
@@ -431,10 +426,7 @@ function modifyAstWithTagForWallFace(
   )
   if (err(segment)) return segment
 
-  const pathToSegmentNode = getNodePathFromSourceRange(
-    astClone,
-    segment.codeRef.range
-  )
+  const pathToSegmentNode = segment.codeRef.pathToNode
 
   const result = modifyAstWithTagForSketchSegment(astClone, pathToSegmentNode)
   if (err(result)) return result
@@ -482,10 +474,7 @@ function modifyAstWithTagForCapFace(
     return new Error('Only extrusion and revolve caps are currently supported')
   }
 
-  const pathToSweepNode = getNodePathFromSourceRange(
-    astClone,
-    sweepArtifact.codeRef.range
-  )
+  const pathToSweepNode = sweepArtifact.codeRef.pathToNode
 
   const callExp = getNodeFromPath<CallExpressionKw>(astClone, pathToSweepNode, [
     'CallExpressionKw',
