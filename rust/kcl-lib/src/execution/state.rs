@@ -8,6 +8,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     exec::DefaultPlanes,
@@ -20,15 +22,9 @@ use crate::{
         EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, UnitAngle, UnitLen,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
-    parsing::ast::types::Annotation,
+    parsing::ast::types::{Annotation, NodeRef},
     source_range::SourceRange,
-    CompilationError, KclErrorWithOutputs,
-};
-#[cfg(feature = "artifact-graph")]
-use crate::{
-    execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId},
-    parsing::ast::types::NodeRef,
-    EngineManager,
+    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs,
 };
 
 /// State for executing a program.
@@ -36,7 +32,6 @@ use crate::{
 pub struct ExecState {
     pub(super) global: GlobalState,
     pub(super) mod_local: ModuleState,
-    pub(super) context: Option<super::ExecutorContext>,
 }
 
 pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
@@ -53,6 +48,7 @@ pub(super) struct GlobalState {
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
     pub errors: Vec<CompilationError>,
+    #[allow(dead_code)]
     pub artifacts: ArtifactState,
 }
 
@@ -107,7 +103,6 @@ impl ExecState {
         ExecState {
             global: GlobalState::new(&exec_context.settings),
             mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default()),
-            context: Some(exec_context.clone()),
         }
     }
 
@@ -117,7 +112,6 @@ impl ExecState {
         *self = ExecState {
             global,
             mod_local: ModuleState::new(self.mod_local.path.clone(), ProgramMemory::new(), Default::default()),
-            context: Some(exec_context.clone()),
         };
     }
 
@@ -139,15 +133,12 @@ impl ExecState {
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
-    pub async fn to_exec_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
+    pub async fn to_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
-            variables: self
-                .stack()
-                .find_all_in_env(main_ref)
-                .map(|(k, v)| (k.clone(), v.clone()))
-                .collect(),
+            variables: self.mod_local.variables(main_ref),
+            filenames: self.global.filenames(),
             #[cfg(feature = "artifact-graph")]
             operations: self.global.artifacts.operations,
             #[cfg(feature = "artifact-graph")]
@@ -155,29 +146,13 @@ impl ExecState {
             #[cfg(feature = "artifact-graph")]
             artifact_graph: self.global.artifacts.graph,
             errors: self.global.errors,
-            filenames: self
-                .global
-                .path_to_source_id
-                .iter()
-                .map(|(k, v)| ((*v), k.clone()))
-                .collect(),
-            default_planes: if let Some(ctx) = &self.context {
-                ctx.engine.get_default_planes().read().await.clone()
-            } else {
-                None
-            },
+            default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
     }
 
-    pub async fn to_mock_exec_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
-        // Fields are opt-in so that we don't accidentally leak private internal
-        // state when we add more to ExecState.
+    pub async fn to_mock_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
         ExecOutcome {
-            variables: self
-                .stack()
-                .find_all_in_env(main_ref)
-                .map(|(k, v)| (k.clone(), v.clone()))
-                .collect(),
+            variables: self.mod_local.variables(main_ref),
             #[cfg(feature = "artifact-graph")]
             operations: Default::default(),
             #[cfg(feature = "artifact-graph")]
@@ -186,11 +161,7 @@ impl ExecState {
             artifact_graph: Default::default(),
             errors: self.global.errors,
             filenames: Default::default(),
-            default_planes: if let Some(ctx) = &self.context {
-                ctx.engine.get_default_planes().read().await.clone()
-            } else {
-                None
-            },
+            default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
     }
 
@@ -258,10 +229,6 @@ impl ExecState {
 
     pub(super) fn add_id_to_source(&mut self, id: ModuleId, source: ModuleSource) {
         self.global.id_to_source.insert(id, source.clone());
-    }
-
-    pub(super) fn get_source(&self, id: ModuleId) -> Option<&ModuleSource> {
-        self.global.id_to_source.get(&id)
     }
 
     pub(super) fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
@@ -342,7 +309,6 @@ impl ExecState {
         &mut self,
         engine: &Arc<Box<dyn EngineManager>>,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
-        cached_body_items: usize,
     ) -> Result<(), KclError> {
         let new_commands = engine.take_artifact_commands().await;
         let new_responses = engine.take_responses().await;
@@ -353,7 +319,6 @@ impl ExecState {
             &new_commands,
             &new_responses,
             program,
-            cached_body_items,
             &mut self.global.artifacts.artifacts,
             initial_graph,
         );
@@ -371,9 +336,8 @@ impl ExecState {
     #[cfg(not(feature = "artifact-graph"))]
     pub(crate) async fn build_artifact_graph(
         &mut self,
-        _engine: Arc<Box<dyn EngineManager>>,
+        _engine: &Arc<Box<dyn EngineManager>>,
         _program: NodeRef<'_, crate::parsing::ast::types::Program>,
-        _cached_body_items: usize,
     ) -> Result<(), KclError> {
         Ok(())
     }
@@ -407,6 +371,14 @@ impl GlobalState {
             .insert(ModulePath::Local { value: root_path }, root_id);
         global
     }
+
+    pub(super) fn filenames(&self) -> IndexMap<ModuleId, ModulePath> {
+        self.path_to_source_id.iter().map(|(k, v)| ((*v), k.clone())).collect()
+    }
+
+    pub(super) fn get_source(&self, id: ModuleId) -> Option<&ModuleSource> {
+        self.id_to_source.get(&id)
+    }
 }
 
 impl ModuleState {
@@ -425,6 +397,13 @@ impl ModuleState {
                 kcl_version: "0.1".to_owned(),
             },
         }
+    }
+
+    pub(super) fn variables(&self, main_ref: EnvironmentRef) -> IndexMap<String, KclValue> {
+        self.stack
+            .find_all_in_env(main_ref)
+            .map(|(k, v)| (k.clone(), v.clone()))
+            .collect()
     }
 }
 

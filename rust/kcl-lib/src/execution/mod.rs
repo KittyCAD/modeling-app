@@ -5,9 +5,8 @@ use std::sync::Arc;
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
 pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, CodeRef, StartSketchOnFace, StartSketchOnPlane};
-use cache::OldAstState;
+use cache::GlobalState;
 pub use cache::{bust_cache, clear_mem_cache};
-#[cfg(feature = "artifact-graph")]
 pub use cad_op::{Group, Operation};
 pub use geometry::*;
 pub use id_generator::IdGenerator;
@@ -567,7 +566,7 @@ impl ExecutorContext {
         // part of the scene).
         exec_state.mut_stack().push_new_env_for_scope();
 
-        let result = self.inner_run(&program, 0, &mut exec_state, true).await?;
+        let result = self.inner_run(&program, &mut exec_state, true).await?;
 
         // Restore any temporary variables, then save any newly created variables back to
         // memory in case another run wants to use them. Note this is just saved to the preserved
@@ -575,7 +574,7 @@ impl ExecutorContext {
 
         let mut mem = exec_state.stack().clone();
         let module_infos = exec_state.global.module_infos.clone();
-        let outcome = exec_state.to_mock_exec_outcome(result.0).await;
+        let outcome = exec_state.to_mock_exec_outcome(result.0, self).await;
 
         mem.squash_env(result.0);
         cache::write_old_memory((mem, module_infos)).await;
@@ -586,169 +585,176 @@ impl ExecutorContext {
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
 
-        let (program, mut exec_state, preserve_mem, cached_body_items, imports_info) = if let Some(OldAstState {
-            ast: old_ast,
-            exec_state: mut old_state,
-            settings: old_settings,
-            result_env,
-        }) =
-            cache::read_old_ast().await
-        {
-            let old = CacheInformation {
-                ast: &old_ast,
-                settings: &old_settings,
-            };
-            let new = CacheInformation {
-                ast: &program.ast,
-                settings: &self.settings,
-            };
-
-            // Get the program that actually changed from the old and new information.
-            let (clear_scene, program, body_items, import_check_info) = match cache::get_changed_program(old, new).await
-            {
-                CacheResult::ReExecute {
-                    clear_scene,
-                    reapply_settings,
-                    program: changed_program,
-                    cached_body_items,
-                } => {
-                    if reapply_settings
-                        && self
-                            .engine
-                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
-                            .await
-                            .is_err()
-                    {
-                        (true, program, cached_body_items, None)
-                    } else {
-                        (
-                            clear_scene,
-                            crate::Program {
-                                ast: changed_program,
-                                original_file_contents: program.original_file_contents,
-                            },
-                            cached_body_items,
-                            None,
-                        )
-                    }
-                }
-                CacheResult::CheckImportsOnly {
-                    reapply_settings,
-                    ast: changed_program,
-                } => {
-                    if reapply_settings
-                        && self
-                            .engine
-                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
-                            .await
-                            .is_err()
-                    {
-                        (true, program, old_ast.body.len(), None)
-                    } else {
-                        // We need to check our imports to see if they changed.
-                        let mut new_exec_state = ExecState::new(self);
-                        let (new_universe, new_universe_map) = self.get_universe(&program, &mut new_exec_state).await?;
-                        let mut clear_scene = false;
-
-                        let mut keys = new_universe.keys().clone().collect::<Vec<_>>();
-                        keys.sort();
-                        for key in keys {
-                            let (_, id, _, _) = &new_universe[key];
-                            if let (Some(source0), Some(source1)) =
-                                (old_state.get_source(*id), new_exec_state.get_source(*id))
-                            {
-                                if source0.source != source1.source {
-                                    clear_scene = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if !clear_scene {
-                            // Return early we don't need to clear the scene.
-                            let outcome = old_state.to_exec_outcome(result_env).await;
-                            return Ok(outcome);
-                        }
-
-                        (
-                            clear_scene,
-                            crate::Program {
-                                ast: changed_program,
-                                original_file_contents: program.original_file_contents,
-                            },
-                            old_ast.body.len(),
-                            // We only care about this if we are clearing the scene.
-                            if clear_scene {
-                                Some((new_universe, new_universe_map, new_exec_state))
-                            } else {
-                                None
-                            },
-                        )
-                    }
-                }
-                CacheResult::NoAction(true) => {
-                    if self
-                        .engine
-                        .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
-                        .await
-                        .is_ok()
-                    {
-                        // We need to update the old ast state with the new settings!!
-                        cache::write_old_ast(OldAstState {
-                            ast: old_ast,
-                            exec_state: old_state.clone(),
-                            settings: self.settings.clone(),
-                            result_env,
-                        })
-                        .await;
-
-                        let outcome = old_state.to_exec_outcome(result_env).await;
-                        return Ok(outcome);
-                    }
-                    (true, program, old_ast.body.len(), None)
-                }
-                CacheResult::NoAction(false) => {
-                    let outcome = old_state.to_exec_outcome(result_env).await;
-                    return Ok(outcome);
-                }
-            };
-
-            let (exec_state, preserve_mem, universe_info) =
-                if let Some((new_universe, new_universe_map, mut new_exec_state)) = import_check_info {
-                    // Clear the scene if the imports changed.
-                    self.send_clear_scene(&mut new_exec_state, Default::default())
-                        .await
-                        .map_err(KclErrorWithOutputs::no_outputs)?;
-
-                    (new_exec_state, false, Some((new_universe, new_universe_map)))
-                } else if clear_scene {
-                    // Pop the execution state, since we are starting fresh.
-                    let mut exec_state = old_state;
-                    exec_state.reset(self);
-
-                    self.send_clear_scene(&mut exec_state, Default::default())
-                        .await
-                        .map_err(KclErrorWithOutputs::no_outputs)?;
-
-                    (exec_state, false, None)
-                } else {
-                    old_state.mut_stack().restore_env(result_env);
-
-                    (old_state, true, None)
+        let (program, exec_state, result) = match cache::read_old_ast().await {
+            Some(mut cached_state) => {
+                let old = CacheInformation {
+                    ast: &cached_state.main.ast,
+                    settings: &cached_state.settings,
+                };
+                let new = CacheInformation {
+                    ast: &program.ast,
+                    settings: &self.settings,
                 };
 
-            (program, exec_state, preserve_mem, body_items, universe_info)
-        } else {
-            let mut exec_state = ExecState::new(self);
-            self.send_clear_scene(&mut exec_state, Default::default())
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?;
-            (program, exec_state, false, 0, None)
-        };
+                // Get the program that actually changed from the old and new information.
+                let (clear_scene, program, import_check_info) = match cache::get_changed_program(old, new).await {
+                    CacheResult::ReExecute {
+                        clear_scene,
+                        reapply_settings,
+                        program: changed_program,
+                    } => {
+                        if reapply_settings
+                            && self
+                                .engine
+                                .reapply_settings(
+                                    &self.settings,
+                                    Default::default(),
+                                    &mut cached_state.main.exec_state.id_generator,
+                                )
+                                .await
+                                .is_err()
+                        {
+                            (true, program, None)
+                        } else {
+                            (
+                                clear_scene,
+                                crate::Program {
+                                    ast: changed_program,
+                                    original_file_contents: program.original_file_contents,
+                                },
+                                None,
+                            )
+                        }
+                    }
+                    CacheResult::CheckImportsOnly {
+                        reapply_settings,
+                        ast: changed_program,
+                    } => {
+                        if reapply_settings
+                            && self
+                                .engine
+                                .reapply_settings(
+                                    &self.settings,
+                                    Default::default(),
+                                    &mut cached_state.main.exec_state.id_generator,
+                                )
+                                .await
+                                .is_err()
+                        {
+                            (true, program, None)
+                        } else {
+                            // We need to check our imports to see if they changed.
+                            let mut new_exec_state = ExecState::new(self);
+                            let (new_universe, new_universe_map) =
+                                self.get_universe(&program, &mut new_exec_state).await?;
 
-        let result = self
-            .run_concurrent(&program, cached_body_items, &mut exec_state, imports_info, preserve_mem)
-            .await;
+                            let clear_scene = new_universe.keys().any(|key| {
+                                let id = new_universe[key].1;
+                                match (
+                                    cached_state.exec_state.get_source(id),
+                                    new_exec_state.global.get_source(id),
+                                ) {
+                                    (Some(s0), Some(s1)) => s0.source != s1.source,
+                                    _ => false,
+                                }
+                            });
+
+                            if !clear_scene {
+                                // Return early we don't need to clear the scene.
+                                return Ok(cached_state.into_exec_outcome(self).await);
+                            }
+
+                            (
+                                true,
+                                crate::Program {
+                                    ast: changed_program,
+                                    original_file_contents: program.original_file_contents,
+                                },
+                                Some((new_universe, new_universe_map, new_exec_state)),
+                            )
+                        }
+                    }
+                    CacheResult::NoAction(true) => {
+                        if self
+                            .engine
+                            .reapply_settings(
+                                &self.settings,
+                                Default::default(),
+                                &mut cached_state.main.exec_state.id_generator,
+                            )
+                            .await
+                            .is_ok()
+                        {
+                            // We need to update the old ast state with the new settings!!
+                            cache::write_old_ast(GlobalState::with_settings(
+                                cached_state.clone(),
+                                self.settings.clone(),
+                            ))
+                            .await;
+
+                            return Ok(cached_state.into_exec_outcome(self).await);
+                        }
+                        (true, program, None)
+                    }
+                    CacheResult::NoAction(false) => {
+                        return Ok(cached_state.into_exec_outcome(self).await);
+                    }
+                };
+
+                let (exec_state, result) = match import_check_info {
+                    Some((new_universe, new_universe_map, mut new_exec_state)) => {
+                        // Clear the scene if the imports changed.
+                        self.send_clear_scene(&mut new_exec_state, Default::default())
+                            .await
+                            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+                        let result = self
+                            .run_concurrent(
+                                &program,
+                                &mut new_exec_state,
+                                Some((new_universe, new_universe_map)),
+                                false,
+                            )
+                            .await;
+
+                        (new_exec_state, result)
+                    }
+                    None if clear_scene => {
+                        // Pop the execution state, since we are starting fresh.
+                        let mut exec_state = cached_state.reconstitute_exec_state();
+                        exec_state.reset(self);
+
+                        self.send_clear_scene(&mut exec_state, Default::default())
+                            .await
+                            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+                        let result = self.run_concurrent(&program, &mut exec_state, None, false).await;
+
+                        (exec_state, result)
+                    }
+                    None => {
+                        let mut exec_state = cached_state.reconstitute_exec_state();
+                        exec_state.mut_stack().restore_env(cached_state.main.result_env);
+
+                        let result = self.run_concurrent(&program, &mut exec_state, None, true).await;
+
+                        (exec_state, result)
+                    }
+                };
+
+                (program, exec_state, result)
+            }
+            None => {
+                let mut exec_state = ExecState::new(self);
+                self.send_clear_scene(&mut exec_state, Default::default())
+                    .await
+                    .map_err(KclErrorWithOutputs::no_outputs)?;
+
+                let result = self.run_concurrent(&program, &mut exec_state, None, false).await;
+
+                (program, exec_state, result)
+            }
+        };
 
         if result.is_err() {
             cache::bust_cache().await;
@@ -758,15 +764,15 @@ impl ExecutorContext {
         let result = result?;
 
         // Save this as the last successful execution to the cache.
-        cache::write_old_ast(OldAstState {
-            ast: program.ast,
-            exec_state: exec_state.clone(),
-            settings: self.settings.clone(),
-            result_env: result.0,
-        })
+        cache::write_old_ast(GlobalState::new(
+            exec_state.clone(),
+            self.settings.clone(),
+            program.ast,
+            result.0,
+        ))
         .await;
 
-        let outcome = exec_state.to_exec_outcome(result.0).await;
+        let outcome = exec_state.to_exec_outcome(result.0, self).await;
         Ok(outcome)
     }
 
@@ -781,11 +787,11 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        self.run_concurrent(program, 0, exec_state, None, false).await
+        self.run_concurrent(program, exec_state, None, false).await
     }
 
     /// Perform the execution of a program using a concurrent
-    /// execution model. This has the same signature as [Self::run].
+    /// execution model.
     ///
     /// You can optionally pass in some initialization memory for partial
     /// execution.
@@ -794,13 +800,12 @@ impl ExecutorContext {
     pub async fn run_concurrent(
         &self,
         program: &crate::Program,
-        cached_body_items: usize,
         exec_state: &mut ExecState,
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Reuse our cached universe if we have one.
-        #[allow(unused_variables)]
+
         let (universe, universe_map) = if let Some((universe, universe_map)) = universe_info {
             (universe, universe_map)
         } else {
@@ -975,8 +980,7 @@ impl ExecutorContext {
             }
         }
 
-        self.inner_run(program, cached_body_items, exec_state, preserve_mem)
-            .await
+        self.inner_run(program, exec_state, preserve_mem).await
     }
 
     /// Get the universe & universe map of the program.
@@ -1010,7 +1014,6 @@ impl ExecutorContext {
     async fn inner_run(
         &self,
         program: &crate::Program,
-        cached_body_items: usize,
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
@@ -1024,7 +1027,7 @@ impl ExecutorContext {
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
         let result = self
-            .execute_and_build_graph(&program.ast, cached_body_items, exec_state, preserve_mem)
+            .execute_and_build_graph(&program.ast, exec_state, preserve_mem)
             .await;
 
         crate::log::log(format!(
@@ -1050,7 +1053,6 @@ impl ExecutorContext {
     async fn execute_and_build_graph(
         &self,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
-        cached_body_items: usize,
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<EnvironmentRef, KclError> {
@@ -1077,10 +1079,7 @@ impl ExecutorContext {
         // and should be dropped.
         self.engine.clear_queues().await;
 
-        match exec_state
-            .build_artifact_graph(&self.engine, program, cached_body_items)
-            .await
-        {
+        match exec_state.build_artifact_graph(&self.engine, program).await {
             Ok(_) => exec_result.map(|(_, env_ref, _)| env_ref),
             Err(err) => exec_result.and(Err(err)),
         }
@@ -2084,7 +2083,7 @@ w = f() + f()
         }
 
         // Get the id_generator from the first execution.
-        let id_generator = cache::read_old_ast().await.unwrap().exec_state.mod_local.id_generator;
+        let id_generator = cache::read_old_ast().await.unwrap().main.exec_state.id_generator;
 
         let code = r#"sketch001 = startSketchOn(XZ)
 |> startProfile(at = [62.74, 206.13])
@@ -2105,7 +2104,7 @@ w = f() + f()
         // Execute the program.
         ctx.run_with_caching(program).await.unwrap();
 
-        let new_id_generator = cache::read_old_ast().await.unwrap().exec_state.mod_local.id_generator;
+        let new_id_generator = cache::read_old_ast().await.unwrap().main.exec_state.id_generator;
 
         assert_eq!(id_generator, new_id_generator);
     }
