@@ -113,9 +113,11 @@ export async function deleteFromSelection(
       selection.artifact?.type === 'startSketchOnFace'
     ) {
       const sketchVarDec = selection.artifact.codeRef.pathToNode
-      const sketchBodyIndex = Number(sketchVarDec[1][0])
-      astClone.body.splice(sketchBodyIndex, 1)
-      return astClone
+      if (sketchVarDec.length >= 2) {
+        const sketchBodyIndex = Number(sketchVarDec[1][0])
+        astClone.body.splice(sketchBodyIndex, 1)
+        return astClone
+      }
     }
   }
 
