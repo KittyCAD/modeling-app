@@ -1,11 +1,11 @@
 ---
 title: "patternCircular2d"
 subtitle: "Function in std::sketch"
-excerpt: ""
+excerpt: "Repeat a 2-dimensional sketch some number of times along a partial or complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orientation of the solid with respect to the center of the circle is maintained."
 layout: manual
 ---
 
-
+Repeat a 2-dimensional sketch some number of times along a partial or complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orientation of the solid with respect to the center of the circle is maintained.
 
 ```kcl
 patternCircular2d(
@@ -18,9 +18,7 @@ patternCircular2d(
 ): [Sketch; 1+]
 ```
 
-Repeat a 2-dimensional sketch some number of times along a partial or
-complete circle some specified number of times. Each object mayadditionally be rotated along the circle, ensuring orientation of the
-solid with respect to the center of the circle is maintained.
+
 
 ### Arguments
 
