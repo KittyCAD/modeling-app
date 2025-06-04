@@ -24,12 +24,20 @@ expression: actual
               "computed": false,
               "end": 19,
               "object": {
+                "abs_path": false,
                 "commentStart": 11,
                 "end": 14,
-                "name": "obj",
+                "name": {
+                  "commentStart": 11,
+                  "end": 14,
+                  "name": "obj",
+                  "start": 11,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 11,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "property": {
                 "commentStart": 15,
