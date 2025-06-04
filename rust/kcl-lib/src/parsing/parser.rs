@@ -2480,32 +2480,13 @@ impl TryFrom<Token> for Node<TagDeclarator> {
     }
 }
 
-impl Node<TagDeclarator> {
-    fn into_valid_binding_name(self) -> Result<Self, CompilationError> {
-        // Make sure they are not assigning a variable to a stdlib function.
-        if crate::std::name_in_stdlib(&self.name) {
-            return Err(CompilationError::fatal(
-                SourceRange::from(&self),
-                format!("Cannot assign a tag to a reserved keyword: {}", self.name),
-            ));
-        }
-        Ok(self)
-    }
-}
-
 /// Parse a Kcl tag that starts with a `$`.
 fn tag(i: &mut TokenSlice) -> ModalResult<Node<TagDeclarator>> {
     dollar.parse_next(i)?;
-    let tag_declarator = any
-        .try_map(Node::<TagDeclarator>::try_from)
+    any.try_map(Node::<TagDeclarator>::try_from)
         .context(expected("a tag, e.g. '$seg01' or '$line01'"))
         .parse_next(i)
-        .map_err(|e: ErrMode<ContextError>| e.cut())?;
-    // Now that we've parsed a tag declarator, verify that it's not a stdlib
-    // name.  If it is, stop backtracking.
-    tag_declarator
-        .into_valid_binding_name()
-        .map_err(|e| ErrMode::Cut(ContextError::from(e)))
+        .map_err(|e: ErrMode<ContextError>| e.cut())
 }
 
 /// Helper function. Matches any number of whitespace tokens and ignores them.
@@ -4896,19 +4877,6 @@ let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
             let tokens = crate::parsing::token::lex(input, module_id).unwrap();
             super::program.parse(tokens.as_slice()).unwrap();
         }
-    }
-
-    #[test]
-    fn test_parse_tag_named_std_lib() {
-        let some_program_string = r#"startSketchOn(XY)
-    |> startProfile(at = [0, 0])
-    |> line(%, end = [5, 5], tag = $xLine)
-"#;
-        assert_err(
-            some_program_string,
-            "Cannot assign a tag to a reserved keyword: xLine",
-            [86, 92],
-        );
     }
 
     #[test]

@@ -1901,7 +1901,6 @@ d = b + c
                 project_directory: Some(crate::TypedPath(tmpdir.path().into())),
                 ..Default::default()
             },
-            stdlib: Arc::new(crate::std::StdLib::new()),
             context_type: ContextType::Mock,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
