@@ -1,5 +1,5 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
 
 async function navigateAndClickOpenInDesktopApp(
   page: Page,
@@ -28,7 +28,7 @@ test.describe('Share link tests', () => {
       }
       const codeLength = 1000
       await navigateAndClickOpenInDesktopApp(page, codeLength)
-      expect(getToastError(page)).not.toBeVisible()
+      await expect(getToastError(page)).not.toBeVisible()
     }
   )
 
@@ -41,11 +41,11 @@ test.describe('Share link tests', () => {
       }
       let codeLength = 1000
       await navigateAndClickOpenInDesktopApp(page, codeLength)
-      expect(getToastError(page)).not.toBeVisible()
+      await expect(getToastError(page)).not.toBeVisible()
 
       codeLength = 2000
       await navigateAndClickOpenInDesktopApp(page, codeLength)
-      expect(getToastError(page)).toBeVisible()
+      await expect(getToastError(page)).toBeVisible()
     }
   )
 })
