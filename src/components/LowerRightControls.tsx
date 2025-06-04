@@ -20,6 +20,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { isDesktop } from '@src/lib/isDesktop'
 import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { APP_DOWNLOAD_PATH } from '@src/lib/constants'
+import { ExternalMouseIndicator} from '@src/components/ExternalMouseIndicator'
 
 export function LowerRightControls({
   children,
@@ -117,6 +118,9 @@ export function LowerRightControls({
           </Tooltip>
         </Link>
         <NetworkMachineIndicator className={linkOverrideClassName} />
+        {!location.pathname.startsWith(PATHS.HOME) && (
+          <ExternalMouseIndicator/>
+        )}
         {!location.pathname.startsWith(PATHS.HOME) && (
           <NetworkHealthIndicator />
         )}

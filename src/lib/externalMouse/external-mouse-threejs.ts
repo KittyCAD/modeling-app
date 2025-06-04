@@ -2,7 +2,7 @@ import type { Vector3 } from 'three'
 import { PerspectiveCamera, OrthographicCamera } from 'three'
 import { sceneInfra, engineCommandManager } from '@src/lib/singletons'
 import { uuidv4 } from '@src/lib/utils'
-import { EXTERNAL_MOUSE_ERROR_PREFIX } from "@src/lib/constants"
+import { EXTERNAL_MOUSE_ERROR_PREFIX } from '@src/lib/constants'
 import * as THREE from 'three'
 declare global {
   var _3Dconnexion: any
@@ -228,7 +228,9 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     this.camera = configuration.camera
 
     if (!_3Dconnexion) {
-      console.error(`${EXTERNAL_MOUSE_ERROR_PREFIX} Unable to find _3Dconnexion library`)
+      console.error(
+        `${EXTERNAL_MOUSE_ERROR_PREFIX} Unable to find _3Dconnexion library`
+      )
     }
   }
 
@@ -414,12 +416,17 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     )
 
     if (!canvas) {
-      console.error(`${EXTERNAL_MOUSE_ERROR_PREFIX} no canvas found, failed onConnect`, canvas)
+      console.error(
+        `${EXTERNAL_MOUSE_ERROR_PREFIX} no canvas found, failed onConnect`,
+        canvas
+      )
       return
     }
 
     if (!this.spaceMouse) {
-      console.error(`${EXTERNAL_MOUSE_ERROR_PREFIX} spaceMouse is not defined, failed onConnect`)
+      console.error(
+        `${EXTERNAL_MOUSE_ERROR_PREFIX} spaceMouse is not defined, failed onConnect`
+      )
       return
     }
 
@@ -573,7 +580,9 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
 
   render(time: number): void {
     if (!this.spaceMouse) {
-      console.error(`${EXTERNAL_MOUSE_ERROR_PREFIX} spaceMouse is not defined, failed render`)
+      console.error(
+        `${EXTERNAL_MOUSE_ERROR_PREFIX} spaceMouse is not defined, failed render`
+      )
       return
     }
 

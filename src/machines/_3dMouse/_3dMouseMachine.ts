@@ -1,45 +1,13 @@
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { OrthographicCamera, PerspectiveCamera } from 'three'
 import { _3DMouseThreeJS } from '@src/lib/externalMouse/external-mouse-threejs'
-import { EXTERNAL_MOUSE_ERROR_PREFIX } from "@src/lib/constants"
-
-const donePrefix = 'xstate.done.actor.'
-const errorPrefix = 'xstate.error.actor.'
-
-type _3DMouseContext = {
-  _3dMouse: _3DMouseThreeJS | null
-  /** Use this object for internal retries on behalf of the user */
-  lastConfigurationForConnection: {
-    name: string
-    debug: boolean
-    canvasId: string
-    camera: PerspectiveCamera | OrthographicCamera | null
-  } | null
-  retries: number
-  maxRetries: number
-}
-
-enum _3DMouseMachineStates {
-  waitingToConnect = 'waiting to connect',
-  connecting = 'connecting',
-  connected = 'connected',
-  failedToConnect = 'failed to connect',
-  /** Automatic reconnection, this will internally transistion.
-   * I do not recommend making an event to transition here from a .send() call
-   */
-  retryConnection = 'retryConnection',
-}
-
-enum _3DMouseMachineEvents {
-  connect = 'connect',
-  done_connect = donePrefix + 'connect',
-  error_connect = errorPrefix + 'connect',
-}
-
-enum _3DMouseMachineActors {
-  connect = 'connect',
-}
+import { EXTERNAL_MOUSE_ERROR_PREFIX } from '@src/lib/constants'
+import {
+  _3DMouseContext,
+  _3DMouseMachineStates,
+  _3DMouseMachineEvents,
+  _3DMouseMachineActors
+} from '@src/machines/_3dMouse/utils'
 
 function logError(message: string) {
   console.error(`${EXTERNAL_MOUSE_ERROR_PREFIX} ${message}`)
