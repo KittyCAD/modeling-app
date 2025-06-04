@@ -2938,7 +2938,7 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
         (identifier, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(ident, suffix)| {
             let mut result = Node::new(PrimitiveType::Boolean, ident.start, ident.end, ident.module_id);
             result.inner =
-                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named(ident));
+                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named { id: ident });
             result
         }),
     ))
