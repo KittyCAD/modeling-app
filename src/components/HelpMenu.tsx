@@ -14,6 +14,8 @@ import {
   catchOnboardingWarnError,
 } from '@src/routes/Onboarding/utils'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
+import { reportRejection } from '@src/lib/trap'
+import { isDesktop } from '@src/lib/isDesktop'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -138,6 +140,17 @@ export function HelpMenu({
             >
               Replay onboarding tutorial
             </HelpMenuItem>
+            {isDesktop() && (
+              <HelpMenuItem
+                as="button"
+                onClick={() => {
+                  close()
+                  window.electron.appCheckForUpdates().catch(reportRejection)
+                }}
+              >
+                Check for updates
+              </HelpMenuItem>
+            )}
           </>
         )}
       </Popover.Panel>
