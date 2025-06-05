@@ -134,9 +134,9 @@
     "test:unit": "vitest run --mode development --exclude **/jest-component-unit-tests/*",
     "test:unit:components": "jest -c jest-component-unit-tests/jest.config.ts --rootDir jest-component-unit-tests/",
     "test:e2e:web": "cross-env TARGET=web NODE_ENV=development playwright test --config=playwright.config.ts --project=\"Google Chrome\" --grep=@web",
-    "test:e2e:desktop": "cross-env TARGET=desktop playwright test --config=playwright.electron.config.ts --grep-invert=@snapshot",
-    "test:e2e:desktop:local": "cross-env TARGET=desktop npm run tronb:vite:dev && playwright test --config=playwright.electron.config.ts --grep-invert=@snapshot --grep-invert=\"$(curl --silent https://test-analysis-bot.hawk-dinosaur.ts.net/projects/KittyCAD/modeling-app/tests/disabled/regex)\"",
-    "test:e2e:desktop:local-engine": "cross-env TARGET=desktop npm run tronb:vite:dev && playwright test --config=playwright.electron.config.ts --grep-invert='@snapshot|@skipLocalEngine' --grep-invert=\"$(curl --silent https://test-analysis-bot.hawk-dinosaur.ts.net/projects/KittyCAD/modeling-app/tests/disabled/regex)\"",
+    "test:e2e:desktop": "cross-env TARGET=desktop playwright test --config=playwright.electron.config.ts --grep-invert=\"@snapshot|@web\"",
+    "test:e2e:desktop:local": "cross-env TARGET=desktop npm run tronb:vite:dev && playwright test --config=playwright.electron.config.ts --grep-invert=\"@snapshot|@web\" --grep-invert=\"$(curl --silent https://test-analysis-bot.hawk-dinosaur.ts.net/projects/KittyCAD/modeling-app/tests/disabled/regex)\"",
+    "test:e2e:desktop:local-engine": "cross-env TARGET=desktop npm run tronb:vite:dev && playwright test --config=playwright.electron.config.ts --grep-invert=\"@snapshot|@web|@skipLocalEngine\" --grep-invert=\"$(curl --silent https://test-analysis-bot.hawk-dinosaur.ts.net/projects/KittyCAD/modeling-app/tests/disabled/regex)\"",
     "test:unit:local": "npm run simpleserver:bg && npm run test:unit; kill-port 3000"
   },
   "browserslist": {
