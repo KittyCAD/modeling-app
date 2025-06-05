@@ -24,6 +24,7 @@ type Point3D = kcmc::shared::Point3d<f64>;
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
+#[allow(clippy::large_enum_variant)]
 pub enum Geometry {
     Sketch(Sketch),
     Solid(Solid),
@@ -52,6 +53,7 @@ impl Geometry {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
+#[allow(clippy::large_enum_variant)]
 pub enum GeometryWithImportedGeometry {
     Sketch(Sketch),
     Solid(Solid),
@@ -469,7 +471,7 @@ impl TryFrom<PlaneData> for PlaneInfo {
             PlaneData::NegYZ => PlaneName::NegYz,
             PlaneData::Plane(_) => {
                 // We will never get here since we already checked for PlaneData::Plane.
-                return Err(KclError::Internal(KclErrorDetails::new(
+                return Err(KclError::new_internal(KclErrorDetails::new(
                     format!("PlaneData {:?} not found", value),
                     Default::default(),
                 )));
@@ -477,7 +479,7 @@ impl TryFrom<PlaneData> for PlaneInfo {
         };
 
         let info = DEFAULT_PLANE_INFO.get(&name).ok_or_else(|| {
-            KclError::Internal(KclErrorDetails::new(
+            KclError::new_internal(KclErrorDetails::new(
                 format!("Plane {} not found", name),
                 Default::default(),
             ))

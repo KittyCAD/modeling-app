@@ -302,6 +302,7 @@ impl DocData {
         }
     }
 
+    #[allow(dead_code)]
     pub(super) fn summary(&self) -> Option<&String> {
         match self {
             DocData::Fn(f) => f.summary.as_ref(),
@@ -462,6 +463,7 @@ impl ModData {
         }
     }
 
+    #[allow(dead_code)]
     pub fn find_by_name(&self, name: &str) -> Option<&DocData> {
         if let Some(result) = self
             .children
@@ -644,13 +646,13 @@ impl FnData {
         format!("{}({})", self.preferred_name, args.join(", "))
     }
 
-    fn to_signature_help(&self) -> SignatureHelp {
+    pub(crate) fn to_signature_help(&self) -> SignatureHelp {
         // TODO Fill this in based on the current position of the cursor.
         let active_parameter = None;
 
         SignatureHelp {
             signatures: vec![SignatureInformation {
-                label: self.preferred_name.clone(),
+                label: self.preferred_name.clone() + &self.fn_signature(),
                 documentation: self.short_docs().map(|s| {
                     Documentation::MarkupContent(MarkupContent {
                         kind: MarkupKind::Markdown,
@@ -744,12 +746,12 @@ impl ArgData {
             } = &attr.inner
             {
                 for p in props {
-                    if p.key.name == "include_in_snippet" {
+                    if p.key.name == "includeInSnippet" {
                         if let Some(b) = p.value.literal_bool() {
                             result.override_in_snippet = Some(b);
                         } else {
                             panic!(
-                                "Invalid value for `include_in_snippet`, expected bool literal, found {:?}",
+                                "Invalid value for `includeInSnippet`, expected bool literal, found {:?}",
                                 p.value
                             );
                         }
@@ -812,6 +814,7 @@ impl ArgData {
             return Some((index + n - 1, snippet));
         }
         match self.ty.as_deref() {
+            Some("Sketch") if self.kind == ArgKind::Special => None,
             Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{}:10}}"#, index))),
             Some("Point2d") => Some((index + 1, format!(r#"{label}[${{{}:0}}, ${{{}:0}}]"#, index, index + 1))),
             Some("Point3d") => Some((
@@ -824,13 +827,18 @@ impl ArgData {
                 ),
             )),
             Some("Axis2d | Edge") | Some("Axis3d | Edge") => Some((index, format!(r#"{label}${{{index}:X}}"#))),
+            Some("Sketch") | Some("Sketch | Helix") => Some((index, format!(r#"{label}${{{index}:sketch000}}"#))),
             Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
-            Some("Plane") => Some((index, format!(r#"{label}${{{}:XY}}"#, index))),
+            Some("Plane") | Some("Solid | Plane") => Some((index, format!(r#"{label}${{{}:XY}}"#, index))),
+            Some("[tag; 2]") => Some((
+                index + 1,
+                format!(r#"{label}[${{{}:tag}}, ${{{}:tag}}]"#, index, index + 1),
+            )),
 
             Some("string") => {
                 if self.name == "color" {
-                    Some((index, format!(r#"{label}${{{}:"ff0000"}}"#, index)))
+                    Some((index, format!(r"{label}${{{}:{}}}", index, "\"#ff0000\"")))
                 } else {
                     Some((index, format!(r#"{label}${{{}:"string"}}"#, index)))
                 }
@@ -984,7 +992,7 @@ trait ApplyMeta {
         }
 
         let mut summary = None;
-        let mut description = None;
+        let mut description: Option<String> = None;
         let mut example: Option<(String, ExampleProperties)> = None;
         let mut examples = Vec::new();
         for l in comments.iter().filter(|l| l.starts_with("///")).map(|l| {
@@ -994,22 +1002,6 @@ trait ApplyMeta {
                 &l[3..]
             }
         }) {
-            if description.is_none() && summary.is_none() {
-                summary = Some(l.to_owned());
-                continue;
-            }
-            if description.is_none() {
-                if l.is_empty() {
-                    description = Some(String::new());
-                } else {
-                    description = summary;
-                    summary = None;
-                    let d = description.as_mut().unwrap();
-                    d.push('\n');
-                    d.push_str(l);
-                }
-                continue;
-            }
             #[allow(clippy::manual_strip)]
             if l.starts_with("```") {
                 if let Some((e, p)) = example {
@@ -1045,12 +1037,36 @@ trait ApplyMeta {
                     continue;
                 }
             }
+
+            // An empty line outside of an example. This either starts the description (with or
+            // without a summary) or adds a blank line to the description.
+            if l.is_empty() {
+                match &mut description {
+                    Some(d) => {
+                        d.push('\n');
+                    }
+                    None => description = Some(String::new()),
+                }
+                continue;
+            }
+
+            // Our first line, start the summary.
+            if description.is_none() && summary.is_none() {
+                summary = Some(l.to_owned());
+                continue;
+            }
+
+            // Append the line to either the description or summary.
             match &mut description {
                 Some(d) => {
                     d.push_str(l);
                     d.push('\n');
                 }
-                None => unreachable!(),
+                None => {
+                    let s = summary.as_mut().unwrap();
+                    s.push(' ');
+                    s.push_str(l);
+                }
             }
         }
         assert!(example.is_none());
@@ -1276,7 +1292,10 @@ mod test {
                     continue;
                 };
 
-                for i in 0..f.examples.len() {
+                for (i, (_, props)) in f.examples.iter().enumerate() {
+                    if props.norun {
+                        continue;
+                    }
                     let name = format!("{}-{i}", f.qual_name.replace("::", "-"));
                     assert!(TEST_NAMES.contains(&&*name), "Missing test for example \"{name}\", maybe need to update kcl-derive-docs/src/example_tests.rs?")
                 }

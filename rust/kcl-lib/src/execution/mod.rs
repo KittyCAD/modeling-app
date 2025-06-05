@@ -5,9 +5,8 @@ use std::sync::Arc;
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
 pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, CodeRef, StartSketchOnFace, StartSketchOnPlane};
-use cache::OldAstState;
+use cache::GlobalState;
 pub use cache::{bust_cache, clear_mem_cache};
-#[cfg(feature = "artifact-graph")]
 pub use cad_op::{Group, Operation};
 pub use geometry::*;
 pub use id_generator::IdGenerator;
@@ -27,13 +26,12 @@ use serde::{Deserialize, Serialize};
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::artifact::build_artifact_graph;
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     execution::{
         cache::{CacheInformation, CacheResult},
+        import_graph::{Universe, UniverseMap},
         typed_path::TypedPath,
         types::{UnitAngle, UnitLen},
     },
@@ -41,8 +39,6 @@ use crate::{
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
     source_range::SourceRange,
-    std::StdLib,
-    walk::{Universe, UniverseMap},
     CompilationError, ExecError, KclErrorWithOutputs,
 };
 
@@ -56,6 +52,7 @@ pub mod fn_call;
 mod geometry;
 mod id_generator;
 mod import;
+mod import_graph;
 pub(crate) mod kcl_value;
 mod memory;
 mod state;
@@ -273,7 +270,6 @@ pub enum ContextType {
 pub struct ExecutorContext {
     pub engine: Arc<Box<dyn EngineManager>>,
     pub fs: Arc<FileManager>,
-    pub stdlib: Arc<StdLib>,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
 }
@@ -412,7 +408,6 @@ impl ExecutorContext {
         Ok(Self {
             engine,
             fs: Arc::new(FileManager::new()),
-            stdlib: Arc::new(StdLib::new()),
             settings,
             context_type: ContextType::Live,
         })
@@ -423,7 +418,6 @@ impl ExecutorContext {
         ExecutorContext {
             engine,
             fs,
-            stdlib: Arc::new(StdLib::new()),
             settings,
             context_type: ContextType::Live,
         }
@@ -436,7 +430,6 @@ impl ExecutorContext {
                 crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
             )),
             fs: Arc::new(FileManager::new()),
-            stdlib: Arc::new(StdLib::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
         }
@@ -447,7 +440,6 @@ impl ExecutorContext {
         ExecutorContext {
             engine,
             fs,
-            stdlib: Arc::new(StdLib::new()),
             settings,
             context_type: ContextType::Mock,
         }
@@ -458,7 +450,6 @@ impl ExecutorContext {
         ExecutorContext {
             engine,
             fs: Arc::new(FileManager::new()),
-            stdlib: Arc::new(StdLib::new()),
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
         }
@@ -575,7 +566,7 @@ impl ExecutorContext {
         // part of the scene).
         exec_state.mut_stack().push_new_env_for_scope();
 
-        let result = self.inner_run(&program, 0, &mut exec_state, true).await?;
+        let result = self.inner_run(&program, &mut exec_state, true).await?;
 
         // Restore any temporary variables, then save any newly created variables back to
         // memory in case another run wants to use them. Note this is just saved to the preserved
@@ -583,7 +574,7 @@ impl ExecutorContext {
 
         let mut mem = exec_state.stack().clone();
         let module_infos = exec_state.global.module_infos.clone();
-        let outcome = exec_state.to_mock_exec_outcome(result.0).await;
+        let outcome = exec_state.to_mock_exec_outcome(result.0, self).await;
 
         mem.squash_env(result.0);
         cache::write_old_memory((mem, module_infos)).await;
@@ -594,169 +585,176 @@ impl ExecutorContext {
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
 
-        let (program, mut exec_state, preserve_mem, cached_body_items, imports_info) = if let Some(OldAstState {
-            ast: old_ast,
-            exec_state: mut old_state,
-            settings: old_settings,
-            result_env,
-        }) =
-            cache::read_old_ast().await
-        {
-            let old = CacheInformation {
-                ast: &old_ast,
-                settings: &old_settings,
-            };
-            let new = CacheInformation {
-                ast: &program.ast,
-                settings: &self.settings,
-            };
-
-            // Get the program that actually changed from the old and new information.
-            let (clear_scene, program, body_items, import_check_info) = match cache::get_changed_program(old, new).await
-            {
-                CacheResult::ReExecute {
-                    clear_scene,
-                    reapply_settings,
-                    program: changed_program,
-                    cached_body_items,
-                } => {
-                    if reapply_settings
-                        && self
-                            .engine
-                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
-                            .await
-                            .is_err()
-                    {
-                        (true, program, cached_body_items, None)
-                    } else {
-                        (
-                            clear_scene,
-                            crate::Program {
-                                ast: changed_program,
-                                original_file_contents: program.original_file_contents,
-                            },
-                            cached_body_items,
-                            None,
-                        )
-                    }
-                }
-                CacheResult::CheckImportsOnly {
-                    reapply_settings,
-                    ast: changed_program,
-                } => {
-                    if reapply_settings
-                        && self
-                            .engine
-                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
-                            .await
-                            .is_err()
-                    {
-                        (true, program, old_ast.body.len(), None)
-                    } else {
-                        // We need to check our imports to see if they changed.
-                        let mut new_exec_state = ExecState::new(self);
-                        let (new_universe, new_universe_map) = self.get_universe(&program, &mut new_exec_state).await?;
-                        let mut clear_scene = false;
-
-                        let mut keys = new_universe.keys().clone().collect::<Vec<_>>();
-                        keys.sort();
-                        for key in keys {
-                            let (_, id, _, _) = &new_universe[key];
-                            if let (Some(source0), Some(source1)) =
-                                (old_state.get_source(*id), new_exec_state.get_source(*id))
-                            {
-                                if source0.source != source1.source {
-                                    clear_scene = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if !clear_scene {
-                            // Return early we don't need to clear the scene.
-                            let outcome = old_state.to_exec_outcome(result_env).await;
-                            return Ok(outcome);
-                        }
-
-                        (
-                            clear_scene,
-                            crate::Program {
-                                ast: changed_program,
-                                original_file_contents: program.original_file_contents,
-                            },
-                            old_ast.body.len(),
-                            // We only care about this if we are clearing the scene.
-                            if clear_scene {
-                                Some((new_universe, new_universe_map, new_exec_state))
-                            } else {
-                                None
-                            },
-                        )
-                    }
-                }
-                CacheResult::NoAction(true) => {
-                    if self
-                        .engine
-                        .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
-                        .await
-                        .is_ok()
-                    {
-                        // We need to update the old ast state with the new settings!!
-                        cache::write_old_ast(OldAstState {
-                            ast: old_ast,
-                            exec_state: old_state.clone(),
-                            settings: self.settings.clone(),
-                            result_env,
-                        })
-                        .await;
-
-                        let outcome = old_state.to_exec_outcome(result_env).await;
-                        return Ok(outcome);
-                    }
-                    (true, program, old_ast.body.len(), None)
-                }
-                CacheResult::NoAction(false) => {
-                    let outcome = old_state.to_exec_outcome(result_env).await;
-                    return Ok(outcome);
-                }
-            };
-
-            let (exec_state, preserve_mem, universe_info) =
-                if let Some((new_universe, new_universe_map, mut new_exec_state)) = import_check_info {
-                    // Clear the scene if the imports changed.
-                    self.send_clear_scene(&mut new_exec_state, Default::default())
-                        .await
-                        .map_err(KclErrorWithOutputs::no_outputs)?;
-
-                    (new_exec_state, false, Some((new_universe, new_universe_map)))
-                } else if clear_scene {
-                    // Pop the execution state, since we are starting fresh.
-                    let mut exec_state = old_state;
-                    exec_state.reset(self);
-
-                    self.send_clear_scene(&mut exec_state, Default::default())
-                        .await
-                        .map_err(KclErrorWithOutputs::no_outputs)?;
-
-                    (exec_state, false, None)
-                } else {
-                    old_state.mut_stack().restore_env(result_env);
-
-                    (old_state, true, None)
+        let (program, exec_state, result) = match cache::read_old_ast().await {
+            Some(mut cached_state) => {
+                let old = CacheInformation {
+                    ast: &cached_state.main.ast,
+                    settings: &cached_state.settings,
+                };
+                let new = CacheInformation {
+                    ast: &program.ast,
+                    settings: &self.settings,
                 };
 
-            (program, exec_state, preserve_mem, body_items, universe_info)
-        } else {
-            let mut exec_state = ExecState::new(self);
-            self.send_clear_scene(&mut exec_state, Default::default())
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?;
-            (program, exec_state, false, 0, None)
-        };
+                // Get the program that actually changed from the old and new information.
+                let (clear_scene, program, import_check_info) = match cache::get_changed_program(old, new).await {
+                    CacheResult::ReExecute {
+                        clear_scene,
+                        reapply_settings,
+                        program: changed_program,
+                    } => {
+                        if reapply_settings
+                            && self
+                                .engine
+                                .reapply_settings(
+                                    &self.settings,
+                                    Default::default(),
+                                    &mut cached_state.main.exec_state.id_generator,
+                                )
+                                .await
+                                .is_err()
+                        {
+                            (true, program, None)
+                        } else {
+                            (
+                                clear_scene,
+                                crate::Program {
+                                    ast: changed_program,
+                                    original_file_contents: program.original_file_contents,
+                                },
+                                None,
+                            )
+                        }
+                    }
+                    CacheResult::CheckImportsOnly {
+                        reapply_settings,
+                        ast: changed_program,
+                    } => {
+                        if reapply_settings
+                            && self
+                                .engine
+                                .reapply_settings(
+                                    &self.settings,
+                                    Default::default(),
+                                    &mut cached_state.main.exec_state.id_generator,
+                                )
+                                .await
+                                .is_err()
+                        {
+                            (true, program, None)
+                        } else {
+                            // We need to check our imports to see if they changed.
+                            let mut new_exec_state = ExecState::new(self);
+                            let (new_universe, new_universe_map) =
+                                self.get_universe(&program, &mut new_exec_state).await?;
 
-        let result = self
-            .run_concurrent(&program, cached_body_items, &mut exec_state, imports_info, preserve_mem)
-            .await;
+                            let clear_scene = new_universe.keys().any(|key| {
+                                let id = new_universe[key].1;
+                                match (
+                                    cached_state.exec_state.get_source(id),
+                                    new_exec_state.global.get_source(id),
+                                ) {
+                                    (Some(s0), Some(s1)) => s0.source != s1.source,
+                                    _ => false,
+                                }
+                            });
+
+                            if !clear_scene {
+                                // Return early we don't need to clear the scene.
+                                return Ok(cached_state.into_exec_outcome(self).await);
+                            }
+
+                            (
+                                true,
+                                crate::Program {
+                                    ast: changed_program,
+                                    original_file_contents: program.original_file_contents,
+                                },
+                                Some((new_universe, new_universe_map, new_exec_state)),
+                            )
+                        }
+                    }
+                    CacheResult::NoAction(true) => {
+                        if self
+                            .engine
+                            .reapply_settings(
+                                &self.settings,
+                                Default::default(),
+                                &mut cached_state.main.exec_state.id_generator,
+                            )
+                            .await
+                            .is_ok()
+                        {
+                            // We need to update the old ast state with the new settings!!
+                            cache::write_old_ast(GlobalState::with_settings(
+                                cached_state.clone(),
+                                self.settings.clone(),
+                            ))
+                            .await;
+
+                            return Ok(cached_state.into_exec_outcome(self).await);
+                        }
+                        (true, program, None)
+                    }
+                    CacheResult::NoAction(false) => {
+                        return Ok(cached_state.into_exec_outcome(self).await);
+                    }
+                };
+
+                let (exec_state, result) = match import_check_info {
+                    Some((new_universe, new_universe_map, mut new_exec_state)) => {
+                        // Clear the scene if the imports changed.
+                        self.send_clear_scene(&mut new_exec_state, Default::default())
+                            .await
+                            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+                        let result = self
+                            .run_concurrent(
+                                &program,
+                                &mut new_exec_state,
+                                Some((new_universe, new_universe_map)),
+                                false,
+                            )
+                            .await;
+
+                        (new_exec_state, result)
+                    }
+                    None if clear_scene => {
+                        // Pop the execution state, since we are starting fresh.
+                        let mut exec_state = cached_state.reconstitute_exec_state();
+                        exec_state.reset(self);
+
+                        self.send_clear_scene(&mut exec_state, Default::default())
+                            .await
+                            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+                        let result = self.run_concurrent(&program, &mut exec_state, None, false).await;
+
+                        (exec_state, result)
+                    }
+                    None => {
+                        let mut exec_state = cached_state.reconstitute_exec_state();
+                        exec_state.mut_stack().restore_env(cached_state.main.result_env);
+
+                        let result = self.run_concurrent(&program, &mut exec_state, None, true).await;
+
+                        (exec_state, result)
+                    }
+                };
+
+                (program, exec_state, result)
+            }
+            None => {
+                let mut exec_state = ExecState::new(self);
+                self.send_clear_scene(&mut exec_state, Default::default())
+                    .await
+                    .map_err(KclErrorWithOutputs::no_outputs)?;
+
+                let result = self.run_concurrent(&program, &mut exec_state, None, false).await;
+
+                (program, exec_state, result)
+            }
+        };
 
         if result.is_err() {
             cache::bust_cache().await;
@@ -766,15 +764,15 @@ impl ExecutorContext {
         let result = result?;
 
         // Save this as the last successful execution to the cache.
-        cache::write_old_ast(OldAstState {
-            ast: program.ast,
-            exec_state: exec_state.clone(),
-            settings: self.settings.clone(),
-            result_env: result.0,
-        })
+        cache::write_old_ast(GlobalState::new(
+            exec_state.clone(),
+            self.settings.clone(),
+            program.ast,
+            result.0,
+        ))
         .await;
 
-        let outcome = exec_state.to_exec_outcome(result.0).await;
+        let outcome = exec_state.to_exec_outcome(result.0, self).await;
         Ok(outcome)
     }
 
@@ -789,11 +787,11 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        self.run_concurrent(program, 0, exec_state, None, false).await
+        self.run_concurrent(program, exec_state, None, false).await
     }
 
     /// Perform the execution of a program using a concurrent
-    /// execution model. This has the same signature as [Self::run].
+    /// execution model.
     ///
     /// You can optionally pass in some initialization memory for partial
     /// execution.
@@ -802,13 +800,12 @@ impl ExecutorContext {
     pub async fn run_concurrent(
         &self,
         program: &crate::Program,
-        cached_body_items: usize,
         exec_state: &mut ExecState,
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Reuse our cached universe if we have one.
-        #[allow(unused_variables)]
+
         let (universe, universe_map) = if let Some((universe, universe_map)) = universe_info {
             (universe, universe_map)
         } else {
@@ -822,29 +819,8 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        for modules in crate::walk::import_graph(&universe, self)
-            .map_err(|err| {
-                let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                    .global
-                    .path_to_source_id
-                    .iter()
-                    .map(|(k, v)| ((*v), k.clone()))
-                    .collect();
-
-                KclErrorWithOutputs::new(
-                    err,
-                    exec_state.errors().to_vec(),
-                    #[cfg(feature = "artifact-graph")]
-                    exec_state.global.operations.clone(),
-                    #[cfg(feature = "artifact-graph")]
-                    exec_state.global.artifact_commands.clone(),
-                    #[cfg(feature = "artifact-graph")]
-                    exec_state.global.artifact_graph.clone(),
-                    module_id_to_module_path,
-                    exec_state.global.id_to_source.clone(),
-                    default_planes.clone(),
-                )
-            })?
+        for modules in import_graph::import_graph(&universe, self)
+            .map_err(|err| exec_state.error_with_outputs(err, default_planes.clone()))?
             .into_iter()
         {
             #[cfg(not(target_arch = "wasm32"))]
@@ -858,7 +834,7 @@ impl ExecutorContext {
 
             for module in modules {
                 let Some((import_stmt, module_id, module_path, repr)) = universe.get(&module) else {
-                    return Err(KclErrorWithOutputs::no_outputs(KclError::Internal(
+                    return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
                         KclErrorDetails::new(format!("Module {module} not found in universe"), Default::default()),
                     )));
                 };
@@ -866,7 +842,6 @@ impl ExecutorContext {
                 let module_path = module_path.clone();
                 let source_range = SourceRange::from(import_stmt);
 
-                #[cfg(feature = "artifact-graph")]
                 match &module_path {
                     ModulePath::Main => {
                         // This should never happen.
@@ -875,7 +850,7 @@ impl ExecutorContext {
                         // We only want to display the top-level module imports in
                         // the Feature Tree, not transitive imports.
                         if universe_map.contains_key(value) {
-                            exec_state.global.operations.push(Operation::GroupBegin {
+                            exec_state.push_op(Operation::GroupBegin {
                                 group: Group::ModuleInstance {
                                     name: value.file_name().unwrap_or_default(),
                                     module_id,
@@ -885,7 +860,7 @@ impl ExecutorContext {
                             // Due to concurrent execution, we cannot easily
                             // group operations by module. So we leave the
                             // group empty and close it immediately.
-                            exec_state.global.operations.push(Operation::GroupEnd);
+                            exec_state.push_op(Operation::GroupEnd);
                         }
                     }
                     ModulePath::Std { .. } => {
@@ -920,7 +895,7 @@ impl ExecutorContext {
 
                             result.map(|val| ModuleRepr::Foreign(geom.clone(), val))
                         }
-                        ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::Internal(KclErrorDetails::new(
+                        ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
                             format!("Module {module_path} not found in universe"),
                             vec![source_range],
                         ))),
@@ -930,7 +905,6 @@ impl ExecutorContext {
                 #[cfg(target_arch = "wasm32")]
                 {
                     wasm_bindgen_futures::spawn_local(async move {
-                        //set.spawn(async move {
                         let mut exec_state = exec_state;
                         let exec_ctxt = exec_ctxt;
 
@@ -1000,33 +974,13 @@ impl ExecutorContext {
                         exec_state.global.module_infos[&module_id].restore_repr(repr);
                     }
                     Err(e) => {
-                        let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                            .global
-                            .path_to_source_id
-                            .iter()
-                            .map(|(k, v)| ((*v), k.clone()))
-                            .collect();
-
-                        return Err(KclErrorWithOutputs::new(
-                            e,
-                            exec_state.errors().to_vec(),
-                            #[cfg(feature = "artifact-graph")]
-                            exec_state.global.operations.clone(),
-                            #[cfg(feature = "artifact-graph")]
-                            exec_state.global.artifact_commands.clone(),
-                            #[cfg(feature = "artifact-graph")]
-                            exec_state.global.artifact_graph.clone(),
-                            module_id_to_module_path,
-                            exec_state.global.id_to_source.clone(),
-                            default_planes,
-                        ));
+                        return Err(exec_state.error_with_outputs(e, default_planes));
                     }
                 }
             }
         }
 
-        self.inner_run(program, cached_body_items, exec_state, preserve_mem)
-            .await
+        self.inner_run(program, exec_state, preserve_mem).await
     }
 
     /// Get the universe & universe map of the program.
@@ -1042,7 +996,7 @@ impl ExecutorContext {
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
 
-        let root_imports = crate::walk::import_universe(
+        let root_imports = import_graph::import_universe(
             self,
             &ModulePath::Main,
             &ModuleRepr::Kcl(program.ast.clone(), None),
@@ -1050,29 +1004,7 @@ impl ExecutorContext {
             exec_state,
         )
         .await
-        .map_err(|err| {
-            println!("Error: {err:?}");
-            let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                .global
-                .path_to_source_id
-                .iter()
-                .map(|(k, v)| ((*v), k.clone()))
-                .collect();
-
-            KclErrorWithOutputs::new(
-                err,
-                exec_state.errors().to_vec(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.operations.clone(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.artifact_commands.clone(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.artifact_graph.clone(),
-                module_id_to_module_path,
-                exec_state.global.id_to_source.clone(),
-                default_planes,
-            )
-        })?;
+        .map_err(|err| exec_state.error_with_outputs(err, default_planes))?;
 
         Ok((universe, root_imports))
     }
@@ -1082,7 +1014,6 @@ impl ExecutorContext {
     async fn inner_run(
         &self,
         program: &crate::Program,
-        cached_body_items: usize,
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
@@ -1096,7 +1027,7 @@ impl ExecutorContext {
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
         let result = self
-            .execute_and_build_graph(&program.ast, cached_body_items, exec_state, preserve_mem)
+            .execute_and_build_graph(&program.ast, exec_state, preserve_mem)
             .await;
 
         crate::log::log(format!(
@@ -1105,28 +1036,7 @@ impl ExecutorContext {
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
-        let env_ref = result.map_err(|e| {
-            let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                .global
-                .path_to_source_id
-                .iter()
-                .map(|(k, v)| ((*v), k.clone()))
-                .collect();
-
-            KclErrorWithOutputs::new(
-                e,
-                exec_state.errors().to_vec(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.operations.clone(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.artifact_commands.clone(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.artifact_graph.clone(),
-                module_id_to_module_path,
-                exec_state.global.id_to_source.clone(),
-                default_planes.clone(),
-            )
-        })?;
+        let env_ref = result.map_err(|e| exec_state.error_with_outputs(e, default_planes))?;
 
         if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();
@@ -1143,7 +1053,6 @@ impl ExecutorContext {
     async fn execute_and_build_graph(
         &self,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
-        #[cfg_attr(not(feature = "artifact-graph"), expect(unused))] cached_body_items: usize,
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<EnvironmentRef, KclError> {
@@ -1170,40 +1079,9 @@ impl ExecutorContext {
         // and should be dropped.
         self.engine.clear_queues().await;
 
-        #[cfg(feature = "artifact-graph")]
-        {
-            let new_commands = self.engine.take_artifact_commands().await;
-            let new_responses = self.engine.take_responses().await;
-            let initial_graph = exec_state.global.artifact_graph.clone();
-
-            // Build the artifact graph.
-            let graph_result = build_artifact_graph(
-                &new_commands,
-                &new_responses,
-                program,
-                cached_body_items,
-                &mut exec_state.global.artifacts,
-                initial_graph,
-            );
-            // Move the artifact commands and responses into ExecState to
-            // simplify cache management and error creation.
-            exec_state.global.artifact_commands.extend(new_commands);
-            exec_state.global.artifact_responses.extend(new_responses);
-
-            match graph_result {
-                Ok(artifact_graph) => {
-                    exec_state.global.artifact_graph = artifact_graph;
-                    exec_result.map(|(_, env_ref, _)| env_ref)
-                }
-                Err(err) => {
-                    // Prefer the exec error.
-                    exec_result.and(Err(err))
-                }
-            }
-        }
-        #[cfg(not(feature = "artifact-graph"))]
-        {
-            exec_result.map(|(_, env_ref, _)| env_ref)
+        match exec_state.build_artifact_graph(&self.engine, program).await {
+            Ok(_) => exec_result.map(|(_, env_ref, _)| env_ref),
+            Err(err) => exec_result.and(Err(err)),
         }
     }
 
@@ -1283,7 +1161,7 @@ impl ExecutorContext {
             .await?;
 
         let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
-            return Err(KclError::Internal(crate::errors::KclErrorDetails::new(
+            return Err(KclError::new_internal(crate::errors::KclErrorDetails::new(
                 format!("Expected Export response, got {resp:?}",),
                 vec![SourceRange::default()],
             )));
@@ -1303,7 +1181,7 @@ impl ExecutorContext {
                     coords: *kittycad_modeling_cmds::coord::KITTYCAD,
                     created: if deterministic_time {
                         Some("2021-01-01T00:00:00Z".parse().map_err(|e| {
-                            KclError::Internal(crate::errors::KclErrorDetails::new(
+                            KclError::new_internal(crate::errors::KclErrorDetails::new(
                                 format!("Failed to parse date: {}", e),
                                 vec![SourceRange::default()],
                             ))
@@ -1383,14 +1261,13 @@ pub(crate) async fn parse_execute_with_project_dir(
     let exec_ctxt = ExecutorContext {
         engine: Arc::new(Box::new(
             crate::engine::conn_mock::EngineConnection::new().await.map_err(|err| {
-                KclError::Internal(crate::errors::KclErrorDetails::new(
+                KclError::new_internal(crate::errors::KclErrorDetails::new(
                     format!("Failed to create mock engine connection: {}", err),
                     vec![SourceRange::default()],
                 ))
             })?,
         )),
         fs: Arc::new(crate::fs::FileManager::new()),
-        stdlib: Arc::new(crate::std::StdLib::new()),
         settings: ExecutorSettings {
             project_directory,
             ..Default::default()
@@ -1799,7 +1676,7 @@ foo
         let err = result.unwrap_err();
         assert_eq!(
             err,
-            KclError::Syntax(KclErrorDetails::new(
+            KclError::new_syntax(KclErrorDetails::new(
                 "Unexpected token: #".to_owned(),
                 vec![SourceRange::new(14, 15, ModuleId::default())],
             )),
@@ -2058,7 +1935,7 @@ notTagIdentifier = !myTag";
             // TODO: We don't currently parse this, but we should.  It should be
             // a runtime error instead.
             parse_execute(code10).await.unwrap_err(),
-            KclError::Syntax(KclErrorDetails::new(
+            KclError::new_syntax(KclErrorDetails::new(
                 "Unexpected token: !".to_owned(),
                 vec![SourceRange::new(10, 11, ModuleId::default())],
             ))
@@ -2071,9 +1948,9 @@ notPipeSub = 1 |> identity(!%))";
             // TODO: We don't currently parse this, but we should.  It should be
             // a runtime error instead.
             parse_execute(code11).await.unwrap_err(),
-            KclError::Syntax(KclErrorDetails::new(
-                "Unexpected token: |>".to_owned(),
-                vec![SourceRange::new(44, 46, ModuleId::default())],
+            KclError::new_syntax(KclErrorDetails::new(
+                "There was an unexpected !. Try removing it.".to_owned(),
+                vec![SourceRange::new(56, 57, ModuleId::default())],
             ))
         );
 
@@ -2206,7 +2083,7 @@ w = f() + f()
         }
 
         // Get the id_generator from the first execution.
-        let id_generator = cache::read_old_ast().await.unwrap().exec_state.mod_local.id_generator;
+        let id_generator = cache::read_old_ast().await.unwrap().main.exec_state.id_generator;
 
         let code = r#"sketch001 = startSketchOn(XZ)
 |> startProfile(at = [62.74, 206.13])
@@ -2227,7 +2104,7 @@ w = f() + f()
         // Execute the program.
         ctx.run_with_caching(program).await.unwrap();
 
-        let new_id_generator = cache::read_old_ast().await.unwrap().exec_state.mod_local.id_generator;
+        let new_id_generator = cache::read_old_ast().await.unwrap().main.exec_state.id_generator;
 
         assert_eq!(id_generator, new_id_generator);
     }

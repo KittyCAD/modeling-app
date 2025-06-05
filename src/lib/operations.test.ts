@@ -1,7 +1,12 @@
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { topLevelRange } from '@src/lang/util'
 
-import { defaultSourceRange } from '@src/lang/wasm'
-import { filterOperations } from '@src/lib/operations'
+import {
+  assertParse,
+  defaultSourceRange,
+  type SourceRange,
+} from '@src/lang/wasm'
+import { filterOperations, getOperationVariableName } from '@src/lib/operations'
 
 function stdlib(name: string): Operation {
   return {
@@ -160,5 +165,77 @@ describe('operations filtering', () => {
       userCall('foo2'),
       stdlib('std8'),
     ])
+  })
+})
+
+function rangeOfText(fullCode: string, target: string): SourceRange {
+  const start = fullCode.indexOf(target)
+  if (start === -1) {
+    throw new Error(`Could not find \`${target}\` in: ${fullCode}`)
+  }
+  return topLevelRange(start, start + target.length)
+}
+
+describe('variable name of operations', () => {
+  it('finds the variable name with simple assignment', async () => {
+    const op = stdlib('stdLibFn')
+    if (op.type !== 'StdLibCall') {
+      throw new Error('Expected operation to be a StdLibCall')
+    }
+    const code = `myVar = stdLibFn()`
+    // Make the source range match the code.
+    op.sourceRange = rangeOfText(code, 'stdLibFn()')
+
+    const program = assertParse(code)
+    const variableName = getOperationVariableName(op, program)
+    expect(variableName).toBe('myVar')
+  })
+  it('finds the variable name inside a function with simple assignment', async () => {
+    const op = stdlib('stdLibFn')
+    if (op.type !== 'StdLibCall') {
+      throw new Error('Expected operation to be a StdLibCall')
+    }
+    const code = `fn myFunc() {
+  myVar = stdLibFn()
+  return 0
+}
+`
+    // Make the source range match the code.
+    op.sourceRange = rangeOfText(code, 'stdLibFn()')
+
+    const program = assertParse(code)
+    const variableName = getOperationVariableName(op, program)
+    expect(variableName).toBe('myVar')
+  })
+  it("finds the variable name when it's the last in a pipeline", async () => {
+    const op = stdlib('stdLibFn')
+    if (op.type !== 'StdLibCall') {
+      throw new Error('Expected operation to be a StdLibCall')
+    }
+    const code = `myVar = foo()
+  |> stdLibFn()
+`
+    // Make the source range match the code.
+    op.sourceRange = rangeOfText(code, 'stdLibFn()')
+
+    const program = assertParse(code)
+    const variableName = getOperationVariableName(op, program)
+    expect(variableName).toBe('myVar')
+  })
+  it("finds nothing when it's not the last in a pipeline", async () => {
+    const op = stdlib('stdLibFn')
+    if (op.type !== 'StdLibCall') {
+      throw new Error('Expected operation to be a StdLibCall')
+    }
+    const code = `myVar = foo()
+  |> stdLibFn()
+  |> bar()
+`
+    // Make the source range match the code.
+    op.sourceRange = rangeOfText(code, 'stdLibFn()')
+
+    const program = assertParse(code)
+    const variableName = getOperationVariableName(op, program)
+    expect(variableName).toBeUndefined()
   })
 })

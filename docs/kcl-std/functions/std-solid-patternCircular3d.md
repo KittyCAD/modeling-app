@@ -1,11 +1,11 @@
 ---
 title: "patternCircular3d"
 subtitle: "Function in std::solid"
-excerpt: ""
+excerpt: "Repeat a 3-dimensional solid some number of times along a partial or complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orientation of the solid with respect to the center of the circle is maintained."
 layout: manual
 ---
 
-
+Repeat a 3-dimensional solid some number of times along a partial or complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orientation of the solid with respect to the center of the circle is maintained.
 
 ```kcl
 patternCircular3d(
@@ -19,9 +19,7 @@ patternCircular3d(
 ): [Solid; 1+]
 ```
 
-Repeat a 3-dimensional solid some number of times along a partial or
-complete circle some specified number of times. Each object mayadditionally be rotated along the circle, ensuring orientation of the
-solid with respect to the center of the circle is maintained.
+
 
 ### Arguments
 

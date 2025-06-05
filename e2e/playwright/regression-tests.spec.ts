@@ -558,7 +558,7 @@ extrude002 = extrude(profile002, length = 150)
 
   test(
     `Network health indicator only appears in modeling view`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'bracket')

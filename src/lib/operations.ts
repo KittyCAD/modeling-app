@@ -15,7 +15,13 @@ import {
   getSweepEdgeCodeRef,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
-import { type PipeExpression, sourceRangeFromRust } from '@src/lang/wasm'
+import {
+  type CallExpressionKw,
+  type PipeExpression,
+  type Program,
+  sourceRangeFromRust,
+  type VariableDeclaration,
+} from '@src/lang/wasm'
 import type {
   HelixModes,
   ModelingCommandSchema,
@@ -982,6 +988,16 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  rotate: {
+    label: 'Rotate',
+    icon: 'rotate',
+    prepareToEdit: prepareToEditRotate,
+    supportsTransform: true,
+  },
+  scale: {
+    label: 'Scale',
+    icon: 'scale',
+  },
   shell: {
     label: 'Shell',
     icon: 'shell',
@@ -1017,6 +1033,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'sweep',
     prepareToEdit: prepareToEditSweep,
     supportsAppearance: true,
+  },
+  translate: {
+    label: 'Translate',
+    icon: 'move',
+    prepareToEdit: prepareToEditTranslate,
+    supportsTransform: true,
   },
   union: {
     label: 'Union',
@@ -1072,6 +1094,71 @@ export function getOperationIcon(op: Operation): CustomIconName {
       const _exhaustiveCheck: never = op
       return 'questionMark' // unreachable
   }
+}
+
+/**
+ * If the result of the operation is assigned to a variable, returns the
+ * variable name.
+ */
+export function getOperationVariableName(
+  op: Operation,
+  program: Program
+): string | undefined {
+  if (
+    op.type !== 'StdLibCall' &&
+    !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall')
+  ) {
+    return undefined
+  }
+  // Find the AST node.
+  const range = sourceRangeFromRust(op.sourceRange)
+  const pathToNode = getNodePathFromSourceRange(program, range)
+  if (pathToNode.length === 0) {
+    return undefined
+  }
+  const call = getNodeFromPath<CallExpressionKw>(
+    program,
+    pathToNode,
+    'CallExpressionKw'
+  )
+  if (err(call) || call.node.type !== 'CallExpressionKw') {
+    return undefined
+  }
+  // Find the var name from the variable declaration.
+  const varDec = getNodeFromPath<VariableDeclaration>(
+    program,
+    pathToNode,
+    'VariableDeclaration'
+  )
+  if (err(varDec)) {
+    return undefined
+  }
+  if (varDec.node.type !== 'VariableDeclaration') {
+    // There's no variable declaration for this call.
+    return undefined
+  }
+  const varName = varDec.node.declaration.id.name
+  // If the operation is a simple assignment, we can use the variable name.
+  if (varDec.node.declaration.init === call.node) {
+    return varName
+  }
+  // If the AST node is in a pipe expression, we can only use the variable
+  // name if it's the last operation in the pipe.
+  const pipe = getNodeFromPath<PipeExpression>(
+    program,
+    pathToNode,
+    'PipeExpression'
+  )
+  if (err(pipe)) {
+    return undefined
+  }
+  if (
+    pipe.node.type === 'PipeExpression' &&
+    pipe.node.body[pipe.node.body.length - 1] === call.node
+  ) {
+    return varName
+  }
+  return undefined
 }
 
 /**
@@ -1232,17 +1319,19 @@ export async function enterAppearanceFlow({
   )
 }
 
-export async function enterTranslateFlow({
-  operation,
-}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
+  const baseCommand = {
+    name: 'Translate',
+    groupId: 'modeling',
+  }
   const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
     operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
   if (!isModuleImport && !isSupportedStdLibCall) {
-    return new Error(
-      'Unsupported operation type. Please edit in the code editor.'
-    )
+    return {
+      reason: 'Unsupported operation type. Please edit in the code editor.',
+    }
   }
 
   const nodeToEdit = getNodePathFromSourceRange(
@@ -1285,26 +1374,38 @@ export async function enterTranslateFlow({
   const selection: Selections = { graphSelections: [], otherSelections: [] }
   const argDefaultValues = { nodeToEdit, selection, x, y, z }
   return {
-    type: 'Find and select command',
-    data: {
-      name: 'Translate',
-      groupId: 'modeling',
-      argDefaultValues,
-    },
+    ...baseCommand,
+    argDefaultValues,
   }
 }
 
-export async function enterRotateFlow({
+export async function enterTranslateFlow({
   operation,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  const data = await prepareToEditTranslate({ operation })
+  if ('reason' in data) {
+    return new Error(data.reason)
+  }
+
+  return {
+    type: 'Find and select command',
+    data,
+  }
+}
+
+async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
+  const baseCommand = {
+    name: 'Rotate',
+    groupId: 'modeling',
+  }
   const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
     operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
   if (!isModuleImport && !isSupportedStdLibCall) {
-    return new Error(
-      'Unsupported operation type. Please edit in the code editor.'
-    )
+    return {
+      reason: 'Unsupported operation type. Please edit in the code editor.',
+    }
   }
 
   const nodeToEdit = getNodePathFromSourceRange(
@@ -1347,12 +1448,22 @@ export async function enterRotateFlow({
   const selection: Selections = { graphSelections: [], otherSelections: [] }
   const argDefaultValues = { nodeToEdit, selection, roll, pitch, yaw }
   return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+export async function enterRotateFlow({
+  operation,
+}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  const data = await prepareToEditRotate({ operation })
+  if ('reason' in data) {
+    return new Error(data.reason)
+  }
+
+  return {
     type: 'Find and select command',
-    data: {
-      name: 'Rotate',
-      groupId: 'modeling',
-      argDefaultValues,
-    },
+    data,
   }
 }
 

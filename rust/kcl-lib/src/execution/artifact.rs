@@ -24,7 +24,7 @@ macro_rules! internal_error {
     ($range:expr, $($rest:tt)*) => {{
         let message = format!($($rest)*);
         debug_assert!(false, "{}", &message);
-        return Err(KclError::Internal(KclErrorDetails::new(message, vec![$range])));
+        return Err(KclError::new_internal(KclErrorDetails::new(message, vec![$range])));
     }};
 }
 
@@ -676,6 +676,7 @@ impl EdgeCut {
 #[serde(rename_all = "camelCase")]
 pub struct ArtifactGraph {
     map: IndexMap<ArtifactId, Artifact>,
+    item_count: usize,
 }
 
 impl ArtifactGraph {
@@ -711,10 +712,10 @@ pub(super) fn build_artifact_graph(
     artifact_commands: &[ArtifactCommand],
     responses: &IndexMap<Uuid, WebSocketResponse>,
     ast: &Node<Program>,
-    cached_body_items: usize,
     exec_artifacts: &mut IndexMap<ArtifactId, Artifact>,
     initial_graph: ArtifactGraph,
 ) -> Result<ArtifactGraph, KclError> {
+    let item_count = initial_graph.item_count;
     let mut map = initial_graph.into_map();
 
     let mut path_to_plane_id_map = FnvHashMap::default();
@@ -725,7 +726,7 @@ pub(super) fn build_artifact_graph(
     for exec_artifact in exec_artifacts.values_mut() {
         // Note: We only have access to the new AST. So if these artifacts
         // somehow came from cached AST, this won't fill in anything.
-        fill_in_node_paths(exec_artifact, ast, cached_body_items);
+        fill_in_node_paths(exec_artifact, ast, item_count);
     }
 
     for artifact_command in artifact_commands {
@@ -752,7 +753,7 @@ pub(super) fn build_artifact_graph(
             &flattened_responses,
             &path_to_plane_id_map,
             ast,
-            cached_body_items,
+            item_count,
             exec_artifacts,
         )?;
         for artifact in artifact_updates {
@@ -765,7 +766,10 @@ pub(super) fn build_artifact_graph(
         merge_artifact_into_map(&mut map, exec_artifact.clone());
     }
 
-    Ok(ArtifactGraph { map })
+    Ok(ArtifactGraph {
+        map,
+        item_count: item_count + ast.body.len(),
+    })
 }
 
 /// These may have been created with placeholder `CodeRef`s because we didn't
@@ -949,7 +953,7 @@ fn artifacts_to_update(
         ModelingCmd::StartPath(_) => {
             let mut return_arr = Vec::new();
             let current_plane_id = path_to_plane_id_map.get(&artifact_command.cmd_id).ok_or_else(|| {
-                KclError::Internal(KclErrorDetails::new(
+                KclError::new_internal(KclErrorDetails::new(
                     format!("Expected a current plane ID when processing StartPath command, but we have none: {id:?}"),
                     vec![range],
                 ))
@@ -1137,7 +1141,7 @@ fn artifacts_to_update(
                 // TODO: Using the first one.  Make sure to revisit this
                 // choice, don't think it matters for now.
                 path_id: ArtifactId::new(*loft_cmd.section_ids.first().ok_or_else(|| {
-                    KclError::Internal(KclErrorDetails::new(
+                    KclError::new_internal(KclErrorDetails::new(
                         format!("Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"),
                         vec![range],
                     ))
@@ -1180,7 +1184,7 @@ fn artifacts_to_update(
                 };
                 last_path = Some(path);
                 let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                    KclError::Internal(KclErrorDetails::new(
+                    KclError::new_internal(KclErrorDetails::new(
                         format!(
                             "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
                         ),
@@ -1234,7 +1238,7 @@ fn artifacts_to_update(
                         continue;
                     };
                     let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                        KclError::Internal(KclErrorDetails::new(
+                        KclError::new_internal(KclErrorDetails::new(
                             format!(
                                 "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
                             ),
