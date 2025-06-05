@@ -1447,7 +1447,7 @@ export class CameraControls {
           }
 
           // We have to multiply by the refresh rate, because `velocity` is in px/ms
-          // but we only call every `decaryRefreshRate` ms.
+          // but we only call every `decayRefreshRate` ms.
           center.x =
             center.x +
             Math.cos(degToRad(direction)) * velocity * decayRefreshRate
