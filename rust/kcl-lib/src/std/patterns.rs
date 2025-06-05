@@ -37,7 +37,7 @@ const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your 
 pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
     let instances: u32 = args.get_kw_arg_typed("instances", &RuntimeType::count(), exec_state)?;
-    let transform: &FunctionSource = args.get_kw_arg("transform")?;
+    let transform: FunctionSource = args.get_kw_arg_typed("transform", &RuntimeType::function(), exec_state)?;
     let use_original = args.get_kw_arg_opt_typed("useOriginal", &RuntimeType::bool(), exec_state)?;
 
     let solids = inner_pattern_transform(solids, instances, transform, use_original, exec_state, &args).await?;
@@ -48,20 +48,20 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg_typed("instances", &RuntimeType::count(), exec_state)?;
-    let transform: &FunctionSource = args.get_kw_arg("transform")?;
+    let transform: FunctionSource = args.get_kw_arg_typed("transform", &RuntimeType::function(), exec_state)?;
     let use_original = args.get_kw_arg_opt_typed("useOriginal", &RuntimeType::bool(), exec_state)?;
 
     let sketches = inner_pattern_transform_2d(sketches, instances, transform, use_original, exec_state, &args).await?;
     Ok(sketches.into())
 }
 
-async fn inner_pattern_transform<'a>(
+async fn inner_pattern_transform(
     solids: Vec<Solid>,
     instances: u32,
-    transform: &'a FunctionSource,
+    transform: FunctionSource,
     use_original: Option<bool>,
     exec_state: &mut ExecState,
-    args: &'a Args,
+    args: &Args,
 ) -> Result<Vec<Solid>, KclError> {
     // Build the vec of transforms, one for each repetition.
     let mut transform_vec = Vec::with_capacity(usize::try_from(instances).unwrap());
@@ -72,7 +72,7 @@ async fn inner_pattern_transform<'a>(
         )));
     }
     for i in 1..instances {
-        let t = make_transform::<Solid>(i, transform, args.source_range, exec_state, &args.ctx).await?;
+        let t = make_transform::<Solid>(i, &transform, args.source_range, exec_state, &args.ctx).await?;
         transform_vec.push(t);
     }
     execute_pattern_transform(
@@ -85,13 +85,13 @@ async fn inner_pattern_transform<'a>(
     .await
 }
 
-async fn inner_pattern_transform_2d<'a>(
+async fn inner_pattern_transform_2d(
     sketches: Vec<Sketch>,
     instances: u32,
-    transform: &'a FunctionSource,
+    transform: FunctionSource,
     use_original: Option<bool>,
     exec_state: &mut ExecState,
-    args: &'a Args,
+    args: &Args,
 ) -> Result<Vec<Sketch>, KclError> {
     // Build the vec of transforms, one for each repetition.
     let mut transform_vec = Vec::with_capacity(usize::try_from(instances).unwrap());
@@ -102,7 +102,7 @@ async fn inner_pattern_transform_2d<'a>(
         )));
     }
     for i in 1..instances {
-        let t = make_transform::<Sketch>(i, transform, args.source_range, exec_state, &args.ctx).await?;
+        let t = make_transform::<Sketch>(i, &transform, args.source_range, exec_state, &args.ctx).await?;
         transform_vec.push(t);
     }
     execute_pattern_transform(

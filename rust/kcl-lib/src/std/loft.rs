@@ -36,8 +36,8 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         args.get_kw_arg_opt_typed("baseCurveIndex", &RuntimeType::count(), exec_state)?;
     // Tolerance for the loft operation.
     let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
-    let tag_start = args.get_kw_arg_opt("tagStart")?;
-    let tag_end = args.get_kw_arg_opt("tagEnd")?;
+    let tag_start = args.get_kw_arg_opt_typed("tagStart", &RuntimeType::tag_decl(), exec_state)?;
+    let tag_end = args.get_kw_arg_opt_typed("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
 
     let value = inner_loft(
         sketches,

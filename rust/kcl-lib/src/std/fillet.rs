@@ -64,7 +64,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let radius: TyF64 = args.get_kw_arg_typed("radius", &RuntimeType::length(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
     let tags = args.kw_arg_edge_array_and_source("tags")?;
-    let tag = args.get_kw_arg_opt("tag")?;
+    let tag = args.get_kw_arg_opt_typed("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     // Run the function.
     validate_unique(&tags)?;

@@ -24,7 +24,6 @@ use crate::{
     },
     parsing::ast::types::TagNode,
     std::{
-        sketch::NEW_TAG_KW,
         utils::{calculate_circle_center, distance},
         Args,
     },
@@ -47,7 +46,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let center = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
     let radius: Option<TyF64> = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;
     let diameter: Option<TyF64> = args.get_kw_arg_opt_typed("diameter", &RuntimeType::length(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let tag = args.get_kw_arg_opt_typed("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let sketch = inner_circle(sketch_or_surface, center, radius, diameter, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
@@ -134,7 +133,7 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
     let p1 = args.get_kw_arg_typed("p1", &RuntimeType::point2d(), exec_state)?;
     let p2 = args.get_kw_arg_typed("p2", &RuntimeType::point2d(), exec_state)?;
     let p3 = args.get_kw_arg_typed("p3", &RuntimeType::point2d(), exec_state)?;
-    let tag = args.get_kw_arg_opt("tag")?;
+    let tag = args.get_kw_arg_opt_typed("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let sketch = inner_circle_three_point(sketch_or_surface, p1, p2, p3, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {

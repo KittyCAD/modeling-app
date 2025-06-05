@@ -7,10 +7,7 @@ use kittycad_modeling_cmds as kcmc;
 use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{
-        types::{PrimitiveType, RuntimeType},
-        ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, Solid,
-    },
+    execution::{types::RuntimeType, ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, Solid},
     parsing::ast::types::TagNode,
     std::{fillet::EdgeReference, Args},
 };
@@ -19,10 +16,10 @@ pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
 /// Create chamfers on tagged paths.
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::Primitive(PrimitiveType::Solid), exec_state)?;
+    let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::solid(), exec_state)?;
     let length: TyF64 = args.get_kw_arg_typed("length", &RuntimeType::length(), exec_state)?;
     let tags = args.kw_arg_edge_array_and_source("tags")?;
-    let tag = args.get_kw_arg_opt("tag")?;
+    let tag = args.get_kw_arg_opt_typed("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     super::fillet::validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();

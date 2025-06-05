@@ -35,8 +35,8 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     )?;
     let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::degrees(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
-    let tag_start = args.get_kw_arg_opt("tagStart")?;
-    let tag_end = args.get_kw_arg_opt("tagEnd")?;
+    let tag_start = args.get_kw_arg_opt_typed("tagStart", &RuntimeType::tag_decl(), exec_state)?;
+    let tag_end = args.get_kw_arg_opt_typed("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
     let symmetric = args.get_kw_arg_opt_typed("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_angle: Option<TyF64> =
         args.get_kw_arg_opt_typed("bidirectionalAngle", &RuntimeType::angle(), exec_state)?;

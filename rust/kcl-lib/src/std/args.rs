@@ -109,31 +109,6 @@ impl JsonSchema for TyF64 {
 }
 
 impl Args {
-    /// Get a keyword argument. If not set, returns None.
-    pub(crate) fn get_kw_arg_opt<'a, T>(&'a self, label: &str) -> Result<Option<T>, KclError>
-    where
-        T: FromKclValue<'a>,
-    {
-        let Some(arg) = self.kw_args.labeled.get(label) else {
-            return Ok(None);
-        };
-        if let KclValue::KclNone { .. } = arg.value {
-            // It is set, but it's an optional parameter that wasn't provided.
-            return Ok(None);
-        }
-
-        T::from_kcl_val(&arg.value).map(Some).ok_or_else(|| {
-            KclError::new_type(KclErrorDetails::new(
-                format!(
-                    "The arg {label} was given, but it was the wrong type. It should be type {} but it was {}",
-                    tynm::type_name::<T>(),
-                    arg.value.human_friendly_type(),
-                ),
-                vec![self.source_range],
-            ))
-        })
-    }
-
     pub(crate) fn get_kw_arg_opt_typed<T>(
         &self,
         label: &str,
@@ -153,19 +128,6 @@ impl Args {
         }
 
         self.get_kw_arg_typed(label, ty, exec_state).map(Some)
-    }
-
-    /// Get a keyword argument. If not set, returns Err.
-    pub(crate) fn get_kw_arg<'a, T>(&'a self, label: &str) -> Result<T, KclError>
-    where
-        T: FromKclValue<'a>,
-    {
-        self.get_kw_arg_opt(label)?.ok_or_else(|| {
-            KclError::new_semantic(KclErrorDetails::new(
-                format!("This function requires a keyword argument '{label}'"),
-                vec![self.source_range],
-            ))
-        })
     }
 
     pub(crate) fn get_kw_arg_typed<T>(
@@ -1365,9 +1327,9 @@ impl<'a> FromKclValue<'a> for Box<Solid> {
     }
 }
 
-impl<'a> FromKclValue<'a> for &'a FunctionSource {
+impl<'a> FromKclValue<'a> for FunctionSource {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        arg.as_function()
+        arg.as_function().cloned()
     }
 }
 
