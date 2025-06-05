@@ -122,15 +122,16 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     let y = primaryDisplay.workArea.y + Math.floor((height - windowHeight) / 2)
 
     // If size was saved already, use it
-    const lastWindowConfig = loadLastWindowConfig()
-    if (lastWindowConfig?.bounds) {
+    const localDeviceState = loadLocalDeviceState()
+    const windowBounds = localDeviceState?.windowBounds
+    if (windowBounds) {
       // Only use bounds if the window is still visible on any of the displays
       // (one screen could have been disconnected since config was saved).
-      if (isBoundsVisible(lastWindowConfig.bounds)) {
-        windowWidth = lastWindowConfig.bounds.width
-        windowHeight = lastWindowConfig.bounds.height
-        x = lastWindowConfig.bounds.x
-        y = lastWindowConfig.bounds.y
+      if (isBoundsVisible(windowBounds)) {
+        windowWidth = windowBounds.width
+        windowHeight = windowBounds.height
+        x = windowBounds.x
+        y = windowBounds.y
       }
     }
 
@@ -157,9 +158,9 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
 
   newWindow.on('close', () => {
     const bounds = newWindow.getBounds()
-    saveLastWindowConfig({
+    saveLocalDeviceState({
       version: '0.1', // Version of the config file, so we add migrations if we break it later
-      bounds,
+      windowBounds: bounds,
     })
   })
 
@@ -245,29 +246,29 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   return newWindow
 }
 
-interface LastWindowConfig {
-  bounds: Electron.Rectangle
+interface LocalDeviceState {
+  windowBounds: Electron.Rectangle
   version: string // "0.1"
 }
 
 const userDataPath = app.getPath('userData')
-const windowConfigPath = path.join(userDataPath, 'window_config.json')
+const localDeviceStatePath = path.join(userDataPath, 'device_state.json')
 
-const loadLastWindowConfig = (): LastWindowConfig | null => {
+const loadLocalDeviceState = (): LocalDeviceState | null => {
   try {
-    const data = fs.readFileSync(windowConfigPath, 'utf8')
-    const config = JSON.parse(data) as LastWindowConfig
-    if (config.bounds) {
-      return config
+    const data = fs.readFileSync(localDeviceStatePath, 'utf8')
+    const localDeviceState = JSON.parse(data) as LocalDeviceState
+    if (localDeviceState.windowBounds) {
+      return localDeviceState
     }
   } catch (e) {
-    console.log("Can't load window_config.json", e)
+    console.log("Can't load device_state.json", e)
   }
   return null
 }
 
-const saveLastWindowConfig = (config: LastWindowConfig) => {
-  fs.writeFileSync(windowConfigPath, JSON.stringify(config), {
+const saveLocalDeviceState = (state: LocalDeviceState) => {
+  fs.writeFileSync(localDeviceStatePath, JSON.stringify(state), {
     encoding: 'utf8',
   })
 }
