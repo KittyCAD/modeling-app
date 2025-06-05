@@ -776,7 +776,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
         &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::plane()]),
         exec_state,
     )?;
-    let face = args.get_kw_arg_opt("face", &RuntimeType::tag(), exec_state)?;
+    let face = args.get_kw_arg_opt("face", &RuntimeType::tag_identifier(), exec_state)?;
 
     match inner_start_sketch_on(data, face, exec_state, &args).await? {
         SketchSurface::Plane(value) => Ok(KclValue::Plane { value }),

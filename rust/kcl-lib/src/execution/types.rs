@@ -84,10 +84,6 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Face)
     }
 
-    pub fn tag() -> Self {
-        RuntimeType::Primitive(PrimitiveType::Tag)
-    }
-
     pub fn tag_decl() -> Self {
         RuntimeType::Primitive(PrimitiveType::TagDecl)
     }
@@ -196,7 +192,8 @@ impl RuntimeType {
                 RuntimeType::Primitive(PrimitiveType::Number(ty))
             }
             AstPrimitiveType::Named { id } => Self::from_alias(&id.name, exec_state, source_range)?,
-            AstPrimitiveType::Tag => RuntimeType::Primitive(PrimitiveType::Tag),
+            AstPrimitiveType::TagDecl => RuntimeType::Primitive(PrimitiveType::TagDecl),
+            AstPrimitiveType::TagId => RuntimeType::Primitive(PrimitiveType::TagId),
             AstPrimitiveType::ImportedGeometry => RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
             AstPrimitiveType::Function(_) => RuntimeType::Primitive(PrimitiveType::Function),
         })
@@ -383,7 +380,6 @@ pub enum PrimitiveType {
     Number(NumericType),
     String,
     Boolean,
-    Tag,
     TagId,
     TagDecl,
     Sketch,
@@ -416,7 +412,6 @@ impl PrimitiveType {
             PrimitiveType::Axis3d => "3d axes".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
             PrimitiveType::Function => "functions".to_owned(),
-            PrimitiveType::Tag => "tags".to_owned(),
             PrimitiveType::TagDecl => "tag declarators".to_owned(),
             PrimitiveType::TagId => "tag identifiers".to_owned(),
         }
@@ -426,7 +421,6 @@ impl PrimitiveType {
         match (self, other) {
             (_, PrimitiveType::Any) => true,
             (PrimitiveType::Number(n1), PrimitiveType::Number(n2)) => n1.subtype(n2),
-            (PrimitiveType::TagId, PrimitiveType::Tag) | (PrimitiveType::TagDecl, PrimitiveType::Tag) => true,
             (t1, t2) => t1 == t2,
         }
     }
@@ -442,7 +436,6 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Number(NumericType::Any) => write!(f, "number(any units)"),
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
-            PrimitiveType::Tag => write!(f, "tag"),
             PrimitiveType::TagDecl => write!(f, "tag declarator"),
             PrimitiveType::TagId => write!(f, "tag identifier"),
             PrimitiveType::Sketch => write!(f, "Sketch"),
@@ -1297,19 +1290,13 @@ impl KclValue {
             },
             PrimitiveType::TagId => match self {
                 KclValue::TagIdentifier { .. } => Ok(self.clone()),
+                s @ KclValue::String { value, .. } if ["start", "end", "START", "END"].contains(&&**value) => {
+                    Ok(s.clone())
+                }
                 _ => Err(self.into()),
             },
             PrimitiveType::TagDecl => match self {
                 KclValue::TagDeclarator { .. } => Ok(self.clone()),
-                _ => Err(self.into()),
-            },
-            PrimitiveType::Tag => match self {
-                KclValue::TagDeclarator { .. } | KclValue::TagIdentifier { .. } | KclValue::Uuid { .. } => {
-                    Ok(self.clone())
-                }
-                s @ KclValue::String { value, .. } if ["start", "end", "START", "END"].contains(&&**value) => {
-                    Ok(s.clone())
-                }
                 _ => Err(self.into()),
             },
         }
@@ -1503,7 +1490,7 @@ impl KclValue {
             }
             KclValue::TagIdentifier(_) => Some(RuntimeType::Primitive(PrimitiveType::TagId)),
             KclValue::TagDeclarator(_) => Some(RuntimeType::Primitive(PrimitiveType::TagDecl)),
-            KclValue::Uuid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Tag)),
+            KclValue::Uuid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Edge)),
             KclValue::Function { .. } => Some(RuntimeType::Primitive(PrimitiveType::Function)),
             KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => None,
         }

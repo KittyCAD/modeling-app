@@ -14,8 +14,8 @@ sweep(
   sectional?: bool,
   tolerance?: number(Length),
   relativeTo?: string,
-  tagStart?: tag,
-  tagEnd?: tag,
+  tagStart?: TagDecl,
+  tagEnd?: TagDecl,
 ): [Solid; 1+]
 ```
 
@@ -37,8 +37,8 @@ swept along the same path.
 | `sectional` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Tolerance for this operation. | No |
 | `relativeTo` | [`string`](/docs/kcl-std/types/std-types-string) | What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. | No |
-| `tagStart` | [`tag`](/docs/kcl-std/types/std-types-tag) | A named tag for the face at the start of the sweep, i.e. the original sketch. | No |
-| `tagEnd` | [`tag`](/docs/kcl-std/types/std-types-tag) | A named tag for the face at the end of the sweep. | No |
+| `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the sweep, i.e. the original sketch. | No |
+| `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the sweep. | No |
 
 ### Returns
 
