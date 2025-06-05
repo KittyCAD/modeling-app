@@ -30,7 +30,7 @@ win:
   target:
     - target: nsis
       arch:
-        # - x64
+        - x64
         - arm64
   signtoolOptions:
     sign: "./scripts/sign-win.js"
