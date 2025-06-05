@@ -109,7 +109,7 @@ impl JsonSchema for TyF64 {
 }
 
 impl Args {
-    pub(crate) fn get_kw_arg_opt_typed<T>(
+    pub(crate) fn get_kw_arg_opt<T>(
         &self,
         label: &str,
         ty: &RuntimeType,
@@ -127,15 +127,10 @@ impl Args {
             }
         }
 
-        self.get_kw_arg_typed(label, ty, exec_state).map(Some)
+        self.get_kw_arg(label, ty, exec_state).map(Some)
     }
 
-    pub(crate) fn get_kw_arg_typed<T>(
-        &self,
-        label: &str,
-        ty: &RuntimeType,
-        exec_state: &mut ExecState,
-    ) -> Result<T, KclError>
+    pub(crate) fn get_kw_arg<T>(&self, label: &str, ty: &RuntimeType, exec_state: &mut ExecState) -> Result<T, KclError>
     where
         T: for<'a> FromKclValue<'a>,
     {
@@ -216,7 +211,7 @@ impl Args {
         label: &str,
         exec_state: &mut ExecState,
     ) -> Result<(Vec<KclValue>, RuntimeType), KclError> {
-        let value = self.get_unlabeled_kw_arg_typed(label, &RuntimeType::any_array(), exec_state)?;
+        let value = self.get_unlabeled_kw_arg(label, &RuntimeType::any_array(), exec_state)?;
         Ok(match value {
             KclValue::HomArray { value, ty } => (value, ty),
             KclValue::Tuple { value, .. } => (value, RuntimeType::any()),
@@ -226,7 +221,7 @@ impl Args {
 
     /// Get the unlabeled keyword argument. If not set, returns Err. If it
     /// can't be converted to the given type, returns Err.
-    pub(crate) fn get_unlabeled_kw_arg_typed<T>(
+    pub(crate) fn get_unlabeled_kw_arg<T>(
         &self,
         label: &str,
         ty: &RuntimeType,

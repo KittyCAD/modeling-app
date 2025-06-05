@@ -16,10 +16,10 @@ pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
 /// Create chamfers on tagged paths.
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::solid(), exec_state)?;
-    let length: TyF64 = args.get_kw_arg_typed("length", &RuntimeType::length(), exec_state)?;
+    let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
     let tags = args.kw_arg_edge_array_and_source("tags")?;
-    let tag = args.get_kw_arg_opt_typed("tag", &RuntimeType::tag_decl(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     super::fillet::validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
