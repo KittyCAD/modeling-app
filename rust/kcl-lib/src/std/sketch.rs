@@ -1750,23 +1750,17 @@ pub async fn elliptic_point(exec_state: &mut ExecState, args: Args) -> Result<Kc
     args.make_kcl_val_from_point(elliptic_point, exec_state.length_unit().into())
 }
 
-/// ```no_run
-/// point001 = ellipticPoint(x = 2, majorRadius = 2, minorRadius = 1)
-/// point002 = ellipticPoint(y = 0, majorRadius = 2, minorRadius = 1)
-/// assert(point001[0], isEqualTo = point002[0])
-/// assert(point001[1], isEqualTo = point002[1])
-///```
-#[stdlib {
-    name = "ellipticPoint",
-    unlabeled_first = false,
-    args = {
-        major_radius = { docs = "The major radius a of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1." },
-        minor_radius = { docs = "The minor radius b of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1." },
-        x = { docs = "The x value of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Will calculate the point y that satisfies the equation and returns (x, y). Incompatible with `y`."},
-        y = { docs = "The y value of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Will calculate the point x that satisfies the equation and returns (x, y). Incompatible with `x`."},
-    },
-    tags = ["sketch"]
-}]
+// #[stdlib {
+//     name = "ellipticPoint",
+//     unlabeled_first = false,
+//     args = {
+//         major_radius = { docs = "The major radius a of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1." },
+//         minor_radius = { docs = "The minor radius b of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1." },
+//         x = { docs = "The x value of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Will calculate the point y that satisfies the equation and returns (x, y). Incompatible with `y`."},
+//         y = { docs = "The y value of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Will calculate the point x that satisfies the equation and returns (x, y). Incompatible with `x`."},
+//     },
+//     tags = ["sketch"]
+// }]
 async fn inner_elliptic_point(
     x: Option<TyF64>,
     y: Option<TyF64>,
@@ -1778,14 +1772,16 @@ async fn inner_elliptic_point(
     let minor_radius = minor_radius.n;
     if let Some(x) = x {
         if x.n > major_radius {
-            Err(KclError::Type(KclErrorDetails::new(
-                format!(
-                    "Invalid input. The x value, {}, cannot be larger than the major radius {}.",
-                    x.n, major_radius
-                )
-                .to_owned(),
-                vec![args.source_range],
-            )))
+            Err(KclError::Type {
+                details: KclErrorDetails::new(
+                    format!(
+                        "Invalid input. The x value, {}, cannot be larger than the major radius {}.",
+                        x.n, major_radius
+                    )
+                    .to_owned(),
+                    vec![args.source_range],
+                ),
+            })
         } else {
             Ok((
                 x.n,
@@ -1795,14 +1791,16 @@ async fn inner_elliptic_point(
         }
     } else if let Some(y) = y {
         if y.n > minor_radius {
-            Err(KclError::Type(KclErrorDetails::new(
-                format!(
-                    "Invalid input. The y value, {}, cannot be larger than the major radius {}.",
-                    y.n, major_radius
-                )
-                .to_owned(),
-                vec![args.source_range],
-            )))
+            Err(KclError::Type {
+                details: KclErrorDetails::new(
+                    format!(
+                        "Invalid input. The y value, {}, cannot be larger than the major radius {}.",
+                        y.n, major_radius
+                    )
+                    .to_owned(),
+                    vec![args.source_range],
+                ),
+            })
         } else {
             Ok((
                 major_radius * (1.0 - y.n.powf(2.0) / minor_radius.powf(2.0)).sqrt(),
@@ -1811,10 +1809,12 @@ async fn inner_elliptic_point(
                 .into())
         }
     } else {
-        Err(KclError::Type(KclErrorDetails::new(
-            "Invalid input. Must have either x or y, you cannot have both or neither.".to_owned(),
-            vec![args.source_range],
-        )))
+        Err(KclError::Type {
+            details: KclErrorDetails::new(
+                "Invalid input. Must have either x or y, you cannot have both or neither.".to_owned(),
+                vec![args.source_range],
+            ),
+        })
     }
 }
 
@@ -1852,32 +1852,22 @@ pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     })
 }
 
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [0, 0])
-///   |> elliptic(
-///         endAbsolute = [10,0],
-///         interiorAbsolute = [5,5]
-///      )
-///   |> close()
-/// example = extrude(exampleSketch, length = 10)
-/// ```
-#[stdlib {
-    name = "elliptic",
-    unlabeled_first = true,
-    args = {
-        sketch = { docs = "Which sketch should this path be added to?" },
-        center = { docs = "The center of the ellipse.", include_in_snippet = true },
-        angle_start = { docs = "Where along the elliptic should this arc start?", include_in_snippet = true },
-        angle_end = { docs = "Where along the elliptic should this arc end?", include_in_snippet = true },
-        major_radius = { docs = "The major radius a of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.", include_in_snippet = true },
-        minor_radius = { docs = "The minor radius b of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.", include_in_snippet = true },
-        interior_absolute = { docs = "Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
-        end_absolute = { docs = "Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
-        tag = { docs = "Create a new tag which refers to this line"},
-    },
-    tags = ["sketch"]
-}]
+// #[stdlib {
+//     name = "elliptic",
+//     unlabeled_first = true,
+//     args = {
+//         sketch = { docs = "Which sketch should this path be added to?" },
+//         center = { docs = "The center of the ellipse.", include_in_snippet = true },
+//         angle_start = { docs = "Where along the elliptic should this arc start?", include_in_snippet = true },
+//         angle_end = { docs = "Where along the elliptic should this arc end?", include_in_snippet = true },
+//         major_radius = { docs = "The major radius a of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.", include_in_snippet = true },
+//         minor_radius = { docs = "The minor radius b of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.", include_in_snippet = true },
+//         interior_absolute = { docs = "Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
+//         end_absolute = { docs = "Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
+//         tag = { docs = "Create a new tag which refers to this line"},
+//     },
+//     tags = ["sketch"]
+// }]
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn inner_elliptic(
     sketch: Sketch,
@@ -1973,20 +1963,17 @@ pub async fn hyperbolic_point(exec_state: &mut ExecState, args: Args) -> Result<
     args.make_kcl_val_from_point(hyperbolic_point, exec_state.length_unit().into())
 }
 
-/// ```no_run
-/// point = hyperbolicPoint(x = 5, semiMajor = 2, semiMinor = 1)
-///```
-#[stdlib {
-    name = "hyperbolicPoint",
-    unlabeled_first = false,
-    args = {
-        semi_major = { docs = "The semi major value a of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
-        semi_minor = { docs = "The semi minor value b of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
-        x = { docs = "The x value of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1. Will calculate the point y that satisfies the equation and returns (x, y). Incompatible with `y`."},
-        y = { docs = "The y value of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1. Will calculate the point x that satisfies the equation and returns (x, y). Incompatible with `x`."},
-    },
-    tags = ["sketch"]
-}]
+// #[stdlib {
+//     name = "hyperbolicPoint",
+//     unlabeled_first = false,
+//     args = {
+//         semi_major = { docs = "The semi major value a of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
+//         semi_minor = { docs = "The semi minor value b of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
+//         x = { docs = "The x value of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1. Will calculate the point y that satisfies the equation and returns (x, y). Incompatible with `y`."},
+//         y = { docs = "The y value of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1. Will calculate the point x that satisfies the equation and returns (x, y). Incompatible with `x`."},
+//     },
+//     tags = ["sketch"]
+// }]
 async fn inner_hyperbolic_point(
     x: Option<TyF64>,
     y: Option<TyF64>,
@@ -1998,24 +1985,28 @@ async fn inner_hyperbolic_point(
     let semi_minor = semi_minor.n;
     if let Some(x) = x {
         if x.n < semi_major {
-            Err(KclError::Type(KclErrorDetails::new(
-                format!(
-                    "Invalid input. The x value, {}, cannot be less than the semi major value, {}.",
-                    x.n, semi_major
-                )
-                .to_owned(),
-                vec![args.source_range],
-            )))
+            Err(KclError::Type {
+                details: KclErrorDetails::new(
+                    format!(
+                        "Invalid input. The x value, {}, cannot be less than the semi major value, {}.",
+                        x.n, semi_major
+                    )
+                    .to_owned(),
+                    vec![args.source_range],
+                ),
+            })
         } else {
             Ok((x.n, semi_minor * (x.n.powf(2.0) / semi_major.powf(2.0) - 1.0).sqrt()).into())
         }
     } else if let Some(y) = y {
         Ok((semi_major * (y.n.powf(2.0) / semi_minor.powf(2.0) + 1.0).sqrt(), y.n).into())
     } else {
-        Err(KclError::Type(KclErrorDetails::new(
-            "Invalid input. Must have either x or y, cannot have both or neither.".to_owned(),
-            vec![args.source_range],
-        )))
+        Err(KclError::Type {
+            details: KclErrorDetails::new(
+                "Invalid input. Must have either x or y, cannot have both or neither.".to_owned(),
+                vec![args.source_range],
+            ),
+        })
     }
 }
 
@@ -2057,32 +2048,21 @@ fn hyperbolic_tangent(point: Point2d, semi_major: f64, semi_minor: f64) -> [f64;
     (point.y * semi_major.powf(2.0), point.x * semi_minor.powf(2.0)).into()
 }
 
-/// ```no_run
-/// exampleSketch = startSketchOn(XY)
-///   |> startProfile(at = [0,0])
-///   |> hyperbolic(
-///         end = [10,0],
-///         semiMajor = 2,
-///         semiMinor = 1,
-///         interior = [0,0]
-///   )
-///   |>close()
-///```
-#[stdlib {
-    name = "hyperbolic",
-    unlabeled_first = true,
-    args = {
-        sketch = { docs = "Which sketch should this path be added to?" },
-        semi_major = { docs = "The semi major value a of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
-        semi_minor = { docs = "The semi minor value b of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
-        interior = { docs = "A point that lies on the conic segment. This point is relative to the start of the segment. Requires `end`. Incompatible with `interior_absolute` and `end_absolute`." },
-        interior_absolute = { docs = "A point that lies on the conic. Requires `end_absolute`. Incompatible with `interior` and `end`." },
-        end = { docs = "Where should this arc end? This point is relative to the start of the segment. Requires `interior`. Incompatible with `interior_absolute` and `end_absolute`." },
-        end_absolute = { docs = "Where should this arc end? Requires `interior_absolute`. Incompatible with `interior` and `end`." },
-        tag = { docs = "Create a new tag which refers to this line"},
-    },
-    tags = ["sketch"]
-}]
+// #[stdlib {
+//     name = "hyperbolic",
+//     unlabeled_first = true,
+//     args = {
+//         sketch = { docs = "Which sketch should this path be added to?" },
+//         semi_major = { docs = "The semi major value a of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
+//         semi_minor = { docs = "The semi minor value b of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
+//         interior = { docs = "A point that lies on the conic segment. This point is relative to the start of the segment. Requires `end`. Incompatible with `interior_absolute` and `end_absolute`." },
+//         interior_absolute = { docs = "A point that lies on the conic. Requires `end_absolute`. Incompatible with `interior` and `end`." },
+//         end = { docs = "Where should this arc end? This point is relative to the start of the segment. Requires `interior`. Incompatible with `interior_absolute` and `end_absolute`." },
+//         end_absolute = { docs = "Where should this arc end? Requires `interior_absolute`. Incompatible with `interior` and `end`." },
+//         tag = { docs = "Create a new tag which refers to this line"},
+//     },
+//     tags = ["sketch"]
+// }]
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn inner_hyperbolic(
     sketch: Sketch,
@@ -2108,11 +2088,11 @@ pub(crate) async fn inner_hyperbolic(
             None,
             None,
             false,
-            Some(KclError::Type(KclErrorDetails::new(
+            Some(KclError::Type{details: KclErrorDetails::new(
                 "Invalid combination of arguments. Either provide (end, interior) or (endAbsolute, interiorAbsolute)"
                     .to_owned(),
                 vec![args.source_range],
-            ))),
+            )}),
         ),
     };
 
@@ -2183,22 +2163,16 @@ pub async fn parabolic_point(exec_state: &mut ExecState, args: Args) -> Result<K
     args.make_kcl_val_from_point(parabolic_point, exec_state.length_unit().into())
 }
 
-/// ```no_run
-/// point001 = parabolicPoint(x = 5, a = 0.1, b = 0, c = 0)
-/// point002 = parabolicPoint(y = 2.5, a = 0.1, b = 0, c = 0)
-/// assert(point001[0], isEqualTo = point002[0])
-/// assert(point001[1], isEqualTo = point002[1])
-///```
-#[stdlib {
-    name = "parabolicPoint",
-    unlabeled_first = false,
-    args = {
-        coefficients = { docs = "The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c." },
-        x = { docs = "The x value of the parabolic equation y = ax^2. Will calculate the point y that satisfies the equation and returns (x, y). Incompatible with `y`."},
-        y = { docs = "The y value of the parabolic equation y = ax^2. Will calculate the point x that satisfies the equation and returns (x, y). Incompatible with `x`."},
-    },
-    tags = ["sketch"]
-}]
+// #[stdlib {
+//     name = "parabolicPoint",
+//     unlabeled_first = false,
+//     args = {
+//         coefficients = { docs = "The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c." },
+//         x = { docs = "The x value of the parabolic equation y = ax^2. Will calculate the point y that satisfies the equation and returns (x, y). Incompatible with `y`."},
+//         y = { docs = "The y value of the parabolic equation y = ax^2. Will calculate the point x that satisfies the equation and returns (x, y). Incompatible with `x`."},
+//     },
+//     tags = ["sketch"]
+// }]
 async fn inner_parabolic_point(
     x: Option<TyF64>,
     y: Option<TyF64>,
@@ -2214,10 +2188,12 @@ async fn inner_parabolic_point(
         let det = (b.powf(2.0) - 4.0 * a * (c - y.n)).sqrt();
         Ok(((-b + det) / (2.0 * a), y.n).into())
     } else {
-        Err(KclError::Type(KclErrorDetails::new(
-            "Invalid input. Must have either x or y, cannot have both or neither.".to_owned(),
-            vec![args.source_range],
-        )))
+        Err(KclError::Type {
+            details: KclErrorDetails::new(
+                "Invalid input. Must have either x or y, cannot have both or neither.".to_owned(),
+                vec![args.source_range],
+            ),
+        })
     }
 }
 
@@ -2244,28 +2220,18 @@ fn parabolic_tangent(point: Point2d, a: f64, b: f64) -> [f64; 2] {
     (1.0, 2.0 * a * point.x + b).into()
 }
 
-/// ```no_run
-/// exampleSketch = startSketchOn(XY)
-///   |> startProfile(at = [0,0])
-///   |> parabolic(
-///         end = [10,0],
-///         coefficient = 2,
-///         interior = [0,0]
-///   )
-///   |>close()
-///```
-#[stdlib {
-    name = "parabolic",
-    unlabeled_first = true,
-    args = {
-        sketch = { docs = "Which sketch should this path be added to?" },
-        coefficients = { docs = "The coefficienta [a, b, c] of the parabolic equation y = ax^2 + bx + c. Incompatible with `interior`." },
-        interior = { docs = "Any point between the arc's start and end?. Incompatible with `coefficients." },
-        end = { docs = "Where should this arc end?" },
-        tag = { docs = "Create a new tag which refers to this line"},
-    },
-    tags = ["sketch"]
-}]
+// #[stdlib {
+//     name = "parabolic",
+//     unlabeled_first = true,
+//     args = {
+//         sketch = { docs = "Which sketch should this path be added to?" },
+//         coefficients = { docs = "The coefficienta [a, b, c] of the parabolic equation y = ax^2 + bx + c. Incompatible with `interior`." },
+//         interior = { docs = "Any point between the arc's start and end?. Incompatible with `coefficients." },
+//         end = { docs = "Where should this arc end?" },
+//         tag = { docs = "Create a new tag which refers to this line"},
+//     },
+//     tags = ["sketch"]
+// }]
 pub(crate) async fn inner_parabolic(
     sketch: Sketch,
     coefficients: Option<[TyF64; 3]>,
@@ -2279,10 +2245,12 @@ pub(crate) async fn inner_parabolic(
     let id = exec_state.next_uuid();
 
     if (coefficients.is_some() && interior.is_some()) || (coefficients.is_none() && interior.is_none()) {
-        return Err(KclError::Type(KclErrorDetails::new(
-            "Invalid combination of arguments. Either provide (a, b, c) or (interior)".to_owned(),
-            vec![args.source_range],
-        )));
+        return Err(KclError::Type {
+            details: KclErrorDetails::new(
+                "Invalid combination of arguments. Either provide (a, b, c) or (interior)".to_owned(),
+                vec![args.source_range],
+            ),
+        });
     }
 
     let (end, _) = untype_point(end);
@@ -2412,32 +2380,20 @@ pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     })
 }
 
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [0, 0])
-///   |> conic(
-///         end = [10,0],
-///         endTangent = [0,1],
-///         interior = [5,5],
-///         startTangent = [0, -1],
-///      )
-///   |> close()
-/// example = extrude(exampleSketch, length = 10)
-/// ```
-#[stdlib {
-    name = "conic",
-    unlabeled_first = true,
-    args = {
-        sketch = { docs = "Which sketch should this path be added to?" },
-        start_tangent = { docs = "The tangent of the conic at the start point (the end of the previous path segement)" },
-        end_tangent = { docs = "The tangent of the conic at the end point" },
-        interior = { docs = "Any point between the arc's start and end? Incompatible with `coefficients`." },
-        coefficients = { docs = "The coefficients [a, b, c, d, e, f] of the generic conic equation ax^2 + by^2 + cxy + dx + ey + f = 0. Incompatible with `endTangent`."},
-        end = { docs = "Where should this arc end?" },
-        tag = { docs = "Create a new tag which refers to this line"},
-    },
-    tags = ["sketch"]
-}]
+// #[stdlib {
+//     name = "conic",
+//     unlabeled_first = true,
+//     args = {
+//         sketch = { docs = "Which sketch should this path be added to?" },
+//         start_tangent = { docs = "The tangent of the conic at the start point (the end of the previous path segement)" },
+//         end_tangent = { docs = "The tangent of the conic at the end point" },
+//         interior = { docs = "Any point between the arc's start and end? Incompatible with `coefficients`." },
+//         coefficients = { docs = "The coefficients [a, b, c, d, e, f] of the generic conic equation ax^2 + by^2 + cxy + dx + ey + f = 0. Incompatible with `endTangent`."},
+//         end = { docs = "Where should this arc end?" },
+//         tag = { docs = "Create a new tag which refers to this line"},
+//     },
+//     tags = ["sketch"]
+// }]
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn inner_conic(
     sketch: Sketch,
@@ -2456,10 +2412,12 @@ pub(crate) async fn inner_conic(
     if (coefficients.is_some() && (start_tangent.is_some() || end_tangent.is_some()))
         || (coefficients.is_none() && (start_tangent.is_none() && end_tangent.is_none()))
     {
-        return Err(KclError::Type(KclErrorDetails::new(
-            "Invalid combination of arguments. Either provide coefficients or interior".to_owned(),
-            vec![args.source_range],
-        )));
+        return Err(KclError::Type {
+            details: KclErrorDetails::new(
+                "Invalid combination of arguments. Either provide coefficients or interior".to_owned(),
+                vec![args.source_range],
+            ),
+        });
     }
 
     let (end, _) = untype_array(end);

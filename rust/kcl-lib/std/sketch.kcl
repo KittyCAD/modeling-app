@@ -291,7 +291,7 @@ export fn ellipse(
   /// Create a new tag which refers to this ellipse.
   tag?: tag,
 ): Sketch {}
-=======
+
 /// Extend a 2-dimensional sketch through a third dimension in order to
 /// create new 3-dimensional volume, or if extruded into an existing volume,
 /// cut into an existing solid.
@@ -1939,3 +1939,193 @@ export fn subtract2d(
   /// The shape(s) which should be cut out of the sketch.
   tool: [Sketch; 1+],
 ): Sketch {}
+ 
+
+/// Add a conic section to an existing sketch.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> conic(
+///         end = [10,0],
+///         endTangent = [0,1],
+///         interior = [5,5],
+///         startTangent = [0, -1],
+///      )
+///   |> close()
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+@(impl = std_rust)
+export fn conic(
+  /// Which sketch should this path be added to?
+  @sketch: Sketch,
+  /// Any point between the segment's start and end. Incompatible with `coefficients`.
+  interior: Point2d,
+  /// Where should the path end?.
+  end: Point2d,
+  /// The coefficients [a, b, c, d, e, f] of the generic conic equation ax^2 + by^2 + cxy + dx + ey + f = 0. If provided the start and end tangents will be calculated using this equation. Incompatible with `startTangent` and `endTangent`.
+  coefficients?: [number(Count); 6],
+  /// The tangent of the conic section at the start. If not provided the tangent of the previous path segment is used.
+  startTangent?: Point2d,
+  /// The tangnet of the conic section at the end. Incompatible with `coefficients`.
+  endTangent?: Point2d,
+  /// Create a new tag which refers to this segment.
+  tag?: tag,
+  ): Sketch {}
+
+/// Add a parabolic segment to an existing skwtch.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [0,0])
+///   |> parabolic(
+///         end = [10,0],
+///         coefficient = 2,
+///         interior = [0,0]
+///   )
+///   |>close()
+///```
+@(impl = std_rust)
+export fn parabolic(
+  /// Which sketch should this path be added to?
+  @sketch: Sketch,
+  /// Where should the path end?
+  end: Point2d,
+  /// The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c. Incompatible with `interior`.
+  coefficients?: [number(Count); 3],
+  /// A point between the segment's start and end that lies on the parabola. Incompatible with `coefficients`.
+  interior?: Point2d,
+  /// Create a new tag which refers to this segment.
+  tag?: tag,
+): Sketch {}
+ 
+/// Calculate the point (x, y) on a parabola given x or y and the coefficients [a, b, c] of the parabola.
+///
+/// ```kcl
+/// point001 = parabolicPoint(x = 5, a = 0.1, b = 0, c = 0)
+/// point002 = parabolicPoint(y = 2.5, a = 0.1, b = 0, c = 0)
+/// assert(point001[0], isEqualTo = point002[0])
+/// assert(point001[1], isEqualTo = point002[1])
+///```
+@(impl = std_rust)
+export fn parabolicPoint(
+  /// The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c.
+  coefficients: [number(Count); 3],
+  /// The x value. Calculates y and returns (x, y). Incompatible with `y`.
+  x?: number(Length),
+  /// The y value. Calculates x and returns (x, y). Incompatible with `x`.
+  y?: number(Length),
+): Point2d {}
+
+/// Add a hyperbolic section to an existing sketch.
+/// 
+/// ```kcl
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [0,0])
+///   |> hyperbolic(
+///         end = [10,0],
+///         semiMajor = 2,
+///         semiMinor = 1,
+///         interior = [0,0]
+///   )
+///   |>close()
+///```
+@(impl = std_rust)
+export fn hyperbolic(
+  /// Which sketch should this path be added to?
+  @sketch: Sketch,
+  /// The semi major value, a, of the hyperbolic equation x^2 / a ^ 2 - y^2 / b^2 = 1.
+  semiMajor: number(Length),
+  ///  The semi minor value, b, of the hyperbolic equation x^2 / a ^ 2 - y^2 / b^2 = 1.
+  semiMinor: number(Length),
+  /// Any point between the segments's start and end? Requires `end`. Incompatible with `endAbsolute` or `interiorAbsolute`.
+  interior?: Point2d,
+  /// Any point between the segments's start and end? This point is relative to the start point of the segment. Requires `endAbsolute`. Incompatible with `end` or `interior`.
+  interiorAbsolute?: Point2d,
+  /// Where should this segment endt? This point is relagive to the start point of the segment. Requires `interior`. Incompatible with `endAbsolute` or `interiorAbsolute`.
+  end?: Point2d,
+  /// Where should this segment end? Requires `interiorAbsolute`. Incompatible with `end` or `interior`.
+  endAbsolute?: Point2d,
+  /// Create a new tag which refers to this arc.
+  tag?: tag,
+): Sketch {}
+
+/// Calculate the point (x, y) on a hyperbola given x or y and the semi major/minor values of the hyperbolic.
+///
+/// ```kcl
+/// point = hyperbolicPoint(x = 5, semiMajor = 2, semiMinor = 1)
+///```
+@(impl = std_rust)
+export fn hyperbolicPoint(
+  /// The semi major value, a, of the hyperbolic equation x^2 / a ^ 2 - y^2 / b^2 = 1.
+  semiMajor: number(Count),
+  ///  The semi minor value, b, of the hyperbolic equation x^2 / a ^ 2 - y^2 / b^2 = 1.
+  semiMinor: number(Count),
+  /// The x value. Calculates y and returns (x, y). Incompatible with `y`.
+  x?: number(Length),
+  /// The y value. Calculates x and returns (x, y). Incompatible with `x`.
+  y?: number(Length),
+): Point2d {}
+
+/// Add a parabolic section to an existing sketch.
+///
+/// ```kcl
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> elliptic(
+///         endAbsolute = [10,0],
+///         interiorAbsolute = [5,5]
+///      )
+///   |> close()
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+@(impl = std_rust)
+export fn elliptic(
+  /// Which sketch should this path be added to?
+  @sketch: Sketch,
+  /// The center of the ellipse.
+  @(snippetArray = ["0", "0"])
+  center: Point2d,
+  /// Where along the ellptic should this segment start?
+  @(includeInSnippet = true)
+  angleStart: number(Angle),
+  /// Where along the ellptic should this segment end?
+  @(includeInSnippet = true)
+  angleEnd: number(Angle),
+  /// The major radius, a, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.
+  @(includeInSnippet = true)
+  majorRadius: number(Length),
+  /// The minor radius, b, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.
+  @(includeInSnippet = true)
+  minorRadius: number(Length),
+  /// Any point between the segment's start and end. Requies `endAbsolute`. Incompatible with `interior` or `end`.
+  interiorAbsolute?: Point2d,
+  /// Where should this segment end? Requires `interiorAbsolute`. Incompatible with `interior` or `end`.
+  endAbsolute?: Point2d,
+  /// Any point between the segment's start and end. This point is relative to the start point. Requires `end`. Incompatible with `interiorAbsolute` or `endAbsolute`.
+  interior?: Point2d,
+  /// Where should this segment end? This point is relative to the start point. Requires `interior`. Incompatible with `interiorAbsolute` or `endAbsolute`.
+  end?: Point2d,
+  /// Create a new tag which refers to this arc.
+  tag?: tag,
+): Sketch {}
+
+/// Calculate the point (x, y) on an ellipse given x or y and the center and major/minor radii of the ellipse.
+///
+/// ```kcl
+/// point001 = ellipticPoint(x = 2, majorRadius = 2, minorRadius = 1)
+/// point002 = ellipticPoint(y = 0, majorRadius = 2, minorRadius = 1)
+/// assert(point001[0], isEqualTo = point002[0])
+/// assert(point001[1], isEqualTo = point002[1])
+///```
+@(impl = std_rust)
+export fn ellipticPoint(
+  /// The major radius, a, of the elliptic equation x^2 / a ^ 2 + y^2 / b^2 = 1.
+  majorRadius: number(Count),
+  ///  The minor radius, b, of the hyperbolic equation x^2 / a ^ 2 + y^2 / b^2 = 1.
+  minorRadius: number(Count),
+  /// The x value. Calculates y and returns (x, y). Incompatible with `y`.
+  x?: number(Length),
+  /// The y value. Calculates x and returns (x, y). Incompatible with `x`.
+  y?: number(Length),
+): Point2d {}
