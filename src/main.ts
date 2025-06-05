@@ -452,13 +452,37 @@ app.on('ready', () => {
   // TODO: we're getting `Error: Response ends without calling any handlers` with our setup,
   // so at the moment this isn't worth enabling
   autoUpdater.disableDifferentialDownload = true
-  setTimeout(() => {
-    autoUpdater.checkForUpdates().catch(reportRejection)
-  }, 1000)
+
+  // Check for updates in the background at startup and then every 15 minutes
+  let backgroundCheckingForUpdates = false
+  const checkForUpdatesBackground = async () => {
+    backgroundCheckingForUpdates = true
+    try {
+      await autoUpdater.checkForUpdates()
+    } catch (error) {
+      reportRejection(error)
+    } finally {
+      backgroundCheckingForUpdates = false
+    }
+  }
+  const oneSecond = 1000
   const fifteenMinutes = 15 * 60 * 1000
-  setInterval(() => {
-    autoUpdater.checkForUpdates().catch(reportRejection)
-  }, fifteenMinutes)
+  setTimeout(() => checkForUpdatesBackground(), oneSecond)
+  setInterval(() => checkForUpdatesBackground(), fifteenMinutes)
+
+  autoUpdater.on('checking-for-update', () => {
+    console.log('checking-for-update')
+    if (!backgroundCheckingForUpdates) {
+      mainWindow?.webContents.send('update-checking')
+    }
+  })
+
+  autoUpdater.on('update-not-available', (error) => {
+    console.error('update-not-available', error)
+    if (!backgroundCheckingForUpdates) {
+      mainWindow?.webContents.send('update-not-available')
+    }
+  })
 
   autoUpdater.on('error', (error) => {
     console.error('update-error', error)
