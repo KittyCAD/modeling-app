@@ -9,6 +9,20 @@ import path from 'path'
 import fs from 'node:fs'
 import type { Selections } from '@src/lib/selections'
 
+/**
+ * This test is some what unique, and in fact it doesn't assert anything aside from capturing snapshots
+ * The snap shots are the request to the ML iteration endpoint, so that the ML team can use these in their own
+ * test harness.
+ * The reason why this is done at all is because the frontEnd has to be the source of truth because in the case of a user
+ * selecting something in the UI, the UI turns that artifactGraph selection into meta prompt that accompanies the user's prompt
+ *
+ * These are down as unit tests, because when a user selects something in the UI, that click resolves to an artifact in the artifactGraph
+ * So long as we're able to find the same artifact in the graph, we don't need the click.
+ * So far `artifactSearchSnippet` that has the file name, a searchString (some code in that file) and the artifact type ('wall', sweepEdge' etc) has
+ * been enough to find the artifact in the graph. That might need to change with more examples OR later if we have rock-solid stable ids
+ * We can possible just hard-code the ids and have that be reliable.
+ */
+
 // Custom JSON snapshot utilities
 const SNAPSHOTS_DIR = path.join(__dirname, '__snapshots__')
 const SNAPSHOTS_FILE = path.join(SNAPSHOTS_DIR, 'modifyWithTTC.test.json')
