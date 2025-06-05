@@ -47,7 +47,7 @@ it('formats numbers with units', () => {
 describe('test errFromErrWithOutputs', () => {
   it('converts KclErrorWithOutputs to KclError', () => {
     const blob =
-      '{"error":{"kind":"internal","sourceRanges":[],"backtrace":[],"msg":"Cache busted"},"nonFatal":[],"operations":[],"artifactCommands":[],"artifactGraph":{"map":{}},"filenames":{},"sourceFiles":{},"defaultPlanes":null}'
+      '{"error":{"kind":"internal","details":{"sourceRanges":[],"backtrace":[],"msg":"Cache busted"}},"nonFatal":[],"operations":[],"artifactCommands":[],"artifactGraph":{"map":{}},"filenames":{},"sourceFiles":{},"defaultPlanes":null}'
     const error = errFromErrWithOutputs(blob)
     const errorStr = JSON.stringify(error)
     expect(errorStr).toEqual(
@@ -67,5 +67,17 @@ y = foo(center = [3, 4])`)
   )
   expect(await rustImplPathToNode(ast, sr(31, 32))).toStrictEqual(
     getNodePathFromSourceRange(ast, sr(31, 32))
+  )
+
+  const ast2 = assertParse(`a1 = startSketchOn({
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  //            ^
+  yAxis = { x = 0, y = 1, z = 0 },
+  zAxis = { x = 0, y = 0, z = 1 }
+})
+`)
+  expect(await rustImplPathToNode(ast2, sr(73, 74))).toStrictEqual(
+    getNodePathFromSourceRange(ast2, sr(73, 74))
   )
 })

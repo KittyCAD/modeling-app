@@ -5,8 +5,8 @@ use crate::parsing::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
         BinaryPart, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions, FunctionExpression,
         IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier,
-        LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
-        PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
+        LiteralValue, MemberExpression, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter, PipeExpression,
+        Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
     },
     deprecation, DeprecationKind, PIPE_OPERATOR,
 };
@@ -278,11 +278,11 @@ impl Expr {
             ctxt = ExprContext::Other;
         }
         match &self {
-            Expr::BinaryExpression(bin_exp) => bin_exp.recast(options),
+            Expr::BinaryExpression(bin_exp) => bin_exp.recast(options, indentation_level, ctxt),
             Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, ctxt),
             Expr::ArrayRangeExpression(range_exp) => range_exp.recast(options, indentation_level, ctxt),
             Expr::ObjectExpression(ref obj_exp) => obj_exp.recast(options, indentation_level, ctxt),
-            Expr::MemberExpression(mem_exp) => mem_exp.recast(),
+            Expr::MemberExpression(mem_exp) => mem_exp.recast(options, indentation_level, ctxt),
             Expr::Literal(literal) => literal.recast(),
             Expr::FunctionExpression(func_exp) => {
                 let mut result = if is_decl { String::new() } else { "fn".to_owned() };
@@ -299,7 +299,7 @@ impl Expr {
             }
             Expr::TagDeclarator(tag) => tag.recast(),
             Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
-            Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
+            Expr::UnaryExpression(unary_exp) => unary_exp.recast(options, indentation_level, ctxt),
             Expr::IfExpression(e) => e.recast(options, indentation_level, ctxt),
             Expr::PipeSubstitution(_) => crate::parsing::PIPE_SUBSTITUTION_OPERATOR.to_string(),
             Expr::LabelledExpression(e) => {
@@ -332,7 +332,7 @@ impl AscribedExpression {
 }
 
 impl BinaryPart {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         match &self {
             BinaryPart::Literal(literal) => literal.recast(),
             BinaryPart::Name(name) => {
@@ -342,12 +342,16 @@ impl BinaryPart {
                     None => result,
                 }
             }
-            BinaryPart::BinaryExpression(binary_expression) => binary_expression.recast(options),
+            BinaryPart::BinaryExpression(binary_expression) => {
+                binary_expression.recast(options, indentation_level, ctxt)
+            }
             BinaryPart::CallExpressionKw(call_expression) => {
                 call_expression.recast(options, indentation_level, ExprContext::Other)
             }
-            BinaryPart::UnaryExpression(unary_expression) => unary_expression.recast(options),
-            BinaryPart::MemberExpression(member_expression) => member_expression.recast(),
+            BinaryPart::UnaryExpression(unary_expression) => unary_expression.recast(options, indentation_level, ctxt),
+            BinaryPart::MemberExpression(member_expression) => {
+                member_expression.recast(options, indentation_level, ctxt)
+            }
             BinaryPart::IfExpression(e) => e.recast(options, indentation_level, ExprContext::Other),
             BinaryPart::AscribedExpression(e) => e.recast(options, indentation_level, ExprContext::Other),
         }
@@ -670,7 +674,7 @@ impl ObjectExpression {
 }
 
 impl MemberExpression {
-    fn recast(&self) -> String {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         let key_str = match &self.property {
             LiteralIdentifier::Identifier(identifier) => {
                 if self.computed {
@@ -682,15 +686,12 @@ impl MemberExpression {
             LiteralIdentifier::Literal(lit) => format!("[{}]", &(*lit.raw)),
         };
 
-        match &self.object {
-            MemberObject::MemberExpression(member_exp) => member_exp.recast() + key_str.as_str(),
-            MemberObject::Identifier(identifier) => identifier.name.to_string() + key_str.as_str(),
-        }
+        self.object.recast(options, indentation_level, ctxt) + key_str.as_str()
     }
 }
 
 impl BinaryExpression {
-    fn recast(&self, options: &FormatOptions) -> String {
+    fn recast(&self, options: &FormatOptions, _indentation_level: usize, ctxt: ExprContext) -> String {
         let maybe_wrap_it = |a: String, doit: bool| -> String {
             if doit {
                 format!("({})", a)
@@ -715,15 +716,15 @@ impl BinaryExpression {
 
         format!(
             "{} {} {}",
-            maybe_wrap_it(self.left.recast(options, 0), should_wrap_left),
+            maybe_wrap_it(self.left.recast(options, 0, ctxt), should_wrap_left),
             self.operator,
-            maybe_wrap_it(self.right.recast(options, 0), should_wrap_right)
+            maybe_wrap_it(self.right.recast(options, 0, ctxt), should_wrap_right)
         )
     }
 }
 
 impl UnaryExpression {
-    fn recast(&self, options: &FormatOptions) -> String {
+    fn recast(&self, options: &FormatOptions, _indentation_level: usize, ctxt: ExprContext) -> String {
         match self.argument {
             BinaryPart::Literal(_)
             | BinaryPart::Name(_)
@@ -731,10 +732,10 @@ impl UnaryExpression {
             | BinaryPart::IfExpression(_)
             | BinaryPart::AscribedExpression(_)
             | BinaryPart::CallExpressionKw(_) => {
-                format!("{}{}", &self.operator, self.argument.recast(options, 0))
+                format!("{}{}", &self.operator, self.argument.recast(options, 0, ctxt))
             }
             BinaryPart::BinaryExpression(_) | BinaryPart::UnaryExpression(_) => {
-                format!("{}({})", &self.operator, self.argument.recast(options, 0))
+                format!("{}({})", &self.operator, self.argument.recast(options, 0, ctxt))
             }
         }
     }
@@ -883,7 +884,7 @@ pub async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::PathBuf
 #[cfg(not(target_arch = "wasm32"))]
 pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -> Result<(), anyhow::Error> {
     let files = walk_dir(&dir.to_path_buf()).await.map_err(|err| {
-        crate::KclError::Internal(crate::errors::KclErrorDetails::new(
+        crate::KclError::new_internal(crate::errors::KclErrorDetails::new(
             format!("Failed to walk directory `{}`: {:?}", dir.display(), err),
             vec![crate::SourceRange::default()],
         ))
@@ -912,7 +913,7 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
                     if ce.severity != crate::errors::Severity::Warning {
                         let report = crate::Report {
                             kcl_source: contents.to_string(),
-                            error: crate::KclError::Semantic(ce.clone().into()),
+                            error: crate::KclError::new_semantic(ce.clone().into()),
                             filename: file.to_string_lossy().to_string(),
                         };
                         let report = miette::Report::new(report);

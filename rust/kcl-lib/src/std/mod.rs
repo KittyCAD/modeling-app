@@ -28,60 +28,16 @@ pub mod utils;
 
 use anyhow::Result;
 pub use args::Args;
-use indexmap::IndexMap;
-use lazy_static::lazy_static;
 
 use crate::{
-    docs::StdLibFn,
     errors::KclError,
     execution::{types::PrimitiveType, ExecState, KclValue},
-    parsing::ast::types::Name,
 };
 
 pub type StdFn = fn(
     &mut ExecState,
     Args,
 ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<KclValue, KclError>> + Send + '_>>;
-
-lazy_static! {
-    static ref CORE_FNS: Vec<Box<dyn StdLibFn>> = vec![
-        Box::new(crate::std::segment::SegEnd),
-        Box::new(crate::std::segment::SegEndX),
-        Box::new(crate::std::segment::SegEndY),
-        Box::new(crate::std::segment::SegStart),
-        Box::new(crate::std::segment::SegStartX),
-        Box::new(crate::std::segment::SegStartY),
-        Box::new(crate::std::segment::LastSegX),
-        Box::new(crate::std::segment::LastSegY),
-        Box::new(crate::std::segment::SegLen),
-        Box::new(crate::std::segment::SegAng),
-        Box::new(crate::std::segment::TangentToEnd),
-        Box::new(crate::std::sketch::InvoluteCircular),
-        Box::new(crate::std::sketch::Line),
-        Box::new(crate::std::sketch::XLine),
-        Box::new(crate::std::sketch::YLine),
-        Box::new(crate::std::sketch::AngledLine),
-        Box::new(crate::std::sketch::AngledLineThatIntersects),
-        Box::new(crate::std::sketch::StartSketchOn),
-        Box::new(crate::std::sketch::StartProfile),
-        Box::new(crate::std::sketch::ProfileStartX),
-        Box::new(crate::std::sketch::ProfileStartY),
-        Box::new(crate::std::sketch::ProfileStart),
-        Box::new(crate::std::sketch::Close),
-        Box::new(crate::std::sketch::Arc),
-        Box::new(crate::std::sketch::TangentialArc),
-        Box::new(crate::std::sketch::BezierCurve),
-        Box::new(crate::std::sketch::Subtract2D),
-    ];
-}
-
-pub fn name_in_stdlib(name: &str) -> bool {
-    CORE_FNS.iter().any(|f| f.name() == name)
-}
-
-pub fn get_stdlib_fn(name: &str) -> Option<Box<dyn StdLibFn>> {
-    CORE_FNS.iter().find(|f| f.name() == name).cloned()
-}
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct StdFnProps {
@@ -206,7 +162,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("transform", "mirror2d") => (
             |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a)),
-            StdFnProps::default("std::transform::mirror2d"),
+            StdFnProps::default("std::transform::mirror2d").include_in_feature_tree(),
         ),
         ("transform", "translate") => (
             |e, a| Box::pin(crate::std::transform::translate(e, a)),
@@ -352,6 +308,114 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::patterns::pattern_circular_2d(e, a)),
             StdFnProps::default("std::sketch::patternCircular2d"),
         ),
+        ("sketch", "segEnd") => (
+            |e, a| Box::pin(crate::std::segment::segment_end(e, a)),
+            StdFnProps::default("std::sketch::segEnd"),
+        ),
+        ("sketch", "segEndX") => (
+            |e, a| Box::pin(crate::std::segment::segment_end_x(e, a)),
+            StdFnProps::default("std::sketch::segEndX"),
+        ),
+        ("sketch", "segEndY") => (
+            |e, a| Box::pin(crate::std::segment::segment_end_y(e, a)),
+            StdFnProps::default("std::sketch::segEndY"),
+        ),
+        ("sketch", "segStart") => (
+            |e, a| Box::pin(crate::std::segment::segment_start(e, a)),
+            StdFnProps::default("std::sketch::segStart"),
+        ),
+        ("sketch", "segStartX") => (
+            |e, a| Box::pin(crate::std::segment::segment_start_x(e, a)),
+            StdFnProps::default("std::sketch::segStartX"),
+        ),
+        ("sketch", "segStartY") => (
+            |e, a| Box::pin(crate::std::segment::segment_start_y(e, a)),
+            StdFnProps::default("std::sketch::segStartY"),
+        ),
+        ("sketch", "lastSegX") => (
+            |e, a| Box::pin(crate::std::segment::last_segment_x(e, a)),
+            StdFnProps::default("std::sketch::lastSegX"),
+        ),
+        ("sketch", "lastSegY") => (
+            |e, a| Box::pin(crate::std::segment::last_segment_y(e, a)),
+            StdFnProps::default("std::sketch::lastSegY"),
+        ),
+        ("sketch", "segLen") => (
+            |e, a| Box::pin(crate::std::segment::segment_length(e, a)),
+            StdFnProps::default("std::sketch::segLen"),
+        ),
+        ("sketch", "segAng") => (
+            |e, a| Box::pin(crate::std::segment::segment_angle(e, a)),
+            StdFnProps::default("std::sketch::segAng"),
+        ),
+        ("sketch", "tangentToEnd") => (
+            |e, a| Box::pin(crate::std::segment::tangent_to_end(e, a)),
+            StdFnProps::default("std::sketch::tangentToEnd"),
+        ),
+        ("sketch", "profileStart") => (
+            |e, a| Box::pin(crate::std::sketch::profile_start(e, a)),
+            StdFnProps::default("std::sketch::profileStart"),
+        ),
+        ("sketch", "profileStartX") => (
+            |e, a| Box::pin(crate::std::sketch::profile_start_x(e, a)),
+            StdFnProps::default("std::sketch::profileStartX"),
+        ),
+        ("sketch", "profileStartY") => (
+            |e, a| Box::pin(crate::std::sketch::profile_start_y(e, a)),
+            StdFnProps::default("std::sketch::profileStartY"),
+        ),
+        ("sketch", "startSketchOn") => (
+            |e, a| Box::pin(crate::std::sketch::start_sketch_on(e, a)),
+            StdFnProps::default("std::sketch::startSketchOn").include_in_feature_tree(),
+        ),
+        ("sketch", "startProfile") => (
+            |e, a| Box::pin(crate::std::sketch::start_profile(e, a)),
+            StdFnProps::default("std::sketch::startProfile"),
+        ),
+        ("sketch", "involuteCircular") => (
+            |e, a| Box::pin(crate::std::sketch::involute_circular(e, a)),
+            StdFnProps::default("std::sketch::startProfile"),
+        ),
+        ("sketch", "line") => (
+            |e, a| Box::pin(crate::std::sketch::line(e, a)),
+            StdFnProps::default("std::sketch::startProfile"),
+        ),
+        ("sketch", "xLine") => (
+            |e, a| Box::pin(crate::std::sketch::x_line(e, a)),
+            StdFnProps::default("std::sketch::startProfile"),
+        ),
+        ("sketch", "yLine") => (
+            |e, a| Box::pin(crate::std::sketch::y_line(e, a)),
+            StdFnProps::default("std::sketch::startProfile"),
+        ),
+        ("sketch", "angledLine") => (
+            |e, a| Box::pin(crate::std::sketch::angled_line(e, a)),
+            StdFnProps::default("std::sketch::startProfile"),
+        ),
+        ("sketch", "angledLineThatIntersects") => (
+            |e, a| Box::pin(crate::std::sketch::angled_line_that_intersects(e, a)),
+            StdFnProps::default("std::sketch::startProfile"),
+        ),
+        ("sketch", "close") => (
+            |e, a| Box::pin(crate::std::sketch::close(e, a)),
+            StdFnProps::default("std::sketch::startProfile"),
+        ),
+        ("sketch", "arc") => (
+            |e, a| Box::pin(crate::std::sketch::arc(e, a)),
+            StdFnProps::default("std::sketch::startProfile"),
+        ),
+        ("sketch", "tangentialArc") => (
+            |e, a| Box::pin(crate::std::sketch::tangential_arc(e, a)),
+            StdFnProps::default("std::sketch::startProfile"),
+        ),
+        ("sketch", "bezierCurve") => (
+            |e, a| Box::pin(crate::std::sketch::bezier_curve(e, a)),
+            StdFnProps::default("std::sketch::startProfile"),
+        ),
+        ("sketch", "subtract2d") => (
+            |e, a| Box::pin(crate::std::sketch::subtract_2d(e, a)),
+            StdFnProps::default("std::sketch::startProfile").include_in_feature_tree(),
+        ),
         ("appearance", "hexString") => (
             |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),
             StdFnProps::default("std::appearance::hexString"),
@@ -373,57 +437,6 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
         ("types", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::types::Axis2d")),
         ("types", "Axis3d") => (PrimitiveType::Axis3d, StdFnProps::default("std::types::Axis3d")),
         _ => unreachable!(),
-    }
-}
-
-pub struct StdLib {
-    pub fns: IndexMap<String, Box<dyn StdLibFn>>,
-}
-
-impl std::fmt::Debug for StdLib {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("StdLib").field("fns.len()", &self.fns.len()).finish()
-    }
-}
-
-impl StdLib {
-    pub fn new() -> Self {
-        let fns = CORE_FNS
-            .clone()
-            .into_iter()
-            .map(|internal_fn| (internal_fn.name(), internal_fn))
-            .collect();
-
-        Self { fns }
-    }
-
-    // Get the combined hashmaps.
-    pub fn combined(&self) -> IndexMap<String, Box<dyn StdLibFn>> {
-        self.fns.clone()
-    }
-
-    pub fn get(&self, name: &str) -> Option<Box<dyn StdLibFn>> {
-        self.fns.get(name).cloned()
-    }
-
-    pub fn get_rust_function(&self, name: &Name) -> Option<Box<dyn StdLibFn>> {
-        if let Some(name) = name.local_ident() {
-            if let Some(f) = self.get(name.inner) {
-                return Some(f);
-            }
-        }
-
-        None
-    }
-
-    pub fn contains_key(&self, key: &str) -> bool {
-        self.fns.contains_key(key)
-    }
-}
-
-impl Default for StdLib {
-    fn default() -> Self {
-        Self::new()
     }
 }
 

@@ -6,7 +6,6 @@ import {
   findPipesWithImportAlias,
   getSketchSelectionsFromOperation,
 } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -19,7 +18,7 @@ import {
   type CallExpressionKw,
   type PipeExpression,
   type Program,
-  sourceRangeFromRust,
+  pathToNodeFromRustNodePath,
   type VariableDeclaration,
 } from '@src/lang/wasm'
 import type {
@@ -102,10 +101,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   const argDefaultValues: ModelingCommandSchema['Extrude'] = {
     sketches,
     length,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
     ...baseCommand,
@@ -168,10 +164,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
   // Assemble the default argument values for the Fillet command,
   // with `nodeToEdit` set, which will let the Fillet actor know
   // to edit the node that corresponds to the StdLibCall.
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
-  )
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
 
   let argDefaultValues:
     | ModelingCommandSchema['Chamfer']
@@ -333,10 +326,7 @@ const prepareToEditShell: PrepareToEditCallback =
         graphSelections,
         otherSelections: [],
       },
-      nodeToEdit: getNodePathFromSourceRange(
-        kclManager.ast,
-        sourceRangeFromRust(operation.sourceRange)
-      ),
+      nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
     }
     return {
       ...baseCommand,
@@ -405,10 +395,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   const argDefaultValues: ModelingCommandSchema['Offset plane'] = {
     distance: distanceResult,
     plane,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
   return {
@@ -497,10 +484,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     sketches,
     path,
     sectional,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
     ...baseCommand,
@@ -750,10 +734,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     radius,
     length,
     ccw,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
   return {
@@ -889,10 +870,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     axis,
     edge,
     angle,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
     ...baseCommand,
@@ -981,6 +959,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  mirror2d: {
+    label: 'Mirror 2D',
+    icon: 'mirror',
+  },
   revolve: {
     label: 'Revolve',
     icon: 'revolve',
@@ -991,6 +973,8 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   rotate: {
     label: 'Rotate',
     icon: 'rotate',
+    prepareToEdit: prepareToEditRotate,
+    supportsTransform: true,
   },
   scale: {
     label: 'Scale',
@@ -1035,6 +1019,8 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   translate: {
     label: 'Translate',
     icon: 'move',
+    prepareToEdit: prepareToEditTranslate,
+    supportsTransform: true,
   },
   union: {
     label: 'Union',
@@ -1107,8 +1093,7 @@ export function getOperationVariableName(
     return undefined
   }
   // Find the AST node.
-  const range = sourceRangeFromRust(op.sourceRange)
-  const pathToNode = getNodePathFromSourceRange(program, range)
+  const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
   if (pathToNode.length === 0) {
     return undefined
   }
@@ -1295,10 +1280,7 @@ export async function enterAppearanceFlow({
 
   if (stdLibInfo && stdLibInfo.supportsAppearance) {
     const argDefaultValues = {
-      nodeToEdit: getNodePathFromSourceRange(
-        kclManager.ast,
-        sourceRangeFromRust(operation.sourceRange)
-      ),
+      nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
     }
     return {
       type: 'Find and select command',
@@ -1315,23 +1297,22 @@ export async function enterAppearanceFlow({
   )
 }
 
-export async function enterTranslateFlow({
-  operation,
-}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
+  const baseCommand = {
+    name: 'Translate',
+    groupId: 'modeling',
+  }
   const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
     operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
   if (!isModuleImport && !isSupportedStdLibCall) {
-    return new Error(
-      'Unsupported operation type. Please edit in the code editor.'
-    )
+    return {
+      reason: 'Unsupported operation type. Please edit in the code editor.',
+    }
   }
 
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
-  )
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
   let x: KclExpression | undefined = undefined
   let y: KclExpression | undefined = undefined
   let z: KclExpression | undefined = undefined
@@ -1368,32 +1349,41 @@ export async function enterTranslateFlow({
   const selection: Selections = { graphSelections: [], otherSelections: [] }
   const argDefaultValues = { nodeToEdit, selection, x, y, z }
   return {
-    type: 'Find and select command',
-    data: {
-      name: 'Translate',
-      groupId: 'modeling',
-      argDefaultValues,
-    },
+    ...baseCommand,
+    argDefaultValues,
   }
 }
 
-export async function enterRotateFlow({
+export async function enterTranslateFlow({
   operation,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  const data = await prepareToEditTranslate({ operation })
+  if ('reason' in data) {
+    return new Error(data.reason)
+  }
+
+  return {
+    type: 'Find and select command',
+    data,
+  }
+}
+
+async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
+  const baseCommand = {
+    name: 'Rotate',
+    groupId: 'modeling',
+  }
   const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
     operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
   if (!isModuleImport && !isSupportedStdLibCall) {
-    return new Error(
-      'Unsupported operation type. Please edit in the code editor.'
-    )
+    return {
+      reason: 'Unsupported operation type. Please edit in the code editor.',
+    }
   }
 
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
-  )
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
   let roll: KclExpression | undefined = undefined
   let pitch: KclExpression | undefined = undefined
   let yaw: KclExpression | undefined = undefined
@@ -1430,12 +1420,22 @@ export async function enterRotateFlow({
   const selection: Selections = { graphSelections: [], otherSelections: [] }
   const argDefaultValues = { nodeToEdit, selection, roll, pitch, yaw }
   return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+export async function enterRotateFlow({
+  operation,
+}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  const data = await prepareToEditRotate({ operation })
+  if ('reason' in data) {
+    return new Error(data.reason)
+  }
+
+  return {
     type: 'Find and select command',
-    data: {
-      name: 'Rotate',
-      groupId: 'modeling',
-      argDefaultValues,
-    },
+    data,
   }
 }
 
@@ -1452,10 +1452,7 @@ export async function enterCloneFlow({
     )
   }
 
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
-  )
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
 
   // Won't be used since we provide nodeToEdit
   const selection: Selections = { graphSelections: [], otherSelections: [] }

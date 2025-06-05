@@ -33,7 +33,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     // Make sure we have a radius if we don't have a cylinder.
     if radius.is_none() && cylinder.is_none() {
-        return Err(KclError::Semantic(crate::errors::KclErrorDetails::new(
+        return Err(KclError::new_semantic(crate::errors::KclErrorDetails::new(
             "Radius is required when creating a helix without a cylinder.".to_string(),
             vec![args.source_range],
         )));
@@ -41,7 +41,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     // Make sure we don't have a radius if we have a cylinder.
     if radius.is_some() && cylinder.is_some() {
-        return Err(KclError::Semantic(crate::errors::KclErrorDetails::new(
+        return Err(KclError::new_semantic(crate::errors::KclErrorDetails::new(
             "Radius is not allowed when creating a helix with a cylinder.".to_string(),
             vec![args.source_range],
         )));
@@ -49,7 +49,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     // Make sure we have an axis if we don't have a cylinder.
     if axis.is_none() && cylinder.is_none() {
-        return Err(KclError::Semantic(crate::errors::KclErrorDetails::new(
+        return Err(KclError::new_semantic(crate::errors::KclErrorDetails::new(
             "Axis is required when creating a helix without a cylinder.".to_string(),
             vec![args.source_range],
         )));
@@ -57,7 +57,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     // Make sure we don't have an axis if we have a cylinder.
     if axis.is_some() && cylinder.is_some() {
-        return Err(KclError::Semantic(crate::errors::KclErrorDetails::new(
+        return Err(KclError::new_semantic(crate::errors::KclErrorDetails::new(
             "Axis is not allowed when creating a helix with a cylinder.".to_string(),
             vec![args.source_range],
         )));
@@ -65,7 +65,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     // Make sure we have a radius if we have an axis.
     if radius.is_none() && axis.is_some() {
-        return Err(KclError::Semantic(crate::errors::KclErrorDetails::new(
+        return Err(KclError::new_semantic(crate::errors::KclErrorDetails::new(
             "Radius is required when creating a helix around an axis.".to_string(),
             vec![args.source_range],
         )));
@@ -73,7 +73,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     // Make sure we have an axis if we have a radius.
     if axis.is_none() && radius.is_some() {
-        return Err(KclError::Semantic(crate::errors::KclErrorDetails::new(
+        return Err(KclError::new_semantic(crate::errors::KclErrorDetails::new(
             "Axis is required when creating a helix around an axis.".to_string(),
             vec![args.source_range],
         )));
@@ -140,7 +140,7 @@ async fn inner_helix(
             Axis3dOrEdgeReference::Axis { direction, origin } => {
                 // Make sure they gave us a length.
                 let Some(length) = length else {
-                    return Err(KclError::Semantic(KclErrorDetails::new(
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
                         "Length is required when creating a helix around an axis.".to_owned(),
                         vec![args.source_range],
                     )));

@@ -36,14 +36,14 @@ async fn inner_shell(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     if faces.is_empty() {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "You must shell at least one face".to_owned(),
             vec![args.source_range],
         )));
     }
 
     if solids.is_empty() {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "You must shell at least one solid".to_owned(),
             vec![args.source_range],
         )));
@@ -63,7 +63,7 @@ async fn inner_shell(
     }
 
     if face_ids.is_empty() {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "Expected at least one valid face".to_owned(),
             vec![args.source_range],
         )));
@@ -72,7 +72,7 @@ async fn inner_shell(
     // Make sure all the solids have the same id, as we are going to shell them all at
     // once.
     if !solids.iter().all(|eg| eg.id == solids[0].id) {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "All solids stem from the same root object, like multiple sketch on face extrusions, etc.".to_owned(),
             vec![args.source_range],
         )));

@@ -271,14 +271,14 @@ async fn inner_polygon(
     args: Args,
 ) -> Result<Sketch, KclError> {
     if num_sides < 3 {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "Polygon must have at least 3 sides".to_string(),
             vec![args.source_range],
         )));
     }
 
     if radius.n <= 0.0 {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "Radius must be greater than 0".to_string(),
             vec![args.source_range],
         )));
@@ -407,11 +407,11 @@ pub(crate) fn get_radius(
     match (radius, diameter) {
         (Some(radius), None) => Ok(radius),
         (None, Some(diameter)) => Ok(TyF64::new(diameter.n / 2.0, diameter.ty)),
-        (None, None) => Err(KclError::Type(KclErrorDetails::new(
+        (None, None) => Err(KclError::new_type(KclErrorDetails::new(
             "This function needs either `diameter` or `radius`".to_string(),
             vec![source_range],
         ))),
-        (Some(_), Some(_)) => Err(KclError::Type(KclErrorDetails::new(
+        (Some(_), Some(_)) => Err(KclError::new_type(KclErrorDetails::new(
             "You cannot specify both `diameter` and `radius`, please remove one".to_string(),
             vec![source_range],
         ))),
