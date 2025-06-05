@@ -19,7 +19,7 @@ loft(
 ): Solid
 ```
 
-The sketches need to closed and on the same plane.
+The sketches need to be closed and on different planes that are parallel.
 
 ### Arguments
 
