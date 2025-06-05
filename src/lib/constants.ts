@@ -220,3 +220,9 @@ export const CREATE_FILE_URL_PARAM = 'create-file'
 /** A query parameter to skip the sign-on view if unnecessary. */
 export const IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM =
   'immediate-sign-in-if-necessary'
+
+/** Local storage key names. */
+export const LOCAL_STORAGE_TEMPORARY_WORKSPACE = 'temporaryWorkspace'
+export const LOCAL_STORAGE_OLD_CODE = 'oldCode'
+export const LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION =
+  'replacedWorkspaceThisSession'

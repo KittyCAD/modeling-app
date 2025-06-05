@@ -8,7 +8,10 @@ import { Router } from '@src/Router'
 import { ToastUpdate } from '@src/components/ToastUpdate'
 import '@src/index.css'
 import { initPromise } from '@src/lang/wasmUtils'
-import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
+import {
+  AUTO_UPDATER_TOAST_ID,
+  LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION,
+} from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import { isDesktop } from '@src/lib/isDesktop'
 import { markOnce } from '@src/lib/performance'
@@ -45,6 +48,9 @@ initPromise
   .catch(reportRejection)
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+
+// Used primarly for samples on web.
+localStorage.setItem(LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION, '')
 
 root.render(
   <HotkeysProvider>

@@ -9,6 +9,9 @@ import {
   BROWSER_PROJECT_NAME,
   FILE_EXT,
   PROJECT_ENTRYPOINT,
+  LOCAL_STORAGE_TEMPORARY_WORKSPACE,
+  LOCAL_STORAGE_OLD_CODE,
+  LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION,
 } from '@src/lib/constants'
 import { getProjectInfo } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -166,6 +169,33 @@ export const fileLoader: LoaderFunction = async (
     kcl_file_count: 1,
     metadata: null,
     readWriteAccess: true,
+  }
+
+  // Restore the previous "project" if it was there
+  // This has to be high up the render tree so it runs before the user
+  // sees the old code.
+  if (isBrowserProject) {
+    const replacedWorkspaceThisSession = Boolean(
+      localStorage.getItem(LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION)
+    )
+    const isInTemporaryWorkspace = Boolean(
+      localStorage.getItem(LOCAL_STORAGE_TEMPORARY_WORKSPACE)
+    )
+    const codeBeforeDemo = localStorage.getItem(LOCAL_STORAGE_OLD_CODE)
+
+    // On web, we only replace the buffer.
+    if (
+      !replacedWorkspaceThisSession &&
+      isInTemporaryWorkspace === true &&
+      codeBeforeDemo !== '' &&
+      codeBeforeDemo !== undefined
+    ) {
+      localStorage.setItem(LOCAL_STORAGE_TEMPORARY_WORKSPACE, '')
+      localStorage.setItem(LOCAL_STORAGE_OLD_CODE, '')
+      code = codeBeforeDemo ?? ''
+      codeManager.updateCodeStateEditor(code, true)
+      codeManager.writeToFile().catch(console.warn)
+    }
   }
 
   // Fire off the event to load the project settings

@@ -7,16 +7,19 @@ import {
   CMD_GROUP_QUERY_PARAM,
   CMD_NAME_QUERY_PARAM,
   CREATE_FILE_URL_PARAM,
+  LOCAL_STORAGE_TEMPORARY_WORKSPACE,
+  LOCAL_STORAGE_OLD_CODE,
+  LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION,
   DEFAULT_FILE_NAME,
   POOL_QUERY_PARAM,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
-import { commandBarActor, useAuthState } from '@src/lib/singletons'
-import { showCodeReplaceToast } from '@src/components/CodeReplaceToast'
+import { commandBarActor, useAuthState, codeManager } from '@src/lib/singletons'
 import { findKclSample } from '@src/lib/kclSamples'
 import { webSafePathSplit } from '@src/lib/paths'
+import { askQuestionPrompt } from '@src/components/ToastQuestion'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -136,7 +139,45 @@ export function useQueryParamEffects() {
         return response.text()
       })
       .then((code) => {
-        showCodeReplaceToast(code)
+        // We only support "Try in browser" demo'ing.
+        // Originally I (lee) had actually written browser support but
+        // removed it, because all the links will go directly to the
+        // browser version anyway.
+
+        // Save the current code in localStorage and load the new code.
+        const oldCode = codeManager.localStoragePersistCode()
+
+        // By default we throw users into a temporary workspace in case
+        // they start modifying things on the side
+        localStorage.setItem(LOCAL_STORAGE_TEMPORARY_WORKSPACE, 'truthy')
+        localStorage.setItem(
+          LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION,
+          'truthy'
+        )
+        localStorage.setItem(LOCAL_STORAGE_OLD_CODE, oldCode)
+
+        // Only ask the question if there's code that may get clobbered.
+        // Otherwise it's fine.
+        if (!isDesktop() && oldCode) {
+          askQuestionPrompt({
+            question: 'Create a temporary workspace for sample?',
+            onYes: () => {
+              // Store a persistent demo-mode indicator.
+              codeManager.writeToFile().catch(console.warn)
+            },
+            onNo: () => {
+              localStorage.setItem(LOCAL_STORAGE_TEMPORARY_WORKSPACE, '')
+              localStorage.setItem(
+                LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION,
+                ''
+              )
+              localStorage.setItem(LOCAL_STORAGE_OLD_CODE, '')
+              codeManager.writeToFile().catch(console.warn)
+            },
+          })
+        }
+
+        codeManager.updateCodeStateEditor(code, true)
       })
       .catch((error) => {
         console.error('Error loading KCL sample:', error)
