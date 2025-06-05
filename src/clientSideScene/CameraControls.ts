@@ -118,7 +118,7 @@ export class CameraControls {
   enableZoom = true
   moveSender: CameraRateLimiter = new CameraRateLimiter()
   zoomSender: CameraRateLimiter = new CameraRateLimiter()
-  lastPerspectiveFov: number = 45
+  lastPerspectiveFov = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
   pendingPan: Vector2 | null = null
@@ -213,7 +213,10 @@ export class CameraControls {
     }
   }
 
-  doMove = (interaction: any, coordinates: any) => {
+  doMove = (
+    interaction: CameraDragInteractionType_type,
+    coordinates: [number, number]
+  ) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -244,9 +247,9 @@ export class CameraControls {
   }
 
   constructor(
-    isOrtho = false,
     domElement: HTMLCanvasElement,
-    engineCommandManager: EngineCommandManager
+    engineCommandManager: EngineCommandManager,
+    isOrtho = false
   ) {
     this.engineCommandManager = engineCommandManager
     this.camera = isOrtho ? new OrthographicCamera() : new PerspectiveCamera()
@@ -429,8 +432,10 @@ export class CameraControls {
         .sub(this.mouseDownPosition)
       this.mouseDownPosition.copy(this.mouseNewPosition)
 
-      let interaction = this.getInteractionType(event)
-      if (interaction === 'none') return
+      const interaction = this.getInteractionType(event)
+      if (interaction === 'none') {
+        return
+      }
 
       // If there's a valid interaction and the mouse is moving,
       // our past (and current) interaction was a drag.
