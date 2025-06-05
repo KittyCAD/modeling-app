@@ -307,7 +307,7 @@ impl ExecutorContext {
                     // During the evaluation of the variable's RHS, set context that this is all happening inside a variable
                     // declaration, for the given name. This helps improve user-facing error messages.
                     let lhs = variable_declaration.inner.name().to_owned();
-                    let prev_being_declared = exec_state.mod_local.being_declared.clone();
+                    let prev_being_declared = exec_state.mod_local.being_declared.take();
                     exec_state.mod_local.being_declared = Some(lhs);
                     let rhs_result = self
                         .execute_expr(
