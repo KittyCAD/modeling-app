@@ -3151,8 +3151,10 @@ pub enum PrimitiveType {
     /// A boolean type.
     #[serde(rename = "bool")]
     Boolean,
-    /// A tag.
-    Tag,
+    /// A tag declaration.
+    TagDecl,
+    /// A tag identifier.
+    TagId,
     /// Imported from other CAD system.
     ImportedGeometry,
     /// `fn`, type of functions.
@@ -3167,7 +3169,8 @@ impl PrimitiveType {
             ("any", None) => Some(PrimitiveType::Any),
             ("string", None) => Some(PrimitiveType::String),
             ("bool", None) => Some(PrimitiveType::Boolean),
-            ("tag", None) => Some(PrimitiveType::Tag),
+            ("TagDecl", None) => Some(PrimitiveType::TagDecl),
+            ("tagIdent", None) => Some(PrimitiveType::TagId),
             ("number", None) => Some(PrimitiveType::Number(NumericSuffix::None)),
             ("number", Some(s)) => Some(PrimitiveType::Number(s)),
             ("ImportedGeometry", None) => Some(PrimitiveType::ImportedGeometry),
@@ -3202,7 +3205,8 @@ impl fmt::Display for PrimitiveType {
             }
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
-            PrimitiveType::Tag => write!(f, "tag"),
+            PrimitiveType::TagDecl => write!(f, "TagDecl"),
+            PrimitiveType::TagId => write!(f, "tagIdent"),
             PrimitiveType::ImportedGeometry => write!(f, "ImportedGeometry"),
             PrimitiveType::Function(t) => {
                 write!(f, "fn")?;

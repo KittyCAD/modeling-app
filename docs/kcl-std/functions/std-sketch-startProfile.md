@@ -11,7 +11,7 @@ Start a new profile at a given point.
 startProfile(
   @startProfileOn: Plane | Face,
   at: Point2d,
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -23,7 +23,7 @@ startProfile(
 |----------|------|-------------|----------|
 | `startProfileOn` | [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Face`](/docs/kcl-std/types/std-types-Face) | What to start the profile on. | Yes |
 | `at` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Where to start the profile. An absolute point. | Yes |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Tag this first starting point. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Tag this first starting point. | No |
 
 ### Returns
 

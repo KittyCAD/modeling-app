@@ -16,7 +16,7 @@ bezierCurve(
   control1Absolute?: Point2d,
   control2Absolute?: Point2d,
   endAbsolute?: Point2d,
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -33,7 +33,7 @@ bezierCurve(
 | `control1Absolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | First control point for the cubic. Absolute point. | No |
 | `control2Absolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Second control point for the cubic. Absolute point. | No |
 | `endAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Coordinate on the plane at which this line should end. | No |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this line. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this line. | No |
 
 ### Returns
 

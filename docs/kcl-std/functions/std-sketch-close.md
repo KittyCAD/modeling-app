@@ -10,7 +10,7 @@ Construct a line segment from the current origin back to the profile's origin, e
 ```kcl
 close(
   @sketch: Sketch,
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -24,7 +24,7 @@ starting point.
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | The sketch you want to close. | Yes |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this line. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this line. | No |
 
 ### Returns
 

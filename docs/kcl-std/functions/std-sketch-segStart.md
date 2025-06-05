@@ -8,7 +8,7 @@ layout: manual
 Compute the starting point of the provided line segment.
 
 ```kcl
-segStart(@tag: tag): Point2d
+segStart(@tag: tagIdent): Point2d
 ```
 
 
@@ -17,7 +17,7 @@ segStart(@tag: tag): Point2d
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | The line segment being queried by its tag. | Yes |
+| `tag` | [`tagIdent`](/docs/kcl-std/types/std-types-tagIdent) | The line segment being queried by its tag. | Yes |
 
 ### Returns
 

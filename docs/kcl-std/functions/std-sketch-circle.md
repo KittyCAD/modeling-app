@@ -13,7 +13,7 @@ circle(
   center: Point2d,
   radius?: number(Length),
   diameter?: number(Length),
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -27,7 +27,7 @@ circle(
 | `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center of the circle. | Yes |
 | `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The radius of the circle. Incompatible with `diameter`. | No |
 | `diameter` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The diameter of the circle. Incompatible with `radius`. | No |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this circle. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this circle. | No |
 
 ### Returns
 

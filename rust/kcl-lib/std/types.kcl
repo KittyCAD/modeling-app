@@ -86,14 +86,6 @@ export type string
 ///   |> close()
 /// ```
 ///
-/// ### Tag Identifier
-///
-/// As per the example above you can use the tag identifier to get a reference to the 
-/// tagged object. The syntax for this is `myTag`.
-/// 
-/// In the example above we use the tag identifier to get the angle of the segment
-/// `segAng(rectangleSegmentA001)`.
-///
 /// ### Tag Scope
 ///
 /// Tags are scoped globally if in the root context meaning in this example you can 
@@ -161,7 +153,11 @@ export type string
 /// the `rect` function. This is because the `rect` function is returning the
 /// sketch group that contains the tags.
 @(impl = primitive)
-export type tag
+export type TagDecl
+
+/// Reference a previously created tag. Used much like a variable.
+@(impl = primitive)
+export type tagIdent
 
 /// Represents geometry which is defined using some other CAD system and imported into KCL.
 @(impl = primitive)
