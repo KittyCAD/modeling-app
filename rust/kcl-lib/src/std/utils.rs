@@ -10,6 +10,15 @@ pub(crate) fn untype_point(p: [TyF64; 2]) -> ([f64; 2], NumericType) {
     ([x, y], ty)
 }
 
+pub(crate) fn untype_array<const N: usize>(p: [TyF64; N]) -> ([f64; N], NumericType) {
+    let (vec, ty) = NumericType::combine_eq_array(&p);
+    (
+        vec.try_into()
+            .unwrap_or_else(|v: Vec<f64>| panic!("Expected a Vec of length {} but it was {}", N, v.len())),
+        ty,
+    )
+}
+
 pub(crate) fn point_to_mm(p: [TyF64; 2]) -> [f64; 2] {
     [p[0].to_mm(), p[1].to_mm()]
 }

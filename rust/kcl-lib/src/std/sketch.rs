@@ -32,6 +32,7 @@ use crate::{
     },
 };
 
+use super::utils::untype_array;
 use super::utils::untype_point;
 
 /// A tag for a face.
@@ -2850,11 +2851,9 @@ pub(crate) async fn inner_hyperbolic(
 pub async fn parabolic_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::length(), exec_state)?;
     let y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::length(), exec_state)?;
-    let coefficient_a: TyF64 = args.get_kw_arg_typed("a", &RuntimeType::count(), exec_state)?;
-    let coefficient_b: TyF64 = args.get_kw_arg_typed("b", &RuntimeType::count(), exec_state)?;
-    let coefficient_c: TyF64 = args.get_kw_arg_typed("c", &RuntimeType::count(), exec_state)?;
+    let coefficients: [TyF64; 3] = args.get_kw_arg_typed("coefficients", &RuntimeType::any_array(), exec_state)?;
 
-    let parabolic_point = inner_parabolic_point(x, y, coefficient_a, coefficient_b, coefficient_c, &args).await?;
+    let parabolic_point = inner_parabolic_point(x, y, &coefficients, &args).await?;
 
     args.make_kcl_val_from_point(parabolic_point, exec_state.length_unit().into())
 }
@@ -2869,9 +2868,7 @@ pub async fn parabolic_point(exec_state: &mut ExecState, args: Args) -> Result<K
     name = "parabolicPoint",
     unlabeled_first = false,
     args = {
-        a = { docs = "The coefficient a of the parabolic equation y = ax^2 + bx + c." },
-        b = { docs = "The coefficient b of the parabolic equation y = ax^2 + bx + c." },
-        c = { docs = "The coefficient c of the parabolic equation y = ax^2 + bx + c." },
+        coefficients = { docs = "The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c." },
         x = { docs = "The x value of the parabolic equation y = ax^2. Will calculate the point y that satisfies the equation and returns (x, y). Incompatible with `y`."},
         y = { docs = "The y value of the parabolic equation y = ax^2. Will calculate the point x that satisfies the equation and returns (x, y). Incompatible with `x`."},
     },
@@ -2880,14 +2877,12 @@ pub async fn parabolic_point(exec_state: &mut ExecState, args: Args) -> Result<K
 async fn inner_parabolic_point(
     x: Option<TyF64>,
     y: Option<TyF64>,
-    a: TyF64,
-    b: TyF64,
-    c: TyF64,
+    coefficients: &[TyF64; 3],
     args: &Args,
 ) -> Result<[f64; 2], KclError> {
-    let a = a.n;
-    let b = b.n;
-    let c = c.n;
+    let a = coefficients[0].n;
+    let b = coefficients[1].n;
+    let c = coefficients[2].n;
     if let Some(x) = x {
         Ok((x.n, a * x.n.powf(2.0) + b * x.n + c).into())
     } else if let Some(y) = y {
@@ -2906,25 +2901,13 @@ pub async fn parabolic(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     let sketch =
         args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
-    let coefficient_a: Option<TyF64> = args.get_kw_arg_opt_typed("a", &RuntimeType::count(), exec_state)?;
-    let coefficient_b: Option<TyF64> = args.get_kw_arg_opt_typed("b", &RuntimeType::count(), exec_state)?;
-    let coefficient_c: Option<TyF64> = args.get_kw_arg_opt_typed("c", &RuntimeType::count(), exec_state)?;
+    let coefficients: Option<[TyF64; 3]> =
+        args.get_kw_arg_opt_typed("coefficients", &RuntimeType::any_array(), exec_state)?;
     let interior: Option<[TyF64; 2]> = args.get_kw_arg_opt_typed("interior", &RuntimeType::point2d(), exec_state)?;
     let end: [TyF64; 2] = args.get_kw_arg_typed("end", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let new_sketch = inner_parabolic(
-        sketch,
-        coefficient_a,
-        coefficient_b,
-        coefficient_c,
-        interior,
-        end,
-        tag,
-        exec_state,
-        args,
-    )
-    .await?;
+    let new_sketch = inner_parabolic(sketch, coefficients, interior, end, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -2951,10 +2934,8 @@ fn parabolic_tangent(point: Point2d, a: f64, b: f64) -> [f64; 2] {
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?" },
-        a = { docs = "The coefficient a of the parabolic equation y = ax^2 + bx + c." },
-        b = { docs = "The coefficient b of the parabolic equation y = ax^2 + bx + c." },
-        c = { docs = "The coefficient c of the parabolic equation y = ax^2 + bx + c." },
-        interior = { docs = "Any point between the arc's start and end?" },
+        coefficients = { docs = "The coefficienta [a, b, c] of the parabolic equation y = ax^2 + bx + c. Incompatible with `interior`." },
+        interior = { docs = "Any point between the arc's start and end?. Incompatible with `coefficients." },
         end = { docs = "Where should this arc end?" },
         tag = { docs = "Create a new tag which refers to this line"},
     },
@@ -2962,9 +2943,7 @@ fn parabolic_tangent(point: Point2d, a: f64, b: f64) -> [f64; 2] {
 }]
 pub(crate) async fn inner_parabolic(
     sketch: Sketch,
-    a: Option<TyF64>,
-    b: Option<TyF64>,
-    c: Option<TyF64>,
+    coefficients: Option<[TyF64; 3]>,
     interior: Option<[TyF64; 2]>,
     end: [TyF64; 2],
     tag: Option<TagNode>,
@@ -2974,9 +2953,7 @@ pub(crate) async fn inner_parabolic(
     let from = sketch.current_pen_position()?;
     let id = exec_state.next_uuid();
 
-    if (a.is_some() && b.is_some() && c.is_some() && interior.is_some())
-        || (a.is_none() && b.is_none() && c.is_none() && interior.is_none())
-    {
+    if (coefficients.is_some() && interior.is_some()) || (coefficients.is_none() && interior.is_none()) {
         return Err(KclError::Type(KclErrorDetails::new(
             "Invalid combination of arguments. Either provide (a, b, c) or (interior)".to_owned(),
             vec![args.source_range],
@@ -2993,9 +2970,7 @@ pub(crate) async fn inner_parabolic(
             inner_parabolic_point(
                 Some(TyF64::count(0.5 * (from.x + end[0]))),
                 None,
-                a.clone().unwrap(),
-                b.clone().unwrap(),
-                c.clone().unwrap(),
+                coefficients.as_ref().unwrap(),
                 &args,
             )
             .await?,
@@ -3008,26 +2983,25 @@ pub(crate) async fn inner_parabolic(
         units: from.units,
     };
 
-    let (a, b, _c) = match (a, b, c) {
-        (Some(a), Some(b), Some(c)) => (a.n, b.n, c.n),
-        _ => {
-            // Any three points is enough to uniquely define a parabola
-            let denom = (from.x - interior[0]) * (from.x - end_point.x) * (interior[0] - end_point.x);
-            let a = (end_point.x * (interior[1] - from.y)
-                + interior[0] * (from.y - end_point.y)
-                + from.x * (end_point.y - interior[1]))
-                / denom;
-            let b = (end_point.x.powf(2.0) * (from.y - interior[1])
-                + interior[0].powf(2.0) * (end_point.y - from.y)
-                + from.x.powf(2.0) * (interior[1] - end_point.y))
-                / denom;
-            let c = (interior[0] * end_point.x * (interior[0] - end_point.x) * from.y
-                + end_point.x * from.x * (end_point.x - from.x) * interior[1]
-                + from.x * interior[0] * (from.x - interior[0]) * end_point.y)
-                / denom;
+    let (a, b, _c) = if let Some([a, b, c]) = coefficients {
+        (a.n, b.n, c.n)
+    } else {
+        // Any three points is enough to uniquely define a parabola
+        let denom = (from.x - interior[0]) * (from.x - end_point.x) * (interior[0] - end_point.x);
+        let a = (end_point.x * (interior[1] - from.y)
+            + interior[0] * (from.y - end_point.y)
+            + from.x * (end_point.y - interior[1]))
+            / denom;
+        let b = (end_point.x.powf(2.0) * (from.y - interior[1])
+            + interior[0].powf(2.0) * (end_point.y - from.y)
+            + from.x.powf(2.0) * (interior[1] - end_point.y))
+            / denom;
+        let c = (interior[0] * end_point.x * (interior[0] - end_point.x) * from.y
+            + end_point.x * from.x * (end_point.x - from.x) * interior[1]
+            + from.x * interior[0] * (from.x - interior[0]) * end_point.y)
+            / denom;
 
-            (a, b, c)
-        }
+        (a, b, c)
     };
 
     let start_tangent = parabolic_tangent(from, a, b);
@@ -3071,6 +3045,16 @@ pub(crate) async fn inner_parabolic(
     Ok(new_sketch)
 }
 
+fn conic_tangent(coefficients: [f64; 6], point: [f64; 2]) -> [f64; 2] {
+    let [a, b, c, d, e, _] = coefficients;
+
+    (
+        c * point[0] + 2.0 * b * point[1] + e,
+        -(2.0 * a * point[0] + c * point[1] + d),
+    )
+        .into()
+}
+
 /// Draw a conic section
 pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch =
@@ -3078,12 +3062,26 @@ pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     let start_tangent: Option<[TyF64; 2]> =
         args.get_kw_arg_opt_typed("startTangent", &RuntimeType::point2d(), exec_state)?;
-    let end_tangent: [TyF64; 2] = args.get_kw_arg_typed("endTangent", &RuntimeType::point2d(), exec_state)?;
+    let end_tangent: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt_typed("endTangent", &RuntimeType::point2d(), exec_state)?;
     let end: [TyF64; 2] = args.get_kw_arg_typed("end", &RuntimeType::point2d(), exec_state)?;
     let interior: [TyF64; 2] = args.get_kw_arg_typed("interior", &RuntimeType::point2d(), exec_state)?;
+    let coefficients: Option<[TyF64; 6]> =
+        args.get_kw_arg_opt_typed("coefficients", &RuntimeType::any_array(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let new_sketch = inner_conic(sketch, start_tangent, end, end_tangent, interior, tag, exec_state, args).await?;
+    let new_sketch = inner_conic(
+        sketch,
+        start_tangent,
+        end,
+        end_tangent,
+        interior,
+        coefficients,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -3108,7 +3106,8 @@ pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         sketch = { docs = "Which sketch should this path be added to?" },
         start_tangent = { docs = "The tangent of the conic at the start point (the end of the previous path segement)" },
         end_tangent = { docs = "The tangent of the conic at the end point" },
-        interior = { docs = "Any point between the arc's start and end?" },
+        interior = { docs = "Any point between the arc's start and end? Incompatible with `coefficients`." },
+        coefficients = { docs = "The coefficients [a, b, c, d, e, f] of the generic conic equation ax^2 + by^2 + cxy + dx + ey + f = 0. Incompatible with `endTangent`."},
         end = { docs = "Where should this arc end?" },
         tag = { docs = "Create a new tag which refers to this line"},
     },
@@ -3119,29 +3118,45 @@ pub(crate) async fn inner_conic(
     sketch: Sketch,
     start_tangent: Option<[TyF64; 2]>,
     end: [TyF64; 2],
-    end_tangent: [TyF64; 2],
+    end_tangent: Option<[TyF64; 2]>,
     interior: [TyF64; 2],
+    coefficients: Option<[TyF64; 6]>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
     let id = exec_state.next_uuid();
-    let (end_tangent, _) = untype_point(end_tangent);
-    let (end, _) = untype_point(end);
+
+    if (coefficients.is_some() && (start_tangent.is_some() || end_tangent.is_some()))
+        || (coefficients.is_none() && (start_tangent.is_none() && end_tangent.is_none()))
+    {
+        return Err(KclError::Type(KclErrorDetails::new(
+            "Invalid combination of arguments. Either provide coefficients or interior".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let (end, _) = untype_array(end);
     let (interior, _) = untype_point(interior);
 
-    let (start_tangent, _) = if let Some(start_tangent) = start_tangent {
-        untype_point(start_tangent)
+    let (start_tangent, end_tangent) = if let Some(coeffs) = coefficients {
+        let (coeffs, _) = untype_array(coeffs);
+        (conic_tangent(coeffs, [from.x, from.y]), conic_tangent(coeffs, end))
     } else {
-        let previous_point = sketch
-            .get_tangential_info_from_paths()
-            .tan_previous_point(from.ignore_units());
-        let from = from.ignore_units();
-        (
-            [from[0] - previous_point[0], from[1] - previous_point[1]],
-            NumericType::Any,
-        )
+        let start = if let Some(start_tangent) = start_tangent {
+            let (start, _) = untype_point(start_tangent);
+            start
+        } else {
+            let previous_point = sketch
+                .get_tangential_info_from_paths()
+                .tan_previous_point(from.ignore_units());
+            let from = from.ignore_units();
+            [from[0] - previous_point[0], from[1] - previous_point[1]]
+        };
+
+        let (end_tan, _) = untype_point(end_tangent.unwrap());
+        (start, end_tan)
     };
 
     args.batch_modeling_cmd(

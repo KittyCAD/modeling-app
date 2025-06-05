@@ -1323,6 +1323,34 @@ impl<'a> FromKclValue<'a> for [TyF64; 3] {
     }
 }
 
+impl<'a> FromKclValue<'a> for [TyF64; 6] {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
+                if value.len() != 6 {
+                    return None;
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
+                let v2 = value.get(2)?;
+                let v3 = value.get(3)?;
+                let v4 = value.get(4)?;
+                let v5 = value.get(5)?;
+                let array = [
+                    v0.as_ty_f64()?,
+                    v1.as_ty_f64()?,
+                    v2.as_ty_f64()?,
+                    v3.as_ty_f64()?,
+                    v4.as_ty_f64()?,
+                    v5.as_ty_f64()?,
+                ];
+                Some(array)
+            }
+            _ => None,
+        }
+    }
+}
+
 impl<'a> FromKclValue<'a> for Sketch {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Sketch { value } = arg else {
