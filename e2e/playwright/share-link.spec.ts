@@ -21,7 +21,7 @@ function getToastError(page: Page) {
 test.describe('Share link tests', () => {
   test(
     `Open in desktop app with 2000-long code doesn't show error on non-Windows`,
-    { tag: ['@web'] },
+    { tag: ['@web', '@macos', '@linux'] },
     async ({ page }) => {
       if (process.env.TARGET !== 'web' || process.platform === 'win32') {
         return
