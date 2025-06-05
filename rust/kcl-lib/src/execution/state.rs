@@ -381,6 +381,13 @@ impl GlobalState {
     }
 }
 
+#[cfg(feature = "artifact-graph")]
+impl ArtifactState {
+    pub fn cached_body_items(&self) -> usize {
+        self.graph.item_count
+    }
+}
+
 impl ModuleState {
     pub(super) fn new(path: ModulePath, memory: Arc<ProgramMemory>, module_id: Option<ModuleId>) -> Self {
         ModuleState {

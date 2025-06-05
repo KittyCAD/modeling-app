@@ -7,6 +7,7 @@ use anyhow::Result;
 pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use cache::GlobalState;
 pub use cache::{bust_cache, clear_mem_cache};
+#[cfg(feature = "artifact-graph")]
 pub use cad_op::{Group, Operation};
 pub use geometry::*;
 pub use id_generator::IdGenerator;
@@ -842,31 +843,14 @@ impl ExecutorContext {
                 let module_path = module_path.clone();
                 let source_range = SourceRange::from(import_stmt);
 
-                match &module_path {
-                    ModulePath::Main => {
-                        // This should never happen.
-                    }
-                    ModulePath::Local { value, .. } => {
-                        // We only want to display the top-level module imports in
-                        // the Feature Tree, not transitive imports.
-                        if universe_map.contains_key(value) {
-                            exec_state.push_op(Operation::GroupBegin {
-                                group: Group::ModuleInstance {
-                                    name: value.file_name().unwrap_or_default(),
-                                    module_id,
-                                },
-                                source_range,
-                            });
-                            // Due to concurrent execution, we cannot easily
-                            // group operations by module. So we leave the
-                            // group empty and close it immediately.
-                            exec_state.push_op(Operation::GroupEnd);
-                        }
-                    }
-                    ModulePath::Std { .. } => {
-                        // We don't want to display stdlib in the Feature Tree.
-                    }
-                }
+                self.add_import_module_ops(
+                    exec_state,
+                    program,
+                    module_id,
+                    &module_path,
+                    source_range,
+                    &universe_map,
+                );
 
                 let repr = repr.clone();
                 let exec_state = exec_state.clone();
@@ -1009,6 +993,67 @@ impl ExecutorContext {
         Ok((universe, root_imports))
     }
 
+    #[cfg(feature = "artifact-graph")]
+    fn add_import_module_ops(
+        &self,
+        exec_state: &mut ExecState,
+        program: &crate::Program,
+        module_id: ModuleId,
+        module_path: &ModulePath,
+        source_range: SourceRange,
+        universe_map: &UniverseMap,
+    ) {
+        match module_path {
+            ModulePath::Main => {
+                // This should never happen.
+            }
+            ModulePath::Local { value, .. } => {
+                // We only want to display the top-level module imports in
+                // the Feature Tree, not transitive imports.
+                if universe_map.contains_key(value) {
+                    use crate::NodePath;
+
+                    let node_path = if source_range.is_top_level_module() {
+                        let cached_body_items = exec_state.global.artifacts.cached_body_items();
+                        NodePath::from_range(&program.ast, cached_body_items, source_range).unwrap_or_default()
+                    } else {
+                        // The frontend doesn't care about paths in
+                        // files other than the top-level module.
+                        NodePath::placeholder()
+                    };
+
+                    exec_state.push_op(Operation::GroupBegin {
+                        group: Group::ModuleInstance {
+                            name: value.file_name().unwrap_or_default(),
+                            module_id,
+                        },
+                        node_path,
+                        source_range,
+                    });
+                    // Due to concurrent execution, we cannot easily
+                    // group operations by module. So we leave the
+                    // group empty and close it immediately.
+                    exec_state.push_op(Operation::GroupEnd);
+                }
+            }
+            ModulePath::Std { .. } => {
+                // We don't want to display stdlib in the Feature Tree.
+            }
+        }
+    }
+
+    #[cfg(not(feature = "artifact-graph"))]
+    fn add_import_module_ops(
+        &self,
+        _exec_state: &mut ExecState,
+        _program: &crate::Program,
+        _module_id: ModuleId,
+        _module_path: &ModulePath,
+        _source_range: SourceRange,
+        _universe_map: &UniverseMap,
+    ) {
+    }
+
     /// Perform the execution of a program.  Accept all possible parameters and
     /// output everything.
     async fn inner_run(
@@ -1059,6 +1104,11 @@ impl ExecutorContext {
         // Don't early return!  We need to build other outputs regardless of
         // whether execution failed.
 
+        // Because of execution caching, we may start with operations from a
+        // previous run.
+        #[cfg(feature = "artifact-graph")]
+        let start_op = exec_state.global.artifacts.operations.len();
+
         self.eval_prelude(exec_state, SourceRange::from(program).start_as_range())
             .await?;
 
@@ -1071,6 +1121,29 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await;
+
+        #[cfg(feature = "artifact-graph")]
+        {
+            // Fill in NodePath for operations.
+            let cached_body_items = exec_state.global.artifacts.cached_body_items();
+            for op in exec_state.global.artifacts.operations.iter_mut().skip(start_op) {
+                match op {
+                    Operation::StdLibCall {
+                        node_path,
+                        source_range,
+                        ..
+                    }
+                    | Operation::GroupBegin {
+                        node_path,
+                        source_range,
+                        ..
+                    } => {
+                        node_path.fill_placeholder(program, cached_body_items, *source_range);
+                    }
+                    Operation::GroupEnd => {}
+                }
+            }
+        }
 
         // Ensure all the async commands completed.
         self.engine.ensure_async_commands_completed().await?;
