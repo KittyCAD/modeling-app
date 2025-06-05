@@ -36,7 +36,16 @@ pub async fn execute_and_snapshot_ast(
     ast: Program,
     current_file: Option<PathBuf>,
     with_export_step: bool,
-) -> Result<(ExecState, EnvironmentRef, image::DynamicImage, Option<Vec<u8>>), ExecErrorWithState> {
+) -> Result<
+    (
+        ExecState,
+        ExecutorContext,
+        EnvironmentRef,
+        image::DynamicImage,
+        Option<Vec<u8>>,
+    ),
+    ExecErrorWithState,
+> {
     let ctx = new_context(true, current_file).await?;
     let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast).await {
         Ok((exec_state, env_ref, img)) => (exec_state, env_ref, img),
@@ -64,7 +73,7 @@ pub async fn execute_and_snapshot_ast(
         step = files.into_iter().next().map(|f| f.contents);
     }
     ctx.close().await;
-    Ok((exec_state, env, img, step))
+    Ok((exec_state, ctx, env, img, step))
 }
 
 pub async fn execute_and_snapshot_no_auth(

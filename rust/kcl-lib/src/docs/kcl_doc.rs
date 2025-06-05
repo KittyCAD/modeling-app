@@ -302,6 +302,7 @@ impl DocData {
         }
     }
 
+    #[allow(dead_code)]
     pub(super) fn summary(&self) -> Option<&String> {
         match self {
             DocData::Fn(f) => f.summary.as_ref(),
@@ -462,6 +463,7 @@ impl ModData {
         }
     }
 
+    #[allow(dead_code)]
     pub fn find_by_name(&self, name: &str) -> Option<&DocData> {
         if let Some(result) = self
             .children
@@ -812,6 +814,7 @@ impl ArgData {
             return Some((index + n - 1, snippet));
         }
         match self.ty.as_deref() {
+            Some("Sketch") if self.kind == ArgKind::Special => None,
             Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{}:10}}"#, index))),
             Some("Point2d") => Some((index + 1, format!(r#"{label}[${{{}:0}}, ${{{}:0}}]"#, index, index + 1))),
             Some("Point3d") => Some((
@@ -827,7 +830,7 @@ impl ArgData {
             Some("Sketch") | Some("Sketch | Helix") => Some((index, format!(r#"{label}${{{index}:sketch000}}"#))),
             Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
-            Some("Plane") => Some((index, format!(r#"{label}${{{}:XY}}"#, index))),
+            Some("Plane") | Some("Solid | Plane") => Some((index, format!(r#"{label}${{{}:XY}}"#, index))),
             Some("[tag; 2]") => Some((
                 index + 1,
                 format!(r#"{label}[${{{}:tag}}, ${{{}:tag}}]"#, index, index + 1),
@@ -989,7 +992,7 @@ trait ApplyMeta {
         }
 
         let mut summary = None;
-        let mut description = None;
+        let mut description: Option<String> = None;
         let mut example: Option<(String, ExampleProperties)> = None;
         let mut examples = Vec::new();
         for l in comments.iter().filter(|l| l.starts_with("///")).map(|l| {
@@ -999,22 +1002,6 @@ trait ApplyMeta {
                 &l[3..]
             }
         }) {
-            if description.is_none() && summary.is_none() {
-                summary = Some(l.to_owned());
-                continue;
-            }
-            if description.is_none() {
-                if l.is_empty() {
-                    description = Some(String::new());
-                } else {
-                    description = summary;
-                    summary = None;
-                    let d = description.as_mut().unwrap();
-                    d.push('\n');
-                    d.push_str(l);
-                }
-                continue;
-            }
             #[allow(clippy::manual_strip)]
             if l.starts_with("```") {
                 if let Some((e, p)) = example {
@@ -1050,12 +1037,36 @@ trait ApplyMeta {
                     continue;
                 }
             }
+
+            // An empty line outside of an example. This either starts the description (with or
+            // without a summary) or adds a blank line to the description.
+            if l.is_empty() {
+                match &mut description {
+                    Some(d) => {
+                        d.push('\n');
+                    }
+                    None => description = Some(String::new()),
+                }
+                continue;
+            }
+
+            // Our first line, start the summary.
+            if description.is_none() && summary.is_none() {
+                summary = Some(l.to_owned());
+                continue;
+            }
+
+            // Append the line to either the description or summary.
             match &mut description {
                 Some(d) => {
                     d.push_str(l);
                     d.push('\n');
                 }
-                None => unreachable!(),
+                None => {
+                    let s = summary.as_mut().unwrap();
+                    s.push(' ');
+                    s.push_str(l);
+                }
             }
         }
         assert!(example.is_none());

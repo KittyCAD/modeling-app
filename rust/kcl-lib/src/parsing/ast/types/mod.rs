@@ -25,7 +25,6 @@ pub use crate::parsing::ast::types::{
     none::KclNone,
 };
 use crate::{
-    docs::StdLibFn,
     errors::KclError,
     execution::{
         annotations,
@@ -1973,31 +1972,6 @@ impl CallExpressionKw {
     }
 }
 
-/// A function declaration.
-#[derive(Debug, Clone, Default, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type")]
-pub enum Function {
-    /// A stdlib function written in Rust (aka core lib).
-    StdLib {
-        /// The function.
-        func: Box<dyn StdLibFn>,
-    },
-    /// A function that is defined in memory.
-    #[default]
-    InMemory,
-}
-
-impl PartialEq for Function {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (Function::StdLib { func: func1 }, Function::StdLib { func: func2 }) => func1.name() == func2.name(),
-            (Function::InMemory, Function::InMemory) => true,
-            _ => false,
-        }
-    }
-}
-
 #[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
@@ -2785,47 +2759,6 @@ impl ObjectProperty {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub enum MemberObject {
-    MemberExpression(BoxNode<MemberExpression>),
-    Identifier(BoxNode<Identifier>),
-}
-
-impl MemberObject {
-    pub fn start(&self) -> usize {
-        match self {
-            MemberObject::MemberExpression(member_expression) => member_expression.start,
-            MemberObject::Identifier(identifier) => identifier.start,
-        }
-    }
-
-    pub fn end(&self) -> usize {
-        match self {
-            MemberObject::MemberExpression(member_expression) => member_expression.end,
-            MemberObject::Identifier(identifier) => identifier.end,
-        }
-    }
-
-    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
-        let sr = SourceRange::from(self);
-        sr.contains_range(range)
-    }
-}
-
-impl From<MemberObject> for SourceRange {
-    fn from(obj: MemberObject) -> Self {
-        Self::new(obj.start(), obj.end(), obj.module_id())
-    }
-}
-
-impl From<&MemberObject> for SourceRange {
-    fn from(obj: &MemberObject) -> Self {
-        Self::new(obj.start(), obj.end(), obj.module_id())
-    }
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type")]
 pub enum LiteralIdentifier {
     Identifier(BoxNode<Identifier>),
     Literal(BoxNode<Literal>),
@@ -2868,7 +2801,7 @@ impl From<&LiteralIdentifier> for SourceRange {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct MemberExpression {
-    pub object: MemberObject,
+    pub object: Expr,
     pub property: LiteralIdentifier,
     pub computed: bool,
 
@@ -2890,12 +2823,7 @@ impl Node<MemberExpression> {
 impl MemberExpression {
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        match &mut self.object {
-            MemberObject::MemberExpression(ref mut member_expression) => {
-                member_expression.rename_identifiers(old_name, new_name)
-            }
-            MemberObject::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
-        }
+        self.object.rename_identifiers(old_name, new_name);
 
         match &mut self.property {
             LiteralIdentifier::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
