@@ -1967,7 +1967,7 @@ export fn conic(
   coefficients?: [number(Count); 6],
   /// The tangent of the conic section at the start. If not provided the tangent of the previous path segment is used.
   startTangent?: Point2d,
-  /// The tangnet of the conic section at the end. Incompatible with `coefficients`.
+  /// The tangent of the conic section at the end. Incompatible with `coefficients`.
   endTangent?: Point2d,
   /// Create a new tag which refers to this segment.
   tag?: tag,
@@ -2098,7 +2098,7 @@ export fn elliptic(
   /// The minor radius, b, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.
   @(includeInSnippet = true)
   minorRadius: number(Length),
-  /// Any point between the segment's start and end. Requies `endAbsolute`. Incompatible with `interior` or `end`.
+  /// Any point between the segment's start and end. Requires `endAbsolute`. Incompatible with `interior` or `end`.
   interiorAbsolute?: Point2d,
   /// Where should this segment end? Requires `interiorAbsolute`. Incompatible with `interior` or `end`.
   endAbsolute?: Point2d,

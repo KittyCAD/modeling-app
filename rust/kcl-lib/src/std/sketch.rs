@@ -2385,7 +2385,7 @@ pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 //     unlabeled_first = true,
 //     args = {
 //         sketch = { docs = "Which sketch should this path be added to?" },
-//         start_tangent = { docs = "The tangent of the conic at the start point (the end of the previous path segement)" },
+//         start_tangent = { docs = "The tangent of the conic at the start point (the end of the previous path segment)" },
 //         end_tangent = { docs = "The tangent of the conic at the end point" },
 //         interior = { docs = "Any point between the arc's start and end? Incompatible with `coefficients`." },
 //         coefficients = { docs = "The coefficients [a, b, c, d, e, f] of the generic conic equation ax^2 + by^2 + cxy + dx + ey + f = 0. Incompatible with `endTangent`."},
