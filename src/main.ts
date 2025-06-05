@@ -476,8 +476,8 @@ app.on('ready', () => {
     }
   })
 
-  autoUpdater.on('update-not-available', (error) => {
-    console.error('update-not-available', error)
+  autoUpdater.on('update-not-available', (info) => {
+    console.log('update-not-available', info)
     if (!backgroundCheckingForUpdates) {
       mainWindow?.webContents.send('update-not-available')
     }
