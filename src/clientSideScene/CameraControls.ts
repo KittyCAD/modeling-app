@@ -1324,7 +1324,7 @@ export class CameraControls {
     Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
   getInteractionType = (
-    event: PointerEvent | WheelEvent
+    event: PointerEvent | WheelEvent | MouseEvent
   ): CameraDragInteractionType_type | 'none' => {
     // We just need to send any start value to the engine for touch.
     // I chose "rotate" because it's the 1-finger gesture
