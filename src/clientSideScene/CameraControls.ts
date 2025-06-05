@@ -45,6 +45,7 @@ import {
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { degToRad } from 'three/src/math/MathUtils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -511,6 +512,14 @@ export class CameraControls {
   }
 
   onMouseUp = (event: PointerEvent) => {
+    if (event.pointerType === 'touch') {
+      // We support momentum flick gestures so we have to do these things after that completes
+      return
+    }
+    this.onMouseUpInner(event)
+  }
+
+  onMouseUpInner = (event: PointerEvent) => {
     this.domElement.releasePointerCapture(event.pointerId)
     this.isDragging = false
     this.handleEnd()
@@ -1360,6 +1369,16 @@ export class CameraControls {
     const velocityLimit = 0.5
     /** Amount of pixel delta of calculated zoom transform needed before we send to the engine */
     const normalizedScaleThreshold = 5
+    const velocityFlickDecay = 0.03
+    /** Refresh rate for flick orbit decay timer */
+    const decayRefreshRate = 16
+    const decayIntervals: ReturnType<typeof setInterval>[] = []
+    const clearIntervals = () => {
+      for (let i = decayIntervals.length - 1; i >= 0; i--) {
+        clearInterval(decayIntervals[i])
+        decayIntervals.pop()
+      }
+    }
 
     const hammertime = new Hammer(domElement, {
       recognizers: [
@@ -1381,6 +1400,11 @@ export class CameraControls {
     // then we won't have to worry about jitter at all.
     hammertime.get('pinch').recognizeWith(hammertime.get('doublepan'))
 
+    // Clear decay intervals on any interaction start
+    hammertime.on('panstart doublepanstart pinchstart', () => {
+      clearIntervals()
+    })
+
     // Orbit gesture is a 1-finger "pan"
     hammertime.on('pan', (ev) => {
       if (this.syncDirection === 'engineToClient' && ev.maxPointers === 1) {
@@ -1393,6 +1417,49 @@ export class CameraControls {
             this.doMove(orbitMode, [ev.center.x, ev.center.y])
           })
         }
+      }
+    })
+    // Fake flicking by sending decaying orbit events in the last direction of orbit
+    hammertime.on('panend', (ev) => {
+      /** HammerJS's `event.velocity` gives you `Math.max(ev.velocityX, ev.velocityY`)`, not the actual velocity. */
+      let velocity = Math.sqrt(ev.velocityY ** 2 + ev.velocityX ** 2)
+      const center = ev.center
+      const direction = ev.angle
+
+      if (
+        this.syncDirection === 'engineToClient' &&
+        ev.maxPointers === 1 &&
+        this.enableRotate &&
+        velocity > 0
+      ) {
+        const orbitMode =
+          this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
+            ? 'rotatetrackball'
+            : 'rotate'
+
+        const decayInterval = setInterval(() => {
+          const decayedVelocity = velocity - velocityFlickDecay
+          if (decayedVelocity <= 0) {
+            this.onMouseUpInner(ev.srcEvent as PointerEvent)
+            clearInterval(decayInterval)
+          } else {
+            velocity = decayedVelocity
+          }
+
+          // We have to multiply by the refresh rate, because `velocity` is in px/ms
+          // but we only call every `decaryRefreshRate` ms.
+          center.x =
+            center.x +
+            Math.cos(degToRad(direction)) * velocity * decayRefreshRate
+          center.y =
+            center.y +
+            Math.sin(degToRad(direction)) * velocity * decayRefreshRate
+
+          this.moveSender.send(() => {
+            this.doMove(orbitMode, [center.x, center.y])
+          })
+        }, decayRefreshRate)
+        decayIntervals.push(decayInterval)
       }
     })
 
@@ -1435,6 +1502,10 @@ export class CameraControls {
     })
     hammertime.on('pinchend pinchcancel', () => {
       lastScale = 1
+    })
+
+    hammertime.on('pinchend pinchcancel doublepanend', (event) => {
+      this.onMouseUpInner(event.srcEvent as PointerEvent)
     })
   }
 }
