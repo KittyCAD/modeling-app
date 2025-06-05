@@ -60,6 +60,20 @@ pub enum Step {
 }
 
 impl NodePath {
+    /// Placeholder for when the AST isn't available to create a real path.  It
+    /// will be filled in later.
+    pub(crate) fn placeholder() -> Self {
+        Self::default()
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn fill_placeholder(&mut self, program: &Node<Program>, cached_body_items: usize, range: SourceRange) {
+        if !self.is_empty() {
+            return;
+        }
+        *self = Self::from_range(program, cached_body_items, range).unwrap_or_default();
+    }
+
     /// Given a program and a [`SourceRange`], return the path to the node that
     /// contains the range.
     pub(crate) fn from_range(program: &Node<Program>, cached_body_items: usize, range: SourceRange) -> Option<Self> {
@@ -387,6 +401,21 @@ mod tests {
                     Step::CallKwArg { index: 1 },
                     Step::ArrayElement { index: 1 }
                 ],
+            }
+        );
+    }
+
+    #[test]
+    fn test_node_path_from_range_import() {
+        let code = r#"import "cube.step" as cube
+import "cylinder.kcl" as cylinder
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        // The entire cylinder import statement.
+        assert_eq!(
+            NodePath::from_range(&program.ast, 0, range(27, 60)).unwrap(),
+            NodePath {
+                steps: vec![Step::ProgramBodyItem { index: 1 }],
             }
         );
     }
