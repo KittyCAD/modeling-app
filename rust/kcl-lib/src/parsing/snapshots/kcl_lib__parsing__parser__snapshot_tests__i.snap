@@ -117,12 +117,20 @@ expression: actual
             "computed": false,
             "end": 49,
             "object": {
+              "abs_path": false,
               "commentStart": 41,
               "end": 44,
-              "name": "obj",
+              "name": {
+                "commentStart": 41,
+                "end": 44,
+                "name": "obj",
+                "start": 41,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 41,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "property": {
               "commentStart": 45,

@@ -19,8 +19,8 @@ use crate::{
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
         BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, LiteralIdentifier,
-        LiteralValue, MemberExpression, MemberObject, Name, Node, NodeRef, ObjectExpression, PipeExpression, Program,
-        TagDeclarator, Type, UnaryExpression, UnaryOperator,
+        LiteralValue, MemberExpression, Name, Node, NodeRef, ObjectExpression, PipeExpression, Program, TagDeclarator,
+        Type, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
     std::args::TyF64,
@@ -739,7 +739,7 @@ impl ExecutorContext {
             Expr::ArrayExpression(array_expression) => array_expression.execute(exec_state, self).await?,
             Expr::ArrayRangeExpression(range_expression) => range_expression.execute(exec_state, self).await?,
             Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, self).await?,
-            Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state)?,
+            Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state, self).await?,
             Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
             Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
             Expr::LabelledExpression(expr) => {
@@ -825,7 +825,7 @@ impl BinaryPart {
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
-            BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state),
+            BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state, ctx).await,
             BinaryPart::IfExpression(e) => e.get_result(exec_state, ctx).await,
             BinaryPart::AscribedExpression(e) => e.get_result(exec_state, ctx).await,
         }
@@ -942,16 +942,14 @@ impl Node<Name> {
 }
 
 impl Node<MemberExpression> {
-    fn get_result(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
+    async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let property = Property::try_from(self.computed, self.property.clone(), exec_state, self.into())?;
-        let object = match &self.object {
-            // TODO: Don't use recursion here, use a loop.
-            MemberObject::MemberExpression(member_expr) => member_expr.get_result(exec_state)?,
-            MemberObject::Identifier(identifier) => {
-                let value = exec_state.stack().get(&identifier.name, identifier.into())?;
-                value.clone()
-            }
+        let meta = Metadata {
+            source_range: SourceRange::from(self),
         };
+        let object = ctx
+            .execute_expr(&self.object, exec_state, &meta, &[], StatementKind::Expression)
+            .await?;
 
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
