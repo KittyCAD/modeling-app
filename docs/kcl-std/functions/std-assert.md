@@ -41,8 +41,19 @@ assert(
 ```kcl
 n = 10
 assert(n, isEqualTo = 10)
-assert(n, isGreaterThanOrEqual = 0, isLessThan = 100, error = "number should be between 0 and 100")
-assert(1.0000000000012, isEqualTo = 1, tolerance = 0.0001, error = "number should be almost exactly 1")
+assert(
+  n,
+  isGreaterThanOrEqual = 0,
+  isLessThan = 100,
+  error = "number should be between 0 and 100",
+)
+assert(
+  1.0000000000012,
+  isEqualTo = 1,
+  tolerance = 0.0001,
+  error = "number should be almost exactly 1",
+)
+
 ```
 
 
