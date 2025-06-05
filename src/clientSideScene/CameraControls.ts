@@ -1,3 +1,4 @@
+import Hammer from 'hammerjs'
 import type {
   CameraDragInteractionType_type,
   CameraViewState_type,
@@ -266,6 +267,7 @@ export class CameraControls {
     this.domElement.addEventListener('pointermove', this.onMouseMove)
     this.domElement.addEventListener('pointerup', this.onMouseUp)
     this.domElement.addEventListener('wheel', this.onMouseWheel)
+    this.setUpMultiTouch(this.domElement)
 
     window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
@@ -425,6 +427,10 @@ export class CameraControls {
   }
 
   onMouseMove = (event: PointerEvent) => {
+    if (event.pointerType === 'touch') {
+      return
+    }
+
     if (this.isDragging) {
       this.mouseNewPosition.set(event.clientX, event.clientY)
       const deltaMove = this.mouseNewPosition
@@ -1309,15 +1315,20 @@ export class CameraControls {
     Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
   getInteractionType = (
-    event: MouseEvent
+    event: PointerEvent | WheelEvent
   ): CameraDragInteractionType_type | 'none' => {
-    const initialInteractionType = _getInteractionType(
-      this.interactionGuards,
-      event,
-      this.enablePan,
-      this.enableRotate,
-      this.enableZoom
-    )
+    // We just need to send any start value to the engine for touch.
+    // I chose "rotate" because it's the 1-finger gesture
+    const initialInteractionType =
+      'pointerType' in event && event.pointerType === 'touch'
+        ? 'rotate'
+        : _getInteractionType(
+            this.interactionGuards,
+            event,
+            this.enablePan,
+            this.enableRotate,
+            this.enableZoom
+          )
     if (
       initialInteractionType === 'rotate' &&
       this.getSettings?.().modeling.cameraOrbit.current === 'trackball'
@@ -1325,6 +1336,106 @@ export class CameraControls {
       return 'rotatetrackball'
     }
     return initialInteractionType
+  }
+
+  /**
+   * Set up HammerJS, a small library for multi-touch listeners,
+   * and use it for the camera controls if touch is available.
+   *
+   * Note: users cannot change touch controls; this implementation
+   * treats them as distinct from the mouse control scheme. This is because
+   * a device may both have mouse controls and touch available.
+   *
+   * TODO: Add support for sketch mode touch camera movements
+   */
+  setUpMultiTouch = (domElement: HTMLCanvasElement) => {
+    /** Amount in px needed to pan before recognizer runs */
+    const panDistanceThreshold = 3
+    /** Amount in scale delta needed to pinch before recognizer runs */
+    const zoomScaleThreshold = 0.01
+    /**
+     * Max speed a pinch can be moving (not the pinch but its XY drift) before it's considered a pan.
+     * The closer to this value, the more we reduce the calculated zoom transformation to reduce jitter.
+     */
+    const velocityLimit = 0.5
+    /** Amount of pixel delta of calculated zoom transform needed before we send to the engine */
+    const normalizedScaleThreshold = 5
+
+    const hammertime = new Hammer(domElement, {
+      recognizers: [
+        [Hammer.Pan, { pointers: 1, direction: Hammer.DIRECTION_ALL }],
+        [
+          Hammer.Pan,
+          {
+            event: 'doublepan',
+            pointers: 2,
+            direction: Hammer.DIRECTION_ALL,
+            threshold: panDistanceThreshold,
+          },
+        ],
+        [Hammer.Pinch, { enable: true, threshold: zoomScaleThreshold }],
+      ],
+    })
+
+    // TODO: get the engine to coalesce simultaneous zoom/pan/orbit events,
+    // then we won't have to worry about jitter at all.
+    hammertime.get('pinch').recognizeWith(hammertime.get('doublepan'))
+
+    // Orbit gesture is a 1-finger "pan"
+    hammertime.on('pan', (ev) => {
+      if (this.syncDirection === 'engineToClient' && ev.maxPointers === 1) {
+        if (this.enableRotate) {
+          const orbitMode =
+            this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
+              ? 'rotatetrackball'
+              : 'rotate'
+          this.moveSender.send(() => {
+            this.doMove(orbitMode, [ev.center.x, ev.center.y])
+          })
+        }
+      }
+    })
+
+    // Pan gesture is a 2-finger gesture I named "doublepan"
+    hammertime.on('doublepan', (ev) => {
+      if (this.syncDirection === 'engineToClient' && this.enablePan) {
+        this.moveSender.send(() => {
+          this.doMove('pan', [ev.center.x, ev.center.y])
+        })
+      }
+    })
+
+    // Zoom is a pinch, which is very similar to a 2-finger pan
+    // and must therefore be heuristically determined. My heuristics is:
+    // A zoom should only occur if the gesture velocity is low and the scale delta is high
+    let lastScale = 1
+    hammertime.on('pinchmove', (ev) => {
+      const scaleDelta = lastScale - ev.scale
+      const isUnderVelocityLimit = ev.velocity < velocityLimit
+      // The faster you move the less you zoom
+      const velocityFactor =
+        Math.abs(
+          velocityLimit - Math.min(velocityLimit, Math.abs(ev.velocity))
+        ) * 0.5
+      const normalizedScale = Math.ceil(scaleDelta * 2000 * velocityFactor)
+      const isOverNormalizedScaleLimit =
+        Math.abs(normalizedScale) > normalizedScaleThreshold
+
+      if (
+        this.syncDirection === 'engineToClient' &&
+        this.enableZoom &&
+        isUnderVelocityLimit &&
+        isOverNormalizedScaleLimit
+      ) {
+        this.zoomSender.send(() => {
+          this.doZoom(normalizedScale)
+        })
+        lastScale = ev.scale
+      }
+    })
+    hammertime.on('pinchend pinchcancel', () => {
+      lastScale = 1
+    })
   }
 }
 
