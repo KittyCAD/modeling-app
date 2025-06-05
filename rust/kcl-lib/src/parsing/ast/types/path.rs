@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use super::{BodyItem, Expr, MemberObject, Node, Program};
+use super::{BodyItem, Expr, Node, Program};
 use crate::SourceRange;
 
 /// A traversal path through the AST to a node.
@@ -248,7 +248,7 @@ impl NodePath {
             Expr::MemberExpression(node) => {
                 if node.object.contains_range(&range) {
                     path.push(Step::MemberExpressionObject);
-                    return Self::from_member_expr_object(&node.object, range, path);
+                    return NodePath::from_expr(&node.object, range, path);
                 }
                 if node.property.contains_range(&range) {
                     path.push(Step::MemberExpressionProperty);
@@ -308,18 +308,6 @@ impl NodePath {
                 // TODO: Check the type annotation.
             }
             Expr::None(_) => {}
-        }
-
-        Some(path)
-    }
-
-    fn from_member_expr_object(mut expr: &MemberObject, range: SourceRange, mut path: NodePath) -> Option<NodePath> {
-        while let MemberObject::MemberExpression(node) = expr {
-            if !node.object.contains_range(&range) {
-                break;
-            }
-            path.push(Step::MemberExpressionObject);
-            expr = &node.object;
         }
 
         Some(path)

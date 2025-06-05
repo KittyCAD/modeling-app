@@ -31,7 +31,7 @@ pub(crate) type Universe = HashMap<String, DependencyInfo>;
 /// run concurrently. Each "stage" is blocking in this model, which will
 /// change in the future. Don't use this function widely, yet.
 #[allow(clippy::iter_over_hash_type)]
-pub fn import_graph(progs: &Universe, ctx: &ExecutorContext) -> Result<Vec<Vec<String>>, KclError> {
+pub(crate) fn import_graph(progs: &Universe, ctx: &ExecutorContext) -> Result<Vec<Vec<String>>, KclError> {
     let mut graph = Graph::new();
 
     for (name, (_, _, path, repr)) in progs.iter() {
@@ -120,7 +120,7 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>, KclEr
 
 type ImportDependencies = Vec<(String, AstNode<ImportStatement>, ModulePath)>;
 
-pub(crate) fn import_dependencies(
+fn import_dependencies(
     path: &ModulePath,
     repr: &ModuleRepr,
     ctx: &ExecutorContext,

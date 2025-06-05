@@ -33,12 +33,20 @@ expression: actual
                 "computed": false,
                 "end": 13,
                 "object": {
+                  "abs_path": false,
                   "commentStart": 7,
                   "end": 9,
-                  "name": "yo",
+                  "name": {
+                    "commentStart": 7,
+                    "end": 9,
+                    "name": "yo",
+                    "start": 7,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "property": {
                   "commentStart": 10,
