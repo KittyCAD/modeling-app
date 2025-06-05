@@ -304,9 +304,11 @@ impl ExecutorContext {
 
                     let annotations = &variable_declaration.outer_attrs;
 
-                    // During the evaluation of the variable's LHS, set context that this is all happening inside a variable
+                    // During the evaluation of the variable's RHS, set context that this is all happening inside a variable
                     // declaration, for the given name. This helps improve user-facing error messages.
-                    exec_state.mod_local.being_declared = Some(variable_declaration.inner.name().to_owned());
+                    let lhs = variable_declaration.inner.name().to_owned();
+                    let prev_being_declared = exec_state.mod_local.being_declared.clone();
+                    exec_state.mod_local.being_declared = Some(lhs);
                     let rhs_result = self
                         .execute_expr(
                             &variable_declaration.declaration.init,
@@ -317,7 +319,7 @@ impl ExecutorContext {
                         )
                         .await;
                     // Declaration over, so unset this context.
-                    exec_state.mod_local.being_declared = None;
+                    exec_state.mod_local.being_declared = prev_being_declared;
                     let rhs = rhs_result?;
 
                     exec_state
@@ -645,7 +647,12 @@ impl ExecutorContext {
             Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state),
             Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
             Expr::Name(name) => {
-                let value = name.get_result(exec_state, self).await?.clone();
+                let being_declared = exec_state.mod_local.being_declared.clone();
+                let value = name
+                    .get_result(exec_state, self)
+                    .await
+                    .map_err(|e| var_in_own_ref_err(e, &being_declared))?
+                    .clone();
                 if let KclValue::Module { value: module_id, meta } = value {
                     self.exec_module_for_result(
                         module_id,
@@ -751,6 +758,24 @@ impl ExecutorContext {
     }
 }
 
+/// If the error is about an undefined name, and that name matches the name being defined,
+/// make the error message more specific.
+fn var_in_own_ref_err(e: KclError, being_declared: &Option<String>) -> KclError {
+    let KclError::UndefinedValue { name, mut details } = e else {
+        return e;
+    };
+    // TODO after June 26th: replace this with a let-chain,
+    // which will be available in Rust 1.88
+    // https://rust-lang.github.io/rfcs/2497-if-let-chains.html
+    match (&being_declared, &name) {
+        (Some(name0), Some(name1)) if name0 == name1 => {
+            details.message = format!("You can't use `{name0}` because you're currently trying to define it. Use a different variable here instead.");
+        }
+        _ => {}
+    }
+    KclError::UndefinedValue { details, name }
+}
+
 impl Node<AscribedExpression> {
     #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
@@ -809,6 +834,17 @@ impl BinaryPart {
 
 impl Node<Name> {
     pub(super) async fn get_result<'a>(
+        &self,
+        exec_state: &'a mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<&'a KclValue, KclError> {
+        let being_declared = exec_state.mod_local.being_declared.clone();
+        self.get_result_inner(exec_state, ctx)
+            .await
+            .map_err(|e| var_in_own_ref_err(e, &being_declared))
+    }
+
+    async fn get_result_inner<'a>(
         &self,
         exec_state: &'a mut ExecState,
         ctx: &ExecutorContext,
@@ -1327,7 +1363,7 @@ pub(crate) async fn execute_pipe_body(
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
     // should use the previous child expression for %.
     // This means there's no more need for the previous pipe_value from the parent AST node above this one.
-    let previous_pipe_value = std::mem::replace(&mut exec_state.mod_local.pipe_value, Some(output));
+    let previous_pipe_value = exec_state.mod_local.pipe_value.replace(output);
     // Evaluate remaining elements.
     let result = inner_execute_pipe_body(exec_state, body, ctx).await;
     // Restore the previous pipe value.
@@ -1877,7 +1913,6 @@ d = b + c
                 project_directory: Some(crate::TypedPath(tmpdir.path().into())),
                 ..Default::default()
             },
-            stdlib: Arc::new(crate::std::StdLib::new()),
             context_type: ContextType::Mock,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);

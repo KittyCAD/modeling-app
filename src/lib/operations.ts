@@ -991,6 +991,8 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   rotate: {
     label: 'Rotate',
     icon: 'rotate',
+    prepareToEdit: prepareToEditRotate,
+    supportsTransform: true,
   },
   scale: {
     label: 'Scale',
@@ -1035,6 +1037,8 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   translate: {
     label: 'Translate',
     icon: 'move',
+    prepareToEdit: prepareToEditTranslate,
+    supportsTransform: true,
   },
   union: {
     label: 'Union',
@@ -1315,17 +1319,19 @@ export async function enterAppearanceFlow({
   )
 }
 
-export async function enterTranslateFlow({
-  operation,
-}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
+  const baseCommand = {
+    name: 'Translate',
+    groupId: 'modeling',
+  }
   const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
     operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
   if (!isModuleImport && !isSupportedStdLibCall) {
-    return new Error(
-      'Unsupported operation type. Please edit in the code editor.'
-    )
+    return {
+      reason: 'Unsupported operation type. Please edit in the code editor.',
+    }
   }
 
   const nodeToEdit = getNodePathFromSourceRange(
@@ -1368,26 +1374,38 @@ export async function enterTranslateFlow({
   const selection: Selections = { graphSelections: [], otherSelections: [] }
   const argDefaultValues = { nodeToEdit, selection, x, y, z }
   return {
-    type: 'Find and select command',
-    data: {
-      name: 'Translate',
-      groupId: 'modeling',
-      argDefaultValues,
-    },
+    ...baseCommand,
+    argDefaultValues,
   }
 }
 
-export async function enterRotateFlow({
+export async function enterTranslateFlow({
   operation,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  const data = await prepareToEditTranslate({ operation })
+  if ('reason' in data) {
+    return new Error(data.reason)
+  }
+
+  return {
+    type: 'Find and select command',
+    data,
+  }
+}
+
+async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
+  const baseCommand = {
+    name: 'Rotate',
+    groupId: 'modeling',
+  }
   const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
     operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
   if (!isModuleImport && !isSupportedStdLibCall) {
-    return new Error(
-      'Unsupported operation type. Please edit in the code editor.'
-    )
+    return {
+      reason: 'Unsupported operation type. Please edit in the code editor.',
+    }
   }
 
   const nodeToEdit = getNodePathFromSourceRange(
@@ -1430,12 +1448,22 @@ export async function enterRotateFlow({
   const selection: Selections = { graphSelections: [], otherSelections: [] }
   const argDefaultValues = { nodeToEdit, selection, roll, pitch, yaw }
   return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+export async function enterRotateFlow({
+  operation,
+}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  const data = await prepareToEditRotate({ operation })
+  if ('reason' in data) {
+    return new Error(data.reason)
+  }
+
+  return {
     type: 'Find and select command',
-    data: {
-      name: 'Rotate',
-      groupId: 'modeling',
-      argDefaultValues,
-    },
+    data,
   }
 }
 
