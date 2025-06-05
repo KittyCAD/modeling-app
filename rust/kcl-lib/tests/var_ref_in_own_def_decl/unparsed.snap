@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing var_ref_in_own_def_decl.kcl
+---
+fn declare() {
+  x = 0
+  return x
+}
+
+x = x + declare()

@@ -163,7 +163,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     // Run the program.
     let exec_res = crate::test_server::execute_and_snapshot_ast(ast, Some(test.entry_point.clone()), export_step).await;
     match exec_res {
-        Ok((exec_state, env_ref, png, step)) => {
+        Ok((exec_state, ctx, env_ref, png, step)) => {
             let fail_path = test.output_dir.join("execution_error.snap");
             if std::fs::exists(&fail_path).unwrap() {
                 panic!("This test case is expected to fail, but it passed. If this is intended, and the test should actually be passing now, please delete kcl-lib/{}", fail_path.to_string_lossy())
@@ -181,7 +181,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     panic!("Step data was empty");
                 }
             }
-            let outcome = exec_state.to_exec_outcome(env_ref).await;
+            let outcome = exec_state.to_exec_outcome(env_ref, &ctx).await;
 
             let mem_result = catch_unwind(AssertUnwindSafe(|| {
                 assert_snapshot(test, "Variables in memory after executing", || {
@@ -3506,6 +3506,27 @@ mod var_ref_in_own_def {
 }
 mod ascription_unknown_type {
     const TEST_NAME: &str = "ascription_unknown_type";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod var_ref_in_own_def_decl {
+    const TEST_NAME: &str = "var_ref_in_own_def_decl";
 
     /// Test parsing KCL.
     #[test]
