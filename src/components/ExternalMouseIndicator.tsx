@@ -1,7 +1,6 @@
 import { Popover } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { isDesktop } from '@src/lib/isDesktop'
 import { _3dMouseActor, sceneInfra } from '@src/lib/singletons'
 import { ActionButton } from '@src/components/ActionButton'
 import {
@@ -18,7 +17,7 @@ export const ExternalMouseIndicator = ({
     return state.value
   })
 
-  return isDesktop() ? (
+  return (
     <Popover className="relative">
       <Popover.Button
         className={
@@ -67,5 +66,5 @@ export const ExternalMouseIndicator = ({
         </ActionButton>
       </Popover.Panel>
     </Popover>
-  ) : null
+  )
 }

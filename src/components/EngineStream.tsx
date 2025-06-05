@@ -193,17 +193,48 @@ export const EngineStream = (props: {
         }
 
         if (!once) {
+          /* var navigationModel = {}
+           *       var spaceMouse = null
+           *       var TRACE_MESSAGES = true
+           *       var canvas = document.getElementById('client-side-scene-canvas')
+           *       navigationModel.onConnect = function () {
+           *         // create the 3dmouse connection.
+           *         // The first parameter is the canvas that the 3dmouse will be tracking. The canvas
+           *         // must have focus i.e. be focusable for the 3dmouse to send data.
+           *         // The second parameter is the name of the application that will be displayed
+           *         // in the 3dmouse properties panel when the canvas has focus.
+           *         spaceMouse.create3dmouse(canvas, 'dogshit');
+           *       };
+           *
+           *
+           *       navigationModel.onDisconnect = function (reason) {
+           *         if (TRACE_MESSAGES)
+           *           console.log("3Dconnexion NL-Proxy disconnected " + reason);
+           *       };
+           *
+           *       ///////////////////////////////////////////////////////////////////////
+           *       // the 3dconnexion 3DMouse initialization
+           *       function init3DMouse() {
+           *         spaceMouse = new _3Dconnexion(navigationModel);
+           *         spaceMouse.debug = true
+           *         if (!spaceMouse.connect()) {
+           *           if (TRACE_MESSAGES)
+           *             console.log("Cannot connect to 3Dconnexion NL-Proxy");
+           *         }
+           *       }
+           *
+           *       init3DMouse(); */
           /* const the3DMouse = new _3DMouseThreeJS({
            *   // Name needs to be registered in the python proxy server!
            *   name: 'zoo-design-studio',
-           *   debug: false,
+           *   debug: true,
            *   canvasId: 'client-side-scene-canvas',
            *   camera: sceneInfra.camControls.camera.clone(),
            * })
 
            * window.the3DMouse = the3DMouse
-           * the3DMouse.init3DMouse()
-           * once = true */
+           * the3DMouse.init3DMouse() */
+          once = true
         }
       })
       .catch(trap)

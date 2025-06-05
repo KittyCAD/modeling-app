@@ -8,6 +8,7 @@ import {
   useNavigate,
   useSearchParams,
 } from 'react-router-dom'
+import * as THREE from 'three'
 
 import { AppHeader } from '@src/components/AppHeader'
 import { EngineStream } from '@src/components/EngineStream'
@@ -57,6 +58,7 @@ import { VITE_KC_SITE_BASE_URL } from '@src/env'
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
 
+window.THREE = THREE
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})

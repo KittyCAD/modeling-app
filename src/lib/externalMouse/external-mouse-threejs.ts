@@ -107,37 +107,6 @@ interface _3DconnexionMocked {
 }
 
 interface _3DconnexionMiddleware {
-  // Callbacks
-  getCoordinateSystem(): SixteenNumbers
-  getFrontView(): SixteenNumbers
-  getViewMatrix(): SixteenNumbers
-  getFov(): number
-  getPerspective(): boolean
-  getModelExtents(): BoundingBox
-  getPointerPosition?(): Position
-  getPivotPositon?(): Position
-  getViewExtents(): ViewExtents
-  getFrameTime(): number
-  setViewExtents(viewExtents: ViewExtents): void
-  getViewFrustum(): ViewExtents
-
-  getConstructionPlane?(): PlaneEquation
-  getFloorPlane?(): PlaneEquation
-  getUnitsToMeters?(): number
-  getLookAt?(): Position | null
-  getViewRotatable?(): boolean
-
-  // hit test properties
-  setLookFrom?(p: Position): void
-  setLookDirection?(p: Position): void
-  setLookAperture?(a: number): void
-  setSelectionOnly?(b: boolean): void
-
-  // Commands
-  setActiveCommand(id: any): void
-  setViewMatrix(viewMatrix: SixteenNumbers): void
-  setFov(fov: number): void
-  setTransaction(transaction: number): void
   onStartMotion(): void
   onStopMotion(): void
 
@@ -152,6 +121,86 @@ interface _3DconnexionMiddleware {
 
   // Custom
   destroy(): void
+
+  /**
+   * Client read
+   * These are class functions called in the 3dconnexion.js library with the navigaiton library and the proxy server
+   */
+  /** View */
+  getViewMatrix(): SixteenNumbers
+  getConstructionPlane?(): PlaneEquation // TODO
+  getViewExtents(): ViewExtents
+  getFov(): number
+  getViewFrustum(): ViewExtents
+  getPerspective(): boolean
+  getViewTarget?(): void // TODO
+  getViewRotatable?(): boolean
+
+  /** Model */
+  getModelExtents(): BoundingBox
+  getFloorPlane?(): PlaneEquation // TODO
+  getUnitsToMeters?() : void // TODO
+
+  /** Pivot */
+  getPivotPositon?(): Position
+
+  /** Hit testing */
+  getLookAt?(): Position | null // TODO
+
+  /** Selection */
+  getSelectionAffine?(): void // TODO
+  getSelectionEmpty?(): null // TODO
+  getSelectionExtents?(): void // TODO
+
+  /** Cursor */
+  getPointerPosition?(): Position // TODO
+
+  /** World */
+  getCoordinateSystem(): SixteenNumbers
+
+  /** Predefined views */
+  getFrontView(): SixteenNumbers
+
+  /** Frame */
+  getFrameTimingSource?(): void // TODO
+  getFrameTime(): number
+
+  /**
+   * Client update
+   * These are class functions called in the 3dconnexion.js library with the navigaiton library and the proxy server
+   */
+  setMoving?(data: any): void // TODO
+  setTransaction(transaction: number): void
+
+  /** View / Camera */
+  setViewMatrix(viewMatrix: SixteenNumbers): void
+  setViewExtents(viewExtents: ViewExtents): void
+  setFov(fov: number): void
+  setTarget?(data: any): void // TODO
+
+  /** Commands */
+  setActiveCommand(id: any): void // TODO
+
+
+  /** Pivot */
+  setPivotPosition?(data: any) : void // TODO
+  setPivotVisible?(data: any): void // TODO
+
+  /** Hit testing */
+  setLookFrom?(p: Position): void
+  setLookDirection?(p: Position): void
+  setLookAperture?(a: number): void
+  setSelectionOnly?(b: boolean): void
+
+  /** Selection */
+  setSelectionAffine?(data: any) : void // TODO
+
+  /** Keys */
+  setKeyPress?(data: any): void // TODO
+  setKeyRelease?(data: any): void // TODO
+
+  /** Settings */
+  setSettingsChanged?(data: any): void // TODO
 }
 
 interface _3DMouseConfiguration {
@@ -221,6 +270,30 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   bottom: number = 0
   top: number = 0
 
+  settings = {
+    changed: false
+  }
+
+  pivot = {
+    position : [0,0,0],
+    visible: true
+  }
+
+  motion = false
+
+  hit = {
+    lookfrom : [0,0,0],
+    lookat : [0,0,0],
+    direction: [0,0,0]
+  }
+
+  look = {
+    origin: new THREE.Vector3()
+    , direction: new THREE.Vector3()
+    , aperture: 0.01
+    , selection: false
+  }
+
   constructor(configuration: _3DMouseConfiguration) {
     this.name = configuration.name
     this.debug = true
@@ -232,6 +305,32 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
         `${EXTERNAL_MOUSE_ERROR_PREFIX} Unable to find _3Dconnexion library`
       )
     }
+
+
+  }
+
+  setLookFrom (data) {
+    console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} setLookFrom: ${data}`)
+    this.look.origin.set(data[0], data[1], data[2]);
+  }
+
+  setLookDirection (data) {
+    console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} setLookDirection: ${data}`)
+    this.look.direction.set(data[0], data[1], data[2]);
+  }
+
+  setLookAperture (data) {
+    console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} setLookAperture: ${data}`)
+    this.look.aperture = data;
+  }
+
+  setSelectionOnly (data) {
+    console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} setSelectionOnly: ${data}`)
+    this.look.selection = data;
+  }
+
+  getPivotPosition () {
+    return [0,0,0]
   }
 
   // custom
@@ -262,6 +361,11 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     const unit = 100
     return [-unit / 2, -unit / 2, -unit / 2, unit / 2, unit / 2, unit / 2]
   }
+
+  getUnitsToMeters () {
+    // 1 unit is 10m
+    return 0.1;
+  };
 
   getPerspective(): boolean {
     // This is called after onStartMotion
@@ -366,7 +470,8 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
    * Everything will initialize after this function call.
    */
   async init3DMouse(
-    timeout: number = 15000
+    timeout: number = 15000,
+    self: any
   ): Promise<{ value: boolean; message: string }> {
     /**
      * _3Dconnexion.connect() is buggy, the code is implemented wrong.
@@ -380,18 +485,11 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
      * It would require an N ms timeout wait to see if the libray has connected to the proxy server
      * Also the convention is backwards, 1 says success and 0 says failure, this is confusing.
      */
-    this.spaceMouse = new _3Dconnexion(this)
-    console.log('okay?')
+    this.spaceMouse = new _3Dconnexion(self)
+    // set the debug flag in the wrapper library
+    this.spaceMouse.debug = this.debug
+    this.spaceMouse.connect()
 
-    if (this.spaceMouse) {
-      // set the debug flag in the wrapper library
-      this.spaceMouse.debug = this.debug
-
-      // Do not even attempt to read the return value from this function
-      // it is not correct nor it is safe. It is an async function written as a sync function
-      // it is broken.
-      this.spaceMouse.connect()
-    }
     // artifically wait to hope it connects within that timeframe
     return new Promise((resolve, reject) => {
       if (this.spaceMouse) {
@@ -418,9 +516,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   // init3DMouse needs onConnect
   onConnect(): void {
     console.log('trying to do on connect?')
-    const canvas: HTMLCanvasElement | null = document.querySelector(
-      '#' + this.canvasId
-    )
+    const canvas: HTMLCanvasElement = document.getElementById('client-side-scene-canvas')
 
     if (!canvas) {
       console.error(
@@ -551,6 +647,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
 
     cameraMatrix.fromArray(viewMatrix)
 
+    console.log(this.camera.position)
     // update the camera
     cameraMatrix.decompose(
       this.camera.position,
@@ -572,6 +669,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
    * transaction ===0 at the end of a frame change
    */
   setTransaction(transaction: number): void {
+    console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} setTransaction: ${transaction}`)
     if (transaction === 0) {
       console.log('request a redraw not animating')
     }
@@ -603,6 +701,24 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     if (this.debug) {
       console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} mouse movement stopped`)
     }
+  }
+
+  setPivotVisible(data: any) : void {
+    console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} setPivotVislble: ${data}`)
+  }
+
+  // getSelectionEmpty() : null {
+  //   console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} getSelectionEmpty`)
+  //   return null
+  // }
+
+  setMoving(data: any): void  {
+    console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} setMoving: ${data}`)
+  }
+
+  setSettingsChanged(data: any): void {
+    console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} setSettingsChanged: ${data}`)
+    this.settings.changed = data
   }
 }
 

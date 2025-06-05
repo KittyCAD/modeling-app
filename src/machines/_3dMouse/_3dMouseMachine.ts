@@ -49,6 +49,7 @@ export const _3DMouseMachine = setup({
           camera: PerspectiveCamera | OrthographicCamera | null
         }
       }): Promise<_3DMouseThreeJS> => {
+        console.error('I AM CONNECTING TOO MANY TIMES')
         /** * Global variable reference from html script tag loading */
         if (!_3Dconnexion) {
           const message = '_3Dconnexion library missing.'
@@ -85,8 +86,9 @@ export const _3DMouseMachine = setup({
          * The mouse class has a bug and we cannot properly await the async xmlHttpRequest
          * we have to poll and hope it connects
          */
-        const response = await the3DMouse.init3DMouse(1000 * 2)
+        const response = await the3DMouse.init3DMouse(1000 * 2, the3DMouse)
 
+        console.log("RESPONSE", response)
         if (response.value === false) {
           logError(response.message)
           the3DMouse.destroy()

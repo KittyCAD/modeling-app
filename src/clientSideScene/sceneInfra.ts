@@ -281,6 +281,8 @@ export class SceneInfra {
     this.renderer.domElement.id = 'client-side-scene-canvas'
     this.renderer.setSize(window.innerWidth, window.innerHeight)
     this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
+    this.renderer.domElement.tabIndex = 0
+    this.renderer.domElement.autofocus = true;
 
     // LABEL RENDERER
     this.labelRenderer = new CSS2DRenderer()
