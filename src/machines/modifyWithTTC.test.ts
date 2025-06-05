@@ -21,6 +21,11 @@ import type { Selections } from '@src/lib/selections'
  * So far `artifactSearchSnippet` that has the file name, a searchString (some code in that file) and the artifact type ('wall', sweepEdge' etc) has
  * been enough to find the artifact in the graph. That might need to change with more examples OR later if we have rock-solid stable ids
  * We can possible just hard-code the ids and have that be reliable.
+ *
+ * The snapshot code is custom, instead of using Vitest's built-in snapshot functionality.
+ * This is purely because we want pure JSON to make this easy for the ML team to ingest
+ * It's been made to still work with the same `-u` flag, so it won't feel meaningfully different
+ * When they need to be updated.
  */
 
 // Custom JSON snapshot utilities
