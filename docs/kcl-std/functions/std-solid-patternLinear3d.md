@@ -1,11 +1,11 @@
 ---
 title: "patternLinear3d"
 subtitle: "Function in std::solid"
-excerpt: ""
+excerpt: "Repeat a 3-dimensional solid along a linear path, with a dynamic amount of distance between each repetition, some specified number of times."
 layout: manual
 ---
 
-
+Repeat a 3-dimensional solid along a linear path, with a dynamic amount of distance between each repetition, some specified number of times.
 
 ```kcl
 patternLinear3d(
@@ -17,8 +17,7 @@ patternLinear3d(
 ): [Solid; 1+]
 ```
 
-Repeat a 3-dimensional solid along a linear path, with a dynamic amount
-of distance between each repetition, some specified number of times.
+
 
 ### Arguments
 

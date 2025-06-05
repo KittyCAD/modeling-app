@@ -1,11 +1,11 @@
 ---
 title: "patternLinear2d"
 subtitle: "Function in std::sketch"
-excerpt: ""
+excerpt: "Repeat a 2-dimensional sketch along some dimension, with a dynamic amount of distance between each repetition, some specified number of times."
 layout: manual
 ---
 
-
+Repeat a 2-dimensional sketch along some dimension, with a dynamic amount of distance between each repetition, some specified number of times.
 
 ```kcl
 patternLinear2d(
@@ -17,8 +17,7 @@ patternLinear2d(
 ): [Sketch; 1+]
 ```
 
-Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
-of distance between each repetition, some specified number of times.
+
 
 ### Arguments
 
