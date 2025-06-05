@@ -94,6 +94,11 @@ impl SourceRange {
         ModuleId::from_usize(self.0[2])
     }
 
+    /// True if this source range is from the top-level module.
+    pub fn is_top_level_module(&self) -> bool {
+        self.module_id().is_top_level()
+    }
+
     /// Check if the range contains a position.
     pub fn contains(&self, pos: usize) -> bool {
         pos >= self.start() && pos <= self.end()

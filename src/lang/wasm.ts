@@ -175,6 +175,12 @@ function bestSourceRange(error: RustKclError): SourceRange {
   return sourceRangeFromRust(error.details.sourceRanges[0])
 }
 
+export function defaultNodePath(): NodePath {
+  return {
+    steps: [],
+  }
+}
+
 const splitErrors = (
   input: CompilationError[]
 ): { errors: CompilationError[]; warnings: CompilationError[] } => {
@@ -389,7 +395,20 @@ export function sketchFromKclValue(
 }
 
 export const errFromErrWithOutputs = (e: any): KCLError => {
-  const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
+  // `e` is any, so let's figure out something useful to do with it.
+  const parsed: KclErrorWithOutputs = (() => {
+    // No need to parse, it's already an object.
+    if (typeof e === 'object') {
+      return e
+    }
+    // It's a string, so parse it.
+    if (typeof e === 'string') {
+      return JSON.parse(e)
+    }
+    // It can be converted to a string, then parsed.
+    return JSON.parse(e.toString())
+  })()
+
   return new KCLError(
     parsed.error.kind,
     parsed.error.details.msg,
@@ -427,7 +446,7 @@ export async function rustImplPathToNode(
   return pathToNodeFromRustNodePath(nodePath)
 }
 
-async function nodePathFromRange(
+export async function nodePathFromRange(
   ast: Program,
   range: SourceRange
 ): Promise<NodePath | null> {
@@ -555,7 +574,7 @@ export async function coreDump(
   }
 }
 
-function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
+export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
   const pathToNode: PathToNode = []
   for (const step of nodePath.steps) {
     switch (step.type) {

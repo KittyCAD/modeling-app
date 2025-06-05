@@ -1,11 +1,11 @@
 ---
 title: "assert"
 subtitle: "Function in std"
-excerpt: ""
+excerpt: "Check a value meets some expected conditions at runtime. Program terminates with an error if conditions aren't met. If you provide multiple conditions, they will all be checked and all must be met."
 layout: manual
 ---
 
-
+Check a value meets some expected conditions at runtime. Program terminates with an error if conditions aren't met. If you provide multiple conditions, they will all be checked and all must be met.
 
 ```kcl
 assert(
@@ -20,8 +20,7 @@ assert(
 )
 ```
 
-Check a value meets some expected conditions at runtime. Program terminates with an error if conditions aren't met.
-If you provide multiple conditions, they will all be checked and all must be met.
+
 
 ### Arguments
 

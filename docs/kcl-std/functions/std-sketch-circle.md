@@ -1,11 +1,11 @@
 ---
 title: "circle"
 subtitle: "Function in std::sketch"
-excerpt: ""
+excerpt: "Construct a 2-dimensional circle, of the specified radius, centered at the provided (x, y) origin point."
 layout: manual
 ---
 
-
+Construct a 2-dimensional circle, of the specified radius, centered at the provided (x, y) origin point.
 
 ```kcl
 circle(
@@ -17,8 +17,7 @@ circle(
 ): Sketch
 ```
 
-Construct a 2-dimensional circle, of the specified radius, centered at
-the provided (x, y) origin point.
+
 
 ### Arguments
 

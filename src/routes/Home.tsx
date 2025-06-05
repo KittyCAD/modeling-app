@@ -521,7 +521,7 @@ function ProjectGrid({
   return (
     <section data-testid="home-section" {...rest}>
       {state.matches(SystemIOMachineStates.readingFolders) ? (
-        <Loading>Loading your Projects...</Loading>
+        <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
           {searchResults.length > 0 ? (

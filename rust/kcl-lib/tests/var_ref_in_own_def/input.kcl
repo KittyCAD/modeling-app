@@ -1,0 +1,3 @@
+// This won't work, because `sketch001` is being referenced in its own definition.
+sketch001 = startSketchOn(XY)
+  |> startProfileAt([20, -20], sketch001)

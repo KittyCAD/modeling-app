@@ -1,9 +1,10 @@
 use std::{
     fs,
+    hint::black_box,
     path::{Path, PathBuf},
 };
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion};
 
 const IGNORE_DIRS: [&str; 2] = ["step", "screenshots"];
 

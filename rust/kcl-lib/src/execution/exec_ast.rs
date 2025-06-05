@@ -19,8 +19,8 @@ use crate::{
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
         BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, LiteralIdentifier,
-        LiteralValue, MemberExpression, MemberObject, Name, Node, NodeRef, ObjectExpression, PipeExpression, Program,
-        TagDeclarator, Type, UnaryExpression, UnaryOperator,
+        LiteralValue, MemberExpression, Name, Node, NodeRef, ObjectExpression, PipeExpression, Program, TagDeclarator,
+        Type, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
     std::args::TyF64,
@@ -164,10 +164,13 @@ impl ExecutorContext {
                                 let mut mod_value = mem.get_from(&mod_name, env_ref, import_item.into(), 0).cloned();
 
                                 if value.is_err() && ty.is_err() && mod_value.is_err() {
-                                    return Err(KclError::new_undefined_value(KclErrorDetails::new(
-                                        format!("{} is not defined in module", import_item.name.name),
-                                        vec![SourceRange::from(&import_item.name)],
-                                    )));
+                                    return Err(KclError::new_undefined_value(
+                                        KclErrorDetails::new(
+                                            format!("{} is not defined in module", import_item.name.name),
+                                            vec![SourceRange::from(&import_item.name)],
+                                        ),
+                                        None,
+                                    ));
                                 }
 
                                 // Check that the item is allowed to be imported (in at least one namespace).
@@ -301,7 +304,12 @@ impl ExecutorContext {
 
                     let annotations = &variable_declaration.outer_attrs;
 
-                    let value = self
+                    // During the evaluation of the variable's RHS, set context that this is all happening inside a variable
+                    // declaration, for the given name. This helps improve user-facing error messages.
+                    let lhs = variable_declaration.inner.name().to_owned();
+                    let prev_being_declared = exec_state.mod_local.being_declared.take();
+                    exec_state.mod_local.being_declared = Some(lhs);
+                    let rhs_result = self
                         .execute_expr(
                             &variable_declaration.declaration.init,
                             exec_state,
@@ -309,10 +317,14 @@ impl ExecutorContext {
                             annotations,
                             StatementKind::Declaration { name: &var_name },
                         )
-                        .await?;
+                        .await;
+                    // Declaration over, so unset this context.
+                    exec_state.mod_local.being_declared = prev_being_declared;
+                    let rhs = rhs_result?;
+
                     exec_state
                         .mut_stack()
-                        .add(var_name.clone(), value.clone(), source_range)?;
+                        .add(var_name.clone(), rhs.clone(), source_range)?;
 
                     // Track exports.
                     if let ItemVisibility::Export = variable_declaration.visibility {
@@ -326,7 +338,7 @@ impl ExecutorContext {
                         }
                     }
                     // Variable declaration can be the return value of a module.
-                    last_expr = matches!(body_type, BodyType::Root).then_some(value);
+                    last_expr = matches!(body_type, BodyType::Root).then_some(rhs);
                 }
                 BodyItem::TypeDeclaration(ty) => {
                     let metadata = Metadata::from(&**ty);
@@ -635,7 +647,12 @@ impl ExecutorContext {
             Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state),
             Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
             Expr::Name(name) => {
-                let value = name.get_result(exec_state, self).await?.clone();
+                let being_declared = exec_state.mod_local.being_declared.clone();
+                let value = name
+                    .get_result(exec_state, self)
+                    .await
+                    .map_err(|e| var_in_own_ref_err(e, &being_declared))?
+                    .clone();
                 if let KclValue::Module { value: module_id, meta } = value {
                     self.exec_module_for_result(
                         module_id,
@@ -722,7 +739,7 @@ impl ExecutorContext {
             Expr::ArrayExpression(array_expression) => array_expression.execute(exec_state, self).await?,
             Expr::ArrayRangeExpression(range_expression) => range_expression.execute(exec_state, self).await?,
             Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, self).await?,
-            Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state)?,
+            Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state, self).await?,
             Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
             Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
             Expr::LabelledExpression(expr) => {
@@ -739,6 +756,24 @@ impl ExecutorContext {
         };
         Ok(item)
     }
+}
+
+/// If the error is about an undefined name, and that name matches the name being defined,
+/// make the error message more specific.
+fn var_in_own_ref_err(e: KclError, being_declared: &Option<String>) -> KclError {
+    let KclError::UndefinedValue { name, mut details } = e else {
+        return e;
+    };
+    // TODO after June 26th: replace this with a let-chain,
+    // which will be available in Rust 1.88
+    // https://rust-lang.github.io/rfcs/2497-if-let-chains.html
+    match (&being_declared, &name) {
+        (Some(name0), Some(name1)) if name0 == name1 => {
+            details.message = format!("You can't use `{name0}` because you're currently trying to define it. Use a different variable here instead.");
+        }
+        _ => {}
+    }
+    KclError::UndefinedValue { details, name }
 }
 
 impl Node<AscribedExpression> {
@@ -790,7 +825,7 @@ impl BinaryPart {
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
-            BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state),
+            BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state, ctx).await,
             BinaryPart::IfExpression(e) => e.get_result(exec_state, ctx).await,
             BinaryPart::AscribedExpression(e) => e.get_result(exec_state, ctx).await,
         }
@@ -799,6 +834,17 @@ impl BinaryPart {
 
 impl Node<Name> {
     pub(super) async fn get_result<'a>(
+        &self,
+        exec_state: &'a mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<&'a KclValue, KclError> {
+        let being_declared = exec_state.mod_local.being_declared.clone();
+        self.get_result_inner(exec_state, ctx)
+            .await
+            .map_err(|e| var_in_own_ref_err(e, &being_declared))
+    }
+
+    async fn get_result_inner<'a>(
         &self,
         exec_state: &'a mut ExecState,
         ctx: &ExecutorContext,
@@ -896,16 +942,14 @@ impl Node<Name> {
 }
 
 impl Node<MemberExpression> {
-    fn get_result(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
+    async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let property = Property::try_from(self.computed, self.property.clone(), exec_state, self.into())?;
-        let object = match &self.object {
-            // TODO: Don't use recursion here, use a loop.
-            MemberObject::MemberExpression(member_expr) => member_expr.get_result(exec_state)?,
-            MemberObject::Identifier(identifier) => {
-                let value = exec_state.stack().get(&identifier.name, identifier.into())?;
-                value.clone()
-            }
+        let meta = Metadata {
+            source_range: SourceRange::from(self),
         };
+        let object = ctx
+            .execute_expr(&self.object, exec_state, &meta, &[], StatementKind::Expression)
+            .await?;
 
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
@@ -913,10 +957,13 @@ impl Node<MemberExpression> {
                 if let Some(value) = map.get(&property) {
                     Ok(value.to_owned())
                 } else {
-                    Err(KclError::new_undefined_value(KclErrorDetails::new(
-                        format!("Property '{property}' not found in object"),
-                        vec![self.clone().into()],
-                    )))
+                    Err(KclError::new_undefined_value(
+                        KclErrorDetails::new(
+                            format!("Property '{property}' not found in object"),
+                            vec![self.clone().into()],
+                        ),
+                        None,
+                    ))
                 }
             }
             (KclValue::Object { .. }, Property::String(property), true) => {
@@ -938,10 +985,13 @@ impl Node<MemberExpression> {
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
                 } else {
-                    Err(KclError::new_undefined_value(KclErrorDetails::new(
-                        format!("The array doesn't have any item at index {index}"),
-                        vec![self.clone().into()],
-                    )))
+                    Err(KclError::new_undefined_value(
+                        KclErrorDetails::new(
+                            format!("The array doesn't have any item at index {index}"),
+                            vec![self.clone().into()],
+                        ),
+                        None,
+                    ))
                 }
             }
             // Singletons and single-element arrays should be interchangeable, but only indexing by 0 should work.
@@ -1311,7 +1361,7 @@ pub(crate) async fn execute_pipe_body(
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
     // should use the previous child expression for %.
     // This means there's no more need for the previous pipe_value from the parent AST node above this one.
-    let previous_pipe_value = std::mem::replace(&mut exec_state.mod_local.pipe_value, Some(output));
+    let previous_pipe_value = exec_state.mod_local.pipe_value.replace(output);
     // Evaluate remaining elements.
     let result = inner_execute_pipe_body(exec_state, body, ctx).await;
     // Restore the previous pipe value.
@@ -1861,7 +1911,6 @@ d = b + c
                 project_directory: Some(crate::TypedPath(tmpdir.path().into())),
                 ..Default::default()
             },
-            stdlib: Arc::new(crate::std::StdLib::new()),
             context_type: ContextType::Mock,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);

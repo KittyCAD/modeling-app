@@ -749,7 +749,7 @@ sketch001 = startSketchOn(XZ)
     // expect the code to have changed
     await editor.expectEditor.toContain(
       `sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [8.41, -9.97]) 
+  |> startProfile(at = [8.41, -9.97])
   |> line(end = [12.73, -0.09])
   |> line(end = [1.99, 2.06])
   |> tangentialArc(endAbsolute = [24.95, -5.38])
@@ -2329,16 +2329,18 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
       await page.mouse.down()
       await rectDragTo()
       await page.mouse.up()
+      await page.waitForTimeout(200)
       await editor.expectEditor.toContain(
         `angledLine(angle = -7, length = 10.27, tag = $rectangleSegmentA001)`
       )
     })
 
-    await test.step('edit existing circl', async () => {
+    await test.step('edit existing circle', async () => {
       await circleEdge()
       await page.mouse.down()
       await dragCircleTo()
       await page.mouse.up()
+      await page.waitForTimeout(200)
       await editor.expectEditor.toContain(
         `profile003 = circle(sketch001, center = [6.92, -4.2], radius = 4.81)`
       )
@@ -2349,6 +2351,7 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
       await page.mouse.down()
       await circ3PEnd()
       await page.mouse.up()
+      await page.waitForTimeout(200)
       await editor.expectEditor.toContain(
         `profile004 = circleThreePoint(
   sketch001,
@@ -2362,7 +2365,7 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
 
     await test.step('add new profile', async () => {
       await toolbar.rectangleBtn.click()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(200)
       await rectStart()
       await editor.expectEditor.toContain(
         `profile005 = startProfile(sketch001, at = [15.68, -3.84])`
