@@ -10,6 +10,14 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       "name": "cube-inches.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -18,6 +26,14 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       "type": "ModuleInstance",
       "name": "cube-mm.kcl",
       "moduleId": 0
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        }
+      ]
     },
     "sourceRange": []
   },

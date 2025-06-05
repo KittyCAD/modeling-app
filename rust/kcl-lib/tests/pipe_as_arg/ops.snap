@@ -63,6 +63,20 @@ description: Operations executed pipe_as_arg.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 3
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -88,6 +102,28 @@ description: Operations executed pipe_as_arg.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 3
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "CallKwArg",
+          "index": 0
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 1
+        }
+      ]
     },
     "sourceRange": []
   },

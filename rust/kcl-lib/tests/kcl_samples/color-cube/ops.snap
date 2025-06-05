@@ -31,6 +31,20 @@ description: Operations executed color-cube.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 5
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -61,6 +75,20 @@ description: Operations executed color-cube.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 6
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -91,6 +119,20 @@ description: Operations executed color-cube.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 7
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -120,6 +162,20 @@ description: Operations executed color-cube.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 8
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -151,6 +207,20 @@ description: Operations executed color-cube.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 9
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -181,69 +251,19 @@ description: Operations executed color-cube.kcl
         "sourceRange": []
       }
     },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 1.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
         },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 1.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
+        {
+          "type": "VariableDeclarationDeclaration"
         },
-        "sourceRange": []
-      }
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -277,6 +297,34 @@ description: Operations executed color-cube.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 11
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "ReturnStatementArg"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 7
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -309,6 +357,34 @@ description: Operations executed color-cube.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 11
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "ReturnStatementArg"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 7
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -341,6 +417,34 @@ description: Operations executed color-cube.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 11
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "ReturnStatementArg"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 7
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -372,6 +476,154 @@ description: Operations executed color-cube.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 11
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "ReturnStatementArg"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 7
+        }
+      ]
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 11
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "ReturnStatementArg"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 7
+        }
+      ]
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 11
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "ReturnStatementArg"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 7
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -399,6 +651,17 @@ description: Operations executed color-cube.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 12
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -424,6 +687,17 @@ description: Operations executed color-cube.kcl
           "sourceRange": []
         }
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 13
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -451,6 +725,17 @@ description: Operations executed color-cube.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -476,6 +761,17 @@ description: Operations executed color-cube.kcl
           "sourceRange": []
         }
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 15
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -503,6 +799,17 @@ description: Operations executed color-cube.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 16
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -528,6 +835,17 @@ description: Operations executed color-cube.kcl
           "sourceRange": []
         }
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 17
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
     },
     "sourceRange": []
   },
