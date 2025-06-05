@@ -2050,6 +2050,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.122"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/conics#c4bfcbb124fb7d86ad0f2d060410802511b385d5"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2074,6 +2075,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.12"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/conics#c4bfcbb124fb7d86ad0f2d060410802511b385d5"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2084,6 +2086,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.13"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/conics#c4bfcbb124fb7d86ad0f2d060410802511b385d5"
 dependencies = [
  "proc-macro2",
  "quote",
