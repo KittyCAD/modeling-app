@@ -455,20 +455,19 @@ app.on('ready', () => {
 
   // Check for updates in the background at startup and then every 15 minutes
   let backgroundCheckingForUpdates = false
-  const checkForUpdatesBackground = async () => {
+  const checkForUpdatesBackground = () => {
     backgroundCheckingForUpdates = true
-    try {
-      await autoUpdater.checkForUpdates()
-    } catch (error) {
-      reportRejection(error)
-    } finally {
-      backgroundCheckingForUpdates = false
-    }
+    autoUpdater
+      .checkForUpdates()
+      .catch(reportRejection)
+      .finally(() => {
+        backgroundCheckingForUpdates = false
+      })
   }
   const oneSecond = 1000
   const fifteenMinutes = 15 * 60 * 1000
-  setTimeout(() => checkForUpdatesBackground(), oneSecond)
-  setInterval(() => checkForUpdatesBackground(), fifteenMinutes)
+  setTimeout(checkForUpdatesBackground, oneSecond)
+  setInterval(checkForUpdatesBackground, fifteenMinutes)
 
   autoUpdater.on('checking-for-update', () => {
     console.log('checking-for-update')
