@@ -26,6 +26,9 @@ import type { Selections } from '@src/lib/selections'
  * This is purely because we want pure JSON to make this easy for the ML team to ingest
  * It's been made to still work with the same `-u` flag, so it won't feel meaningfully different
  * When they need to be updated.
+ *
+ * The way to add more examples is pushing new cases to `cases` array, you should be able
+ * to follow the patterns of other examples.
  */
 
 // Custom JSON snapshot utilities
