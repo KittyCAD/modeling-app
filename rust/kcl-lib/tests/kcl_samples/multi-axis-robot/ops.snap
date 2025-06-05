@@ -10,6 +10,14 @@ description: Operations executed multi-axis-robot.kcl
       "name": "robot-arm-base.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -18,6 +26,14 @@ description: Operations executed multi-axis-robot.kcl
       "type": "ModuleInstance",
       "name": "robot-rotating-base.kcl",
       "moduleId": 0
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -28,6 +44,14 @@ description: Operations executed multi-axis-robot.kcl
       "name": "robot-arm-j2.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 2
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -36,6 +60,14 @@ description: Operations executed multi-axis-robot.kcl
       "type": "ModuleInstance",
       "name": "robot-arm-j3.kcl",
       "moduleId": 0
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 3
+        }
+      ]
     },
     "sourceRange": []
   },

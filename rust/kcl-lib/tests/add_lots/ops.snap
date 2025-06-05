@@ -27,6 +27,185 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -52,6 +231,185 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -79,6 +437,182 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -104,6 +638,179 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -131,6 +838,176 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -156,6 +1033,173 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -183,6 +1227,170 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -208,6 +1416,167 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -235,6 +1604,164 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -260,6 +1787,161 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -287,6 +1969,158 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -312,6 +2146,155 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -339,6 +2322,152 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -364,6 +2493,149 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -391,6 +2663,146 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -416,6 +2828,143 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -443,6 +2992,140 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -468,6 +3151,137 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -495,6 +3309,134 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -520,6 +3462,131 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -547,6 +3614,128 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -572,6 +3761,125 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -599,6 +3907,122 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -624,6 +4048,119 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -651,6 +4188,116 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -676,6 +4323,113 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -703,6 +4457,110 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -728,6 +4586,107 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -755,6 +4714,104 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -780,6 +4837,101 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -807,6 +4959,98 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -832,6 +5076,95 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -859,6 +5192,92 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -884,6 +5303,89 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -911,6 +5413,86 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -936,6 +5518,83 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -963,6 +5622,80 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -988,6 +5721,77 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1015,6 +5819,74 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1040,6 +5912,71 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1067,6 +6004,68 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1092,6 +6091,65 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1119,6 +6177,62 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1144,6 +6258,59 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1171,6 +6338,56 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1196,6 +6413,53 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1223,6 +6487,50 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1248,6 +6556,47 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1275,6 +6624,44 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1300,6 +6687,41 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1327,6 +6749,38 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1352,6 +6806,35 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1379,6 +6862,32 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1404,6 +6913,29 @@ description: Operations executed add_lots.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1431,6 +6963,26 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryLeft"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1457,94 +7009,24 @@ description: Operations executed add_lots.kcl
       },
       "labeledArgs": {}
     },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "f",
-      "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 56.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
         },
-        "sourceRange": []
-      },
-      "labeledArgs": {}
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "BinaryRight"
+        }
+      ]
     },
     "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "f",
-      "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 57.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "f",
-      "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 58.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"
