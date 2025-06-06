@@ -1,10 +1,10 @@
 .PHONY: **all**
 
-**all**: *install*
+**all**: **install**
 
 # INSTALL
 
-.PHONY: *install*
+.PHONY: **install**
 
 ```sh :
 ifeq ($(OS),Windows_NT)
@@ -29,7 +29,7 @@ endif
 
 ### Install dependencies
 
-*install*: node_modules/.package-lock.json $(CARGO) $(WASM_PACK)
+**install**: node_modules/.package-lock.json $(CARGO) $(WASM_PACK)
 
 node_modules/.package-lock.json: package.json package-lock.json
 	npm prune
