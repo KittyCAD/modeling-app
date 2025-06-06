@@ -1728,10 +1728,10 @@ async fn inner_subtract_2d(
 
 /// Calculate the (x, y) point on an ellipse given x or y and the major/minor radii of the ellipse.
 pub async fn elliptic_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::length(), exec_state)?;
-    let y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::length(), exec_state)?;
-    let major_radius: TyF64 = args.get_kw_arg_typed("majorRadius", &RuntimeType::count(), exec_state)?;
-    let minor_radius: TyF64 = args.get_kw_arg_typed("minorRadius", &RuntimeType::count(), exec_state)?;
+    let x = args.get_kw_arg_opt("x", &RuntimeType::length(), exec_state)?;
+    let y = args.get_kw_arg_opt("y", &RuntimeType::length(), exec_state)?;
+    let major_radius = args.get_kw_arg("majorRadius", &RuntimeType::count(), exec_state)?;
+    let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::count(), exec_state)?;
 
     let elliptic_point = inner_elliptic_point(x, y, major_radius, minor_radius, &args).await?;
 
@@ -1808,19 +1808,16 @@ async fn inner_elliptic_point(
 
 /// Draw an elliptical arc.
 pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch =
-        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
-    let center: [TyF64; 2] = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
-    let angle_start: TyF64 = args.get_kw_arg_typed("angleStart", &RuntimeType::degrees(), exec_state)?;
-    let angle_end: TyF64 = args.get_kw_arg_typed("angleEnd", &RuntimeType::degrees(), exec_state)?;
-    let major_radius: TyF64 = args.get_kw_arg_typed("majorRadius", &RuntimeType::length(), exec_state)?;
-    let minor_radius: TyF64 = args.get_kw_arg_typed("minorRadius", &RuntimeType::length(), exec_state)?;
-    let end_absolute: Option<[TyF64; 2]> =
-        args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::point2d(), exec_state)?;
-    let interior_absolute: Option<[TyF64; 2]> =
-        args.get_kw_arg_opt_typed("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let angle_start = args.get_kw_arg("angleStart", &RuntimeType::degrees(), exec_state)?;
+    let angle_end = args.get_kw_arg("angleEnd", &RuntimeType::degrees(), exec_state)?;
+    let major_radius = args.get_kw_arg("majorRadius", &RuntimeType::length(), exec_state)?;
+    let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::length(), exec_state)?;
+    let end_absolute = args.get_kw_arg_opt("endAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let interior_absolute = args.get_kw_arg_opt("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW, &RuntimeType::tag(), exec_state)?;
     let new_sketch = inner_elliptic(
         sketch,
         center,
@@ -1941,10 +1938,10 @@ pub(crate) async fn inner_elliptic(
 
 /// Calculate the (x, y) point on an hyperbola given x or y and the semi major/minor of the ellipse.
 pub async fn hyperbolic_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::length(), exec_state)?;
-    let y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::length(), exec_state)?;
-    let semi_major: TyF64 = args.get_kw_arg_typed("semiMajor", &RuntimeType::count(), exec_state)?;
-    let semi_minor: TyF64 = args.get_kw_arg_typed("semiMinor", &RuntimeType::count(), exec_state)?;
+    let x = args.get_kw_arg_opt("x", &RuntimeType::length(), exec_state)?;
+    let y = args.get_kw_arg_opt("y", &RuntimeType::length(), exec_state)?;
+    let semi_major = args.get_kw_arg("semiMajor", &RuntimeType::count(), exec_state)?;
+    let semi_minor = args.get_kw_arg("semiMinor", &RuntimeType::count(), exec_state)?;
 
     let hyperbolic_point = inner_hyperbolic_point(x, y, semi_major, semi_minor, &args).await?;
 
@@ -2000,18 +1997,15 @@ async fn inner_hyperbolic_point(
 
 /// Draw a hyperbolic arc.
 pub async fn hyperbolic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch =
-        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
-    let semi_major: TyF64 = args.get_kw_arg_typed("semiMajor", &RuntimeType::length(), exec_state)?;
-    let semi_minor: TyF64 = args.get_kw_arg_typed("semiMinor", &RuntimeType::length(), exec_state)?;
-    let interior: Option<[TyF64; 2]> = args.get_kw_arg_opt_typed("interior", &RuntimeType::point2d(), exec_state)?;
-    let end: Option<[TyF64; 2]> = args.get_kw_arg_opt_typed("end", &RuntimeType::point2d(), exec_state)?;
-    let interior_absolute: Option<[TyF64; 2]> =
-        args.get_kw_arg_opt_typed("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
-    let end_absolute: Option<[TyF64; 2]> =
-        args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::point2d(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let semi_major = args.get_kw_arg("semiMajor", &RuntimeType::length(), exec_state)?;
+    let semi_minor = args.get_kw_arg("semiMinor", &RuntimeType::length(), exec_state)?;
+    let interior = args.get_kw_arg_opt("interior", &RuntimeType::point2d(), exec_state)?;
+    let end = args.get_kw_arg_opt("end", &RuntimeType::point2d(), exec_state)?;
+    let interior_absolute = args.get_kw_arg_opt("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let end_absolute = args.get_kw_arg_opt("endAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW, &RuntimeType::tag(), exec_state)?;
 
     let new_sketch = inner_hyperbolic(
         sketch,
@@ -2142,9 +2136,9 @@ pub(crate) async fn inner_hyperbolic(
 
 /// Calculate the point on a parabola given the coefficient of the parabola and either x or y
 pub async fn parabolic_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::length(), exec_state)?;
-    let y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::length(), exec_state)?;
-    let coefficients: [TyF64; 3] = args.get_kw_arg_typed("coefficients", &RuntimeType::any_array(), exec_state)?;
+    let x = args.get_kw_arg_opt("x", &RuntimeType::length(), exec_state)?;
+    let y = args.get_kw_arg_opt("y", &RuntimeType::length(), exec_state)?;
+    let coefficients = args.get_kw_arg("coefficients", &RuntimeType::any_array(), exec_state)?;
 
     let parabolic_point = inner_parabolic_point(x, y, &coefficients, &args).await?;
 
@@ -2187,14 +2181,12 @@ async fn inner_parabolic_point(
 
 /// Draw a parabolic arc.
 pub async fn parabolic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch =
-        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
-    let coefficients: Option<[TyF64; 3]> =
-        args.get_kw_arg_opt_typed("coefficients", &RuntimeType::any_array(), exec_state)?;
-    let interior: Option<[TyF64; 2]> = args.get_kw_arg_opt_typed("interior", &RuntimeType::point2d(), exec_state)?;
-    let end: [TyF64; 2] = args.get_kw_arg_typed("end", &RuntimeType::point2d(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let coefficients = args.get_kw_arg_opt("coefficients", &RuntimeType::any_array(), exec_state)?;
+    let interior = args.get_kw_arg_opt("interior", &RuntimeType::point2d(), exec_state)?;
+    let end = args.get_kw_arg("end", &RuntimeType::point2d(), exec_state)?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW, &RuntimeType::tag(), exec_state)?;
 
     let new_sketch = inner_parabolic(sketch, coefficients, interior, end, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
@@ -2338,18 +2330,14 @@ fn conic_tangent(coefficients: [f64; 6], point: [f64; 2]) -> [f64; 2] {
 
 /// Draw a conic section
 pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch =
-        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
-    let start_tangent: Option<[TyF64; 2]> =
-        args.get_kw_arg_opt_typed("startTangent", &RuntimeType::point2d(), exec_state)?;
-    let end_tangent: Option<[TyF64; 2]> =
-        args.get_kw_arg_opt_typed("endTangent", &RuntimeType::point2d(), exec_state)?;
-    let end: [TyF64; 2] = args.get_kw_arg_typed("end", &RuntimeType::point2d(), exec_state)?;
-    let interior: [TyF64; 2] = args.get_kw_arg_typed("interior", &RuntimeType::point2d(), exec_state)?;
-    let coefficients: Option<[TyF64; 6]> =
-        args.get_kw_arg_opt_typed("coefficients", &RuntimeType::any_array(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let start_tangent = args.get_kw_arg_opt("startTangent", &RuntimeType::point2d(), exec_state)?;
+    let end_tangent = args.get_kw_arg_opt("endTangent", &RuntimeType::point2d(), exec_state)?;
+    let end = args.get_kw_arg("end", &RuntimeType::point2d(), exec_state)?;
+    let interior = args.get_kw_arg("interior", &RuntimeType::point2d(), exec_state)?;
+    let coefficients = args.get_kw_arg_opt("coefficients", &RuntimeType::any_array(), exec_state)?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW, &RuntimeType::tag(), exec_state)?;
 
     let new_sketch = inner_conic(
         sketch,

@@ -401,11 +401,11 @@ async fn inner_polygon(
 /// Sketch an ellipse.
 pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_or_surface =
-        args.get_unlabeled_kw_arg_typed("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
-    let center = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
-    let major_radius: TyF64 = args.get_kw_arg_typed("majorRadius", &RuntimeType::length(), exec_state)?;
-    let minor_radius: TyF64 = args.get_kw_arg_typed("minorRadius", &RuntimeType::length(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+        args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
+    let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let major_radius = args.get_kw_arg("majorRadius", &RuntimeType::length(), exec_state)?;
+    let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::length(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag(), exec_state)?;
 
     let sketch = inner_ellipse(
         sketch_or_surface,
