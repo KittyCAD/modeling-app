@@ -1,6 +1,7 @@
 # Zoo Design Studio
 ### Developer manual
 
+[//]:#\
 .PHONY: **all**
 
 **all**: **install**
