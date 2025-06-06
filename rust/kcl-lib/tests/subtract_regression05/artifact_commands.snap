@@ -33,6 +33,15 @@ description: Artifact commands subtract_regression05.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_grid_scale",
+      "value": 10.0,
+      "units": "in"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
