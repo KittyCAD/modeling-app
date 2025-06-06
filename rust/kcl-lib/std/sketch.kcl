@@ -1959,15 +1959,19 @@ export fn subtract2d(
 export fn conic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
-  /// Any point between the segment's start and end. Incompatible with `coefficients`.
-  interior: Point2d,
-  /// Where should the path end?.
-  end: Point2d,
+  /// Any point between the segment's start and end. Requires `endAbsolute`. Incompatible with `interior` or `end`.
+  interiorAbsolute?: Point2d,
+  /// Where should this segment end? Requires `interiorAbsolute`. Incompatible with `interior` or `end`.
+  endAbsolute?: Point2d,
+  /// Any point between the segment's start and end. This point is relative to the start point. Requires `end`. Incompatible with `interiorAbsolute` or `endAbsolute`.
+  interior?: Point2d,
+  /// Where should this segment end? This point is relative to the start point. Requires `interior`. Incompatible with `interiorAbsolute` or `endAbsolute`.
+  end?: Point2d,
   /// The coefficients [a, b, c, d, e, f] of the generic conic equation ax^2 + by^2 + cxy + dx + ey + f = 0. If provided the start and end tangents will be calculated using this equation. Incompatible with `startTangent` and `endTangent`.
   coefficients?: [number(Count); 6],
-  /// The tangent of the conic section at the start. If not provided the tangent of the previous path segment is used.
+  /// The tangent of the conic section at the start. If not provided the tangent of the previous path segment is used. Incompatible with `coefficients`.
   startTangent?: Point2d,
-  /// The tangent of the conic section at the end. Incompatible with `coefficients`.
+  /// The tangent of the conic section at the end. Incompatible with `coefficients`. Incompatible with `coefficients`.
   endTangent?: Point2d,
   /// Create a new tag which refers to this segment.
   tag?: tag,
@@ -1989,12 +1993,16 @@ export fn conic(
 export fn parabolic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
-  /// Where should the path end?
+  /// Where should the path end? Relative to the start point. Incompatible with `interiorAbsolute` or `endAbsolute`.
   end: Point2d,
+  /// Where should this segment end? Requires `interiorAbsolute`. Incompatible with `interior` or `end`.
+  endAbsolute?: Point2d,
   /// The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c. Incompatible with `interior`.
   coefficients?: [number(Count); 3],
-  /// A point between the segment's start and end that lies on the parabola. Incompatible with `coefficients`.
+  /// A point between the segment's start and end that lies on the parabola. Incompatible with `coefficients` or `interiorAbsolute` or `endAbsolute`.
   interior?: Point2d,
+  /// Any point between the segment's start and end. Requires `endAbsolute`. Incompatible with `coefficients` or `interior` or `end`.
+  interiorAbsolute?: Point2d,
   /// Create a new tag which refers to this segment.
   tag?: tag,
 ): Sketch {}
@@ -2038,14 +2046,14 @@ export fn hyperbolic(
   semiMajor: number(Length),
   ///  The semi minor value, b, of the hyperbolic equation x^2 / a ^ 2 - y^2 / b^2 = 1.
   semiMinor: number(Length),
-  /// Any point between the segments's start and end? Requires `end`. Incompatible with `endAbsolute` or `interiorAbsolute`.
-  interior?: Point2d,
-  /// Any point between the segments's start and end? This point is relative to the start point of the segment. Requires `endAbsolute`. Incompatible with `end` or `interior`.
+  /// Any point between the segment's start and end. Requires `endAbsolute`. Incompatible with `interior` or `end`.
   interiorAbsolute?: Point2d,
-  /// Where should this segment endt? This point is relagive to the start point of the segment. Requires `interior`. Incompatible with `endAbsolute` or `interiorAbsolute`.
-  end?: Point2d,
-  /// Where should this segment end? Requires `interiorAbsolute`. Incompatible with `end` or `interior`.
+  /// Where should this segment end? Requires `interiorAbsolute`. Incompatible with `interior` or `end`.
   endAbsolute?: Point2d,
+  /// Any point between the segment's start and end. This point is relative to the start point. Requires `end`. Incompatible with `interiorAbsolute` or `endAbsolute`.
+  interior?: Point2d,
+  /// Where should this segment end? This point is relative to the start point. Requires `interior`. Incompatible with `interiorAbsolute` or `endAbsolute`.
+  end?: Point2d,
   /// Create a new tag which refers to this arc.
   tag?: tag,
 ): Sketch {}
@@ -2098,14 +2106,6 @@ export fn elliptic(
   /// The minor radius, b, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.
   @(includeInSnippet = true)
   minorRadius: number(Length),
-  /// Any point between the segment's start and end. Requires `endAbsolute`. Incompatible with `interior` or `end`.
-  interiorAbsolute?: Point2d,
-  /// Where should this segment end? Requires `interiorAbsolute`. Incompatible with `interior` or `end`.
-  endAbsolute?: Point2d,
-  /// Any point between the segment's start and end. This point is relative to the start point. Requires `end`. Incompatible with `interiorAbsolute` or `endAbsolute`.
-  interior?: Point2d,
-  /// Where should this segment end? This point is relative to the start point. Requires `interior`. Incompatible with `interiorAbsolute` or `endAbsolute`.
-  end?: Point2d,
   /// Create a new tag which refers to this arc.
   tag?: tag,
 ): Sketch {}

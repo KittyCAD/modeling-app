@@ -1815,9 +1815,8 @@ pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let angle_end = args.get_kw_arg("angleEnd", &RuntimeType::degrees(), exec_state)?;
     let major_radius = args.get_kw_arg("majorRadius", &RuntimeType::length(), exec_state)?;
     let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::length(), exec_state)?;
-    let end_absolute = args.get_kw_arg_opt("endAbsolute", &RuntimeType::point2d(), exec_state)?;
-    let interior_absolute = args.get_kw_arg_opt("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW, &RuntimeType::tag(), exec_state)?;
+
     let new_sketch = inner_elliptic(
         sketch,
         center,
@@ -1825,8 +1824,6 @@ pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         angle_end,
         major_radius,
         minor_radius,
-        interior_absolute,
-        end_absolute,
         tag,
         exec_state,
         args,
@@ -1837,22 +1834,6 @@ pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     })
 }
 
-// #[stdlib {
-//     name = "elliptic",
-//     unlabeled_first = true,
-//     args = {
-//         sketch = { docs = "Which sketch should this path be added to?" },
-//         center = { docs = "The center of the ellipse.", include_in_snippet = true },
-//         angle_start = { docs = "Where along the elliptic should this arc start?", include_in_snippet = true },
-//         angle_end = { docs = "Where along the elliptic should this arc end?", include_in_snippet = true },
-//         major_radius = { docs = "The major radius a of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.", include_in_snippet = true },
-//         minor_radius = { docs = "The minor radius b of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.", include_in_snippet = true },
-//         interior_absolute = { docs = "Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
-//         end_absolute = { docs = "Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
-//         tag = { docs = "Create a new tag which refers to this line"},
-//     },
-//     tags = ["sketch"]
-// }]
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn inner_elliptic(
     sketch: Sketch,
@@ -1861,8 +1842,6 @@ pub(crate) async fn inner_elliptic(
     angle_end: TyF64,
     major_radius: TyF64,
     minor_radius: TyF64,
-    _interior_absolute: Option<[TyF64; 2]>,
-    _end_absolute: Option<[TyF64; 2]>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -1879,22 +1858,6 @@ pub(crate) async fn inner_elliptic(
         center_u[1] + minor_radius.to_length_units(from.units) * end_angle.to_radians().sin(),
     ];
 
-    //TODO: (bc) fix the absolute/relative check
-    // match (angle_start, angle_end, radius, interior_absolute, end_absolute) {
-    //     (Some(angle_start), Some(angle_end), Some(radius), None, None) => {
-    //         relative_arc(&args, id, exec_state, sketch, from, angle_start, angle_end, radius, tag).await
-    //     }
-    //     (None, None, None, Some(interior_absolute), Some(end_absolute)) => {
-    //         absolute_arc(&args, id, exec_state, sketch, from, interior_absolute, end_absolute, tag).await
-    //     }
-    //     _ => {
-    //         Err(KclError::Type(KclErrorDetails::new(
-    //             "Invalid combination of arguments. Either provide (angleStart, angleEnd, radius) or (endAbsolute, interiorAbsolute)".to_owned(),
-    //             vec![args.source_range],
-    //         )))
-    //     }
-    // }
-    //
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::ExtendPath {
@@ -1948,17 +1911,6 @@ pub async fn hyperbolic_point(exec_state: &mut ExecState, args: Args) -> Result<
     args.make_kcl_val_from_point(hyperbolic_point, exec_state.length_unit().into())
 }
 
-// #[stdlib {
-//     name = "hyperbolicPoint",
-//     unlabeled_first = false,
-//     args = {
-//         semi_major = { docs = "The semi major value a of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
-//         semi_minor = { docs = "The semi minor value b of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
-//         x = { docs = "The x value of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1. Will calculate the point y that satisfies the equation and returns (x, y). Incompatible with `y`."},
-//         y = { docs = "The y value of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1. Will calculate the point x that satisfies the equation and returns (x, y). Incompatible with `x`."},
-//     },
-//     tags = ["sketch"]
-// }]
 async fn inner_hyperbolic_point(
     x: Option<TyF64>,
     y: Option<TyF64>,
@@ -2030,21 +1982,6 @@ fn hyperbolic_tangent(point: Point2d, semi_major: f64, semi_minor: f64) -> [f64;
     (point.y * semi_major.powf(2.0), point.x * semi_minor.powf(2.0)).into()
 }
 
-// #[stdlib {
-//     name = "hyperbolic",
-//     unlabeled_first = true,
-//     args = {
-//         sketch = { docs = "Which sketch should this path be added to?" },
-//         semi_major = { docs = "The semi major value a of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
-//         semi_minor = { docs = "The semi minor value b of the hyperbolic equation x^2 / a^2 - y^2 / b^2 = 1." },
-//         interior = { docs = "A point that lies on the conic segment. This point is relative to the start of the segment. Requires `end`. Incompatible with `interior_absolute` and `end_absolute`." },
-//         interior_absolute = { docs = "A point that lies on the conic. Requires `end_absolute`. Incompatible with `interior` and `end`." },
-//         end = { docs = "Where should this arc end? This point is relative to the start of the segment. Requires `interior`. Incompatible with `interior_absolute` and `end_absolute`." },
-//         end_absolute = { docs = "Where should this arc end? Requires `interior_absolute`. Incompatible with `interior` and `end`." },
-//         tag = { docs = "Create a new tag which refers to this line"},
-//     },
-//     tags = ["sketch"]
-// }]
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn inner_hyperbolic(
     sketch: Sketch,
@@ -2061,29 +1998,20 @@ pub(crate) async fn inner_hyperbolic(
     let from = sketch.current_pen_position()?;
     let id = exec_state.next_uuid();
 
-    let (interior, end, relative, error) = match (interior, end, interior_absolute, end_absolute) {
-        (Some(interior), Some(end), None, None) => (Some(interior), Some(end), true, None),
-        (None, None, Some(interior_absolute), Some(end_absolute)) => {
-            (Some(interior_absolute), Some(end_absolute), false, None)
-        }
-        _ => (
-            None,
-            None,
-            false,
-            Some(KclError::Type{details: KclErrorDetails::new(
+    let (interior, end, relative) = match (interior, end, interior_absolute, end_absolute) {
+        (Some(interior), Some(end), None, None) => (interior, end, true),
+        (None, None, Some(interior_absolute), Some(end_absolute)) => (interior_absolute, end_absolute, false),
+        _ => return Err(KclError::Type {
+            details: KclErrorDetails::new(
                 "Invalid combination of arguments. Either provide (end, interior) or (endAbsolute, interiorAbsolute)"
                     .to_owned(),
                 vec![args.source_range],
-            )}),
-        ),
+            ),
+        }),
     };
 
-    if let Some(err) = error {
-        return Err(err);
-    }
-
-    let (interior, _) = untype_point(interior.unwrap());
-    let (end, _) = untype_point(end.unwrap());
+    let (interior, _) = untype_point(interior);
+    let (end, _) = untype_point(end);
     let end_point = Point2d {
         x: end[0],
         y: end[1],
@@ -2145,16 +2073,6 @@ pub async fn parabolic_point(exec_state: &mut ExecState, args: Args) -> Result<K
     args.make_kcl_val_from_point(parabolic_point, exec_state.length_unit().into())
 }
 
-// #[stdlib {
-//     name = "parabolicPoint",
-//     unlabeled_first = false,
-//     args = {
-//         coefficients = { docs = "The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c." },
-//         x = { docs = "The x value of the parabolic equation y = ax^2. Will calculate the point y that satisfies the equation and returns (x, y). Incompatible with `y`."},
-//         y = { docs = "The y value of the parabolic equation y = ax^2. Will calculate the point x that satisfies the equation and returns (x, y). Incompatible with `x`."},
-//     },
-//     tags = ["sketch"]
-// }]
 async fn inner_parabolic_point(
     x: Option<TyF64>,
     y: Option<TyF64>,
@@ -2185,10 +2103,23 @@ pub async fn parabolic(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 
     let coefficients = args.get_kw_arg_opt("coefficients", &RuntimeType::any_array(), exec_state)?;
     let interior = args.get_kw_arg_opt("interior", &RuntimeType::point2d(), exec_state)?;
-    let end = args.get_kw_arg("end", &RuntimeType::point2d(), exec_state)?;
+    let end = args.get_kw_arg_opt("end", &RuntimeType::point2d(), exec_state)?;
+    let interior_absolute = args.get_kw_arg_opt("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let end_absolute = args.get_kw_arg_opt("endAbsolute", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW, &RuntimeType::tag(), exec_state)?;
 
-    let new_sketch = inner_parabolic(sketch, coefficients, interior, end, tag, exec_state, args).await?;
+    let new_sketch = inner_parabolic(
+        sketch,
+        coefficients,
+        interior,
+        end,
+        interior_absolute,
+        end_absolute,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -2200,23 +2131,13 @@ fn parabolic_tangent(point: Point2d, a: f64, b: f64) -> [f64; 2] {
     (1.0, 2.0 * a * point.x + b).into()
 }
 
-// #[stdlib {
-//     name = "parabolic",
-//     unlabeled_first = true,
-//     args = {
-//         sketch = { docs = "Which sketch should this path be added to?" },
-//         coefficients = { docs = "The coefficienta [a, b, c] of the parabolic equation y = ax^2 + bx + c. Incompatible with `interior`." },
-//         interior = { docs = "Any point between the arc's start and end?. Incompatible with `coefficients." },
-//         end = { docs = "Where should this arc end?" },
-//         tag = { docs = "Create a new tag which refers to this line"},
-//     },
-//     tags = ["sketch"]
-// }]
 pub(crate) async fn inner_parabolic(
     sketch: Sketch,
     coefficients: Option<[TyF64; 3]>,
     interior: Option<[TyF64; 2]>,
-    end: [TyF64; 2],
+    end: Option<[TyF64; 2]>,
+    interior_absolute: Option<[TyF64; 2]>,
+    end_absolute: Option<[TyF64; 2]>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -2233,23 +2154,49 @@ pub(crate) async fn inner_parabolic(
         });
     }
 
-    let (end, _) = untype_point(end);
-    // If interior point is provided use that, or take the middle point between that start and the
-    // end and use that as the interior.
-    let (interior, _) = if let Some(interior) = interior {
-        untype_point(interior)
-    } else {
-        (
+    let (interior, end, relative) = match (coefficients.clone(), interior, end, interior_absolute, end_absolute) {
+        (None, Some(interior), Some(end), None, None) => {
+            let (interior, _) = untype_point(interior);
+            let (end, _) = untype_point(end);
+            (interior,end, true)
+        },
+        (None, None, None, Some(interior_absolute), Some(end_absolute)) => {
+            let (interior_absolute, _) = untype_point(interior_absolute);
+            let (end_absolute, _) = untype_point(end_absolute);
+            (interior_absolute, end_absolute, false)
+        }
+        (Some(coefficients), _, Some(end), _, _) => {
+            let (end, _) = untype_point(end);
+            let interior = 
             inner_parabolic_point(
                 Some(TyF64::count(0.5 * (from.x + end[0]))),
                 None,
-                coefficients.as_ref().unwrap(),
+                &coefficients,
                 &args,
             )
-            .await?,
-            NumericType::Any,
-        )
+            .await?;
+            (interior, end, true)
+        }
+        (Some(coefficients), _, _, _, Some(end)) => {
+            let (end, _) = untype_point(end);
+            let interior = 
+            inner_parabolic_point(
+                Some(TyF64::count(0.5 * (from.x + end[0]))),
+                None,
+                &coefficients,
+                &args,
+            )
+            .await?;
+            (interior, end, false)
+        }
+        _ => return 
+            Err(KclError::Type{details: KclErrorDetails::new(
+                "Invalid combination of arguments. Either provide (end, interior) or (endAbsolute, interiorAbsolute) if coefficients are not provided."
+                    .to_owned(),
+                vec![args.source_range],
+            )}),
     };
+
     let end_point = Point2d {
         x: end[0],
         y: end[1],
@@ -2289,7 +2236,7 @@ pub(crate) async fn inner_parabolic(
                 end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
                 end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
                 interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
-                relative: false,
+                relative,
             },
         }),
     )
@@ -2334,8 +2281,10 @@ pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
     let start_tangent = args.get_kw_arg_opt("startTangent", &RuntimeType::point2d(), exec_state)?;
     let end_tangent = args.get_kw_arg_opt("endTangent", &RuntimeType::point2d(), exec_state)?;
-    let end = args.get_kw_arg("end", &RuntimeType::point2d(), exec_state)?;
-    let interior = args.get_kw_arg("interior", &RuntimeType::point2d(), exec_state)?;
+    let end = args.get_kw_arg_opt("end", &RuntimeType::point2d(), exec_state)?;
+    let interior = args.get_kw_arg_opt("interior", &RuntimeType::point2d(), exec_state)?;
+    let end_absolute = args.get_kw_arg_opt("endAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let interior_absolute = args.get_kw_arg_opt("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
     let coefficients = args.get_kw_arg_opt("coefficients", &RuntimeType::any_array(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW, &RuntimeType::tag(), exec_state)?;
 
@@ -2346,6 +2295,8 @@ pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         end_tangent,
         interior,
         coefficients,
+        interior_absolute,
+        end_absolute,
         tag,
         exec_state,
         args,
@@ -2356,28 +2307,16 @@ pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     })
 }
 
-// #[stdlib {
-//     name = "conic",
-//     unlabeled_first = true,
-//     args = {
-//         sketch = { docs = "Which sketch should this path be added to?" },
-//         start_tangent = { docs = "The tangent of the conic at the start point (the end of the previous path segment)" },
-//         end_tangent = { docs = "The tangent of the conic at the end point" },
-//         interior = { docs = "Any point between the arc's start and end? Incompatible with `coefficients`." },
-//         coefficients = { docs = "The coefficients [a, b, c, d, e, f] of the generic conic equation ax^2 + by^2 + cxy + dx + ey + f = 0. Incompatible with `endTangent`."},
-//         end = { docs = "Where should this arc end?" },
-//         tag = { docs = "Create a new tag which refers to this line"},
-//     },
-//     tags = ["sketch"]
-// }]
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn inner_conic(
     sketch: Sketch,
     start_tangent: Option<[TyF64; 2]>,
-    end: [TyF64; 2],
+    end: Option<[TyF64; 2]>,
     end_tangent: Option<[TyF64; 2]>,
-    interior: [TyF64; 2],
+    interior: Option<[TyF64; 2]>,
     coefficients: Option<[TyF64; 6]>,
+    interior_absolute: Option<[TyF64; 2]>,
+    end_absolute: Option<[TyF64; 2]>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -2395,6 +2334,18 @@ pub(crate) async fn inner_conic(
             ),
         });
     }
+
+    let (interior, end, relative) = match (interior, end, interior_absolute, end_absolute) {
+        (Some(interior), Some(end), None, None) => (interior, end, true),
+        (None, None, Some(interior_absolute), Some(end_absolute)) => (interior_absolute, end_absolute, false),
+        _ => return Err(KclError::Type {
+            details: KclErrorDetails::new(
+                "Invalid combination of arguments. Either provide (end, interior) or (endAbsolute, interiorAbsolute)"
+                    .to_owned(),
+                vec![args.source_range],
+            ),
+        }),
+    };
 
     let (end, _) = untype_array(end);
     let (interior, _) = untype_point(interior);
@@ -2427,7 +2378,7 @@ pub(crate) async fn inner_conic(
                 end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
                 end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
                 interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
-                relative: false,
+                relative,
             },
         }),
     )
