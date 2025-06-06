@@ -224,9 +224,9 @@ async fn inner_get_common_edge(
     // TODO: we likely want to be a lot more persnickety _which_ fillets we are flushing
     // but for now, we'll just flush everything.
     if let Some(ExtrudeSurface::Chamfer { .. } | ExtrudeSurface::Fillet { .. }) = first_tagged_path.surface {
-        args.ctx.engine.flush_batch(true, args.source_range).await?;
+        exec_state.flush_batch((&args).into(), true).await?;
     } else if let Some(ExtrudeSurface::Chamfer { .. } | ExtrudeSurface::Fillet { .. }) = second_tagged_path.surface {
-        args.ctx.engine.flush_batch(true, args.source_range).await?;
+        exec_state.flush_batch((&args).into(), true).await?;
     }
 
     let resp = exec_state

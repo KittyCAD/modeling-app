@@ -417,6 +417,17 @@ impl ExecState {
             .await
     }
 
+    /// Force flush the batch queue.
+    pub(crate) async fn flush_batch(
+        &mut self,
+        meta: ModelingCmdMeta<'_>,
+        // Whether or not to flush the end commands as well.
+        // We only do this at the very end of the file.
+        batch_end: bool,
+    ) -> Result<OkWebSocketResponseData, KclError> {
+        meta.ctx.engine.flush_batch(batch_end, meta.source_range).await
+    }
+
     /// Flush just the fillets and chamfers for this specific SolidSet.
     pub(crate) async fn flush_batch_for_solids(
         &mut self,
@@ -467,7 +478,7 @@ impl ExecState {
 
         // Run flush.
         // Yes, we do need to actually flush the batch here, or references will fail later.
-        meta.ctx.engine.flush_batch(false, meta.source_range).await?;
+        self.flush_batch(meta, false).await?;
 
         Ok(())
     }
