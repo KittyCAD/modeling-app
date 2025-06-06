@@ -220,7 +220,7 @@ jobs:
         include:
           - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
           - os: namespace-profile-macos-8-cores
-          - os: nscloud-windows-2022-amd64-4x16
+          - os: namespace-profile-windows-8-cores
     runs-on: ${{ matrix.os }}
     name: e2e:web (${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }})
     env:
@@ -336,10 +336,10 @@ jobs:
           - os: namespace-profile-macos-8-cores
             shardIndex: 2
             shardTotal: 2
-          - os: nscloud-windows-2022-amd64-4x16
+          - os: namespace-profile-windows-8-cores
             shardIndex: 1
             shardTotal: 2
-          - os: nscloud-windows-2022-amd64-4x16
+          - os: namespace-profile-windows-8-cores
             shardIndex: 2
             shardTotal: 2
     runs-on: ${{ matrix.os }}
