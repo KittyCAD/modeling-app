@@ -1,14 +1,10 @@
-``` :
-.PHONY: all
+.PHONY: **all**
 
-all: install check build
-#\
-```
-
+**all**: install build
 
 # INSTALL
 
-``` :
+```sh :
 ifeq ($(OS),Windows_NT)
   export WINDOWS := true
   ifndef MSYSTEM
@@ -45,8 +41,8 @@ install: node_modules/.package-lock.json $(CARGO) $(WASM_PACK)
 node_modules/.package-lock.json: package.json package-lock.json
 	npm prune
 	npm install
+#\
 ```
-```` :
 
 ``` :
 $(CARGO):
@@ -55,8 +51,8 @@ ifdef WINDOWS
 else
 	npm run install:rust
 endif
+#\
 ```
-```` :
 
 ``` :
 $(WASM_PACK):
@@ -65,5 +61,6 @@ ifdef WINDOWS
 else
 	npm run install:wasm-pack:sh
 endif
-``` :
+#\
+```
 
