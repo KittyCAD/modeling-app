@@ -177,7 +177,7 @@ jobs:
           TARGET: web
 
       - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() && (success() || failure()) }}
+        if: ${{ !cancelled() }}
         with:
           name: playwright-report-ubuntu-snapshot-${{ github.sha }}
           path: playwright-report/
@@ -186,7 +186,7 @@ jobs:
           overwrite: true
 
       - name: Check diff
-        if: ${{ github.ref != 'refs/heads/main' }}
+        if: ${{ always() && github.ref != 'refs/heads/main' }}
         shell: bash
         id: git-check
         run: |
@@ -197,7 +197,7 @@ jobs:
             fi
 
       - name: Commit changes
-        if: ${{ steps.git-check.outputs.modified == 'true' }}
+        if: ${{ always() && steps.git-check.outputs.modified == 'true' }}
         shell: bash
         run: |
           git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
