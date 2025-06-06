@@ -173,7 +173,11 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
         return None;
     }
 
-    let content = if props.inline { "" } else { src };
+    let content = if props.inline {
+        String::new()
+    } else {
+        crate::unparser::fmt(src).unwrap()
+    };
 
     let image_base64 = if props.norun {
         String::new()
