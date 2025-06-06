@@ -10,6 +10,14 @@ description: Operations executed import_whole_transitive_import.kcl
       "name": "part.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -41,6 +49,24 @@ description: Operations executed import_whole_transitive_import.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 1
+        }
+      ]
     },
     "sourceRange": []
   },

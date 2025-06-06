@@ -170,7 +170,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("transform", "mirror2d") => (
             |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a)),
-            StdFnProps::default("std::transform::mirror2d"),
+            StdFnProps::default("std::transform::mirror2d").include_in_feature_tree(),
         ),
         ("transform", "translate") => (
             |e, a| Box::pin(crate::std::transform::translate(e, a)),
@@ -406,47 +406,47 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "involuteCircular") => (
             |e, a| Box::pin(crate::std::sketch::involute_circular(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::involuteCircular"),
         ),
         ("sketch", "line") => (
             |e, a| Box::pin(crate::std::sketch::line(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::line"),
         ),
         ("sketch", "xLine") => (
             |e, a| Box::pin(crate::std::sketch::x_line(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::xLine"),
         ),
         ("sketch", "yLine") => (
             |e, a| Box::pin(crate::std::sketch::y_line(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::yLine"),
         ),
         ("sketch", "angledLine") => (
             |e, a| Box::pin(crate::std::sketch::angled_line(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::angledLine"),
         ),
         ("sketch", "angledLineThatIntersects") => (
             |e, a| Box::pin(crate::std::sketch::angled_line_that_intersects(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::angledLineThatIntersects"),
         ),
         ("sketch", "close") => (
             |e, a| Box::pin(crate::std::sketch::close(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::close"),
         ),
         ("sketch", "arc") => (
             |e, a| Box::pin(crate::std::sketch::arc(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::arc"),
         ),
         ("sketch", "tangentialArc") => (
             |e, a| Box::pin(crate::std::sketch::tangential_arc(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::tangentialArc"),
         ),
         ("sketch", "bezierCurve") => (
             |e, a| Box::pin(crate::std::sketch::bezier_curve(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::bezierCurve"),
         ),
         ("sketch", "subtract2d") => (
             |e, a| Box::pin(crate::std::sketch::subtract_2d(e, a)),
-            StdFnProps::default("std::sketch::startProfile").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::subtract2d").include_in_feature_tree(),
         ),
         ("appearance", "hexString") => (
             |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),

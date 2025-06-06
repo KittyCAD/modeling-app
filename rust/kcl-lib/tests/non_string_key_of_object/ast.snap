@@ -77,12 +77,20 @@ description: Result of parsing non_string_key_of_object.kcl
             "computed": false,
             "end": 0,
             "object": {
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": "obj",
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "obj",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "property": {
               "commentStart": 0,

@@ -40,6 +40,10 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Edge)
     }
 
+    pub fn function() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Function)
+    }
+
     pub fn sketch() -> Self {
         RuntimeType::Primitive(PrimitiveType::Sketch)
     }
@@ -82,6 +86,10 @@ impl RuntimeType {
 
     pub fn tag() -> Self {
         RuntimeType::Primitive(PrimitiveType::Tag)
+    }
+
+    pub fn tag_decl() -> Self {
+        RuntimeType::Primitive(PrimitiveType::TagDecl)
     }
 
     pub fn tag_identifier() -> Self {
@@ -376,8 +384,8 @@ pub enum PrimitiveType {
     String,
     Boolean,
     Tag,
-    // Annoyingly some functions only want a TagIdentifier, not any kind of tag.
     TagId,
+    TagDecl,
     Sketch,
     Solid,
     Plane,
@@ -409,6 +417,7 @@ impl PrimitiveType {
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
             PrimitiveType::Function => "functions".to_owned(),
             PrimitiveType::Tag => "tags".to_owned(),
+            PrimitiveType::TagDecl => "tag declarators".to_owned(),
             PrimitiveType::TagId => "tag identifiers".to_owned(),
         }
     }
@@ -417,7 +426,7 @@ impl PrimitiveType {
         match (self, other) {
             (_, PrimitiveType::Any) => true,
             (PrimitiveType::Number(n1), PrimitiveType::Number(n2)) => n1.subtype(n2),
-            (PrimitiveType::TagId, PrimitiveType::Tag) => true,
+            (PrimitiveType::TagId, PrimitiveType::Tag) | (PrimitiveType::TagDecl, PrimitiveType::Tag) => true,
             (t1, t2) => t1 == t2,
         }
     }
@@ -434,6 +443,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
             PrimitiveType::Tag => write!(f, "tag"),
+            PrimitiveType::TagDecl => write!(f, "tag declarator"),
             PrimitiveType::TagId => write!(f, "tag identifier"),
             PrimitiveType::Sketch => write!(f, "Sketch"),
             PrimitiveType::Solid => write!(f, "Solid"),
@@ -1291,6 +1301,10 @@ impl KclValue {
                 KclValue::TagIdentifier { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::TagDecl => match self {
+                KclValue::TagDeclarator { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::Tag => match self {
                 KclValue::TagDeclarator { .. } | KclValue::TagIdentifier { .. } | KclValue::Uuid { .. } => {
                     Ok(self.clone())
@@ -1490,7 +1504,8 @@ impl KclValue {
                 Some(RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(value.len())))
             }
             KclValue::TagIdentifier(_) => Some(RuntimeType::Primitive(PrimitiveType::TagId)),
-            KclValue::TagDeclarator(_) | KclValue::Uuid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Tag)),
+            KclValue::TagDeclarator(_) => Some(RuntimeType::Primitive(PrimitiveType::TagDecl)),
+            KclValue::Uuid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Tag)),
             KclValue::Function { .. } => Some(RuntimeType::Primitive(PrimitiveType::Function)),
             KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => None,
         }

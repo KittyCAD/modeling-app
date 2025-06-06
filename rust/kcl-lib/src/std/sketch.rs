@@ -102,13 +102,13 @@ pub enum StartOrEnd {
 pub const NEW_TAG_KW: &str = "tag";
 
 pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch = args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::sketch(), exec_state)?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::sketch(), exec_state)?;
 
-    let start_radius: TyF64 = args.get_kw_arg_typed("startRadius", &RuntimeType::length(), exec_state)?;
-    let end_radius: TyF64 = args.get_kw_arg_typed("endRadius", &RuntimeType::length(), exec_state)?;
-    let angle: TyF64 = args.get_kw_arg_typed("angle", &RuntimeType::angle(), exec_state)?;
-    let reverse = args.get_kw_arg_opt_typed("reverse", &RuntimeType::bool(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let start_radius: TyF64 = args.get_kw_arg("startRadius", &RuntimeType::length(), exec_state)?;
+    let end_radius: TyF64 = args.get_kw_arg("endRadius", &RuntimeType::length(), exec_state)?;
+    let angle: TyF64 = args.get_kw_arg("angle", &RuntimeType::angle(), exec_state)?;
+    let reverse = args.get_kw_arg_opt("reverse", &RuntimeType::bool(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
     let new_sketch =
         inner_involute_circular(sketch, start_radius, end_radius, angle, reverse, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
@@ -195,10 +195,10 @@ async fn inner_involute_circular(
 
 /// Draw a line to a point.
 pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch = args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::sketch(), exec_state)?;
-    let end = args.get_kw_arg_opt_typed("end", &RuntimeType::point2d(), exec_state)?;
-    let end_absolute = args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::point2d(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::sketch(), exec_state)?;
+    let end = args.get_kw_arg_opt("end", &RuntimeType::point2d(), exec_state)?;
+    let end_absolute = args.get_kw_arg_opt("endAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let new_sketch = inner_line(sketch, end_absolute, end, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
@@ -332,11 +332,10 @@ async fn straight_line(
 
 /// Draw a line on the x-axis.
 pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch =
-        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
-    let length: Option<TyF64> = args.get_kw_arg_opt_typed("length", &RuntimeType::length(), exec_state)?;
-    let end_absolute: Option<TyF64> = args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::length(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
+    let end_absolute: Option<TyF64> = args.get_kw_arg_opt("endAbsolute", &RuntimeType::length(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let new_sketch = inner_x_line(sketch, length, end_absolute, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
@@ -369,11 +368,10 @@ async fn inner_x_line(
 
 /// Draw a line on the y-axis.
 pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch =
-        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
-    let length: Option<TyF64> = args.get_kw_arg_opt_typed("length", &RuntimeType::length(), exec_state)?;
-    let end_absolute: Option<TyF64> = args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::length(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
+    let end_absolute: Option<TyF64> = args.get_kw_arg_opt("endAbsolute", &RuntimeType::length(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let new_sketch = inner_y_line(sketch, length, end_absolute, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
@@ -406,16 +404,14 @@ async fn inner_y_line(
 
 /// Draw an angled line.
 pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch = args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::sketch(), exec_state)?;
-    let angle: TyF64 = args.get_kw_arg_typed("angle", &RuntimeType::degrees(), exec_state)?;
-    let length: Option<TyF64> = args.get_kw_arg_opt_typed("length", &RuntimeType::length(), exec_state)?;
-    let length_x: Option<TyF64> = args.get_kw_arg_opt_typed("lengthX", &RuntimeType::length(), exec_state)?;
-    let length_y: Option<TyF64> = args.get_kw_arg_opt_typed("lengthY", &RuntimeType::length(), exec_state)?;
-    let end_absolute_x: Option<TyF64> =
-        args.get_kw_arg_opt_typed("endAbsoluteX", &RuntimeType::length(), exec_state)?;
-    let end_absolute_y: Option<TyF64> =
-        args.get_kw_arg_opt_typed("endAbsoluteY", &RuntimeType::length(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::sketch(), exec_state)?;
+    let angle: TyF64 = args.get_kw_arg("angle", &RuntimeType::degrees(), exec_state)?;
+    let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
+    let length_x: Option<TyF64> = args.get_kw_arg_opt("lengthX", &RuntimeType::length(), exec_state)?;
+    let length_y: Option<TyF64> = args.get_kw_arg_opt("lengthY", &RuntimeType::length(), exec_state)?;
+    let end_absolute_x: Option<TyF64> = args.get_kw_arg_opt("endAbsoluteX", &RuntimeType::length(), exec_state)?;
+    let end_absolute_y: Option<TyF64> = args.get_kw_arg_opt("endAbsoluteY", &RuntimeType::length(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let new_sketch = inner_angled_line(
         sketch,
@@ -686,13 +682,11 @@ async fn inner_angled_line_to_y(
 
 /// Draw an angled line that intersects with a given line.
 pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch =
-        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
-    let angle: TyF64 = args.get_kw_arg_typed("angle", &RuntimeType::angle(), exec_state)?;
-    let intersect_tag: TagIdentifier =
-        args.get_kw_arg_typed("intersectTag", &RuntimeType::tag_identifier(), exec_state)?;
-    let offset = args.get_kw_arg_opt_typed("offset", &RuntimeType::length(), exec_state)?;
-    let tag: Option<TagNode> = args.get_kw_arg_opt("tag")?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let angle: TyF64 = args.get_kw_arg("angle", &RuntimeType::angle(), exec_state)?;
+    let intersect_tag: TagIdentifier = args.get_kw_arg("intersectTag", &RuntimeType::tag_identifier(), exec_state)?;
+    let offset = args.get_kw_arg_opt("offset", &RuntimeType::length(), exec_state)?;
+    let tag: Option<TagNode> = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
     let new_sketch =
         inner_angled_line_that_intersects(sketch, angle, intersect_tag, offset, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
@@ -777,12 +771,12 @@ pub enum PlaneData {
 
 /// Start a sketch on a specific plane or face.
 pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let data = args.get_unlabeled_kw_arg_typed(
+    let data = args.get_unlabeled_kw_arg(
         "planeOrSolid",
         &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::plane()]),
         exec_state,
     )?;
-    let face = args.get_kw_arg_opt_typed("face", &RuntimeType::tag(), exec_state)?;
+    let face = args.get_kw_arg_opt("face", &RuntimeType::tag(), exec_state)?;
 
     match inner_start_sketch_on(data, face, exec_state, &args).await? {
         SketchSurface::Plane(value) => Ok(KclValue::Plane { value }),
@@ -901,13 +895,13 @@ async fn make_sketch_plane_from_orientation(
 
 /// Start a new profile at a given point.
 pub async fn start_profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch_surface = args.get_unlabeled_kw_arg_typed(
+    let sketch_surface = args.get_unlabeled_kw_arg(
         "startProfileOn",
         &RuntimeType::Union(vec![RuntimeType::plane(), RuntimeType::face()]),
         exec_state,
     )?;
-    let start: [TyF64; 2] = args.get_kw_arg_typed("at", &RuntimeType::point2d(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let start: [TyF64; 2] = args.get_kw_arg("at", &RuntimeType::point2d(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let sketch = inner_start_profile(sketch_surface, start, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
@@ -1031,7 +1025,7 @@ pub(crate) async fn inner_start_profile(
 
 /// Returns the X component of the sketch profile start point.
 pub async fn profile_start_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch: Sketch = args.get_unlabeled_kw_arg_typed("profile", &RuntimeType::sketch(), exec_state)?;
+    let sketch: Sketch = args.get_unlabeled_kw_arg("profile", &RuntimeType::sketch(), exec_state)?;
     let ty = sketch.units.into();
     let x = inner_profile_start_x(sketch)?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(x, ty)))
@@ -1043,7 +1037,7 @@ pub(crate) fn inner_profile_start_x(profile: Sketch) -> Result<f64, KclError> {
 
 /// Returns the Y component of the sketch profile start point.
 pub async fn profile_start_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch: Sketch = args.get_unlabeled_kw_arg_typed("profile", &RuntimeType::sketch(), exec_state)?;
+    let sketch: Sketch = args.get_unlabeled_kw_arg("profile", &RuntimeType::sketch(), exec_state)?;
     let ty = sketch.units.into();
     let x = inner_profile_start_y(sketch)?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(x, ty)))
@@ -1055,7 +1049,7 @@ pub(crate) fn inner_profile_start_y(profile: Sketch) -> Result<f64, KclError> {
 
 /// Returns the sketch profile start point.
 pub async fn profile_start(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch: Sketch = args.get_unlabeled_kw_arg_typed("profile", &RuntimeType::sketch(), exec_state)?;
+    let sketch: Sketch = args.get_unlabeled_kw_arg("profile", &RuntimeType::sketch(), exec_state)?;
     let ty = sketch.units.into();
     let point = inner_profile_start(sketch)?;
     Ok(KclValue::from_point2d(point, ty, args.into()))
@@ -1067,9 +1061,8 @@ pub(crate) fn inner_profile_start(profile: Sketch) -> Result<[f64; 2], KclError>
 
 /// Close the current sketch.
 pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch =
-        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
     let new_sketch = inner_close(sketch, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
@@ -1115,18 +1108,16 @@ pub(crate) async fn inner_close(
 
 /// Draw an arc.
 pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch =
-        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
-    let angle_start: Option<TyF64> = args.get_kw_arg_opt_typed("angleStart", &RuntimeType::degrees(), exec_state)?;
-    let angle_end: Option<TyF64> = args.get_kw_arg_opt_typed("angleEnd", &RuntimeType::degrees(), exec_state)?;
-    let radius: Option<TyF64> = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;
-    let diameter: Option<TyF64> = args.get_kw_arg_opt_typed("diameter", &RuntimeType::length(), exec_state)?;
-    let end_absolute: Option<[TyF64; 2]> =
-        args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let angle_start: Option<TyF64> = args.get_kw_arg_opt("angleStart", &RuntimeType::degrees(), exec_state)?;
+    let angle_end: Option<TyF64> = args.get_kw_arg_opt("angleEnd", &RuntimeType::degrees(), exec_state)?;
+    let radius: Option<TyF64> = args.get_kw_arg_opt("radius", &RuntimeType::length(), exec_state)?;
+    let diameter: Option<TyF64> = args.get_kw_arg_opt("diameter", &RuntimeType::length(), exec_state)?;
+    let end_absolute: Option<[TyF64; 2]> = args.get_kw_arg_opt("endAbsolute", &RuntimeType::point2d(), exec_state)?;
     let interior_absolute: Option<[TyF64; 2]> =
-        args.get_kw_arg_opt_typed("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+        args.get_kw_arg_opt("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
     let new_sketch = inner_arc(
         sketch,
         angle_start,
@@ -1307,14 +1298,13 @@ pub async fn relative_arc(
 
 /// Draw a tangential arc to a specific point.
 pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch =
-        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
-    let end = args.get_kw_arg_opt_typed("end", &RuntimeType::point2d(), exec_state)?;
-    let end_absolute = args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::point2d(), exec_state)?;
-    let radius = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;
-    let diameter = args.get_kw_arg_opt_typed("diameter", &RuntimeType::length(), exec_state)?;
-    let angle = args.get_kw_arg_opt_typed("angle", &RuntimeType::angle(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let end = args.get_kw_arg_opt("end", &RuntimeType::point2d(), exec_state)?;
+    let end_absolute = args.get_kw_arg_opt("endAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let radius = args.get_kw_arg_opt("radius", &RuntimeType::length(), exec_state)?;
+    let diameter = args.get_kw_arg_opt("diameter", &RuntimeType::length(), exec_state)?;
+    let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let new_sketch = inner_tangential_arc(
         sketch,
@@ -1563,15 +1553,14 @@ async fn inner_tangential_arc_to_point(
 
 /// Draw a bezier curve.
 pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch =
-        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
-    let control1 = args.get_kw_arg_opt_typed("control1", &RuntimeType::point2d(), exec_state)?;
-    let control2 = args.get_kw_arg_opt_typed("control2", &RuntimeType::point2d(), exec_state)?;
-    let end = args.get_kw_arg_opt_typed("end", &RuntimeType::point2d(), exec_state)?;
-    let control1_absolute = args.get_kw_arg_opt_typed("control1Absolute", &RuntimeType::point2d(), exec_state)?;
-    let control2_absolute = args.get_kw_arg_opt_typed("control2Absolute", &RuntimeType::point2d(), exec_state)?;
-    let end_absolute = args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::point2d(), exec_state)?;
-    let tag = args.get_kw_arg_opt("tag")?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let control1 = args.get_kw_arg_opt("control1", &RuntimeType::point2d(), exec_state)?;
+    let control2 = args.get_kw_arg_opt("control2", &RuntimeType::point2d(), exec_state)?;
+    let end = args.get_kw_arg_opt("end", &RuntimeType::point2d(), exec_state)?;
+    let control1_absolute = args.get_kw_arg_opt("control1Absolute", &RuntimeType::point2d(), exec_state)?;
+    let control2_absolute = args.get_kw_arg_opt("control2Absolute", &RuntimeType::point2d(), exec_state)?;
+    let end_absolute = args.get_kw_arg_opt("endAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let new_sketch = inner_bezier_curve(
         sketch,
@@ -1689,10 +1678,9 @@ async fn inner_bezier_curve(
 
 /// Use a sketch to cut a hole in another sketch.
 pub async fn subtract_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch =
-        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
-    let tool: Vec<Sketch> = args.get_kw_arg_typed(
+    let tool: Vec<Sketch> = args.get_kw_arg(
         "tool",
         &RuntimeType::Array(
             Box::new(RuntimeType::Primitive(PrimitiveType::Sketch)),
