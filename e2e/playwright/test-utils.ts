@@ -1198,3 +1198,175 @@ export async function enableConsoleLogEverything({
     console.log(`[Main] ${msg.type()}: ${msg.text()}`)
   })
 }
+
+/**
+ * Simulate a pan touch gesture from the center of an element.
+ * with {touchSpacing} pixels between.
+ *
+ * Adapted from Playwright docs: https://playwright.dev/docs/touch-events
+ */
+export async function panFromCenter(
+  locator: Locator,
+  deltaX = 0,
+  deltaY = 0,
+  steps = 5
+) {
+  const { centerX, centerY } = await locator.evaluate((target: HTMLElement) => {
+    const bounds = target.getBoundingClientRect()
+    const centerX = bounds.left + bounds.width / 2
+    const centerY = bounds.top + bounds.height / 2
+    return { centerX, centerY }
+  })
+
+  // Providing only clientX and clientY as the app only cares about those.
+  const touches = [
+    {
+      identifier: 0,
+      clientX: centerX,
+      clientY: centerY,
+    },
+  ]
+  await locator.dispatchEvent('touchstart', {
+    touches,
+    changedTouches: touches,
+    targetTouches: touches,
+  })
+
+  for (let j = 1; j <= steps; j++) {
+    const touches = [
+      {
+        identifier: 0,
+        clientX: centerX + (deltaX * j) / steps,
+        clientY: centerY + (deltaY * j) / steps,
+      },
+    ]
+    await locator.dispatchEvent('touchmove', {
+      touches,
+      changedTouches: touches,
+      targetTouches: touches,
+    })
+  }
+
+  await locator.dispatchEvent('touchend')
+}
+
+/**
+ * Simulate a 2-finger pan touch gesture from the center of an element.
+ * with {touchSpacing} pixels between.
+ *
+ * Adapted from Playwright docs: https://playwright.dev/docs/touch-events
+ */
+export async function panTwoFingerFromCenter(
+  locator: Locator,
+  deltaX = 0,
+  deltaY = 0,
+  steps = 5,
+  spacingX = 20
+) {
+  const { centerX, centerY } = await locator.evaluate((target: HTMLElement) => {
+    const bounds = target.getBoundingClientRect()
+    const centerX = bounds.left + bounds.width / 2
+    const centerY = bounds.top + bounds.height / 2
+    return { centerX, centerY }
+  })
+
+  // Providing only clientX and clientY as the app only cares about those.
+  const touches = [
+    {
+      identifier: 0,
+      clientX: centerX,
+      clientY: centerY,
+    },
+    {
+      identifier: 1,
+      clientX: centerX + spacingX,
+      clientY: centerY,
+    },
+  ]
+  await locator.dispatchEvent('touchstart', {
+    touches,
+    changedTouches: touches,
+    targetTouches: touches,
+  })
+
+  for (let j = 1; j <= steps; j++) {
+    const touches = [
+      {
+        identifier: 0,
+        clientX: centerX + (deltaX * j) / steps,
+        clientY: centerY + (deltaY * j) / steps,
+      },
+      {
+        identifier: 1,
+        clientX: centerX + spacingX + (deltaX * j) / steps,
+        clientY: centerY + (deltaY * j) / steps,
+      },
+    ]
+    await locator.dispatchEvent('touchmove', {
+      touches,
+      changedTouches: touches,
+      targetTouches: touches,
+    })
+  }
+
+  await locator.dispatchEvent('touchend')
+}
+
+/**
+ * Simulate a pinch touch gesture from the center of an element.
+ * Touch points are set horizontally from each other, separated by {startDistance} pixels.
+ */
+export async function pinchFromCenter(
+  locator: Locator,
+  startDistance = 100,
+  delta = 0,
+  steps = 5
+) {
+  const { centerX, centerY } = await locator.evaluate((target: HTMLElement) => {
+    const bounds = target.getBoundingClientRect()
+    const centerX = bounds.left + bounds.width / 2
+    const centerY = bounds.top + bounds.height / 2
+    return { centerX, centerY }
+  })
+
+  // Providing only clientX and clientY as the app only cares about those.
+  const touches = [
+    {
+      identifier: 0,
+      clientX: centerX - startDistance / 2,
+      clientY: centerY,
+    },
+    {
+      identifier: 1,
+      clientX: centerX + startDistance / 2,
+      clientY: centerY,
+    },
+  ]
+  await locator.dispatchEvent('touchstart', {
+    touches,
+    changedTouches: touches,
+    targetTouches: touches,
+  })
+
+  for (let i = 1; i <= steps; i++) {
+    const touches = [
+      {
+        identifier: 0,
+        clientX: centerX - startDistance / 2 + (delta * i) / steps,
+        clientY: centerY,
+      },
+      {
+        identifier: 1,
+        clientX: centerX + startDistance / 2 + (delta * i) / steps,
+        clientY: centerY,
+      },
+    ]
+    await locator.dispatchEvent('touchmove', {
+      touches,
+      changedTouches: touches,
+      targetTouches: touches,
+    })
+  }
+
+  await locator.dispatchEvent('touchend')
+}
