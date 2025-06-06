@@ -165,7 +165,7 @@ interface _3DconnexionMiddleware {
 
   /** Frame */
   getFrameTimingSource?(): void // TODO
-  getFrameTime(): number
+  getFrameTime?(): number
 
   /**
    * Client update
@@ -404,10 +404,24 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
   }
 
   getFov() {
+    if (!this.camera) {
+      const message = 'Missing camera in getFov'
+      this.log(message)
+      throw new Error(message)
+    }
+
+    if (this.camera instanceof PerspectiveCamera === false) {
+      const message =
+        'Camear is not perspective, unable to getFov, brick!'
+      this.log(message)
+      throw new Error(message)
+    }
+
     const fov =
       2 *
       Math.atan(
         Math.atan2(this.camera.fov * Math.PI, 360.0) *
+
           Math.sqrt(1 + this.camera.aspect * this.camera.aspect)
       )
     if (this.TRACE_MESSAGES) console.log('fov=' + (fov * 180.0) / Math.PI)
