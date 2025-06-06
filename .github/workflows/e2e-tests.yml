@@ -304,7 +304,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # TODO: enable namespace-profile-windows-latest once available
         include:
           - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
             shardIndex: 1
