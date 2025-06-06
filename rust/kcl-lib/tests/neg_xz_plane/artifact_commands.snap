@@ -33,6 +33,13 @@ description: Artifact commands neg_xz_plane.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_grid_auto_scale"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,

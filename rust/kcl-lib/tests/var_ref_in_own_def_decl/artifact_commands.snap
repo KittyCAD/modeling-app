@@ -28,5 +28,12 @@ description: Artifact commands var_ref_in_own_def_decl.kcl
       "object_id": "[uuid]",
       "hidden": true
     }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_grid_auto_scale"
+    }
   }
 ]

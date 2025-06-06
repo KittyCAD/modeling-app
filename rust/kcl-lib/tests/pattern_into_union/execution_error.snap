@@ -4,22 +4,23 @@ description: Error from executing pattern_into_union.kcl
 ---
 KCL Engine error
 
-  × engine: The Zoo engine cannot handle this 3D union yet.  Please report
-  │ this as an issue
-    ╭─[67:1]
- 66 │ 
- 67 │ union([base,endTabs])
-    · ──────────┬──────────┬
-    ·           ╰── tests/pattern_into_union/input.kcl
-    ·           ╰── tests/pattern_into_union/input.kcl
+  × engine: Modeling command timed out `[uuid]`
+    ╭─[24:6]
+ 23 │   |> close()
+ 24 │   |> extrude(length = -depth)
+    ·      ────────────┬───────────┬
+    ·                  ╰── tests/pattern_into_union/input.kcl
+    ·                  ╰── tests/pattern_into_union/input.kcl
+ 25 │ 
     ╰────
   ╰─▶ KCL Engine error
       
-        × engine: The Zoo engine cannot handle this 3D union yet.  Please
-        │ report this as an issue
-          ╭─[67:1]
-       66 │
-       67 │ union([base,endTabs])
-          · ──────────┬──────────
-          ·           ╰── tests/pattern_into_union/input.kcl
+        × engine: Modeling command timed out `d3dfef80-4176-40ae-a6df-
+        │ 84983d302306`
+          ╭─[24:6]
+       23 │   |> close()
+       24 │   |> extrude(length = -depth)
+          ·      ────────────┬───────────
+          ·                  ╰── tests/pattern_into_union/input.kcl
+       25 │
           ╰────

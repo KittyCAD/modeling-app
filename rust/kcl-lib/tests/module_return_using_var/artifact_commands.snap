@@ -33,6 +33,13 @@ description: Artifact commands module_return_using_var.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_grid_auto_scale"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "set_object_transform",
       "object_id": "[uuid]",
       "transforms": [

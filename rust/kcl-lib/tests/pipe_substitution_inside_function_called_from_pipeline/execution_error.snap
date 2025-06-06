@@ -2,13 +2,12 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing pipe_substitution_inside_function_called_from_pipeline.kcl
 ---
-KCL Semantic error
+KCL Engine error
 
-  × semantic: cannot use % outside a pipe expression
-   ╭─[6:10]
- 5 │ 
- 6 │ answer = %
-   ·          ┬
-   ·          ╰── tests/pipe_substitution_inside_function_called_from_pipeline/input.kcl
- 7 │   |> f(%)
+  × engine: Modeling command timed out `[uuid]`
+   ╭─[1:1]
+ 1 │ // Make sure pipe value doesn't leak into the function call.
+   · ▲
+   · ╰── main
+ 2 │ fn f(@ignored) {
    ╰────

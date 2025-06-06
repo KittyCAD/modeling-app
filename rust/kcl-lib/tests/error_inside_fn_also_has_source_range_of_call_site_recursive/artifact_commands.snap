@@ -28,5 +28,12 @@ description: Artifact commands error_inside_fn_also_has_source_range_of_call_sit
       "object_id": "[uuid]",
       "hidden": true
     }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_grid_auto_scale"
+    }
   }
 ]

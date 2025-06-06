@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Artifact commands nested_main_kcl.kcl
+description: Artifact commands nested_windows_main_kcl.kcl
 ---
 [
   {
@@ -27,6 +27,13 @@ description: Artifact commands nested_main_kcl.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_grid_auto_scale"
     }
   },
   {
