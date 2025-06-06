@@ -216,7 +216,6 @@ interface Model {
   }
 }
 
-
 class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
   PERSPECTIVE: boolean
   TRACE_MESSAGES: boolean
@@ -224,36 +223,36 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
   spaceMouse: any
   animating: boolean
   canvas: any
-  camera: any
+  _camera: any
   appName: string
   debug: boolean
   gl: {
-    fov: number,
-    near: number,
-    far: number,
-    left: number,
-    right: number,
-    bottom: number,
-    top: number,
-    viewportWidth: number,
+    fov: number
+    near: number
+    far: number
+    left: number
+    right: number
+    bottom: number
+    top: number
+    viewportWidth: number
     viewportHeight: number
   }
 
   look: {
-    origin: Vector3,
-    direction: Vector3,
-    aperture: number,
+    origin: Vector3
+    direction: Vector3
+    aperture: number
     selection: boolean
   }
 
-  log(message: string, data) : void {
+  log(message: string, data): void {
     console.log(`prefix ${message} data:${data}`)
   }
 
-  constructor ({camera, canvasId, appName, debug}) {
+  constructor({ camera, canvasId, appName, debug }) {
     const canvas = document.getElementById(canvasId)
     this.canvas = canvas
-    this.aspect = canvas?.offsetWidth/ canvas?.offsetHeight
+    this.aspect = canvas?.offsetWidth / canvas?.offsetHeight
     this.appName = appName
     this.debug = debug
     this.PERSPECTIVE = true
@@ -267,6 +266,7 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     const right = -left
     const bottom = (-(right - left) * viewportHeight) / viewportWidth / 2
     const top = -bottom
+    // This will get out of date?
     this.gl = {
       fov,
       near,
@@ -276,14 +276,14 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
       bottom,
       top,
       viewportWidth,
-      viewportHeight
+      viewportHeight,
     }
 
     this.look = {
       origin: new THREE.Vector3(),
       direction: new THREE.Vector3(),
       aperture: 0.01,
-      selection: false
+      selection: false,
     }
 
     this.camera = camera.clone()
@@ -293,167 +293,266 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     this.log('constructor called _3DMouseThreeJSWindows')
   }
 
+  get camera () {
+    return this._camera
+  }
 
-  render (now: number) {
+  set camera(newCamera) {
+    this._camera = newCamera.clone()
+  }
+
+  render(now: number) {
     if (this.animating) {
       this.spaceMouse.update3dcontroller({
-        frame: {time: now}
+        frame: { time: now },
       })
-      window.requestAnimationFrame(function(theTime) {this.render(theTime)}.bind(this))
+      window.requestAnimationFrame(
+        function (theTime) {
+          this.render(theTime)
+        }.bind(this)
+      )
     }
-    // if (this.animating) {
-    //   this.spaceMouse.update3dcontroller({
-    //     frame: {time: now}
-    //   })
-    //   requestAnimationFrame(this.render)
-    // }
-
     this.log('rendering!', now)
   }
 
-  updateScene () {
+  updateScene() {
     this.log('updateScene')
     if (!this.animating) {
       // window.requestAnimationFrame(this.render)
-      window.requestAnimationFrame(function(theTime) {this.render(theTime)}.bind(this))
+      window.requestAnimationFrame(
+        function (theTime) {
+          this.render(theTime)
+        }.bind(this)
+      )
     }
   }
 
-  deleteScene () {
+  deleteScene() {
     this.log('deleting scene')
     this.spaceMouse.delete3dmouse()
   }
 
   // navigation model
-  getCoordinateSystem () {
-    const a= [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-    this.log('getCoordinateSystem',a)
+  // getCoordinateSystem is queried to determine the coordinate system of the application
+  // described as X to the right, Y-up and Z out of the screen
+  getCoordinateSystem() {
+    const a = [ 1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1]
+    this.log('getCoordinateSystem', a)
     return a
   }
 
   getConstructionPlane() {
-    const a =  [0,0,0,0]
-    this.log('getConstructionPlane',a)
+    throw new Error('getConstructionPlane')
+    const a = [0, 0, 0, 0]
+    this.log('getConstructionPlane', a)
     return a
   }
 
-  getFloorPlane () {
-    const a = [0,0,0,0]
-    this.log('getFloorPlane',a)
+  getFloorPlane() {
+    throw new Error('getFloorPlane')
+    const a = [0, 0, 0, 0]
+    this.log('getFloorPlane', a)
     return a
   }
 
-  getUnitsToMeters () {
-    const a =  10.0
+  getUnitsToMeters() {
+    // originall 10.0 in the documentation?
+    // Anything from the client side is in mm so mm to meters is 1mm * 0.001 = 0.001m
+    const a = 0.001
     this.log('getUnitsToMeter', a)
     return a
   }
 
-  getFov () {
-    const fov = 2. * Math.atan(Math.atan2(this.camera.fov * Math.PI, 360.0) * Math.sqrt(1 + this.camera.aspect * this.camera.aspect));
-    if (this.TRACE_MESSAGES)
-      console.log("fov=" + (fov * 180.0 / Math.PI));
+  getFov() {
+    const fov =
+      2 *
+      Math.atan(
+        Math.atan2(this.camera.fov * Math.PI, 360.0) *
+          Math.sqrt(1 + this.camera.aspect * this.camera.aspect)
+      )
+    if (this.TRACE_MESSAGES) console.log('fov=' + (fov * 180.0) / Math.PI)
 
-    const a = fov;
-    this.log('getFov',a)
+    const a = fov
+    this.log('getFov', a)
     return a
   }
 
-  getFrontView () {
-    const a = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+  getFrontView() {
+    // Method called by the Navigation Library when a connection is established to determine the pose
+    // of the front view. When the user presses the ‘Front’ button on a 3D Mouse this will be the pose
+    // the Navigation Library switches to. All other view orientations are calculated from this.
+    const a = [1, 0, 0, 0,
+               0, 1, 0, 0,
+               0, 0, 1, 0,
+               0, 0, 0, 1]
     this.log('getFrontView', a)
     return a
   }
 
   getLookAt() {
+    // Method called by the Navigation Library when it requires the world position of the nearest
+    // intersection of the “look” ray with the scene or selection set.
+    // Required for the auto pivot algorithms.
     // if nothing was hit return nothing
     const a = null
-    this.log('getLookAt',a)
+    this.log('getLookAt', a)
     return a
   }
 
-  getModelExtents () {
-    // This is called after onStartMotion
+  getModelExtents() {
+    // Method called by the Navigation Library when it needs to know the bounding box of the model.
+    //   One example of when this will happen is when the library needs to zoom the view to the extents
+    // of the model. The extents are returned as an array containing the min and max values of the
+    // bounding box in world coordinates.
+    // Required for the pivot and zoom algorithms.
+
     const unit = 100
     const a = [-unit / 2, -unit / 2, -unit / 2, unit / 2, unit / 2, unit / 2]
-    this.log('getModelExtents',a)
+    this.log('getModelExtents', a)
     return a
   }
 
-  getPerspective () {
+  getPerspective() {
+    // Required to distinguish between orthographic and perspective navigation algorithms.
     const a = this.PERSPECTIVE
     this.log('getPerspective', a)
     return a
   }
 
-  getPivotPositon () {
+  getPivotPositon() {
+    // Method called by the Navigation Library when it wants to know the position of the 2D mouse
+    // pivot or of a pivot manually set by the user. The position is returned as a 1x3 array in world
+    // coordinates.
+    // Required for rotating about the pivot position
     if (this.TRACE_MESSAGES)
-      console.log("pivot=[" + 0 + ", " + 0 + ", " + 0 + "]");
-    const a = [0,0,0]
+      console.log('pivot=[' + 0 + ', ' + 0 + ', ' + 0 + ']')
+    const a = [0, 0, 0]
     this.log('getPivotPosition', a)
     return a
   }
 
-  getPointerPosition () {
+  getPointerPosition() {
+    // Method called by the Navigation Library when it requires the world position of the mouse pointer
+    // on the projection/near plane.
+    // Required for the quick zoom algorithms.
     this.log('getPointerPosition')
     throw new Error('implement getPointerPosition')
   }
 
-  getViewRotatable () {
+  getViewRotatable() {
+    // The method returns a true of false. This may be called by the Navigation Library when
+    // calculating a next frame. The rotatable describes whether the view in an orthographic project
+    // can be rotated
+    // Required for 2d navigation.
+    // The Navigation Library will treat non-rotatable views as pure pan-zoom views and also disable
+    // the views keys (Right, Left, Top, etc.). To allow the navigation library to rotate the view to an
+    // alternative orientation such as Top, define the view as rotatable and a corresponding
+    // construction plane.
     const a = true
-    this.log('getViewRotatable',a)
+    this.log('getViewRotatable', a)
     return a
   }
 
-  getViewExtents () {
-    const a = [this.camera.left, this.camera.bottom, this.camera.far * -1, this.camera.right, this.camera.top, this.camera.near * -1]
-    this.log('getViewExtents',a)
+  getViewExtents() {
+    // The method returns a 1x6 java array containing the min and max extents of the view bounding
+    // box. The view extents defines the visible viewing volume of an orthographic projection in view
+    // coordinates as min = [left, bottom, -far] and max = [right, top, far].
+    // Required for orthographic projections.
+    const a = [
+      this.camera.left,
+      this.camera.bottom,
+      this.camera.far * -1,
+      this.camera.right,
+      this.camera.top,
+      this.camera.near * -1,
+    ]
+    this.log('getViewExtents', a)
     return a
   }
 
-  getViewFrustum () {
-    const tan_halffov = Math.tan(this.gl.fov * Math.PI / 360.0);
-    const bottom = -this.camera.near * tan_halffov;
-    const left = bottom * this.camera.aspect;
+  getViewFrustum() {
+    // The method returns a 1x 6 java array containing the frustum of the perspective view/camera in
+    // camera coordinates. This may be called by the Navigation Library when it needs to calculate the
+    // field-of-view of the camera, or during algorithms that need to know if the model is currently
+    // visible within the frustum. The Navigation Library will not write to the ‘view.frustum’ property,
+    // Required for perspective projections.
+    // The values in the array are the same as those passed to glFrustum in OpenGL.
+
+    // Why isn't this the cameras.fov?
+    // in setFov it should be this.camera.fov = this.gl.fov
+    // and this should be this.camera.fov
+    const tan_halffov = Math.tan((this.gl.fov * Math.PI) / 360.0)
+    const bottom = -this.camera.near * tan_halffov
+    const left = bottom * this.camera.aspect
     if (this.TRACE_MESSAGES)
-      console.log("frustum=[" + left + ", " + -left + ", " + bottom + ", " + -bottom + ", " + this.camera.near + ", " + this.camera.far + "]");
-    const a = [left, -left, bottom, -bottom, this.camera.near, this.camera.far];
-    this.log('getViewFrustum',a)
+      console.log(
+        'frustum=[' +
+          left +
+          ', ' +
+          -left +
+          ', ' +
+          bottom +
+          ', ' +
+          -bottom +
+          ', ' +
+          this.camera.near +
+          ', ' +
+          this.camera.far +
+          ']'
+      )
+    const a = [left, -left, bottom, -bottom, this.camera.near, this.camera.far]
+    this.log('getViewFrustum', a)
     return a
   }
 
-  getViewMatrix () {
+  getViewMatrix() {
+    // The method returns a java array containing the view 4x4 column major matrix. This may be
+    // called by the Navigation Library when calculating a next frame. The view matrix describes the
+    // transform from view coordinates to world coordinates of the view/camera position. Generally
+    // getViewMatrix() is called by the library at the beginning of motion.
     const a = this.camera.matrixWorld.toArray()
     this.log('getViewMatrix', a)
     return a
   }
 
-  setActiveCommand (id) {
+  setActiveCommand(id) {
     this.log(`setActiveCommand`, id)
   }
 
-  setLookFrom (data) {
-    this.log('setLookFrom',data)
+  setLookFrom(data) {
+    // Method called by the Navigation Library that defines the origin of the ray used in hit-testing.
+    this.log('setLookFrom', data)
     this.look.origin.set(data[0], data[1], data[2])
   }
 
-  setLookDirection (data) {
-    this.log('setLookDirection',data)
-    this.look.direction.set(data[0],data[1], data[2])
+  setLookDirection(data) {
+    // Method called by the Navigation Library that defines the direction of the ray used in hit-testing
+    this.log('setLookDirection', data)
+    this.look.direction.set(data[0], data[1], data[2])
   }
 
-  setLookAperture (data) {
-    this.log('setLookAperture',data)
+  setLookAperture(data) {
+    // Method called by the Navigation Library that defines the diameter of the ray used in hit-testing.
+    this.log('setLookAperture', data)
     this.look.aperture = data
   }
 
-  setSelectionOnly (data){
-    this.log('setSelectionOnly',data)
+  setSelectionOnly(data) {
+    // Method called by the Navigation Library that defines whether hit-testing should include all the
+    // objects or be limited to the current selection set.
+    this.log('setSelectionOnly', data)
     this.look.selection = data
   }
 
-  setViewExtents (data) {
-    this.log('setViewExtents',data)
+  setViewExtents(data) {
+    // The method receives a 1x6 java array containing the min and max extents of the view bounding
+    // box. The view extents defines the visible viewing volume of an orthographic projection in view
+    // coordinates as min = [left, bottom, far] and max = [right, top, near]. The Navigation Library will
+    // call setViewExtents when navigating in an orthographic projection in order to zoom the view.
+    this.log('setViewExtents', data)
     this.camera.left = data[0]
     this.camera.bottom = data[1]
     this.camera.right = data[3]
@@ -461,15 +560,19 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     this.camera.updateProjectionMatrix()
   }
 
-  setViewMatrix (data) {
-    this.log('setViewMatrix',data)
+  setViewMatrix(data) {
+    this.log('setViewMatrix', data)
     // Note data is a column major matrix
-    let cameraMatrix = new THREE.Matrix4();
-    cameraMatrix.fromArray(data);
+    let cameraMatrix = new THREE.Matrix4()
+    cameraMatrix.fromArray(data)
 
     // update the camera
-    cameraMatrix.decompose(this.camera.position, this.camera.quaternion, this.camera.scale);
-    this.camera.updateMatrixWorld(true);
+    cameraMatrix.decompose(
+      this.camera.position,
+      this.camera.quaternion,
+      this.camera.scale
+    )
+    this.camera.updateMatrixWorld(true)
     this.sendToEngine()
   }
 
@@ -499,41 +602,56 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     // })
   }
 
+  /**
+   * What? Why wouldn't it actually translate, zooming is faking?
+   */
   setFov(data) {
+    // Method called by the Navigation Library when it wants to update the fov of the camera/view.
+    // Required for zooming in perspective projections.
+    // The fov in radians.
     this.log('setFov', data)
-    this.gl.fov = data * 180.0 / Math.PI
+    this.gl.fov = (data * 180.0) / Math.PI
   }
 
-  setTransaction (transaction) {
-    this.log('setTransaction',transaction)
+  setTransaction(transaction) {
+    // Method called by the Navigation Library at the beginning and end of a frame change. At the
+    // beginning of a frame change the Navigation Library will set the ‘transaction’ property to a
+    // value >0. When the Navigation Library has completed the changes to the frame, the value is
+    // reset to 0. Clients that do not use an animation loop and need to actively refresh the view can
+    // trigger the update when the value is set to 0.
+    this.log('setTransaction', transaction)
     if (transaction === 0) {
       this.updateScene()
     }
   }
 
-  onStartMotion () {
+  onStartMotion() {
     this.log('onStartMotion')
     if (!this.animating) {
       this.animating = true
       // window.requestAnimationFrame(this.render)
-      window.requestAnimationFrame(function(theTime) {this.render(theTime)}.bind(this))
+      window.requestAnimationFrame(
+        function (theTime) {
+          this.render(theTime)
+        }.bind(this)
+      )
     }
   }
 
-  onStopMotion () {
+  onStopMotion() {
     this.log('onStopMotion')
     this.animating = false
   }
 
-  onConnect () {
+  onConnect() {
     this.log('onConnect')
     this.spaceMouse.create3dmouse(this.canvas, this.appName)
   }
 
-  on3dmouseCreated () {
+  on3dmouseCreated() {
     this.log('on3dmouseCreated')
     this.spaceMouse.update3dcontroller({
-      frame: {timingSource:1}
+      frame: { timingSource: 1 },
     })
     // ignore image cache
     // ignore action images
@@ -542,19 +660,19 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     // ignore application commands
   }
 
-  onDisconnect (reason) {
-    this.log('onDisconnect',reason)
+  onDisconnect(reason) {
+    this.log('onDisconnect', reason)
     if (this.TRACE_MESSAGES) {
-      console.log("3Dconnexion NL-Proxy disconnected " + reason);
+      console.log('3Dconnexion NL-Proxy disconnected ' + reason)
     }
   }
 
-  init3DMouse () {
+  init3DMouse() {
     this.log('init3DMouse')
     this.spaceMouse = new _3Dconnexion(this)
     this.spaceMouse.debug = this.debug
     this.spaceMouse.connect()
-    return Promise.resolve({value: true, message:'wtf'})
+    return Promise.resolve({ value: true, message: 'wtf' })
   }
   // HERE
 }
@@ -649,7 +767,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     }
   }
 
-  getLookAt() : null {
+  getLookAt(): null {
     return null
   }
 
@@ -1056,7 +1174,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     this.pivot.visible = data
   }
 
-  getSelectionEmpty() : boolean {
+  getSelectionEmpty(): boolean {
     console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} getSelectionEmpty`)
     return true
   }

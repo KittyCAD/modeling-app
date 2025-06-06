@@ -1,6 +1,9 @@
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import { OrthographicCamera, PerspectiveCamera } from 'three'
-import { _3DMouseThreeJS, _3DMouseThreeJSWindows } from '@src/lib/externalMouse/external-mouse-threejs'
+import {
+  _3DMouseThreeJS,
+  _3DMouseThreeJSWindows,
+} from '@src/lib/externalMouse/external-mouse-threejs'
 import { EXTERNAL_MOUSE_ERROR_PREFIX } from '@src/lib/constants'
 import {
   _3DMouseContext,

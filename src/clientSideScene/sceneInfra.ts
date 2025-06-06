@@ -281,7 +281,6 @@ export class SceneInfra {
     this.renderer.setSize(window.innerWidth, window.innerHeight)
     this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
 
-
     /**
      * Required for 3dconnexion mouse navigation library API
      * Gotcha: Canvas elements are not focusable by default
