@@ -139,7 +139,7 @@ interface _3DconnexionMiddleware {
   /** Model */
   getModelExtents(): BoundingBox
   getFloorPlane?(): PlaneEquation // TODO
-  getUnitsToMeters?() : void // TODO
+  getUnitsToMeters?(): void // TODO
 
   /** Pivot */
   getPivotPositon?(): Position
@@ -149,7 +149,7 @@ interface _3DconnexionMiddleware {
 
   /** Selection */
   getSelectionAffine?(): void // TODO
-  getSelectionEmpty?(): null // TODO
+  getSelectionEmpty?(): boolean // TODO
   getSelectionExtents?(): void // TODO
 
   /** Cursor */
@@ -181,9 +181,8 @@ interface _3DconnexionMiddleware {
   /** Commands */
   setActiveCommand(id: any): void // TODO
 
-
   /** Pivot */
-  setPivotPosition?(data: any) : void // TODO
+  setPivotPosition?(data: any): void // TODO
   setPivotVisible?(data: any): void // TODO
 
   /** Hit testing */
@@ -193,7 +192,7 @@ interface _3DconnexionMiddleware {
   setSelectionOnly?(b: boolean): void
 
   /** Selection */
-  setSelectionAffine?(data: any) : void // TODO
+  setSelectionAffine?(data: any): void // TODO
 
   /** Keys */
   setKeyPress?(data: any): void // TODO
@@ -215,6 +214,349 @@ interface Model {
     min: Vector3
     max: Vector3
   }
+}
+
+
+class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
+  PERSPECTIVE: boolean
+  TRACE_MESSAGES: boolean
+  aspect: number
+  spaceMouse: any
+  animating: boolean
+  canvas: any
+  camera: any
+  appName: string
+  debug: boolean
+  gl: {
+    fov: number,
+    near: number,
+    far: number,
+    left: number,
+    right: number,
+    bottom: number,
+    top: number,
+    viewportWidth: number,
+    viewportHeight: number
+  }
+
+  look: {
+    origin: Vector3,
+    direction: Vector3,
+    aperture: number,
+    selection: boolean
+  }
+
+  log(message: string, data) : void {
+    console.log(`prefix ${message} data:${data}`)
+  }
+
+  constructor ({camera, canvasId, appName, debug}) {
+    const canvas = document.getElementById(canvasId)
+    this.canvas = canvas
+    this.aspect = canvas?.offsetWidth/ canvas?.offsetHeight
+    this.appName = appName
+    this.debug = debug
+    this.PERSPECTIVE = true
+
+    const viewportWidth = canvas.width
+    const viewportHeight = canvas.height
+    const fov = camera instanceof PerspectiveCamera ? camera.fov : -1
+    const near = camera.near
+    const far = camera.far
+    const left = camera instanceof OrthographicCamera ? camera.left : 0
+    const right = -left
+    const bottom = (-(right - left) * viewportHeight) / viewportWidth / 2
+    const top = -bottom
+    this.gl = {
+      fov,
+      near,
+      far,
+      left,
+      right,
+      bottom,
+      top,
+      viewportWidth,
+      viewportHeight
+    }
+
+    this.look = {
+      origin: new THREE.Vector3(),
+      direction: new THREE.Vector3(),
+      aperture: 0.01,
+      selection: false
+    }
+
+    this.camera = camera.clone()
+    // this.camera.updateMatrix()
+    // this.camera.updateMatrixWorld()
+    // this.camera.updateProjectionMatrix()
+    this.log('constructor called _3DMouseThreeJSWindows')
+  }
+
+
+  render (now: number) {
+    if (this.animating) {
+      this.spaceMouse.update3dcontroller({
+        frame: {time: now}
+      })
+      window.requestAnimationFrame(function(theTime) {this.render(theTime)}.bind(this))
+    }
+    // if (this.animating) {
+    //   this.spaceMouse.update3dcontroller({
+    //     frame: {time: now}
+    //   })
+    //   requestAnimationFrame(this.render)
+    // }
+
+    this.log('rendering!', now)
+  }
+
+  updateScene () {
+    this.log('updateScene')
+    if (!this.animating) {
+      // window.requestAnimationFrame(this.render)
+      window.requestAnimationFrame(function(theTime) {this.render(theTime)}.bind(this))
+    }
+  }
+
+  deleteScene () {
+    this.log('deleting scene')
+    this.spaceMouse.delete3dmouse()
+  }
+
+  // navigation model
+  getCoordinateSystem () {
+    const a= [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+    this.log('getCoordinateSystem',a)
+    return a
+  }
+
+  getConstructionPlane() {
+    const a =  [0,0,0,0]
+    this.log('getConstructionPlane',a)
+    return a
+  }
+
+  getFloorPlane () {
+    const a = [0,0,0,0]
+    this.log('getFloorPlane',a)
+    return a
+  }
+
+  getUnitsToMeters () {
+    const a =  10.0
+    this.log('getUnitsToMeter', a)
+    return a
+  }
+
+  getFov () {
+    const fov = 2. * Math.atan(Math.atan2(this.camera.fov * Math.PI, 360.0) * Math.sqrt(1 + this.camera.aspect * this.camera.aspect));
+    if (this.TRACE_MESSAGES)
+      console.log("fov=" + (fov * 180.0 / Math.PI));
+
+    const a = fov;
+    this.log('getFov',a)
+    return a
+  }
+
+  getFrontView () {
+    const a = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+    this.log('getFrontView', a)
+    return a
+  }
+
+  getLookAt() {
+    // if nothing was hit return nothing
+    const a = null
+    this.log('getLookAt',a)
+    return a
+  }
+
+  getModelExtents () {
+    // This is called after onStartMotion
+    const unit = 100
+    const a = [-unit / 2, -unit / 2, -unit / 2, unit / 2, unit / 2, unit / 2]
+    this.log('getModelExtents',a)
+    return a
+  }
+
+  getPerspective () {
+    const a = this.PERSPECTIVE
+    this.log('getPerspective', a)
+    return a
+  }
+
+  getPivotPositon () {
+    if (this.TRACE_MESSAGES)
+      console.log("pivot=[" + 0 + ", " + 0 + ", " + 0 + "]");
+    const a = [0,0,0]
+    this.log('getPivotPosition', a)
+    return a
+  }
+
+  getPointerPosition () {
+    this.log('getPointerPosition')
+    throw new Error('implement getPointerPosition')
+  }
+
+  getViewRotatable () {
+    const a = true
+    this.log('getViewRotatable',a)
+    return a
+  }
+
+  getViewExtents () {
+    const a = [this.camera.left, this.camera.bottom, this.camera.far * -1, this.camera.right, this.camera.top, this.camera.near * -1]
+    this.log('getViewExtents',a)
+    return a
+  }
+
+  getViewFrustum () {
+    const tan_halffov = Math.tan(this.gl.fov * Math.PI / 360.0);
+    const bottom = -this.camera.near * tan_halffov;
+    const left = bottom * this.camera.aspect;
+    if (this.TRACE_MESSAGES)
+      console.log("frustum=[" + left + ", " + -left + ", " + bottom + ", " + -bottom + ", " + this.camera.near + ", " + this.camera.far + "]");
+    const a = [left, -left, bottom, -bottom, this.camera.near, this.camera.far];
+    this.log('getViewFrustum',a)
+    return a
+  }
+
+  getViewMatrix () {
+    const a = this.camera.matrixWorld.toArray()
+    this.log('getViewMatrix', a)
+    return a
+  }
+
+  setActiveCommand (id) {
+    this.log(`setActiveCommand`, id)
+  }
+
+  setLookFrom (data) {
+    this.log('setLookFrom',data)
+    this.look.origin.set(data[0], data[1], data[2])
+  }
+
+  setLookDirection (data) {
+    this.log('setLookDirection',data)
+    this.look.direction.set(data[0],data[1], data[2])
+  }
+
+  setLookAperture (data) {
+    this.log('setLookAperture',data)
+    this.look.aperture = data
+  }
+
+  setSelectionOnly (data){
+    this.log('setSelectionOnly',data)
+    this.look.selection = data
+  }
+
+  setViewExtents (data) {
+    this.log('setViewExtents',data)
+    this.camera.left = data[0]
+    this.camera.bottom = data[1]
+    this.camera.right = data[3]
+    this.camera.top = data[4]
+    this.camera.updateProjectionMatrix()
+  }
+
+  setViewMatrix (data) {
+    this.log('setViewMatrix',data)
+    // Note data is a column major matrix
+    let cameraMatrix = new THREE.Matrix4();
+    cameraMatrix.fromArray(data);
+
+    // update the camera
+    cameraMatrix.decompose(this.camera.position, this.camera.quaternion, this.camera.scale);
+    this.camera.updateMatrixWorld(true);
+    this.sendToEngine()
+  }
+
+  async sendToEngine() {
+    /** TODO: Kevin, this does not work for rotational component since the lookAt is broken. Translation only is okay */
+    const c1 = sceneInfra.camControls.camera.position.clone()
+    const c2 = this.camera?.position.clone()
+    const diff = c2?.clone()?.sub(c1.clone())
+    const t1 = sceneInfra.camControls.target.clone()
+    const t2 = diff?.clone().add(t1.clone())
+
+    sceneInfra.camControls.throttledUpdateEngineCamera({
+      isPerspective: true,
+      position: this.camera?.position.clone(),
+      quaternion: this.camera?.quaternion.clone(),
+      zoom: this.camera?.zoom,
+      target: t2, //sceneInfra.camControls.target.clone(),
+    })
+
+    /** TODO: How to sync state after the throttled call? in the callback?*/
+    // await engineCommandManager.sendSceneCommand({
+    //   type: 'modeling_cmd_req',
+    //   cmd_id: uuidv4(),
+    //   cmd: {
+    //     type: 'default_camera_get_settings',
+    //   },
+    // })
+  }
+
+  setFov(data) {
+    this.log('setFov', data)
+    this.gl.fov = data * 180.0 / Math.PI
+  }
+
+  setTransaction (transaction) {
+    this.log('setTransaction',transaction)
+    if (transaction === 0) {
+      this.updateScene()
+    }
+  }
+
+  onStartMotion () {
+    this.log('onStartMotion')
+    if (!this.animating) {
+      this.animating = true
+      // window.requestAnimationFrame(this.render)
+      window.requestAnimationFrame(function(theTime) {this.render(theTime)}.bind(this))
+    }
+  }
+
+  onStopMotion () {
+    this.log('onStopMotion')
+    this.animating = false
+  }
+
+  onConnect () {
+    this.log('onConnect')
+    this.spaceMouse.create3dmouse(this.canvas, this.appName)
+  }
+
+  on3dmouseCreated () {
+    this.log('on3dmouseCreated')
+    this.spaceMouse.update3dcontroller({
+      frame: {timingSource:1}
+    })
+    // ignore image cache
+    // ignore action images
+    // ignore action tree
+    // ignore button bank
+    // ignore application commands
+  }
+
+  onDisconnect (reason) {
+    this.log('onDisconnect',reason)
+    if (this.TRACE_MESSAGES) {
+      console.log("3Dconnexion NL-Proxy disconnected " + reason);
+    }
+  }
+
+  init3DMouse () {
+    this.log('init3DMouse')
+    this.spaceMouse = new _3Dconnexion(this)
+    this.spaceMouse.debug = this.debug
+    this.spaceMouse.connect()
+    return Promise.resolve({value: true, message:'wtf'})
+  }
+  // HERE
 }
 
 class _3DMouseThreeJS implements _3DconnexionMiddleware {
@@ -271,27 +613,27 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   top: number = 0
 
   settings = {
-    changed: false
+    changed: false,
   }
 
   pivot = {
-    position : [0,0,0],
-    visible: true
+    position: [0, 0, 0],
+    visible: true,
   }
 
   motion = false
 
   hit = {
-    lookfrom : [0,0,0],
-    lookat : [0,0,0],
-    direction: [0,0,0]
+    lookfrom: [0, 0, 0],
+    lookat: [0, 0, 0],
+    direction: [0, 0, 0],
   }
 
   look = {
-    origin: new THREE.Vector3()
-    , direction: new THREE.Vector3()
-    , aperture: 0.01
-    , selection: false
+    origin: new THREE.Vector3(),
+    direction: new THREE.Vector3(),
+    aperture: 0.01,
+    selection: false,
   }
 
   constructor(configuration: _3DMouseConfiguration) {
@@ -305,32 +647,34 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
         `${EXTERNAL_MOUSE_ERROR_PREFIX} Unable to find _3Dconnexion library`
       )
     }
-
-
   }
 
-  setLookFrom (data) {
+  getLookAt() : null {
+    return null
+  }
+
+  setLookFrom(data) {
     console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} setLookFrom: ${data}`)
-    this.look.origin.set(data[0], data[1], data[2]);
+    this.look.origin.set(data[0], data[1], data[2])
   }
 
-  setLookDirection (data) {
+  setLookDirection(data) {
     console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} setLookDirection: ${data}`)
-    this.look.direction.set(data[0], data[1], data[2]);
+    this.look.direction.set(data[0], data[1], data[2])
   }
 
-  setLookAperture (data) {
+  setLookAperture(data) {
     console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} setLookAperture: ${data}`)
-    this.look.aperture = data;
+    this.look.aperture = data
   }
 
-  setSelectionOnly (data) {
+  setSelectionOnly(data) {
     console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} setSelectionOnly: ${data}`)
-    this.look.selection = data;
+    this.look.selection = data
   }
 
-  getPivotPosition () {
-    return [0,0,0]
+  getPivotPosition() {
+    return [0, 0, 0]
   }
 
   // custom
@@ -340,7 +684,7 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     // }
   }
 
-  // callbacks
+  // // callbacks
   getCoordinateSystem(): SixteenNumbers {
     // In this sample the cs has X to the right, Y-up, and Z out of the screen
     return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
@@ -351,28 +695,30 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
   }
 
-  /**
-   * This is critical to compute to the rotation part of the viewMatrix from the navigation library
-   * The new affine viewMatrix will be a rotation about the model's extent's center position followed by a translation.
-   * It takes the center point of this min,max AABB then applies the rotational diffierence to this pivot point.
-   */
+  // /**
+  //  * This is critical to compute to the rotation part of the viewMatrix from the navigation library
+  //  * The new affine viewMatrix will be a rotation about the model's extent's center position followed by a translation.
+  //  * It takes the center point of this min,max AABB then applies the rotational diffierence to this pivot point.
+  //  */
   getModelExtents(): BoundingBox {
     // This is called after onStartMotion
     const unit = 100
     return [-unit / 2, -unit / 2, -unit / 2, unit / 2, unit / 2, unit / 2]
   }
 
-  getUnitsToMeters () {
+  getUnitsToMeters() {
     // 1 unit is 10m
-    return 0.1;
-  };
+    return 1.0
+  }
 
   getPerspective(): boolean {
     // This is called after onStartMotion
+    console.log('invoked getPerspective')
     return true
   }
 
   getViewMatrix() {
+    console.log('invoked getViewMatrix')
     // This is called after onStartMotion
     // THREE.js matrices are column major (same as openGL)
     return this.camera.matrixWorld.toArray()
@@ -516,7 +862,9 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   // init3DMouse needs onConnect
   onConnect(): void {
     console.log('trying to do on connect?')
-    const canvas: HTMLCanvasElement = document.getElementById('client-side-scene-canvas')
+    const canvas: HTMLCanvasElement = document.getElementById(
+      'client-side-scene-canvas'
+    )
 
     if (!canvas) {
       console.error(
@@ -703,17 +1051,19 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
     }
   }
 
-  setPivotVisible(data: any) : void {
+  setPivotVisible(data: any): void {
     console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} setPivotVislble: ${data}`)
+    this.pivot.visible = data
   }
 
-  // getSelectionEmpty() : null {
-  //   console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} getSelectionEmpty`)
-  //   return null
-  // }
+  getSelectionEmpty() : boolean {
+    console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} getSelectionEmpty`)
+    return true
+  }
 
-  setMoving(data: any): void  {
+  setMoving(data: any): void {
     console.log(`${EXTERNAL_MOUSE_ERROR_PREFIX} setMoving: ${data}`)
+    this.motion = data
   }
 
   setSettingsChanged(data: any): void {
@@ -722,4 +1072,4 @@ class _3DMouseThreeJS implements _3DconnexionMiddleware {
   }
 }
 
-export { _3DMouseThreeJS }
+export { _3DMouseThreeJS, _3DMouseThreeJSWindows }

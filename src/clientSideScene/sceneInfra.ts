@@ -278,11 +278,20 @@ export class SceneInfra {
 
     // RENDERER
     this.renderer = new WebGLRenderer({ antialias: true, alpha: true }) // Enable transparency
-    this.renderer.domElement.id = 'client-side-scene-canvas'
     this.renderer.setSize(window.innerWidth, window.innerHeight)
     this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
+
+
+    /**
+     * Required for 3dconnexion mouse navigation library API
+     * Gotcha: Canvas elements are not focusable by default
+     * Set an id to easily access the canvas
+     * tabIndex=0 allows for focus
+     * autofocus is helpful? It seemed to act poorly withou it.
+     */
+    this.renderer.domElement.id = 'client-side-scene-canvas'
     this.renderer.domElement.tabIndex = 0
-    this.renderer.domElement.autofocus = true;
+    this.renderer.domElement.autofocus = true
 
     // LABEL RENDERER
     this.labelRenderer = new CSS2DRenderer()

@@ -1,6 +1,6 @@
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import { OrthographicCamera, PerspectiveCamera } from 'three'
-import { _3DMouseThreeJS } from '@src/lib/externalMouse/external-mouse-threejs'
+import { _3DMouseThreeJS, _3DMouseThreeJSWindows } from '@src/lib/externalMouse/external-mouse-threejs'
 import { EXTERNAL_MOUSE_ERROR_PREFIX } from '@src/lib/constants'
 import {
   _3DMouseContext,
@@ -74,26 +74,35 @@ export const _3DMouseMachine = setup({
           throw message
         }
 
-        const the3DMouse = new _3DMouseThreeJS({
+        // const the3DMouse = new _3DMouseThreeJS({
+        //   // Name needs to be registered in the python proxy server!
+        //   name: input.name,
+        //   debug: input.debug,
+        //   canvasId: input.canvasId,
+        //   camera: input.camera.clone(),
+        // })
+
+        const the3DMouse = new _3DMouseThreeJSWindows({
           // Name needs to be registered in the python proxy server!
-          name: input.name,
+          appName: input.name,
           debug: input.debug,
           canvasId: input.canvasId,
           camera: input.camera.clone(),
         })
+        the3DMouse.init3DMouse()
 
         /**
          * The mouse class has a bug and we cannot properly await the async xmlHttpRequest
          * we have to poll and hope it connects
          */
-        const response = await the3DMouse.init3DMouse(1000 * 2, the3DMouse)
+        // const response = await the3DMouse.init3DMouse(1000 * 2, the3DMouse)
 
-        console.log("RESPONSE", response)
-        if (response.value === false) {
-          logError(response.message)
-          the3DMouse.destroy()
-          throw response.message
-        }
+        // console.log('RESPONSE', response)
+        // if (response.value === false) {
+        //   logError(response.message)
+        //   the3DMouse.destroy()
+        //   throw response.message
+        // }
 
         return the3DMouse
       }
