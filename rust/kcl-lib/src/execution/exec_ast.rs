@@ -11,8 +11,8 @@ use crate::{
         memory,
         state::ModuleState,
         types::{NumericType, PrimitiveType, RuntimeType},
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModuleArtifactState, PlaneType,
-        StatementKind, TagIdentifier,
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta, ModuleArtifactState,
+        PlaneType, StatementKind, TagIdentifier,
     },
     fmt,
     modules::{ModuleId, ModulePath, ModuleRepr},
@@ -453,12 +453,12 @@ impl ExecutorContext {
 
         if matches!(body_type, BodyType::Root) {
             // Flush the batch queue.
-            self.engine
+            exec_state
                 .flush_batch(
+                    ModelingCmdMeta::new(self, SourceRange::new(program.end, program.end, program.module_id)),
                     // True here tells the engine to flush all the end commands as well like fillets
                     // and chamfers where the engine would otherwise eat the ID of the segments.
                     true,
-                    SourceRange::new(program.end, program.end, program.module_id),
                 )
                 .await?;
         }
