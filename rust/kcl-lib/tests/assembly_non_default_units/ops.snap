@@ -10,6 +10,14 @@ description: Operations executed assembly_non_default_units.kcl
       "name": "other1.kcl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -18,6 +26,14 @@ description: Operations executed assembly_non_default_units.kcl
       "type": "ModuleInstance",
       "name": "other2.kcl",
       "moduleId": 0
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        }
+      ]
     },
     "sourceRange": []
   },

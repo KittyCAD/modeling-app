@@ -2,7 +2,7 @@ pub(crate) mod digest;
 pub mod types;
 
 use crate::{
-    parsing::ast::types::{BinaryPart, BodyItem, Expr, LiteralIdentifier, MemberObject},
+    parsing::ast::types::{BinaryPart, BodyItem, Expr, LiteralIdentifier},
     ModuleId,
 };
 
@@ -53,15 +53,6 @@ impl BinaryPart {
             BinaryPart::MemberExpression(member_expression) => member_expression.module_id,
             BinaryPart::IfExpression(e) => e.module_id,
             BinaryPart::AscribedExpression(e) => e.module_id,
-        }
-    }
-}
-
-impl MemberObject {
-    pub fn module_id(&self) -> ModuleId {
-        match self {
-            MemberObject::MemberExpression(member_expression) => member_expression.module_id,
-            MemberObject::Identifier(identifier) => identifier.module_id,
         }
     }
 }
