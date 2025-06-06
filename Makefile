@@ -3,8 +3,7 @@
 
 Welcome to Zoo Design Studio GitHub repository! Below are various recipes you can type into `make`. To build everything, type `make all`.:
 
-###\
----
+#
 
 .PHONY: **all**
 
