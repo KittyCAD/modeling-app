@@ -276,7 +276,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 {
                     let duration = instant::Duration::from_millis(1);
                     wasm_timer::Delay::new(duration).await.map_err(|err| {
-                        KclError::Internal(KclErrorDetails::new(
+                        KclError::new_internal(KclErrorDetails::new(
                             format!("Failed to sleep: {:?}", err),
                             vec![source_range],
                         ))
@@ -293,7 +293,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             return Ok(response);
         }
 
-        Err(KclError::Engine(KclErrorDetails::new(
+        Err(KclError::new_engine(KclErrorDetails::new(
             "async command timed out".to_string(),
             vec![source_range],
         )))
@@ -547,7 +547,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     id_to_source_range.insert(Uuid::from(*cmd_id), *range);
                 }
                 _ => {
-                    return Err(KclError::Engine(KclErrorDetails::new(
+                    return Err(KclError::new_engine(KclErrorDetails::new(
                         format!("The request is not a modeling command: {:?}", req),
                         vec![*range],
                     )));
@@ -595,7 +595,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     self.parse_batch_responses(last_id.into(), id_to_source_range, responses)
                 } else {
                     // We should never get here.
-                    Err(KclError::Engine(KclErrorDetails::new(
+                    Err(KclError::new_engine(KclErrorDetails::new(
                         format!("Failed to get batch response: {:?}", response),
                         vec![source_range],
                     )))
@@ -610,7 +610,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 // request so we need the original request source range in case the engine returns
                 // an error.
                 let source_range = id_to_source_range.get(cmd_id.as_ref()).cloned().ok_or_else(|| {
-                    KclError::Engine(KclErrorDetails::new(
+                    KclError::new_engine(KclErrorDetails::new(
                         format!("Failed to get source range for command ID: {:?}", cmd_id),
                         vec![],
                     ))
@@ -620,7 +620,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     .await?;
                 self.parse_websocket_response(ws_resp, source_range)
             }
-            _ => Err(KclError::Engine(KclErrorDetails::new(
+            _ => Err(KclError::new_engine(KclErrorDetails::new(
                 format!("The final request is not a modeling command: {:?}", final_req),
                 vec![source_range],
             ))),
@@ -729,7 +729,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         for (name, plane_id, color) in plane_settings {
             let info = DEFAULT_PLANE_INFO.get(&name).ok_or_else(|| {
                 // We should never get here.
-                KclError::Engine(KclErrorDetails::new(
+                KclError::new_engine(KclErrorDetails::new(
                     format!("Failed to get default plane info for: {:?}", name),
                     vec![source_range],
                 ))
@@ -763,7 +763,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             WebSocketResponse::Success(success) => Ok(success.resp),
             WebSocketResponse::Failure(fail) => {
                 let _request_id = fail.request_id;
-                Err(KclError::Engine(KclErrorDetails::new(
+                Err(KclError::new_engine(KclErrorDetails::new(
                     fail.errors
                         .iter()
                         .map(|e| e.message.clone())
@@ -805,12 +805,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 BatchResponse::Failure { errors } => {
                     // Get the source range for the command.
                     let source_range = id_to_source_range.get(cmd_id).cloned().ok_or_else(|| {
-                        KclError::Engine(KclErrorDetails::new(
+                        KclError::new_engine(KclErrorDetails::new(
                             format!("Failed to get source range for command ID: {:?}", cmd_id),
                             vec![],
                         ))
                     })?;
-                    return Err(KclError::Engine(KclErrorDetails::new(
+                    return Err(KclError::new_engine(KclErrorDetails::new(
                         errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
                         vec![source_range],
                     )));
@@ -820,7 +820,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Return an error that we did not get an error or the response we wanted.
         // This should never happen but who knows.
-        Err(KclError::Engine(KclErrorDetails::new(
+        Err(KclError::new_engine(KclErrorDetails::new(
             format!("Failed to find response for command ID: {:?}", id),
             vec![],
         )))

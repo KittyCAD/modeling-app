@@ -21,6 +21,7 @@ use crate::{
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
 pub enum SweepPath {
     Sketch(Sketch),
     Helix(Box<Helix>),
@@ -28,17 +29,17 @@ pub enum SweepPath {
 
 /// Extrude a sketch along a path.
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let path: SweepPath = args.get_kw_arg_typed(
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let path: SweepPath = args.get_kw_arg(
         "path",
         &RuntimeType::Union(vec![RuntimeType::sketch(), RuntimeType::helix()]),
         exec_state,
     )?;
-    let sectional = args.get_kw_arg_opt_typed("sectional", &RuntimeType::bool(), exec_state)?;
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
-    let relative_to: Option<String> = args.get_kw_arg_opt_typed("relativeTo", &RuntimeType::string(), exec_state)?;
-    let tag_start = args.get_kw_arg_opt("tagStart")?;
-    let tag_end = args.get_kw_arg_opt("tagEnd")?;
+    let sectional = args.get_kw_arg_opt("sectional", &RuntimeType::bool(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+    let relative_to: Option<String> = args.get_kw_arg_opt("relativeTo", &RuntimeType::string(), exec_state)?;
+    let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
+    let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
 
     let value = inner_sweep(
         sketches,
@@ -75,7 +76,7 @@ async fn inner_sweep(
         Some("sketchPlane") => RelativeTo::SketchPlane,
         Some("trajectoryCurve") | None => RelativeTo::TrajectoryCurve,
         Some(_) => {
-            return Err(KclError::Syntax(crate::errors::KclErrorDetails::new(
+            return Err(KclError::new_syntax(crate::errors::KclErrorDetails::new(
                 "If you provide relativeTo, it must either be 'sketchPlane' or 'trajectoryCurve'".to_owned(),
                 vec![args.source_range],
             )))

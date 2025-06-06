@@ -7,10 +7,7 @@ use kittycad_modeling_cmds as kcmc;
 use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{
-        types::{PrimitiveType, RuntimeType},
-        ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, Solid,
-    },
+    execution::{types::RuntimeType, ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, Solid},
     parsing::ast::types::TagNode,
     std::{fillet::EdgeReference, Args},
 };
@@ -19,10 +16,10 @@ pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
 /// Create chamfers on tagged paths.
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::Primitive(PrimitiveType::Solid), exec_state)?;
-    let length: TyF64 = args.get_kw_arg_typed("length", &RuntimeType::length(), exec_state)?;
+    let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
     let tags = args.kw_arg_edge_array_and_source("tags")?;
-    let tag = args.get_kw_arg_opt("tag")?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     super::fillet::validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
@@ -41,7 +38,7 @@ async fn inner_chamfer(
     // If you try and tag multiple edges with a tagged chamfer, we want to return an
     // error to the user that they can only tag one edge at a time.
     if tag.is_some() && tags.len() > 1 {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag.".to_string(),
             vec![args.source_range],
         )));

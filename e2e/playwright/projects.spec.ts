@@ -169,7 +169,8 @@ test(
 
       // error text on hover
       await page.hover('.cm-lint-marker-error')
-      const crypticErrorText = `The arg tag was given, but it was the wrong type`
+      const crypticErrorText =
+        'tag requires a value with type `tag`, but found string'
       await expect(page.getByText(crypticErrorText).first()).toBeVisible()
 
       // black pixel means the scene has been cleared.
@@ -367,7 +368,8 @@ test(
 
       // error text on hover
       await page.hover('.cm-lint-marker-error')
-      const crypticErrorText = `The arg tag was given, but it was the wrong type`
+      const crypticErrorText =
+        'tag requires a value with type `tag`, but found string'
       await expect(page.getByText(crypticErrorText).first()).toBeVisible()
 
       // black pixel means the scene has been cleared.
@@ -405,7 +407,8 @@ test(
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    const crypticErrorText = `The arg tag was given, but it was the wrong type`
+    const crypticErrorText =
+      'tag requires a value with type `tag`, but found string'
     await expect(page.getByText(crypticErrorText).first()).toBeVisible()
   }
 )
@@ -2113,6 +2116,77 @@ test(
           timeout: 10_000,
         })
         .toBeLessThan(15)
+    })
+  }
+)
+
+test(
+  'segment position changes persist after dragging and reopening project',
+  { tag: '@desktop' },
+  async ({ scene, cmdBar, context, page, editor, toolbar }, testInfo) => {
+    const projectName = 'segment-drag-test'
+
+    await context.folderSetupFn(async (dir) => {
+      const projectDir = path.join(dir, projectName)
+      await fsp.mkdir(projectDir, { recursive: true })
+      await fsp.writeFile(
+        path.join(projectDir, 'main.kcl'),
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [0, 6])
+  |> line(end = [10, 0])
+  |> line(end = [-8, -5])
+`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+    const u = await getUtils(page)
+
+    await test.step('Opening the project and entering sketch mode', async () => {
+      await expect(page.getByText(projectName)).toBeVisible()
+      await page.getByText(projectName).click()
+
+      await scene.settled(cmdBar)
+
+      // go to sketch mode
+      await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+
+      // Without this, "add axis n grid" action runs after editing the sketch and invokes codeManager.writeToFile()
+      // so we wait for that action to run first before we start editing the sketch and making sure it's saving
+      // because of those edits.
+      await page.waitForTimeout(2000)
+    })
+
+    const changedLine = 'line(end = [-6.54, -4.99])'
+
+    await test.step('Dragging the line endpoint to modify it', async () => {
+      // Get the last line's endpoint position
+      const lineEnd = await u.getBoundingBox('[data-overlay-index="3"]')
+
+      await page.mouse.move(lineEnd.x, lineEnd.y - 5)
+      await page.mouse.down()
+      await page.mouse.move(lineEnd.x + 80, lineEnd.y)
+      await page.mouse.up()
+
+      await editor.expectEditor.toContain(changedLine)
+
+      // Exit sketch mode
+      await page.keyboard.press('Escape')
+      await page.waitForTimeout(100)
+    })
+
+    await test.step('Going back to dashboard', async () => {
+      await page.getByTestId('app-logo').click()
+      await page.waitForTimeout(1000)
+    })
+
+    await test.step('Reopening the project and verifying changes are saved', async () => {
+      await page.getByText(projectName).click()
+      await scene.settled(cmdBar)
+
+      // Check if new line coordinates were saved
+      await editor.expectEditor.toContain(changedLine)
     })
   }
 )

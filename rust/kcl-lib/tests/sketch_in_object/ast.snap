@@ -1036,12 +1036,20 @@ description: Result of parsing sketch_in_object.kcl
                 "computed": false,
                 "end": 0,
                 "object": {
+                  "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
-                  "name": "x2",
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "x2",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "property": {
                   "commentStart": 0,

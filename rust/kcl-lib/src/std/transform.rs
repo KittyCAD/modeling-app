@@ -21,7 +21,7 @@ use crate::{
 
 /// Scale a solid or a sketch.
 pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let objects = args.get_unlabeled_kw_arg_typed(
+    let objects = args.get_unlabeled_kw_arg(
         "objects",
         &RuntimeType::Union(vec![
             RuntimeType::sketches(),
@@ -30,14 +30,14 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         ]),
         exec_state,
     )?;
-    let scale_x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::count(), exec_state)?;
-    let scale_y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::count(), exec_state)?;
-    let scale_z: Option<TyF64> = args.get_kw_arg_opt_typed("z", &RuntimeType::count(), exec_state)?;
-    let global = args.get_kw_arg_opt_typed("global", &RuntimeType::bool(), exec_state)?;
+    let scale_x: Option<TyF64> = args.get_kw_arg_opt("x", &RuntimeType::count(), exec_state)?;
+    let scale_y: Option<TyF64> = args.get_kw_arg_opt("y", &RuntimeType::count(), exec_state)?;
+    let scale_z: Option<TyF64> = args.get_kw_arg_opt("z", &RuntimeType::count(), exec_state)?;
+    let global = args.get_kw_arg_opt("global", &RuntimeType::bool(), exec_state)?;
 
     // Ensure at least one scale value is provided.
     if scale_x.is_none() && scale_y.is_none() && scale_z.is_none() {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             "Expected `x`, `y`, or `z` to be provided.".to_string(),
             vec![args.source_range],
         )));
@@ -103,7 +103,7 @@ async fn inner_scale(
 
 /// Move a solid or a sketch.
 pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let objects = args.get_unlabeled_kw_arg_typed(
+    let objects = args.get_unlabeled_kw_arg(
         "objects",
         &RuntimeType::Union(vec![
             RuntimeType::sketches(),
@@ -112,14 +112,14 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         ]),
         exec_state,
     )?;
-    let translate_x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::length(), exec_state)?;
-    let translate_y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::length(), exec_state)?;
-    let translate_z: Option<TyF64> = args.get_kw_arg_opt_typed("z", &RuntimeType::length(), exec_state)?;
-    let global = args.get_kw_arg_opt_typed("global", &RuntimeType::bool(), exec_state)?;
+    let translate_x: Option<TyF64> = args.get_kw_arg_opt("x", &RuntimeType::length(), exec_state)?;
+    let translate_y: Option<TyF64> = args.get_kw_arg_opt("y", &RuntimeType::length(), exec_state)?;
+    let translate_z: Option<TyF64> = args.get_kw_arg_opt("z", &RuntimeType::length(), exec_state)?;
+    let global = args.get_kw_arg_opt("global", &RuntimeType::bool(), exec_state)?;
 
     // Ensure at least one translation value is provided.
     if translate_x.is_none() && translate_y.is_none() && translate_z.is_none() {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             "Expected `x`, `y`, or `z` to be provided.".to_string(),
             vec![args.source_range],
         )));
@@ -176,7 +176,7 @@ async fn inner_translate(
 
 /// Rotate a solid or a sketch.
 pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let objects = args.get_unlabeled_kw_arg_typed(
+    let objects = args.get_unlabeled_kw_arg(
         "objects",
         &RuntimeType::Union(vec![
             RuntimeType::sketches(),
@@ -185,10 +185,10 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         ]),
         exec_state,
     )?;
-    let roll: Option<TyF64> = args.get_kw_arg_opt_typed("roll", &RuntimeType::degrees(), exec_state)?;
-    let pitch: Option<TyF64> = args.get_kw_arg_opt_typed("pitch", &RuntimeType::degrees(), exec_state)?;
-    let yaw: Option<TyF64> = args.get_kw_arg_opt_typed("yaw", &RuntimeType::degrees(), exec_state)?;
-    let axis: Option<Axis3dOrPoint3d> = args.get_kw_arg_opt_typed(
+    let roll: Option<TyF64> = args.get_kw_arg_opt("roll", &RuntimeType::degrees(), exec_state)?;
+    let pitch: Option<TyF64> = args.get_kw_arg_opt("pitch", &RuntimeType::degrees(), exec_state)?;
+    let yaw: Option<TyF64> = args.get_kw_arg_opt("yaw", &RuntimeType::degrees(), exec_state)?;
+    let axis: Option<Axis3dOrPoint3d> = args.get_kw_arg_opt(
         "axis",
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Axis3d),
@@ -197,12 +197,12 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         exec_state,
     )?;
     let axis = axis.map(|a| a.to_point3d());
-    let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::degrees(), exec_state)?;
-    let global = args.get_kw_arg_opt_typed("global", &RuntimeType::bool(), exec_state)?;
+    let angle: Option<TyF64> = args.get_kw_arg_opt("angle", &RuntimeType::degrees(), exec_state)?;
+    let global = args.get_kw_arg_opt("global", &RuntimeType::bool(), exec_state)?;
 
     // Check if no rotation values are provided.
     if roll.is_none() && pitch.is_none() && yaw.is_none() && axis.is_none() && angle.is_none() {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             "Expected `roll`, `pitch`, and `yaw` or `axis` and `angle` to be provided.".to_string(),
             vec![args.source_range],
         )));
@@ -212,7 +212,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     if roll.is_some() || pitch.is_some() || yaw.is_some() {
         // Ensure they didn't also provide an axis or angle.
         if axis.is_some() || angle.is_some() {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Expected `axis` and `angle` to not be provided when `roll`, `pitch`, and `yaw` are provided."
                     .to_owned(),
                 vec![args.source_range],
@@ -223,13 +223,13 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     // If they give us an axis or angle, they must give us both.
     if axis.is_some() || angle.is_some() {
         if axis.is_none() {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Expected `axis` to be provided when `angle` is provided.".to_string(),
                 vec![args.source_range],
             )));
         }
         if angle.is_none() {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Expected `angle` to be provided when `axis` is provided.".to_string(),
                 vec![args.source_range],
             )));
@@ -237,7 +237,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 
         // Ensure they didn't also provide a roll, pitch, or yaw.
         if roll.is_some() || pitch.is_some() || yaw.is_some() {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Expected `roll`, `pitch`, and `yaw` to not be provided when `axis` and `angle` are provided."
                     .to_owned(),
                 vec![args.source_range],
@@ -248,7 +248,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     // Validate the roll, pitch, and yaw values.
     if let Some(roll) = &roll {
         if !(-360.0..=360.0).contains(&roll.n) {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Expected roll to be between -360 and 360, found `{}`", roll.n),
                 vec![args.source_range],
             )));
@@ -256,7 +256,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     }
     if let Some(pitch) = &pitch {
         if !(-360.0..=360.0).contains(&pitch.n) {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Expected pitch to be between -360 and 360, found `{}`", pitch.n),
                 vec![args.source_range],
             )));
@@ -264,7 +264,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     }
     if let Some(yaw) = &yaw {
         if !(-360.0..=360.0).contains(&yaw.n) {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Expected yaw to be between -360 and 360, found `{}`", yaw.n),
                 vec![args.source_range],
             )));
@@ -274,7 +274,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     // Validate the axis and angle values.
     if let Some(angle) = &angle {
         if !(-360.0..=360.0).contains(&angle.n) {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Expected angle to be between -360 and 360, found `{}`", angle.n),
                 vec![args.source_range],
             )));

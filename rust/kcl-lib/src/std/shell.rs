@@ -16,9 +16,9 @@ use crate::{
 
 /// Create a shell.
 pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
-    let thickness: TyF64 = args.get_kw_arg_typed("thickness", &RuntimeType::length(), exec_state)?;
-    let faces = args.get_kw_arg_typed(
+    let solids = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
+    let thickness: TyF64 = args.get_kw_arg("thickness", &RuntimeType::length(), exec_state)?;
+    let faces = args.get_kw_arg(
         "faces",
         &RuntimeType::Array(Box::new(RuntimeType::tag()), ArrayLen::Minimum(1)),
         exec_state,
@@ -36,14 +36,14 @@ async fn inner_shell(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     if faces.is_empty() {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "You must shell at least one face".to_owned(),
             vec![args.source_range],
         )));
     }
 
     if solids.is_empty() {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "You must shell at least one solid".to_owned(),
             vec![args.source_range],
         )));
@@ -63,7 +63,7 @@ async fn inner_shell(
     }
 
     if face_ids.is_empty() {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "Expected at least one valid face".to_owned(),
             vec![args.source_range],
         )));
@@ -72,7 +72,7 @@ async fn inner_shell(
     // Make sure all the solids have the same id, as we are going to shell them all at
     // once.
     if !solids.iter().all(|eg| eg.id == solids[0].id) {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "All solids stem from the same root object, like multiple sketch on face extrusions, etc.".to_owned(),
             vec![args.source_range],
         )));
@@ -94,8 +94,8 @@ async fn inner_shell(
 
 /// Make the inside of a 3D object hollow.
 pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::solid(), exec_state)?;
-    let thickness: TyF64 = args.get_kw_arg_typed("thickness", &RuntimeType::length(), exec_state)?;
+    let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let thickness: TyF64 = args.get_kw_arg("thickness", &RuntimeType::length(), exec_state)?;
 
     let value = inner_hollow(solid, thickness, exec_state, args).await?;
     Ok(KclValue::Solid { value })

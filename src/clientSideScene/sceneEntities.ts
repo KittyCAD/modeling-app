@@ -2504,8 +2504,8 @@ export class SceneEntities {
             forward,
             position,
           })
-          await this.codeManager.writeToFile()
         }
+        await this.codeManager.writeToFile()
       },
       onDrag: async ({
         selected,
@@ -3588,7 +3588,8 @@ export class SceneEntities {
     })
 
     if (!resp) {
-      return Promise.reject('no response')
+      console.warn('No response')
+      return {} as Models['GetSketchModePlane_type']
     }
 
     if (isArray(resp)) {

@@ -823,7 +823,7 @@ test('theme persists', async ({ page, context, homePage }) => {
     uploadThroughput: -1,
   })
 
-  await expect(networkToggle).toContainText('Connected')
+  await expect(networkToggle).toContainText('Network health (Strong)')
 
   await expect(page.getByText('building scene')).not.toBeVisible()
 

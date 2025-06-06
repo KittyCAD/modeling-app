@@ -28,13 +28,13 @@ use crate::{
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let length: TyF64 = args.get_kw_arg_typed("length", &RuntimeType::length(), exec_state)?;
-    let symmetric = args.get_kw_arg_opt_typed("symmetric", &RuntimeType::bool(), exec_state)?;
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
+    let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_length: Option<TyF64> =
-        args.get_kw_arg_opt_typed("bidirectionalLength", &RuntimeType::length(), exec_state)?;
-    let tag_start = args.get_kw_arg_opt("tagStart")?;
-    let tag_end = args.get_kw_arg_opt("tagEnd")?;
+        args.get_kw_arg_opt("bidirectionalLength", &RuntimeType::length(), exec_state)?;
+    let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
+    let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
 
     let result = inner_extrude(
         sketches,
@@ -66,7 +66,7 @@ async fn inner_extrude(
     let mut solids = Vec::new();
 
     if symmetric.unwrap_or(false) && bidirectional_length.is_some() {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
                 .to_owned(),
             vec![args.source_range],
@@ -153,7 +153,7 @@ pub(crate) async fn do_post_extrude<'a>(
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
         // So, let's just use the first one.
         let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
-            return Err(KclError::Type(KclErrorDetails::new(
+            return Err(KclError::new_type(KclErrorDetails::new(
                 "Expected a non-empty sketch".to_owned(),
                 vec![args.source_range],
             )));
@@ -278,7 +278,7 @@ pub(crate) async fn do_post_extrude<'a>(
     // Add the tags for the start or end caps.
     if let Some(tag_start) = named_cap_tags.start {
         let Some(start_cap_id) = start_cap_id else {
-            return Err(KclError::Type(KclErrorDetails::new(
+            return Err(KclError::new_type(KclErrorDetails::new(
                 format!(
                     "Expected a start cap ID for tag `{}` for extrusion of sketch {:?}",
                     tag_start.name, sketch.id
@@ -298,7 +298,7 @@ pub(crate) async fn do_post_extrude<'a>(
     }
     if let Some(tag_end) = named_cap_tags.end {
         let Some(end_cap_id) = end_cap_id else {
-            return Err(KclError::Type(KclErrorDetails::new(
+            return Err(KclError::new_type(KclErrorDetails::new(
                 format!(
                     "Expected an end cap ID for tag `{}` for extrusion of sketch {:?}",
                     tag_end.name, sketch.id

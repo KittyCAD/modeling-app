@@ -22,7 +22,7 @@ lazy_static::lazy_static! {
 
 /// Construct a color from its red, blue and green components.
 pub async fn hex_string(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let rgb: [TyF64; 3] = args.get_unlabeled_kw_arg_typed(
+    let rgb: [TyF64; 3] = args.get_unlabeled_kw_arg(
         "rgb",
         &RuntimeType::Array(Box::new(RuntimeType::count()), ArrayLen::Known(3)),
         exec_state,
@@ -30,7 +30,7 @@ pub async fn hex_string(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 
     // Make sure the color if set is valid.
     if let Some(component) = rgb.iter().find(|component| component.n < 0.0 || component.n > 255.0) {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             format!("Colors are given between 0 and 255, so {} is invalid", component.n),
             vec![args.source_range],
         )));
@@ -50,19 +50,19 @@ async fn inner_hex_string(rgb: [TyF64; 3], _: &mut ExecState, args: Args) -> Res
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
 pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed(
+    let solids = args.get_unlabeled_kw_arg(
         "solids",
         &RuntimeType::Union(vec![RuntimeType::solids(), RuntimeType::imported()]),
         exec_state,
     )?;
 
-    let color: String = args.get_kw_arg_typed("color", &RuntimeType::string(), exec_state)?;
-    let metalness: Option<TyF64> = args.get_kw_arg_opt_typed("metalness", &RuntimeType::count(), exec_state)?;
-    let roughness: Option<TyF64> = args.get_kw_arg_opt_typed("roughness", &RuntimeType::count(), exec_state)?;
+    let color: String = args.get_kw_arg("color", &RuntimeType::string(), exec_state)?;
+    let metalness: Option<TyF64> = args.get_kw_arg_opt("metalness", &RuntimeType::count(), exec_state)?;
+    let roughness: Option<TyF64> = args.get_kw_arg_opt("roughness", &RuntimeType::count(), exec_state)?;
 
     // Make sure the color if set is valid.
     if !HEX_REGEX.is_match(&color) {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             format!("Invalid hex color (`{}`), try something like `#fff000`", color),
             vec![args.source_range],
         )));
@@ -93,7 +93,7 @@ async fn inner_appearance(
     for solid_id in solids.ids(&args.ctx).await? {
         // Set the material properties.
         let rgb = rgba_simple::RGB::<f32>::from_hex(&color).map_err(|err| {
-            KclError::Semantic(KclErrorDetails::new(
+            KclError::new_semantic(KclErrorDetails::new(
                 format!("Invalid hex color (`{color}`): {err}"),
                 vec![args.source_range],
             ))

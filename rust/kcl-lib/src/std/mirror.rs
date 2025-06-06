@@ -18,8 +18,8 @@ use crate::{
 
 /// Mirror a sketch.
 pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let axis = args.get_kw_arg_typed(
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let axis = args.get_kw_arg(
         "axis",
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Edge),
@@ -101,7 +101,7 @@ async fn inner_mirror_2d(
                 OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids { entity_ids: child_ids }),
         } = response
         else {
-            return Err(KclError::Internal(KclErrorDetails::new(
+            return Err(KclError::new_internal(KclErrorDetails::new(
                 "Expected a successful response from EntityGetAllChildUuids".to_string(),
                 vec![args.source_range],
             )));
@@ -112,7 +112,7 @@ async fn inner_mirror_2d(
             let child_id = child_ids[1];
             sketch.mirror = Some(child_id);
         } else {
-            return Err(KclError::Type(KclErrorDetails::new(
+            return Err(KclError::new_type(KclErrorDetails::new(
                 "Expected child uuids to be >= 2".to_string(),
                 vec![args.source_range],
             )));

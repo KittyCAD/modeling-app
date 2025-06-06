@@ -24,8 +24,8 @@ extern crate nalgebra_glm as glm;
 
 /// Revolve a sketch or set of sketches around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let axis = args.get_kw_arg_typed(
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let axis = args.get_kw_arg(
         "axis",
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Edge),
@@ -33,13 +33,13 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         ]),
         exec_state,
     )?;
-    let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::degrees(), exec_state)?;
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
-    let tag_start = args.get_kw_arg_opt("tagStart")?;
-    let tag_end = args.get_kw_arg_opt("tagEnd")?;
-    let symmetric = args.get_kw_arg_opt_typed("symmetric", &RuntimeType::bool(), exec_state)?;
+    let angle: Option<TyF64> = args.get_kw_arg_opt("angle", &RuntimeType::degrees(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+    let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
+    let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
+    let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_angle: Option<TyF64> =
-        args.get_kw_arg_opt_typed("bidirectionalAngle", &RuntimeType::angle(), exec_state)?;
+        args.get_kw_arg_opt("bidirectionalAngle", &RuntimeType::angle(), exec_state)?;
 
     let value = inner_revolve(
         sketches,
@@ -75,7 +75,7 @@ async fn inner_revolve(
         // We don't use validate() here because we want to return a specific error message that is
         // nice and we use the other data in the docs, so we still need use the derive above for the json schema.
         if !(-360.0..=360.0).contains(&angle) || angle == 0.0 {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Expected angle to be between -360 and 360 and not 0, found `{}`", angle),
                 vec![args.source_range],
             )));
@@ -87,7 +87,7 @@ async fn inner_revolve(
         // We don't use validate() here because we want to return a specific error message that is
         // nice and we use the other data in the docs, so we still need use the derive above for the json schema.
         if !(-360.0..=360.0).contains(&bidirectional_angle) || bidirectional_angle == 0.0 {
-            return Err(KclError::Semantic(KclErrorDetails::new(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Expected bidirectional angle to be between -360 and 360 and not 0, found `{}`",
                     bidirectional_angle
@@ -99,7 +99,7 @@ async fn inner_revolve(
         if let Some(angle) = angle {
             let ang = angle.signum() * bidirectional_angle + angle;
             if !(-360.0..=360.0).contains(&ang) {
-                return Err(KclError::Semantic(KclErrorDetails::new(
+                return Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
                         "Combined angle and bidirectional must be between -360 and 360, found '{}'",
                         ang
@@ -111,7 +111,7 @@ async fn inner_revolve(
     }
 
     if symmetric.unwrap_or(false) && bidirectional_angle.is_some() {
-        return Err(KclError::Semantic(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
                 .to_owned(),
             vec![args.source_range],
