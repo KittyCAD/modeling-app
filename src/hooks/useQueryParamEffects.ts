@@ -139,6 +139,9 @@ export function useQueryParamEffects() {
         return response.text()
       })
       .then((code) => {
+        // Only create a temporary workspace on web.
+        if (isDesktop()) { return }
+
         // We only support "Try in browser" demo'ing.
         // Originally I (lee) had actually written browser support but
         // removed it, because all the links will go directly to the
@@ -155,28 +158,7 @@ export function useQueryParamEffects() {
           'truthy'
         )
         localStorage.setItem(LOCAL_STORAGE_OLD_CODE, oldCode)
-
-        // Only ask the question if there's code that may get clobbered.
-        // Otherwise it's fine.
-        if (!isDesktop() && oldCode) {
-          askQuestionPrompt({
-            question: 'Create a temporary workspace for sample?',
-            onYes: () => {
-              // Store a persistent demo-mode indicator.
-              codeManager.writeToFile().catch(console.warn)
-            },
-            onNo: () => {
-              localStorage.setItem(LOCAL_STORAGE_TEMPORARY_WORKSPACE, '')
-              localStorage.setItem(
-                LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION,
-                ''
-              )
-              localStorage.setItem(LOCAL_STORAGE_OLD_CODE, '')
-              codeManager.writeToFile().catch(console.warn)
-            },
-          })
-        }
-
+        codeManager.writeToFile().catch(console.warn)
         codeManager.updateCodeStateEditor(code, true)
       })
       .catch((error) => {
