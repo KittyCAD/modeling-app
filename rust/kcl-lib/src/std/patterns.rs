@@ -149,12 +149,11 @@ async fn send_pattern_transform<T: GeometryTrait>(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<T>, KclError> {
-    let id = exec_state.next_uuid();
     let extra_instances = transforms.len();
 
-    let resp = args
+    let resp = exec_state
         .send_modeling_cmd(
-            id,
+            args.into(),
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
                 entity_id: if use_original { solid.original_id() } else { solid.id() },
                 transform: Default::default(),
@@ -443,7 +442,7 @@ impl GeometryTrait for Solid {
     }
 
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, solid_set: &Self::Set) -> Result<(), KclError> {
-        args.flush_batch_for_solids(exec_state, solid_set).await
+        exec_state.flush_batch_for_solids(args.into(), solid_set).await
     }
 }
 
@@ -874,7 +873,7 @@ async fn inner_pattern_circular_3d(
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these solids.
-    args.flush_batch_for_solids(exec_state, &solids).await?;
+    exec_state.flush_batch_for_solids((&args).into(), &solids).await?;
 
     let starting_solids = solids;
 
@@ -919,7 +918,6 @@ async fn pattern_circular(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Geometries, KclError> {
-    let id = exec_state.next_uuid();
     let num_repetitions = match data.repetitions() {
         RepetitionsNeeded::More(n) => n,
         RepetitionsNeeded::None => {
@@ -934,9 +932,9 @@ async fn pattern_circular(
     };
 
     let center = data.center_mm();
-    let resp = args
+    let resp = exec_state
         .send_modeling_cmd(
-            id,
+            (&args).into(),
             ModelingCmd::from(mcmd::EntityCircularPattern {
                 axis: kcmc::shared::Point3d::from(data.axis()),
                 entity_id: if data.use_original() {

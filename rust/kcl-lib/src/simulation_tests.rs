@@ -3,9 +3,9 @@ use std::{
     path::{Path, PathBuf},
 };
 
-#[cfg(feature = "artifact-graph")]
 use indexmap::IndexMap;
 use insta::rounded_redaction;
+#[cfg(feature = "artifact-graph")]
 use serde::Serialize;
 
 use crate::{
@@ -62,7 +62,7 @@ impl Test {
 
 impl ExecState {
     /// Same as [`Self::to_exec_outcome`], but also returns the module state.
-    async fn to_test_exec_outcome(
+    async fn into_test_exec_outcome(
         self,
         main_ref: EnvironmentRef,
         ctx: &ExecutorContext,
@@ -222,7 +222,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     panic!("Step data was empty");
                 }
             }
-            let (outcome, module_state) = exec_state.to_test_exec_outcome(env_ref, &ctx).await;
+            let (outcome, module_state) = exec_state.into_test_exec_outcome(env_ref, &ctx).await;
 
             let mem_result = catch_unwind(AssertUnwindSafe(|| {
                 assert_snapshot(test, "Variables in memory after executing", || {
@@ -243,6 +243,8 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 })
             }));
 
+            #[cfg(not(feature = "artifact-graph"))]
+            drop(module_state);
             #[cfg(feature = "artifact-graph")]
             assert_artifact_snapshots(
                 test,
@@ -281,6 +283,8 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
                     let module_state = e.exec_state.map(|e| e.to_module_state()).unwrap_or_default();
 
+                    #[cfg(not(feature = "artifact-graph"))]
+                    drop(module_state);
                     #[cfg(feature = "artifact-graph")]
                     assert_artifact_snapshots(
                         test,
@@ -331,7 +335,7 @@ fn assert_artifact_snapshots(
         .map(|(path, s)| (path, &s.operations))
         .collect::<IndexMap<_, _>>();
     let operations = TestOperations {
-        module_operations: module_operations,
+        module_operations,
         global_operations,
     };
     let result1 = catch_unwind(AssertUnwindSafe(|| {

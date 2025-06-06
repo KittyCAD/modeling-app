@@ -106,17 +106,18 @@ async fn inner_appearance(
             a: 100.0,
         };
 
-        args.batch_modeling_cmd(
-            exec_state.next_uuid(),
-            ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
-                object_id: solid_id,
-                color,
-                metalness: metalness.unwrap_or_default() as f32 / 100.0,
-                roughness: roughness.unwrap_or_default() as f32 / 100.0,
-                ambient_occlusion: 0.0,
-            }),
-        )
-        .await?;
+        exec_state
+            .batch_modeling_cmd(
+                (&args).into(),
+                ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
+                    object_id: solid_id,
+                    color,
+                    metalness: metalness.unwrap_or_default() as f32 / 100.0,
+                    roughness: roughness.unwrap_or_default() as f32 / 100.0,
+                    ambient_occlusion: 0.0,
+                }),
+            )
+            .await?;
 
         // Idk if we want to actually modify the memory for the colors, but I'm not right now since
         // I can't think of a use case for it.

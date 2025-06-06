@@ -6,7 +6,7 @@ use kittycad_modeling_cmds as kcmc;
 use super::{args::TyF64, sketch::PlaneData};
 use crate::{
     errors::KclError,
-    execution::{types::RuntimeType, ExecState, KclValue, Plane, PlaneType},
+    execution::{types::RuntimeType, ExecState, KclValue, ModelingCmdMeta, Plane, PlaneType},
     std::Args,
 };
 
@@ -49,28 +49,31 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
         a: 0.3,
     };
 
-    args.batch_modeling_cmd(
-        plane.id,
-        ModelingCmd::from(mcmd::MakePlane {
-            clobber: false,
-            origin: plane.info.origin.into(),
-            size: LengthUnit(default_size),
-            x_axis: plane.info.x_axis.into(),
-            y_axis: plane.info.y_axis.into(),
-            hide: Some(false),
-        }),
-    )
-    .await?;
+    let meta = ModelingCmdMeta::from_args_id(args, plane.id);
+    exec_state
+        .batch_modeling_cmd(
+            meta,
+            ModelingCmd::from(mcmd::MakePlane {
+                clobber: false,
+                origin: plane.info.origin.into(),
+                size: LengthUnit(default_size),
+                x_axis: plane.info.x_axis.into(),
+                y_axis: plane.info.y_axis.into(),
+                hide: Some(false),
+            }),
+        )
+        .await?;
 
     // Set the color.
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::PlaneSetColor {
-            color,
-            plane_id: plane.id,
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            args.into(),
+            ModelingCmd::from(mcmd::PlaneSetColor {
+                color,
+                plane_id: plane.id,
+            }),
+        )
+        .await?;
 
     Ok(())
 }

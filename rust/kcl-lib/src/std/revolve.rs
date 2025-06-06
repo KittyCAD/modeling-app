@@ -14,7 +14,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         types::{NumericType, PrimitiveType, RuntimeType},
-        ExecState, KclValue, Sketch, Solid,
+        ExecState, KclValue, ModelingCmdMeta, Sketch, Solid,
     },
     parsing::ast::types::TagNode,
     std::{axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude, Args},
@@ -137,42 +137,44 @@ async fn inner_revolve(
 
         let direction = match &axis {
             Axis2dOrEdgeReference::Axis { direction, origin } => {
-                args.batch_modeling_cmd(
-                    id,
-                    ModelingCmd::from(mcmd::Revolve {
-                        angle,
-                        target: sketch.id.into(),
-                        axis: Point3d {
-                            x: direction[0].to_mm(),
-                            y: direction[1].to_mm(),
-                            z: 0.0,
-                        },
-                        origin: Point3d {
-                            x: LengthUnit(origin[0].to_mm()),
-                            y: LengthUnit(origin[1].to_mm()),
-                            z: LengthUnit(0.0),
-                        },
-                        tolerance: LengthUnit(tolerance),
-                        axis_is_2d: true,
-                        opposite: opposite.clone(),
-                    }),
-                )
-                .await?;
+                exec_state
+                    .batch_modeling_cmd(
+                        ModelingCmdMeta::from_args_id(&args, id),
+                        ModelingCmd::from(mcmd::Revolve {
+                            angle,
+                            target: sketch.id.into(),
+                            axis: Point3d {
+                                x: direction[0].to_mm(),
+                                y: direction[1].to_mm(),
+                                z: 0.0,
+                            },
+                            origin: Point3d {
+                                x: LengthUnit(origin[0].to_mm()),
+                                y: LengthUnit(origin[1].to_mm()),
+                                z: LengthUnit(0.0),
+                            },
+                            tolerance: LengthUnit(tolerance),
+                            axis_is_2d: true,
+                            opposite: opposite.clone(),
+                        }),
+                    )
+                    .await?;
                 glm::DVec2::new(direction[0].to_mm(), direction[1].to_mm())
             }
             Axis2dOrEdgeReference::Edge(edge) => {
                 let edge_id = edge.get_engine_id(exec_state, &args)?;
-                args.batch_modeling_cmd(
-                    id,
-                    ModelingCmd::from(mcmd::RevolveAboutEdge {
-                        angle,
-                        target: sketch.id.into(),
-                        edge_id,
-                        tolerance: LengthUnit(tolerance),
-                        opposite: opposite.clone(),
-                    }),
-                )
-                .await?;
+                exec_state
+                    .batch_modeling_cmd(
+                        ModelingCmdMeta::from_args_id(&args, id),
+                        ModelingCmd::from(mcmd::RevolveAboutEdge {
+                            angle,
+                            target: sketch.id.into(),
+                            edge_id,
+                            tolerance: LengthUnit(tolerance),
+                            opposite: opposite.clone(),
+                        }),
+                    )
+                    .await?;
                 //TODO: fix me! Need to be able to calculate this to ensure the path isn't colinear
                 glm::DVec2::new(0.0, 1.0)
             }

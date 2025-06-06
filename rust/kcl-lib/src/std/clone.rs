@@ -16,7 +16,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         types::{NumericType, PrimitiveType, RuntimeType},
-        ExecState, GeometryWithImportedGeometry, KclValue, Sketch, Solid,
+        ExecState, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid,
     },
     parsing::ast::types::TagNode,
     std::{extrude::NamedCapTags, Args},
@@ -64,7 +64,9 @@ async fn inner_clone(
         }
         GeometryWithImportedGeometry::Solid(solid) => {
             // We flush before the clone so all the shit exists.
-            args.flush_batch_for_solids(exec_state, &[solid.clone()]).await?;
+            exec_state
+                .flush_batch_for_solids((&args).into(), &[solid.clone()])
+                .await?;
 
             let mut new_solid = solid.clone();
             new_solid.id = new_id;
@@ -78,7 +80,11 @@ async fn inner_clone(
         return Ok(new_geometry);
     }
 
-    args.batch_modeling_cmd(new_id, ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }))
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, new_id),
+            ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }),
+        )
         .await?;
 
     fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
@@ -169,9 +175,9 @@ async fn get_old_new_child_map(
     args: &Args,
 ) -> Result<HashMap<uuid::Uuid, uuid::Uuid>> {
     // Get the old geometries entity ids.
-    let response = args
+    let response = exec_state
         .send_modeling_cmd(
-            exec_state.next_uuid(),
+            args.into(),
             ModelingCmd::from(mcmd::EntityGetAllChildUuids {
                 entity_id: old_geometry_id,
             }),
@@ -188,9 +194,9 @@ async fn get_old_new_child_map(
     };
 
     // Get the new geometries entity ids.
-    let response = args
+    let response = exec_state
         .send_modeling_cmd(
-            exec_state.next_uuid(),
+            args.into(),
             ModelingCmd::from(mcmd::EntityGetAllChildUuids {
                 entity_id: new_geometry_id,
             }),
