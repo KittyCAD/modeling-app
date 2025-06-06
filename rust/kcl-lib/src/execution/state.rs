@@ -48,7 +48,7 @@ pub(super) struct GlobalState {
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
     pub errors: Vec<CompilationError>,
-    #[allow(dead_code)]
+    #[cfg_attr(not(feature = "artifact-graph"), allow(dead_code))]
     pub artifacts: ArtifactState,
 }
 

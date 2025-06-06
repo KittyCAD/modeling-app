@@ -1,15 +1,25 @@
 use std::fmt::Write;
 
-use crate::parsing::{
-    ast::types::{
-        Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
-        BinaryPart, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions, FunctionExpression,
-        IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier,
-        LiteralValue, MemberExpression, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter, PipeExpression,
-        Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
+use crate::{
+    parsing::{
+        ast::types::{
+            Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
+            BinaryPart, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions,
+            FunctionExpression, IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal,
+            LiteralIdentifier, LiteralValue, MemberExpression, Node, NonCodeNode, NonCodeValue, ObjectExpression,
+            Parameter, PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration,
+            VariableKind,
+        },
+        deprecation, DeprecationKind, PIPE_OPERATOR,
     },
-    deprecation, DeprecationKind, PIPE_OPERATOR,
+    KclError, ModuleId,
 };
+
+#[allow(dead_code)]
+pub fn fmt(input: &str) -> Result<String, KclError> {
+    let program = crate::parsing::parse_str(input, ModuleId::default()).parse_errs_as_err()?;
+    Ok(program.recast(&Default::default(), 0))
+}
 
 impl Program {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
