@@ -28,6 +28,7 @@ export const _3DMouseMachine = setup({
             canvasId: string
             /** Allow null because of internal retry, it will fail if this is null, we cannot have a default camera*/
             camera: PerspectiveCamera | OrthographicCamera | null
+            onDisconnect : () => void
           }
         }
       | {
@@ -36,6 +37,9 @@ export const _3DMouseMachine = setup({
         }
       | {
           type: _3DMouseMachineEvents.error_connect
+      }
+      | {
+          type: _3DMouseMachineEvents.disconnect
         },
   },
   actions: {},
@@ -50,6 +54,7 @@ export const _3DMouseMachine = setup({
           debug: boolean
           canvasId: string
           camera: PerspectiveCamera | OrthographicCamera | null
+          onDisconnect: () => void
         }
       }): Promise<_3DMouseThreeJSWindows> => {
         console.error('I AM CONNECTING TOO MANY TIMES')
@@ -85,12 +90,20 @@ export const _3DMouseMachine = setup({
         //   camera: input.camera.clone(),
         // })
 
+        // delete old mouse before creating a new one!
+        // This is important when someone disconnects and we reconnect
+        if (input.context._3dMouse) {
+          input.context._3dMouse.destroy()
+        }
+
         const the3DMouse = new _3DMouseThreeJSWindows({
           // Name needs to be registered in the python proxy server!
           appName: input.name,
           debug: input.debug,
           canvasId: input.canvasId,
           camera: input.camera.clone(),
+          TRACE_MESSAGES: true,
+          disconnectCallback: input.onDisconnect
         })
 
         /**
@@ -119,6 +132,12 @@ export const _3DMouseMachine = setup({
     /** retry 3 times before the user needs to manually click a connect button to retry */
     maxRetries: 3,
   }),
+  on: {
+    [_3DMouseMachineEvents.disconnect]: {
+      // root state
+      target: '.' + _3DMouseMachineStates.waitingToConnect
+    }
+  },
   states: {
     [_3DMouseMachineStates.waitingToConnect]: {
       on: {
@@ -139,14 +158,20 @@ export const _3DMouseMachine = setup({
       invoke: {
         id: _3DMouseMachineActors.connect,
         src: _3DMouseMachineActors.connect,
-        input: ({ context, event }) => {
+        input: ({ context, event, self }) => {
           assertEvent(event, _3DMouseMachineEvents.connect)
+
+          const onDisconnectHelperFunction = () => {
+            self.send({type: _3DMouseMachineEvents.disconnect})
+          }
+
           return {
             context,
             name: event.data.name,
             debug: event.data.debug,
             canvasId: event.data.canvasId,
             camera: event.data.camera,
+            onDisconnect: onDisconnectHelperFunction
           }
         },
         onDone: {
@@ -195,8 +220,13 @@ export const _3DMouseMachine = setup({
       invoke: {
         id: _3DMouseMachineActors.connect,
         src: _3DMouseMachineActors.connect,
-        input: ({ context, event }) => {
+        input: ({ context, event, self }) => {
           assertEvent(event, _3DMouseMachineEvents.error_connect)
+
+          const onDisconnectHelperFunction = () => {
+            self.send({type: _3DMouseMachineEvents.disconnect})
+          }
+
           let { name, debug, canvasId, camera } =
             context.lastConfigurationForConnection || {
               name: '',
@@ -213,6 +243,7 @@ export const _3DMouseMachine = setup({
             debug,
             canvasId,
             camera,
+            onDisconnect: onDisconnectHelperFunction
           }
         },
         onDone: {

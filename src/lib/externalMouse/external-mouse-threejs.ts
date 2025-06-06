@@ -228,6 +228,7 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
   _camera: PerspectiveCamera | OrthographicCamera | null
   appName: string
   debug: boolean
+  disconnectionCallback: () => void
   gl: {
     fov: number
     near: number
@@ -251,15 +252,24 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     console.log(`prefix ${message} data:${data}`)
   }
 
-  constructor({ camera, canvasId, appName, debug = false, TRACE_MESSAGES = false }:{
-    camera: PerspectiveCamera | OrthographicCamera,
-    canvasId: string,
-    appName: string,
-    debug: boolean,
+  constructor({
+    camera,
+    canvasId,
+    appName,
+    debug = false,
+    TRACE_MESSAGES = false,
+    disconnectCallback,
+  }: {
+    camera: PerspectiveCamera | OrthographicCamera
+    canvasId: string
+    appName: string
+    debug: boolean
     TRACE_MESSAGES: boolean
+    disconnectCallback: () => void
   }) {
     this._camera = null
-    const canvas : HTMLElement | null= document.getElementById(canvasId)
+    this.disconnectionCallback = disconnectCallback
+    const canvas: HTMLElement | null = document.getElementById(canvasId)
 
     if (canvas instanceof HTMLCanvasElement === false) {
       const message = 'the canvas found is not a HTMLCanvasElement'
@@ -273,8 +283,14 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
       throw new Error(message)
     }
 
-    if (!(camera instanceof PerspectiveCamera === true || camera instanceof OrthographicCamera === true)) {
-      const message = 'camera is not a perpsective camera or a orthographic camera'
+    if (
+      !(
+        camera instanceof PerspectiveCamera === true ||
+        camera instanceof OrthographicCamera === true
+      )
+    ) {
+      const message =
+        'camera is not a perpsective camera or a orthographic camera'
       this.log(message)
       throw new Error(message)
     }
@@ -330,7 +346,11 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
   }
 
   set camera(newCamera) {
-    this._camera = newCamera instanceof PerspectiveCamera || newCamera instanceof OrthographicCamera ? newCamera.clone() : newCamera
+    this._camera =
+      newCamera instanceof PerspectiveCamera ||
+      newCamera instanceof OrthographicCamera
+        ? newCamera.clone()
+        : newCamera
   }
 
   render(now: number) {
@@ -375,22 +395,22 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
   // navigation model
   // getCoordinateSystem is queried to determine the coordinate system of the application
   // described as X to the right, Y-up and Z out of the screen
-  getCoordinateSystem() : SixteenNumbers {
-    const a : SixteenNumbers = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+  getCoordinateSystem(): SixteenNumbers {
+    const a: SixteenNumbers = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
     this.log('getCoordinateSystem', a)
     return a
   }
 
-  getConstructionPlane() : PlaneEquation {
+  getConstructionPlane(): PlaneEquation {
     throw new Error('getConstructionPlane')
-    const a : PlaneEquation = [0, 0, 0, 0]
+    const a: PlaneEquation = [0, 0, 0, 0]
     this.log('getConstructionPlane', a)
     return a
   }
 
-  getFloorPlane() : PlaneEquation {
+  getFloorPlane(): PlaneEquation {
     throw new Error('getFloorPlane')
-    const a : PlaneEquation = [0, 0, 0, 0]
+    const a: PlaneEquation = [0, 0, 0, 0]
     this.log('getFloorPlane', a)
     return a
   }
@@ -411,8 +431,7 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     }
 
     if (this.camera instanceof PerspectiveCamera === false) {
-      const message =
-        'Camear is not perspective, unable to getFov, brick!'
+      const message = 'Camear is not perspective, unable to getFov, brick!'
       this.log(message)
       throw new Error(message)
     }
@@ -421,7 +440,6 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
       2 *
       Math.atan(
         Math.atan2(this.camera.fov * Math.PI, 360.0) *
-
           Math.sqrt(1 + this.camera.aspect * this.camera.aspect)
       )
     if (this.TRACE_MESSAGES) console.log('fov=' + (fov * 180.0) / Math.PI)
@@ -431,11 +449,11 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     return a
   }
 
-  getFrontView() : SixteenNumbers {
+  getFrontView(): SixteenNumbers {
     // Method called by the Navigation Library when a connection is established to determine the pose
     // of the front view. When the user presses the ‘Front’ button on a 3D Mouse this will be the pose
     // the Navigation Library switches to. All other view orientations are calculated from this.
-    const a : SixteenNumbers = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+    const a: SixteenNumbers = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
     this.log('getFrontView', a)
     return a
   }
@@ -450,7 +468,7 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     return a
   }
 
-  getModelExtents() : BoundingBox {
+  getModelExtents(): BoundingBox {
     // Method called by the Navigation Library when it needs to know the bounding box of the model.
     //   One example of when this will happen is when the library needs to zoom the view to the extents
     // of the model. The extents are returned as an array containing the min and max values of the
@@ -458,7 +476,14 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     // Required for the pivot and zoom algorithms.
 
     const unit = 100
-    const a : BoundingBox = [-unit / 2, -unit / 2, -unit / 2, unit / 2, unit / 2, unit / 2]
+    const a: BoundingBox = [
+      -unit / 2,
+      -unit / 2,
+      -unit / 2,
+      unit / 2,
+      unit / 2,
+      unit / 2,
+    ]
     this.log('getModelExtents', a)
     return a
   }
@@ -470,19 +495,19 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     return a
   }
 
-  getPivotPositon() : Position {
+  getPivotPositon(): Position {
     // Method called by the Navigation Library when it wants to know the position of the 2D mouse
     // pivot or of a pivot manually set by the user. The position is returned as a 1x3 array in world
     // coordinates.
     // Required for rotating about the pivot position
     if (this.TRACE_MESSAGES)
       console.log('pivot=[' + 0 + ', ' + 0 + ', ' + 0 + ']')
-    const a : Position = [0, 0, 0]
+    const a: Position = [0, 0, 0]
     this.log('getPivotPosition', a)
     return a
   }
 
-  getPointerPosition() : Position {
+  getPointerPosition(): Position {
     // Method called by the Navigation Library when it requires the world position of the mouse pointer
     // on the projection/near plane.
     // Required for the quick zoom algorithms.
@@ -504,13 +529,14 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     return a
   }
 
-  getViewExtents() : ViewExtents{
+  getViewExtents(): ViewExtents {
     // The method returns a 1x6 java array containing the min and max extents of the view bounding
     // box. The view extents defines the visible viewing volume of an orthographic projection in view
     // coordinates as min = [left, bottom, -far] and max = [right, top, far].
     // Required for orthographic projections.
     if (this.camera instanceof PerspectiveCamera) {
-      const message = 'State is mismatched, camera says perspective but the navigation library says orthographc, in getViewExtents'
+      const message =
+        'State is mismatched, camera says perspective but the navigation library says orthographc, in getViewExtents'
       this.log(message)
       throw new Error(message)
     }
@@ -521,7 +547,7 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
       throw new Error(message)
     }
 
-    const a : ViewExtents = [
+    const a: ViewExtents = [
       this.camera.left,
       this.camera.bottom,
       this.camera.far * -1,
@@ -533,7 +559,7 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     return a
   }
 
-  getViewFrustum() : ViewExtents {
+  getViewFrustum(): ViewExtents {
     // The method returns a 1x 6 java array containing the frustum of the perspective view/camera in
     // camera coordinates. This may be called by the Navigation Library when it needs to calculate the
     // field-of-view of the camera, or during algorithms that need to know if the model is currently
@@ -552,7 +578,8 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     }
 
     if (this.camera instanceof PerspectiveCamera === false) {
-      const message = 'Camear is not perspective, unable to getViewFrustum, brick!'
+      const message =
+        'Camear is not perspective, unable to getViewFrustum, brick!'
       this.log(message)
       throw new Error(message)
     }
@@ -576,12 +603,19 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
           this.camera.far +
           ']'
       )
-    const a : ViewExtents = [left, -left, bottom, -bottom, this.camera.near, this.camera.far]
+    const a: ViewExtents = [
+      left,
+      -left,
+      bottom,
+      -bottom,
+      this.camera.near,
+      this.camera.far,
+    ]
     this.log('getViewFrustum', a)
     return a
   }
 
-  getViewMatrix() : SixteenNumbers {
+  getViewMatrix(): SixteenNumbers {
     // The method returns a java array containing the view 4x4 column major matrix. This may be
     // called by the Navigation Library when calculating a next frame. The view matrix describes the
     // transform from view coordinates to world coordinates of the view/camera position. Generally
@@ -593,7 +627,7 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
       throw new Error(message)
     }
 
-    const a : SixteenNumbers = this.camera.matrixWorld.toArray()
+    const a: SixteenNumbers = this.camera.matrixWorld.toArray()
     this.log('getViewMatrix', a)
     return a
   }
@@ -602,32 +636,32 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     this.log(`setActiveCommand`, id)
   }
 
-  setLookFrom(data : Position) {
+  setLookFrom(data: Position) {
     // Method called by the Navigation Library that defines the origin of the ray used in hit-testing.
     this.log('setLookFrom', data)
     this.look.origin.set(data[0], data[1], data[2])
   }
 
-  setLookDirection(data : Position) {
+  setLookDirection(data: Position) {
     // Method called by the Navigation Library that defines the direction of the ray used in hit-testing
     this.log('setLookDirection', data)
     this.look.direction.set(data[0], data[1], data[2])
   }
 
-  setLookAperture(data : number) {
+  setLookAperture(data: number) {
     // Method called by the Navigation Library that defines the diameter of the ray used in hit-testing.
     this.log('setLookAperture', data)
     this.look.aperture = data
   }
 
-  setSelectionOnly(data : boolean) {
+  setSelectionOnly(data: boolean) {
     // Method called by the Navigation Library that defines whether hit-testing should include all the
     // objects or be limited to the current selection set.
     this.log('setSelectionOnly', data)
     this.look.selection = data
   }
 
-  setViewExtents(data : ViewExtents) {
+  setViewExtents(data: ViewExtents) {
     // The method receives a 1x6 java array containing the min and max extents of the view bounding
     // box. The view extents defines the visible viewing volume of an orthographic projection in view
     // coordinates as min = [left, bottom, far] and max = [right, top, near]. The Navigation Library will
@@ -641,7 +675,8 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     }
 
     if (this.camera instanceof PerspectiveCamera) {
-      const message = 'State is mismatched, camera says perspective but the navigation library says orthographc, in setViewExtents'
+      const message =
+        'State is mismatched, camera says perspective but the navigation library says orthographc, in setViewExtents'
       this.log(message)
       throw new Error(message)
     }
@@ -653,7 +688,7 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     this.camera.updateProjectionMatrix()
   }
 
-  setViewMatrix(data : SixteenNumbers) {
+  setViewMatrix(data: SixteenNumbers) {
     if (!this.camera) {
       const message = 'Missing camera in setViewMatrix'
       this.log(message)
@@ -720,7 +755,7 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     this.gl.fov = (data * 180.0) / Math.PI
   }
 
-  setTransaction(transaction : number) {
+  setTransaction(transaction: number) {
     // Method called by the Navigation Library at the beginning and end of a frame change. At the
     // beginning of a frame change the Navigation Library will set the ‘transaction’ property to a
     // value >0. When the Navigation Library has completed the changes to the frame, the value is
@@ -738,7 +773,7 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
       this.animating = true
       // window.requestAnimationFrame(this.render)
       window.requestAnimationFrame(
-        function (theTime : number) {
+        function (theTime: number) {
           this.render(theTime)
         }.bind(this)
       )
@@ -773,14 +808,15 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     // ignore application commands
   }
 
-  onDisconnect(reason : any) {
+  onDisconnect(reason: any) {
     this.log('onDisconnect', reason)
     if (this.TRACE_MESSAGES) {
       console.log('3Dconnexion NL-Proxy disconnected ' + reason)
     }
+    this.disconnectionCallback()
   }
 
-  init3DMouse(timeout?: number) : Promise<{value: boolean, message: string}> {
+  init3DMouse(timeout?: number): Promise<{ value: boolean; message: string }> {
     this.log('init3DMouse')
     this.spaceMouse = new _3Dconnexion(this)
     if (!this.spaceMouse) {
@@ -797,7 +833,10 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
       if (this.spaceMouse) {
         setTimeout(() => {
           if (!this.spaceMouse) {
-            return reject({value: false, message: 'spaceMouse is missing, this is bad.'})
+            return reject({
+              value: false,
+              message: 'spaceMouse is missing, this is bad.',
+            })
           }
           let message = '3DConnexion mouse is connected'
           let success = true

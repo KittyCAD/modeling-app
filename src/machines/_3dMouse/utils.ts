@@ -32,6 +32,7 @@ export enum _3DMouseMachineEvents {
   connect = 'connect',
   done_connect = donePrefix + 'connect',
   error_connect = errorPrefix + 'connect',
+  disconnect = 'disconnect'
 }
 
 export enum _3DMouseMachineActors {
