@@ -1,6 +1,8 @@
 # Zoo Design Studio
 ### Developer manual
 
+Welcome to Zoo Design Studio GitHub repository! Below are various recipes you can type into `make` . :
+
 .PHONY: **all**
 
 **all**: **install**
