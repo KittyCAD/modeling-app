@@ -39,7 +39,10 @@ endif
 	- npm install
 
 - $(CARGO):
+```sh:
 ifdef WINDOWS
+#\
+```
 	- npm run install:rust:windows
 else
 	- npm run install:rust
