@@ -32,7 +32,7 @@ export const _3DMouseMachine = setup({
         }
       | {
           type: _3DMouseMachineEvents.done_connect
-          output: _3DMouseThreeJS
+          output: _3DMouseThreeJSWindows
         }
       | {
           type: _3DMouseMachineEvents.error_connect
@@ -51,7 +51,7 @@ export const _3DMouseMachine = setup({
           canvasId: string
           camera: PerspectiveCamera | OrthographicCamera | null
         }
-      }): Promise<_3DMouseThreeJS> => {
+      }): Promise<_3DMouseThreeJSWindows> => {
         console.error('I AM CONNECTING TOO MANY TIMES')
         /** * Global variable reference from html script tag loading */
         if (!_3Dconnexion) {
@@ -92,20 +92,19 @@ export const _3DMouseMachine = setup({
           canvasId: input.canvasId,
           camera: input.camera.clone(),
         })
-        the3DMouse.init3DMouse()
 
         /**
          * The mouse class has a bug and we cannot properly await the async xmlHttpRequest
          * we have to poll and hope it connects
          */
-        // const response = await the3DMouse.init3DMouse(1000 * 2, the3DMouse)
+        const response = await the3DMouse.init3DMouse(1000 * 2)
 
-        // console.log('RESPONSE', response)
-        // if (response.value === false) {
-        //   logError(response.message)
-        //   the3DMouse.destroy()
-        //   throw response.message
-        // }
+        console.log('RESPONSE', response)
+        if (response.value === false) {
+          logError(response.message)
+          the3DMouse.destroy()
+          throw response.message
+        }
 
         return the3DMouse
       }

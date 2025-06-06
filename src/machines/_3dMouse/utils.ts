@@ -1,11 +1,11 @@
 import { OrthographicCamera, PerspectiveCamera } from 'three'
-import { _3DMouseThreeJS } from '@src/lib/externalMouse/external-mouse-threejs'
+import { _3DMouseThreeJSWindows } from '@src/lib/externalMouse/external-mouse-threejs'
 
 const donePrefix = 'xstate.done.actor.'
 const errorPrefix = 'xstate.error.actor.'
 
 export type _3DMouseContext = {
-  _3dMouse: _3DMouseThreeJS | null
+  _3dMouse: _3DMouseThreeJSWindows | null
   /** Use this object for internal retries on behalf of the user */
   lastConfigurationForConnection: {
     name: string
