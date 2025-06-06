@@ -39,21 +39,10 @@ endif
 	- npm install
 
 - $(CARGO):
-```sh:
-ifdef WINDOWS
-#\
-```
-	- npm run install:rust:windows
-else
 	- npm run install:rust
-endif
 
 - $(WASM_PACK):
-ifdef WINDOWS
-	- npm run install:wasm-pack:cargo
-else
 	- npm run install:wasm-pack:sh
-endif
 
 -:
 $\:
