@@ -1,7 +1,7 @@
 # Zoo Design Studio
 ### Developer manual
 
-Welcome to Zoo Design Studio GitHub repository! Below are various recipes you can type into `make`. To build everything, type `make all`.:
+Welcome to Zoo Design Studio GitHub repository! Below are various recipes you can type into `make`. To build everything, type `make all`. [](:)
 
 #
 
@@ -50,3 +50,4 @@ endif
 
 -:
 $\:
+):
