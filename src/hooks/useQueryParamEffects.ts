@@ -7,19 +7,18 @@ import {
   CMD_GROUP_QUERY_PARAM,
   CMD_NAME_QUERY_PARAM,
   CREATE_FILE_URL_PARAM,
-  LOCAL_STORAGE_TEMPORARY_WORKSPACE,
-  LOCAL_STORAGE_OLD_CODE,
-  LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION,
+  FILE_NAME_QUERY_PARAM,
+  CODE_QUERY_PARAM,
   DEFAULT_FILE_NAME,
   POOL_QUERY_PARAM,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
-import { commandBarActor, useAuthState, codeManager } from '@src/lib/singletons'
+import { commandBarActor, useAuthState } from '@src/lib/singletons'
 import { findKclSample } from '@src/lib/kclSamples'
 import { webSafePathSplit } from '@src/lib/paths'
-import { askQuestionPrompt } from '@src/components/ToastQuestion'
+import { goIntoTemporaryWorkspaceModeWithCode } from '@src/lib/goToTemporaryWorkspace'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -50,17 +49,21 @@ export function useQueryParamEffects() {
   useEffect(() => {
     if (shouldInvokeCreateFile && authState.matches('loggedIn')) {
       const argDefaultValues = buildCreateFileCommandArgs(searchParams)
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Import file from URL',
-          argDefaultValues,
-        },
-      })
+      if (isDesktop()) {
+        commandBarActor.send({
+          type: 'Find and select command',
+          data: {
+            groupId: 'projects',
+            name: 'Import file from URL',
+            argDefaultValues,
+          },
+        })
+      }
 
-      // Delete the query param after the command has been invoked.
+      // Delete the query params after the command has been invoked.
       searchParams.delete(CREATE_FILE_URL_PARAM)
+      searchParams.delete(FILE_NAME_QUERY_PARAM)
+      searchParams.delete(CODE_QUERY_PARAM)
       setSearchParams(searchParams)
     }
   }, [shouldInvokeCreateFile, setSearchParams, authState])
@@ -140,26 +143,11 @@ export function useQueryParamEffects() {
       })
       .then((code) => {
         // Only create a temporary workspace on web.
-        if (isDesktop()) { return }
+        if (isDesktop()) {
+          return
+        }
 
-        // We only support "Try in browser" demo'ing.
-        // Originally I (lee) had actually written browser support but
-        // removed it, because all the links will go directly to the
-        // browser version anyway.
-
-        // Save the current code in localStorage and load the new code.
-        const oldCode = codeManager.localStoragePersistCode()
-
-        // By default we throw users into a temporary workspace in case
-        // they start modifying things on the side
-        localStorage.setItem(LOCAL_STORAGE_TEMPORARY_WORKSPACE, 'truthy')
-        localStorage.setItem(
-          LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION,
-          'truthy'
-        )
-        localStorage.setItem(LOCAL_STORAGE_OLD_CODE, oldCode)
-        codeManager.writeToFile().catch(console.warn)
-        codeManager.updateCodeStateEditor(code, true)
+        goIntoTemporaryWorkspaceModeWithCode(code)
       })
       .catch((error) => {
         console.error('Error loading KCL sample:', error)
