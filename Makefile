@@ -4,14 +4,14 @@ all: install check build
 
 # INSTALL
 
-```:
+``` :
 ifeq ($(OS),Windows_NT)
   export WINDOWS := true
   ifndef MSYSTEM
     export POWERSHELL := true
   endif
 endif
-```:
+``` :
 
 ```:
 ifdef WINDOWS
