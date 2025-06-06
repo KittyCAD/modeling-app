@@ -1,26 +1,39 @@
 .PHONY: all
+
 all: install check build
 
-###############################################################################
 # INSTALL
 
 ifeq ($(OS),Windows_NT)
-export WINDOWS := true
-ifndef MSYSTEM
-export POWERSHELL := true
-endif
+
+  export WINDOWS := true
+
+  ifndef MSYSTEM
+
+    export POWERSHELL := true
+
+  endif
+
 endif
 
 ifdef WINDOWS
-CARGO ?= $(USERPROFILE)/.cargo/bin/cargo.exe
-WASM_PACK ?= $(USERPROFILE)/.cargo/bin/wasm-pack.exe
+
+  CARGO ?= $(USERPROFILE)/.cargo/bin/cargo.exe
+
+  WASM_PACK ?= $(USERPROFILE)/.cargo/bin/wasm-pack.exe
+
 else
-CARGO ?= $(shell which cargo || echo ~/.cargo/bin/cargo)
-WASM_PACK ?= $(shell which wasm-pack || echo ~/.cargo/bin/wasm-pack)
+
+  CARGO ?= $(shell which cargo || echo ~/.cargo/bin/cargo)
+
+  WASM_PACK ?= $(shell which wasm-pack || echo ~/.cargo/bin/wasm-pack)
+
 endif
 
 .PHONY: install
-install: node_modules/.package-lock.json $(CARGO) $(WASM_PACK) ## Install dependencies
+
+### Install dependencies
+install: node_modules/.package-lock.json $(CARGO) $(WASM_PACK)
 
 node_modules/.package-lock.json: package.json package-lock.json
 	npm prune
@@ -40,7 +53,6 @@ else
 	npm run install:wasm-pack:sh
 endif
 
-###############################################################################
 # BUILD
 
 CARGO_SOURCES := rust/.cargo/config.toml $(wildcard rust/Cargo.*) $(wildcard rust/**/Cargo.*)
