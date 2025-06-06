@@ -130,9 +130,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-14
+          - os: namespace-profile-macos-6-cores
             platform: mac
-          - os: namespace-profile-windows-8-cores
+          - os: namespace-profile-windows-4-cores
             platform: win
           - os: ubuntu-22.04
             platform: linux
