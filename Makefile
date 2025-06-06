@@ -13,7 +13,9 @@ Welcome to Zoo Design Studio GitHub repository! Below are various recipes you ca
 
 .PHONY: **install**
 
-```sh :
+You will need NodeJS. From there the build system will install Rust as well, followed by hundreds of millions of dependencies /s [](:)
+
+```sh:
 ifeq ($(OS),Windows_NT)
   export WINDOWS := true
   ifndef MSYSTEM
@@ -23,7 +25,7 @@ endif
 #\
 ```
 
-```sh :
+```sh:
 ifdef WINDOWS
   CARGO ?= $(USERPROFILE)/.cargo/bin/cargo.exe
   WASM_PACK ?= $(USERPROFILE)/.cargo/bin/wasm-pack.exe
