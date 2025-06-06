@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     exec::KclValue,
-    execution::{typed_path::TypedPath, EnvironmentRef, PreImportedGeometry},
+    execution::{typed_path::TypedPath, EnvironmentRef, ModuleArtifactState, PreImportedGeometry},
     fs::{FileManager, FileSystem},
     parsing::ast::types::{ImportPath, Node, Program},
     source_range::SourceRange,
@@ -131,7 +131,7 @@ impl ModuleInfo {
 pub enum ModuleRepr {
     Root,
     // AST, memory, exported names
-    Kcl(Node<Program>, Option<(Option<KclValue>, EnvironmentRef, Vec<String>)>),
+    Kcl(Node<Program>, Option<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState)>),
     Foreign(PreImportedGeometry, Option<KclValue>),
     Dummy,
 }

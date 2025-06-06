@@ -3,9 +3,17 @@ use std::{
     path::{Path, PathBuf},
 };
 
+#[cfg(feature = "artifact-graph")]
+use indexmap::IndexMap;
 use insta::rounded_redaction;
+use serde::Serialize;
 
-use crate::{errors::KclError, ModuleId};
+use crate::{
+    errors::KclError,
+    execution::{EnvironmentRef, ModuleArtifactState},
+    modules::ModuleRepr,
+    ExecOutcome, ExecState, ExecutorContext, ModuleId,
+};
 #[cfg(feature = "artifact-graph")]
 use crate::{
     exec::ArtifactCommand,
@@ -49,6 +57,39 @@ impl Test {
     pub fn read(&self) -> String {
         std::fs::read_to_string(&self.entry_point)
             .unwrap_or_else(|e| panic!("Failed to read file: {:?} due to {e}", self.entry_point))
+    }
+}
+
+impl ExecState {
+    /// Same as [`Self::to_exec_outcome`], but also returns the module state.
+    async fn to_test_exec_outcome(
+        self,
+        main_ref: EnvironmentRef,
+        ctx: &ExecutorContext,
+    ) -> (ExecOutcome, IndexMap<String, ModuleArtifactState>) {
+        let module_state = self.to_module_state();
+        let outcome = self.to_exec_outcome(main_ref, ctx).await;
+        (outcome, module_state)
+    }
+
+    /// The keys of the map are the module paths.  Can't use `ModulePath` since
+    /// it needs to be converted to a string to be a JSON object key.
+    fn to_module_state(&self) -> IndexMap<String, ModuleArtifactState> {
+        let mut module_state = IndexMap::new();
+        for info in self.modules().values() {
+            match &info.repr {
+                ModuleRepr::Root | ModuleRepr::Kcl(_, None) => {
+                    // self.
+                    module_state.insert(info.path.to_string(), Default::default());
+                }
+                ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts))) => {
+                    // self.
+                    module_state.insert(info.path.to_string(), module_artifacts.clone());
+                }
+                ModuleRepr::Foreign(_, _) | ModuleRepr::Dummy => {}
+            }
+        }
+        module_state
     }
 }
 
@@ -181,7 +222,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     panic!("Step data was empty");
                 }
             }
-            let outcome = exec_state.to_exec_outcome(env_ref, &ctx).await;
+            let (outcome, module_state) = exec_state.to_test_exec_outcome(env_ref, &ctx).await;
 
             let mem_result = catch_unwind(AssertUnwindSafe(|| {
                 assert_snapshot(test, "Variables in memory after executing", || {
@@ -203,9 +244,10 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             }));
 
             #[cfg(feature = "artifact-graph")]
-            assert_common_snapshots(
+            assert_artifact_snapshots(
                 test,
                 outcome.operations,
+                module_state,
                 outcome.artifact_commands,
                 outcome.artifact_graph,
             );
@@ -237,8 +279,16 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         })
                     }));
 
+                    let module_state = e.exec_state.map(|e| e.to_module_state()).unwrap_or_default();
+
                     #[cfg(feature = "artifact-graph")]
-                    assert_common_snapshots(test, error.operations, error.artifact_commands, error.artifact_graph);
+                    assert_artifact_snapshots(
+                        test,
+                        error.operations,
+                        module_state,
+                        error.artifact_commands,
+                        error.artifact_graph,
+                    );
                     err_result.unwrap();
                 }
                 e => {
@@ -252,35 +302,38 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     }
 }
 
-/// Assert snapshots that should happen both when KCL execution succeeds and
-/// when it results in an error.
 #[cfg(feature = "artifact-graph")]
-fn assert_common_snapshots(
+#[derive(Debug, Serialize)]
+struct TestOperations<'a> {
+    module_operations: IndexMap<&'a String, &'a Vec<Operation>>,
+    global_operations: Vec<Operation>,
+}
+
+#[cfg(feature = "artifact-graph")]
+#[derive(Debug, Serialize)]
+struct TestArtifactCommands<'a> {
+    module_commands: IndexMap<&'a String, &'a Vec<ArtifactCommand>>,
+    global_commands: Vec<ArtifactCommand>,
+}
+
+/// Assert snapshots for artifacts that should happen both when KCL execution
+/// succeeds and when it results in an error.
+#[cfg(feature = "artifact-graph")]
+fn assert_artifact_snapshots(
     test: &Test,
-    operations: Vec<Operation>,
-    artifact_commands: Vec<ArtifactCommand>,
+    global_operations: Vec<Operation>,
+    module_state: IndexMap<String, ModuleArtifactState>,
+    global_commands: Vec<ArtifactCommand>,
     artifact_graph: ArtifactGraph,
 ) {
-    let operations = {
-        // Make the operations deterministic by sorting them by their module ID,
-        // then by their range.
-        let mut operations = operations.clone();
-        operations.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
-        operations
+    let module_operations = module_state
+        .iter()
+        .map(|(path, s)| (path, &s.operations))
+        .collect::<IndexMap<_, _>>();
+    let operations = TestOperations {
+        module_operations: module_operations,
+        global_operations,
     };
-    let artifact_commands = {
-        // Due to our newfound concurrency, we're going to mess with the
-        // artifact_commands a bit -- we're going to maintain the order,
-        // but only for a given module ID. This means the artifact_commands
-        // is no longer meaningful, but it is deterministic and will hopefully
-        // catch meaningful changes in behavior.
-        // We sort by the source range, like we do for the operations.
-
-        let mut artifact_commands = artifact_commands.clone();
-        artifact_commands.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
-        artifact_commands
-    };
-
     let result1 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Operations executed", || {
             insta::assert_json_snapshot!("ops", operations, {
@@ -295,6 +348,14 @@ fn assert_common_snapshots(
             });
         })
     }));
+    let module_commands = module_state
+        .iter()
+        .map(|(path, s)| (path, &s.commands))
+        .collect::<IndexMap<_, _>>();
+    let artifact_commands = TestArtifactCommands {
+        module_commands,
+        global_commands,
+    };
     let result2 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Artifact commands", || {
             insta::assert_json_snapshot!("artifact_commands", artifact_commands, {
