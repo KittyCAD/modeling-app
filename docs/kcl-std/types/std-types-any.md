@@ -21,6 +21,7 @@ acceptAnything(42)
 acceptAnything('hello')
 acceptAnything(XY)
 acceptAnything([0, 1, 2])
+
 ```
 
 
