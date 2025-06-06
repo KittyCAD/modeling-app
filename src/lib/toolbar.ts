@@ -103,7 +103,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         hotkey: 'S',
         description: 'Start drawing a 2D sketch',
         links: [
-          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/startSketchOn' },
+          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/startSketchOn' },
         ],
       },
       'break',
@@ -119,7 +119,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: 'Extrude',
         hotkey: 'E',
         description: 'Pull a sketch into 3D along its normal or perpendicular.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/extrude' }],
+        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/extrude' }],
       },
       {
         id: 'sweep',
@@ -137,7 +137,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl/sweep',
+            url: 'https://zoo.dev/docs/kcl-std/sweep',
           },
         ],
       },
@@ -157,7 +157,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl/loft',
+            url: 'https://zoo.dev/docs/kcl-std/loft',
           },
         ],
       },
@@ -175,7 +175,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         description:
           'Create a 3D body by rotating a sketch region about an axis.',
         links: [
-          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/revolve' },
+          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/functions/std-sketch-revolve' },
           {
             label: 'KCL example',
             url: 'https://zoo.dev/docs/kcl-samples/ball-bearing',
@@ -195,7 +195,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: 'Fillet',
         hotkey: 'F',
         description: 'Round the edges of a 3D solid.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/fillet' }],
+        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-fillet' }],
       },
       {
         id: 'chamfer3d',
@@ -216,7 +216,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             label: 'issue tracker',
             url: 'https://github.com/KittyCAD/modeling-app/issues/6617',
           },
-          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/chamfer' },
+          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-chamfer' },
         ],
       },
       {
@@ -231,7 +231,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         title: 'Shell',
         description: 'Hollow out a 3D solid.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/shell' }],
+        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-shell' }],
       },
       'break',
       {
@@ -313,7 +313,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'KCL docs',
-                url: 'https://zoo.dev/docs/kcl/offsetPlane',
+                url: 'https://zoo.dev/docs/kcl-std/functions/std-offsetPlane',
               },
             ],
           },
@@ -341,7 +341,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         title: 'Helix',
         description: 'Create a helix or spiral in 3D about an axis.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/helix' }],
+        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/functions/std-helix' }],
       },
       'break',
       {
@@ -360,7 +360,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'API docs',
-            url: 'https://zoo.dev/docs/kcl/import',
+            url: 'https://zoo.dev/docs/kcl-lang/modules',
           },
         ],
       },
@@ -381,7 +381,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'API docs',
-                url: 'https://zoo.dev/docs/kcl/translate',
+                url: 'https://zoo.dev/docs/kcl-std/translate',
               },
             ],
           },
@@ -399,7 +399,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'API docs',
-                url: 'https://zoo.dev/docs/kcl/rotate',
+                url: 'https://zoo.dev/docs/kcl-std/rotate',
               },
             ],
           },
@@ -417,7 +417,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'API docs',
-                url: 'https://zoo.dev/docs/kcl/clone',
+                url: 'https://zoo.dev/docs/kcl-std/functions/std-clone',
               },
             ],
           },
@@ -710,7 +710,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl/polygon',
+            url: 'https://zoo.dev/docs/kcl-std/polygon',
           },
         ],
       },
@@ -726,7 +726,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl/std-sketch-mirror2d',
+            url: 'https://zoo.dev/docs/kcl-std/functions/std-transform-mirror2d',
           },
         ],
       },
