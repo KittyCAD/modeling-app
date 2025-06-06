@@ -533,7 +533,10 @@ function modifyAstWithTagForSketchSegment(
   if (err(segmentNode)) return segmentNode
 
   // Check whether selection is a valid sketch segment
-  if (!(segmentNode.node.callee.name.name in sketchLineHelperMapKw)) {
+  if (
+    !(segmentNode.node.callee.name.name in sketchLineHelperMapKw) &&
+    segmentNode.node.callee.name.name !== 'close'
+  ) {
     return new Error('Selection is not a sketch segment')
   }
 
