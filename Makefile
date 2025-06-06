@@ -41,14 +41,14 @@ endif
 **install**: node_modules/.package-lock.json $ $(CARGO) $ $(WASM_PACK)
 
 - node_modules/.package-lock.json: package.json package-lock.json
-	- npm prune
-	- npm install
+	- `npm prune`
+	- `npm install`
 
 - $(CARGO):
-	- npm run install:rust
+	- `npm run install:rust`
 
 - $(WASM_PACK):
-	- npm run install:wasm-pack:sh
+	- `npm run install:wasm-pack:sh`
 
 -:
 $\:
