@@ -133,11 +133,17 @@ jobs:
         include:
           - os: namespace-profile-macos-6-cores
             platform: mac
+            version: macos-14
           - os: namespace-profile-windows-4-cores
             platform: win
+            version: windows-2022
           - os: ubuntu-22.04
             platform: linux
+            version: ubuntu-22.04
     runs-on: ${{ matrix.os }}
+    # The version prop is only used here to maintain job name consistency
+    # for the branch protection rules. Should be removed at some point.
+    name: build-apps (${{ matrix.version }}, ${{ matrix.platform }})
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
     steps:
