@@ -1201,7 +1201,6 @@ export async function enableConsoleLogEverything({
 
 /**
  * Simulate a pan touch gesture from the center of an element.
- * with {touchSpacing} pixels between.
  *
  * Adapted from Playwright docs: https://playwright.dev/docs/touch-events
  */
