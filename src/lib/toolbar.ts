@@ -103,7 +103,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         hotkey: 'S',
         description: 'Start drawing a 2D sketch',
         links: [
-          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/startSketchOn' },
+          {
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl-std/startSketchOn',
+          },
         ],
       },
       'break',
@@ -119,7 +122,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: 'Extrude',
         hotkey: 'E',
         description: 'Pull a sketch into 3D along its normal or perpendicular.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/extrude' }],
+        links: [
+          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/extrude' },
+        ],
       },
       {
         id: 'sweep',
@@ -175,7 +180,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         description:
           'Create a 3D body by rotating a sketch region about an axis.',
         links: [
-          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/functions/std-sketch-revolve' },
+          {
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl-std/functions/std-sketch-revolve',
+          },
           {
             label: 'KCL example',
             url: 'https://zoo.dev/docs/kcl-samples/ball-bearing',
@@ -195,7 +203,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: 'Fillet',
         hotkey: 'F',
         description: 'Round the edges of a 3D solid.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-fillet' }],
+        links: [
+          {
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-fillet',
+          },
+        ],
       },
       {
         id: 'chamfer3d',
@@ -216,7 +229,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             label: 'issue tracker',
             url: 'https://github.com/KittyCAD/modeling-app/issues/6617',
           },
-          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-chamfer' },
+          {
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-chamfer',
+          },
         ],
       },
       {
@@ -231,7 +247,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         title: 'Shell',
         description: 'Hollow out a 3D solid.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-shell' }],
+        links: [
+          {
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-shell',
+          },
+        ],
       },
       'break',
       {
@@ -250,8 +271,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             description: 'Combine two or more solids into a single solid.',
             links: [
               {
-                label: 'GitHub discussion',
-                url: 'https://github.com/KittyCAD/modeling-app/discussions/509',
+                label: 'KCL docs',
+                url: 'https://zoo.dev/docs/kcl-std/union',
               },
             ],
           },
@@ -268,8 +289,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             description: 'Subtract one solid from another.',
             links: [
               {
-                label: 'GitHub discussion',
-                url: 'https://github.com/KittyCAD/modeling-app/discussions/510',
+                label: 'KCL docs',
+                url: 'https://zoo.dev/docs/kcl-std/subtract',
               },
             ],
           },
@@ -286,8 +307,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             description: 'Create a solid from the intersection of two solids.',
             links: [
               {
-                label: 'GitHub discussion',
-                url: 'https://github.com/KittyCAD/modeling-app/discussions/511',
+                label: 'KCL docs',
+                url: 'https://zoo.dev/docs/kcl-std/intersect',
               },
             ],
           },
@@ -341,7 +362,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         title: 'Helix',
         description: 'Create a helix or spiral in 3D about an axis.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/functions/std-helix' }],
+        links: [
+          {
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl-std/functions/std-helix',
+          },
+        ],
       },
       'break',
       {
