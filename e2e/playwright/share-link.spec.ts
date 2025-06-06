@@ -20,10 +20,10 @@ function getToastError(page: Page) {
 
 test.describe('Share link tests', () => {
   test(
-    `Open in desktop app with 2000-long code doesn't show error on non-Windows`,
-    { tag: ['@web', '@macos', '@linux'] },
+    `Open in desktop app with 2000-long code doesn't show error on macOS`,
+    { tag: ['@web', '@macos'] },
     async ({ page }) => {
-      test.skip(process.platform === 'win32')
+      test.skip(process.platform === 'win32' || process.platform === 'linux')
       const codeLength = 2000
       await navigateAndClickOpenInDesktopApp(page, codeLength)
       await expect(getToastError(page)).not.toBeVisible()
@@ -31,10 +31,10 @@ test.describe('Share link tests', () => {
   )
 
   test(
-    `Open in desktop app with 1000-long code works on Windows but not with 2000`,
-    { tag: ['@web', '@windows'] },
+    `Open in desktop app with 1000-long code works on Windows and Linux but not with 2000`,
+    { tag: ['@web', '@windows', '@linux'] },
     async ({ page }) => {
-      test.skip(process.platform !== 'win32')
+      test.skip(process.platform === 'darwin')
       let codeLength = 1000
       await navigateAndClickOpenInDesktopApp(page, codeLength)
       await expect(getToastError(page)).not.toBeVisible()
