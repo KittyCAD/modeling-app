@@ -1440,7 +1440,9 @@ export class CameraControls {
         const decayInterval = setInterval(() => {
           const decayedVelocity = velocity - velocityFlickDecay
           if (decayedVelocity <= 0) {
-            this.onMouseUpInner(ev.srcEvent as PointerEvent)
+if (ev.srcEvent instanceof PointerEvent) {
+  this.onMouseUpInner(ev.srcEvent)
+}
             clearInterval(decayInterval)
           } else {
             velocity = decayedVelocity
