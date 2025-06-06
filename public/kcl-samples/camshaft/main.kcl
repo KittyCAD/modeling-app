@@ -99,7 +99,7 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
   tipDiameter = pitchDiameter + 2 * module
 
   // Define a function to create a rotated gear sketch on an offset plane
-  fn helicalGearSketch(offsetHeight) {
+  fn helicalGearSketch(@offsetHeight) {
     // Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height
     helixCalc = acos(offsetHeight * tan(helixAngle) / (tipDiameter / 2))
 
@@ -137,13 +137,13 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
   }
 
   // Draw a gear sketch on the base plane
-  gearcamProfile = helicalGearSketch(offsetHeight = 0)
+  gearcamProfile = helicalGearSketch(0)
 
   // Draw a rotated gear sketch on a middle interstitial plane
-  gearcenterShaft = helicalGearSketch(offsetHeight = gearHeight / 2)
+  gearcenterShaft = helicalGearSketch(gearHeight / 2)
 
   // Draw a rotated gear sketch at the gear height offset plane
-  gearSketch003 = helicalGearSketch(offsetHeight = gearHeight)
+  gearSketch003 = helicalGearSketch(gearHeight)
 
   // Loft each rotated gear sketch together to form a helical gear
   helicalGear = loft([
