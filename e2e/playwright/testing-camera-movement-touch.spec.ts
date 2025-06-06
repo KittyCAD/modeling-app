@@ -1,11 +1,6 @@
-import {
-  getUtils,
-  panFromCenter,
-  panTwoFingerFromCenter,
-  pinchFromCenter,
-} from '@e2e/playwright/test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { type Page, devices } from '@playwright/test'
+import { type Page } from '@playwright/test'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 
 test.use({
@@ -22,7 +17,7 @@ test.describe('Testing Camera Movement (Touch Only)', () => {
    * We could break them out into separate tests, but the longest past of the test is waiting
    * for the stream to start, so it can be good to bundle related things together.
    */
-  const bakeInRetries = async ({
+  const _bakeInRetries = async ({
     mouseActions,
     afterPosition,
     beforePosition,
@@ -83,7 +78,7 @@ test.describe('Testing Camera Movement (Touch Only)', () => {
       shouldRetry = true
     }
     if (shouldRetry) {
-      await bakeInRetries({
+      await _bakeInRetries({
         mouseActions,
         afterPosition: afterPosition,
         beforePosition: beforePosition,
