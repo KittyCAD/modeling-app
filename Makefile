@@ -2,8 +2,8 @@
 .PHONY: all
 
 all: install check build
+#\
 ```
-```` :
 
 
 # INSTALL
@@ -15,8 +15,8 @@ ifeq ($(OS),Windows_NT)
     export POWERSHELL := true
   endif
 endif
+#\
 ```
-```` :
 
 ``` :
 ifdef WINDOWS
@@ -26,20 +26,20 @@ else
   CARGO ?= $(shell which cargo || echo ~/.cargo/bin/cargo)
   WASM_PACK ?= $(shell which wasm-pack || echo ~/.cargo/bin/wasm-pack)
 endif
+#\
 ```
-```` :
 
 ``` :
 .PHONY: install
+#\
 ```
-```` :
 
 ### Install dependencies
 
 ``` :
 install: node_modules/.package-lock.json $(CARGO) $(WASM_PACK)
+#\
 ```
-```` :
 
 ``` :
 node_modules/.package-lock.json: package.json package-lock.json
