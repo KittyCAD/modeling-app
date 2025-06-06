@@ -24,7 +24,7 @@ test.describe('Share link tests', () => {
     { tag: ['@web', '@macos', '@linux'] },
     async ({ page }) => {
       test.skip(process.platform === 'win32')
-      const codeLength = 1000
+      const codeLength = 2000
       await navigateAndClickOpenInDesktopApp(page, codeLength)
       await expect(getToastError(page)).not.toBeVisible()
     }
