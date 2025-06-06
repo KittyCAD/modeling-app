@@ -418,7 +418,6 @@ impl ExecState {
     }
 
     /// Flush just the fillets and chamfers for this specific SolidSet.
-    #[allow(clippy::vec_box)]
     pub(crate) async fn flush_batch_for_solids(
         &mut self,
         meta: ModelingCmdMeta<'_>,
