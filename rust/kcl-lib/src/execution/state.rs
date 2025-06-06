@@ -77,6 +77,21 @@ pub(super) struct ArtifactState {
 #[derive(Debug, Clone, Default)]
 pub(super) struct ArtifactState {}
 
+/// Artifact state for a single module.
+#[cfg(all(test, feature = "artifact-graph"))]
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
+pub struct ModuleArtifactState {
+    /// Output commands to allow building the artifact graph.
+    pub commands: Vec<ArtifactCommand>,
+    /// Operations that have been performed in execution order, for display in
+    /// the Feature Tree.
+    pub operations: Vec<Operation>,
+}
+
+#[cfg(not(all(test, feature = "artifact-graph")))]
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
+pub struct ModuleArtifactState {}
+
 #[derive(Debug, Clone)]
 pub(super) struct ModuleState {
     /// The id generator for this module.
@@ -96,6 +111,7 @@ pub(super) struct ModuleState {
     pub settings: MetaSettings,
     pub(super) explicit_length_units: bool,
     pub(super) path: ModulePath,
+    pub artifacts: ModuleArtifactState,
 }
 
 impl ExecState {
@@ -188,6 +204,8 @@ impl ExecState {
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
+        #[cfg(all(test, feature = "artifact-graph"))]
+        self.mod_local.artifacts.operations.push(op.clone());
         #[cfg(feature = "artifact-graph")]
         self.global.artifacts.operations.push(op);
         #[cfg(not(feature = "artifact-graph"))]
@@ -239,6 +257,10 @@ impl ExecState {
 
     pub fn get_module(&mut self, id: ModuleId) -> Option<&ModuleInfo> {
         self.global.module_infos.get(&id)
+    }
+
+    pub fn modules(&self) -> &ModuleInfoMap {
+        &self.global.module_infos
     }
 
     pub fn current_default_units(&self) -> NumericType {
@@ -403,6 +425,7 @@ impl ModuleState {
                 default_angle_units: Default::default(),
                 kcl_version: "0.1".to_owned(),
             },
+            artifacts: Default::default(),
         }
     }
 
