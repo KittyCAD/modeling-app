@@ -132,7 +132,7 @@ jobs:
         include:
           - os: macos-14
             platform: mac
-          - os: namespace-profile-windows-2-cores
+          - os: namespace-profile-windows-8-cores
             platform: win
           - os: ubuntu-22.04
             platform: linux
