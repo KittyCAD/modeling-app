@@ -14,11 +14,52 @@ import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
-import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
+import { APP_VERSION } from '@src/routes/utils'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
 const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:text-chalkboard-30`
+
+// OAuth provider types - matching the API types
+type AccountProvider = 'github' | 'google' | 'apple' | 'microsoft' | 'discord'
+
+// OAuth client info type to match API response
+interface OAuth2ClientInfo {
+  url?: string
+}
+
+async function handleOAuthSignin(
+  provider: AccountProvider,
+  callback_url: string
+) {
+  try {
+    const endpoint =
+      VITE_KC_API_BASE_URL +
+      '/oauth2/provider/' +
+      provider +
+      '/consent?callback_url=' +
+      encodeURIComponent(callback_url)
+
+    // This will get our auth URL and state.
+    const resp = await fetch(endpoint, {
+      method: 'GET',
+    })
+
+    if (!resp.ok) {
+      toast.error('Login is unavailable.')
+      return
+    }
+
+    const info: OAuth2ClientInfo = await resp.json()
+
+    // If there is a url, redirect to it.
+    if (info && info.url && info.url.length > 0) {
+      window.location.href = info.url
+    }
+  } catch {
+    toast.error('Login is unavailable.')
+  }
+}
 
 const SignIn = () => {
   // Only create the native file menus on desktop
@@ -35,8 +76,13 @@ const SignIn = () => {
   const {
     app: { theme },
   } = useSettings()
-  const signInUrl = generateSignInUrl()
   const kclSampleUrl = `${VITE_KC_SITE_BASE_URL}/docs/kcl-samples/car-wheel-assembly`
+
+  // OAuth callback URL for webapp
+  const webappCallbackUrl =
+    typeof window !== 'undefined'
+      ? window.location.href.replace('signin', '')
+      : ''
 
   const getThemeText = useCallback(
     (shouldContrast = true) =>
@@ -55,7 +101,7 @@ const SignIn = () => {
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await window.electron
       .startDeviceFlow(VITE_KC_API_BASE_URL + location.search)
-      .catch(reportError)
+      .catch(reportRejection)
     if (!userCodeToDisplay) {
       console.error('No user code received while trying to log in')
       toast.error('Error while trying to log in')
@@ -64,7 +110,9 @@ const SignIn = () => {
     setUserCode(userCodeToDisplay)
 
     // Now that we have the user code, we can kick off the final login step.
-    const token = await window.electron.loginWithDeviceFlow().catch(reportError)
+    const token = await window.electron
+      .loginWithDeviceFlow()
+      .catch(reportRejection)
     if (!token) {
       console.error('No token received while trying to log in')
       toast.error('Error while trying to log in')
@@ -77,6 +125,16 @@ const SignIn = () => {
     authActor.send({ type: 'Log out' })
     setUserCode('')
   }
+
+  const handleOAuthClick = (provider: AccountProvider) => {
+    return (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      event.preventDefault()
+      handleOAuthSignin(provider, webappCallbackUrl).catch(reportRejection)
+    }
+  }
+
+  // OAuth button styling
+  const oauthButtonClasses = `w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg border ${subtleBorder} bg-chalkboard-10 dark:bg-chalkboard-90 hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 text-chalkboard-90 dark:text-chalkboard-10 transition-colors`
 
   return (
     <main
@@ -167,24 +225,63 @@ const SignIn = () => {
             ) : (
               <>
                 <div className="flex md:hidden flex-col gap-2">
-                  <p className="text-base text-primary">
+                  <p className="text-base text-primary mb-4">
                     This app is really best used on a desktop. We're working on
                     simple touch controls for mobile, but in the meantime please
                     visit using a larger device.
                   </p>
                 </div>
-                <Link
-                  onClick={openExternalBrowserIfDesktop(signInUrl)}
-                  to={signInUrl}
-                  className={
-                    'w-fit m-0 mt-8 hidden md:flex gap-4 items-center px-3 py-1 ' +
-                    '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
-                  }
-                  data-testid="sign-in-button"
-                >
-                  Sign in to get started
-                  <CustomIcon name="arrowRight" className="w-6 h-6" />
-                </Link>
+                <div className="hidden md:block mt-8">
+                  <h2 className="text-xl mb-4 text-chalkboard-90 dark:text-chalkboard-10">
+                    Sign in to get started
+                  </h2>
+                  <p className="text-sm mb-6 text-chalkboard-70 dark:text-chalkboard-30">
+                    No password setup necessary. When you sign into Zoo for the
+                    first time we create your account automatically.
+                  </p>
+                  <div className="flex flex-col gap-3 max-w-sm">
+                    <button
+                      onClick={handleOAuthClick('github')}
+                      className={oauthButtonClasses}
+                      data-testid="github-signin-button"
+                    >
+                      <CustomIcon name="code" className="w-5 h-5" />
+                      <span>Continue with GitHub</span>
+                    </button>
+                    <button
+                      onClick={handleOAuthClick('google')}
+                      className={oauthButtonClasses}
+                      data-testid="google-signin-button"
+                    >
+                      <CustomIcon name="search" className="w-5 h-5" />
+                      <span>Continue with Google</span>
+                    </button>
+                    <button
+                      onClick={handleOAuthClick('apple')}
+                      className={oauthButtonClasses}
+                      data-testid="apple-signin-button"
+                    >
+                      <CustomIcon name="star" className="w-5 h-5" />
+                      <span>Continue with Apple</span>
+                    </button>
+                    <button
+                      onClick={handleOAuthClick('microsoft')}
+                      className={oauthButtonClasses}
+                      data-testid="microsoft-signin-button"
+                    >
+                      <CustomIcon name="settings" className="w-5 h-5" />
+                      <span>Continue with Microsoft</span>
+                    </button>
+                    <button
+                      onClick={handleOAuthClick('discord')}
+                      className={oauthButtonClasses}
+                      data-testid="discord-signin-button"
+                    >
+                      <CustomIcon name="chat" className="w-5 h-5" />
+                      <span>Continue with Discord</span>
+                    </button>
+                  </div>
+                </div>
               </>
             )}
           </div>
