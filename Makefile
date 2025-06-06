@@ -32,20 +32,20 @@ endif
 
 ### Install dependencies
 
-**install**: node_modules/.package-lock.json `$(CARGO)` `$(WASM_PACK)`
+**install**: node_modules/.package-lock.json $(CARGO) $(WASM_PACK)
 
 - node_modules/.package-lock.json: package.json package-lock.json
 	- npm prune
 	- npm install
 
-- `$(CARGO)`:
+- $(CARGO):
 ifdef WINDOWS
 	- npm run install:rust:windows
 else
 	- npm run install:rust
 endif
 
-- `$(WASM_PACK)`:
+- $(WASM_PACK):
 ifdef WINDOWS
 	- npm run install:wasm-pack:cargo
 else
