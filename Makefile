@@ -1,8 +1,10 @@
-.PHONY: **all**
+.PHONY: ***all***
 
-**all**: install build
+***all***: **install**
 
 # INSTALL
+
+.PHONY: **install**
 
 ```sh :
 ifeq ($(OS),Windows_NT)
@@ -14,7 +16,7 @@ endif
 #\
 ```
 
-``` :
+```sh :
 ifdef WINDOWS
   CARGO ?= $(USERPROFILE)/.cargo/bin/cargo.exe
   WASM_PACK ?= $(USERPROFILE)/.cargo/bin/wasm-pack.exe
@@ -25,26 +27,15 @@ endif
 #\
 ```
 
-``` :
-.PHONY: install
-#\
-```
-
 ### Install dependencies
 
-``` :
-install: node_modules/.package-lock.json $(CARGO) $(WASM_PACK)
-#\
-```
+**install**: node_modules/.package-lock.json $(CARGO) $(WASM_PACK)
 
-``` :
 node_modules/.package-lock.json: package.json package-lock.json
 	npm prune
 	npm install
-#\
-```
 
-``` :
+```sh :
 $(CARGO):
 ifdef WINDOWS
 	npm run install:rust:windows
@@ -54,7 +45,7 @@ endif
 #\
 ```
 
-``` :
+```sh :
 $(WASM_PACK):
 ifdef WINDOWS
 	npm run install:wasm-pack:cargo
@@ -63,4 +54,3 @@ else
 endif
 #\
 ```
-
