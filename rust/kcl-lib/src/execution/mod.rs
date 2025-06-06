@@ -42,7 +42,7 @@ use crate::{
     source_range::SourceRange,
     CompilationError, ExecError, KclErrorWithOutputs,
 };
-pub(crate) use state::ModuleArtifactState;
+pub(crate) use state::{ModuleArtifactState, ModelingCmdMeta};
 
 pub(crate) mod annotations;
 #[cfg(feature = "artifact-graph")]

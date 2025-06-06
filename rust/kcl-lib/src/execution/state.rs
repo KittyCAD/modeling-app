@@ -3,7 +3,12 @@ use std::sync::Arc;
 use anyhow::Result;
 use indexmap::IndexMap;
 #[cfg(feature = "artifact-graph")]
-use kittycad_modeling_cmds::websocket::WebSocketResponse;
+use kcmc::websocket::WebSocketResponse;
+use kcmc::{
+    websocket::{ModelingCmdReq, OkWebSocketResponseData},
+    ModelingCmd,
+};
+use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -19,11 +24,12 @@ use crate::{
         id_generator::IdGenerator,
         memory::{ProgramMemory, Stack},
         types::{self, NumericType},
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, UnitAngle, UnitLen,
+        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, Solid, UnitAngle, UnitLen,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
     source_range::SourceRange,
+    std::Args,
     CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs,
 };
 
@@ -362,6 +368,148 @@ impl ExecState {
         _program: NodeRef<'_, crate::parsing::ast::types::Program>,
     ) -> Result<(), KclError> {
         Ok(())
+    }
+
+    // Add a modeling command to the batch but don't fire it right away.
+    pub(crate) async fn batch_modeling_cmd(
+        &mut self,
+        mut meta: ModelingCmdMeta<'_>,
+        cmd: ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        meta.ctx
+            .engine
+            .batch_modeling_cmd(meta.id(self.id_generator()), meta.source_range, &cmd)
+            .await
+    }
+
+    // Add multiple modeling commands to the batch but don't fire them right away.
+    pub(crate) async fn batch_modeling_cmds(
+        &mut self,
+        meta: ModelingCmdMeta<'_>,
+        cmds: &[ModelingCmdReq],
+    ) -> Result<(), crate::errors::KclError> {
+        meta.ctx.engine.batch_modeling_cmds(meta.source_range, cmds).await
+    }
+
+    // Add a modeling commandSolid> to the batch that gets executed at the end of the file.
+    // This is good for something like fillet or chamfer where the engine would
+    // eat the path id if we executed it right away.
+    pub(crate) async fn batch_end_cmd(
+        &mut self,
+        mut meta: ModelingCmdMeta<'_>,
+        cmd: ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        meta.ctx
+            .engine
+            .batch_end_cmd(meta.id(self.id_generator()), meta.source_range, &cmd)
+            .await
+    }
+
+    /// Send the modeling cmd and wait for the response.
+    pub(crate) async fn send_modeling_cmd(
+        &mut self,
+        mut meta: ModelingCmdMeta<'_>,
+        cmd: ModelingCmd,
+    ) -> Result<OkWebSocketResponseData, KclError> {
+        meta.ctx
+            .engine
+            .send_modeling_cmd(meta.id(self.id_generator()), meta.source_range, &cmd)
+            .await
+    }
+
+    /// Flush just the fillets and chamfers for this specific SolidSet.
+    #[allow(clippy::vec_box)]
+    pub(crate) async fn flush_batch_for_solids(
+        &mut self,
+        meta: ModelingCmdMeta<'_>,
+        solids: &[Solid],
+    ) -> Result<(), KclError> {
+        // Make sure we don't traverse sketches more than once.
+        let mut traversed_sketches = Vec::new();
+
+        // Collect all the fillet/chamfer ids for the solids.
+        let mut ids = Vec::new();
+        for solid in solids {
+            // We need to traverse the solids that share the same sketch.
+            let sketch_id = solid.sketch.id;
+            if !traversed_sketches.contains(&sketch_id) {
+                // Find all the solids on the same shared sketch.
+                ids.extend(
+                    self.stack()
+                        .walk_call_stack()
+                        .filter(|v| matches!(v, KclValue::Solid { value } if value.sketch.id == sketch_id))
+                        .flat_map(|v| match v {
+                            KclValue::Solid { value } => value.get_all_edge_cut_ids(),
+                            _ => unreachable!(),
+                        }),
+                );
+                traversed_sketches.push(sketch_id);
+            }
+
+            ids.extend(solid.get_all_edge_cut_ids());
+        }
+
+        // We can return early if there are no fillets or chamfers.
+        if ids.is_empty() {
+            return Ok(());
+        }
+
+        // We want to move these fillets and chamfers from batch_end to batch so they get executed
+        // before what ever we call next.
+        for id in ids {
+            // Pop it off the batch_end and add it to the batch.
+            let Some(item) = meta.ctx.engine.batch_end().write().await.shift_remove(&id) else {
+                // It might be in the batch already.
+                continue;
+            };
+            // Add it to the batch.
+            meta.ctx.engine.batch().write().await.push(item);
+        }
+
+        // Run flush.
+        // Yes, we do need to actually flush the batch here, or references will fail later.
+        meta.ctx.engine.flush_batch(false, meta.source_range).await?;
+
+        Ok(())
+    }
+}
+
+pub(crate) struct ModelingCmdMeta<'a> {
+    pub ctx: &'a ExecutorContext,
+    pub source_range: SourceRange,
+    id: Option<Uuid>,
+}
+
+impl<'a> ModelingCmdMeta<'a> {
+    pub fn new(ctx: &'a ExecutorContext, source_range: SourceRange) -> Self {
+        ModelingCmdMeta {
+            ctx,
+            source_range,
+            id: None,
+        }
+    }
+
+    pub fn from_args_id(args: &'a Args, id: Uuid) -> Self {
+        ModelingCmdMeta {
+            ctx: &args.ctx,
+            source_range: args.source_range,
+            id: Some(id),
+        }
+    }
+
+    pub fn id(&mut self, id_generator: &mut IdGenerator) -> Uuid {
+        if let Some(id) = self.id {
+            return id;
+        }
+        let id = id_generator.next_uuid();
+        self.id = Some(id);
+        id
+    }
+}
+
+impl<'a> From<&'a Args> for ModelingCmdMeta<'a> {
+    fn from(args: &'a Args) -> Self {
+        ModelingCmdMeta::new(&args.ctx, args.source_range)
     }
 }
 

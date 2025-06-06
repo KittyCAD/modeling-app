@@ -1,14 +1,10 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use kcmc::{
-    websocket::{ModelingCmdReq, OkWebSocketResponseData},
-    ModelingCmd,
-};
-use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::Serialize;
 
+use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -27,8 +23,6 @@ use crate::{
     },
     ModuleId,
 };
-
-use super::fillet::EdgeReference;
 
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`";
@@ -277,36 +271,7 @@ impl Args {
         })
     }
 
-    // Add a modeling command to the batch but don't fire it right away.
-    pub(crate) async fn batch_modeling_cmd(
-        &self,
-        id: uuid::Uuid,
-        cmd: ModelingCmd,
-    ) -> Result<(), crate::errors::KclError> {
-        self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
-    }
-
-    // Add multiple modeling commands to the batch but don't fire them right away.
-    pub(crate) async fn batch_modeling_cmds(&self, cmds: &[ModelingCmdReq]) -> Result<(), crate::errors::KclError> {
-        self.ctx.engine.batch_modeling_cmds(self.source_range, cmds).await
-    }
-
-    // Add a modeling commandSolid> to the batch that gets executed at the end of the file.
-    // This is good for something like fillet or chamfer where the engine would
-    // eat the path id if we executed it right away.
-    pub(crate) async fn batch_end_cmd(&self, id: uuid::Uuid, cmd: ModelingCmd) -> Result<(), crate::errors::KclError> {
-        self.ctx.engine.batch_end_cmd(id, self.source_range, &cmd).await
-    }
-
-    /// Send the modeling cmd and wait for the response.
-    pub(crate) async fn send_modeling_cmd(
-        &self,
-        id: uuid::Uuid,
-        cmd: ModelingCmd,
-    ) -> Result<OkWebSocketResponseData, KclError> {
-        self.ctx.engine.send_modeling_cmd(id, self.source_range, &cmd).await
-    }
-
+    // TODO: Move this to ExecState.
     fn get_tag_info_from_memory<'a, 'e>(
         &'a self,
         exec_state: &'e mut ExecState,
@@ -330,6 +295,7 @@ impl Args {
         }
     }
 
+    // TODO: Move this to ExecState.
     pub(crate) fn get_tag_engine_info<'a, 'e>(
         &'a self,
         exec_state: &'e mut ExecState,
@@ -345,6 +311,7 @@ impl Args {
         self.get_tag_info_from_memory(exec_state, tag)
     }
 
+    // TODO: Move this to ExecState.
     fn get_tag_engine_info_check_surface<'a, 'e>(
         &'a self,
         exec_state: &'e mut ExecState,
@@ -360,63 +327,6 @@ impl Args {
         }
 
         self.get_tag_info_from_memory(exec_state, tag)
-    }
-
-    /// Flush just the fillets and chamfers for this specific SolidSet.
-    #[allow(clippy::vec_box)]
-    pub(crate) async fn flush_batch_for_solids(
-        &self,
-        exec_state: &mut ExecState,
-        solids: &[Solid],
-    ) -> Result<(), KclError> {
-        // Make sure we don't traverse sketches more than once.
-        let mut traversed_sketches = Vec::new();
-
-        // Collect all the fillet/chamfer ids for the solids.
-        let mut ids = Vec::new();
-        for solid in solids {
-            // We need to traverse the solids that share the same sketch.
-            let sketch_id = solid.sketch.id;
-            if !traversed_sketches.contains(&sketch_id) {
-                // Find all the solids on the same shared sketch.
-                ids.extend(
-                    exec_state
-                        .stack()
-                        .walk_call_stack()
-                        .filter(|v| matches!(v, KclValue::Solid { value } if value.sketch.id == sketch_id))
-                        .flat_map(|v| match v {
-                            KclValue::Solid { value } => value.get_all_edge_cut_ids(),
-                            _ => unreachable!(),
-                        }),
-                );
-                traversed_sketches.push(sketch_id);
-            }
-
-            ids.extend(solid.get_all_edge_cut_ids());
-        }
-
-        // We can return early if there are no fillets or chamfers.
-        if ids.is_empty() {
-            return Ok(());
-        }
-
-        // We want to move these fillets and chamfers from batch_end to batch so they get executed
-        // before what ever we call next.
-        for id in ids {
-            // Pop it off the batch_end and add it to the batch.
-            let Some(item) = self.ctx.engine.batch_end().write().await.shift_remove(&id) else {
-                // It might be in the batch already.
-                continue;
-            };
-            // Add it to the batch.
-            self.ctx.engine.batch().write().await.push(item);
-        }
-
-        // Run flush.
-        // Yes, we do need to actually flush the batch here, or references will fail later.
-        self.ctx.engine.flush_batch(false, self.source_range).await?;
-
-        Ok(())
     }
 
     pub(crate) fn make_kcl_val_from_point(&self, p: [f64; 2], ty: NumericType) -> Result<KclValue, KclError> {
@@ -448,6 +358,7 @@ impl Args {
         )
     }
 
+    // TODO: Move this to ExecState.
     pub(crate) async fn get_adjacent_face_to_tag(
         &self,
         exec_state: &mut ExecState,
