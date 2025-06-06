@@ -32,7 +32,7 @@ endif
 
 ### Installing dependencies
 
-**install**: node_modules/.package-lock.json $( CARGO ) $( WASM_PACK )
+**install**: node_modules/.package-lock.json $(CARGO) $(WASM_PACK) $\
 
 - node_modules/.package-lock.json: package.json package-lock.json
 	- npm prune
@@ -53,3 +53,4 @@ else
 endif
 
 -:
+$\:
