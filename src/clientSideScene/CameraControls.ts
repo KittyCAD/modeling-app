@@ -1398,6 +1398,7 @@ export class CameraControls {
 
     // TODO: get the engine to coalesce simultaneous zoom/pan/orbit events,
     // then we won't have to worry about jitter at all.
+    // https://github.com/KittyCAD/engine/issues/3528
     hammertime.get('pinch').recognizeWith(hammertime.get('doublepan'))
 
     // Clear decay intervals on any interaction start
