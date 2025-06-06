@@ -291,9 +291,9 @@ export class SceneInfra {
     window.addEventListener('resize', this.onWindowResize)
 
     this.camControls = new CameraControls(
-      false,
       this.renderer.domElement,
-      engineCommandManager
+      engineCommandManager,
+      false
     )
     this.camControls.subscribeToCamChange(() => this.onCameraChange())
     this.camControls.camera.layers.enable(SKETCH_LAYER)
