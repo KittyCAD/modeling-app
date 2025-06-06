@@ -217,6 +217,14 @@ export const POOL_QUERY_PARAM = 'pool'
  * @deprecated: supporting old share links with this. For new command URLs, use "cmd"
  */
 export const CREATE_FILE_URL_PARAM = 'create-file'
+export const FILE_NAME_QUERY_PARAM = 'name'
+export const CODE_QUERY_PARAM = 'code'
 /** A query parameter to skip the sign-on view if unnecessary. */
 export const IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM =
   'immediate-sign-in-if-necessary'
+
+/** Local storage key names. */
+export const LOCAL_STORAGE_TEMPORARY_WORKSPACE = 'temporaryWorkspace'
+export const LOCAL_STORAGE_OLD_CODE = 'oldCode'
+export const LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION =
+  'replacedWorkspaceThisSession'

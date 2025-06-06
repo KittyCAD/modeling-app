@@ -5,6 +5,7 @@ import UserSidebarMenu from '@src/components/UserSidebarMenu'
 import { isDesktop } from '@src/lib/isDesktop'
 import { type IndexLoaderData } from '@src/lib/types'
 import { useUser } from '@src/lib/singletons'
+import { LOCAL_STORAGE_TEMPORARY_WORKSPACE } from '@src/lib/constants'
 
 import styles from './AppHeader.module.css'
 
@@ -27,6 +28,9 @@ export const AppHeader = ({
   nativeFileMenuCreated,
 }: AppHeaderProps) => {
   const user = useUser()
+  const isInTemporaryWorkspace = Boolean(
+    localStorage.getItem(LOCAL_STORAGE_TEMPORARY_WORKSPACE)
+  )
 
   return (
     <header
@@ -49,8 +53,15 @@ export const AppHeader = ({
         file={project?.file}
       />
       {/* Toolbar if the context deems it */}
-      <div className="flex-grow flex justify-center max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">
-        {showToolbar && <Toolbar />}
+      <div className="flex flex-col items-center gap-2">
+        <div className="flex-grow flex justify-center max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">
+          {showToolbar && <Toolbar />}
+        </div>
+        {isInTemporaryWorkspace && (
+          <div className="animate-pulse w-fit uppercase text-xs rounded-full ml-2 px-2 py-1 border border-chalkboard-40 dark:text-chalkboard-40">
+            Temporary workspace
+          </div>
+        )}
       </div>
       <div className="flex items-center gap-2 py-1 ml-auto">
         {/* If there are children, show them, otherwise show User menu */}
