@@ -38,24 +38,18 @@ endif
 	- npm prune
 	- npm install
 
-```sh :
-$(CARGO):
+- $(CARGO):
 ifdef WINDOWS
-	npm run install:rust:windows
+	- npm run install:rust:windows
 else
-	npm run install:rust
+	- npm run install:rust
 endif
-#\
-```
 
-```sh :
-$(WASM_PACK):
+- $(WASM_PACK):
 ifdef WINDOWS
-	npm run install:wasm-pack:cargo
+	- npm run install:wasm-pack:cargo
 else
-	npm run install:wasm-pack:sh
+	- npm run install:wasm-pack:sh
 endif
-#\
-```
 
 -:
