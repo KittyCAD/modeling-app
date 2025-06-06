@@ -5,7 +5,7 @@
 
 **all**: **install**
 
-# INSTALL
+## Installation
 
 .PHONY: **install**
 
@@ -30,7 +30,7 @@ endif
 #\
 ```
 
-### Install dependencies
+### Installing dependencies
 
 **install**: node_modules/.package-lock.json $(CARGO) $(WASM_PACK)
 
