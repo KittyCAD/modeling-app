@@ -1,7 +1,6 @@
 # Zoo Design Studio
 ### Developer manual
 
-[//]:#\
 .PHONY: **all**
 
 **all**: **install**
@@ -35,9 +34,9 @@ endif
 
 **install**: node_modules/.package-lock.json $(CARGO) $(WASM_PACK)
 
-node_modules/.package-lock.json: package.json package-lock.json
-	npm prune
-	npm install
+- node_modules/.package-lock.json: package.json package-lock.json
+	- npm prune
+	- npm install
 
 ```sh :
 $(CARGO):
@@ -58,3 +57,5 @@ else
 endif
 #\
 ```
+
+-:
