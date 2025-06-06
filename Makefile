@@ -1,8 +1,9 @@
-````:
+``` :
 .PHONY: all
 
 all: install check build
-# ````
+
+# ```
 
 
 # INSTALL
