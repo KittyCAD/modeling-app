@@ -1,5 +1,5 @@
 # Zoo Design Studio
-## Developer manual
+### Developer manual
 
 .PHONY: **all**
 
