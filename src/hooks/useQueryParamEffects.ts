@@ -47,18 +47,20 @@ export function useQueryParamEffects() {
    * Watches for legacy `?create-file` hook, which share links currently use.
    */
   useEffect(() => {
-    if (shouldInvokeCreateFile && authState.matches('loggedIn')) {
+    if (
+      shouldInvokeCreateFile &&
+      authState.matches('loggedIn') &&
+      isDesktop()
+    ) {
       const argDefaultValues = buildCreateFileCommandArgs(searchParams)
-      if (isDesktop()) {
-        commandBarActor.send({
-          type: 'Find and select command',
-          data: {
-            groupId: 'projects',
-            name: 'Import file from URL',
-            argDefaultValues,
-          },
-        })
-      }
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Import file from URL',
+          argDefaultValues,
+        },
+      })
 
       // Delete the query params after the command has been invoked.
       searchParams.delete(CREATE_FILE_URL_PARAM)
