@@ -379,7 +379,7 @@ impl ExecState {
         Ok(())
     }
 
-    // Add a modeling command to the batch but don't fire it right away.
+    /// Add a modeling command to the batch but don't fire it right away.
     pub(crate) async fn batch_modeling_cmd(
         &mut self,
         mut meta: ModelingCmdMeta<'_>,
@@ -395,7 +395,8 @@ impl ExecState {
         meta.ctx.engine.batch_modeling_cmd(id, meta.source_range, &cmd).await
     }
 
-    // Add multiple modeling commands to the batch but don't fire them right away.
+    /// Add multiple modeling commands to the batch but don't fire them right
+    /// away.
     pub(crate) async fn batch_modeling_cmds(
         &mut self,
         meta: ModelingCmdMeta<'_>,
@@ -412,9 +413,9 @@ impl ExecState {
         meta.ctx.engine.batch_modeling_cmds(meta.source_range, cmds).await
     }
 
-    // Add a modeling commandSolid> to the batch that gets executed at the end of the file.
-    // This is good for something like fillet or chamfer where the engine would
-    // eat the path id if we executed it right away.
+    /// Add a modeling command to the batch that gets executed at the end of the
+    /// file. This is good for something like fillet or chamfer where the engine
+    /// would eat the path id if we executed it right away.
     pub(crate) async fn batch_end_cmd(
         &mut self,
         mut meta: ModelingCmdMeta<'_>,
