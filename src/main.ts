@@ -38,6 +38,7 @@ import {
   disableMenu,
   enableMenu,
 } from '@src/menu'
+import fs from 'fs'
 
 // If we're on Windows, pull the local system TLS CAs in
 require('win-ca')
@@ -102,7 +103,7 @@ if (!singleInstanceLock && !IS_PLAYWRIGHT) {
 }
 
 const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
-  let newWindow
+  let newWindow: BrowserWindow | null = null
 
   if (reuse) {
     newWindow = mainWindow
@@ -112,12 +113,27 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     const primaryDisplay = screen.getPrimaryDisplay()
     const { width, height } = primaryDisplay.workAreaSize
 
-    const windowWidth = Math.max(500, width - 150)
-    const windowHeight = Math.max(400, height - 100)
+    // Use 90% vertical screen space, 16:9 aspect ratio for the width,
+    // but ensure it fits within the screen width with a bit of padding
+    let windowHeight = Math.round(height * 0.9)
+    let windowWidth = Math.min(Math.round(windowHeight * (16 / 9)), width - 50)
 
-    const x = primaryDisplay.workArea.x + Math.floor((width - windowWidth) / 2)
-    const y =
-      primaryDisplay.workArea.y + Math.floor((height - windowHeight) / 2)
+    let x = primaryDisplay.workArea.x + Math.floor((width - windowWidth) / 2)
+    let y = primaryDisplay.workArea.y + Math.floor((height - windowHeight) / 2)
+
+    // If size was saved already, use it
+    const localDeviceState = loadLocalDeviceState()
+    const windowBounds = localDeviceState?.windowBounds
+    if (windowBounds) {
+      // Only use bounds if the window is still visible on any of the displays
+      // (one screen could have been disconnected since config was saved).
+      if (isBoundsVisible(windowBounds)) {
+        windowWidth = windowBounds.width
+        windowHeight = windowBounds.height
+        x = windowBounds.x
+        y = windowBounds.y
+      }
+    }
 
     newWindow = new BrowserWindow({
       autoHideMenuBar: false,
@@ -139,6 +155,14 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
       backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
     })
   }
+
+  newWindow.on('close', () => {
+    const bounds = newWindow.getBounds()
+    saveLocalDeviceState({
+      version: '0.1', // Version of the config file, so we add migrations if we break it later
+      windowBounds: bounds,
+    })
+  })
 
   // Deep Link: Case of a cold start from Windows or Linux
   const pathOrUrl = getPathOrUrlFromArgs(args)
@@ -220,6 +244,45 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   }
 
   return newWindow
+}
+
+interface LocalDeviceState {
+  windowBounds: Electron.Rectangle
+  version: string // "0.1"
+}
+
+const userDataPath = app.getPath('userData')
+const localDeviceStatePath = path.join(userDataPath, 'device_state.json')
+
+const loadLocalDeviceState = (): LocalDeviceState | null => {
+  try {
+    const data = fs.readFileSync(localDeviceStatePath, 'utf8')
+    const localDeviceState = JSON.parse(data) as LocalDeviceState
+    if (localDeviceState.windowBounds) {
+      return localDeviceState
+    }
+  } catch (e) {
+    console.log("Can't load device_state.json", e)
+  }
+  return null
+}
+
+const saveLocalDeviceState = (state: LocalDeviceState) => {
+  fs.writeFileSync(localDeviceStatePath, JSON.stringify(state), {
+    encoding: 'utf8',
+  })
+}
+
+const isBoundsVisible = (bounds: Electron.Rectangle): boolean => {
+  return screen.getAllDisplays().some((display) => {
+    const displayBounds = display.bounds
+    return !(
+      bounds.x >= displayBounds.x + displayBounds.width ||
+      bounds.x + bounds.width <= displayBounds.x ||
+      bounds.y >= displayBounds.y + displayBounds.height ||
+      bounds.y + bounds.height <= displayBounds.y
+    )
+  })
 }
 
 // Quit when all windows are closed, even on macOS. There, it's common
