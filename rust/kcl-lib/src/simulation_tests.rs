@@ -78,12 +78,13 @@ impl ExecState {
         let mut module_state = IndexMap::new();
         for info in self.modules().values() {
             match &info.repr {
-                ModuleRepr::Root | ModuleRepr::Kcl(_, None) => {
-                    // self.
+                ModuleRepr::Root => {
+                    module_state.insert(info.path.to_string(), self.module_artifact_state().clone());
+                }
+                ModuleRepr::Kcl(_, None) => {
                     module_state.insert(info.path.to_string(), Default::default());
                 }
                 ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts))) => {
-                    // self.
                     module_state.insert(info.path.to_string(), module_artifacts.clone());
                 }
                 ModuleRepr::Foreign(_, _) | ModuleRepr::Dummy => {}
@@ -248,8 +249,8 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             #[cfg(feature = "artifact-graph")]
             assert_artifact_snapshots(
                 test,
-                outcome.operations,
                 module_state,
+                outcome.operations,
                 outcome.artifact_commands,
                 outcome.artifact_graph,
             );
@@ -288,8 +289,8 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     #[cfg(feature = "artifact-graph")]
                     assert_artifact_snapshots(
                         test,
-                        error.operations,
                         module_state,
+                        error.operations,
                         error.artifact_commands,
                         error.artifact_graph,
                     );
@@ -310,7 +311,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 #[derive(Debug, Serialize)]
 struct TestOperations<'a> {
     module_operations: IndexMap<&'a String, &'a Vec<Operation>>,
-    global_operations: Vec<Operation>,
+    main_operations: Vec<Operation>,
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -325,8 +326,8 @@ struct TestArtifactCommands<'a> {
 #[cfg(feature = "artifact-graph")]
 fn assert_artifact_snapshots(
     test: &Test,
-    global_operations: Vec<Operation>,
     module_state: IndexMap<String, ModuleArtifactState>,
+    main_operations: Vec<Operation>,
     global_commands: Vec<ArtifactCommand>,
     artifact_graph: ArtifactGraph,
 ) {
@@ -334,13 +335,13 @@ fn assert_artifact_snapshots(
         .iter()
         .map(|(path, s)| (path, &s.operations))
         .collect::<IndexMap<_, _>>();
-    let operations = TestOperations {
-        module_operations,
-        global_operations,
-    };
+    // let operations = TestOperations {
+    //     module_operations,
+    //     main_operations,
+    // };
     let result1 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Operations executed", || {
-            insta::assert_json_snapshot!("ops", operations, {
+            insta::assert_json_snapshot!("ops", module_operations, {
                 "[].*.unlabeledArg.*.value.**[].from[]" => rounded_redaction(3),
                 "[].*.unlabeledArg.*.value.**[].to[]" => rounded_redaction(3),
                 "[].**.value.value" => rounded_redaction(3),
@@ -356,13 +357,13 @@ fn assert_artifact_snapshots(
         .iter()
         .map(|(path, s)| (path, &s.commands))
         .collect::<IndexMap<_, _>>();
-    let artifact_commands = TestArtifactCommands {
-        module_commands,
-        global_commands,
-    };
+    // let artifact_commands = TestArtifactCommands {
+    //     module_commands,
+    //     global_commands,
+    // };
     let result2 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Artifact commands", || {
-            insta::assert_json_snapshot!("artifact_commands", artifact_commands, {
+            insta::assert_json_snapshot!("artifact_commands", module_commands, {
                 "[].command.**.value" => rounded_redaction(3),
                 "[].command.**.x" => rounded_redaction(3),
                 "[].command.**.y" => rounded_redaction(3),

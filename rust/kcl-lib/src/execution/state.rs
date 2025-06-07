@@ -277,7 +277,7 @@ impl ExecState {
         &self.global.module_infos
     }
 
-    #[cfg(all(test, feature = "artifact-graph"))]
+    #[cfg(test)]
     pub(crate) fn module_artifact_state(&self) -> &ModuleArtifactState {
         &self.mod_local.artifacts
     }
