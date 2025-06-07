@@ -269,6 +269,11 @@ impl ExecState {
         &self.global.module_infos
     }
 
+    #[cfg(all(test, feature = "artifact-graph"))]
+    pub(crate) fn module_artifact_state(&self) -> &ModuleArtifactState {
+        &self.mod_local.artifacts
+    }
+
     pub fn current_default_units(&self) -> NumericType {
         NumericType::Default {
             len: self.length_unit(),
@@ -376,10 +381,14 @@ impl ExecState {
         mut meta: ModelingCmdMeta<'_>,
         cmd: ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
-        meta.ctx
-            .engine
-            .batch_modeling_cmd(meta.id(self.id_generator()), meta.source_range, &cmd)
-            .await
+        let id = meta.id(self.id_generator());
+        #[cfg(all(test, feature = "artifact-graph"))]
+        self.mod_local.artifacts.commands.push(ArtifactCommand {
+            cmd_id: id,
+            range: meta.source_range,
+            command: cmd.clone(),
+        });
+        meta.ctx.engine.batch_modeling_cmd(id, meta.source_range, &cmd).await
     }
 
     // Add multiple modeling commands to the batch but don't fire them right away.
@@ -388,6 +397,14 @@ impl ExecState {
         meta: ModelingCmdMeta<'_>,
         cmds: &[ModelingCmdReq],
     ) -> Result<(), crate::errors::KclError> {
+        #[cfg(all(test, feature = "artifact-graph"))]
+        for cmd_req in cmds {
+            self.mod_local.artifacts.commands.push(ArtifactCommand {
+                cmd_id: *cmd_req.cmd_id.as_ref(),
+                range: meta.source_range,
+                command: cmd_req.cmd.clone(),
+            });
+        }
         meta.ctx.engine.batch_modeling_cmds(meta.source_range, cmds).await
     }
 
@@ -399,10 +416,16 @@ impl ExecState {
         mut meta: ModelingCmdMeta<'_>,
         cmd: ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
-        meta.ctx
-            .engine
-            .batch_end_cmd(meta.id(self.id_generator()), meta.source_range, &cmd)
-            .await
+        let id = meta.id(self.id_generator());
+        // TODO: The order of the tracking of these doesn't match the order that
+        // they're sent to the engine.
+        #[cfg(all(test, feature = "artifact-graph"))]
+        self.mod_local.artifacts.commands.push(ArtifactCommand {
+            cmd_id: id,
+            range: meta.source_range,
+            command: cmd.clone(),
+        });
+        meta.ctx.engine.batch_end_cmd(id, meta.source_range, &cmd).await
     }
 
     /// Send the modeling cmd and wait for the response.
@@ -411,10 +434,14 @@ impl ExecState {
         mut meta: ModelingCmdMeta<'_>,
         cmd: ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        meta.ctx
-            .engine
-            .send_modeling_cmd(meta.id(self.id_generator()), meta.source_range, &cmd)
-            .await
+        let id = meta.id(self.id_generator());
+        #[cfg(all(test, feature = "artifact-graph"))]
+        self.mod_local.artifacts.commands.push(ArtifactCommand {
+            cmd_id: id,
+            range: meta.source_range,
+            command: cmd.clone(),
+        });
+        meta.ctx.engine.send_modeling_cmd(id, meta.source_range, &cmd).await
     }
 
     /// Force flush the batch queue.
