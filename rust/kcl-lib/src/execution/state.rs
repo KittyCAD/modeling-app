@@ -222,6 +222,14 @@ impl ExecState {
         drop(op);
     }
 
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn push_command(&mut self, command: ArtifactCommand) {
+        #[cfg(all(test, feature = "artifact-graph"))]
+        self.mod_local.artifacts.commands.push(command);
+        #[cfg(not(all(test, feature = "artifact-graph")))]
+        drop(command);
+    }
+
     pub(super) fn next_module_id(&self) -> ModuleId {
         ModuleId::from_usize(self.global.path_to_source_id.len())
     }
@@ -386,8 +394,8 @@ impl ExecState {
         cmd: ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
         let id = meta.id(self.id_generator());
-        #[cfg(all(test, feature = "artifact-graph"))]
-        self.mod_local.artifacts.commands.push(ArtifactCommand {
+        #[cfg(feature = "artifact-graph")]
+        self.push_command(ArtifactCommand {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
@@ -402,9 +410,9 @@ impl ExecState {
         meta: ModelingCmdMeta<'_>,
         cmds: &[ModelingCmdReq],
     ) -> Result<(), crate::errors::KclError> {
-        #[cfg(all(test, feature = "artifact-graph"))]
+        #[cfg(feature = "artifact-graph")]
         for cmd_req in cmds {
-            self.mod_local.artifacts.commands.push(ArtifactCommand {
+            self.push_command(ArtifactCommand {
                 cmd_id: *cmd_req.cmd_id.as_ref(),
                 range: meta.source_range,
                 command: cmd_req.cmd.clone(),
@@ -424,8 +432,8 @@ impl ExecState {
         let id = meta.id(self.id_generator());
         // TODO: The order of the tracking of these doesn't match the order that
         // they're sent to the engine.
-        #[cfg(all(test, feature = "artifact-graph"))]
-        self.mod_local.artifacts.commands.push(ArtifactCommand {
+        #[cfg(feature = "artifact-graph")]
+        self.push_command(ArtifactCommand {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
@@ -440,8 +448,8 @@ impl ExecState {
         cmd: ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
         let id = meta.id(self.id_generator());
-        #[cfg(all(test, feature = "artifact-graph"))]
-        self.mod_local.artifacts.commands.push(ArtifactCommand {
+        #[cfg(feature = "artifact-graph")]
+        self.push_command(ArtifactCommand {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
