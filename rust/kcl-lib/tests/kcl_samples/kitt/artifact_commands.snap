@@ -33,6 +33,13 @@ description: Artifact commands kitt.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_grid_auto_scale"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
       "ortho": false,

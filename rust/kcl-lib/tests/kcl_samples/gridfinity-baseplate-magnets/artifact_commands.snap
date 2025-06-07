@@ -33,6 +33,15 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_grid_scale",
+      "value": 10.0,
+      "units": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
       "ortho": false,

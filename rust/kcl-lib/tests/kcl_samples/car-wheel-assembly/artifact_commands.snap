@@ -33,6 +33,15 @@ description: Artifact commands car-wheel-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_grid_scale",
+      "value": 10.0,
+      "units": "in"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "set_object_transform",
       "object_id": "[uuid]",
       "transforms": [

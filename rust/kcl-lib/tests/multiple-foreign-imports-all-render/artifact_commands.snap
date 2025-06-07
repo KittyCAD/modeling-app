@@ -33,6 +33,13 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_grid_auto_scale"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "import_files",
       "files": [
         {

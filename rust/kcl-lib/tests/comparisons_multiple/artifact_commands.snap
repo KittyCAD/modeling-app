@@ -28,5 +28,12 @@ description: Artifact commands comparisons_multiple.kcl
       "object_id": "[uuid]",
       "hidden": true
     }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_grid_auto_scale"
+    }
   }
 ]
