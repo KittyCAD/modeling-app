@@ -780,9 +780,6 @@ impl ExecutorContext {
 
     /// Perform the execution of a program.
     ///
-    /// You can optionally pass in some initialization memory for partial
-    /// execution.
-    ///
     /// To access non-fatal errors and warnings, extract them from the `ExecState`.
     pub async fn run(
         &self,
@@ -794,9 +791,6 @@ impl ExecutorContext {
 
     /// Perform the execution of a program using a concurrent
     /// execution model.
-    ///
-    /// You can optionally pass in some initialization memory for partial
-    /// execution.
     ///
     /// To access non-fatal errors and warnings, extract them from the `ExecState`.
     pub async fn run_concurrent(
