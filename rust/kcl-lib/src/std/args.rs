@@ -11,8 +11,8 @@ use crate::{
     execution::{
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
-        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, ModelingCmdMeta, PlaneInfo, Sketch,
-        SketchSurface, Solid, TagIdentifier,
+        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
+        TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
@@ -445,12 +445,6 @@ impl Args {
             format!("Expected a face with the tag `{}`", tag.value),
             vec![self.source_range],
         )))
-    }
-}
-
-impl<'a> From<&'a Args> for ModelingCmdMeta<'a> {
-    fn from(args: &'a Args) -> Self {
-        ModelingCmdMeta::new(&args.ctx, args.source_range)
     }
 }
 

@@ -557,6 +557,12 @@ impl<'a> ModelingCmdMeta<'a> {
     }
 }
 
+impl<'a> From<&'a Args> for ModelingCmdMeta<'a> {
+    fn from(args: &'a Args) -> Self {
+        ModelingCmdMeta::new(&args.ctx, args.source_range)
+    }
+}
+
 impl GlobalState {
     fn new(settings: &ExecutorSettings) -> Self {
         let mut global = GlobalState {
