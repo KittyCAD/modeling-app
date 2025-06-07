@@ -450,6 +450,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
+        validation: async ({ data }) => {
+          if (data.sketches.graphSelections.length < 2) {
+            return 'Loft requires at least 2 sketches.'
+          }
+
+          return true
+        },
       },
     },
   },
