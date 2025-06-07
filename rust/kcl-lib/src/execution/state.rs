@@ -273,7 +273,8 @@ impl ExecState {
         self.global.module_infos.get(&id)
     }
 
-    pub fn modules(&self) -> &ModuleInfoMap {
+    #[cfg(test)]
+    pub(crate) fn modules(&self) -> &ModuleInfoMap {
         &self.global.module_infos
     }
 
