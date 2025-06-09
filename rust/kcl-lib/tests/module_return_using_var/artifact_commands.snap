@@ -220,5 +220,30 @@ description: Artifact commands module_return_using_var.kcl
       }
     }
   ],
-  "tests/module_return_using_var/input.kcl": []
+  "tests/module_return_using_var/input.kcl": [
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "set_object_transform",
+        "object_id": "[uuid]",
+        "transforms": [
+          {
+            "translate": {
+              "property": {
+                "x": 5.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "set": false,
+              "is_local": true
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
+      }
+    }
+  ]
 }
