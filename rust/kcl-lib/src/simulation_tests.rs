@@ -22,8 +22,7 @@ mod kcl_samples;
 struct Test {
     /// The name of the test.
     name: String,
-    /// The name of the KCL file that's the entry point, e.g. "main.kcl", in the
-    /// `input_dir`.
+    /// The KCL file that's the entry point, e.g. "main.kcl", in the `input_dir`.
     entry_point: PathBuf,
     /// Input KCL files are in this directory.
     input_dir: PathBuf,
@@ -303,7 +302,6 @@ fn assert_artifact_snapshots(
         .iter()
         .map(|(path, s)| (path, &s.operations))
         .collect::<IndexMap<_, _>>();
-    let module_operations_count = module_operations.values().map(|ops| ops.len()).sum();
     let result1 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Operations executed", || {
             insta::assert_json_snapshot!("ops", module_operations, {
@@ -364,7 +362,17 @@ fn assert_artifact_snapshots(
     result1.unwrap();
     result2.unwrap();
     result3.unwrap();
-    assert!(global_operations.len() >= module_operations_count);
+
+    // The global operations should be a superset of the main module.  But it
+    // won't always be a superset of the operations of all modules.
+    let root_string: String = test.entry_point.to_string_lossy().into_owned();
+    let main_operations = module_operations
+        .get(&root_string)
+        .expect("Main module state not found");
+    assert!(
+        global_operations.len() >= main_operations.len(),
+        "global_operations={global_operations:#?}, main_operations={main_operations:#?}"
+    );
 }
 
 mod cube {
