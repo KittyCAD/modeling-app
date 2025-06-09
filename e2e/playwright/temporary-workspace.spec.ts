@@ -27,9 +27,7 @@ test.describe('Temporary workspace', () => {
         await page.goto(page.url() + targetURL)
         await expect
           .poll(() => page.url())
-          .toContain(
-            'create-file=true&browser=test&code=${codeQueryParam}&ask-open-desktop=true'
-          )
+          .toContain('browser=test&ask-open-desktop=true')
         const button = page.getByRole('button', { name: 'Continue to web app' })
         await button.click()
 

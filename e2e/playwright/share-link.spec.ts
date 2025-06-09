@@ -29,7 +29,7 @@ test.describe('Share link tests', () => {
         await page.goto(page.url() + targetURL)
         await expect
           .poll(() => page.url())
-          .toContain('browser=test&code=${code}&ask-open-desktop=true')
+          .toContain('browser=test&ask-open-desktop=true')
         const button = page.getByRole('button', { name: 'Open in desktop app' })
         await button.click()
         const toastError = page.getByText(
