@@ -218,7 +218,7 @@ jobs:
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           CSC_FOR_PULL_REQUEST : true
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
-        run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'prod' || 'dev' }}
+        run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'dev' || 'prod' }}
 
       - name: List artifacts in out/
         run: ls -R out
