@@ -291,6 +291,7 @@ export class SceneInfra {
     this.renderer.domElement.id = 'client-side-scene-canvas'
     this.renderer.domElement.tabIndex = 0
     this.renderer.domElement.autofocus = true
+    this.renderer.domElement.style.outline = 'none'
 
     // LABEL RENDERER
     this.labelRenderer = new CSS2DRenderer()

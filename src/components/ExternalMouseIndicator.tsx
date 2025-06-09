@@ -51,7 +51,7 @@ export const ExternalMouseIndicator = ({
               type: _3DMouseMachineEvents.connect,
               data: {
                 name: 'zoo-design-studio',
-                debug: true,
+                debug: false,
                 canvasId: 'client-side-scene-canvas',
                 camera: sceneInfra.camControls.camera,
               },

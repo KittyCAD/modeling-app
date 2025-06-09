@@ -249,7 +249,9 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
   }
 
   log(message: string, data?: any): void {
-    console.log(`prefix ${message} data:${data}`)
+    if (this.debug) {
+      console.log(`prefix ${message} data:${data}`)
+    }
   }
 
   constructor({
@@ -706,6 +708,7 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
       this.camera.quaternion,
       this.camera.scale
     )
+
     this.camera.updateMatrixWorld(true)
 
     // Entry to the engine API to sync the engine camera
@@ -763,7 +766,7 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     // trigger the update when the value is set to 0.
     this.log('setTransaction', transaction)
     if (transaction === 0) {
-      this.updateScene()
+      // this.updateScene()
     }
   }
 
@@ -771,7 +774,6 @@ class _3DMouseThreeJSWindows implements _3DconnexionMiddleware {
     this.log('onStartMotion')
     if (!this.animating) {
       this.animating = true
-      // window.requestAnimationFrame(this.render)
       window.requestAnimationFrame(
         function (theTime: number) {
           this.render(theTime)
