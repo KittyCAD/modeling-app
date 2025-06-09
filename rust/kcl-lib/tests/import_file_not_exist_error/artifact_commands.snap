@@ -2,4 +2,6 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands import_file_not_exist_error.kcl
 ---
-[]
+{
+  "tests/import_file_not_exist_error/input.kcl": []
+}

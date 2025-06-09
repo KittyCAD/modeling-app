@@ -2,25 +2,19 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_export.kcl
 ---
-[
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "ModuleInstance",
-      "name": "export_1.kcl",
-      "moduleId": 0
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  }
-]
+{
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": [],
+  "tests/import_export/export_1.kcl": [],
+  "tests/import_export/export_2.kcl": [],
+  "tests/import_export/input.kcl": []
+}
