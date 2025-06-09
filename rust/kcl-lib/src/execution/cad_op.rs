@@ -2,6 +2,8 @@ use indexmap::IndexMap;
 use serde::Serialize;
 
 use super::{types::NumericType, ArtifactId, KclValue};
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::{Node, Program};
 use crate::{ModuleId, NodePath, SourceRange};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
@@ -43,6 +45,25 @@ impl Operation {
         match self {
             Self::StdLibCall { ref mut is_error, .. } => *is_error = is_err,
             Self::GroupBegin { .. } | Self::GroupEnd => {}
+        }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn fill_node_paths(&mut self, program: &Node<Program>, cached_body_items: usize) {
+        match self {
+            Operation::StdLibCall {
+                node_path,
+                source_range,
+                ..
+            }
+            | Operation::GroupBegin {
+                node_path,
+                source_range,
+                ..
+            } => {
+                node_path.fill_placeholder(program, cached_body_items, *source_range);
+            }
+            Operation::GroupEnd => {}
         }
     }
 }

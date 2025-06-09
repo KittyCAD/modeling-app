@@ -1119,20 +1119,19 @@ impl ExecutorContext {
             // Fill in NodePath for operations.
             let cached_body_items = exec_state.global.artifacts.cached_body_items();
             for op in exec_state.global.artifacts.operations.iter_mut().skip(start_op) {
-                match op {
-                    Operation::StdLibCall {
-                        node_path,
-                        source_range,
-                        ..
+                op.fill_node_paths(program, cached_body_items);
+            }
+            #[cfg(test)]
+            {
+                for op in exec_state.global.root_module_artifacts.operations.iter_mut() {
+                    op.fill_node_paths(program, cached_body_items);
+                }
+                for module in exec_state.global.module_infos.values_mut() {
+                    if let ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts))) = &mut module.repr {
+                        for op in &mut module_artifacts.operations {
+                            op.fill_node_paths(program, cached_body_items);
+                        }
                     }
-                    | Operation::GroupBegin {
-                        node_path,
-                        source_range,
-                        ..
-                    } => {
-                        node_path.fill_placeholder(program, cached_body_items, *source_range);
-                    }
-                    Operation::GroupEnd => {}
                 }
             }
         }
