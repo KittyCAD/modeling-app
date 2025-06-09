@@ -155,7 +155,7 @@ impl ExecState {
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
-    pub async fn to_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
+    pub async fn into_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
@@ -170,7 +170,7 @@ impl ExecState {
         }
     }
 
-    pub async fn to_mock_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
+    pub async fn into_mock_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
         ExecOutcome {
             variables: self.mod_local.variables(main_ref),
             #[cfg(feature = "artifact-graph")]

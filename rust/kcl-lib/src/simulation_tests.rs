@@ -61,14 +61,14 @@ impl Test {
 }
 
 impl ExecState {
-    /// Same as [`Self::to_exec_outcome`], but also returns the module state.
+    /// Same as [`Self::into_exec_outcome`], but also returns the module state.
     async fn into_test_exec_outcome(
         self,
         main_ref: EnvironmentRef,
         ctx: &ExecutorContext,
     ) -> (ExecOutcome, IndexMap<String, ModuleArtifactState>) {
         let module_state = self.to_module_state();
-        let outcome = self.to_exec_outcome(main_ref, ctx).await;
+        let outcome = self.into_exec_outcome(main_ref, ctx).await;
         (outcome, module_state)
     }
 
