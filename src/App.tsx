@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
@@ -53,6 +53,12 @@ import {
 } from '@src/lib/constants'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import { VITE_KC_SITE_BASE_URL } from '@src/env'
+import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
+import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
+import { homeDefaultStatusBarItems } from '@src/components/StatusBar/homeDefaultStatusBarItems'
+import { StatusBar } from '@src/components/StatusBar/StatusBar'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { xStateValueToString } from '@src/lib/xStateValueToString'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -62,6 +68,8 @@ maybeWriteToDisk()
   .catch(() => {})
 
 export function App() {
+  // temp pls remove
+  const { state: modelingState } = useModelingContext()
   useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
@@ -72,7 +80,6 @@ export function App() {
   const { onProjectOpen } = useLspContext()
   // We need the ref for the outermost div so we can screenshot the app for
   // the coredump.
-  const ref = useRef<HTMLDivElement>(null)
 
   // Stream related refs and data
   const [searchParams] = useSearchParams()
@@ -220,24 +227,46 @@ export function App() {
   }, [])
 
   return (
-    <div className="relative h-full flex flex-col" ref={ref}>
-      <AppHeader
-        className="transition-opacity transition-duration-75"
-        project={{ project, file }}
-        enableMenu={true}
-        nativeFileMenuCreated={nativeFileMenuCreated}
-      >
-        <CommandBarOpenButton />
-        <ShareButton />
-      </AppHeader>
-      <ModalContainer />
-      <ModelingSidebar />
-      <EngineStream pool={pool} authToken={authToken} />
-      {/* <CamToggle /> */}
-      <LowerRightControls navigate={navigate}>
-        <UnitsMenu />
-        <Gizmo />
-      </LowerRightControls>
+    <div className="h-screen flex flex-col overflow-hidden select-none">
+      <div className="relative flex flex-1 flex-col">
+        <AppHeader
+          className="transition-opacity transition-duration-75"
+          project={{ project, file }}
+          enableMenu={true}
+          nativeFileMenuCreated={nativeFileMenuCreated}
+        >
+          <CommandBarOpenButton />
+          <ShareButton />
+        </AppHeader>
+        <ModalContainer />
+        <ModelingSidebar />
+        <EngineStream pool={pool} authToken={authToken} />
+        {/* <CamToggle /> */}
+        <LowerRightControls navigate={navigate}>
+          <UnitsMenu />
+          <Gizmo />
+        </LowerRightControls>
+      </div>
+      <StatusBar
+        globalItems={[
+          useNetworkHealthStatus(),
+          useNetworkMachineStatus(),
+          ...homeDefaultStatusBarItems({ location }),
+        ]}
+        localItems={[
+          {
+            id: 'modeling-state',
+            element: 'text',
+            label:
+              modelingState.value instanceof Object
+                ? (xStateValueToString(modelingState.value) ?? '')
+                : modelingState.value,
+            toolTip: {
+              children: 'The current state of the modeler',
+            },
+          },
+        ]}
+      />
     </div>
   )
 }
