@@ -28,7 +28,7 @@ export const _3DMouseMachine = setup({
             canvasId: string
             /** Allow null because of internal retry, it will fail if this is null, we cannot have a default camera*/
             camera: PerspectiveCamera | OrthographicCamera | null
-            onDisconnect : () => void
+            onDisconnect: () => void
           }
         }
       | {
@@ -37,7 +37,7 @@ export const _3DMouseMachine = setup({
         }
       | {
           type: _3DMouseMachineEvents.error_connect
-      }
+        }
       | {
           type: _3DMouseMachineEvents.disconnect
         },
@@ -103,7 +103,7 @@ export const _3DMouseMachine = setup({
           canvasId: input.canvasId,
           camera: input.camera.clone(),
           TRACE_MESSAGES: true,
-          disconnectCallback: input.onDisconnect
+          disconnectCallback: input.onDisconnect,
         })
 
         /**
@@ -135,8 +135,8 @@ export const _3DMouseMachine = setup({
   on: {
     [_3DMouseMachineEvents.disconnect]: {
       // root state
-      target: '.' + _3DMouseMachineStates.waitingToConnect
-    }
+      target: '.' + _3DMouseMachineStates.waitingToConnect,
+    },
   },
   states: {
     [_3DMouseMachineStates.waitingToConnect]: {
@@ -162,7 +162,7 @@ export const _3DMouseMachine = setup({
           assertEvent(event, _3DMouseMachineEvents.connect)
 
           const onDisconnectHelperFunction = () => {
-            self.send({type: _3DMouseMachineEvents.disconnect})
+            self.send({ type: _3DMouseMachineEvents.disconnect })
           }
 
           return {
@@ -171,7 +171,7 @@ export const _3DMouseMachine = setup({
             debug: event.data.debug,
             canvasId: event.data.canvasId,
             camera: event.data.camera,
-            onDisconnect: onDisconnectHelperFunction
+            onDisconnect: onDisconnectHelperFunction,
           }
         },
         onDone: {
@@ -224,7 +224,7 @@ export const _3DMouseMachine = setup({
           assertEvent(event, _3DMouseMachineEvents.error_connect)
 
           const onDisconnectHelperFunction = () => {
-            self.send({type: _3DMouseMachineEvents.disconnect})
+            self.send({ type: _3DMouseMachineEvents.disconnect })
           }
 
           let { name, debug, canvasId, camera } =
@@ -243,7 +243,7 @@ export const _3DMouseMachine = setup({
             debug,
             canvasId,
             camera,
-            onDisconnect: onDisconnectHelperFunction
+            onDisconnect: onDisconnectHelperFunction,
           }
         },
         onDone: {
