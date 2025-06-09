@@ -179,7 +179,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report-ubuntu-snapshot-${{ github.sha }}
+          name: playwright-report-snapshot-${{ github.sha }}
           path: playwright-report/
           include-hidden-files: true
           retention-days: 30
@@ -293,6 +293,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() && (success() || failure()) }}
         with:
+          name: playwright-report-web-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: playwright-report/
           include-hidden-files: true
           retention-days: 30
@@ -417,7 +418,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: test-results-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
           include-hidden-files: true
           retention-days: 30
@@ -426,7 +427,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: playwright-report-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: playwright-report/
           include-hidden-files: true
           retention-days: 30
