@@ -25,9 +25,7 @@ test.describe('Temporary workspace', () => {
         const codeQueryParam = encodeURIComponent(stringToBase64(code))
         const targetURL = `?create-file=true&browser=test&code=${codeQueryParam}&ask-open-desktop=true`
         await page.goto(page.url() + targetURL)
-
-        // Strips the long code query param
-        expect(page.url()).toContain('browser=test&ask-open-desktop=true')
+        expect(page.url()).toContain('create-file=true&browser=test&code=${codeQueryParam}&ask-open-desktop=true')
         const button = page.getByRole('button', { name: 'Continue to web app' })
         await button.click()
 
