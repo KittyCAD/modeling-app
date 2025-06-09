@@ -27,9 +27,9 @@ test.describe('Share link tests', () => {
         const targetURL = `?create-file=true&browser=test&code=${code}&ask-open-desktop=true`
         expect(targetURL.length).toEqual(codeLength + 58)
         await page.goto(page.url() + targetURL)
-        expect(page.url()).toContain(
-          'browser=test&code=${code}&ask-open-desktop=true'
-        )
+        expect
+          .poll(() => page.url())
+          .toContain('browser=test&code=${code}&ask-open-desktop=true')
         const button = page.getByRole('button', { name: 'Open in desktop app' })
         await button.click()
         const toastError = page.getByText(
