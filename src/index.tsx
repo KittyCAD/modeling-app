@@ -49,7 +49,7 @@ initPromise
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
-// Used primarly for samples on web.
+// Used primarily for samples on web.
 localStorage.setItem(LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION, '')
 
 root.render(
