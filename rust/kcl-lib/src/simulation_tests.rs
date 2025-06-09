@@ -7,7 +7,7 @@ use indexmap::IndexMap;
 use insta::rounded_redaction;
 
 #[cfg(feature = "artifact-graph")]
-use crate::execution::ArtifactGraph;
+use crate::execution::{ArtifactGraph, Operation};
 use crate::{
     errors::KclError,
     execution::{EnvironmentRef, ModuleArtifactState},
@@ -242,7 +242,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             #[cfg(not(feature = "artifact-graph"))]
             drop(module_state);
             #[cfg(feature = "artifact-graph")]
-            assert_artifact_snapshots(test, module_state, outcome.artifact_graph);
+            assert_artifact_snapshots(test, module_state, outcome.operations, outcome.artifact_graph);
             mem_result.unwrap();
         }
         Err(e) => {
@@ -276,7 +276,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     #[cfg(not(feature = "artifact-graph"))]
                     drop(module_state);
                     #[cfg(feature = "artifact-graph")]
-                    assert_artifact_snapshots(test, module_state, error.artifact_graph);
+                    assert_artifact_snapshots(test, module_state, error.operations, error.artifact_graph);
                     err_result.unwrap();
                 }
                 e => {
@@ -296,12 +296,14 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 fn assert_artifact_snapshots(
     test: &Test,
     module_state: IndexMap<String, ModuleArtifactState>,
+    global_operations: Vec<Operation>,
     artifact_graph: ArtifactGraph,
 ) {
     let module_operations = module_state
         .iter()
         .map(|(path, s)| (path, &s.operations))
         .collect::<IndexMap<_, _>>();
+    let module_operations_count = module_operations.values().map(|ops| ops.len()).sum();
     let result1 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Operations executed", || {
             insta::assert_json_snapshot!("ops", module_operations, {
@@ -362,6 +364,7 @@ fn assert_artifact_snapshots(
     result1.unwrap();
     result2.unwrap();
     result3.unwrap();
+    assert!(global_operations.len() >= module_operations_count);
 }
 
 mod cube {
