@@ -5,19 +5,14 @@ use std::{
 
 use indexmap::IndexMap;
 use insta::rounded_redaction;
-#[cfg(feature = "artifact-graph")]
-use serde::Serialize;
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactGraph;
 use crate::{
     errors::KclError,
     execution::{EnvironmentRef, ModuleArtifactState},
     modules::ModuleRepr,
     ExecOutcome, ExecState, ExecutorContext, ModuleId,
-};
-#[cfg(feature = "artifact-graph")]
-use crate::{
-    exec::ArtifactCommand,
-    execution::{ArtifactGraph, Operation},
 };
 
 mod kcl_samples;
@@ -247,12 +242,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             #[cfg(not(feature = "artifact-graph"))]
             drop(module_state);
             #[cfg(feature = "artifact-graph")]
-            assert_artifact_snapshots(
-                test,
-                module_state,
-                outcome.operations,
-                outcome.artifact_graph,
-            );
+            assert_artifact_snapshots(test, module_state, outcome.artifact_graph);
             mem_result.unwrap();
         }
         Err(e) => {
@@ -286,12 +276,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     #[cfg(not(feature = "artifact-graph"))]
                     drop(module_state);
                     #[cfg(feature = "artifact-graph")]
-                    assert_artifact_snapshots(
-                        test,
-                        module_state,
-                        error.operations,
-                        error.artifact_graph,
-                    );
+                    assert_artifact_snapshots(test, module_state, error.artifact_graph);
                     err_result.unwrap();
                 }
                 e => {
@@ -305,37 +290,18 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     }
 }
 
-#[cfg(feature = "artifact-graph")]
-#[derive(Debug, Serialize)]
-struct TestOperations<'a> {
-    module_operations: IndexMap<&'a String, &'a Vec<Operation>>,
-    main_operations: Vec<Operation>,
-}
-
-#[cfg(feature = "artifact-graph")]
-#[derive(Debug, Serialize)]
-struct TestArtifactCommands<'a> {
-    module_commands: IndexMap<&'a String, &'a Vec<ArtifactCommand>>,
-    global_commands: Vec<ArtifactCommand>,
-}
-
 /// Assert snapshots for artifacts that should happen both when KCL execution
 /// succeeds and when it results in an error.
 #[cfg(feature = "artifact-graph")]
 fn assert_artifact_snapshots(
     test: &Test,
     module_state: IndexMap<String, ModuleArtifactState>,
-    main_operations: Vec<Operation>,
     artifact_graph: ArtifactGraph,
 ) {
     let module_operations = module_state
         .iter()
         .map(|(path, s)| (path, &s.operations))
         .collect::<IndexMap<_, _>>();
-    // let operations = TestOperations {
-    //     module_operations,
-    //     main_operations,
-    // };
     let result1 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Operations executed", || {
             insta::assert_json_snapshot!("ops", module_operations, {
@@ -354,10 +320,6 @@ fn assert_artifact_snapshots(
         .iter()
         .map(|(path, s)| (path, &s.commands))
         .collect::<IndexMap<_, _>>();
-    // let artifact_commands = TestArtifactCommands {
-    //     module_commands,
-    //     global_commands,
-    // };
     let result2 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Artifact commands", || {
             insta::assert_json_snapshot!("artifact_commands", module_commands, {
