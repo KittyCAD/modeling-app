@@ -10,8 +10,7 @@ on:
 
 env:
   IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
-  # IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-  IS_STAGING: true
+  IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -216,7 +215,6 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          CSC_FOR_PULL_REQUEST : true
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
         run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'dev' || 'prod' }}
 
@@ -256,8 +254,7 @@ jobs:
     permissions:
       contents: write
     # Equivalent to IS_RELEASE || IS_STAGING (but we can't access those env vars here)
-    # if: ${{ (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
-    if: true
+    if: ${{ (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
