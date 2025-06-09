@@ -8,9 +8,6 @@ import {
   APP_DOWNLOAD_PATH,
   ASK_TO_OPEN_QUERY_PARAM,
   ZOO_STUDIO_PROTOCOL,
-  CREATE_FILE_URL_PARAM,
-  FILE_NAME_QUERY_PARAM,
-  CODE_QUERY_PARAM,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { Themes, darkModeMatcher, setThemeClass } from '@src/lib/theme'
@@ -52,10 +49,6 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
       decodeURIComponent(searchParams.get('code') ?? '')
     )
     goIntoTemporaryWorkspaceModeWithCode(codeB64)
-    searchParams.delete(CREATE_FILE_URL_PARAM)
-    searchParams.delete(FILE_NAME_QUERY_PARAM)
-    searchParams.delete(CODE_QUERY_PARAM)
-    setSearchParams(searchParams)
   }, [hasAskToOpenParam])
 
   /**
