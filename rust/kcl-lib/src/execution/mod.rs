@@ -77,9 +77,6 @@ pub struct ExecOutcome {
     /// the Feature Tree.
     #[cfg(feature = "artifact-graph")]
     pub operations: Vec<Operation>,
-    /// Output commands to allow building the artifact graph by the caller.
-    #[cfg(feature = "artifact-graph")]
-    pub artifact_commands: Vec<ArtifactCommand>,
     /// Output artifact graph.
     #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,

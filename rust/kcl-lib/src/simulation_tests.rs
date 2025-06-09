@@ -251,7 +251,6 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 test,
                 module_state,
                 outcome.operations,
-                outcome.artifact_commands,
                 outcome.artifact_graph,
             );
             mem_result.unwrap();
@@ -291,7 +290,6 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         test,
                         module_state,
                         error.operations,
-                        error.artifact_commands,
                         error.artifact_graph,
                     );
                     err_result.unwrap();
@@ -328,7 +326,6 @@ fn assert_artifact_snapshots(
     test: &Test,
     module_state: IndexMap<String, ModuleArtifactState>,
     main_operations: Vec<Operation>,
-    global_commands: Vec<ArtifactCommand>,
     artifact_graph: ArtifactGraph,
 ) {
     let module_operations = module_state

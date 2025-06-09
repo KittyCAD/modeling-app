@@ -1,7 +1,4 @@
-import type {
-  ArtifactCommand,
-  ArtifactGraph as RustArtifactGraph,
-} from '@rust/kcl-lib/bindings/Artifact'
+import type { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/Artifact'
 import type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 import type { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
@@ -297,7 +294,6 @@ export const isPathToNode = (input: unknown): input is PathToNode =>
 export interface ExecState {
   variables: { [key in string]?: KclValue }
   operations: Operation[]
-  artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
   errors: CompilationError[]
   filenames: { [x: number]: ModulePath | undefined }
@@ -312,7 +308,6 @@ export function emptyExecState(): ExecState {
   return {
     variables: {},
     operations: [],
-    artifactCommands: [],
     artifactGraph: defaultArtifactGraph(),
     errors: [],
     filenames: [],
@@ -333,7 +328,6 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   return {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
-    artifactCommands: execOutcome.artifactCommands,
     artifactGraph,
     errors: execOutcome.errors,
     filenames: execOutcome.filenames,
@@ -345,7 +339,6 @@ export function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
   return {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
-    artifactCommands: execOutcome.artifactCommands,
     artifactGraph: new Map<ArtifactId, Artifact>(),
     errors: execOutcome.errors,
     filenames: execOutcome.filenames,

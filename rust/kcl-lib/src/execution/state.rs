@@ -164,8 +164,6 @@ impl ExecState {
             #[cfg(feature = "artifact-graph")]
             operations: self.global.artifacts.operations,
             #[cfg(feature = "artifact-graph")]
-            artifact_commands: self.global.artifacts.commands,
-            #[cfg(feature = "artifact-graph")]
             artifact_graph: self.global.artifacts.graph,
             errors: self.global.errors,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
@@ -177,8 +175,6 @@ impl ExecState {
             variables: self.mod_local.variables(main_ref),
             #[cfg(feature = "artifact-graph")]
             operations: Default::default(),
-            #[cfg(feature = "artifact-graph")]
-            artifact_commands: Default::default(),
             #[cfg(feature = "artifact-graph")]
             artifact_graph: Default::default(),
             errors: self.global.errors,
