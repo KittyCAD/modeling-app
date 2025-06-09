@@ -25,6 +25,7 @@ pub use memory::EnvironmentRef;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 pub use state::{ExecState, MetaSettings};
+pub(crate) use state::{ModelingCmdMeta, ModuleArtifactState};
 use uuid::Uuid;
 
 use crate::{
@@ -42,7 +43,6 @@ use crate::{
     source_range::SourceRange,
     CompilationError, ExecError, KclErrorWithOutputs,
 };
-pub(crate) use state::{ModuleArtifactState, ModelingCmdMeta};
 
 pub(crate) mod annotations;
 #[cfg(feature = "artifact-graph")]
@@ -1145,7 +1145,10 @@ impl ExecutorContext {
         self.engine.clear_queues().await;
 
         match exec_state.build_artifact_graph(&self.engine, program).await {
-            Ok(_) => exec_result.map(|(_, env_ref, _, _)| env_ref),
+            Ok(_) => exec_result.map(|(_, env_ref, _, module_artifacts)| {
+                exec_state.global.root_module_artifacts.extend(module_artifacts);
+                env_ref
+            }),
             Err(err) => exec_result.and(Err(err)),
         }
     }

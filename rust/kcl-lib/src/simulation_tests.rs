@@ -79,7 +79,7 @@ impl ExecState {
         for info in self.modules().values() {
             match &info.repr {
                 ModuleRepr::Root => {
-                    module_state.insert(info.path.to_string(), self.module_artifact_state().clone());
+                    module_state.insert(info.path.to_string(), self.root_module_artifact_state().clone());
                 }
                 ModuleRepr::Kcl(_, None) => {
                     module_state.insert(info.path.to_string(), Default::default());

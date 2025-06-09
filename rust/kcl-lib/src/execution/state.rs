@@ -56,6 +56,7 @@ pub(super) struct GlobalState {
     pub errors: Vec<CompilationError>,
     #[cfg_attr(not(feature = "artifact-graph"), allow(dead_code))]
     pub artifacts: ArtifactState,
+    pub root_module_artifacts: ModuleArtifactState,
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -275,8 +276,8 @@ impl ExecState {
     }
 
     #[cfg(test)]
-    pub(crate) fn module_artifact_state(&self) -> &ModuleArtifactState {
-        &self.mod_local.artifacts
+    pub(crate) fn root_module_artifact_state(&self) -> &ModuleArtifactState {
+        &self.global.root_module_artifacts
     }
 
     pub fn current_default_units(&self) -> NumericType {
@@ -562,6 +563,7 @@ impl GlobalState {
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
             artifacts: Default::default(),
+            root_module_artifacts: Default::default(),
             mod_loader: Default::default(),
             errors: Default::default(),
             id_to_source: Default::default(),
@@ -599,6 +601,19 @@ impl ArtifactState {
     pub fn cached_body_items(&self) -> usize {
         self.graph.item_count
     }
+}
+
+impl ModuleArtifactState {
+    /// When self is a cached state, extend it with new state.
+    #[cfg(all(test, feature = "artifact-graph"))]
+    pub(crate) fn extend(&mut self, other: ModuleArtifactState) {
+        self.commands.extend(other.commands);
+        self.operations.extend(other.operations);
+    }
+
+    /// When self is a cached state, extend it with new state.
+    #[cfg(not(all(test, feature = "artifact-graph")))]
+    pub(crate) fn extend(&mut self, _other: ModuleArtifactState) {}
 }
 
 impl ModuleState {
