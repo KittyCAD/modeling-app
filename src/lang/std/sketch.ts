@@ -1183,7 +1183,7 @@ export const startProfile: SketchLineHelperKw = {
       return []
     }
     const argIndex = findKwArgAnyIndex([ARG_AT], callExp)
-    if (argIndex === undefined) {
+    if (argIndex === undefined || expr.elements.length < 2) {
       return []
     }
     const pathToXYArray: PathToNode = [
@@ -1471,7 +1471,9 @@ export const circle: SketchLineHelperKw = {
           key: ARG_RADIUS,
         },
       },
-      {
+    ]
+    if (centerInfo.expr.elements.length >= 2) {
+      constraints.push({
         stdLibFnName: 'circle',
         type: 'xAbsolute',
         isConstrained: isNotLiteralArrayOrStatic(centerInfo.expr.elements[0]),
@@ -1489,8 +1491,8 @@ export const circle: SketchLineHelperKw = {
           index: 0,
           key: ARG_CIRCLE_CENTER,
         },
-      },
-      {
+      })
+      constraints.push({
         stdLibFnName: 'circle',
         type: 'yAbsolute',
         isConstrained: isNotLiteralArrayOrStatic(centerInfo.expr.elements[1]),
@@ -1508,8 +1510,8 @@ export const circle: SketchLineHelperKw = {
           index: 1,
           key: 'center',
         },
-      },
-    ]
+      })
+    }
     return constraints
   },
 }
@@ -2256,134 +2258,103 @@ export const circleThreePoint: SketchLineHelperKw = {
     const pathToP3XArg: PathToNode = [...pathToP3ArrayExpression, [0, 'index']]
     const pathToP3YArg: PathToNode = [...pathToP3ArrayExpression, [1, 'index']]
 
-    const constraints: (ConstrainInfo & { filterValue: string })[] = [
-      {
+    const constraints: (ConstrainInfo & { filterValue: string })[] = []
+    if (p1Details.expr.elements.length >= 2) {
+      const p1XArg = p1Details.expr.elements[0]
+      const p1YArg = p1Details.expr.elements[1]
+      constraints.push({
         stdLibFnName: 'circleThreePoint',
         type: 'xAbsolute',
-        isConstrained: isNotLiteralArrayOrStatic(p1Details.expr.elements[0]),
-        sourceRange: [
-          p1Details.expr.elements[0].start,
-          p1Details.expr.elements[0].end,
-          0,
-        ],
+        isConstrained: isNotLiteralArrayOrStatic(p1XArg),
+        sourceRange: topLevelRange(p1XArg.start, p1XArg.end),
         pathToNode: pathToP1XArg,
-        value: code.slice(
-          p1Details.expr.elements[0].start,
-          p1Details.expr.elements[0].end
-        ),
+        value: code.slice(p1XArg.start, p1XArg.end),
         argPosition: {
           type: 'labeledArgArrayItem',
           index: 0,
           key: 'p1',
         },
         filterValue: 'p1',
-      },
-      {
+      })
+      constraints.push({
         stdLibFnName: 'circleThreePoint',
         type: 'yAbsolute',
-        isConstrained: isNotLiteralArrayOrStatic(p1Details.expr.elements[1]),
-        sourceRange: [
-          p1Details.expr.elements[1].start,
-          p1Details.expr.elements[1].end,
-          0,
-        ],
+        isConstrained: isNotLiteralArrayOrStatic(p1YArg),
+        sourceRange: topLevelRange(p1YArg.start, p1YArg.end),
         pathToNode: pathToP1YArg,
-        value: code.slice(
-          p1Details.expr.elements[1].start,
-          p1Details.expr.elements[1].end
-        ),
+        value: code.slice(p1YArg.start, p1YArg.end),
         argPosition: {
           type: 'labeledArgArrayItem',
           index: 1,
           key: 'p1',
         },
         filterValue: 'p1',
-      },
-      {
+      })
+    }
+    if (p2Details.expr.elements.length >= 2) {
+      const p2XArg = p2Details.expr.elements[0]
+      const p2YArg = p2Details.expr.elements[1]
+      constraints.push({
         stdLibFnName: 'circleThreePoint',
         type: 'xAbsolute',
-        isConstrained: isNotLiteralArrayOrStatic(p2Details.expr.elements[0]),
-        sourceRange: [
-          p2Details.expr.elements[0].start,
-          p2Details.expr.elements[0].end,
-          0,
-        ],
+        isConstrained: isNotLiteralArrayOrStatic(p2XArg),
+        sourceRange: topLevelRange(p2XArg.start, p2XArg.end),
         pathToNode: pathToP2XArg,
-        value: code.slice(
-          p2Details.expr.elements[0].start,
-          p2Details.expr.elements[0].end
-        ),
+        value: code.slice(p2XArg.start, p2XArg.end),
         argPosition: {
           type: 'labeledArgArrayItem',
           index: 0,
           key: 'p2',
         },
         filterValue: 'p2',
-      },
-      {
+      })
+      constraints.push({
         stdLibFnName: 'circleThreePoint',
         type: 'yAbsolute',
-        isConstrained: isNotLiteralArrayOrStatic(p2Details.expr.elements[1]),
-        sourceRange: [
-          p2Details.expr.elements[1].start,
-          p2Details.expr.elements[1].end,
-          0,
-        ],
+        isConstrained: isNotLiteralArrayOrStatic(p2YArg),
+        sourceRange: topLevelRange(p2YArg.start, p2YArg.end),
         pathToNode: pathToP2YArg,
-        value: code.slice(
-          p2Details.expr.elements[1].start,
-          p2Details.expr.elements[1].end
-        ),
+        value: code.slice(p2YArg.start, p2YArg.end),
         argPosition: {
           type: 'labeledArgArrayItem',
           index: 1,
           key: 'p2',
         },
         filterValue: 'p2',
-      },
-      {
+      })
+    }
+    if (p3Details.expr.elements.length >= 2) {
+      const p3XArg = p3Details.expr.elements[0]
+      const p3YArg = p3Details.expr.elements[1]
+      constraints.push({
         stdLibFnName: 'circleThreePoint',
         type: 'xAbsolute',
-        isConstrained: isNotLiteralArrayOrStatic(p3Details.expr.elements[0]),
-        sourceRange: [
-          p3Details.expr.elements[0].start,
-          p3Details.expr.elements[0].end,
-          0,
-        ],
+        isConstrained: isNotLiteralArrayOrStatic(p3XArg),
+        sourceRange: topLevelRange(p3XArg.start, p3XArg.end),
         pathToNode: pathToP3XArg,
-        value: code.slice(
-          p3Details.expr.elements[0].start,
-          p3Details.expr.elements[0].end
-        ),
+        value: code.slice(p3XArg.start, p3XArg.end),
         argPosition: {
           type: 'labeledArgArrayItem',
           index: 0,
           key: 'p3',
         },
         filterValue: 'p3',
-      },
-      {
+      })
+      constraints.push({
         stdLibFnName: 'circleThreePoint',
         type: 'yAbsolute',
-        isConstrained: isNotLiteralArrayOrStatic(p3Details.expr.elements[1]),
-        sourceRange: [
-          p3Details.expr.elements[1].start,
-          p3Details.expr.elements[1].end,
-          0,
-        ],
+        isConstrained: isNotLiteralArrayOrStatic(p3YArg),
+        sourceRange: topLevelRange(p3YArg.start, p3YArg.end),
         pathToNode: pathToP3YArg,
-        value: code.slice(
-          p3Details.expr.elements[1].start,
-          p3Details.expr.elements[1].end
-        ),
+        value: code.slice(p3YArg.start, p3YArg.end),
         argPosition: {
           type: 'labeledArgArrayItem',
           index: 1,
           key: 'p3',
         },
         filterValue: 'p3',
-      },
-    ]
+      })
+    }
     const finalConstraints: ConstrainInfo[] = []
     constraints.forEach((constraint) => {
       if (!filterValue) {
@@ -3252,7 +3223,6 @@ export function fnNameToToolTipFromSegment(
     case 'tangentialArcTo':
     case 'angledLine':
     case 'startProfile':
-    case 'arcTo':
       return fnName
     default:
       const err = `Unknown sketch line function ${fnName}`

@@ -28,13 +28,13 @@ use crate::{
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let length: TyF64 = args.get_kw_arg_typed("length", &RuntimeType::length(), exec_state)?;
-    let symmetric = args.get_kw_arg_opt_typed("symmetric", &RuntimeType::bool(), exec_state)?;
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
+    let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_length: Option<TyF64> =
-        args.get_kw_arg_opt_typed("bidirectionalLength", &RuntimeType::length(), exec_state)?;
-    let tag_start = args.get_kw_arg_opt("tagStart")?;
-    let tag_end = args.get_kw_arg_opt("tagEnd")?;
+        args.get_kw_arg_opt("bidirectionalLength", &RuntimeType::length(), exec_state)?;
+    let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
+    let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
 
     let result = inner_extrude(
         sketches,

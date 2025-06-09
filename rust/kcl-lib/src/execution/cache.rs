@@ -6,25 +6,31 @@ use itertools::{EitherOrBoth, Itertools};
 use tokio::sync::RwLock;
 
 use crate::{
-    execution::{annotations, memory::Stack, state::ModuleInfoMap, EnvironmentRef, ExecState, ExecutorSettings},
+    execution::{
+        annotations,
+        memory::Stack,
+        state::{self as exec_state, ModuleInfoMap},
+        EnvironmentRef, ExecutorSettings,
+    },
     parsing::ast::types::{Annotation, Node, Program},
     walk::Node as WalkNode,
+    ExecOutcome, ExecutorContext,
 };
 
 lazy_static::lazy_static! {
     /// A static mutable lock for updating the last successful execution state for the cache.
-    static ref OLD_AST: Arc<RwLock<Option<OldAstState>>> = Default::default();
+    static ref OLD_AST: Arc<RwLock<Option<GlobalState>>> = Default::default();
     // The last successful run's memory. Not cleared after an unssuccessful run.
     static ref PREV_MEMORY: Arc<RwLock<Option<(Stack, ModuleInfoMap)>>> = Default::default();
 }
 
 /// Read the old ast memory from the lock.
-pub(crate) async fn read_old_ast() -> Option<OldAstState> {
+pub(super) async fn read_old_ast() -> Option<GlobalState> {
     let old_ast = OLD_AST.read().await;
     old_ast.clone()
 }
 
-pub(super) async fn write_old_ast(old_state: OldAstState) {
+pub(super) async fn write_old_ast(old_state: GlobalState) {
     let mut old_ast = OLD_AST.write().await;
     *old_ast = Some(old_state);
 }
@@ -34,7 +40,7 @@ pub(crate) async fn read_old_memory() -> Option<(Stack, ModuleInfoMap)> {
     old_mem.clone()
 }
 
-pub(super) async fn write_old_memory(mem: (Stack, ModuleInfoMap)) {
+pub(crate) async fn write_old_memory(mem: (Stack, ModuleInfoMap)) {
     let mut old_mem = PREV_MEMORY.write().await;
     *old_mem = Some(mem);
 }
@@ -56,16 +62,73 @@ pub struct CacheInformation<'a> {
     pub settings: &'a ExecutorSettings,
 }
 
-/// The old ast and program memory.
+/// The cached state of the whole program.
 #[derive(Debug, Clone)]
-pub struct OldAstState {
-    /// The ast.
-    pub ast: Node<Program>,
+pub(super) struct GlobalState {
+    pub(super) main: ModuleState,
     /// The exec state.
-    pub exec_state: ExecState,
+    pub(super) exec_state: exec_state::GlobalState,
     /// The last settings used for execution.
-    pub settings: crate::execution::ExecutorSettings,
-    pub result_env: EnvironmentRef,
+    pub(super) settings: ExecutorSettings,
+}
+
+impl GlobalState {
+    pub fn new(
+        state: exec_state::ExecState,
+        settings: ExecutorSettings,
+        ast: Node<Program>,
+        result_env: EnvironmentRef,
+    ) -> Self {
+        Self {
+            main: ModuleState {
+                ast,
+                exec_state: state.mod_local,
+                result_env,
+            },
+            exec_state: state.global,
+            settings,
+        }
+    }
+
+    pub fn with_settings(mut self, settings: ExecutorSettings) -> GlobalState {
+        self.settings = settings;
+        self
+    }
+
+    pub fn reconstitute_exec_state(&self) -> exec_state::ExecState {
+        exec_state::ExecState {
+            global: self.exec_state.clone(),
+            mod_local: self.main.exec_state.clone(),
+        }
+    }
+
+    pub async fn into_exec_outcome(self, ctx: &ExecutorContext) -> ExecOutcome {
+        // Fields are opt-in so that we don't accidentally leak private internal
+        // state when we add more to ExecState.
+        ExecOutcome {
+            variables: self.main.exec_state.variables(self.main.result_env),
+            filenames: self.exec_state.filenames(),
+            #[cfg(feature = "artifact-graph")]
+            operations: self.exec_state.artifacts.operations,
+            #[cfg(feature = "artifact-graph")]
+            artifact_commands: self.exec_state.artifacts.commands,
+            #[cfg(feature = "artifact-graph")]
+            artifact_graph: self.exec_state.artifacts.graph,
+            errors: self.exec_state.errors,
+            default_planes: ctx.engine.get_default_planes().read().await.clone(),
+        }
+    }
+}
+
+/// Per-module cached state
+#[derive(Debug, Clone)]
+pub(super) struct ModuleState {
+    /// The AST of the module.
+    pub(super) ast: Node<Program>,
+    /// The ExecState of the module.
+    pub(super) exec_state: exec_state::ModuleState,
+    /// The memory env for the module.
+    pub(super) result_env: EnvironmentRef,
 }
 
 /// The result of a cache check.
@@ -79,9 +142,6 @@ pub(super) enum CacheResult {
         reapply_settings: bool,
         /// The program that needs to be executed.
         program: Node<Program>,
-        /// The number of body items that were cached and omitted from the
-        /// program that needs to be executed. Used to compute [`crate::NodePath`].
-        cached_body_items: usize,
     },
     /// Check only the imports, and not the main program.
     /// Before sending this we already checked the main program and it is the same.
@@ -146,7 +206,6 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
         // We know they have the same imports because the ast is the same.
         // If we have no imports, we can skip this.
         if !old.ast.has_import_statements() {
-            println!("No imports, no need to check.");
             return CacheResult::NoAction(reapply_settings);
         }
 
@@ -194,7 +253,6 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
             clear_scene: true,
             reapply_settings: true,
             program: new.ast.clone(),
-            cached_body_items: 0,
         };
     }
 
@@ -223,7 +281,6 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>, 
             clear_scene: true,
             reapply_settings,
             program: new_ast,
-            cached_body_items: 0,
         };
     }
 
@@ -244,7 +301,6 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>, 
                 clear_scene: true,
                 reapply_settings,
                 program: new_ast,
-                cached_body_items: 0,
             }
         }
         std::cmp::Ordering::Greater => {
@@ -261,7 +317,6 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>, 
                 clear_scene: false,
                 reapply_settings,
                 program: new_ast,
-                cached_body_items: old_ast.body.len(),
             }
         }
         std::cmp::Ordering::Equal => {
@@ -600,7 +655,6 @@ startSketchOn(XY)
                 clear_scene: true,
                 reapply_settings: true,
                 program: new_program.ast,
-                cached_body_items: 0,
             }
         );
     }
@@ -639,7 +693,6 @@ startSketchOn(XY)
                 clear_scene: true,
                 reapply_settings: true,
                 program: new_program.ast,
-                cached_body_items: 0,
             }
         );
     }

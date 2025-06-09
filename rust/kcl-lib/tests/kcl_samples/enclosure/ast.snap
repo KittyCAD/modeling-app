@@ -1636,12 +1636,20 @@ description: Result of parsing enclosure.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "originStart",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "originStart",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -1664,12 +1672,20 @@ description: Result of parsing enclosure.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "originStart",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "originStart",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -1797,12 +1813,20 @@ description: Result of parsing enclosure.kcl
                                           "computed": false,
                                           "end": 0,
                                           "object": {
+                                            "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
-                                            "name": "originStart",
+                                            "name": {
+                                              "commentStart": 0,
+                                              "end": 0,
+                                              "name": "originStart",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "path": [],
                                             "start": 0,
-                                            "type": "Identifier",
-                                            "type": "Identifier"
+                                            "type": "Name",
+                                            "type": "Name"
                                           },
                                           "property": {
                                             "commentStart": 0,
@@ -1825,12 +1849,20 @@ description: Result of parsing enclosure.kcl
                                           "computed": false,
                                           "end": 0,
                                           "object": {
+                                            "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
-                                            "name": "originStart",
+                                            "name": {
+                                              "commentStart": 0,
+                                              "end": 0,
+                                              "name": "originStart",
+                                              "start": 0,
+                                              "type": "Identifier"
+                                            },
+                                            "path": [],
                                             "start": 0,
-                                            "type": "Identifier",
-                                            "type": "Identifier"
+                                            "type": "Name",
+                                            "type": "Name"
                                           },
                                           "property": {
                                             "commentStart": 0,

@@ -12,8 +12,8 @@ use crate::{
 
 /// Offset a plane by a distance along its normal.
 pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let std_plane = args.get_unlabeled_kw_arg_typed("plane", &RuntimeType::plane(), exec_state)?;
-    let offset: TyF64 = args.get_kw_arg_typed("offset", &RuntimeType::length(), exec_state)?;
+    let std_plane = args.get_unlabeled_kw_arg("plane", &RuntimeType::plane(), exec_state)?;
+    let offset: TyF64 = args.get_kw_arg("offset", &RuntimeType::length(), exec_state)?;
     let plane = inner_offset_plane(std_plane, offset, exec_state, &args).await?;
     Ok(KclValue::Plane { value: Box::new(plane) })
 }

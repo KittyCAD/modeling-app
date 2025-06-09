@@ -749,7 +749,7 @@ sketch001 = startSketchOn(XZ)
     // expect the code to have changed
     await editor.expectEditor.toContain(
       `sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [8.41, -9.97]) 
+  |> startProfile(at = [8.41, -9.97])
   |> line(end = [12.73, -0.09])
   |> line(end = [1.99, 2.06])
   |> tangentialArc(endAbsolute = [24.95, -5.38])
@@ -2329,16 +2329,18 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
       await page.mouse.down()
       await rectDragTo()
       await page.mouse.up()
+      await page.waitForTimeout(200)
       await editor.expectEditor.toContain(
         `angledLine(angle = -7, length = 10.27, tag = $rectangleSegmentA001)`
       )
     })
 
-    await test.step('edit existing circl', async () => {
+    await test.step('edit existing circle', async () => {
       await circleEdge()
       await page.mouse.down()
       await dragCircleTo()
       await page.mouse.up()
+      await page.waitForTimeout(200)
       await editor.expectEditor.toContain(
         `profile003 = circle(sketch001, center = [6.92, -4.2], radius = 4.81)`
       )
@@ -2349,6 +2351,7 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
       await page.mouse.down()
       await circ3PEnd()
       await page.mouse.up()
+      await page.waitForTimeout(200)
       await editor.expectEditor.toContain(
         `profile004 = circleThreePoint(
   sketch001,
@@ -2362,7 +2365,7 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
 
     await test.step('add new profile', async () => {
       await toolbar.rectangleBtn.click()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(200)
       await rectStart()
       await editor.expectEditor.toContain(
         `profile005 = startProfile(sketch001, at = [15.68, -3.84])`
@@ -3428,6 +3431,71 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
       await expect(
         page.getByText('Unable to maintain sketch mode')
       ).toBeVisible()
+    })
+  })
+  test('Will exit out of sketch mode when all code is nuked', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `myVar1 = 5
+    myVar2 = 6
+
+    sketch001 = startSketchOn(XZ)
+    profile001 = startProfile(sketch001, at = [106.68, 89.77])
+      |> line(end = [132.34, 157.8])
+      |> line(end = [67.65, -460.55], tag = $seg01)
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> close()
+    extrude001 = extrude(profile001, length = 500)
+    sketch002 = startSketchOn(extrude001, face = seg01)
+    profile002 = startProfile(sketch002, at = [83.39, 329.15])
+      |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
+      |> angledLine(length = 156.54, angle = -28)
+      |> angledLine(
+           angle = -151,
+           length = 116.27,
+         )
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> close()
+    profile003 = startProfile(sketch002, at = [-201.08, 254.17])
+      |> line(end = [103.55, 33.32])
+      |> line(end = [48.8, -153.54])`
+
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+    const expectSketchOriginToBeDrawn = async () => {
+      await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 672, y: 193 }, 15)
+    }
+
+    await test.step('Open feature tree and edit second sketch', async () => {
+      await toolbar.openFeatureTreePane()
+      const sketchButton = await toolbar.getFeatureTreeOperation('Sketch', 1)
+      await sketchButton.dblclick()
+      await page.waitForTimeout(700) // Wait for engine animation
+      await expectSketchOriginToBeDrawn()
+    })
+
+    await test.step('clear editor content while in sketch mode', async () => {
+      await editor.replaceCode('', '')
+      await page.waitForTimeout(100)
+      await expect(
+        page.getByText('Unable to maintain sketch mode')
+      ).toBeVisible()
+      await scene.expectPixelColorNotToBe(
+        TEST_COLORS.WHITE,
+        { x: 672, y: 193 },
+        15
+      )
     })
   })
   test('empty draft sketch is cleaned up properly', async ({

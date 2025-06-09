@@ -109,32 +109,7 @@ impl JsonSchema for TyF64 {
 }
 
 impl Args {
-    /// Get a keyword argument. If not set, returns None.
-    pub(crate) fn get_kw_arg_opt<'a, T>(&'a self, label: &str) -> Result<Option<T>, KclError>
-    where
-        T: FromKclValue<'a>,
-    {
-        let Some(arg) = self.kw_args.labeled.get(label) else {
-            return Ok(None);
-        };
-        if let KclValue::KclNone { .. } = arg.value {
-            // It is set, but it's an optional parameter that wasn't provided.
-            return Ok(None);
-        }
-
-        T::from_kcl_val(&arg.value).map(Some).ok_or_else(|| {
-            KclError::new_type(KclErrorDetails::new(
-                format!(
-                    "The arg {label} was given, but it was the wrong type. It should be type {} but it was {}",
-                    tynm::type_name::<T>(),
-                    arg.value.human_friendly_type(),
-                ),
-                vec![self.source_range],
-            ))
-        })
-    }
-
-    pub(crate) fn get_kw_arg_opt_typed<T>(
+    pub(crate) fn get_kw_arg_opt<T>(
         &self,
         label: &str,
         ty: &RuntimeType,
@@ -143,38 +118,25 @@ impl Args {
     where
         T: for<'a> FromKclValue<'a>,
     {
-        if self.kw_args.labeled.get(label).is_none() {
-            return Ok(None);
-        };
+        match self.kw_args.labeled.get(label) {
+            None => return Ok(None),
+            Some(a) => {
+                if let KclValue::KclNone { .. } = &a.value {
+                    return Ok(None);
+                }
+            }
+        }
 
-        self.get_kw_arg_typed(label, ty, exec_state).map(Some)
+        self.get_kw_arg(label, ty, exec_state).map(Some)
     }
 
-    /// Get a keyword argument. If not set, returns Err.
-    pub(crate) fn get_kw_arg<'a, T>(&'a self, label: &str) -> Result<T, KclError>
-    where
-        T: FromKclValue<'a>,
-    {
-        self.get_kw_arg_opt(label)?.ok_or_else(|| {
-            KclError::new_semantic(KclErrorDetails::new(
-                format!("This function requires a keyword argument '{label}'"),
-                vec![self.source_range],
-            ))
-        })
-    }
-
-    pub(crate) fn get_kw_arg_typed<T>(
-        &self,
-        label: &str,
-        ty: &RuntimeType,
-        exec_state: &mut ExecState,
-    ) -> Result<T, KclError>
+    pub(crate) fn get_kw_arg<T>(&self, label: &str, ty: &RuntimeType, exec_state: &mut ExecState) -> Result<T, KclError>
     where
         T: for<'a> FromKclValue<'a>,
     {
         let Some(arg) = self.kw_args.labeled.get(label) else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("This function requires a keyword argument '{label}'"),
+                format!("This function requires a keyword argument `{label}`"),
                 vec![self.source_range],
             )));
         };
@@ -186,7 +148,7 @@ impl Args {
                 .map(|t| t.to_string())
                 .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
             let msg_base = format!(
-                "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
+                "This function expected its `{label}` argument to be {} but it's actually of type {actual_type_name}",
                 ty.human_friendly_type(),
             );
             let suggestion = match (ty, actual_type) {
@@ -249,7 +211,7 @@ impl Args {
         label: &str,
         exec_state: &mut ExecState,
     ) -> Result<(Vec<KclValue>, RuntimeType), KclError> {
-        let value = self.get_unlabeled_kw_arg_typed(label, &RuntimeType::any_array(), exec_state)?;
+        let value = self.get_unlabeled_kw_arg(label, &RuntimeType::any_array(), exec_state)?;
         Ok(match value {
             KclValue::HomArray { value, ty } => (value, ty),
             KclValue::Tuple { value, .. } => (value, RuntimeType::any()),
@@ -259,7 +221,7 @@ impl Args {
 
     /// Get the unlabeled keyword argument. If not set, returns Err. If it
     /// can't be converted to the given type, returns Err.
-    pub(crate) fn get_unlabeled_kw_arg_typed<T>(
+    pub(crate) fn get_unlabeled_kw_arg<T>(
         &self,
         label: &str,
         ty: &RuntimeType,
@@ -1360,9 +1322,9 @@ impl<'a> FromKclValue<'a> for Box<Solid> {
     }
 }
 
-impl<'a> FromKclValue<'a> for &'a FunctionSource {
+impl<'a> FromKclValue<'a> for FunctionSource {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        arg.as_function()
+        arg.as_function().cloned()
     }
 }
 

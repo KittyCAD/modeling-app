@@ -676,6 +676,7 @@ impl EdgeCut {
 #[serde(rename_all = "camelCase")]
 pub struct ArtifactGraph {
     map: IndexMap<ArtifactId, Artifact>,
+    pub(super) item_count: usize,
 }
 
 impl ArtifactGraph {
@@ -711,10 +712,10 @@ pub(super) fn build_artifact_graph(
     artifact_commands: &[ArtifactCommand],
     responses: &IndexMap<Uuid, WebSocketResponse>,
     ast: &Node<Program>,
-    cached_body_items: usize,
     exec_artifacts: &mut IndexMap<ArtifactId, Artifact>,
     initial_graph: ArtifactGraph,
 ) -> Result<ArtifactGraph, KclError> {
+    let item_count = initial_graph.item_count;
     let mut map = initial_graph.into_map();
 
     let mut path_to_plane_id_map = FnvHashMap::default();
@@ -725,7 +726,7 @@ pub(super) fn build_artifact_graph(
     for exec_artifact in exec_artifacts.values_mut() {
         // Note: We only have access to the new AST. So if these artifacts
         // somehow came from cached AST, this won't fill in anything.
-        fill_in_node_paths(exec_artifact, ast, cached_body_items);
+        fill_in_node_paths(exec_artifact, ast, item_count);
     }
 
     for artifact_command in artifact_commands {
@@ -752,7 +753,7 @@ pub(super) fn build_artifact_graph(
             &flattened_responses,
             &path_to_plane_id_map,
             ast,
-            cached_body_items,
+            item_count,
             exec_artifacts,
         )?;
         for artifact in artifact_updates {
@@ -765,7 +766,10 @@ pub(super) fn build_artifact_graph(
         merge_artifact_into_map(&mut map, exec_artifact.clone());
     }
 
-    Ok(ArtifactGraph { map })
+    Ok(ArtifactGraph {
+        map,
+        item_count: item_count + ast.body.len(),
+    })
 }
 
 /// These may have been created with placeholder `CodeRef`s because we didn't

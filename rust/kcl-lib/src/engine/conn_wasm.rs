@@ -80,12 +80,12 @@ impl ResponseContext {
     }
 
     // Add a response to the context.
-    pub async fn send_response(&self, data: js_sys::Uint8Array) -> Result<(), JsValue> {
+    pub async fn send_response(&self, data: js_sys::Uint8Array) {
         let ws_result: WebSocketResponse = match bson::from_slice(&data.to_vec()) {
             Ok(res) => res,
             Err(_) => {
                 // We don't care about the error if we can't parse it.
-                return Ok(());
+                return;
             }
         };
 
@@ -96,13 +96,11 @@ impl ResponseContext {
 
         let Some(id) = id else {
             // We only care if we have an id.
-            return Ok(());
+            return;
         };
 
         // Add this response to our responses.
         self.add(id, ws_result.clone()).await;
-
-        Ok(())
     }
 }
 

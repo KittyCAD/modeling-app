@@ -19,9 +19,9 @@ import {
   shell,
   systemPreferences,
 } from 'electron'
-import electronUpdater, { type AppUpdater } from 'electron-updater'
 import { Issuer } from 'openid-client'
 
+import { getAutoUpdater } from '@src/updater'
 import {
   argvFromYargs,
   getPathOrUrlFromArgs,
@@ -442,16 +442,6 @@ ipcMain.handle('disable-menu', (event, data) => {
   disableMenu(menuId)
 })
 
-export function getAutoUpdater(): AppUpdater {
-  // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.
-  // It is a workaround for ESM compatibility issues, see https://github.com/electron-userland/electron-builder/issues/7976.
-  const { autoUpdater } = electronUpdater
-  // Allows us to rollback to a previous version if needed.
-  // See https://github.com/electron-userland/electron-builder/blob/7dbc6c77c340c869d1e7effa22135fc740003a0f/packages/electron-updater/src/AppUpdater.ts#L450-L451
-  autoUpdater.allowDowngrade = true
-  return autoUpdater
-}
-
 app.on('ready', () => {
   // Disable auto updater on non-versioned builds
   if (packageJSON.version === '0.0.0' && viteEnv.MODE !== 'production') {
@@ -462,13 +452,36 @@ app.on('ready', () => {
   // TODO: we're getting `Error: Response ends without calling any handlers` with our setup,
   // so at the moment this isn't worth enabling
   autoUpdater.disableDifferentialDownload = true
-  setTimeout(() => {
-    autoUpdater.checkForUpdates().catch(reportRejection)
-  }, 1000)
+
+  // Check for updates in the background at startup and then every 15 minutes
+  let backgroundCheckingForUpdates = false
+  const checkForUpdatesBackground = () => {
+    backgroundCheckingForUpdates = true
+    autoUpdater
+      .checkForUpdates()
+      .catch(reportRejection)
+      .finally(() => {
+        backgroundCheckingForUpdates = false
+      })
+  }
+  const oneSecond = 1000
   const fifteenMinutes = 15 * 60 * 1000
-  setInterval(() => {
-    autoUpdater.checkForUpdates().catch(reportRejection)
-  }, fifteenMinutes)
+  setTimeout(checkForUpdatesBackground, oneSecond)
+  setInterval(checkForUpdatesBackground, fifteenMinutes)
+
+  autoUpdater.on('checking-for-update', () => {
+    console.log('checking-for-update')
+    if (!backgroundCheckingForUpdates) {
+      mainWindow?.webContents.send('update-checking')
+    }
+  })
+
+  autoUpdater.on('update-not-available', (info) => {
+    console.log('update-not-available', info)
+    if (!backgroundCheckingForUpdates) {
+      mainWindow?.webContents.send('update-not-available')
+    }
+  })
 
   autoUpdater.on('error', (error) => {
     console.error('update-error', error)

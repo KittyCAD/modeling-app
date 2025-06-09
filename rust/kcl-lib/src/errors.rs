@@ -565,30 +565,6 @@ impl KclError {
         new
     }
 
-    pub(crate) fn set_last_backtrace_fn_name(&self, last_fn_name: Option<String>) -> Self {
-        let mut new = self.clone();
-        match &mut new {
-            KclError::Lexical { details: e }
-            | KclError::Syntax { details: e }
-            | KclError::Semantic { details: e }
-            | KclError::ImportCycle { details: e }
-            | KclError::Type { details: e }
-            | KclError::Io { details: e }
-            | KclError::Unexpected { details: e }
-            | KclError::ValueAlreadyDefined { details: e }
-            | KclError::UndefinedValue { details: e, .. }
-            | KclError::InvalidExpression { details: e }
-            | KclError::Engine { details: e }
-            | KclError::Internal { details: e } => {
-                if let Some(item) = e.backtrace.last_mut() {
-                    item.fn_name = last_fn_name;
-                }
-            }
-        }
-
-        new
-    }
-
     pub(crate) fn add_unwind_location(&self, last_fn_name: Option<String>, source_range: SourceRange) -> Self {
         let mut new = self.clone();
         match &mut new {

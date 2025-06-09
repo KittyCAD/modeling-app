@@ -1,11 +1,11 @@
 ---
 title: "assert"
 subtitle: "Function in std"
-excerpt: ""
+excerpt: "Check a value meets some expected conditions at runtime. Program terminates with an error if conditions aren't met. If you provide multiple conditions, they will all be checked and all must be met."
 layout: manual
 ---
 
-
+Check a value meets some expected conditions at runtime. Program terminates with an error if conditions aren't met. If you provide multiple conditions, they will all be checked and all must be met.
 
 ```kcl
 assert(
@@ -20,8 +20,7 @@ assert(
 )
 ```
 
-Check a value meets some expected conditions at runtime. Program terminates with an error if conditions aren't met.
-If you provide multiple conditions, they will all be checked and all must be met.
+
 
 ### Arguments
 
@@ -42,8 +41,19 @@ If you provide multiple conditions, they will all be checked and all must be met
 ```kcl
 n = 10
 assert(n, isEqualTo = 10)
-assert(n, isGreaterThanOrEqual = 0, isLessThan = 100, error = "number should be between 0 and 100")
-assert(1.0000000000012, isEqualTo = 1, tolerance = 0.0001, error = "number should be almost exactly 1")
+assert(
+  n,
+  isGreaterThanOrEqual = 0,
+  isLessThan = 100,
+  error = "number should be between 0 and 100",
+)
+assert(
+  1.0000000000012,
+  isEqualTo = 1,
+  tolerance = 0.0001,
+  error = "number should be almost exactly 1",
+)
+
 ```
 
 

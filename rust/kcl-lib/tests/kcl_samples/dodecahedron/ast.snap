@@ -2038,12 +2038,20 @@ description: Result of parsing dodecahedron.kcl
                                 "computed": false,
                                 "end": 0,
                                 "object": {
+                                  "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
-                                  "name": "rotation",
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "rotation",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "property": {
                                   "commentStart": 0,
@@ -2078,12 +2086,20 @@ description: Result of parsing dodecahedron.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "rotation",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "rotation",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -2116,12 +2132,20 @@ description: Result of parsing dodecahedron.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "rotation",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "rotation",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -2154,12 +2178,20 @@ description: Result of parsing dodecahedron.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "rotation",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "rotation",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -2756,12 +2788,20 @@ description: Result of parsing dodecahedron.kcl
                       "computed": true,
                       "end": 0,
                       "object": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
-                        "name": "solids",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "solids",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "property": {
                         "commentStart": 0,

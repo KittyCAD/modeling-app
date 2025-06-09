@@ -26,8 +26,8 @@ use crate::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
             BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
             FunctionExpression, FunctionType, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement,
-            ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name,
-            Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter,
+            ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, Name, Node,
+            NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter,
             PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang, TagDeclarator, Type,
             TypeDeclaration, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
@@ -1326,10 +1326,7 @@ fn member_expression_subscript(i: &mut TokenSlice) -> ModalResult<(LiteralIdenti
 
 /// Get a property of an object, or an index of an array, or a member of a collection.
 /// Can be arbitrarily nested, e.g. `people[i]['adam'].age`.
-fn member_expression(i: &mut TokenSlice) -> ModalResult<Node<MemberExpression>> {
-    // This is an identifier, followed by a sequence of members (aka properties)
-    // First, the identifier.
-    let id = nameable_identifier.context(expected("the identifier of the object whose property you're trying to access, e.g. in 'shape.size.width', 'shape' is the identifier")).parse_next(i)?;
+fn build_member_expression(object: Expr, i: &mut TokenSlice) -> ModalResult<Node<MemberExpression>> {
     // Now a sequence of members.
     let member = alt((member_expression_dot, member_expression_subscript)).context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
     let mut members: Vec<_> = repeat(1.., member)
@@ -1340,11 +1337,11 @@ fn member_expression(i: &mut TokenSlice) -> ModalResult<Node<MemberExpression>> 
     // It's safe to call remove(0), because the vec is created from repeat(1..),
     // which is guaranteed to have >=1 elements.
     let (property, end, computed) = members.remove(0);
-    let start = id.start;
-    let module_id = id.module_id;
+    let start = object.start();
+    let module_id = object.module_id();
     let initial_member_expression = Node::new(
         MemberExpression {
-            object: MemberObject::Identifier(Box::new(id)),
+            object,
             computed,
             property,
             digest: None,
@@ -1362,7 +1359,7 @@ fn member_expression(i: &mut TokenSlice) -> ModalResult<Node<MemberExpression>> 
         .fold(initial_member_expression, |accumulated, (property, end, computed)| {
             Node::new(
                 MemberExpression {
-                    object: MemberObject::MemberExpression(Box::new(accumulated)),
+                    object: Expr::MemberExpression(Box::new(accumulated)),
                     computed,
                     property,
                     digest: None,
@@ -2085,8 +2082,7 @@ fn unnecessarily_bracketed(i: &mut TokenSlice) -> ModalResult<Expr> {
 }
 
 fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
-    alt((
-        member_expression.map(Box::new).map(Expr::MemberExpression),
+    let parsed_expr = alt((
         bool_value.map(Box::new).map(Expr::Literal),
         tag.map(Box::new).map(Expr::TagDeclarator),
         literal.map(Expr::Literal),
@@ -2100,14 +2096,19 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
         unnecessarily_bracketed,
     ))
     .context(expected("a KCL expression (but not a pipe expression)"))
-    .parse_next(i)
+    .parse_next(i)?;
+
+    let maybe_member = build_member_expression(parsed_expr.clone(), i);
+    if let Ok(mem) = maybe_member {
+        return Ok(Expr::MemberExpression(Box::new(mem)));
+    }
+    Ok(parsed_expr)
 }
 
 fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
     let mut expr = alt((
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         bool_value.map(Box::new).map(Expr::Literal),
-        member_expression.map(Box::new).map(Expr::MemberExpression),
         literal.map(Expr::Literal),
         fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
         name.map(Box::new).map(Expr::Name),
@@ -2118,6 +2119,10 @@ fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
         "a KCL value which can be used as an argument/operand to an operator",
     ))
     .parse_next(i)?;
+    let maybe_member = build_member_expression(expr.clone(), i);
+    if let Ok(mem) = maybe_member {
+        expr = Expr::MemberExpression(Box::new(mem));
+    }
 
     let ty = opt((colon, opt(whitespace), type_)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
@@ -2480,32 +2485,13 @@ impl TryFrom<Token> for Node<TagDeclarator> {
     }
 }
 
-impl Node<TagDeclarator> {
-    fn into_valid_binding_name(self) -> Result<Self, CompilationError> {
-        // Make sure they are not assigning a variable to a stdlib function.
-        if crate::std::name_in_stdlib(&self.name) {
-            return Err(CompilationError::fatal(
-                SourceRange::from(&self),
-                format!("Cannot assign a tag to a reserved keyword: {}", self.name),
-            ));
-        }
-        Ok(self)
-    }
-}
-
 /// Parse a Kcl tag that starts with a `$`.
 fn tag(i: &mut TokenSlice) -> ModalResult<Node<TagDeclarator>> {
     dollar.parse_next(i)?;
-    let tag_declarator = any
-        .try_map(Node::<TagDeclarator>::try_from)
+    any.try_map(Node::<TagDeclarator>::try_from)
         .context(expected("a tag, e.g. '$seg01' or '$line01'"))
         .parse_next(i)
-        .map_err(|e: ErrMode<ContextError>| e.cut())?;
-    // Now that we've parsed a tag declarator, verify that it's not a stdlib
-    // name.  If it is, stop backtracking.
-    tag_declarator
-        .into_valid_binding_name()
-        .map_err(|e| ErrMode::Cut(ContextError::from(e)))
+        .map_err(|e: ErrMode<ContextError>| e.cut())
 }
 
 /// Helper function. Matches any number of whitespace tokens and ignores them.
@@ -2938,7 +2924,7 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
         (identifier, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(ident, suffix)| {
             let mut result = Node::new(PrimitiveType::Boolean, ident.start, ident.end, ident.module_id);
             result.inner =
-                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named(ident));
+                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named { id: ident });
             result
         }),
     ))
@@ -3277,7 +3263,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                 return Err(ErrMode::Cut(
                     CompilationError::fatal(
                         SourceRange::from(&tok),
-                        format!("There was an unexpected {}. Try removing it.", tok.value),
+                        format!("There was an unexpected `{}`. Try removing it.", tok.value),
                     )
                     .into(),
                 ));
@@ -4446,7 +4432,7 @@ z(-[["#,
         assert_err(
             r#"z
 (--#"#,
-            "There was an unexpected -. Try removing it.",
+            "There was an unexpected `-`. Try removing it.",
             [3, 4],
         );
     }
@@ -4899,19 +4885,6 @@ let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
     }
 
     #[test]
-    fn test_parse_tag_named_std_lib() {
-        let some_program_string = r#"startSketchOn(XY)
-    |> startProfile(at = [0, 0])
-    |> line(%, end = [5, 5], tag = $xLine)
-"#;
-        assert_err(
-            some_program_string,
-            "Cannot assign a tag to a reserved keyword: xLine",
-            [86, 92],
-        );
-    }
-
-    #[test]
     fn test_parse_empty_tag_brace() {
         let some_program_string = r#"startSketchOn(XY)
     |> startProfile(at = [0, 0])
@@ -5027,6 +5000,17 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     |> line(end = [5, 5], tag = $sketching)
     "#;
         assert_no_err(some_program_string);
+    }
+
+    #[test]
+    fn test_parse_fn_call_then_field() {
+        let some_program_string = "myFunction().field";
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap(); // Updated import path
+        let actual = expression.parse(tokens.as_slice()).unwrap();
+        let Expr::MemberExpression(_expr) = actual else {
+            panic!("expected member expression")
+        };
     }
 
     #[test]
@@ -5217,7 +5201,7 @@ bar = 1
             .cause
             .as_ref()
             .expect("Found an error, but there was no cause. Add a cause.");
-        assert_eq!(cause.message, "There was an unexpected }. Try removing it.",);
+        assert_eq!(cause.message, "There was an unexpected `}`. Try removing it.",);
         assert_eq!(cause.source_range.start(), expected_src_start);
     }
 

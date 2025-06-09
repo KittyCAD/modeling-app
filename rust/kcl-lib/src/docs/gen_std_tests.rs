@@ -2,48 +2,11 @@ use std::{collections::HashMap, fs, path::Path};
 
 use anyhow::Result;
 use base64::Engine;
-use convert_case::Casing;
-use indexmap::IndexMap;
-use itertools::Itertools;
 use serde_json::json;
 use tokio::task::JoinSet;
 
 use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyData};
-use crate::{
-    docs::{StdLibFn, DECLARED_TYPES},
-    std::StdLib,
-    ExecutorContext,
-};
-
-// Types with special handling.
-const SPECIAL_TYPES: [&str; 4] = ["TagDeclarator", "TagIdentifier", "Start", "End"];
-
-const TYPE_REWRITES: [(&str, &str); 11] = [
-    ("TagNode", "TagDeclarator"),
-    ("SketchData", "Plane | Solid"),
-    ("SketchOrSurface", "Sketch | Plane | Face"),
-    ("SketchSurface", "Plane | Face"),
-    ("SolidOrImportedGeometry", "[Solid] | ImportedGeometry"),
-    (
-        "SolidOrSketchOrImportedGeometry",
-        "[Solid] | [Sketch] | ImportedGeometry",
-    ),
-    ("KclValue", "any"),
-    ("[KclValue]", "[any]"),
-    ("FaceTag", "TagIdentifier | Start | End"),
-    ("GeometryWithImportedGeometry", "Solid | Sketch | ImportedGeometry"),
-    ("SweepPath", "Sketch | Helix"),
-];
-
-fn rename_type(input: &str) -> &str {
-    for (i, o) in TYPE_REWRITES {
-        if input == i {
-            return o;
-        }
-    }
-
-    input
-}
+use crate::ExecutorContext;
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     let mut hbs = handlebars::Handlebars::new();
@@ -104,7 +67,7 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     Ok(hbs)
 }
 
-fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModData) -> Result<()> {
+fn generate_index(kcl_lib: &ModData) -> Result<()> {
     let hbs = init_handlebars()?;
 
     let mut functions = HashMap::new();
@@ -114,31 +77,6 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
 
     let mut types = HashMap::new();
     types.insert("Primitive types".to_owned(), Vec::new());
-
-    for key in combined.keys() {
-        let internal_fn = combined
-            .get(key)
-            .ok_or_else(|| anyhow::anyhow!("Failed to get internal function: {}", key))?;
-
-        if internal_fn.unpublished() || internal_fn.deprecated() {
-            continue;
-        }
-
-        let tags = internal_fn.tags();
-        let module = tags.first().map(|s| format!("std::{s}")).unwrap_or("std".to_owned());
-
-        functions
-            .entry(module.to_owned())
-            .or_default()
-            .push((internal_fn.name(), format!("/docs/kcl-std/{}", internal_fn.name())));
-    }
-
-    for name in SPECIAL_TYPES {
-        types
-            .get_mut("Primitive types")
-            .unwrap()
-            .push((name.to_owned(), format!("/docs/kcl-lang/types#{name}")));
-    }
 
     for d in kcl_lib.all_docs() {
         if d.hide() {
@@ -235,7 +173,11 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
         return None;
     }
 
-    let content = if props.inline { "" } else { src };
+    let content = if props.inline {
+        String::new()
+    } else {
+        crate::unparser::fmt(src).unwrap()
+    };
 
     let image_base64 = if props.norun {
         String::new()
@@ -257,8 +199,8 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
     }))
 }
 
-fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) -> Result<()> {
-    if ty.properties.doc_hidden || !DECLARED_TYPES.contains(&&*ty.name) {
+fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String, kcl_std: &ModData) -> Result<()> {
+    if ty.properties.doc_hidden {
         return Ok(());
     }
 
@@ -282,43 +224,20 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
     });
 
     let output = hbs.render("kclType", &data)?;
-    let output = cleanup_types(&output);
+    let output = cleanup_types(&output, kcl_std);
     expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
 
     Ok(())
 }
 
-fn generate_mod_from_kcl(m: &ModData, file_name: String, combined: &IndexMap<String, Box<dyn StdLibFn>>) -> Result<()> {
-    fn list_items(
-        m: &ModData,
-        namespace: &str,
-        combined: &IndexMap<String, Box<dyn StdLibFn>>,
-    ) -> Vec<gltf_json::Value> {
+fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
+    fn list_items(m: &ModData, namespace: &str) -> Vec<gltf_json::Value> {
         let mut items: Vec<_> = m
             .children
             .iter()
             .filter(|(k, _)| k.starts_with(namespace))
             .map(|(_, v)| (v.preferred_name().to_owned(), v.file_name()))
             .collect();
-
-        if namespace == "I:" {
-            // Add in functions declared in Rust
-            items.extend(
-                combined
-                    .values()
-                    .filter(|f| {
-                        if f.unpublished() || f.deprecated() {
-                            return false;
-                        }
-
-                        let tags = f.tags();
-                        let module = tags.first().map(|s| format!("std::{s}")).unwrap_or("std".to_owned());
-
-                        module == m.qual_name
-                    })
-                    .map(|f| (f.name(), f.name())),
-            )
-        }
 
         items.sort();
         items
@@ -333,9 +252,9 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String, combined: &IndexMap<Str
     }
     let hbs = init_handlebars()?;
 
-    let functions = list_items(m, "I:", combined);
-    let modules = list_items(m, "M:", combined);
-    let types = list_items(m, "T:", combined);
+    let functions = list_items(m, "I:");
+    let modules = list_items(m, "M:");
+    let types = list_items(m, "T:");
 
     let data = json!({
         "name": m.name,
@@ -391,7 +310,7 @@ fn generate_function_from_kcl(
         json!({
             "name": arg.name,
             "type_": arg.ty,
-            "description": docs.or_else(|| arg.ty.as_ref().and_then(|t| super::docs_for_type(t, kcl_std))).unwrap_or_default(),
+            "description": docs.or_else(|| arg.ty.as_ref().and_then(|t| docs_for_type(t, kcl_std))).unwrap_or_default(),
             "required": arg.kind.required(),
         })
     }).collect::<Vec<_>>();
@@ -408,16 +327,28 @@ fn generate_function_from_kcl(
         "return_value": function.return_type.as_ref().map(|t| {
             json!({
                 "type_": t,
-                "description": super::docs_for_type(t, kcl_std).unwrap_or_default(),
+                "description": docs_for_type(t, kcl_std).unwrap_or_default(),
             })
         }),
     });
 
     let output = hbs.render("function", &data)?;
-    let output = &cleanup_types(&output);
+    let output = &cleanup_types(&output, kcl_std);
     expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), output);
 
     Ok(())
+}
+
+fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
+    let key = if ty.starts_with("number") { "number" } else { ty };
+
+    if !key.contains('|') && !key.contains('[') {
+        if let Some(data) = kcl_std.find_by_name(key) {
+            return data.summary().cloned();
+        }
+    }
+
+    None
 }
 
 fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: String) -> Result<()> {
@@ -450,83 +381,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
     Ok(())
 }
 
-fn generate_function(internal_fn: Box<dyn StdLibFn>, kcl_std: &ModData) -> Result<()> {
-    let hbs = init_handlebars()?;
-
-    if internal_fn.unpublished() {
-        return Ok(());
-    }
-
-    let fn_name = internal_fn.name();
-    let snake_case_name = clean_function_name(&fn_name);
-
-    let examples: Vec<serde_json::Value> = internal_fn
-        .examples()
-        .iter()
-        .enumerate()
-        .map(|(index, (example, norun))| {
-            let image_base64 = if !norun {
-                let image_path = format!(
-                    "{}/tests/outputs/serial_test_example_{}{}.png",
-                    env!("CARGO_MANIFEST_DIR"),
-                    snake_case_name,
-                    index
-                );
-                let image_data =
-                    std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {}", image_path));
-                base64::engine::general_purpose::STANDARD.encode(&image_data)
-            } else {
-                String::new()
-            };
-
-            json!({
-                "content": example,
-                "image_base64": image_base64,
-            })
-        })
-        .collect();
-
-    let tags = internal_fn.tags();
-    let module = tags
-        .first()
-        .map(|s| &**s)
-        .map(|m| format!("std::{m}"))
-        .unwrap_or("std".to_owned());
-
-    let data = json!({
-        "name": fn_name,
-        "module": module,
-        "summary": internal_fn.summary(),
-        "description": internal_fn.description(),
-        "deprecated": internal_fn.deprecated(),
-        "fn_signature": internal_fn.fn_signature(true),
-        "examples": examples,
-        "args": internal_fn.args(false).iter().map(|arg| {
-            json!({
-                "name": arg.name,
-                "type_": rename_type(&arg.type_),
-                "description": arg.description(Some(kcl_std)),
-                "required": arg.required,
-            })
-        }).collect::<Vec<_>>(),
-        "return_value": internal_fn.return_value(false).map(|ret| {
-            json!({
-                "type_": rename_type(&ret.type_),
-                "description": ret.description(Some(kcl_std)),
-            })
-        }),
-    });
-
-    let mut output = hbs.render("function", &data)?;
-    // Fix the links to the types.
-    output = cleanup_types(&output);
-
-    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", fn_name), &output);
-
-    Ok(())
-}
-
-fn cleanup_types(input: &str) -> String {
+fn cleanup_types(input: &str, kcl_std: &ModData) -> String {
     #[derive(Copy, Clone, Eq, PartialEq, Debug)]
     enum State {
         Text,
@@ -550,7 +405,7 @@ fn cleanup_types(input: &str) -> String {
                 if code_type.starts_with(' ') {
                     code.push(' ');
                 }
-                code.push_str(&cleanup_type_string(code_type.trim(), false));
+                code.push_str(&cleanup_type_string(code_type.trim(), false, kcl_std));
                 if code_type.ends_with(' ') {
                     code.push(' ');
                 }
@@ -586,7 +441,7 @@ fn cleanup_types(input: &str) -> String {
                     }
                     ticks = 0;
                 } else if state == State::Text && ticks == 2 && !code.is_empty() {
-                    output.push_str(&cleanup_type_string(&code, true));
+                    output.push_str(&cleanup_type_string(&code, true, kcl_std));
                     code = String::new();
                     ticks = 0;
                 } else if state == State::CodeBlock {
@@ -631,13 +486,11 @@ fn cleanup_types(input: &str) -> String {
     output
 }
 
-fn cleanup_type_string(input: &str, fmt_for_text: bool) -> String {
+fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> String {
     assert!(
         !(input.starts_with('[') && input.ends_with(']') && input.contains('|')),
         "Arrays of unions are not supported"
     );
-
-    let input = rename_type(input);
 
     let tys: Vec<_> = input
         .split('|')
@@ -676,9 +529,7 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool) -> String {
                 format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-number)")
             } else if fmt_for_text && ty.starts_with("fn") {
                 format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-fn)")
-            } else if fmt_for_text && SPECIAL_TYPES.contains(&ty) {
-                format!("[{prefix}{ty}{suffix}](/docs/kcl-lang/types#{ty})")
-            } else if fmt_for_text && DECLARED_TYPES.contains(&ty) {
+            } else if fmt_for_text && matches!(kcl_std.find_by_name(ty), Some(DocData::Ty(_))) {
                 format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-{ty})")
             } else {
                 format!("{prefix}{ty}{suffix}")
@@ -689,73 +540,22 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool) -> String {
     tys.join(if fmt_for_text { " or " } else { " | " })
 }
 
-fn clean_function_name(name: &str) -> String {
-    // Convert from camel case to snake case.
-    let mut fn_name = name.to_case(convert_case::Case::Snake);
-    // Clean the fn name.
-    if fn_name.starts_with("last_seg_") {
-        fn_name = fn_name.replace("last_seg_", "last_segment_");
-    } else if fn_name.contains("_2_d") {
-        fn_name = fn_name.replace("_2_d", "_2d");
-    } else if fn_name.contains("_3_d") {
-        fn_name = fn_name.replace("_3_d", "_3d");
-    } else if fn_name == "seg_ang" {
-        fn_name = "segment_angle".to_string();
-    } else if fn_name == "seg_len" {
-        fn_name = "segment_length".to_string();
-    } else if fn_name.starts_with("seg_") {
-        fn_name = fn_name.replace("seg_", "segment_");
-    }
-
-    fn_name
-}
-
 #[test]
 fn test_generate_stdlib_markdown_docs() {
-    let stdlib = StdLib::new();
-    let combined = stdlib.combined();
     let kcl_std = crate::docs::kcl_doc::walk_prelude();
 
     // Generate the index which is the table of contents.
-    generate_index(&combined, &kcl_std).unwrap();
-
-    for key in combined.keys().sorted() {
-        let internal_fn = combined.get(key).unwrap();
-        generate_function(internal_fn.clone(), &kcl_std).unwrap();
-    }
+    generate_index(&kcl_std).unwrap();
 
     for d in kcl_std.all_docs() {
         match d {
             DocData::Fn(f) => generate_function_from_kcl(f, d.file_name(), d.example_name(), &kcl_std).unwrap(),
             DocData::Const(c) => generate_const_from_kcl(c, d.file_name(), d.example_name()).unwrap(),
-            DocData::Ty(t) => generate_type_from_kcl(t, d.file_name(), d.example_name()).unwrap(),
-            DocData::Mod(m) => generate_mod_from_kcl(m, d.file_name(), &combined).unwrap(),
+            DocData::Ty(t) => generate_type_from_kcl(t, d.file_name(), d.example_name(), &kcl_std).unwrap(),
+            DocData::Mod(m) => generate_mod_from_kcl(m, d.file_name()).unwrap(),
         }
     }
-    generate_mod_from_kcl(&kcl_std, "modules/std".to_owned(), &combined).unwrap();
-}
-
-#[test]
-fn test_generate_stdlib_json_schema() {
-    // If this test fails and you've modified the AST or something else which affects the json repr
-    // of stdlib functions, you should rerun the test with `EXPECTORATE=overwrite` to create new
-    // test data, then check `/docs/kcl-std/std.json` to ensure the changes are expected.
-    // Alternatively, run `just redo-kcl-stdlib-docs` (make sure to have just installed).
-    let stdlib = StdLib::new();
-    let combined = stdlib.combined();
-
-    let json_data: Vec<_> = combined
-        .keys()
-        .sorted()
-        .map(|key| {
-            let internal_fn = combined.get(key).unwrap();
-            internal_fn.to_json().unwrap()
-        })
-        .collect();
-    expectorate::assert_contents(
-        "../../docs/kcl-std/std.json",
-        &serde_json::to_string_pretty(&json_data).unwrap(),
-    );
+    generate_mod_from_kcl(&kcl_std, "modules/std".to_owned()).unwrap();
 }
 
 #[tokio::test(flavor = "multi_thread")]

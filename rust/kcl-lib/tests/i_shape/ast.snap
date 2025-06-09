@@ -109,12 +109,20 @@ description: Result of parsing i_shape.kcl
                   "computed": false,
                   "end": 0,
                   "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
-                    "name": "d_wrist_circumference",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "d_wrist_circumference",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "property": {
                     "commentStart": 0,
@@ -138,12 +146,20 @@ description: Result of parsing i_shape.kcl
                   "computed": false,
                   "end": 0,
                   "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
-                    "name": "d_wrist_circumference",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "d_wrist_circumference",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "property": {
                     "commentStart": 0,
@@ -171,12 +187,20 @@ description: Result of parsing i_shape.kcl
                 "computed": false,
                 "end": 0,
                 "object": {
+                  "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
-                  "name": "d_wrist_circumference",
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "d_wrist_circumference",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "property": {
                   "commentStart": 0,
@@ -204,12 +228,20 @@ description: Result of parsing i_shape.kcl
               "computed": false,
               "end": 0,
               "object": {
+                "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
-                "name": "d_wrist_circumference",
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "d_wrist_circumference",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "property": {
                 "commentStart": 0,
@@ -810,12 +842,20 @@ description: Result of parsing i_shape.kcl
                           "computed": false,
                           "end": 0,
                           "object": {
+                            "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
-                            "name": "d_wrist_circumference",
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "d_wrist_circumference",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "property": {
                             "commentStart": 0,
@@ -2359,12 +2399,20 @@ description: Result of parsing i_shape.kcl
                                 "computed": false,
                                 "end": 0,
                                 "object": {
+                                  "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
-                                  "name": "d_wrist_circumference",
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "d_wrist_circumference",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "property": {
                                   "commentStart": 0,
@@ -2388,12 +2436,20 @@ description: Result of parsing i_shape.kcl
                                 "computed": false,
                                 "end": 0,
                                 "object": {
+                                  "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
-                                  "name": "d_wrist_circumference",
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "d_wrist_circumference",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "property": {
                                   "commentStart": 0,
@@ -2421,12 +2477,20 @@ description: Result of parsing i_shape.kcl
                               "computed": false,
                               "end": 0,
                               "object": {
+                                "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
-                                "name": "d_wrist_circumference",
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "d_wrist_circumference",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "property": {
                                 "commentStart": 0,

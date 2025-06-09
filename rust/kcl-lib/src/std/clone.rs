@@ -26,7 +26,7 @@ use crate::{
 ///
 /// This works essentially like a copy-paste operation.
 pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let geometry = args.get_unlabeled_kw_arg_typed(
+    let geometry = args.get_unlabeled_kw_arg(
         "geometry",
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Sketch),

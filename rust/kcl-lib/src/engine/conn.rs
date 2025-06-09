@@ -67,6 +67,7 @@ pub struct TcpRead {
 
 /// Occurs when client couldn't read from the WebSocket to the engine.
 // #[derive(Debug)]
+#[allow(clippy::large_enum_variant)]
 pub enum WebSocketReadError {
     /// Could not read a message due to WebSocket errors.
     Read(tokio_tungstenite::tungstenite::Error),
@@ -507,8 +508,9 @@ impl EngineManager for EngineConnection {
             .await?;
 
         // Wait for the response.
+        let response_timeout = 300;
         let current_time = std::time::Instant::now();
-        while current_time.elapsed().as_secs() < 60 {
+        while current_time.elapsed().as_secs() < response_timeout {
             let guard = self.socket_health.read().await;
             if *guard == SocketHealth::Inactive {
                 // Check if we have any pending errors.

@@ -130,13 +130,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-14
+          - os: namespace-profile-macos-6-cores
             platform: mac
-          - os: windows-2022
+          - os: namespace-profile-windows-4-cores
             platform: win
           - os: ubuntu-22.04
             platform: linux
     runs-on: ${{ matrix.os }}
+    name: build-apps (${{ matrix.platform }})
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
     steps:
@@ -166,14 +167,14 @@ jobs:
       - run: npm install
 
       - name: Prepare certificate and variables (Windows only)
-        if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
+        if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.platform == 'win' }}
         run: |
-          echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12
-          cat /d/Certificate_pkcs12.p12
+          echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /c/Certificate_pkcs12.p12
+          cat /c/Certificate_pkcs12.p12
           echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
           echo "SM_HOST=${{ secrets.SM_HOST }}" >> "$GITHUB_ENV"
           echo "SM_API_KEY=${{ secrets.SM_API_KEY }}" >> "$GITHUB_ENV"
-          echo "SM_CLIENT_CERT_FILE=D:\\Certificate_pkcs12.p12" >> "$GITHUB_ENV"
+          echo "SM_CLIENT_CERT_FILE=C:\\Certificate_pkcs12.p12" >> "$GITHUB_ENV"
           echo "SM_CLIENT_CERT_PASSWORD=${{ secrets.SM_CLIENT_CERT_PASSWORD }}" >> "$GITHUB_ENV"
           echo "C:\Program Files (x86)\Windows Kits\10\App Certification Kit" >> $GITHUB_PATH
           echo "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools" >> $GITHUB_PATH
@@ -181,7 +182,7 @@ jobs:
         shell: bash
 
       - name: Setup certicate with SSM KSP (Windows only)
-        if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
+        if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.platform == 'win' }}
         run: |
           curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
           msiexec /i smtools-windows-x64.msi /quiet /qn

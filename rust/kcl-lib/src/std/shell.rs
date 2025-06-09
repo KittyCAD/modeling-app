@@ -16,9 +16,9 @@ use crate::{
 
 /// Create a shell.
 pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
-    let thickness: TyF64 = args.get_kw_arg_typed("thickness", &RuntimeType::length(), exec_state)?;
-    let faces = args.get_kw_arg_typed(
+    let solids = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
+    let thickness: TyF64 = args.get_kw_arg("thickness", &RuntimeType::length(), exec_state)?;
+    let faces = args.get_kw_arg(
         "faces",
         &RuntimeType::Array(Box::new(RuntimeType::tag()), ArrayLen::Minimum(1)),
         exec_state,
@@ -94,8 +94,8 @@ async fn inner_shell(
 
 /// Make the inside of a 3D object hollow.
 pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::solid(), exec_state)?;
-    let thickness: TyF64 = args.get_kw_arg_typed("thickness", &RuntimeType::length(), exec_state)?;
+    let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let thickness: TyF64 = args.get_kw_arg("thickness", &RuntimeType::length(), exec_state)?;
 
     let value = inner_hollow(solid, thickness, exec_state, args).await?;
     Ok(KclValue::Solid { value })

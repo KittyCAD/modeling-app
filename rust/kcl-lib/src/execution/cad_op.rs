@@ -1,13 +1,12 @@
 use indexmap::IndexMap;
-use schemars::JsonSchema;
 use serde::Serialize;
 
 use super::{types::NumericType, ArtifactId, KclValue};
-use crate::{ModuleId, SourceRange};
+use crate::{ModuleId, NodePath, SourceRange};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 pub enum Operation {
@@ -18,6 +17,8 @@ pub enum Operation {
         unlabeled_arg: Option<OpArg>,
         /// The labeled keyword arguments to the function.
         labeled_args: IndexMap<String, OpArg>,
+        /// The node path of the operation in the source code.
+        node_path: NodePath,
         /// The source range of the operation in the source code.
         source_range: SourceRange,
         /// True if the operation resulted in an error.
@@ -28,6 +29,8 @@ pub enum Operation {
     GroupBegin {
         /// The details of the group.
         group: Group,
+        /// The node path of the operation in the source code.
+        node_path: NodePath,
         /// The source range of the operation in the source code.
         source_range: SourceRange,
     },
@@ -64,7 +67,7 @@ impl Operation {
     }
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 #[expect(clippy::large_enum_variant)]
@@ -95,7 +98,7 @@ pub enum Group {
 }
 
 /// An argument to a CAD modeling operation.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpArg {
@@ -119,7 +122,7 @@ fn is_false(b: &bool) -> bool {
 
 /// A KCL value used in Operations.  `ArtifactId`s are used to refer to the
 /// actual scene objects.  Any data not needed in the UI may be omitted.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 pub enum OpKclValue {
@@ -177,21 +180,21 @@ pub enum OpKclValue {
 
 pub type OpKclObjectFields = IndexMap<String, OpKclValue>;
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpSketch {
     artifact_id: ArtifactId,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpSolid {
     artifact_id: ArtifactId,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpHelix {
