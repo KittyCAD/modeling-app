@@ -71,7 +71,6 @@ import { isTopLevelModule } from '@src/lang/util'
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
   Artifact,
-  ArtifactCommand,
   Cap as CapArtifact,
   CodeRef,
   CompositeSolid as CompositeSolidArtifact,
@@ -249,7 +248,6 @@ export const parse = (code: string | Error): ParseResult | Error => {
       [],
       [],
       [],
-      [],
       defaultArtifactGraph(),
       {},
       null
@@ -409,7 +407,6 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
     parsed.error.details.backtrace,
     parsed.nonFatal,
     parsed.operations,
-    parsed.artifactCommands,
     rustArtifactGraphToMap(parsed.artifactGraph),
     parsed.filenames,
     parsed.defaultPlanes
