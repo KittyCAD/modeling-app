@@ -25,7 +25,7 @@ test.describe('Temporary workspace', () => {
         const codeQueryParam = encodeURIComponent(stringToBase64(code))
         const targetURL = `?create-file=true&browser=test&code=${codeQueryParam}&ask-open-desktop=true`
         await page.goto(page.url() + targetURL)
-        expect
+        await expect
           .poll(() => page.url())
           .toContain(
             'create-file=true&browser=test&code=${codeQueryParam}&ask-open-desktop=true'
