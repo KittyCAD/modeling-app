@@ -715,7 +715,7 @@ impl NumericType {
         }
     }
 
-    fn coerce(&self, val: &KclValue, exec_state: &mut ExecState) -> Result<KclValue, CoercionError> {
+    fn coerce(&self, val: &KclValue) -> Result<KclValue, CoercionError> {
         let KclValue::Number { value, ty, meta } = val else {
             return Err(val.into());
         };
@@ -748,25 +748,6 @@ impl NumericType {
                 ty: ty.clone(),
                 meta: meta.clone(),
             }),
-
-            // Count can be coerced to any numeric type by treating it as if
-            // there were an implied multiplication by 1 with Default units.
-            (Known(UnitType::Count), Known(UnitType::Length(l2))) => {
-                let ty = count_to_concrete_length_unit(*l2, exec_state);
-                Ok(KclValue::Number {
-                    value: *value,
-                    ty: Known(UnitType::Length(ty)),
-                    meta: meta.clone(),
-                })
-            }
-            (Known(UnitType::Count), Known(UnitType::Angle(a2))) => {
-                let ty = count_to_concrete_angle_unit(*a2, exec_state);
-                Ok(KclValue::Number {
-                    value: *value,
-                    ty: Known(UnitType::Angle(ty)),
-                    meta: meta.clone(),
-                })
-            }
 
             // Known types and compatible, but needs adjustment.
             (Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => {
@@ -884,20 +865,6 @@ pub enum UnitLen {
     Feet,
     Yards,
     Unknown,
-}
-
-pub fn count_to_concrete_length_unit(unit: UnitLen, exec_state: &mut ExecState) -> UnitLen {
-    match unit {
-        UnitLen::Mm | UnitLen::Cm | UnitLen::M | UnitLen::Inches | UnitLen::Feet | UnitLen::Yards => unit,
-        UnitLen::Unknown => exec_state.length_unit(),
-    }
-}
-
-pub fn count_to_concrete_angle_unit(unit: UnitAngle, exec_state: &mut ExecState) -> UnitAngle {
-    match unit {
-        UnitAngle::Degrees | UnitAngle::Radians => unit,
-        UnitAngle::Unknown => exec_state.angle_unit(),
-    }
 }
 
 impl UnitLen {
@@ -1144,7 +1111,7 @@ impl KclValue {
             PrimitiveType::Any => Ok(self.clone()),
             PrimitiveType::Number(ty) => {
                 if convert_units {
-                    return ty.coerce(self, exec_state);
+                    return ty.coerce(self);
                 }
 
                 // Instead of converting units, reinterpret the number as having
@@ -1160,10 +1127,10 @@ impl KclValue {
                             value: *n,
                             meta: meta.clone(),
                         };
-                        return ty.coerce(&value, exec_state);
+                        return ty.coerce(&value);
                     }
                 }
-                ty.coerce(self, exec_state)
+                ty.coerce(self)
             }
             PrimitiveType::String => match self {
                 KclValue::String { .. } => Ok(self.clone()),
@@ -2147,10 +2114,6 @@ mod test {
     async fn coerce_numeric() {
         let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
 
-        // Set default length unit to something other than the default so that
-        // we verify that it's used.
-        exec_state.mod_local.settings.default_length_units = UnitLen::Feet;
-
         let count = KclValue::Number {
             value: 1.0,
             ty: NumericType::count(),
@@ -2215,6 +2178,9 @@ mod test {
         );
 
         // No coercion
+        count
+            .coerce(&NumericType::mm().into(), true, &mut exec_state)
+            .unwrap_err();
         mm.coerce(&NumericType::count().into(), true, &mut exec_state)
             .unwrap_err();
         unknown
@@ -2270,52 +2236,6 @@ mod test {
                 .unwrap()
                 .round(),
             1.0
-        );
-
-        // Count coercion.
-        assert_eq!(
-            count.coerce(&NumericType::mm().into(), true, &mut exec_state).unwrap(),
-            KclValue::Number {
-                value: 1.0,
-                ty: NumericType::mm(),
-                meta: Vec::new()
-            }
-        );
-        assert_eq!(
-            count.coerce(&NumericType::mm().into(), false, &mut exec_state).unwrap(),
-            KclValue::Number {
-                value: 1.0,
-                ty: NumericType::mm(),
-                meta: Vec::new()
-            }
-        );
-        assert_eq!(
-            count
-                .coerce(
-                    &NumericType::Known(UnitType::Length(UnitLen::Unknown)).into(),
-                    true,
-                    &mut exec_state
-                )
-                .unwrap(),
-            KclValue::Number {
-                value: 1.0,
-                ty: NumericType::Known(UnitType::Length(UnitLen::Feet)),
-                meta: Vec::new()
-            }
-        );
-        assert_eq!(
-            count
-                .coerce(
-                    &NumericType::Known(UnitType::Length(UnitLen::Unknown)).into(),
-                    false,
-                    &mut exec_state
-                )
-                .unwrap(),
-            KclValue::Number {
-                value: 1.0,
-                ty: NumericType::Known(UnitType::Length(UnitLen::Feet)),
-                meta: Vec::new()
-            }
         );
     }
 
