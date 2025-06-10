@@ -12,7 +12,6 @@ import {
 import { AppHeader } from '@src/components/AppHeader'
 import { EngineStream } from '@src/components/EngineStream'
 import Gizmo from '@src/components/Gizmo'
-import { LowerRightControls } from '@src/components/LowerRightControls'
 import { useLspContext } from '@src/components/LspProvider'
 import { ModelingSidebar } from '@src/components/ModelingSidebar/ModelingSidebar'
 import { UnitsMenu } from '@src/components/UnitsMenu'
@@ -248,10 +247,10 @@ export function App() {
         <ModelingSidebar />
         <EngineStream pool={pool} authToken={authToken} />
         {/* <CamToggle /> */}
-        <LowerRightControls navigate={navigate}>
+        <section className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
           <UnitsMenu />
           <Gizmo />
-        </LowerRightControls>
+        </section>
       </div>
       <StatusBar
         globalItems={[
