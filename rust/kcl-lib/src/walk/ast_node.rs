@@ -226,15 +226,6 @@ impl<'tree> From<&'tree types::BinaryPart> for Node<'tree> {
     }
 }
 
-impl<'tree> From<&'tree types::MemberObject> for Node<'tree> {
-    fn from(node: &'tree types::MemberObject) -> Self {
-        match node {
-            types::MemberObject::MemberExpression(me) => me.as_ref().into(),
-            types::MemberObject::Identifier(id) => id.as_ref().into(),
-        }
-    }
-}
-
 impl<'tree> From<&'tree types::LiteralIdentifier> for Node<'tree> {
     fn from(node: &'tree types::LiteralIdentifier) -> Self {
         match node {

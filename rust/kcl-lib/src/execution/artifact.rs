@@ -676,7 +676,7 @@ impl EdgeCut {
 #[serde(rename_all = "camelCase")]
 pub struct ArtifactGraph {
     map: IndexMap<ArtifactId, Artifact>,
-    item_count: usize,
+    pub(super) item_count: usize,
 }
 
 impl ArtifactGraph {

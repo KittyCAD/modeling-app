@@ -958,7 +958,7 @@ export fn sweep(
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
 ///
-/// The sketches need to closed and on the same plane.
+/// The sketches need to be closed and on different planes that are parallel.
 ///
 /// ```kcl
 /// // Loft a square and a triangle.

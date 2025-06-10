@@ -35,10 +35,10 @@ const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your 
 
 /// Repeat some 3D solid, changing each repetition slightly.
 pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
-    let instances: u32 = args.get_kw_arg_typed("instances", &RuntimeType::count(), exec_state)?;
-    let transform: &FunctionSource = args.get_kw_arg("transform")?;
-    let use_original = args.get_kw_arg_opt_typed("useOriginal", &RuntimeType::bool(), exec_state)?;
+    let solids = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
+    let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
+    let transform: FunctionSource = args.get_kw_arg("transform", &RuntimeType::function(), exec_state)?;
+    let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
 
     let solids = inner_pattern_transform(solids, instances, transform, use_original, exec_state, &args).await?;
     Ok(solids.into())
@@ -46,22 +46,22 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 
 /// Repeat some 2D sketch, changing each repetition slightly.
 pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let instances: u32 = args.get_kw_arg_typed("instances", &RuntimeType::count(), exec_state)?;
-    let transform: &FunctionSource = args.get_kw_arg("transform")?;
-    let use_original = args.get_kw_arg_opt_typed("useOriginal", &RuntimeType::bool(), exec_state)?;
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
+    let transform: FunctionSource = args.get_kw_arg("transform", &RuntimeType::function(), exec_state)?;
+    let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
 
     let sketches = inner_pattern_transform_2d(sketches, instances, transform, use_original, exec_state, &args).await?;
     Ok(sketches.into())
 }
 
-async fn inner_pattern_transform<'a>(
+async fn inner_pattern_transform(
     solids: Vec<Solid>,
     instances: u32,
-    transform: &'a FunctionSource,
+    transform: FunctionSource,
     use_original: Option<bool>,
     exec_state: &mut ExecState,
-    args: &'a Args,
+    args: &Args,
 ) -> Result<Vec<Solid>, KclError> {
     // Build the vec of transforms, one for each repetition.
     let mut transform_vec = Vec::with_capacity(usize::try_from(instances).unwrap());
@@ -72,7 +72,7 @@ async fn inner_pattern_transform<'a>(
         )));
     }
     for i in 1..instances {
-        let t = make_transform::<Solid>(i, transform, args.source_range, exec_state, &args.ctx).await?;
+        let t = make_transform::<Solid>(i, &transform, args.source_range, exec_state, &args.ctx).await?;
         transform_vec.push(t);
     }
     execute_pattern_transform(
@@ -85,13 +85,13 @@ async fn inner_pattern_transform<'a>(
     .await
 }
 
-async fn inner_pattern_transform_2d<'a>(
+async fn inner_pattern_transform_2d(
     sketches: Vec<Sketch>,
     instances: u32,
-    transform: &'a FunctionSource,
+    transform: FunctionSource,
     use_original: Option<bool>,
     exec_state: &mut ExecState,
-    args: &'a Args,
+    args: &Args,
 ) -> Result<Vec<Sketch>, KclError> {
     // Build the vec of transforms, one for each repetition.
     let mut transform_vec = Vec::with_capacity(usize::try_from(instances).unwrap());
@@ -102,7 +102,7 @@ async fn inner_pattern_transform_2d<'a>(
         )));
     }
     for i in 1..instances {
-        let t = make_transform::<Sketch>(i, transform, args.source_range, exec_state, &args.ctx).await?;
+        let t = make_transform::<Sketch>(i, &transform, args.source_range, exec_state, &args.ctx).await?;
         transform_vec.push(t);
     }
     execute_pattern_transform(
@@ -519,10 +519,10 @@ mod tests {
 
 /// A linear pattern on a 2D sketch.
 pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let instances: u32 = args.get_kw_arg_typed("instances", &RuntimeType::count(), exec_state)?;
-    let distance: TyF64 = args.get_kw_arg_typed("distance", &RuntimeType::length(), exec_state)?;
-    let axis: Axis2dOrPoint2d = args.get_kw_arg_typed(
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
+    let distance: TyF64 = args.get_kw_arg("distance", &RuntimeType::length(), exec_state)?;
+    let axis: Axis2dOrPoint2d = args.get_kw_arg(
         "axis",
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Axis2d),
@@ -530,7 +530,7 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
         ]),
         exec_state,
     )?;
-    let use_original = args.get_kw_arg_opt_typed("useOriginal", &RuntimeType::bool(), exec_state)?;
+    let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
 
     let axis = axis.to_point2d();
     if axis[0].n == 0.0 && axis[1].n == 0.0 {
@@ -579,10 +579,10 @@ async fn inner_pattern_linear_2d(
 
 /// A linear pattern on a 3D model.
 pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
-    let instances: u32 = args.get_kw_arg_typed("instances", &RuntimeType::count(), exec_state)?;
-    let distance: TyF64 = args.get_kw_arg_typed("distance", &RuntimeType::length(), exec_state)?;
-    let axis: Axis3dOrPoint3d = args.get_kw_arg_typed(
+    let solids = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
+    let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
+    let distance: TyF64 = args.get_kw_arg("distance", &RuntimeType::length(), exec_state)?;
+    let axis: Axis3dOrPoint3d = args.get_kw_arg(
         "axis",
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Axis3d),
@@ -590,7 +590,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
         ]),
         exec_state,
     )?;
-    let use_original = args.get_kw_arg_opt_typed("useOriginal", &RuntimeType::bool(), exec_state)?;
+    let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
 
     let axis = axis.to_point3d();
     if axis[0].n == 0.0 && axis[1].n == 0.0 && axis[2].n == 0.0 {
@@ -747,12 +747,12 @@ impl CircularPattern {
 
 /// A circular pattern on a 2D sketch.
 pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let instances: u32 = args.get_kw_arg_typed("instances", &RuntimeType::count(), exec_state)?;
-    let center: [TyF64; 2] = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
-    let arc_degrees: Option<TyF64> = args.get_kw_arg_opt_typed("arcDegrees", &RuntimeType::degrees(), exec_state)?;
-    let rotate_duplicates = args.get_kw_arg_opt_typed("rotateDuplicates", &RuntimeType::bool(), exec_state)?;
-    let use_original = args.get_kw_arg_opt_typed("useOriginal", &RuntimeType::bool(), exec_state)?;
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
+    let center: [TyF64; 2] = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let arc_degrees: Option<TyF64> = args.get_kw_arg_opt("arcDegrees", &RuntimeType::degrees(), exec_state)?;
+    let rotate_duplicates = args.get_kw_arg_opt("rotateDuplicates", &RuntimeType::bool(), exec_state)?;
+    let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
 
     let sketches = inner_pattern_circular_2d(
         sketches,
@@ -817,14 +817,14 @@ async fn inner_pattern_circular_2d(
 
 /// A circular pattern on a 3D model.
 pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
+    let solids = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
     // The number of total instances. Must be greater than or equal to 1.
     // This includes the original entity. For example, if instances is 2,
     // there will be two copies -- the original, and one new copy.
     // If instances is 1, this has no effect.
-    let instances: u32 = args.get_kw_arg_typed("instances", &RuntimeType::count(), exec_state)?;
+    let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
     // The axis around which to make the pattern. This is a 3D vector.
-    let axis: Axis3dOrPoint3d = args.get_kw_arg_typed(
+    let axis: Axis3dOrPoint3d = args.get_kw_arg(
         "axis",
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Axis3d),
@@ -835,14 +835,14 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
     let axis = axis.to_point3d();
 
     // The center about which to make the pattern. This is a 3D vector.
-    let center: [TyF64; 3] = args.get_kw_arg_typed("center", &RuntimeType::point3d(), exec_state)?;
+    let center: [TyF64; 3] = args.get_kw_arg("center", &RuntimeType::point3d(), exec_state)?;
     // The arc angle (in degrees) to place the repetitions. Must be greater than 0.
-    let arc_degrees: Option<TyF64> = args.get_kw_arg_opt_typed("arcDegrees", &RuntimeType::degrees(), exec_state)?;
+    let arc_degrees: Option<TyF64> = args.get_kw_arg_opt("arcDegrees", &RuntimeType::degrees(), exec_state)?;
     // Whether or not to rotate the duplicates as they are copied.
-    let rotate_duplicates = args.get_kw_arg_opt_typed("rotateDuplicates", &RuntimeType::bool(), exec_state)?;
+    let rotate_duplicates = args.get_kw_arg_opt("rotateDuplicates", &RuntimeType::bool(), exec_state)?;
     // If the target being patterned is itself a pattern, then, should you use the original solid,
     // or the pattern?
-    let use_original = args.get_kw_arg_opt_typed("useOriginal", &RuntimeType::bool(), exec_state)?;
+    let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
 
     let solids = inner_pattern_circular_3d(
         solids,

@@ -16,11 +16,11 @@ use crate::{
 
 /// Create a helix.
 pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let angle_start: TyF64 = args.get_kw_arg_typed("angleStart", &RuntimeType::degrees(), exec_state)?;
-    let revolutions: TyF64 = args.get_kw_arg_typed("revolutions", &RuntimeType::count(), exec_state)?;
-    let ccw = args.get_kw_arg_opt_typed("ccw", &RuntimeType::bool(), exec_state)?;
-    let radius: Option<TyF64> = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;
-    let axis: Option<Axis3dOrEdgeReference> = args.get_kw_arg_opt_typed(
+    let angle_start: TyF64 = args.get_kw_arg("angleStart", &RuntimeType::degrees(), exec_state)?;
+    let revolutions: TyF64 = args.get_kw_arg("revolutions", &RuntimeType::count(), exec_state)?;
+    let ccw = args.get_kw_arg_opt("ccw", &RuntimeType::bool(), exec_state)?;
+    let radius: Option<TyF64> = args.get_kw_arg_opt("radius", &RuntimeType::length(), exec_state)?;
+    let axis: Option<Axis3dOrEdgeReference> = args.get_kw_arg_opt(
         "axis",
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Edge),
@@ -28,8 +28,8 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         ]),
         exec_state,
     )?;
-    let length: Option<TyF64> = args.get_kw_arg_opt_typed("length", &RuntimeType::length(), exec_state)?;
-    let cylinder = args.get_kw_arg_opt_typed("cylinder", &RuntimeType::solid(), exec_state)?;
+    let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
+    let cylinder = args.get_kw_arg_opt("cylinder", &RuntimeType::solid(), exec_state)?;
 
     // Make sure we have a radius if we don't have a cylinder.
     if radius.is_none() && cylinder.is_none() {

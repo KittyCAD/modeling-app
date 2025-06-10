@@ -129,12 +129,20 @@ description: Result of parsing invalid_index_negative.kcl
             "computed": true,
             "end": 0,
             "object": {
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": "arr",
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "arr",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "property": {
               "commentStart": 0,

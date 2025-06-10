@@ -1252,18 +1252,11 @@ p3 = [342.51, 216.38],
           if (err(callExp)) {
             throw new Error('Failed to get CallExpressionKw node')
           }
-          const constraintInfo = getConstraintInfoKw(
-            callExp.node,
-            codeManager.code,
-            artifact.codeRef.pathToNode,
-            filter
-          )
-          const constraint = constraintInfo[constraintIndex]
 
           // Now that we're in sketchIdle state, test the "Constrain with named value" event
           actor.send({
             type: 'Constrain remove constraints',
-            data: constraint.pathToNode,
+            data: artifact.codeRef.pathToNode,
           })
 
           // Wait for the state to change in response to the constraint

@@ -14,6 +14,24 @@ description: Operations executed counterdrilled-weldment.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 11
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -39,6 +57,24 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 11
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 7
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -71,6 +107,24 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 12
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -127,51 +181,23 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "face": {
-        "value": {
-          "type": "String",
-          "value": "end"
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 12
         },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "face": {
-        "value": {
-          "type": "String",
-          "value": "end"
+        {
+          "type": "VariableDeclarationDeclaration"
         },
-        "sourceRange": []
-      }
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 1
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -196,6 +222,37 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -218,6 +275,145 @@ description: Operations executed counterdrilled-weldment.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "startSketchOn",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "face": {
+        "value": {
+          "type": "String",
+          "value": "end"
+        },
+        "sourceRange": []
+      }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "startSketchOn",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "face": {
+        "value": {
+          "type": "String",
+          "value": "end"
+        },
+        "sourceRange": []
+      }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -251,69 +447,36 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": -0.188,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
         },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": -0.188,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
+        {
+          "type": "VariableDeclarationDeclaration"
         },
-        "sourceRange": []
-      }
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -347,6 +510,163 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -0.188,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -0.188,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -370,6 +690,37 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -393,6 +744,37 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -416,6 +798,37 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -438,6 +851,37 @@ description: Operations executed counterdrilled-weldment.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -471,6 +915,37 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -503,6 +978,37 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -535,6 +1041,37 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -566,6 +1103,37 @@ description: Operations executed counterdrilled-weldment.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -612,6 +1180,37 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 3
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -657,6 +1256,37 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 3
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -702,6 +1332,37 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 3
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -746,6 +1407,37 @@ description: Operations executed counterdrilled-weldment.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 3
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -791,6 +1483,17 @@ description: Operations executed counterdrilled-weldment.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 15
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -834,6 +1537,17 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 15
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -879,6 +1593,17 @@ description: Operations executed counterdrilled-weldment.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 15
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -922,6 +1647,17 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 15
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -936,6 +1672,24 @@ description: Operations executed counterdrilled-weldment.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 16
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -968,6 +1722,24 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 16
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -981,6 +1753,24 @@ description: Operations executed counterdrilled-weldment.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 17
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1011,6 +1801,27 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 17
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1035,6 +1846,24 @@ description: Operations executed counterdrilled-weldment.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 17
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1067,6 +1896,24 @@ description: Operations executed counterdrilled-weldment.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 17
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 3
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1098,6 +1945,24 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 17
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 4
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1111,6 +1976,37 @@ description: Operations executed counterdrilled-weldment.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 18
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1124,6 +2020,37 @@ description: Operations executed counterdrilled-weldment.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 18
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1163,6 +2090,37 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 18
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 8
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1201,6 +2159,37 @@ description: Operations executed counterdrilled-weldment.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 18
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 8
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1342,6 +2331,33 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 18
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 2
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1481,6 +2497,33 @@ description: Operations executed counterdrilled-weldment.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 18
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 2
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1508,6 +2551,17 @@ description: Operations executed counterdrilled-weldment.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 19
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1533,6 +2587,17 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       },
       "labeledArgs": {}
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 20
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
     },
     "sourceRange": []
   },

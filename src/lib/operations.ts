@@ -6,7 +6,6 @@ import {
   findPipesWithImportAlias,
   getSketchSelectionsFromOperation,
 } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -19,7 +18,7 @@ import {
   type CallExpressionKw,
   type PipeExpression,
   type Program,
-  sourceRangeFromRust,
+  pathToNodeFromRustNodePath,
   type VariableDeclaration,
 } from '@src/lang/wasm'
 import type {
@@ -102,10 +101,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   const argDefaultValues: ModelingCommandSchema['Extrude'] = {
     sketches,
     length,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
     ...baseCommand,
@@ -168,10 +164,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
   // Assemble the default argument values for the Fillet command,
   // with `nodeToEdit` set, which will let the Fillet actor know
   // to edit the node that corresponds to the StdLibCall.
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
-  )
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
 
   let argDefaultValues:
     | ModelingCommandSchema['Chamfer']
@@ -333,10 +326,7 @@ const prepareToEditShell: PrepareToEditCallback =
         graphSelections,
         otherSelections: [],
       },
-      nodeToEdit: getNodePathFromSourceRange(
-        kclManager.ast,
-        sourceRangeFromRust(operation.sourceRange)
-      ),
+      nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
     }
     return {
       ...baseCommand,
@@ -405,10 +395,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   const argDefaultValues: ModelingCommandSchema['Offset plane'] = {
     distance: distanceResult,
     plane,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
   return {
@@ -497,10 +484,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     sketches,
     path,
     sectional,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
     ...baseCommand,
@@ -750,10 +734,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     radius,
     length,
     ccw,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
   return {
@@ -889,10 +870,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     axis,
     edge,
     angle,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
     ...baseCommand,
@@ -980,6 +958,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'patternLinear3d',
     supportsAppearance: true,
     supportsTransform: true,
+  },
+  mirror2d: {
+    label: 'Mirror 2D',
+    icon: 'mirror',
   },
   revolve: {
     label: 'Revolve',
@@ -1111,8 +1093,7 @@ export function getOperationVariableName(
     return undefined
   }
   // Find the AST node.
-  const range = sourceRangeFromRust(op.sourceRange)
-  const pathToNode = getNodePathFromSourceRange(program, range)
+  const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
   if (pathToNode.length === 0) {
     return undefined
   }
@@ -1299,10 +1280,7 @@ export async function enterAppearanceFlow({
 
   if (stdLibInfo && stdLibInfo.supportsAppearance) {
     const argDefaultValues = {
-      nodeToEdit: getNodePathFromSourceRange(
-        kclManager.ast,
-        sourceRangeFromRust(operation.sourceRange)
-      ),
+      nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
     }
     return {
       type: 'Find and select command',
@@ -1334,10 +1312,7 @@ async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
     }
   }
 
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
-  )
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
   let x: KclExpression | undefined = undefined
   let y: KclExpression | undefined = undefined
   let z: KclExpression | undefined = undefined
@@ -1408,10 +1383,7 @@ async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
     }
   }
 
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
-  )
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
   let roll: KclExpression | undefined = undefined
   let pitch: KclExpression | undefined = undefined
   let yaw: KclExpression | undefined = undefined
@@ -1480,10 +1452,7 @@ export async function enterCloneFlow({
     )
   }
 
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
-  )
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
 
   // Won't be used since we provide nodeToEdit
   const selection: Selections = { graphSelections: [], otherSelections: [] }

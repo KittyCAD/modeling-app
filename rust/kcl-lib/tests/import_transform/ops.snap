@@ -10,6 +10,14 @@ description: Operations executed import_transform.kcl
       "name": "2-5-long-m8-chc-screw.stl",
       "moduleId": 0
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -71,6 +79,21 @@ description: Operations executed import_transform.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 1
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -134,6 +157,21 @@ description: Operations executed import_transform.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -180,6 +218,21 @@ description: Operations executed import_transform.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 3
+        }
+      ]
     },
     "sourceRange": []
   },

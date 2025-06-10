@@ -27,6 +27,20 @@ description: Operations executed kw_fn.kcl
       },
       "labeledArgs": {}
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 2
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -69,6 +83,20 @@ description: Operations executed kw_fn.kcl
           "sourceRange": []
         }
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 3
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
     },
     "sourceRange": []
   },

@@ -11,6 +11,12 @@ const jestConfig: Config = {
     "^.+\.tsx?$": ["ts-jest",{ babelConfig: true }],
   },
   testEnvironment: "jest-fixed-jsdom",
+  // Include both standard test patterns and our custom .jesttest. pattern
+  testMatch: [
+    "**/__tests__/**/*.[jt]s?(x)",
+    "**/?(*.)+(spec|test).[tj]s?(x)",
+    "**/?(*.)+(jesttest).[tj]s?(x)"
+  ],
   // TAG: paths, path, baseUrl, alias
   // This is necessary to use tsconfig path aliases.
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/../' }),

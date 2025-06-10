@@ -14,6 +14,24 @@ description: Operations executed lego.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 15
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -46,6 +64,24 @@ description: Operations executed lego.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 15
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 6
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -68,6 +104,24 @@ description: Operations executed lego.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 16
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -101,6 +155,24 @@ description: Operations executed lego.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 16
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 6
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -123,6 +195,24 @@ description: Operations executed lego.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 17
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -190,6 +280,24 @@ description: Operations executed lego.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 17
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 4
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -214,6 +322,24 @@ description: Operations executed lego.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 18
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -256,6 +382,24 @@ description: Operations executed lego.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 18
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 4
+        }
+      ]
     },
     "sourceRange": []
   }

@@ -48,7 +48,7 @@ pub(super) struct GlobalState {
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
     pub errors: Vec<CompilationError>,
-    #[allow(dead_code)]
+    #[cfg_attr(not(feature = "artifact-graph"), allow(dead_code))]
     pub artifacts: ArtifactState,
 }
 
@@ -378,6 +378,13 @@ impl GlobalState {
 
     pub(super) fn get_source(&self, id: ModuleId) -> Option<&ModuleSource> {
         self.id_to_source.get(&id)
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+impl ArtifactState {
+    pub fn cached_body_items(&self) -> usize {
+        self.graph.item_count
     }
 }
 

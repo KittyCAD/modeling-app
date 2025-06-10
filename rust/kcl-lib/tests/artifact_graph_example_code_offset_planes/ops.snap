@@ -31,6 +31,20 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -60,6 +74,20 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -91,6 +119,20 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 2
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -104,6 +146,24 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 3
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   }
 ]

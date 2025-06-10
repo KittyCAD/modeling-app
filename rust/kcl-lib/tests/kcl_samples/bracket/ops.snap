@@ -14,6 +14,24 @@ description: Operations executed bracket.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 20
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -46,6 +64,24 @@ description: Operations executed bracket.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 20
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 9
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -69,6 +105,24 @@ description: Operations executed bracket.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 21
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -125,6 +179,24 @@ description: Operations executed bracket.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 21
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 4
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -148,6 +220,24 @@ description: Operations executed bracket.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 22
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -191,6 +281,24 @@ description: Operations executed bracket.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 22
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 3
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -236,6 +344,17 @@ description: Operations executed bracket.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 23
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -279,6 +398,17 @@ description: Operations executed bracket.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 24
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -337,6 +467,17 @@ description: Operations executed bracket.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 25
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        }
+      ]
     },
     "sourceRange": []
   }

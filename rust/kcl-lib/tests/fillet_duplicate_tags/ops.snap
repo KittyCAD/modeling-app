@@ -14,6 +14,24 @@ description: Operations executed fillet_duplicate_tags.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 0
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -45,6 +63,21 @@ description: Operations executed fillet_duplicate_tags.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 0
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 5
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -98,6 +131,21 @@ description: Operations executed fillet_duplicate_tags.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 0
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 6
+        }
+      ]
     },
     "sourceRange": [],
     "isError": true

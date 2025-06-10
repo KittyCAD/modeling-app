@@ -14,6 +14,37 @@ description: Operations executed makeup-mirror.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -27,6 +58,37 @@ description: Operations executed makeup-mirror.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -40,6 +102,37 @@ description: Operations executed makeup-mirror.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -53,6 +146,37 @@ description: Operations executed makeup-mirror.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -66,6 +190,37 @@ description: Operations executed makeup-mirror.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -79,6 +234,37 @@ description: Operations executed makeup-mirror.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -92,6 +278,37 @@ description: Operations executed makeup-mirror.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -122,6 +339,40 @@ description: Operations executed makeup-mirror.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -152,6 +403,40 @@ description: Operations executed makeup-mirror.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -181,6 +466,40 @@ description: Operations executed makeup-mirror.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -212,6 +531,40 @@ description: Operations executed makeup-mirror.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -242,6 +595,40 @@ description: Operations executed makeup-mirror.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -271,6 +658,40 @@ description: Operations executed makeup-mirror.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -302,101 +723,39 @@ description: Operations executed makeup-mirror.kcl
         "sourceRange": []
       }
     },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 24.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
         },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 24.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
+        {
+          "type": "VariableDeclarationDeclaration"
         },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 24.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
+        {
+          "type": "VariableDeclarationInit"
         },
-        "sourceRange": []
-      }
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -430,6 +789,37 @@ description: Operations executed makeup-mirror.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -462,6 +852,37 @@ description: Operations executed makeup-mirror.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -494,6 +915,37 @@ description: Operations executed makeup-mirror.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -525,6 +977,226 @@ description: Operations executed makeup-mirror.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 24.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 24.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "StdLibCall",
+    "name": "extrude",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 24.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 10
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -585,6 +1257,20 @@ description: Operations executed makeup-mirror.kcl
           "sourceRange": []
         }
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 11
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -646,6 +1332,20 @@ description: Operations executed makeup-mirror.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 12
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -705,6 +1405,20 @@ description: Operations executed makeup-mirror.kcl
           "sourceRange": []
         }
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 13
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -766,6 +1480,20 @@ description: Operations executed makeup-mirror.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 14
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -825,6 +1553,20 @@ description: Operations executed makeup-mirror.kcl
           "sourceRange": []
         }
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 15
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -885,6 +1627,20 @@ description: Operations executed makeup-mirror.kcl
           "sourceRange": []
         }
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 16
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -946,6 +1702,20 @@ description: Operations executed makeup-mirror.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 17
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -959,6 +1729,37 @@ description: Operations executed makeup-mirror.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 18
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -972,6 +1773,37 @@ description: Operations executed makeup-mirror.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 18
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1004,6 +1836,37 @@ description: Operations executed makeup-mirror.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 18
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1035,6 +1898,37 @@ description: Operations executed makeup-mirror.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 18
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 2
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1087,6 +1981,20 @@ description: Operations executed makeup-mirror.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 19
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1138,6 +2046,20 @@ description: Operations executed makeup-mirror.kcl
         }
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 20
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1151,6 +2073,33 @@ description: Operations executed makeup-mirror.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 21
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1181,6 +2130,36 @@ description: Operations executed makeup-mirror.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 21
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 0
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "CallKwUnlabeledArg"
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1213,6 +2192,37 @@ description: Operations executed makeup-mirror.kcl
         "sourceRange": []
       }
     },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 21
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 1
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 1
+        }
+      ]
+    },
     "sourceRange": []
   },
   {
@@ -1244,6 +2254,37 @@ description: Operations executed makeup-mirror.kcl
         },
         "sourceRange": []
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 21
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "FunctionExpressionBody"
+        },
+        {
+          "type": "FunctionExpressionBodyItem",
+          "index": 2
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 6
+        }
+      ]
     },
     "sourceRange": []
   },
@@ -1375,6 +2416,20 @@ description: Operations executed makeup-mirror.kcl
           "sourceRange": []
         }
       }
+    },
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 22
+        },
+        {
+          "type": "VariableDeclarationDeclaration"
+        },
+        {
+          "type": "VariableDeclarationInit"
+        }
+      ]
     },
     "sourceRange": []
   },

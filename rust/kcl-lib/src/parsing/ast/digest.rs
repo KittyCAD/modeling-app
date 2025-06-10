@@ -4,7 +4,7 @@ use crate::parsing::ast::types::{
     Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, BodyItem,
     CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType, Identifier,
     IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression, Literal,
-    LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, ObjectExpression, ObjectProperty, Parameter,
+    LiteralIdentifier, LiteralValue, MemberExpression, Name, ObjectExpression, ObjectProperty, Parameter,
     PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, TagDeclarator, Type, TypeDeclaration,
     UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
 };
@@ -163,15 +163,6 @@ impl BinaryPart {
             BinaryPart::MemberExpression(me) => me.compute_digest(),
             BinaryPart::IfExpression(e) => e.compute_digest(),
             BinaryPart::AscribedExpression(e) => e.compute_digest(),
-        }
-    }
-}
-
-impl MemberObject {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            MemberObject::MemberExpression(me) => me.compute_digest(),
-            MemberObject::Identifier(id) => id.compute_digest(),
         }
     }
 }

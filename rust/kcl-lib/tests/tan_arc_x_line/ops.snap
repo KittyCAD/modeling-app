@@ -14,6 +14,21 @@ description: Operations executed tan_arc_x_line.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
+    "nodePath": {
+      "steps": [
+        {
+          "type": "ProgramBodyItem",
+          "index": 5
+        },
+        {
+          "type": "ExpressionStatementExpr"
+        },
+        {
+          "type": "PipeBodyItem",
+          "index": 0
+        }
+      ]
+    },
     "sourceRange": []
   }
 ]

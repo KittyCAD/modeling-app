@@ -752,10 +752,13 @@ export const modelingMachine = setup({
       event,
     }) => {
       if (event.type !== 'Constrain remove constraints') return false
-      const info = removeConstrainingValuesInfo({
-        selectionRanges,
-        pathToNodes: event.data && [event.data],
-      })
+
+      const pathToNodes = event.data
+        ? [event.data]
+        : selectionRanges.graphSelections.map(({ codeRef }) => {
+            return codeRef.pathToNode
+          })
+      const info = removeConstrainingValuesInfo(pathToNodes)
       if (err(info)) return false
       return info.enabled
     },
@@ -802,6 +805,20 @@ export const modelingMachine = setup({
       } else if ('error' in event && event.error instanceof Error) {
         toast.error(event.error.message)
       }
+    },
+    toastErrorAndExitSketch: ({ event }) => {
+      if ('output' in event && event.output instanceof Error) {
+        toast.error(event.output.message)
+      } else if ('data' in event && event.data instanceof Error) {
+        toast.error(event.data.message)
+      } else if ('error' in event && event.error instanceof Error) {
+        toast.error(event.error.message)
+      }
+
+      // Clean up the THREE.js sketch scene
+      sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+      sceneEntitiesManager.removeSketchGrid()
+      sceneEntitiesManager.resetOverlays()
     },
     'assign tool in context': assign({
       currentTool: ({ event }) =>
@@ -4404,7 +4421,7 @@ export const modelingMachine = setup({
             },
             onError: {
               target: '#Modeling.idle',
-              actions: 'toastError',
+              actions: 'toastErrorAndExitSketch',
               reenter: true,
             },
           },

@@ -14,7 +14,7 @@ use crate::{
     parsing::ast::types::{CallExpressionKw, DefaultParamVal, FunctionExpression, Node, Program, Type},
     source_range::SourceRange,
     std::StdFn,
-    CompilationError,
+    CompilationError, NodePath,
 };
 
 #[derive(Debug, Clone)]
@@ -322,6 +322,7 @@ impl FunctionDefinition<'_> {
                         .unlabeled_kw_arg_unconverted()
                         .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                     labeled_args: op_labeled_args,
+                    node_path: NodePath::placeholder(),
                     source_range: callsite,
                     is_error: false,
                 })
@@ -337,6 +338,7 @@ impl FunctionDefinition<'_> {
                             .map(|arg| OpArg::new(OpKclValue::from(&arg.1.value), arg.1.source_range)),
                         labeled_args: op_labeled_args,
                     },
+                    node_path: NodePath::placeholder(),
                     source_range: callsite,
                 });
 

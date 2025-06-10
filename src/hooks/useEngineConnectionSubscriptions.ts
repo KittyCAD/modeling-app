@@ -3,7 +3,6 @@ import { useEffect, useRef } from 'react'
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getNodeFromPath } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { SegmentArtifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -13,7 +12,7 @@ import {
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
-import type { CallExpressionKw } from '@src/lang/wasm'
+import type { CallExpressionKw, PathToNode } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/wasm'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { getEventForSelectWithPoint } from '@src/lib/selections'
@@ -247,10 +246,7 @@ export function useEngineConnectionSubscriptions() {
               if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
                 return
               const { z_axis, y_axis, origin } = faceInfo
-              const sketchPathToNode = getNodePathFromSourceRange(
-                kclManager.ast,
-                err(codeRef) ? defaultSourceRange() : codeRef.range
-              )
+              const sketchPathToNode = err(codeRef) ? [] : codeRef.pathToNode
 
               const getEdgeCutMeta = (): null | EdgeCutInfo => {
                 let chamferInfo: {
@@ -332,16 +328,13 @@ export function useEngineConnectionSubscriptions() {
                   { type: 'sweep', ...extrusion },
                   kclManager.artifactGraph
                 )[0] || null
-              const lastChildCodeRef =
+              const lastChildCodeRef: PathToNode | null =
                 lastChild?.type === 'compositeSolid'
-                  ? lastChild.codeRef.range
+                  ? lastChild.codeRef.pathToNode
                   : null
 
               const extrudePathToNode = !err(extrusion)
-                ? getNodePathFromSourceRange(
-                    kclManager.ast,
-                    lastChildCodeRef || extrusion.codeRef.range
-                  )
+                ? lastChildCodeRef || extrusion.codeRef.pathToNode
                 : []
 
               sceneInfra.modelingSend({

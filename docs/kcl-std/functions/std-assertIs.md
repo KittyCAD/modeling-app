@@ -29,6 +29,7 @@ assertIs(
 ```kcl
 kclIsFun = true
 assertIs(kclIsFun)
+
 ```
 
 
