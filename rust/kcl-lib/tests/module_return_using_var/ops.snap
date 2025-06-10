@@ -58,6 +58,26 @@ description: Operations executed module_return_using_var.kcl
   ],
   "rust/kcl-lib/tests/module_return_using_var/input.kcl": [
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "cube.kcl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
       "type": "StdLibCall",
       "name": "translate",
       "unlabeledArg": {

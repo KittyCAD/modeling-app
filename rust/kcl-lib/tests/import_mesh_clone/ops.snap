@@ -5,6 +5,26 @@ description: Operations executed import_mesh_clone.kcl
 {
   "rust/kcl-lib/tests/import_mesh_clone/input.kcl": [
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "cube.obj",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
       "type": "StdLibCall",
       "name": "translate",
       "unlabeledArg": {

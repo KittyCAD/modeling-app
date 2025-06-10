@@ -6,6 +6,26 @@ description: Operations executed import_whole_transitive_import.kcl
   "rust/kcl-lib/tests/import_whole_transitive_import/bolt.kcl": [],
   "rust/kcl-lib/tests/import_whole_transitive_import/input.kcl": [
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "part.kcl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
       "type": "StdLibCall",
       "name": "translate",
       "unlabeledArg": {

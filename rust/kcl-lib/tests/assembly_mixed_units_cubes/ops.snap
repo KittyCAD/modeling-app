@@ -109,7 +109,48 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       "sourceRange": []
     }
   ],
-  "rust/kcl-lib/tests/assembly_mixed_units_cubes/input.kcl": [],
+  "rust/kcl-lib/tests/assembly_mixed_units_cubes/input.kcl": [
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "cube-inches.kcl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "cube-mm.kcl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    }
+  ],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],

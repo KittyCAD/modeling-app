@@ -4,7 +4,41 @@ description: Operations executed import_only_at_top_level.kcl
 ---
 {
   "rust/kcl-lib/tests/import_only_at_top_level/empty.kcl": [],
-  "rust/kcl-lib/tests/import_only_at_top_level/input.kcl": [],
+  "rust/kcl-lib/tests/import_only_at_top_level/input.kcl": [
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "empty.kcl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    }
+  ],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],

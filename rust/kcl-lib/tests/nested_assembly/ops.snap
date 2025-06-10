@@ -3,7 +3,28 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed nested_assembly.kcl
 ---
 {
-  "rust/kcl-lib/tests/nested_assembly/input.kcl": [],
+  "rust/kcl-lib/tests/nested_assembly/input.kcl": [
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "main.kcl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    }
+  ],
   "rust/kcl-lib/tests/nested_assembly/nested/foo/bar/imported.kcl": [
     {
       "type": "StdLibCall",

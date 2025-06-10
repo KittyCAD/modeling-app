@@ -7,6 +7,26 @@ description: Operations executed pattern_circular_in_module.kcl
     {
       "type": "GroupBegin",
       "group": {
+        "type": "ModuleInstance",
+        "name": "thing.kcl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
         "type": "FunctionCall",
         "name": "thing",
         "functionSourceRange": [],

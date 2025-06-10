@@ -21,7 +21,28 @@ description: Operations executed import_side_effect.kcl
       "sourceRange": []
     }
   ],
-  "rust/kcl-lib/tests/import_side_effect/input.kcl": [],
+  "rust/kcl-lib/tests/import_side_effect/input.kcl": [
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "export_side_effect.kcl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    }
+  ],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],

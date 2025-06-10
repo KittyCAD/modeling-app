@@ -7,6 +7,26 @@ description: Operations executed import_async.kcl
     {
       "type": "GroupBegin",
       "group": {
+        "type": "ModuleInstance",
+        "name": "2-5-long-m8-chc-screw.stl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
         "type": "FunctionCall",
         "name": "helicalGear",
         "functionSourceRange": [],

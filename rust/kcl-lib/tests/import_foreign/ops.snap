@@ -3,7 +3,28 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_foreign.kcl
 ---
 {
-  "rust/kcl-lib/tests/import_foreign/input.kcl": [],
+  "rust/kcl-lib/tests/import_foreign/input.kcl": [
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "cube.gltf",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    }
+  ],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],

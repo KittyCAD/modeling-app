@@ -4,7 +4,48 @@ description: Operations executed assembly_non_default_units.kcl
 ---
 {
   "rust/kcl-lib/tests/assembly_non_default_units/globals.kcl": [],
-  "rust/kcl-lib/tests/assembly_non_default_units/input.kcl": [],
+  "rust/kcl-lib/tests/assembly_non_default_units/input.kcl": [
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "other2.kcl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "other1.kcl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    }
+  ],
   "rust/kcl-lib/tests/assembly_non_default_units/other1.kcl": [
     {
       "type": "StdLibCall",

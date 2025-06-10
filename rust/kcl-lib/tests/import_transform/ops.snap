@@ -5,6 +5,26 @@ description: Operations executed import_transform.kcl
 {
   "rust/kcl-lib/tests/import_transform/input.kcl": [
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "2-5-long-m8-chc-screw.stl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
       "type": "StdLibCall",
       "name": "rotate",
       "unlabeledArg": {
