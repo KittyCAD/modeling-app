@@ -98,7 +98,7 @@ description: Artifact commands sketch-on-chamfer-two-times-different-order.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000013303338179137697,
+            "x": 0.0,
             "y": -217.26,
             "z": 0.0
           },
@@ -334,7 +334,7 @@ description: Artifact commands sketch-on-chamfer-two-times-different-order.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0000000000000064171492275321306,
+            "x": 0.0,
             "y": -104.8,
             "z": 0.0
           },
@@ -449,7 +449,7 @@ description: Artifact commands sketch-on-chamfer-two-times-different-order.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000008099201606161021,
+            "x": 0.0,
             "y": -132.27,
             "z": 0.0
           },
@@ -466,7 +466,7 @@ description: Artifact commands sketch-on-chamfer-two-times-different-order.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -40.81999999999999,
+            "x": -40.82,
             "y": -0.0,
             "z": 0.0
           },

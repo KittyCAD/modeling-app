@@ -59,7 +59,7 @@ description: Artifact commands involute_circular_units.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 49.333862591260186,
+          "x": 49.334,
           "y": 0.0,
           "z": 0.0
         }
@@ -99,8 +99,8 @@ description: Artifact commands involute_circular_units.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 57.399134909054006,
-            "y": 3.4043078139641443,
+            "x": 57.399,
+            "y": 3.404,
             "z": 0.0
           },
           "relative": false
@@ -116,13 +116,13 @@ description: Artifact commands involute_circular_units.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.00035511628882822777,
-            "y": -0.005982247255254536
+            "x": 0.0,
+            "y": -0.006
           },
           "radius": 57.5,
           "start": {
             "unit": "degrees",
-            "value": 3.400173269101186
+            "value": 3.4
           },
           "end": {
             "unit": "degrees",
@@ -159,8 +159,8 @@ description: Artifact commands involute_circular_units.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 48.19561253992905,
-            "y": 10.642050608448216,
+            "x": 48.196,
+            "y": 10.642,
             "z": 0.0
           },
           "relative": false
@@ -176,8 +176,8 @@ description: Artifact commands involute_circular_units.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 47.14209749659843,
-            "y": 14.541411272450478,
+            "x": 47.142,
+            "y": 14.541,
             "z": 0.0
           },
           "relative": false

@@ -81,7 +81,7 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 17.4625,
+            "x": 17.463,
             "y": 0.0,
             "z": 0.0
           },
@@ -215,7 +215,7 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 17.4625,
+            "x": 17.463,
             "y": 0.0,
             "z": 0.0
           },
@@ -232,8 +232,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.1903659959029518,
-            "y": -5.15604159282187,
+            "x": 1.19,
+            "y": -5.156,
             "z": 0.0
           },
           "relative": true
@@ -266,7 +266,7 @@ description: Artifact commands cold-plate.kcl
           "type": "line",
           "end": {
             "x": 25.4,
-            "y": 0.00000000000005329736652015526,
+            "y": 0.0,
             "z": 0.0
           },
           "relative": true
@@ -282,7 +282,7 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 143.65849077436857,
+            "x": 143.658,
             "y": 0.0,
             "z": 0.0
           },
@@ -481,8 +481,8 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -186.68999999999997,
-          "y": -76.19999999999999,
+          "x": -186.69,
+          "y": -76.2,
           "z": 0.0
         }
       }
@@ -536,8 +536,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -330.70799999999997,
-            "y": 0.000000000000040500049365242285,
+            "x": -330.708,
+            "y": 0.0,
             "z": 0.0
           },
           "relative": true
@@ -569,8 +569,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 330.70799999999997,
-            "y": -0.00000000000004405915632332835,
+            "x": 330.708,
+            "y": -0.0,
             "z": 0.0
           },
           "relative": true
@@ -603,7 +603,7 @@ description: Artifact commands cold-plate.kcl
           "type": "line",
           "end": {
             "x": -358.902,
-            "y": 0.00000000000004395281855075833,
+            "y": 0.0,
             "z": 0.0
           },
           "relative": true
@@ -616,7 +616,7 @@ description: Artifact commands cold-plate.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": -186.68999999999997,
+          "x": -186.69,
           "y": 0.0,
           "z": 0.0
         },
@@ -688,7 +688,7 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -68.2625,
+          "x": -68.263,
           "y": 15.875,
           "z": 0.0
         }
@@ -710,7 +710,7 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -76.19999999999999,
+            "x": -76.2,
             "y": 15.875
           },
           "radius": 7.9375,
@@ -773,7 +773,7 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -70.2945,
+          "x": -70.295,
           "y": 15.875,
           "z": 0.0
         }
@@ -795,7 +795,7 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -76.19999999999999,
+            "x": -76.2,
             "y": 15.875
           },
           "radius": 5.905499999999999,
@@ -956,7 +956,7 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 68.2625,
+          "x": 68.263,
           "y": 31.75,
           "z": 0.0
         }
@@ -978,12 +978,12 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc_to",
           "interior": {
-            "x": 76.19999999999999,
-            "y": 29.36875,
+            "x": 76.2,
+            "y": 29.369,
             "z": 0.0
           },
           "end": {
-            "x": 84.13749999999999,
+            "x": 84.137,
             "y": 31.75,
             "z": 0.0
           },
@@ -1000,7 +1000,7 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 84.13749999999999,
+            "x": 84.137,
             "y": 15.875,
             "z": 0.0
           },
@@ -1017,12 +1017,12 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc_to",
           "interior": {
-            "x": 76.19999999999999,
-            "y": 23.8125,
+            "x": 76.2,
+            "y": 23.813,
             "z": 0.0
           },
           "end": {
-            "x": 68.2625,
+            "x": 68.263,
             "y": 15.875,
             "z": 0.0
           },
@@ -1039,7 +1039,7 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 68.2625,
+            "x": 68.263,
             "y": 31.75,
             "z": 0.0
           },
@@ -1185,7 +1185,7 @@ description: Artifact commands cold-plate.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": -152.39999999999998,
+                "y": -152.4,
                 "z": 0.0
               },
               "scale": {

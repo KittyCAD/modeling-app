@@ -59,8 +59,8 @@ description: Artifact commands countersunk-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 15.413037500000007,
-          "y": 39.314119998717935,
+          "x": 15.413,
+          "y": 39.314,
           "z": 0.0
         }
       }
@@ -81,8 +81,8 @@ description: Artifact commands countersunk-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 55.04021250000001,
-            "y": -21.578426766213614,
+            "x": 55.04,
+            "y": -21.578,
             "z": 0.0
           },
           "relative": true
@@ -100,7 +100,7 @@ description: Artifact commands countersunk-plate.kcl
           "radius": 19.049999999999997,
           "offset": {
             "unit": "degrees",
-            "value": -137.1848345922876
+            "value": -137.185
           }
         }
       }
@@ -114,8 +114,8 @@ description: Artifact commands countersunk-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -55.04021250000001,
-            "y": -21.578426766213614,
+            "x": -55.04,
+            "y": -21.578,
             "z": 0.0
           },
           "relative": true
@@ -133,7 +133,7 @@ description: Artifact commands countersunk-plate.kcl
           "radius": 42.2275,
           "offset": {
             "unit": "degrees",
-            "value": -42.81516540771243
+            "value": -42.815
           }
         }
       }
@@ -147,8 +147,8 @@ description: Artifact commands countersunk-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -55.04021250000001,
-            "y": 21.578426766213614,
+            "x": -55.04,
+            "y": 21.578,
             "z": 0.0
           },
           "relative": true
@@ -166,7 +166,7 @@ description: Artifact commands countersunk-plate.kcl
           "radius": 19.049999999999997,
           "offset": {
             "unit": "degrees",
-            "value": -137.1848345922876
+            "value": -137.185
           }
         }
       }
@@ -180,8 +180,8 @@ description: Artifact commands countersunk-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 55.04021250000001,
-            "y": 21.578426766213614,
+            "x": 55.04,
+            "y": 21.578,
             "z": 0.0
           },
           "relative": true
@@ -197,8 +197,8 @@ description: Artifact commands countersunk-plate.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 30.82607500000002,
-            "y": -0.000000000000005639932965095795,
+            "x": 30.826,
+            "y": -0.0,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -243,7 +243,7 @@ description: Artifact commands countersunk-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 33.3375,
+          "x": 33.338,
           "y": 0.0,
           "z": 0.0
         }
@@ -393,7 +393,7 @@ description: Artifact commands countersunk-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -60.324999999999996,
+          "x": -60.325,
           "y": 0.0,
           "z": 0.0
         }

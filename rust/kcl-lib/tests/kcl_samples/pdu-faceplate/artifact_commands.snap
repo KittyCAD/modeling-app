@@ -525,7 +525,7 @@ description: Artifact commands pdu-faceplate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -30.337500000000002,
+          "x": -30.338,
           "y": 20.225,
           "z": 0.0
         }
@@ -547,7 +547,7 @@ description: Artifact commands pdu-faceplate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 60.675000000000004,
+            "x": 60.675,
             "y": 0.0,
             "z": 0.0
           },
@@ -581,7 +581,7 @@ description: Artifact commands pdu-faceplate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -60.675000000000004,
+            "x": -60.675,
             "y": 0.0,
             "z": 0.0
           },
@@ -598,7 +598,7 @@ description: Artifact commands pdu-faceplate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -30.337500000000002,
+            "x": -30.338,
             "y": 20.225,
             "z": 0.0
           },
@@ -684,7 +684,7 @@ description: Artifact commands pdu-faceplate.kcl
           {
             "translate": {
               "property": {
-                "x": -208.9625,
+                "x": -208.963,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1425,7 +1425,7 @@ description: Artifact commands pdu-faceplate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -10.1125,
+          "x": -10.113,
           "y": 20.225,
           "z": 0.0
         }
@@ -1498,7 +1498,7 @@ description: Artifact commands pdu-faceplate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -10.1125,
+            "x": -10.113,
             "y": 20.225,
             "z": 0.0
           },
@@ -1584,7 +1584,7 @@ description: Artifact commands pdu-faceplate.kcl
           {
             "translate": {
               "property": {
-                "x": -128.0625,
+                "x": -128.063,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2295,7 +2295,7 @@ description: Artifact commands pdu-faceplate.kcl
           [
             {
               "translate": {
-                "x": 121.35000000000001,
+                "x": 121.35,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2382,7 +2382,7 @@ description: Artifact commands pdu-faceplate.kcl
           [
             {
               "translate": {
-                "x": 242.70000000000002,
+                "x": 242.7,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2411,7 +2411,7 @@ description: Artifact commands pdu-faceplate.kcl
           [
             {
               "translate": {
-                "x": 283.15000000000003,
+                "x": 283.15,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2509,7 +2509,7 @@ description: Artifact commands pdu-faceplate.kcl
           [
             {
               "translate": {
-                "x": 121.35000000000001,
+                "x": 121.35,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2596,7 +2596,7 @@ description: Artifact commands pdu-faceplate.kcl
           [
             {
               "translate": {
-                "x": 242.70000000000002,
+                "x": 242.7,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2625,7 +2625,7 @@ description: Artifact commands pdu-faceplate.kcl
           [
             {
               "translate": {
-                "x": 283.15000000000003,
+                "x": 283.15,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2709,7 +2709,7 @@ description: Artifact commands pdu-faceplate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -16.824999999999985,
+          "x": -16.825,
           "y": 20.225,
           "z": 0.0
         }
@@ -2731,7 +2731,7 @@ description: Artifact commands pdu-faceplate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.64999999999997,
+            "x": 33.65,
             "y": 0.0,
             "z": 0.0
           },
@@ -2765,7 +2765,7 @@ description: Artifact commands pdu-faceplate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -33.64999999999997,
+            "x": -33.65,
             "y": 0.0,
             "z": 0.0
           },
@@ -2782,7 +2782,7 @@ description: Artifact commands pdu-faceplate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -16.824999999999985,
+            "x": -16.825,
             "y": 20.225,
             "z": 0.0
           },
@@ -2868,7 +2868,7 @@ description: Artifact commands pdu-faceplate.kcl
           {
             "translate": {
               "property": {
-                "x": 222.47500000000002,
+                "x": 222.475,
                 "y": 0.0,
                 "z": 0.0
               },

@@ -82,8 +82,8 @@ description: Artifact commands cycloidal-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 11.810999999999998,
-          "y": 7.619999999999999,
+          "x": 11.811,
+          "y": 7.62,
           "z": 0.0
         }
       }
@@ -104,7 +104,7 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 11.810999999999998,
+            "x": 11.811,
             "y": -0.0
           },
           "radius": 7.619999999999999,
@@ -193,8 +193,8 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 11.020519673318484,
-            "y": -6.362699999999994,
+            "x": 11.021,
+            "y": -6.363,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -248,7 +248,7 @@ description: Artifact commands cycloidal-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 3.7718999999999996,
+          "x": 3.772,
           "y": 0.0,
           "z": 0.0
         }
@@ -320,7 +320,7 @@ description: Artifact commands cycloidal-gear.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 19.049999999999997
+          "z": 19.05
         },
         "x_axis": {
           "x": 1.0,
@@ -390,8 +390,8 @@ description: Artifact commands cycloidal-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 13.94579250348968,
-          "y": -1.7547058014411026,
+          "x": 13.946,
+          "y": -1.755,
           "z": 0.0
         }
       }
@@ -412,8 +412,8 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 9.04775091767825,
-            "y": -7.591964458007714
+            "x": 9.048,
+            "y": -7.592
           },
           "radius": 7.619999999999999,
           "start": {
@@ -501,8 +501,8 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 4.352343131876466,
-            "y": -11.957964476549002,
+            "x": 4.352,
+            "y": -11.958,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -556,7 +556,7 @@ description: Artifact commands cycloidal-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 3.7718999999999996,
+          "x": 3.772,
           "y": 0.0,
           "z": 0.0
         }
@@ -628,7 +628,7 @@ description: Artifact commands cycloidal-gear.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 38.099999999999994
+          "z": 38.1
         },
         "x_axis": {
           "x": 1.0,
@@ -698,8 +698,8 @@ description: Artifact commands cycloidal-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 9.555193704377139,
-          "y": -10.308365257005178,
+          "x": 9.555,
+          "y": -10.308,
           "z": 0.0
         }
       }
@@ -720,8 +720,8 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 2.0509586264241157,
-            "y": -11.631564370827189
+            "x": 2.051,
+            "y": -11.632
           },
           "radius": 7.619999999999999,
           "start": {
@@ -809,8 +809,8 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -4.352343131876474,
-            "y": -11.957964476548984,
+            "x": -4.352,
+            "y": -11.958,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -864,7 +864,7 @@ description: Artifact commands cycloidal-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 3.7718999999999996,
+          "x": 3.772,
           "y": 0.0,
           "z": 0.0
         }

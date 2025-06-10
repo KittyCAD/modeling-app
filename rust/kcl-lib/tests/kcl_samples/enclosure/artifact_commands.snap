@@ -98,7 +98,7 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000010715659492539341,
+            "x": 0.0,
             "y": 175.0,
             "z": 0.0
           },
@@ -1471,7 +1471,7 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000010715659492539341,
+            "x": 0.0,
             "y": 175.0,
             "z": 0.0
           },
@@ -2086,7 +2086,7 @@ description: Artifact commands enclosure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000010348265452795134,
+            "x": 0.0,
             "y": 169.0,
             "z": 0.0
           },

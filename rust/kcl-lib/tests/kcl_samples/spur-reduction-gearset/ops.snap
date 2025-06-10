@@ -158,7 +158,7 @@ description: Operations executed spur-reduction-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 12.371270510018954,
+              "value": 12.371,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -224,7 +224,7 @@ description: Operations executed spur-reduction-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 0.1642662825406428,
+              "value": 0.164,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -302,7 +302,7 @@ description: Operations executed spur-reduction-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 0.36959913571644626,
+              "value": 0.37,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -314,7 +314,7 @@ description: Operations executed spur-reduction-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 12.371270510018954,
+              "value": 12.371,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -649,7 +649,7 @@ description: Operations executed spur-reduction-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 37.113811530056864,
+              "value": 37.114,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -715,7 +715,7 @@ description: Operations executed spur-reduction-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 0.05475542751354759,
+              "value": 0.055,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -793,7 +793,7 @@ description: Operations executed spur-reduction-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 0.12319971190548208,
+              "value": 0.123,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -805,7 +805,7 @@ description: Operations executed spur-reduction-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 37.113811530056864,
+              "value": 37.114,
               "ty": {
                 "type": "Default",
                 "len": {

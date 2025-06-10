@@ -82,8 +82,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0000000000000025844862830173056,
-          "y": 42.207864093005846,
+          "x": 0.0,
+          "y": 42.208,
           "z": 0.0
         }
       }
@@ -122,8 +122,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.9769208657835278,
-            "y": 44.901424723040385,
+            "x": -2.977,
+            "y": 44.901,
             "z": 0.0
           },
           "relative": false
@@ -142,7 +142,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
           "end_radius": 45.0,
           "angle": {
             "unit": "degrees",
-            "value": 626.4283375475447
+            "value": 626.428
           },
           "reverse": true
         }
@@ -157,8 +157,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.563472835506928,
-            "y": 41.96043978526968,
+            "x": -4.563,
+            "y": 41.96,
             "z": 0.0
           },
           "relative": false
@@ -414,8 +414,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.627045743080315,
-          "y": 42.12603021835093,
+          "x": -2.627,
+          "y": 42.126,
           "z": 0.0
         }
       }
@@ -439,7 +439,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
           "end_radius": 45.0,
           "angle": {
             "unit": "degrees",
-            "value": 93.56843420271129
+            "value": 93.568
           },
           "reverse": false
         }
@@ -454,8 +454,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.765843883743648,
-            "y": 44.62908294272128,
+            "x": -5.766,
+            "y": 44.629,
             "z": 0.0
           },
           "relative": false
@@ -474,7 +474,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
           "end_radius": 45.0,
           "angle": {
             "unit": "degrees",
-            "value": 622.8599033448335
+            "value": 622.86
           },
           "reverse": true
         }
@@ -489,8 +489,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -7.166270925682334,
-            "y": 41.595052017197574,
+            "x": -7.166,
+            "y": 41.595,
             "z": 0.0
           },
           "relative": false
@@ -836,8 +836,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0000000000000008020819499019225,
-          "y": 13.098992304725952,
+          "x": 0.0,
+          "y": 13.099,
           "z": 0.0
         }
       }
@@ -876,8 +876,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.3177818921176065,
-            "y": 14.819847742152135,
+            "x": -2.318,
+            "y": 14.82,
             "z": 0.0
           },
           "relative": false
@@ -896,7 +896,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
           "end_radius": 15.0,
           "angle": {
             "unit": "degrees",
-            "value": 618.7643201493639
+            "value": 618.764
           },
           "reverse": true
         }
@@ -911,8 +911,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.480119225484201,
-            "y": 12.309026408482376,
+            "x": -4.48,
+            "y": 12.309,
             "z": 0.0
           },
           "relative": false
@@ -1129,8 +1129,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4458701745920246,
-          "y": 12.86861758264309,
+          "x": 2.446,
+          "y": 12.869,
           "z": 0.0
         }
       }
@@ -1154,7 +1154,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
           "end_radius": 15.0,
           "angle": {
             "unit": "degrees",
-            "value": 79.23845407148335
+            "value": 79.238
           },
           "reverse": false
         }
@@ -1169,8 +1169,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.49017318473970817,
-            "y": 14.991988869024754,
+            "x": 0.49,
+            "y": 14.992,
             "z": 0.0
           },
           "relative": false
@@ -1189,7 +1189,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
           "end_radius": 15.0,
           "angle": {
             "unit": "degrees",
-            "value": -90.47413392211939
+            "value": -90.474
           },
           "reverse": true
         }
@@ -1204,8 +1204,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.1029602755543437,
-            "y": 12.92908184979545,
+            "x": -2.103,
+            "y": 12.929,
             "z": 0.0
           },
           "relative": false
@@ -1512,8 +1512,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0000000000000008020819499019225,
-          "y": 13.098992304725952,
+          "x": 0.0,
+          "y": 13.099,
           "z": 0.0
         }
       }
@@ -1552,8 +1552,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.3177818921176065,
-            "y": 14.819847742152135,
+            "x": -2.318,
+            "y": 14.82,
             "z": 0.0
           },
           "relative": false
@@ -1572,7 +1572,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
           "end_radius": 15.0,
           "angle": {
             "unit": "degrees",
-            "value": 618.7643201493639
+            "value": 618.764
           },
           "reverse": true
         }
@@ -1587,8 +1587,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.480119225484201,
-            "y": 12.309026408482376,
+            "x": -4.48,
+            "y": 12.309,
             "z": 0.0
           },
           "relative": false
@@ -1805,8 +1805,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4458701745920233,
-          "y": 12.86861758264309,
+          "x": -2.446,
+          "y": 12.869,
           "z": 0.0
         }
       }
@@ -1830,7 +1830,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
           "end_radius": 15.0,
           "angle": {
             "unit": "degrees",
-            "value": 100.76154592851665
+            "value": 100.762
           },
           "reverse": false
         }
@@ -1845,8 +1845,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.044210337486996,
-            "y": 14.12642708087184,
+            "x": -5.044,
+            "y": 14.126,
             "z": 0.0
           },
           "relative": false
@@ -1865,7 +1865,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
           "end_radius": 15.0,
           "angle": {
             "unit": "degrees",
-            "value": 608.0027742208474
+            "value": 608.003
           },
           "reverse": true
         }
@@ -1880,8 +1880,8 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.699692584483277,
-            "y": 11.256008114455565,
+            "x": -6.7,
+            "y": 11.256,
             "z": 0.0
           },
           "relative": false

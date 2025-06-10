@@ -421,7 +421,7 @@ description: Operations executed surgical-drill-guide.kcl
         "offset": {
           "value": {
             "type": "Number",
-            "value": 28.495190528383297,
+            "value": 28.495,
             "ty": {
               "type": "Known",
               "type": "Length",
@@ -656,7 +656,7 @@ description: Operations executed surgical-drill-guide.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 0.6666666666666666,
+            "value": 0.667,
             "ty": {
               "type": "Default",
               "len": {
@@ -807,7 +807,7 @@ description: Operations executed surgical-drill-guide.kcl
         "offset": {
           "value": {
             "type": "Number",
-            "value": 47.4951905283833,
+            "value": 47.495,
             "ty": {
               "type": "Known",
               "type": "Length",
@@ -1290,7 +1290,7 @@ description: Operations executed surgical-drill-guide.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 1.0666666666666667,
+            "value": 1.067,
             "ty": {
               "type": "Default",
               "len": {

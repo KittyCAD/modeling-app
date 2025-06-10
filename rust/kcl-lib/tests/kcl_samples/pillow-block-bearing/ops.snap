@@ -1285,7 +1285,7 @@ description: Operations executed pillow-block-bearing.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.1875,
+            "value": -0.188,
             "ty": {
               "type": "Default",
               "len": {
@@ -1346,7 +1346,7 @@ description: Operations executed pillow-block-bearing.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.3125,
+            "value": -0.313,
             "ty": {
               "type": "Default",
               "len": {
@@ -1457,7 +1457,7 @@ description: Operations executed pillow-block-bearing.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.1875,
+            "value": -0.188,
             "ty": {
               "type": "Default",
               "len": {
@@ -1518,7 +1518,7 @@ description: Operations executed pillow-block-bearing.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.3125,
+            "value": -0.313,
             "ty": {
               "type": "Default",
               "len": {
@@ -1629,7 +1629,7 @@ description: Operations executed pillow-block-bearing.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.1875,
+            "value": -0.188,
             "ty": {
               "type": "Default",
               "len": {
@@ -1690,7 +1690,7 @@ description: Operations executed pillow-block-bearing.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.3125,
+            "value": -0.313,
             "ty": {
               "type": "Default",
               "len": {
@@ -1801,7 +1801,7 @@ description: Operations executed pillow-block-bearing.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.1875,
+            "value": -0.188,
             "ty": {
               "type": "Default",
               "len": {
@@ -1862,7 +1862,7 @@ description: Operations executed pillow-block-bearing.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.3125,
+            "value": -0.313,
             "ty": {
               "type": "Default",
               "len": {

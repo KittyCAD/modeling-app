@@ -166,7 +166,7 @@ description: Artifact commands engine-valve.kcl
         "segment": {
           "type": "arc_to",
           "interior": {
-            "x": -5.1000000000000005,
+            "x": -5.1,
             "y": 1.2,
             "z": 0.0
           },
@@ -593,7 +593,7 @@ description: Artifact commands engine-valve.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4000000000000004,
+          "x": 2.4,
           "y": 0.0,
           "z": 0.0
         }
@@ -849,7 +849,7 @@ description: Artifact commands engine-valve.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4000000000000004,
+          "x": 2.4,
           "y": 0.0,
           "z": 0.0
         }
@@ -1105,7 +1105,7 @@ description: Artifact commands engine-valve.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4000000000000004,
+          "x": 2.4,
           "y": 0.0,
           "z": 0.0
         }

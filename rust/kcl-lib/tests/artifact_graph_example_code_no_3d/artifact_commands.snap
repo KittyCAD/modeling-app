@@ -82,7 +82,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
           "type": "line",
           "end": {
             "x": -11.54,
-            "y": 0.0000000000000014132424062160455,
+            "y": 0.0,
             "z": 0.0
           },
           "relative": true
@@ -98,7 +98,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0000000000000005027175110499885,
+            "x": 0.0,
             "y": 8.21,
             "z": 0.0
           },
@@ -116,7 +116,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
           "type": "line",
           "end": {
             "x": 11.54,
-            "y": -0.0000000000000014132424062160455,
+            "y": -0.0,
             "z": 0.0
           },
           "relative": true

@@ -254,8 +254,8 @@ description: Artifact commands subtract_regression09.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1.188246,
-          "y": 27.497102,
+          "x": 1.188,
+          "y": 27.497,
           "z": 0.0
         }
       }
@@ -276,8 +276,8 @@ description: Artifact commands subtract_regression09.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.177089,
-            "y": 0.740791,
+            "x": -0.177,
+            "y": 0.741,
             "z": 0.0
           },
           "relative": true
@@ -293,17 +293,17 @@ description: Artifact commands subtract_regression09.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -4.127500495208472,
-            "y": 27.0094790706367
+            "x": -4.128,
+            "y": 27.009
           },
           "radius": 5.283446,
           "start": {
             "unit": "degrees",
-            "value": 13.444444
+            "value": 13.444
           },
           "end": {
             "unit": "degrees",
-            "value": 38.628165
+            "value": 38.628
           },
           "relative": false
         }
@@ -318,17 +318,17 @@ description: Artifact commands subtract_regression09.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 4.762500077293639,
-            "y": 27.009479172978835
+            "x": 4.763,
+            "y": 27.009
           },
           "radius": 5.793095,
           "start": {
             "unit": "degrees",
-            "value": 145.295512
+            "value": 145.296
           },
           "end": {
             "unit": "degrees",
-            "value": 14.704488
+            "value": 14.704
           },
           "relative": false
         }
@@ -343,17 +343,17 @@ description: Artifact commands subtract_regression09.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 13.116367979053303,
-            "y": 23.96891980683624
+            "x": 13.116,
+            "y": 23.969
           },
           "radius": 5.283446,
           "start": {
             "unit": "degrees",
-            "value": 121.371835
+            "value": 121.372
           },
           "end": {
             "unit": "degrees",
-            "value": 146.555556
+            "value": 146.556
           },
           "relative": false
         }
@@ -368,8 +368,8 @@ description: Artifact commands subtract_regression09.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.419774,
-            "y": -0.635548,
+            "x": -0.42,
+            "y": -0.636,
             "z": 0.0
           },
           "relative": true
@@ -385,17 +385,17 @@ description: Artifact commands subtract_regression09.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 1.4161516316499672,
-            "y": 30.85068030361107
+            "x": 1.416,
+            "y": 30.851
           },
           "radius": 8.272375,
           "start": {
             "unit": "degrees",
-            "value": 326.170267
+            "value": 326.17
           },
           "end": {
             "unit": "degrees",
-            "value": 311.293981
+            "value": 311.294
           },
           "relative": false
         }
@@ -410,17 +410,17 @@ description: Artifact commands subtract_regression09.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 4.7625009207560876,
-            "y": 27.009478799314145
+            "x": 4.763,
+            "y": 27.009
           },
           "radius": 3.178087,
           "start": {
             "unit": "degrees",
-            "value": 311.666667
+            "value": 311.667
           },
           "end": {
             "unit": "degrees",
-            "value": 208.333333
+            "value": 208.333
           },
           "relative": false
         }
@@ -435,8 +435,8 @@ description: Artifact commands subtract_regression09.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -0.7768983132896046,
-            "y": 1.995944449701664,
+            "x": -0.777,
+            "y": 1.996,
             "z": 0.0
           },
           "angle_snap_increment": null

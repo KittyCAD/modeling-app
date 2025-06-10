@@ -121,7 +121,7 @@ description: Artifact commands gridfinity-baseplate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.149999999999999,
+            "x": 2.15,
             "y": -2.15,
             "z": 0.0
           },
@@ -155,7 +155,7 @@ description: Artifact commands gridfinity-baseplate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.6999999999999996,
+            "x": 0.7,
             "y": -0.7,
             "z": 0.0
           },
@@ -369,7 +369,7 @@ description: Artifact commands gridfinity-baseplate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.149999999999999,
+            "x": 2.15,
             "y": -2.15,
             "z": 0.0
           },
@@ -403,7 +403,7 @@ description: Artifact commands gridfinity-baseplate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.6999999999999996,
+            "x": 0.7,
             "y": -0.7,
             "z": 0.0
           },

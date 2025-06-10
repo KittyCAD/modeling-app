@@ -352,7 +352,7 @@ description: Operations executed food-service-spatula.kcl
         "unlabeledArg": {
           "value": {
             "type": "Number",
-            "value": -0.033320995878247196,
+            "value": -0.033,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -547,7 +547,7 @@ description: Operations executed food-service-spatula.kcl
         "unlabeledArg": {
           "value": {
             "type": "Number",
-            "value": 0.033320995878247196,
+            "value": 0.033,
             "ty": {
               "type": "Known",
               "type": "Angle",

@@ -2399,7 +2399,7 @@ description: Operations executed cpu-cooler.kcl
         "distance": {
           "value": {
             "type": "Number",
-            "value": 3.6666666666666665,
+            "value": 3.667,
             "ty": {
               "type": "Default",
               "len": {
@@ -2550,7 +2550,7 @@ description: Operations executed cpu-cooler.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 30.000000000000004,
+            "value": 30.0,
             "ty": {
               "type": "Known",
               "type": "Length",
@@ -2677,7 +2677,7 @@ description: Operations executed cpu-cooler.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 22.500000000000004,
+            "value": 22.5,
             "ty": {
               "type": "Known",
               "type": "Length",
@@ -2908,7 +2908,7 @@ description: Operations executed cpu-cooler.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 1.59375,
+            "value": 1.594,
             "ty": {
               "type": "Default",
               "len": {
@@ -4802,7 +4802,7 @@ description: Operations executed cpu-cooler.kcl
         "offset": {
           "value": {
             "type": "Number",
-            "value": 152.65270364466613,
+            "value": 152.653,
             "ty": {
               "type": "Known",
               "type": "Length",
@@ -4847,7 +4847,7 @@ description: Operations executed cpu-cooler.kcl
         "offset": {
           "value": {
             "type": "Number",
-            "value": 47.34729635533386,
+            "value": 47.347,
             "ty": {
               "type": "Known",
               "type": "Length",
@@ -4892,7 +4892,7 @@ description: Operations executed cpu-cooler.kcl
         "offset": {
           "value": {
             "type": "Number",
-            "value": -43.87966230538214,
+            "value": -43.88,
             "ty": {
               "type": "Known",
               "type": "Length",

@@ -59,8 +59,8 @@ description: Artifact commands subtract_regression04.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 11.90625,
-          "y": 38.099999999999994,
+          "x": 11.906,
+          "y": 38.1,
           "z": 0.0
         }
       }
@@ -81,7 +81,7 @@ description: Artifact commands subtract_regression04.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.3812499999999996,
+            "x": -2.381,
             "y": 0.0,
             "z": 0.0
           },
@@ -99,7 +99,7 @@ description: Artifact commands subtract_regression04.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -76.19999999999999,
+            "y": -76.2,
             "z": 0.0
           },
           "relative": true
@@ -115,7 +115,7 @@ description: Artifact commands subtract_regression04.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.3812499999999996,
+            "x": 2.381,
             "y": 0.0,
             "z": 0.0
           },
@@ -132,8 +132,8 @@ description: Artifact commands subtract_regression04.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.79375,
-            "y": 0.4582668,
+            "x": 0.794,
+            "y": 0.458,
             "z": 0.0
           },
           "relative": true
@@ -150,7 +150,7 @@ description: Artifact commands subtract_regression04.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 75.2834664,
+            "y": 75.283,
             "z": 0.0
           },
           "relative": true
@@ -166,8 +166,8 @@ description: Artifact commands subtract_regression04.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.79375,
-            "y": 0.4582668,
+            "x": -0.794,
+            "y": 0.458,
             "z": 0.0
           },
           "relative": true
@@ -288,7 +288,7 @@ description: Artifact commands subtract_regression04.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 3.8099999999999996,
+          "x": 3.81,
           "y": 0.0,
           "z": 0.0
         }

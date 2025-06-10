@@ -252,7 +252,7 @@ description: Operations executed walkie-talkie.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.0625,
+            "value": -0.063,
             "ty": {
               "type": "Default",
               "len": {
@@ -313,7 +313,7 @@ description: Operations executed walkie-talkie.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.0625,
+            "value": -0.063,
             "ty": {
               "type": "Default",
               "len": {
@@ -2562,7 +2562,7 @@ description: Operations executed walkie-talkie.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.0625,
+            "value": -0.063,
             "ty": {
               "type": "Default",
               "len": {
@@ -3980,7 +3980,7 @@ description: Operations executed walkie-talkie.kcl
         "z": {
           "value": {
             "type": "Number",
-            "value": 0.25000000000000006,
+            "value": 0.25,
             "ty": {
               "type": "Default",
               "len": {

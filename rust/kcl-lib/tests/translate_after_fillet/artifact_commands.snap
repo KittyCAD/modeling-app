@@ -222,7 +222,7 @@ description: Artifact commands translate_after_fillet.kcl
         "path": "[uuid]",
         "to": {
           "x": 0.25,
-          "y": 0.14433756729740643,
+          "y": 0.144,
           "z": 0.0
         }
       }
@@ -243,25 +243,8 @@ description: Artifact commands translate_after_fillet.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.00000000000000005302876193624534,
-            "y": -0.28867513459481287,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -0.24999999999999997,
-            "y": -0.14433756729740646,
+            "x": -0.0,
+            "y": -0.289,
             "z": 0.0
           },
           "relative": true
@@ -278,7 +261,7 @@ description: Artifact commands translate_after_fillet.kcl
           "type": "line",
           "end": {
             "x": -0.25,
-            "y": 0.1443375672974064,
+            "y": -0.144,
             "z": 0.0
           },
           "relative": true
@@ -294,8 +277,25 @@ description: Artifact commands translate_after_fillet.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000000017676253978748448,
-            "y": 0.28867513459481287,
+            "x": -0.25,
+            "y": 0.144,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.0,
+            "y": 0.289,
             "z": 0.0
           },
           "relative": true
@@ -312,7 +312,7 @@ description: Artifact commands translate_after_fillet.kcl
           "type": "line",
           "end": {
             "x": 0.25,
-            "y": 0.1443375672974064,
+            "y": 0.144,
             "z": 0.0
           },
           "relative": true
@@ -409,7 +409,7 @@ description: Artifact commands translate_after_fillet.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.3125,
+          "x": 0.313,
           "y": 0.0,
           "z": 0.0
         }

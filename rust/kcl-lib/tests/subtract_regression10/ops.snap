@@ -1308,7 +1308,7 @@ description: Operations executed subtract_regression10.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 0.6981317007977318,
+              "value": 0.698,
               "ty": {
                 "type": "Known",
                 "type": "Angle",

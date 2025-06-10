@@ -98,7 +98,7 @@ description: Artifact commands tooling-nest-block.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000003061616997868383,
+            "x": 0.0,
             "y": 50.0,
             "z": 0.0
           },
@@ -2903,7 +2903,7 @@ description: Artifact commands tooling-nest-block.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -5.950000000000003,
+          "x": -5.95,
           "y": 25.0,
           "z": 0.0
         }

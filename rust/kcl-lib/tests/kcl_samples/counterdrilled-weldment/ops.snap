@@ -327,7 +327,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.1875,
+            "value": -0.188,
             "ty": {
               "type": "Default",
               "len": {
@@ -444,7 +444,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.3125,
+            "value": -0.313,
             "ty": {
               "type": "Default",
               "len": {
@@ -507,7 +507,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 0.13258252147247768,
+            "value": 0.133,
             "ty": {
               "type": "Default",
               "len": {
@@ -695,7 +695,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.1875,
+            "value": -0.188,
             "ty": {
               "type": "Default",
               "len": {
@@ -812,7 +812,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.3125,
+            "value": -0.313,
             "ty": {
               "type": "Default",
               "len": {
@@ -875,7 +875,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 0.13258252147247768,
+            "value": 0.133,
             "ty": {
               "type": "Default",
               "len": {
@@ -1063,7 +1063,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.1875,
+            "value": -0.188,
             "ty": {
               "type": "Default",
               "len": {
@@ -1180,7 +1180,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.3125,
+            "value": -0.313,
             "ty": {
               "type": "Default",
               "len": {
@@ -1243,7 +1243,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 0.13258252147247768,
+            "value": 0.133,
             "ty": {
               "type": "Default",
               "len": {
@@ -1431,7 +1431,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.1875,
+            "value": -0.188,
             "ty": {
               "type": "Default",
               "len": {
@@ -1548,7 +1548,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.3125,
+            "value": -0.313,
             "ty": {
               "type": "Default",
               "len": {
@@ -1611,7 +1611,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 0.13258252147247768,
+            "value": 0.133,
             "ty": {
               "type": "Default",
               "len": {

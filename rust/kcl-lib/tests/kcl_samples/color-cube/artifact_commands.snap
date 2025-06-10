@@ -316,7 +316,7 @@ description: Artifact commands color-cube.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000006123233995736766,
+            "x": 0.0,
             "y": -100.0,
             "z": 0.0
           },
@@ -521,7 +521,7 @@ description: Artifact commands color-cube.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000006123233995736766,
+            "x": 0.0,
             "y": -100.0,
             "z": 0.0
           },
@@ -726,7 +726,7 @@ description: Artifact commands color-cube.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000006123233995736766,
+            "x": 0.0,
             "y": -100.0,
             "z": 0.0
           },
@@ -931,7 +931,7 @@ description: Artifact commands color-cube.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000006123233995736766,
+            "x": 0.0,
             "y": -100.0,
             "z": 0.0
           },
@@ -1136,7 +1136,7 @@ description: Artifact commands color-cube.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000006123233995736766,
+            "x": 0.0,
             "y": -100.0,
             "z": 0.0
           },
@@ -1341,7 +1341,7 @@ description: Artifact commands color-cube.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000006123233995736766,
+            "x": 0.0,
             "y": -100.0,
             "z": 0.0
           },

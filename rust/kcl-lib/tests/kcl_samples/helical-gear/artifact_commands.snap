@@ -59,7 +59,7 @@ description: Artifact commands helical-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 3.3541019662496847,
+          "x": 3.354,
           "y": 1.0,
           "z": 0.0
         }
@@ -132,13 +132,13 @@ description: Artifact commands helical-gear.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000000017763568394002505,
-            "y": 0.000000000000004884981308350689
+            "x": 0.0,
+            "y": 0.0
           },
           "radius": 3.5,
           "start": {
             "unit": "degrees",
-            "value": 343.3984504009797
+            "value": 343.398
           },
           "end": {
             "unit": "degrees",
@@ -157,8 +157,8 @@ description: Artifact commands helical-gear.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000000017763568394002505,
-            "y": 0.000000000000004884981308350689
+            "x": 0.0,
+            "y": 0.0
           },
           "radius": 3.5,
           "start": {
@@ -167,7 +167,7 @@ description: Artifact commands helical-gear.kcl
           },
           "end": {
             "unit": "degrees",
-            "value": 16.601549599020235
+            "value": 16.602
           },
           "relative": false
         }
@@ -259,8 +259,8 @@ description: Artifact commands helical-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0000000000000012083311382392428,
-          "y": 19.733545036504076,
+          "x": 0.0,
+          "y": 19.734,
           "z": 0.0
         }
       }
@@ -299,8 +299,8 @@ description: Artifact commands helical-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.0494758442486236,
-            "y": 22.796944906617295,
+            "x": -3.049,
+            "y": 22.797,
             "z": 0.0
           },
           "relative": false
@@ -319,7 +319,7 @@ description: Artifact commands helical-gear.kcl
           "end_radius": 23.0,
           "angle": {
             "unit": "degrees",
-            "value": 616.4231928988978
+            "value": 616.423
           },
           "reverse": true
         }
@@ -334,8 +334,8 @@ description: Artifact commands helical-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.816564508980187,
-            "y": 18.856838998639372,
+            "x": -5.817,
+            "y": 18.857,
             "z": 0.0
           },
           "relative": false
@@ -467,8 +467,8 @@ description: Artifact commands helical-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.1026747593723187,
-          "y": 19.62120176146286,
+          "x": 2.103,
+          "y": 19.621,
           "z": 0.0
         }
       }
@@ -492,7 +492,7 @@ description: Artifact commands helical-gear.kcl
           "end_radius": 23.0,
           "angle": {
             "unit": "degrees",
-            "value": 83.88333258352058
+            "value": 83.883
           },
           "reverse": false
         }
@@ -507,8 +507,8 @@ description: Artifact commands helical-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.603024957692658,
-            "y": 22.992093443190416,
+            "x": -0.603,
+            "y": 22.992,
             "z": 0.0
           },
           "relative": false
@@ -527,7 +527,7 @@ description: Artifact commands helical-gear.kcl
           "end_radius": 23.0,
           "angle": {
             "unit": "degrees",
-            "value": -97.46013968462269
+            "value": -97.46
           },
           "reverse": true
         }
@@ -542,8 +542,8 @@ description: Artifact commands helical-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.7741919278824176,
-            "y": 19.369261085525228,
+            "x": -3.774,
+            "y": 19.369,
             "z": 0.0
           },
           "relative": false
@@ -675,8 +675,8 @@ description: Artifact commands helical-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 4.20534951874464,
-          "y": 19.280244685504613,
+          "x": 4.205,
+          "y": 19.28,
           "z": 0.0
         }
       }
@@ -700,7 +700,7 @@ description: Artifact commands helical-gear.kcl
           "end_radius": 23.0,
           "angle": {
             "unit": "degrees",
-            "value": 77.6955281798938
+            "value": 77.696
           },
           "reverse": false
         }
@@ -715,8 +715,8 @@ description: Artifact commands helical-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.8787542118590292,
-            "y": 22.923138585530168,
+            "x": 1.879,
+            "y": 22.923,
             "z": 0.0
           },
           "relative": false
@@ -735,7 +735,7 @@ description: Artifact commands helical-gear.kcl
           "end_radius": 23.0,
           "angle": {
             "unit": "degrees",
-            "value": -91.27233528099597
+            "value": -91.272
           },
           "reverse": true
         }
@@ -750,8 +750,8 @@ description: Artifact commands helical-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.6644342460226098,
-            "y": 19.66322604122736,
+            "x": -1.664,
+            "y": 19.663,
             "z": 0.0
           },
           "relative": false

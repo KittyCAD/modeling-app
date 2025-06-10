@@ -171,8 +171,8 @@ description: Artifact commands wing-spar.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 190.10983019008907,
-            "y": -1.5830132276525148,
+            "x": 190.11,
+            "y": -1.583,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -962,7 +962,7 @@ description: Artifact commands wing-spar.kcl
         "path": "[uuid]",
         "to": {
           "x": 33.0,
-          "y": -15.299999999999999,
+          "y": -15.3,
           "z": 0.0
         }
       }
@@ -1233,7 +1233,7 @@ description: Artifact commands wing-spar.kcl
           "type": "line",
           "end": {
             "x": 33.0,
-            "y": -15.299999999999999,
+            "y": -15.3,
             "z": 0.0
           },
           "relative": false
@@ -2213,7 +2213,7 @@ description: Artifact commands wing-spar.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -5.3999999999999995,
+          "x": -5.4,
           "y": -24.0,
           "z": 0.0
         }
@@ -2351,7 +2351,7 @@ description: Artifact commands wing-spar.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 4.999999999999999,
+            "x": 5.0,
             "y": 5.0,
             "z": 0.0
           },

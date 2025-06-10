@@ -829,7 +829,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.839996,
+            "x": 0.84,
             "y": -20.58,
             "z": 0.0
           },
@@ -846,7 +846,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.839996,
+            "x": 0.84,
             "y": -24.36,
             "z": 0.0
           },
@@ -1203,7 +1203,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.959999999999999,
+            "x": 15.96,
             "y": -21.84,
             "z": 0.0
           },
@@ -1220,7 +1220,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.959999999999999,
+            "x": 15.96,
             "y": -22.68,
             "z": 0.0
           },
@@ -1611,7 +1611,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.839996,
+            "x": 0.84,
             "y": -6.72,
             "z": 0.0
           },
@@ -1628,7 +1628,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.839996,
+            "x": 0.84,
             "y": -8.4,
             "z": 0.0
           },
@@ -1730,7 +1730,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.839996,
+            "x": 0.84,
             "y": -7.56,
             "z": 0.0
           },
@@ -1747,7 +1747,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.839996,
+            "x": 0.84,
             "y": -19.32,
             "z": 0.0
           },
@@ -1799,7 +1799,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 3.36,
-            "y": -9.24001,
+            "y": -9.24,
             "z": 0.0
           },
           "relative": false
@@ -1816,7 +1816,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 17.64,
-            "y": -9.24001,
+            "y": -9.24,
             "z": 0.0
           },
           "relative": false
@@ -1969,7 +1969,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 2.52,
-            "y": -10.080000000000002,
+            "y": -10.08,
             "z": 0.0
           },
           "relative": false
@@ -2139,7 +2139,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 10.92,
-            "y": -15.959999999999999,
+            "y": -15.96,
             "z": 0.0
           },
           "relative": false
@@ -2156,7 +2156,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 13.44,
-            "y": -15.959999999999999,
+            "y": -15.96,
             "z": 0.0
           },
           "relative": false
@@ -2207,7 +2207,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 14.28,
-            "y": -15.959999999999999,
+            "y": -15.96,
             "z": 0.0
           },
           "relative": false
@@ -2224,7 +2224,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 13.44,
-            "y": -15.959999999999999,
+            "y": -15.96,
             "z": 0.0
           },
           "relative": false
@@ -2309,7 +2309,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 6.72,
-            "y": -15.120000000000001,
+            "y": -15.12,
             "z": 0.0
           },
           "relative": false
@@ -2326,7 +2326,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 7.56,
-            "y": -15.120000000000001,
+            "y": -15.12,
             "z": 0.0
           },
           "relative": false
@@ -2546,7 +2546,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.5600000000000005,
+            "x": 7.56,
             "y": -10.92,
             "z": 0.0
           },
@@ -2563,7 +2563,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.5600000000000005,
+            "x": 7.56,
             "y": -11.76,
             "z": 0.0
           },
@@ -2734,7 +2734,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 5.88,
-            "y": -0.83999599,
+            "y": -0.84,
             "z": 0.0
           },
           "relative": false
@@ -2751,7 +2751,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 6.72,
-            "y": -0.83999599,
+            "y": -0.84,
             "z": 0.0
           },
           "relative": false
@@ -3040,7 +3040,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 14.28,
-            "y": -0.83999599,
+            "y": -0.84,
             "z": 0.0
           },
           "relative": false
@@ -3057,7 +3057,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 15.12,
-            "y": -0.83999599,
+            "y": -0.84,
             "z": 0.0
           },
           "relative": false
@@ -3090,7 +3090,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.959999999999999,
+            "x": 15.96,
             "y": -1.68,
             "z": 0.0
           },
@@ -3107,7 +3107,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.959999999999999,
+            "x": 15.96,
             "y": -3.36,
             "z": 0.0
           },
@@ -3192,7 +3192,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.959999999999999,
+            "x": 15.96,
             "y": -0.0,
             "z": 0.0
           },
@@ -3209,7 +3209,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.959999999999999,
+            "x": 15.96,
             "y": -1.68,
             "z": 0.0
           },
@@ -3380,7 +3380,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 15.12,
-            "y": -0.83999999,
+            "y": -0.84,
             "z": 0.0
           },
           "relative": false
@@ -3397,7 +3397,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 14.28,
-            "y": -0.83999999,
+            "y": -0.84,
             "z": 0.0
           },
           "relative": false
@@ -3788,7 +3788,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 6.72,
-            "y": -0.83999999,
+            "y": -0.84,
             "z": 0.0
           },
           "relative": false
@@ -3805,7 +3805,7 @@ description: Artifact commands kittycad_svg.kcl
           "type": "line",
           "end": {
             "x": 5.88,
-            "y": -0.83999999,
+            "y": -0.84,
             "z": 0.0
           },
           "relative": false
@@ -4076,7 +4076,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.959999999999999,
+            "x": 15.96,
             "y": -5.04,
             "z": 0.0
           },
@@ -4093,7 +4093,7 @@ description: Artifact commands kittycad_svg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.959999999999999,
+            "x": 15.96,
             "y": -5.88,
             "z": 0.0
           },

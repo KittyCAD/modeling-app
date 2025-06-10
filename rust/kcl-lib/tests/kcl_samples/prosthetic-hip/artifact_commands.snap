@@ -114,8 +114,8 @@ description: Artifact commands prosthetic-hip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.8660254037844387,
-            "y": -0.49999999999999994,
+            "x": 0.866,
+            "y": -0.5,
             "z": 0.0
           },
           "relative": true
@@ -147,8 +147,8 @@ description: Artifact commands prosthetic-hip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.8660254037844387,
-            "y": -0.49999999999999994,
+            "x": -0.866,
+            "y": -0.5,
             "z": 0.0
           },
           "relative": true
@@ -165,7 +165,7 @@ description: Artifact commands prosthetic-hip.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": -4.5,
-            "y": 2.5980762113533165,
+            "y": 2.598,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -313,8 +313,8 @@ description: Artifact commands prosthetic-hip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 16.454482671904337,
-            "y": -9.499999999999998,
+            "x": 16.454,
+            "y": -9.5,
             "z": 0.0
           },
           "relative": true
@@ -346,8 +346,8 @@ description: Artifact commands prosthetic-hip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -16.454482671904337,
-            "y": -9.499999999999998,
+            "x": -16.454,
+            "y": -9.5,
             "z": 0.0
           },
           "relative": true
@@ -364,7 +364,7 @@ description: Artifact commands prosthetic-hip.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": -4.5,
-            "y": 2.5980762113533125,
+            "y": 2.598,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -489,8 +489,8 @@ description: Artifact commands prosthetic-hip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 27.71281292110204,
-            "y": -15.999999999999998,
+            "x": 27.713,
+            "y": -16.0,
             "z": 0.0
           },
           "relative": true
@@ -522,8 +522,8 @@ description: Artifact commands prosthetic-hip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -27.71281292110204,
-            "y": -15.999999999999998,
+            "x": -27.713,
+            "y": -16.0,
             "z": 0.0
           },
           "relative": true
@@ -540,7 +540,7 @@ description: Artifact commands prosthetic-hip.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": -6.0,
-            "y": 3.46410161513775,
+            "y": 3.464,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -713,8 +713,8 @@ description: Artifact commands prosthetic-hip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 13.85640646055102,
-            "y": -7.999999999999999,
+            "x": 13.856,
+            "y": -8.0,
             "z": 0.0
           },
           "relative": true
@@ -746,8 +746,8 @@ description: Artifact commands prosthetic-hip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -13.85640646055102,
-            "y": -7.999999999999999,
+            "x": -13.856,
+            "y": -8.0,
             "z": 0.0
           },
           "relative": true
@@ -764,7 +764,7 @@ description: Artifact commands prosthetic-hip.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": -7.5,
-            "y": 4.330127018922193,
+            "y": 4.33,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -937,8 +937,8 @@ description: Artifact commands prosthetic-hip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.385640646055102,
-            "y": -0.7999999999999999,
+            "x": 1.386,
+            "y": -0.8,
             "z": 0.0
           },
           "relative": true
@@ -970,8 +970,8 @@ description: Artifact commands prosthetic-hip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.385640646055102,
-            "y": -0.7999999999999999,
+            "x": -1.386,
+            "y": -0.8,
             "z": 0.0
           },
           "relative": true
@@ -987,8 +987,8 @@ description: Artifact commands prosthetic-hip.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -2.400000000000002,
-            "y": 1.3856406460551016,
+            "x": -2.4,
+            "y": 1.386,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1161,8 +1161,8 @@ description: Artifact commands prosthetic-hip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.8660254037844387,
-            "y": -0.49999999999999994,
+            "x": 0.866,
+            "y": -0.5,
             "z": 0.0
           },
           "relative": true
@@ -1194,8 +1194,8 @@ description: Artifact commands prosthetic-hip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.8660254037844387,
-            "y": -0.49999999999999994,
+            "x": -0.866,
+            "y": -0.5,
             "z": 0.0
           },
           "relative": true
@@ -1212,7 +1212,7 @@ description: Artifact commands prosthetic-hip.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": -4.5,
-            "y": 2.5980762113533165,
+            "y": 2.598,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1871,7 +1871,7 @@ description: Artifact commands prosthetic-hip.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": -8.76,
-            "y": 9.450000000000001,
+            "y": 9.45,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1922,7 +1922,7 @@ description: Artifact commands prosthetic-hip.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": 7.68,
-            "y": -8.700000000000001,
+            "y": -8.7,
             "z": 0.0
           },
           "angle_snap_increment": null

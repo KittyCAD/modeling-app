@@ -121,7 +121,7 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.149999999999999,
+            "x": 2.15,
             "y": -2.15,
             "z": 0.0
           },
@@ -155,7 +155,7 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.6999999999999996,
+            "x": 0.7,
             "y": -0.7,
             "z": 0.0
           },
@@ -369,7 +369,7 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.149999999999999,
+            "x": 2.15,
             "y": -2.15,
             "z": 0.0
           },
@@ -403,7 +403,7 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.6999999999999996,
+            "x": 0.7,
             "y": -0.7,
             "z": 0.0
           },
@@ -2219,7 +2219,7 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.8499999999999996,
+          "x": 2.85,
           "y": 13.0,
           "z": 0.0
         }
@@ -2947,7 +2947,7 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.8499999999999996,
+          "x": 2.85,
           "y": 13.0,
           "z": 0.0
         }

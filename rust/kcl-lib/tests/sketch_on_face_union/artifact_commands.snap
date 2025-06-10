@@ -99,7 +99,7 @@ description: Artifact commands sketch_on_face_union.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 304.79999999999995,
+            "y": 304.8,
             "z": 0.0
           },
           "relative": true
@@ -116,7 +116,7 @@ description: Artifact commands sketch_on_face_union.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 1015.4528710282179,
+            "y": 1015.453,
             "z": 0.0
           },
           "relative": false
@@ -133,7 +133,7 @@ description: Artifact commands sketch_on_face_union.kcl
           "type": "line",
           "end": {
             "x": 1524.0,
-            "y": 304.80000000000007,
+            "y": 304.8,
             "z": 0.0
           },
           "relative": false
@@ -178,7 +178,7 @@ description: Artifact commands sketch_on_face_union.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1422.3999999999999,
+          "x": 1422.4,
           "y": 101.6,
           "z": 0.0
         }
@@ -218,7 +218,7 @@ description: Artifact commands sketch_on_face_union.kcl
           "type": "line",
           "end": {
             "x": 50.8,
-            "y": 913.852871028218,
+            "y": 913.853,
             "z": 0.0
           },
           "relative": false
@@ -234,8 +234,8 @@ description: Artifact commands sketch_on_face_union.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1422.3999999999999,
-            "y": 274.2652871028219,
+            "x": 1422.4,
+            "y": 274.265,
             "z": 0.0
           },
           "relative": false
@@ -280,7 +280,7 @@ description: Artifact commands sketch_on_face_union.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1422.3999999999999,
+          "x": -1422.4,
           "y": 101.6,
           "z": 0.0
         }
@@ -320,7 +320,7 @@ description: Artifact commands sketch_on_face_union.kcl
           "type": "line",
           "end": {
             "x": -50.8,
-            "y": 913.852871028218,
+            "y": 913.853,
             "z": 0.0
           },
           "relative": false
@@ -336,8 +336,8 @@ description: Artifact commands sketch_on_face_union.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1422.3999999999999,
-            "y": 274.26528710282224,
+            "x": -1422.4,
+            "y": 274.265,
             "z": 0.0
           },
           "relative": false
@@ -527,7 +527,7 @@ description: Artifact commands sketch_on_face_union.kcl
         "path": "[uuid]",
         "to": {
           "x": 25.4,
-          "y": 355.59999999999997,
+          "y": 355.6,
           "z": 0.0
         }
       }
@@ -548,8 +548,8 @@ description: Artifact commands sketch_on_face_union.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 549.9261314031186,
-            "y": 317.49999999999994,
+            "x": 549.926,
+            "y": 317.5,
             "z": 0.0
           },
           "relative": true
@@ -565,8 +565,8 @@ description: Artifact commands sketch_on_face_union.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 115.10108895365452,
-            "y": -53.67251924106883,
+            "x": 115.101,
+            "y": -53.673,
             "z": 0.0
           },
           "relative": true
@@ -583,7 +583,7 @@ description: Artifact commands sketch_on_face_union.kcl
           "type": "line",
           "end": {
             "x": 25.4,
-            "y": 235.4738360675195,
+            "y": 235.474,
             "z": 0.0
           },
           "relative": false
@@ -698,7 +698,7 @@ description: Artifact commands sketch_on_face_union.kcl
         "path": "[uuid]",
         "to": {
           "x": -25.4,
-          "y": 355.59999999999997,
+          "y": 355.6,
           "z": 0.0
         }
       }
@@ -719,8 +719,8 @@ description: Artifact commands sketch_on_face_union.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -549.9261314031186,
-            "y": 317.49999999999994,
+            "x": -549.926,
+            "y": 317.5,
             "z": 0.0
           },
           "relative": true
@@ -736,8 +736,8 @@ description: Artifact commands sketch_on_face_union.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -115.10108895365455,
-            "y": -53.672519241068805,
+            "x": -115.101,
+            "y": -53.673,
             "z": 0.0
           },
           "relative": true
@@ -754,7 +754,7 @@ description: Artifact commands sketch_on_face_union.kcl
           "type": "line",
           "end": {
             "x": -25.4,
-            "y": 235.47383606751973,
+            "y": 235.474,
             "z": 0.0
           },
           "relative": false

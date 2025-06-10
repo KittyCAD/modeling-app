@@ -59,8 +59,8 @@ description: Artifact commands ball-joint-rod-end.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -152.39999999999998,
-          "y": 134.4041666020812,
+          "x": -152.4,
+          "y": 134.404,
           "z": 0.0
         }
       }
@@ -87,11 +87,11 @@ description: Artifact commands ball-joint-rod-end.kcl
           "radius": 203.2,
           "start": {
             "unit": "degrees",
-            "value": 138.59037789072914
+            "value": 138.59
           },
           "end": {
             "unit": "degrees",
-            "value": 41.409622109270856
+            "value": 41.41
           },
           "relative": false
         }
@@ -123,7 +123,7 @@ description: Artifact commands ball-joint-rod-end.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -152.39999999999998,
+            "x": -152.4,
             "y": 101.6,
             "z": 0.0
           },
@@ -140,8 +140,8 @@ description: Artifact commands ball-joint-rod-end.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -152.39999999999998,
-            "y": 134.4041666020812,
+            "x": -152.4,
+            "y": 134.404,
             "z": 0.0
           },
           "relative": false
@@ -280,7 +280,7 @@ description: Artifact commands ball-joint-rod-end.kcl
         "path": "[uuid]",
         "to": {
           "x": -114.3,
-          "y": 254.95072072853608,
+          "y": 254.951,
           "z": 0.0
         }
       }
@@ -307,11 +307,11 @@ description: Artifact commands ball-joint-rod-end.kcl
           "radius": 279.4,
           "start": {
             "unit": "degrees",
-            "value": 114.14773991702228
+            "value": 114.148
           },
           "end": {
             "unit": "degrees",
-            "value": 65.85226008297771
+            "value": 65.852
           },
           "relative": false
         }
@@ -326,8 +326,8 @@ description: Artifact commands ball-joint-rod-end.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 114.30000000000004,
-            "y": 170.105273355759,
+            "x": 114.3,
+            "y": 170.105,
             "z": 0.0
           },
           "relative": false
@@ -343,17 +343,17 @@ description: Artifact commands ball-joint-rod-end.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.00000000000004511946372076636,
-            "y": 2.1000651031575264
+            "x": 0.0,
+            "y": 2.1
           },
           "radius": 203.2,
           "start": {
             "unit": "degrees",
-            "value": 55.771133672187425
+            "value": 55.771
           },
           "end": {
             "unit": "degrees",
-            "value": 124.22886632781258
+            "value": 124.229
           },
           "relative": false
         }
@@ -369,7 +369,7 @@ description: Artifact commands ball-joint-rod-end.kcl
           "type": "line",
           "end": {
             "x": -114.3,
-            "y": 254.95072072853608,
+            "y": 254.951,
             "z": 0.0
           },
           "relative": false
@@ -512,7 +512,7 @@ description: Artifact commands ball-joint-rod-end.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 201.42199999999997,
+            "x": 201.422,
             "y": 0.0,
             "z": 0.0
           },
@@ -529,8 +529,8 @@ description: Artifact commands ball-joint-rod-end.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 201.42199999999997,
-            "y": -191.76579465587704,
+            "x": 201.422,
+            "y": -191.766,
             "z": 0.0
           },
           "relative": false
@@ -546,8 +546,8 @@ description: Artifact commands ball-joint-rod-end.kcl
         "segment": {
           "type": "arc_to",
           "interior": {
-            "x": 276.31253102031127,
-            "y": -24.174214054432447,
+            "x": 276.313,
+            "y": -24.174,
             "z": 0.0
           },
           "end": {
@@ -729,7 +729,7 @@ description: Artifact commands ball-joint-rod-end.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 177.79999999999998,
+            "x": 177.8,
             "y": 0.0,
             "z": 0.0
           },
@@ -746,8 +746,8 @@ description: Artifact commands ball-joint-rod-end.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 177.79999999999998,
-            "y": -258.059794655877,
+            "x": 177.8,
+            "y": -258.06,
             "z": 0.0
           },
           "relative": false
@@ -764,7 +764,7 @@ description: Artifact commands ball-joint-rod-end.kcl
           "type": "line",
           "end": {
             "x": 111.76,
-            "y": -192.01979465587704,
+            "y": -192.02,
             "z": 0.0
           },
           "relative": false
@@ -797,7 +797,7 @@ description: Artifact commands ball-joint-rod-end.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -110.48999999999998,
+            "x": -110.49,
             "y": 0.0,
             "z": 0.0
           },
@@ -815,7 +815,7 @@ description: Artifact commands ball-joint-rod-end.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -192.01979465587704,
+            "y": -192.02,
             "z": 0.0
           },
           "relative": true
@@ -831,8 +831,8 @@ description: Artifact commands ball-joint-rod-end.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -177.79999999999998,
-            "y": -259.32979465587704,
+            "x": -177.8,
+            "y": -259.33,
             "z": 0.0
           },
           "relative": false
@@ -849,7 +849,7 @@ description: Artifact commands ball-joint-rod-end.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -681.740205344123,
+            "y": -681.74,
             "z": 0.0
           },
           "relative": true
@@ -1090,7 +1090,7 @@ description: Artifact commands ball-joint-rod-end.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 152.39999999999998,
+          "x": 152.4,
           "y": 0.0,
           "z": 0.0
         }

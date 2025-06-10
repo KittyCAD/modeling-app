@@ -928,8 +928,8 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.000000000000002,
-            "y": 10.392304845413264,
+            "x": 6.0,
+            "y": 10.392,
             "z": 0.0
           },
           "relative": true
@@ -962,8 +962,8 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.000000000000002,
-            "y": -10.392304845413264,
+            "x": 6.0,
+            "y": -10.392,
             "z": 0.0
           },
           "relative": true
@@ -979,8 +979,8 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.999999999999998,
-            "y": -10.392304845413264,
+            "x": -6.0,
+            "y": -10.392,
             "z": 0.0
           },
           "relative": true
@@ -1162,8 +1162,8 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 5.000000000000001,
-            "y": 8.660254037844386,
+            "x": 5.0,
+            "y": 8.66,
             "z": 0.0
           },
           "relative": true
@@ -1196,8 +1196,8 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 5.000000000000001,
-            "y": -8.660254037844386,
+            "x": 5.0,
+            "y": -8.66,
             "z": 0.0
           },
           "relative": true
@@ -1213,8 +1213,8 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.999999999999998,
-            "y": -8.660254037844387,
+            "x": -5.0,
+            "y": -8.66,
             "z": 0.0
           },
           "relative": true

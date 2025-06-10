@@ -166,7 +166,7 @@ description: Operations executed bracket.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.39485618835389114,
+            "value": -0.395,
             "ty": {
               "type": "Default",
               "len": {
@@ -269,7 +269,7 @@ description: Operations executed bracket.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.4848561883538911,
+            "value": -0.485,
             "ty": {
               "type": "Default",
               "len": {
@@ -319,7 +319,7 @@ description: Operations executed bracket.kcl
         "radius": {
           "value": {
             "type": "Number",
-            "value": 0.6348561883538911,
+            "value": 0.635,
             "ty": {
               "type": "Default",
               "len": {

@@ -227,7 +227,7 @@ description: Operations executed pdu-faceplate.kcl
           "width": {
             "value": {
               "type": "Number",
-              "value": 60.675000000000004,
+              "value": 60.675,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -384,7 +384,7 @@ description: Operations executed pdu-faceplate.kcl
         "x": {
           "value": {
             "type": "Number",
-            "value": -208.9625,
+            "value": -208.963,
             "ty": {
               "type": "Default",
               "len": {
@@ -1153,7 +1153,7 @@ description: Operations executed pdu-faceplate.kcl
         "x": {
           "value": {
             "type": "Number",
-            "value": -128.0625,
+            "value": -128.063,
             "ty": {
               "type": "Default",
               "len": {
@@ -1936,7 +1936,7 @@ description: Operations executed pdu-faceplate.kcl
           "width": {
             "value": {
               "type": "Number",
-              "value": 33.64999999999997,
+              "value": 33.65,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -2093,7 +2093,7 @@ description: Operations executed pdu-faceplate.kcl
         "x": {
           "value": {
             "type": "Number",
-            "value": 222.47500000000002,
+            "value": 222.475,
             "ty": {
               "type": "Default",
               "len": {
