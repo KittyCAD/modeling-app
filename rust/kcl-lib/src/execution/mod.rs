@@ -22,10 +22,11 @@ use kcmc::{
 };
 use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
+pub(crate) use modeling::ModelingCmdMeta;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
-pub(crate) use state::{ModelingCmdMeta, ModuleArtifactState};
 use uuid::Uuid;
 
 use crate::{
@@ -57,6 +58,7 @@ mod import;
 mod import_graph;
 pub(crate) mod kcl_value;
 mod memory;
+mod modeling;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
