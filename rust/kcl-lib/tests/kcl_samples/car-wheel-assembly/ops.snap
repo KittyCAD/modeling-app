@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed car-wheel-assembly.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/car-wheel-assembly/brake-caliper.kcl": [
+  "public/kcl-samples/car-wheel-assembly/brake-caliper.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -126,7 +126,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/car-wheel-assembly/car-rotor.kcl": [
+  "public/kcl-samples/car-wheel-assembly/car-rotor.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -878,7 +878,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/car-wheel-assembly/car-tire.kcl": [
+  "public/kcl-samples/car-wheel-assembly/car-tire.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -985,7 +985,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/car-wheel-assembly/car-wheel.kcl": [
+  "public/kcl-samples/car-wheel-assembly/car-wheel.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -2170,7 +2170,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/car-wheel-assembly/lug-nut.kcl": [
+  "public/kcl-samples/car-wheel-assembly/lug-nut.kcl": [
     {
       "type": "GroupBegin",
       "group": {
@@ -2495,7 +2495,7 @@ description: Operations executed car-wheel-assembly.kcl
       "type": "GroupEnd"
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/car-wheel-assembly/main.kcl": [
+  "public/kcl-samples/car-wheel-assembly/main.kcl": [
     {
       "type": "StdLibCall",
       "name": "translate",
@@ -2839,7 +2839,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/car-wheel-assembly/parameters.kcl": [],
+  "public/kcl-samples/car-wheel-assembly/parameters.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],

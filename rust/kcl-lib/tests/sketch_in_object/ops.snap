@@ -3,18 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed sketch_in_object.kcl
 ---
 {
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "tests/sketch_in_object/input.kcl": [
+  "rust/kcl-lib/tests/sketch_in_object/input.kcl": [
     {
       "type": "GroupBegin",
       "group": {
@@ -261,5 +250,16 @@ description: Operations executed sketch_in_object.kcl
       },
       "sourceRange": []
     }
-  ]
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
 }

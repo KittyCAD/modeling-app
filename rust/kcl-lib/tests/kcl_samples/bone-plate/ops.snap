@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed bone-plate.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/bone-plate/main.kcl": [
+  "public/kcl-samples/bone-plate/main.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",

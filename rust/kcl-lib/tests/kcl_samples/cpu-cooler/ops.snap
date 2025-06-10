@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed cpu-cooler.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/fan-housing.kcl": [
+  "public/kcl-samples/cpu-cooler/fan-housing.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -800,7 +800,7 @@ description: Operations executed cpu-cooler.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/fan.kcl": [
+  "public/kcl-samples/cpu-cooler/fan.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -1375,7 +1375,7 @@ description: Operations executed cpu-cooler.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/heat-sink.kcl": [
+  "public/kcl-samples/cpu-cooler/heat-sink.kcl": [
     {
       "type": "StdLibCall",
       "name": "offsetPlane",
@@ -3083,7 +3083,7 @@ description: Operations executed cpu-cooler.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/main.kcl": [
+  "public/kcl-samples/cpu-cooler/main.kcl": [
     {
       "type": "GroupBegin",
       "group": {
@@ -4362,7 +4362,7 @@ description: Operations executed cpu-cooler.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/motor.kcl": [
+  "public/kcl-samples/cpu-cooler/motor.kcl": [
     {
       "type": "StdLibCall",
       "name": "offsetPlane",
@@ -4584,7 +4584,7 @@ description: Operations executed cpu-cooler.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/mounting-wire.kcl": [
+  "public/kcl-samples/cpu-cooler/mounting-wire.kcl": [
     {
       "type": "StdLibCall",
       "name": "offsetPlane",
@@ -4980,8 +4980,8 @@ description: Operations executed cpu-cooler.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/parameters.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/removable-sticker.kcl": [
+  "public/kcl-samples/cpu-cooler/parameters.kcl": [],
+  "public/kcl-samples/cpu-cooler/removable-sticker.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",

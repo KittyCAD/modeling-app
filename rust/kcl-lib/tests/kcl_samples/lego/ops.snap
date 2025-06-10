@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed lego.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/lego/main.kcl": [
+  "public/kcl-samples/lego/main.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",

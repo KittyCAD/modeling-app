@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands brake-rotor.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/brake-rotor/main.kcl": [
+  "public/kcl-samples/brake-rotor/main.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],

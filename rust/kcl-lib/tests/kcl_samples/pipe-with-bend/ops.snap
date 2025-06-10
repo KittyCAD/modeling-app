@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed pipe-with-bend.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pipe-with-bend/main.kcl": [
+  "public/kcl-samples/pipe-with-bend/main.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",

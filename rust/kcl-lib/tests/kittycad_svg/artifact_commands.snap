@@ -3,18 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands kittycad_svg.kcl
 ---
 {
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "tests/kittycad_svg/input.kcl": [
+  "rust/kcl-lib/tests/kittycad_svg/input.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -4928,5 +4917,16 @@ description: Artifact commands kittycad_svg.kcl
         "edge_id": "[uuid]"
       }
     }
-  ]
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
 }

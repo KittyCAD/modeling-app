@@ -3,8 +3,8 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed bench.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/bench/bench-parts.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/bench/main.kcl": [
+  "public/kcl-samples/bench/bench-parts.kcl": [],
+  "public/kcl-samples/bench/main.kcl": [
     {
       "type": "GroupBegin",
       "group": {

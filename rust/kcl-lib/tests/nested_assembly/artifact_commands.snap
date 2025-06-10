@@ -3,19 +3,8 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands nested_assembly.kcl
 ---
 {
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "tests/nested_assembly/input.kcl": [],
-  "tests/nested_assembly/nested/foo/bar/imported.kcl": [
+  "rust/kcl-lib/tests/nested_assembly/input.kcl": [],
+  "rust/kcl-lib/tests/nested_assembly/nested/foo/bar/imported.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -169,5 +158,16 @@ description: Artifact commands nested_assembly.kcl
       }
     }
   ],
-  "tests/nested_assembly/nested/foo/bar/main.kcl": []
+  "rust/kcl-lib/tests/nested_assembly/nested/foo/bar/main.kcl": [],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
 }

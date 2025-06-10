@@ -3,18 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands subtract_with_pattern_cut_thru.kcl
 ---
 {
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "tests/subtract_with_pattern_cut_thru/input.kcl": [
+  "rust/kcl-lib/tests/subtract_with_pattern_cut_thru/input.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -574,5 +563,16 @@ description: Artifact commands subtract_with_pattern_cut_thru.kcl
         ]
       }
     }
-  ]
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
 }

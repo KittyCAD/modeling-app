@@ -3,18 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands subtract_cylinder_from_cube.kcl
 ---
 {
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "tests/subtract_cylinder_from_cube/input.kcl": [
+  "rust/kcl-lib/tests/subtract_cylinder_from_cube/input.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -401,5 +390,16 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
         "tolerance": 0.0000001
       }
     }
-  ]
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
 }

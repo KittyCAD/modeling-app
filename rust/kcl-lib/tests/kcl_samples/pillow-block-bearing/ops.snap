@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed pillow-block-bearing.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pillow-block-bearing/ball-bearing.kcl": [
+  "public/kcl-samples/pillow-block-bearing/ball-bearing.kcl": [
     {
       "type": "StdLibCall",
       "name": "offsetPlane",
@@ -1057,7 +1057,7 @@ description: Operations executed pillow-block-bearing.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pillow-block-bearing/block.kcl": [
+  "public/kcl-samples/pillow-block-bearing/block.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -1885,8 +1885,8 @@ description: Operations executed pillow-block-bearing.kcl
       "type": "GroupEnd"
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pillow-block-bearing/main.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pillow-block-bearing/parameters.kcl": [],
+  "public/kcl-samples/pillow-block-bearing/main.kcl": [],
+  "public/kcl-samples/pillow-block-bearing/parameters.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],

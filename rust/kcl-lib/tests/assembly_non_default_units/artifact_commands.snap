@@ -3,20 +3,9 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands assembly_non_default_units.kcl
 ---
 {
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "tests/assembly_non_default_units/globals.kcl": [],
-  "tests/assembly_non_default_units/input.kcl": [],
-  "tests/assembly_non_default_units/other1.kcl": [
+  "rust/kcl-lib/tests/assembly_non_default_units/globals.kcl": [],
+  "rust/kcl-lib/tests/assembly_non_default_units/input.kcl": [],
+  "rust/kcl-lib/tests/assembly_non_default_units/other1.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -119,7 +108,7 @@ description: Artifact commands assembly_non_default_units.kcl
       }
     }
   ],
-  "tests/assembly_non_default_units/other2.kcl": [
+  "rust/kcl-lib/tests/assembly_non_default_units/other2.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -221,5 +210,16 @@ description: Artifact commands assembly_non_default_units.kcl
         "path_id": "[uuid]"
       }
     }
-  ]
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
 }

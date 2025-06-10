@@ -3,18 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands helix_ccw.kcl
 ---
 {
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "tests/helix_ccw/input.kcl": [
+  "rust/kcl-lib/tests/helix_ccw/input.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -191,5 +180,16 @@ description: Artifact commands helix_ccw.kcl
         "length": 10.0
       }
     }
-  ]
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
 }

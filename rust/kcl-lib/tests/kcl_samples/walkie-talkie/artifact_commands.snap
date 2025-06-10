@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands walkie-talkie.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/antenna.kcl": [
+  "public/kcl-samples/walkie-talkie/antenna.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -340,7 +340,7 @@ description: Artifact commands walkie-talkie.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/body.kcl": [
+  "public/kcl-samples/walkie-talkie/body.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -1201,8 +1201,8 @@ description: Artifact commands walkie-talkie.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/button.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/case.kcl": [
+  "public/kcl-samples/walkie-talkie/button.kcl": [],
+  "public/kcl-samples/walkie-talkie/case.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -9604,7 +9604,7 @@ description: Artifact commands walkie-talkie.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/knob.kcl": [
+  "public/kcl-samples/walkie-talkie/knob.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -9811,7 +9811,7 @@ description: Artifact commands walkie-talkie.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/main.kcl": [
+  "public/kcl-samples/walkie-talkie/main.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -11085,8 +11085,8 @@ description: Artifact commands walkie-talkie.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/parameters.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/talk-button.kcl": [
+  "public/kcl-samples/walkie-talkie/parameters.kcl": [],
+  "public/kcl-samples/walkie-talkie/talk-button.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -11356,7 +11356,7 @@ description: Artifact commands walkie-talkie.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/zoo-logo.kcl": [],
+  "public/kcl-samples/walkie-talkie/zoo-logo.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],

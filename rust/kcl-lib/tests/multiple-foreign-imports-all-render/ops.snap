@@ -3,18 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed multiple-foreign-imports-all-render.kcl
 ---
 {
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "tests/multiple-foreign-imports-all-render/anothercube.kcl": [
+  "rust/kcl-lib/tests/multiple-foreign-imports-all-render/anothercube.kcl": [
     {
       "type": "StdLibCall",
       "name": "clone",
@@ -32,7 +21,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "sourceRange": []
     }
   ],
-  "tests/multiple-foreign-imports-all-render/input.kcl": [
+  "rust/kcl-lib/tests/multiple-foreign-imports-all-render/input.kcl": [
     {
       "type": "StdLibCall",
       "name": "translate",
@@ -124,7 +113,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "sourceRange": []
     }
   ],
-  "tests/multiple-foreign-imports-all-render/othercube.kcl": [
+  "rust/kcl-lib/tests/multiple-foreign-imports-all-render/othercube.kcl": [
     {
       "type": "StdLibCall",
       "name": "clone",
@@ -141,5 +130,16 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       },
       "sourceRange": []
     }
-  ]
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
 }

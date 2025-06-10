@@ -3,18 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands intersect_cubes.kcl
 ---
 {
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "tests/intersect_cubes/input.kcl": [
+  "rust/kcl-lib/tests/intersect_cubes/input.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -425,5 +414,16 @@ description: Artifact commands intersect_cubes.kcl
         "tolerance": 0.0000001
       }
     }
-  ]
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
 }

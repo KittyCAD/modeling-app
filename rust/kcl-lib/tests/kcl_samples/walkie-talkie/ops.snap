@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed walkie-talkie.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/antenna.kcl": [
+  "public/kcl-samples/walkie-talkie/antenna.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -99,7 +99,7 @@ description: Operations executed walkie-talkie.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/body.kcl": [
+  "public/kcl-samples/walkie-talkie/body.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -394,8 +394,8 @@ description: Operations executed walkie-talkie.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/button.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/case.kcl": [
+  "public/kcl-samples/walkie-talkie/button.kcl": [],
+  "public/kcl-samples/walkie-talkie/case.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -2582,7 +2582,7 @@ description: Operations executed walkie-talkie.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/knob.kcl": [
+  "public/kcl-samples/walkie-talkie/knob.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -2682,7 +2682,7 @@ description: Operations executed walkie-talkie.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/main.kcl": [
+  "public/kcl-samples/walkie-talkie/main.kcl": [
     {
       "type": "StdLibCall",
       "name": "translate",
@@ -4012,8 +4012,8 @@ description: Operations executed walkie-talkie.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/parameters.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/talk-button.kcl": [
+  "public/kcl-samples/walkie-talkie/parameters.kcl": [],
+  "public/kcl-samples/walkie-talkie/talk-button.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -4125,7 +4125,7 @@ description: Operations executed walkie-talkie.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/walkie-talkie/zoo-logo.kcl": [],
+  "public/kcl-samples/walkie-talkie/zoo-logo.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],

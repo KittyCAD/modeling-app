@@ -3,6 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands panic_repro_cube.kcl
 ---
 {
+  "rust/kcl-lib/tests/panic_repro_cube/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],
@@ -13,6 +14,5 @@ description: Artifact commands panic_repro_cube.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": [],
-  "tests/panic_repro_cube/input.kcl": []
+  "std::units": []
 }

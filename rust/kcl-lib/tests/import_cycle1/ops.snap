@@ -3,6 +3,9 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_cycle1.kcl
 ---
 {
+  "rust/kcl-lib/tests/import_cycle1/import_cycle2.kcl": [],
+  "rust/kcl-lib/tests/import_cycle1/import_cycle3.kcl": [],
+  "rust/kcl-lib/tests/import_cycle1/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],
@@ -13,8 +16,5 @@ description: Operations executed import_cycle1.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": [],
-  "tests/import_cycle1/import_cycle2.kcl": [],
-  "tests/import_cycle1/import_cycle3.kcl": [],
-  "tests/import_cycle1/input.kcl": []
+  "std::units": []
 }

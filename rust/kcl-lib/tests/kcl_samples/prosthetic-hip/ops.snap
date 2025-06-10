@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed prosthetic-hip.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/prosthetic-hip/main.kcl": [
+  "public/kcl-samples/prosthetic-hip/main.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",

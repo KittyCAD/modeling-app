@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands cpu-cooler.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/fan-housing.kcl": [
+  "public/kcl-samples/cpu-cooler/fan-housing.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -2465,7 +2465,7 @@ description: Artifact commands cpu-cooler.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/fan.kcl": [
+  "public/kcl-samples/cpu-cooler/fan.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -3458,7 +3458,7 @@ description: Artifact commands cpu-cooler.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/heat-sink.kcl": [
+  "public/kcl-samples/cpu-cooler/heat-sink.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -7091,7 +7091,7 @@ description: Artifact commands cpu-cooler.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/main.kcl": [
+  "public/kcl-samples/cpu-cooler/main.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -8177,7 +8177,7 @@ description: Artifact commands cpu-cooler.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/motor.kcl": [
+  "public/kcl-samples/cpu-cooler/motor.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -8611,7 +8611,7 @@ description: Artifact commands cpu-cooler.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/mounting-wire.kcl": [
+  "public/kcl-samples/cpu-cooler/mounting-wire.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -10147,8 +10147,8 @@ description: Artifact commands cpu-cooler.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/parameters.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/cpu-cooler/removable-sticker.kcl": [
+  "public/kcl-samples/cpu-cooler/parameters.kcl": [],
+  "public/kcl-samples/cpu-cooler/removable-sticker.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],

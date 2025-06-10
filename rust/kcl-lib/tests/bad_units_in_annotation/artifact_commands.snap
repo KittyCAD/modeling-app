@@ -3,6 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands bad_units_in_annotation.kcl
 ---
 {
+  "rust/kcl-lib/tests/bad_units_in_annotation/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],
@@ -13,6 +14,5 @@ description: Artifact commands bad_units_in_annotation.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": [],
-  "tests/bad_units_in_annotation/input.kcl": []
+  "std::units": []
 }

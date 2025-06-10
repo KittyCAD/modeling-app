@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands telemetry-antenna.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/telemetry-antenna/main.kcl": [
+  "public/kcl-samples/telemetry-antenna/main.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],

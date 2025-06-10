@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands axial-fan.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/axial-fan/fan-housing.kcl": [
+  "public/kcl-samples/axial-fan/fan-housing.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -2465,7 +2465,7 @@ description: Artifact commands axial-fan.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/axial-fan/fan.kcl": [
+  "public/kcl-samples/axial-fan/fan.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -3463,8 +3463,8 @@ description: Artifact commands axial-fan.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/axial-fan/main.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/axial-fan/motor.kcl": [
+  "public/kcl-samples/axial-fan/main.kcl": [],
+  "public/kcl-samples/axial-fan/motor.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -3898,7 +3898,7 @@ description: Artifact commands axial-fan.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/axial-fan/parameters.kcl": [],
+  "public/kcl-samples/axial-fan/parameters.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],

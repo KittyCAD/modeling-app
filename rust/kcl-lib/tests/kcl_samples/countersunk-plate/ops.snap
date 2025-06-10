@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed countersunk-plate.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/countersunk-plate/main.kcl": [
+  "public/kcl-samples/countersunk-plate/main.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",

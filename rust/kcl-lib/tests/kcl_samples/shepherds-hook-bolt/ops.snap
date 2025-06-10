@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed shepherds-hook-bolt.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/shepherds-hook-bolt/main.kcl": [
+  "public/kcl-samples/shepherds-hook-bolt/main.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",

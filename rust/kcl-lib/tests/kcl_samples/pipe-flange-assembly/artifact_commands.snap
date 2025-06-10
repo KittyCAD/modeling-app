@@ -3,10 +3,10 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands pipe-flange-assembly.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pipe-flange-assembly/1120t74-pipe.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pipe-flange-assembly/68095k348-flange.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pipe-flange-assembly/91251a404-bolt.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pipe-flange-assembly/9472k188-gasket.kcl": [
+  "public/kcl-samples/pipe-flange-assembly/1120t74-pipe.kcl": [],
+  "public/kcl-samples/pipe-flange-assembly/68095k348-flange.kcl": [],
+  "public/kcl-samples/pipe-flange-assembly/91251a404-bolt.kcl": [],
+  "public/kcl-samples/pipe-flange-assembly/9472k188-gasket.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -314,9 +314,9 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pipe-flange-assembly/95479a127-hex-nut.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pipe-flange-assembly/98017a257-washer.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pipe-flange-assembly/main.kcl": [
+  "public/kcl-samples/pipe-flange-assembly/95479a127-hex-nut.kcl": [],
+  "public/kcl-samples/pipe-flange-assembly/98017a257-washer.kcl": [],
+  "public/kcl-samples/pipe-flange-assembly/main.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -4126,7 +4126,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pipe-flange-assembly/parameters.kcl": [],
+  "public/kcl-samples/pipe-flange-assembly/parameters.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],

@@ -3,6 +3,8 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands import_constant.kcl
 ---
 {
+  "rust/kcl-lib/tests/import_constant/export_constant.kcl": [],
+  "rust/kcl-lib/tests/import_constant/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],
@@ -13,7 +15,5 @@ description: Artifact commands import_constant.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": [],
-  "tests/import_constant/export_constant.kcl": [],
-  "tests/import_constant/input.kcl": []
+  "std::units": []
 }

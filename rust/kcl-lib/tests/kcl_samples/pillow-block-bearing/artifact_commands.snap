@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands pillow-block-bearing.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pillow-block-bearing/ball-bearing.kcl": [
+  "public/kcl-samples/pillow-block-bearing/ball-bearing.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -1173,7 +1173,7 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pillow-block-bearing/block.kcl": [
+  "public/kcl-samples/pillow-block-bearing/block.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -2578,8 +2578,8 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pillow-block-bearing/main.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/pillow-block-bearing/parameters.kcl": [],
+  "public/kcl-samples/pillow-block-bearing/main.kcl": [],
+  "public/kcl-samples/pillow-block-bearing/parameters.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],

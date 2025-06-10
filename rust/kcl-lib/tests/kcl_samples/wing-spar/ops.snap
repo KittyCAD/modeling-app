@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed wing-spar.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/wing-spar/main.kcl": [
+  "public/kcl-samples/wing-spar/main.kcl": [
     {
       "type": "StdLibCall",
       "name": "offsetPlane",

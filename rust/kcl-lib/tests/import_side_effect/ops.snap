@@ -3,18 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_side_effect.kcl
 ---
 {
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "tests/import_side_effect/export_side_effect.kcl": [
+  "rust/kcl-lib/tests/import_side_effect/export_side_effect.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -32,5 +21,16 @@ description: Operations executed import_side_effect.kcl
       "sourceRange": []
     }
   ],
-  "tests/import_side_effect/input.kcl": []
+  "rust/kcl-lib/tests/import_side_effect/input.kcl": [],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
 }

@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed axial-fan.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/axial-fan/fan-housing.kcl": [
+  "public/kcl-samples/axial-fan/fan-housing.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -800,7 +800,7 @@ description: Operations executed axial-fan.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/axial-fan/fan.kcl": [
+  "public/kcl-samples/axial-fan/fan.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -1370,8 +1370,8 @@ description: Operations executed axial-fan.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/axial-fan/main.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/axial-fan/motor.kcl": [
+  "public/kcl-samples/axial-fan/main.kcl": [],
+  "public/kcl-samples/axial-fan/motor.kcl": [
     {
       "type": "StdLibCall",
       "name": "offsetPlane",
@@ -1593,7 +1593,7 @@ description: Operations executed axial-fan.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/axial-fan/parameters.kcl": [],
+  "public/kcl-samples/axial-fan/parameters.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],

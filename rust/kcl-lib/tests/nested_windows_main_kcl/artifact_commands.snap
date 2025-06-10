@@ -3,19 +3,8 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands nested_windows_main_kcl.kcl
 ---
 {
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "tests/nested_windows_main_kcl/input.kcl": [],
-  "tests/nested_windows_main_kcl/nested/foo/bar/main.kcl": [
+  "rust/kcl-lib/tests/nested_windows_main_kcl/input.kcl": [],
+  "rust/kcl-lib/tests/nested_windows_main_kcl/nested/foo/bar/main.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],
@@ -168,5 +157,16 @@ description: Artifact commands nested_windows_main_kcl.kcl
         "edge_id": "[uuid]"
       }
     }
-  ]
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
 }

@@ -3,18 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed double_map_fn.kcl
 ---
 {
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "tests/double_map_fn/input.kcl": [
+  "rust/kcl-lib/tests/double_map_fn/input.kcl": [
     {
       "type": "GroupBegin",
       "group": {
@@ -297,5 +286,16 @@ description: Operations executed double_map_fn.kcl
     {
       "type": "GroupEnd"
     }
-  ]
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
 }

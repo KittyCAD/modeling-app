@@ -3,18 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed pattern_linear_in_module.kcl
 ---
 {
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "tests/pattern_linear_in_module/input.kcl": [
+  "rust/kcl-lib/tests/pattern_linear_in_module/input.kcl": [
     {
       "type": "GroupBegin",
       "group": {
@@ -133,7 +122,7 @@ description: Operations executed pattern_linear_in_module.kcl
       "type": "GroupEnd"
     }
   ],
-  "tests/pattern_linear_in_module/thing.kcl": [
+  "rust/kcl-lib/tests/pattern_linear_in_module/thing.kcl": [
     {
       "type": "GroupBegin",
       "group": {
@@ -243,5 +232,16 @@ description: Operations executed pattern_linear_in_module.kcl
     {
       "type": "GroupEnd"
     }
-  ]
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
 }

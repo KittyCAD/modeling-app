@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands flange.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/flange/main.kcl": [
+  "public/kcl-samples/flange/main.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],

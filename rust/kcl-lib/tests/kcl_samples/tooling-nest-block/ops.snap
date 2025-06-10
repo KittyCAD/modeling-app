@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed tooling-nest-block.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/tooling-nest-block/main.kcl": [
+  "public/kcl-samples/tooling-nest-block/main.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",

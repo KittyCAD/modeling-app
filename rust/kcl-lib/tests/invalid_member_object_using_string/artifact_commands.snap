@@ -3,6 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands invalid_member_object_using_string.kcl
 ---
 {
+  "rust/kcl-lib/tests/invalid_member_object_using_string/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],
@@ -13,6 +14,5 @@ description: Artifact commands invalid_member_object_using_string.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": [],
-  "tests/invalid_member_object_using_string/input.kcl": []
+  "std::units": []
 }

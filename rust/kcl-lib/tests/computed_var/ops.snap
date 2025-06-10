@@ -3,6 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed computed_var.kcl
 ---
 {
+  "rust/kcl-lib/tests/computed_var/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],
@@ -13,6 +14,5 @@ description: Operations executed computed_var.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": [],
-  "tests/computed_var/input.kcl": []
+  "std::units": []
 }

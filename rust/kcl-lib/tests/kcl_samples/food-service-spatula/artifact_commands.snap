@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands food-service-spatula.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/food-service-spatula/main.kcl": [
+  "public/kcl-samples/food-service-spatula/main.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],

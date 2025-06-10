@@ -3,18 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_whole_simple.kcl
 ---
 {
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "tests/import_whole_simple/exported_mod.kcl": [
+  "rust/kcl-lib/tests/import_whole_simple/exported_mod.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -67,7 +56,7 @@ description: Operations executed import_whole_simple.kcl
       "sourceRange": []
     }
   ],
-  "tests/import_whole_simple/input.kcl": [
+  "rust/kcl-lib/tests/import_whole_simple/input.kcl": [
     {
       "type": "StdLibCall",
       "name": "translate",
@@ -118,5 +107,16 @@ description: Operations executed import_whole_simple.kcl
       },
       "sourceRange": []
     }
-  ]
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
 }

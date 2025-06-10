@@ -3,9 +3,9 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed multi-axis-robot.kcl
 ---
 {
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/multi-axis-robot/globals.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/multi-axis-robot/main.kcl": [],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/multi-axis-robot/robot-arm-base.kcl": [
+  "public/kcl-samples/multi-axis-robot/globals.kcl": [],
+  "public/kcl-samples/multi-axis-robot/main.kcl": [],
+  "public/kcl-samples/multi-axis-robot/robot-arm-base.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -454,7 +454,7 @@ description: Operations executed multi-axis-robot.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/multi-axis-robot/robot-arm-j2.kcl": [
+  "public/kcl-samples/multi-axis-robot/robot-arm-j2.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -976,7 +976,7 @@ description: Operations executed multi-axis-robot.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/multi-axis-robot/robot-arm-j3.kcl": [
+  "public/kcl-samples/multi-axis-robot/robot-arm-j3.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -1550,7 +1550,7 @@ description: Operations executed multi-axis-robot.kcl
       "sourceRange": []
     }
   ],
-  "/Users/jtran/projects/zoo/modeling-app/rust/../public/kcl-samples/multi-axis-robot/robot-rotating-base.kcl": [
+  "public/kcl-samples/multi-axis-robot/robot-rotating-base.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",

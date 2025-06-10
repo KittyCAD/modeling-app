@@ -3,6 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands multi_target_csg.kcl
 ---
 {
+  "rust/kcl-lib/tests/multi_target_csg/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],
@@ -13,6 +14,5 @@ description: Artifact commands multi_target_csg.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": [],
-  "tests/multi_target_csg/input.kcl": []
+  "std::units": []
 }
