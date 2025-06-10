@@ -271,7 +271,7 @@ impl Args {
         })
     }
 
-    // TODO: Move this to ExecState.
+    // TODO: Move this to the modeling module.
     fn get_tag_info_from_memory<'a, 'e>(
         &'a self,
         exec_state: &'e mut ExecState,
@@ -295,7 +295,7 @@ impl Args {
         }
     }
 
-    // TODO: Move this to ExecState.
+    // TODO: Move this to the modeling module.
     pub(crate) fn get_tag_engine_info<'a, 'e>(
         &'a self,
         exec_state: &'e mut ExecState,
@@ -311,7 +311,7 @@ impl Args {
         self.get_tag_info_from_memory(exec_state, tag)
     }
 
-    // TODO: Move this to ExecState.
+    // TODO: Move this to the modeling module.
     fn get_tag_engine_info_check_surface<'a, 'e>(
         &'a self,
         exec_state: &'e mut ExecState,
@@ -358,7 +358,7 @@ impl Args {
         )
     }
 
-    // TODO: Move this to ExecState.
+    // TODO: Move this to the modeling module.
     pub(crate) async fn get_adjacent_face_to_tag(
         &self,
         exec_state: &mut ExecState,

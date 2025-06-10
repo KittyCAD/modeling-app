@@ -14,9 +14,16 @@ use crate::{
     ExecState, ExecutorContext, KclError, SourceRange,
 };
 
+/// Context and metadata needed to send a single modeling command.
+///
+/// Many functions consume Self so that the command ID isn't accidentally reused
+/// among multiple modeling commands.
 pub(crate) struct ModelingCmdMeta<'a> {
+    /// The executor context, which contains the engine.
     pub ctx: &'a ExecutorContext,
+    /// The source range of the command, used for error reporting.
     pub source_range: SourceRange,
+    /// The id of the command, if it has been set by the caller or generated.
     id: Option<Uuid>,
 }
 

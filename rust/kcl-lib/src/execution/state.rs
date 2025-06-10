@@ -85,10 +85,9 @@ pub(super) struct ArtifactState {}
 #[cfg(all(test, feature = "artifact-graph"))]
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct ModuleArtifactState {
-    /// Output commands to allow building the artifact graph.
+    /// Outgoing engine commands.
     pub commands: Vec<ArtifactCommand>,
-    /// Operations that have been performed in execution order, for display in
-    /// the Feature Tree.
+    /// Operations that have been performed in execution order.
     pub operations: Vec<Operation>,
 }
 
