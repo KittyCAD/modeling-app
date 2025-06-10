@@ -37,7 +37,7 @@ test.describe('Share link tests', () => {
       test.skip(process.platform !== 'win32')
       const codeLength = 1000
       await navigateAndClickOpenInDesktopApp(page, codeLength)
-      await expect(getToastError(page)).toBeVisible()
+      await expect(getToastError(page)).not.toBeVisible()
     }
   )
 
