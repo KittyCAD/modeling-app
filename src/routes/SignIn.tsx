@@ -260,7 +260,7 @@ const SignIn = () => {
               <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/docs/kcl-samples/parametric-bearing-pillow-block"
+                  to="https://zoo.dev/docs/kcl-samples/pillow-block-bearing"
                   iconStart={{
                     icon: 'settings',
                     bgClassName: '!bg-transparent',
@@ -273,7 +273,7 @@ const SignIn = () => {
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/docs/tutorials/text-to-cad"
+                  to="https://zoo.dev/docs/zoo-design-studio/text-to-cad"
                   iconStart={{
                     icon: 'sparkles',
                     bgClassName: '!bg-transparent',
