@@ -112,18 +112,21 @@ async fn inner_hollow(
 ) -> Result<Box<Solid>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not do these for sketch on face, things will fail with face does not exist.
-    exec_state.flush_batch_for_solids((&args).into(), &[(*solid).clone()]).await?;
+    exec_state
+        .flush_batch_for_solids((&args).into(), &[(*solid).clone()])
+        .await?;
 
-    exec_state.batch_modeling_cmd(
-        (&args).into(),
-        ModelingCmd::from(mcmd::Solid3dShellFace {
-            hollow: true,
-            face_ids: Vec::new(), // This is empty because we want to hollow the entire object.
-            object_id: solid.id,
-            shell_thickness: LengthUnit(thickness.to_mm()),
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            (&args).into(),
+            ModelingCmd::from(mcmd::Solid3dShellFace {
+                hollow: true,
+                face_ids: Vec::new(), // This is empty because we want to hollow the entire object.
+                object_id: solid.id,
+                shell_thickness: LengthUnit(thickness.to_mm()),
+            }),
+        )
+        .await?;
 
     Ok(solid)
 }

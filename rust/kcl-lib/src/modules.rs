@@ -131,7 +131,10 @@ impl ModuleInfo {
 pub enum ModuleRepr {
     Root,
     // AST, memory, exported names
-    Kcl(Node<Program>, Option<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState)>),
+    Kcl(
+        Node<Program>,
+        Option<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState)>,
+    ),
     Foreign(PreImportedGeometry, Option<KclValue>),
     Dummy,
 }
