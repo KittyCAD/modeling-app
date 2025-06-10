@@ -10,9 +10,9 @@ import { billingActor } from '@src/lib/singletons'
 import { BillingDialog } from '@src/components/BillingDialog'
 import { Popover } from '@headlessui/react'
 import Tooltip from '@src/components/Tooltip'
-import { HelpMenu, HelpMenuContent } from '../HelpMenu'
+import { HelpMenu } from '@src/components/HelpMenu'
 
-export const homeDefaultStatusBarItems = ({
+export const defaultGlobalStatusBarItems = ({
   location,
 }: {
   location: Location

@@ -1,6 +1,5 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { TooltipProps } from '@src/components/Tooltip'
-import type { ReactNode } from 'react'
 
 export type StatusBarItemType = {
   id: string

@@ -58,8 +58,8 @@ import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import {
   defaultLocalStatusBarItems,
-  homeDefaultStatusBarItems,
-} from '@src/components/StatusBar/homeDefaultStatusBarItems'
+  defaultGlobalStatusBarItems,
+} from '@src/components/StatusBar/defaultStatusBarItems'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
@@ -257,7 +257,7 @@ export function App() {
         globalItems={[
           useNetworkHealthStatus(),
           useNetworkMachineStatus(),
-          ...homeDefaultStatusBarItems({ location }),
+          ...defaultGlobalStatusBarItems({ location }),
         ]}
         localItems={[
           ...(getSettings().app.showDebugPanel.current
