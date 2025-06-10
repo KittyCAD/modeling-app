@@ -29,6 +29,7 @@ import {
   codeManager,
   kclManager,
   settingsActor,
+  getSettings,
 } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -59,6 +60,11 @@ import { homeDefaultStatusBarItems } from '@src/components/StatusBar/homeDefault
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
+import {
+  getSelectionTypeDisplayText,
+  getSemanticSelectionType,
+} from './lib/selections'
+import { StatusBarItemType } from './components/StatusBar/statusBarTypes'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -254,15 +260,30 @@ export function App() {
           ...homeDefaultStatusBarItems({ location }),
         ]}
         localItems={[
+          ...(getSettings().app.showDebugPanel.current
+            ? ([
+                {
+                  id: 'modeling-state',
+                  element: 'text',
+                  label:
+                    modelingState.value instanceof Object
+                      ? (xStateValueToString(modelingState.value) ?? '')
+                      : modelingState.value,
+                  toolTip: {
+                    children: 'The current state of the modeler',
+                  },
+                },
+              ] satisfies StatusBarItemType[])
+            : []),
           {
-            id: 'modeling-state',
+            id: 'selection',
             element: 'text',
             label:
-              modelingState.value instanceof Object
-                ? (xStateValueToString(modelingState.value) ?? '')
-                : modelingState.value,
+              getSelectionTypeDisplayText(
+                modelingState.context.selectionRanges
+              ) ?? 'No selection',
             toolTip: {
-              children: 'The current state of the modeler',
+              children: 'Currently selected geometry',
             },
           },
         ]}
