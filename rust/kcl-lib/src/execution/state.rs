@@ -275,6 +275,11 @@ impl ExecState {
         &self.global.module_infos
     }
 
+    #[cfg(all(test, feature = "artifact-graph"))]
+    pub(crate) fn operations(&self) -> &[Operation] {
+        &self.global.artifacts.operations
+    }
+
     #[cfg(test)]
     pub(crate) fn root_module_artifact_state(&self) -> &ModuleArtifactState {
         &self.global.root_module_artifacts

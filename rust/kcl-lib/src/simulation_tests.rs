@@ -270,12 +270,21 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         })
                     }));
 
-                    let module_state = e.exec_state.map(|e| e.to_module_state()).unwrap_or_default();
-
-                    #[cfg(not(feature = "artifact-graph"))]
-                    drop(module_state);
                     #[cfg(feature = "artifact-graph")]
-                    assert_artifact_snapshots(test, module_state, error.operations, error.artifact_graph);
+                    {
+                        let global_operations = if !error.operations.is_empty() {
+                            error.operations
+                        } else if let Some(exec_state) = &e.exec_state {
+                            // Non-fatal compilation errors don't have artifact
+                            // output attached, so we need to get it from
+                            // ExecState.
+                            exec_state.operations().to_vec()
+                        } else {
+                            Vec::new()
+                        };
+                        let module_state = e.exec_state.map(|e| e.to_module_state()).unwrap_or_default();
+                        assert_artifact_snapshots(test, module_state, global_operations, error.artifact_graph);
+                    }
                     err_result.unwrap();
                 }
                 e => {
