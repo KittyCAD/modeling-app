@@ -3,7 +3,7 @@ import { stringToBase64 } from '@src/lib/base64'
 
 test.describe('Temporary workspace', () => {
   test(
-    'Opening a share link creates a temporary environment that is not saved.',
+    'Opening a share link creates a temporary environment that is not saved',
     { tag: ['@web'] },
     async ({ page, editor, scene, cmdBar, homePage }) => {
       await test.step('Pre-condition: editor is empty', async () => {
