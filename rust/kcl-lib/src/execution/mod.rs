@@ -958,6 +958,15 @@ impl ExecutorContext {
             }
         }
 
+        // Since we haven't technically started executing the root module yet,
+        // the operations corresponding to the imports will be missing unless we
+        // track them here.
+        #[cfg(all(test, feature = "artifact-graph"))]
+        exec_state
+            .global
+            .root_module_artifacts
+            .extend(exec_state.mod_local.artifacts.clone());
+
         self.inner_run(program, exec_state, preserve_mem).await
     }
 
