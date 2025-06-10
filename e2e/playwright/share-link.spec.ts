@@ -31,15 +31,22 @@ test.describe('Share link tests', () => {
   )
 
   test(
-    `Open in desktop app with 1000-long code works on Windows but not with 2000`,
+    `Open in desktop app with 1000-long code works on Windows`,
     { tag: ['@web', '@windows'] },
     async ({ page }) => {
       test.skip(process.platform !== 'win32')
-      let codeLength = 1000
+      const codeLength = 1000
       await navigateAndClickOpenInDesktopApp(page, codeLength)
-      await expect(getToastError(page)).not.toBeVisible()
+      await expect(getToastError(page)).toBeVisible()
+    }
+  )
 
-      codeLength = 2000
+  test(
+    `Open in desktop app with 2000-long code doesn't work on Windows`,
+    { tag: ['@web', '@windows'] },
+    async ({ page }) => {
+      test.skip(process.platform !== 'win32')
+      const codeLength = 2000
       await navigateAndClickOpenInDesktopApp(page, codeLength)
       await expect(getToastError(page)).toBeVisible()
     }
