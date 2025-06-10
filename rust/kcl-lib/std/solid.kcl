@@ -402,7 +402,7 @@ export fn hollow(
 ///
 ///    - `rotation.axis` (a 3D point, defaults to the Z axis)
 ///
-///    - `rotation.angle` (number of degrees)
+///    - `rotation.angle`
 ///
 ///    - `rotation.origin` (either "local" i.e. rotate around its own center, "global" i.e. rotate around the scene's center, or a 3D point, defaults to "local")
 ///
@@ -462,7 +462,7 @@ export fn hollow(
 ///     scale = [pow(1.1, exp = i), pow(1.1, exp = i), pow(0.9, exp = i)],
 ///     // Turn by 15 degrees each time.
 ///     rotation = {
-///       angle = 15 * i,
+///       angle = 15deg * i,
 ///       origin = "local",
 ///     }
 ///   }
@@ -498,7 +498,7 @@ export fn hollow(
 ///   return {
 ///     translate = [0, 0, -i * width],
 ///     rotation = {
-///       angle = 90 * i,
+///       angle = 90deg * i,
 ///       // Rotate around the overall scene's origin.
 ///       origin = "global",
 ///     }
@@ -539,7 +539,7 @@ export fn hollow(
 ///   // Transform functions can return multiple transforms. They'll be applied in order.
 ///   return [
 ///     { translate = [30 * i, 0, 0] },
-///     { rotation = { angle = 45 * i } },
+///     { rotation = { angle = 45deg * i } },
 ///   ]
 /// }
 /// startSketchOn(XY)
@@ -943,7 +943,7 @@ export fn subtract(
 /// // Add color to a revolved solid.
 /// sketch001 = startSketchOn(XY)
 ///     |> circle( center = [15, 0], radius = 5 )
-///     |> revolve( angle = 360, axis = Y)
+///     |> revolve( angle = 360deg, axis = Y)
 ///     |> appearance(
 ///         color = '#ff0000',
 ///         metalness = 90,
@@ -1093,9 +1093,9 @@ export fn subtract(
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// pipeHole = startSketchOn(XY)

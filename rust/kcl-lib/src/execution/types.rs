@@ -499,20 +499,6 @@ impl NumericType {
         NumericType::Known(UnitType::Angle(UnitAngle::Degrees))
     }
 
-    pub fn expect_default_length(&self) -> Self {
-        match self {
-            NumericType::Default { len, .. } => NumericType::Known(UnitType::Length(*len)),
-            _ => unreachable!(),
-        }
-    }
-
-    pub fn expect_default_angle(&self) -> Self {
-        match self {
-            NumericType::Default { angle, .. } => NumericType::Known(UnitType::Angle(*angle)),
-            _ => unreachable!(),
-        }
-    }
-
     /// Combine two types when we expect them to be equal, erring on the side of less coercion. To be
     /// precise, only adjusting one number or the other when they are of known types.
     ///
@@ -554,14 +540,9 @@ impl NumericType {
             (at, Any) => (a.n, b.n, at),
             (Any, bt) => (a.n, b.n, bt),
 
-            (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => (a.n, b.n, Unknown),
-
             // Known types and compatible, but needs adjustment.
             (t @ Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => (a.n, l2.adjust_to(b.n, l1).0, t),
             (t @ Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => (a.n, a2.adjust_to(b.n, a1).0, t),
-
-            // Known but incompatible.
-            (Known(_), Known(_)) => (a.n, b.n, Unknown),
 
             // Known and unknown => we assume the known one, possibly with adjustment
             (Known(UnitType::Count), Default { .. }) | (Default { .. }, Known(UnitType::Count)) => {
@@ -570,9 +551,10 @@ impl NumericType {
 
             (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) => (a.n, l2.adjust_to(b.n, l1).0, t),
             (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) => (l1.adjust_to(a.n, l2).0, b.n, t),
-
             (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) => (a.n, a2.adjust_to(b.n, a1).0, t),
             (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) => (a1.adjust_to(a.n, a2).0, b.n, t),
+
+            (Known(_), Known(_)) | (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => (a.n, b.n, Unknown),
         }
     }
 
@@ -851,7 +833,7 @@ impl std::fmt::Display for UnitType {
     }
 }
 
-// TODO called UnitLen so as not to clash with UnitLength in settings)
+// TODO called UnitLen so as not to clash with UnitLength in settings.
 /// A unit of length.
 #[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
