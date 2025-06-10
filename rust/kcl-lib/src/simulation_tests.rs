@@ -6,14 +6,15 @@ use std::{
 use indexmap::IndexMap;
 use insta::rounded_redaction;
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::{ArtifactGraph, Operation};
-#[cfg(feature = "artifact-graph")]
-use crate::modules::ModuleRepr;
 use crate::{
     errors::KclError,
     execution::{EnvironmentRef, ModuleArtifactState},
     ExecOutcome, ExecState, ExecutorContext, ModuleId,
+};
+#[cfg(feature = "artifact-graph")]
+use crate::{
+    execution::{ArtifactGraph, Operation},
+    modules::{ModulePath, ModuleRepr},
 };
 
 mod kcl_samples;
@@ -36,6 +37,9 @@ struct Test {
 }
 
 pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
+
+#[cfg(feature = "artifact-graph")]
+const REPO_ROOT: &str = "../..";
 
 impl Test {
     fn new(name: &str) -> Self {
@@ -61,37 +65,63 @@ impl ExecState {
         self,
         main_ref: EnvironmentRef,
         ctx: &ExecutorContext,
+        project_directory: &Path,
     ) -> (ExecOutcome, IndexMap<String, ModuleArtifactState>) {
-        let module_state = self.to_module_state();
+        let module_state = self.to_module_state(project_directory);
         let outcome = self.into_exec_outcome(main_ref, ctx).await;
         (outcome, module_state)
     }
 
     #[cfg(not(feature = "artifact-graph"))]
-    fn to_module_state(&self) -> IndexMap<String, ModuleArtifactState> {
+    fn to_module_state(&self, _project_directory: &Path) -> IndexMap<String, ModuleArtifactState> {
         Default::default()
     }
 
     /// The keys of the map are the module paths.  Can't use `ModulePath` since
-    /// it needs to be converted to a string to be a JSON object key.
+    /// it needs to be converted to a string to be a JSON object key.  The paths
+    /// need to be relative so that generating locally works in CI.
     #[cfg(feature = "artifact-graph")]
-    fn to_module_state(&self) -> IndexMap<String, ModuleArtifactState> {
+    fn to_module_state(&self, _project_directory: &Path) -> IndexMap<String, ModuleArtifactState> {
+        let project_directory = std::path::Path::new(REPO_ROOT)
+            .canonicalize()
+            .unwrap_or_else(|_| panic!("Failed to canonicalize project directory: {REPO_ROOT}"));
         let mut module_state = IndexMap::new();
         for info in self.modules().values() {
+            let relative_path = relative_module_path(&info.path, &project_directory).unwrap_or_else(|err| {
+                panic!(
+                    "Failed to get relative module path for {:?} in {:?}; caused by {err:?}",
+                    &info.path, project_directory
+                )
+            });
             match &info.repr {
                 ModuleRepr::Root => {
-                    module_state.insert(info.path.to_string(), self.root_module_artifact_state().clone());
+                    module_state.insert(relative_path, self.root_module_artifact_state().clone());
                 }
                 ModuleRepr::Kcl(_, None) => {
-                    module_state.insert(info.path.to_string(), Default::default());
+                    module_state.insert(relative_path, Default::default());
                 }
                 ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts))) => {
-                    module_state.insert(info.path.to_string(), module_artifacts.clone());
+                    module_state.insert(relative_path, module_artifacts.clone());
                 }
                 ModuleRepr::Foreign(_, _) | ModuleRepr::Dummy => {}
             }
         }
         module_state
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+fn relative_module_path(module_path: &ModulePath, abs_project_directory: &Path) -> Result<String, std::io::Error> {
+    match module_path {
+        ModulePath::Main => Ok("main".to_owned()),
+        ModulePath::Local { value: path } => {
+            let abs_path = path.canonicalize()?;
+            abs_path
+                .strip_prefix(abs_project_directory)
+                .map(|p| p.to_string_lossy())
+                .map_err(|_| std::io::Error::other(format!("Failed to strip prefix from module path {abs_path:?}")))
+        }
+        ModulePath::Std { value } => Ok(format!("std::{value}")),
     }
 }
 
@@ -224,7 +254,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     panic!("Step data was empty");
                 }
             }
-            let (outcome, module_state) = exec_state.into_test_exec_outcome(env_ref, &ctx).await;
+            let (outcome, module_state) = exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
 
             let mem_result = catch_unwind(AssertUnwindSafe(|| {
                 assert_snapshot(test, "Variables in memory after executing", || {
@@ -289,7 +319,10 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         } else {
                             Vec::new()
                         };
-                        let module_state = e.exec_state.map(|e| e.to_module_state()).unwrap_or_default();
+                        let module_state = e
+                            .exec_state
+                            .map(|e| e.to_module_state(&test.input_dir))
+                            .unwrap_or_default();
                         assert_artifact_snapshots(test, module_state, global_operations, error.artifact_graph);
                     }
                     err_result.unwrap();
@@ -381,7 +414,15 @@ fn assert_artifact_snapshots(
 
     // The global operations should be a superset of the main module.  But it
     // won't always be a superset of the operations of all modules.
-    let root_string: String = test.entry_point.to_string_lossy().into_owned();
+    let repo_root = std::path::Path::new(REPO_ROOT).canonicalize().unwrap();
+    let root_string: String = test
+        .entry_point
+        .canonicalize()
+        .unwrap_or_else(|_| panic!("Should be able to canonicalize the entry point {:?}", &test.entry_point))
+        .strip_prefix(&repo_root)
+        .expect("Repo root dir should be a prefix of the entry point")
+        .to_string_lossy()
+        .into_owned();
     let main_operations = module_operations
         .get(&root_string)
         .expect("Main module state not found");
