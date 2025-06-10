@@ -23,6 +23,7 @@ import type {
   SourceRange,
   VariableMap,
 } from '@src/lang/wasm'
+import { Coords2d } from '@src/lang/std/sketch'
 
 export interface ModifyAstBase {
   node: Node<Program>
@@ -46,6 +47,7 @@ interface StraightSegmentInput {
   from: [number, number]
   to: [number, number]
   snap?: boolean
+  previousEndTangent?: Coords2d
 }
 
 /** Inputs for arcs, excluding tangentialArc for reasons explain in the

@@ -18,24 +18,26 @@ export function getTangentPointFromPreviousArc(
   ]
 }
 
+export function subVec(a: Coords2d, b: Coords2d): Coords2d {
+  return [a[0] - b[0], a[1] - b[1]]
+}
+
+export function normalizeVec(v: Coords2d): Coords2d {
+  const magnitude = Math.sqrt(v[0] * v[0] + v[1] * v[1])
+  if (magnitude === 0) {
+    return [0, 0]
+  }
+  return [v[0] / magnitude, v[1] / magnitude]
+}
+
 export function closestPointOnRay(
   rayOrigin: Coords2d,
   rayDirection: Coords2d,
   pointToCheck: Coords2d,
   allowNegative = false
 ) {
-  const dirMagnitude = Math.sqrt(
-    rayDirection[0] * rayDirection[0] + rayDirection[1] * rayDirection[1]
-  )
-  const normalizedDir: Coords2d = [
-    rayDirection[0] / dirMagnitude,
-    rayDirection[1] / dirMagnitude,
-  ]
-
-  const originToPoint: Coords2d = [
-    pointToCheck[0] - rayOrigin[0],
-    pointToCheck[1] - rayOrigin[1],
-  ]
+  const normalizedDir = normalizeVec(rayDirection)
+  const originToPoint = subVec(pointToCheck, rayOrigin)
 
   let t =
     originToPoint[0] * normalizedDir[0] + originToPoint[1] * normalizedDir[1]

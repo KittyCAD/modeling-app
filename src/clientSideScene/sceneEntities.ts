@@ -35,7 +35,7 @@ import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { VariableDeclaration } from '@rust/kcl-lib/bindings/VariableDeclaration'
 import type { VariableDeclarator } from '@rust/kcl-lib/bindings/VariableDeclarator'
-import type { SafeArray } from '@src/lib/utils'
+import { normaliseAngle, SafeArray } from '@src/lib/utils'
 import { getAngle, getLength, uuidv4 } from '@src/lib/utils'
 
 import {
@@ -165,7 +165,12 @@ import type { Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
-import { closestPointOnRay, deg2Rad } from '@src/lib/utils2d'
+import {
+  closestPointOnRay,
+  deg2Rad,
+  normalizeVec,
+  subVec,
+} from '@src/lib/utils2d'
 import type {
   SegmentOverlayPayload,
   SketchDetails,
@@ -3023,11 +3028,20 @@ export class SceneEntities {
         return input
       }
 
-      // straight segment is the default
+      // straight segment is the default,
+      // this includes "tangential-arc-to-segment"
+
+      const segments: SafeArray<Group> = Object.values(this.activeSegments) // Using the order in the object feels wrong
+      const currentIndex = segments.indexOf(group)
+      const previousSegment = segments[currentIndex - 1]
+
       return {
         type: 'straight-segment',
         from,
         to: dragTo,
+        previousEndTangent: previousSegment
+          ? findTangentDirection(previousSegment)
+          : undefined,
       }
     }
 
@@ -3953,6 +3967,11 @@ function findTangentDirection(segmentGroup: Group) {
       ) +
       (Math.PI / 2) * (segmentGroup.userData.ccw ? 1 : -1)
     tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
+  } else if (segmentGroup.userData.type === STRAIGHT_SEGMENT) {
+    const to = segmentGroup.userData.to as Coords2d
+    const from = segmentGroup.userData.from as Coords2d
+    tangentDirection = subVec(to, from)
+    tangentDirection = normalizeVec(tangentDirection)
   } else {
     console.warn(
       'Unsupported segment type for tangent direction calculation: ',

@@ -4157,11 +4157,12 @@ const tangentialArcHelpers = {
       .filter((n) => n && n !== ARG_TAG)
 
     if (areArraysEqual(functionArguments, [ARG_ANGLE, ARG_RADIUS])) {
-      // Using length and radius -> convert from, to to the matching length and radius
+      // Using length and radius -> convert "from", "to" to the matching length and radius
       console.log(input)
     } else {
       const argLabel = isAbsolute ? ARG_END_ABSOLUTE : ARG_END
       if (areArraysEqual(functionArguments, [argLabel])) {
+        // Using end or endAbsolute
         const toArrExp = createArrayExpression([
           createLiteral(roundOff(isAbsolute ? to[0] : to[0] - from[0], 2)),
           createLiteral(roundOff(isAbsolute ? to[1] : to[1] - from[1], 2)),
@@ -4169,6 +4170,7 @@ const tangentialArcHelpers = {
 
         mutateKwArg(argLabel, callExpression, toArrExp)
       } else {
+        // Unsupported arguments
         const functionName =
           callExpression.callee.name.name ??
           (isAbsolute ? 'tangentialArcTo' : 'tangentialArc')
