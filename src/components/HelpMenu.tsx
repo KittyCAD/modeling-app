@@ -49,15 +49,12 @@ export function HelpMenu({
   useMenuListener(cb)
 
   return (
-    <Popover className="relative">
+    <Popover className="relative flex items-stretch">
       <Popover.Button
-        className="grid p-0 m-0 border-none rounded-full place-content-center"
+        className="flex items-stretch px-2 py-1 m-0 border-none !bg-chalkboard-110 dark:!bg-chalkboard-80 text-chalkboard-10 rounded-none"
         data-testid="help-button"
       >
-        <CustomIcon
-          name="questionMark"
-          className="rounded-full w-7 h-7 bg-chalkboard-110 dark:bg-chalkboard-80 text-chalkboard-10"
-        />
+        <CustomIcon name="questionMark" className="w-5 h-5" />
         <span className="sr-only">Help and resources</span>
         <Tooltip position="top-right" wrapperClassName="ui-open:hidden">
           Help and resources

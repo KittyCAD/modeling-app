@@ -10,6 +10,7 @@ import { billingActor } from '@src/lib/singletons'
 import { BillingDialog } from '@src/components/BillingDialog'
 import { Popover } from '@headlessui/react'
 import Tooltip from '@src/components/Tooltip'
+import { HelpMenu, HelpMenuContent } from '../HelpMenu'
 
 export const homeDefaultStatusBarItems = ({
   location,
@@ -78,3 +79,10 @@ function BillingStatusBarItem() {
     </Popover>
   )
 }
+
+export const defaultLocalStatusBarItems: StatusBarItemType[] = [
+  {
+    id: 'help',
+    component: HelpMenu,
+  },
+]

@@ -56,15 +56,15 @@ import { isPlaywright } from '@src/lib/isPlaywright'
 import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import { homeDefaultStatusBarItems } from '@src/components/StatusBar/homeDefaultStatusBarItems'
+import {
+  defaultLocalStatusBarItems,
+  homeDefaultStatusBarItems,
+} from '@src/components/StatusBar/homeDefaultStatusBarItems'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
-import {
-  getSelectionTypeDisplayText,
-  getSemanticSelectionType,
-} from './lib/selections'
-import { StatusBarItemType } from './components/StatusBar/statusBarTypes'
+import { getSelectionTypeDisplayText } from '@src/lib/selections'
+import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -286,6 +286,7 @@ export function App() {
               children: 'Currently selected geometry',
             },
           },
+          ...defaultLocalStatusBarItems,
         ]}
       />
     </div>
