@@ -25,7 +25,15 @@ description: Operations executed pattern_linear_in_module.kcl
         "labeledArgs": {}
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
       },
       "sourceRange": []
     },
