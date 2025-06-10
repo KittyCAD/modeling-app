@@ -83,7 +83,13 @@ import type {
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
-import { allLabels, getAngle, getLength, roundOff } from '@src/lib/utils'
+import {
+  allLabels,
+  areArraysEqual,
+  getAngle,
+  getLength,
+  roundOff,
+} from '@src/lib/utils'
 import type { EdgeCutInfo } from '@src/machines/modelingMachine'
 
 const STRAIGHT_SEGMENT_ERR = () =>
@@ -4145,27 +4151,33 @@ const tangentialArcHelpers = {
       )
     }
 
-    const argLabel = isAbsolute ? ARG_END_ABSOLUTE : ARG_END
-    const functionName = isAbsolute ? 'tangentialArcTo' : 'tangentialArc'
+    // All function arguments, except the tag
+    const functionArguments = callExpression.arguments
+      .map((arg) => arg.label?.name)
+      .filter((n) => n && n !== ARG_TAG)
 
-    for (const arg of callExpression.arguments) {
-      if (arg.label?.name !== argLabel && arg.label?.name !== ARG_TAG) {
+    if (areArraysEqual(functionArguments, [ARG_ANGLE, ARG_RADIUS])) {
+      // Using length and radius -> convert from, to to the matching length and radius
+      console.log(input)
+    } else {
+      const argLabel = isAbsolute ? ARG_END_ABSOLUTE : ARG_END
+      if (areArraysEqual(functionArguments, [argLabel])) {
+        const toArrExp = createArrayExpression([
+          createLiteral(roundOff(isAbsolute ? to[0] : to[0] - from[0], 2)),
+          createLiteral(roundOff(isAbsolute ? to[1] : to[1] - from[1], 2)),
+        ])
+
+        mutateKwArg(argLabel, callExpression, toArrExp)
+      } else {
+        const functionName =
+          callExpression.callee.name.name ??
+          (isAbsolute ? 'tangentialArcTo' : 'tangentialArc')
         console.debug(
           `Trying to edit unsupported ${functionName} keyword arguments; skipping`
         )
-        return {
-          modifiedAst: _node,
-          pathToNode,
-        }
       }
     }
 
-    const toArrExp = createArrayExpression([
-      createLiteral(roundOff(isAbsolute ? to[0] : to[0] - from[0], 2)),
-      createLiteral(roundOff(isAbsolute ? to[1] : to[1] - from[1], 2)),
-    ])
-
-    mutateKwArg(argLabel, callExpression, toArrExp)
     return {
       modifiedAst: _node,
       pathToNode,
