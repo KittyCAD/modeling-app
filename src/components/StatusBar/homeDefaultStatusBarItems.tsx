@@ -1,0 +1,80 @@
+import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import type { Location } from 'react-router-dom'
+import { PATHS } from '@src/lib/paths'
+import { APP_VERSION } from '@src/routes/utils'
+import {
+  BillingRemaining,
+  BillingRemainingMode,
+} from '@src/components/BillingRemaining'
+import { billingActor } from '@src/lib/singletons'
+import { BillingDialog } from '@src/components/BillingDialog'
+import { Popover } from '@headlessui/react'
+import Tooltip from '@src/components/Tooltip'
+
+export const homeDefaultStatusBarItems = ({
+  location,
+}: {
+  location: Location
+}): StatusBarItemType[] => [
+  {
+    id: 'version',
+    element: 'externalLink',
+    label: `v${APP_VERSION}`,
+    href: `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`,
+    toolTip: {
+      children: 'View the release notes on GitHub',
+    },
+  },
+  {
+    id: 'telemetry',
+    element: 'link',
+    icon: 'stopwatch',
+    href: `.${PATHS.TELEMETRY}`,
+    'data-testid': 'telemetry-link',
+    label: 'Telemetry',
+    hideLabel: true,
+    toolTip: {
+      children: 'Telemetry',
+    },
+  },
+  {
+    id: 'settings',
+    element: 'link',
+    icon: 'settings',
+    href: `.${PATHS.SETTINGS}${location.pathname.includes(PATHS.FILE) ? '?tab=project' : ''}`,
+    'data-testid': 'settings-link',
+    label: 'Settings',
+  },
+  {
+    id: 'credits',
+    'data-testid': 'settings-link',
+    component: BillingStatusBarItem,
+  },
+]
+
+function BillingStatusBarItem() {
+  return (
+    <Popover className="relative flex items-stretch">
+      <Popover.Button
+        className="m-0 p-0 border-0 flex items-stretch"
+        data-testid="billing-remaining-bar"
+      >
+        <BillingRemaining
+          mode={BillingRemainingMode.ProgressBarFixed}
+          billingActor={billingActor}
+        />
+        <Tooltip
+          position="top"
+          contentClassName="text-xs"
+          hoverOnly
+          wrapperClassName="ui-open:!hidden"
+        >
+          Text-to-CAD credits
+        </Tooltip>
+      </Popover.Button>
+      <Popover.Panel className="absolute left-0 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
+        <BillingDialog billingActor={billingActor} />
+      </Popover.Panel>
+    </Popover>
+  )
+}

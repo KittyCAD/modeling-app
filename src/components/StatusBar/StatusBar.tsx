@@ -38,22 +38,29 @@ function StatusBarItem(
   const tooltipPosition: TooltipProps['position'] =
     props.position === 'middle' ? 'top' : `top-${props.position}`
 
+  // If the consumer used `component`, just render that
+  if ('component' in props) {
+    return props.component({})
+  }
+
   switch (props.element) {
     case 'button':
       return (
         <ActionButton
           Element="button"
           iconStart={
-            props.icon && {
-              icon: props.icon,
-              iconClassName: props.icon === 'loading' ? 'animate-spin' : '',
-              bgClassName: 'bg-transparent dark:bg-transparent',
-            }
+            'icon' in props
+              ? props.icon && {
+                  icon: props.icon,
+                  iconClassName: props.icon === 'loading' ? 'animate-spin' : '',
+                  bgClassName: 'bg-transparent dark:bg-transparent',
+                }
+              : undefined
           }
           className={`${defaultClassNames} ${props.className}`}
           data-testid={props['data-testid']}
         >
-          {props.label && (
+          {'label' in props && props.label && (
             <span className={props.hideLabel ? 'sr-only' : ''}>
               {props.label}
             </span>
@@ -70,16 +77,19 @@ function StatusBarItem(
             as={ActionButton}
             Element="button"
             iconStart={
-              props.icon && {
-                icon: props.icon,
-                iconClassName: props.icon === 'loading' ? 'animate-spin' : '',
-                bgClassName: 'bg-transparent dark:bg-transparent',
-              }
+              'icon' in props
+                ? props.icon && {
+                    icon: props.icon,
+                    iconClassName:
+                      props.icon === 'loading' ? 'animate-spin' : '',
+                    bgClassName: 'bg-transparent dark:bg-transparent',
+                  }
+                : undefined
             }
             className={`${defaultClassNames} ${props.className}`}
             data-testid={props['data-testid']}
           >
-            {props.label && (
+            {'label' in props && props.label && (
               <span className={props.hideLabel ? 'sr-only' : ''}>
                 {props.label}
               </span>
@@ -103,14 +113,14 @@ function StatusBarItem(
           role="tooltip"
           className={`${defaultClassNames} ${props.className}`}
         >
-          {props.icon && (
+          {'icon' in props && props.icon && (
             <ActionIcon
               icon={props.icon}
               iconClassName={props.icon === 'loading' ? 'animate-spin' : ''}
               bgClassName="bg-transparent dark:bg-transparent"
             />
           )}
-          {props.label && (
+          {'label' in props && props.label && (
             <span className={props.hideLabel ? 'sr-only' : ''}>
               {props.label}
             </span>
@@ -126,15 +136,17 @@ function StatusBarItem(
           Element={props.element}
           to={props.href}
           iconStart={
-            props.icon && {
-              icon: props.icon,
-              bgClassName: 'bg-transparent dark:bg-transparent',
-            }
+            'icon' in props
+              ? props.icon && {
+                  icon: props.icon,
+                  bgClassName: 'bg-transparent dark:bg-transparent',
+                }
+              : undefined
           }
           className={`${defaultClassNames} ${props.className}`}
           data-testid={props['data-testid']}
         >
-          {props.label && (
+          {'label' in props && props.label && (
             <span className={props.hideLabel ? 'sr-only' : ''}>
               {props.label}
             </span>
