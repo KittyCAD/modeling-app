@@ -8,7 +8,7 @@ import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import type { ConnectingTypeGroup } from '@src/lang/std/engineConnection'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import type { StatusBarItemType } from './StatusBar/statusBarTypes'
+import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 
 export const NETWORK_HEALTH_TEXT: Record<NetworkHealthState, string> = {
   [NetworkHealthState.Ok]: 'Strong',
