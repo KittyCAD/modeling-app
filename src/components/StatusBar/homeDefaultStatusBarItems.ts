@@ -8,24 +8,33 @@ export const homeDefaultStatusBarItems = ({
 }: {
   location: Location
 }): StatusBarItemType[] => [
-  {
-    id: 'version',
-    element: 'externalLink',
-    label: `v${APP_VERSION}`,
-    href: `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`,
-    toolTip: {
-      children: 'View the release notes on GitHub',
+    {
+      id: 'version',
+      element: 'externalLink',
+      label: `v${APP_VERSION}`,
+      href: `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`,
+      toolTip: {
+        children: 'View the release notes on GitHub',
+      },
     },
-  },
-  {
-    id: 'settings',
-    element: 'link',
-    icon: 'settings',
-    href: `.${PATHS.SETTINGS}${location.pathname.includes(PATHS.FILE) ? '?tab=project' : ''}`,
-    'data-testid': 'settings-link',
-    label: 'Settings',
-    toolTip: {
-      children: 'Settings',
+    {
+      id: 'telemetry',
+      element: 'link',
+      icon: 'stopwatch',
+      href: `.${PATHS.TELEMETRY}`,
+      'data-testid': 'telemetry-link',
+      label: 'Telemetry',
+      hideLabel: true,
+      toolTip: {
+        children: 'Telemetry',
+      },
     },
-  },
-]
+    {
+      id: 'settings',
+      element: 'link',
+      icon: 'settings',
+      href: `.${PATHS.SETTINGS}${location.pathname.includes(PATHS.FILE) ? '?tab=project' : ''}`,
+      'data-testid': 'settings-link',
+      label: 'Settings',
+    },
+  ]
