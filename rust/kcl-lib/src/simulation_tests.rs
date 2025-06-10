@@ -8,10 +8,11 @@ use insta::rounded_redaction;
 
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{ArtifactGraph, Operation};
+#[cfg(feature = "artifact-graph")]
+use crate::modules::ModuleRepr;
 use crate::{
     errors::KclError,
     execution::{EnvironmentRef, ModuleArtifactState},
-    modules::ModuleRepr,
     ExecOutcome, ExecState, ExecutorContext, ModuleId,
 };
 
@@ -66,8 +67,14 @@ impl ExecState {
         (outcome, module_state)
     }
 
+    #[cfg(not(feature = "artifact-graph"))]
+    fn to_module_state(&self) -> IndexMap<String, ModuleArtifactState> {
+        Default::default()
+    }
+
     /// The keys of the map are the module paths.  Can't use `ModulePath` since
     /// it needs to be converted to a string to be a JSON object key.
+    #[cfg(feature = "artifact-graph")]
     fn to_module_state(&self) -> IndexMap<String, ModuleArtifactState> {
         let mut module_state = IndexMap::new();
         for info in self.modules().values() {

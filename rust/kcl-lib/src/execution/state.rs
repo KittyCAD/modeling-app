@@ -56,6 +56,7 @@ pub(super) struct GlobalState {
     pub errors: Vec<CompilationError>,
     #[cfg_attr(not(feature = "artifact-graph"), allow(dead_code))]
     pub artifacts: ArtifactState,
+    #[cfg_attr(not(all(test, feature = "artifact-graph")), expect(dead_code))]
     pub root_module_artifacts: ModuleArtifactState,
 }
 
@@ -270,7 +271,7 @@ impl ExecState {
         self.global.module_infos.get(&id)
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, feature = "artifact-graph"))]
     pub(crate) fn modules(&self) -> &ModuleInfoMap {
         &self.global.module_infos
     }
@@ -280,7 +281,7 @@ impl ExecState {
         &self.global.artifacts.operations
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, feature = "artifact-graph"))]
     pub(crate) fn root_module_artifact_state(&self) -> &ModuleArtifactState {
         &self.global.root_module_artifacts
     }
@@ -615,10 +616,6 @@ impl ModuleArtifactState {
         self.commands.extend(other.commands);
         self.operations.extend(other.operations);
     }
-
-    /// When self is a cached state, extend it with new state.
-    #[cfg(not(all(test, feature = "artifact-graph")))]
-    pub(crate) fn extend(&mut self, _other: ModuleArtifactState) {}
 }
 
 impl ModuleState {
