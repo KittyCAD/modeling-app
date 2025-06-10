@@ -61,10 +61,9 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'Google Chrome',
+      name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        channel: 'chrome',
         contextOptions: {
           /* Chromium is the only one with these permission types */
           permissions: ['clipboard-write', 'clipboard-read'],
@@ -85,10 +84,6 @@ export default defineConfig({
     // {
     //   name: 'firefox',
     //   use: { ...devices['Desktop Firefox'] },
-    // },
-    // {
-    //   name: 'chromium', // compat issue with encoding atm, so we're using the branded 'Google Chrome' instead
-    //   use: { ...devices['Desktop Chrome'] },
     // },
 
     /* Test against mobile viewports. */
