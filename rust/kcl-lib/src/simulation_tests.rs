@@ -354,11 +354,11 @@ fn assert_artifact_snapshots(
     let result1 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Operations executed", || {
             insta::assert_json_snapshot!("ops", module_operations, {
-                "[].*.unlabeledArg.*.value.**[].from[]" => rounded_redaction(3),
-                "[].*.unlabeledArg.*.value.**[].to[]" => rounded_redaction(3),
-                "[].**.value.value" => rounded_redaction(3),
-                "[].*.labeledArgs.*.value.**[].from[]" => rounded_redaction(3),
-                "[].*.labeledArgs.*.value.**[].to[]" => rounded_redaction(3),
+                ".*[].*.unlabeledArg.*.value.**[].from[]" => rounded_redaction(3),
+                ".*[].*.unlabeledArg.*.value.**[].to[]" => rounded_redaction(3),
+                ".*[].**.value.value" => rounded_redaction(3),
+                ".*[].*.labeledArgs.*.value.**[].from[]" => rounded_redaction(3),
+                ".*[].*.labeledArgs.*.value.**[].to[]" => rounded_redaction(3),
                 ".**.sourceRange" => Vec::new(),
                 ".**.functionSourceRange" => Vec::new(),
                 ".**.moduleId" => 0,
@@ -372,10 +372,10 @@ fn assert_artifact_snapshots(
     let result2 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Artifact commands", || {
             insta::assert_json_snapshot!("artifact_commands", module_commands, {
-                "[].command.**.value" => rounded_redaction(3),
-                "[].command.**.x" => rounded_redaction(3),
-                "[].command.**.y" => rounded_redaction(3),
-                "[].command.**.z" => rounded_redaction(3),
+                ".*[].command.**.value" => rounded_redaction(3),
+                ".*[].command.**.x" => rounded_redaction(3),
+                ".*[].command.**.y" => rounded_redaction(3),
+                ".*[].command.**.z" => rounded_redaction(3),
                 ".**.range" => Vec::new(),
             });
         })
