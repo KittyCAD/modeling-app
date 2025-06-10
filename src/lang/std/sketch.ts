@@ -1,4 +1,7 @@
-import { perpendicularDistance } from 'sketch-helpers'
+import {
+  calculateIntersectionOfTwoLines,
+  perpendicularDistance,
+} from 'sketch-helpers'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
@@ -28,6 +31,7 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
+  createLiteralMaybeSuffix,
   createLocalName,
   createPipeExpression,
   createTagDeclarator,
@@ -88,9 +92,11 @@ import {
   areArraysEqual,
   getAngle,
   getLength,
+  normaliseAngle,
   roundOff,
 } from '@src/lib/utils'
 import type { EdgeCutInfo } from '@src/machines/modelingMachine'
+import { distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
 
 const STRAIGHT_SEGMENT_ERR = () =>
   new Error('Invalid input, expected "straight-segment"')
@@ -4158,7 +4164,61 @@ const tangentialArcHelpers = {
 
     if (areArraysEqual(functionArguments, [ARG_ANGLE, ARG_RADIUS])) {
       // Using length and radius -> convert "from", "to" to the matching length and radius
-      console.log(input)
+      const previousEndTangent = input.previousEndTangent
+      if (previousEndTangent) {
+        // Find a circle with these two lines:
+        // - We know "from" and "to" are on the circle, so we can use their perpendicular bisector as the first line
+        // - The second line goes from "from" to the tangentRotated direction
+        // Intersecting these two lines will give us the center of the circle.
+
+        // line 1
+        const midPoint: [number, number] = [
+          (from[0] + to[0]) / 2,
+          (from[1] + to[1]) / 2,
+        ]
+        const dir = subVec(to, from)
+        const perpDir = [-dir[1], dir[0]]
+        const line1PointB: Coords2d = [
+          midPoint[0] + perpDir[0],
+          midPoint[1] + perpDir[1],
+        ]
+
+        // line 2
+        const tangentRotated: Coords2d = [
+          -previousEndTangent[1],
+          previousEndTangent[0],
+        ]
+
+        const center = calculateIntersectionOfTwoLines({
+          line1: [midPoint, line1PointB],
+          line2Point: from,
+          line2Angle: getAngle([0, 0], tangentRotated),
+        })
+        if (isValidNumber(center[0]) && isValidNumber(center[1])) {
+          const radius = distance2d(center, from)
+          const angle1 = getAngle(center, from)
+          const angle2 = getAngle(center, to)
+          const angle = normaliseAngle(angle2 - angle1)
+
+          console.log('radius', radius, 'angle', angle)
+          mutateKwArg(
+            ARG_RADIUS,
+            callExpression,
+            createLiteral(roundOff(radius, 2))
+          )
+          const angleValue = createLiteralMaybeSuffix({
+            value: roundOff(angle, 2),
+            suffix: 'Deg',
+          })
+          if (!err(angleValue)) {
+            mutateKwArg(ARG_ANGLE, callExpression, angleValue)
+          }
+        } else {
+          console.debug('Invalid center calculated for tangential arc')
+        }
+      } else {
+        console.debug('No previous end tangent found, cannot calculate radius')
+      }
     } else {
       const argLabel = isAbsolute ? ARG_END_ABSOLUTE : ARG_END
       if (areArraysEqual(functionArguments, [argLabel])) {

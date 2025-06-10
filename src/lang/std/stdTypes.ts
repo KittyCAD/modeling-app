@@ -23,7 +23,7 @@ import type {
   SourceRange,
   VariableMap,
 } from '@src/lang/wasm'
-import { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/std/sketch'
 
 export interface ModifyAstBase {
   node: Node<Program>

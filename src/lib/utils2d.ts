@@ -30,6 +30,22 @@ export function normalizeVec(v: Coords2d): Coords2d {
   return [v[0] / magnitude, v[1] / magnitude]
 }
 
+export function distance2d(a: Coords2d, b: Coords2d): number {
+  const dx = a[0] - b[0]
+  const dy = a[1] - b[1]
+  return Math.sqrt(dx * dx + dy * dy)
+}
+
+export function isValidNumber(value: number): boolean {
+  return typeof value === 'number' && !Number.isNaN(value) && isFinite(value)
+}
+
+export function rotateVec(v: Coords2d, rad: number): Coords2d {
+  const cos = Math.cos(rad)
+  const sin = Math.sin(rad)
+  return [v[0] * cos - v[1] * sin, v[0] * sin + v[1] * cos]
+}
+
 export function closestPointOnRay(
   rayOrigin: Coords2d,
   rayDirection: Coords2d,

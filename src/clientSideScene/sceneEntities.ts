@@ -35,7 +35,7 @@ import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { VariableDeclaration } from '@rust/kcl-lib/bindings/VariableDeclaration'
 import type { VariableDeclarator } from '@rust/kcl-lib/bindings/VariableDeclarator'
-import { normaliseAngle, SafeArray } from '@src/lib/utils'
+import type { SafeArray } from '@src/lib/utils'
 import { getAngle, getLength, uuidv4 } from '@src/lib/utils'
 
 import {
