@@ -1113,6 +1113,13 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await;
+        #[cfg(all(test, feature = "artifact-graph"))]
+        let exec_result = exec_result.map(|(_, env_ref, _, module_artifacts)| {
+            exec_state.global.root_module_artifacts.extend(module_artifacts);
+            env_ref
+        });
+        #[cfg(not(all(test, feature = "artifact-graph")))]
+        let exec_result = exec_result.map(|(_, env_ref, _, _)| env_ref);
 
         #[cfg(feature = "artifact-graph")]
         {
@@ -1144,10 +1151,7 @@ impl ExecutorContext {
         self.engine.clear_queues().await;
 
         match exec_state.build_artifact_graph(&self.engine, program).await {
-            Ok(_) => exec_result.map(|(_, env_ref, _, module_artifacts)| {
-                exec_state.global.root_module_artifacts.extend(module_artifacts);
-                env_ref
-            }),
+            Ok(_) => exec_result,
             Err(err) => exec_result.and(Err(err)),
         }
     }
