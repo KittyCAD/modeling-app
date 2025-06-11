@@ -2,125 +2,93 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed helix_ccw.kcl
 ---
-[
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
+{
+  "rust/kcl-lib/tests/helix_ccw/input.kcl": [
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
         "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 10.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 2
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "helix",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
-    "labeledArgs": {
-      "angleStart": {
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
         "value": {
-          "type": "Number",
-          "value": 0.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
       },
-      "ccw": {
-        "value": {
-          "type": "Bool",
-          "value": true
-        },
-        "sourceRange": []
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 10.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
       },
-      "cylinder": {
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "helix",
+      "unlabeledArg": {
         "value": {
           "type": "Solid",
           "value": {
@@ -129,36 +97,81 @@ description: Operations executed helix_ccw.kcl
         },
         "sourceRange": []
       },
-      "revolutions": {
-        "value": {
-          "type": "Number",
-          "value": 16.0,
-          "ty": {
-            "type": "Known",
-            "type": "Count"
-          }
+      "labeledArgs": {
+        "angleStart": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
         },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 0
+        "ccw": {
+          "value": {
+            "type": "Bool",
+            "value": true
+          },
+          "sourceRange": []
         },
-        {
-          "type": "VariableDeclarationDeclaration"
+        "cylinder": {
+          "value": {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          "sourceRange": []
         },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 3
+        "revolutions": {
+          "value": {
+            "type": "Number",
+            "value": 16.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
         }
-      ]
-    },
-    "sourceRange": []
-  }
-]
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
+}

@@ -17,6 +17,7 @@ import {
   kclManager,
   sceneInfra,
 } from '@src/lib/singletons'
+import { KclManagerEvents } from '@src/lang/KclSingleton'
 import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -46,6 +47,9 @@ export const EngineStream = (props: {
   const settings = useSettings()
   const { state: modelingMachineState, send: modelingMachineActorSend } =
     useModelingContext()
+  const [streamIdleMode, setStreamIdleMode] = useState(
+    settings.app.streamIdleMode.current
+  )
 
   const { file, project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const last = useRef<number>(Date.now())
@@ -83,7 +87,9 @@ export const EngineStream = (props: {
     cameraOrbit: settings.modeling.cameraOrbit.current,
   }
 
-  const streamIdleMode = settings.app.streamIdleMode.current
+  useEffect(() => {
+    setStreamIdleMode(settings.app.streamIdleMode.current)
+  }, [settings.app.streamIdleMode.current])
 
   useEffect(() => {
     // Will cause a useEffect loop if not checked for.
@@ -143,11 +149,25 @@ export const EngineStream = (props: {
   }
 
   useEffect(() => {
+    // When execution takes a long time, it's most likely a user will want to
+    // come back and be able to say, export the model. The issue with this is
+    // that means the application should NOT go into idle mode for a long time!
+    // We've picked 8 hours to coincide with the typical length of a workday.
+    const onLongExecution = () => {
+      setStreamIdleMode(1000 * 60 * 60 * 8)
+    }
+
+    kclManager.addEventListener(KclManagerEvents.LongExecution, onLongExecution)
+
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.SceneReady,
       play
     )
     return () => {
+      kclManager.removeEventListener(
+        KclManagerEvents.LongExecution,
+        onLongExecution
+      )
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.SceneReady,
         play

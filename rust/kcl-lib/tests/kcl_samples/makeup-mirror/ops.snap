@@ -2,1245 +2,94 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed makeup-mirror.kcl
 ---
-[
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "offsetPlane",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 0.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
+{
+  "public/kcl-samples/makeup-mirror/main.kcl": [
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "hingeFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "x": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
             },
-            "angle": {
-              "type": "Degrees"
-            }
+            "sourceRange": []
+          },
+          "y": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "z": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
           }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        },
-        {
-          "type": "CallKwUnlabeledArg"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "offsetPlane",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
       },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 24.5,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        },
-        {
-          "type": "CallKwUnlabeledArg"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "offsetPlane",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 49.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        },
-        {
-          "type": "CallKwUnlabeledArg"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "offsetPlane",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 24.5,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        },
-        {
-          "type": "CallKwUnlabeledArg"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "offsetPlane",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 49.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        },
-        {
-          "type": "CallKwUnlabeledArg"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "offsetPlane",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 49.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        },
-        {
-          "type": "CallKwUnlabeledArg"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "offsetPlane",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 73.5,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        },
-        {
-          "type": "CallKwUnlabeledArg"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 24.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 2
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 24.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 2
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 24.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 2
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 24.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 2
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 24.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 2
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 24.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 2
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 24.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 2
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "hingeFn",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
       "labeledArgs": {
-        "x": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "y": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "z": {
+        "offset": {
           "value": {
             "type": "Number",
             "value": 0.0,
@@ -1256,36 +105,104 @@ description: Operations executed makeup-mirror.kcl
           },
           "sourceRange": []
         }
-      }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 11
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "hingeFn",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
       "labeledArgs": {
-        "x": {
+        "length": {
           "value": {
             "type": "Number",
-            "value": 0.0,
+            "value": 24.0,
             "ty": {
               "type": "Default",
               "len": {
@@ -1297,24 +214,130 @@ description: Operations executed makeup-mirror.kcl
             }
           },
           "sourceRange": []
-        },
-        "y": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
           },
-          "sourceRange": []
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "hingeFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "x": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "y": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "z": {
+            "value": {
+              "type": "Number",
+              "value": 24.5,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 12
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "z": {
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
           "value": {
             "type": "Number",
             "value": 24.5,
@@ -1330,36 +353,104 @@ description: Operations executed makeup-mirror.kcl
           },
           "sourceRange": []
         }
-      }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 12
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "hingeFn",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
       "labeledArgs": {
-        "x": {
+        "length": {
           "value": {
             "type": "Number",
-            "value": 0.0,
+            "value": 24.0,
             "ty": {
               "type": "Default",
               "len": {
@@ -1371,24 +462,130 @@ description: Operations executed makeup-mirror.kcl
             }
           },
           "sourceRange": []
-        },
-        "y": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
           },
-          "sourceRange": []
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "hingeFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "x": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "y": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "z": {
+            "value": {
+              "type": "Number",
+              "value": 49.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "z": {
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
           "value": {
             "type": "Number",
             "value": 49.0,
@@ -1404,36 +601,104 @@ description: Operations executed makeup-mirror.kcl
           },
           "sourceRange": []
         }
-      }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 13
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "hingeFn",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
       "labeledArgs": {
-        "x": {
+        "length": {
           "value": {
             "type": "Number",
-            "value": 170.0,
+            "value": 24.0,
             "ty": {
               "type": "Default",
               "len": {
@@ -1445,24 +710,130 @@ description: Operations executed makeup-mirror.kcl
             }
           },
           "sourceRange": []
-        },
-        "y": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
           },
-          "sourceRange": []
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "hingeFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "x": {
+            "value": {
+              "type": "Number",
+              "value": 170.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "y": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "z": {
+            "value": {
+              "type": "Number",
+              "value": 24.5,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "z": {
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
           "value": {
             "type": "Number",
             "value": 24.5,
@@ -1478,36 +849,104 @@ description: Operations executed makeup-mirror.kcl
           },
           "sourceRange": []
         }
-      }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 14
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "hingeFn",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
       "labeledArgs": {
-        "x": {
+        "length": {
           "value": {
             "type": "Number",
-            "value": 170.0,
+            "value": 24.0,
             "ty": {
               "type": "Default",
               "len": {
@@ -1519,24 +958,130 @@ description: Operations executed makeup-mirror.kcl
             }
           },
           "sourceRange": []
-        },
-        "y": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
           },
-          "sourceRange": []
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "hingeFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "x": {
+            "value": {
+              "type": "Number",
+              "value": 170.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "y": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "z": {
+            "value": {
+              "type": "Number",
+              "value": 49.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 15
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "z": {
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
           "value": {
             "type": "Number",
             "value": 49.0,
@@ -1552,36 +1097,104 @@ description: Operations executed makeup-mirror.kcl
           },
           "sourceRange": []
         }
-      }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 15
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "hingeFn",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
       "labeledArgs": {
-        "x": {
+        "length": {
           "value": {
             "type": "Number",
-            "value": 170.0,
+            "value": 24.0,
             "ty": {
               "type": "Default",
               "len": {
@@ -1593,24 +1206,130 @@ description: Operations executed makeup-mirror.kcl
             }
           },
           "sourceRange": []
-        },
-        "y": {
-          "value": {
-            "type": "Number",
-            "value": -170.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
           },
-          "sourceRange": []
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "hingeFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "x": {
+            "value": {
+              "type": "Number",
+              "value": 170.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "y": {
+            "value": {
+              "type": "Number",
+              "value": -170.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "z": {
+            "value": {
+              "type": "Number",
+              "value": 49.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 16
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "z": {
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
           "value": {
             "type": "Number",
             "value": 49.0,
@@ -1626,36 +1345,104 @@ description: Operations executed makeup-mirror.kcl
           },
           "sourceRange": []
         }
-      }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 16
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "hingeFn",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
       "labeledArgs": {
-        "x": {
+        "length": {
           "value": {
             "type": "Number",
-            "value": 170.0,
+            "value": 24.0,
             "ty": {
               "type": "Default",
               "len": {
@@ -1667,24 +1454,130 @@ description: Operations executed makeup-mirror.kcl
             }
           },
           "sourceRange": []
-        },
-        "y": {
-          "value": {
-            "type": "Number",
-            "value": -170.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
           },
-          "sourceRange": []
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "hingeFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "x": {
+            "value": {
+              "type": "Number",
+              "value": 170.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "y": {
+            "value": {
+              "type": "Number",
+              "value": -170.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "z": {
+            "value": {
+              "type": "Number",
+              "value": 73.5,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 17
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "z": {
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
           "value": {
             "type": "Number",
             "value": 73.5,
@@ -1700,250 +1593,104 @@ description: Operations executed makeup-mirror.kcl
           },
           "sourceRange": []
         }
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 17
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 18
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 18
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
         "value": {
-          "artifactId": "[uuid]"
-        }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
-    "labeledArgs": {
-      "length": {
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
         "value": {
-          "type": "Number",
-          "value": 170.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 18
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 2
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
       },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 170.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 18
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 2
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "armFn",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
       "labeledArgs": {
-        "altitude": {
+        "length": {
           "value": {
             "type": "Number",
-            "value": 36.5,
+            "value": 24.0,
             "ty": {
               "type": "Default",
               "len": {
@@ -1955,11 +1702,554 @@ description: Operations executed makeup-mirror.kcl
             }
           },
           "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "armFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "altitude": {
+            "value": {
+              "type": "Number",
+              "value": 36.5,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "offset": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "plane": {
+            "value": {
+              "type": "Plane",
+              "artifact_id": "[uuid]"
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 18
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 170.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 18
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "armFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "altitude": {
+            "value": {
+              "type": "Number",
+              "value": 61.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "offset": {
+            "value": {
+              "type": "Number",
+              "value": 170.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "plane": {
+            "value": {
+              "type": "Plane",
+              "artifact_id": "[uuid]"
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 18
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 170.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 18
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "mirrorFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "altitude": {
+            "value": {
+              "type": "Number",
+              "value": 188.5,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "gestellD": {
+            "value": {
+              "type": "Number",
+              "value": 1.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "gestellR": {
+            "value": {
+              "type": "Number",
+              "value": 90.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "offsetX": {
+            "value": {
+              "type": "Number",
+              "value": 170.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "offsetY": {
+            "value": {
+              "type": "Number",
+              "value": 170.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "plane": {
+            "value": {
+              "type": "Plane",
+              "artifact_id": "[uuid]"
+            },
+            "sourceRange": []
+          },
+          "radius": {
+            "value": {
+              "type": "Number",
+              "value": 85.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          },
+          "tiefe": {
+            "value": {
+              "type": "Number",
+              "value": 10.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 22
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
         "offset": {
           "value": {
             "type": "Number",
-            "value": 0.0,
+            "value": 165.0,
             "ty": {
               "type": "Default",
               "len": {
@@ -1971,435 +2261,94 @@ description: Operations executed makeup-mirror.kcl
             }
           },
           "sourceRange": []
-        },
-        "plane": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
           },
-          "sourceRange": []
-        }
-      }
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 19
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "armFn",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
       "labeledArgs": {
-        "altitude": {
-          "value": {
-            "type": "Number",
-            "value": 61.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "offset": {
-          "value": {
-            "type": "Number",
-            "value": 170.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "plane": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 20
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 21
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "offsetPlane",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 165.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 21
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "CallKwUnlabeledArg"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 10.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 21
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 1
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 1
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 10.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 21
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 2
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 6
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "mirrorFn",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "altitude": {
-          "value": {
-            "type": "Number",
-            "value": 188.5,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "gestellD": {
-          "value": {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "gestellR": {
-          "value": {
-            "type": "Number",
-            "value": 90.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "offsetX": {
-          "value": {
-            "type": "Number",
-            "value": 170.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "offsetY": {
-          "value": {
-            "type": "Number",
-            "value": 170.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "plane": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "radius": {
-          "value": {
-            "type": "Number",
-            "value": 85.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "tiefe": {
+        "length": {
           "value": {
             "type": "Number",
             "value": 10.0,
@@ -2415,52 +2364,116 @@ description: Operations executed makeup-mirror.kcl
           },
           "sourceRange": []
         }
-      }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 22
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
         },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 10.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
         }
-      ]
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 6
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
-  }
-]
+    {
+      "type": "GroupEnd"
+    }
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
+}

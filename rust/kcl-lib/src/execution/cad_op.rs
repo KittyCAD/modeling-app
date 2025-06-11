@@ -2,6 +2,8 @@ use indexmap::IndexMap;
 use serde::Serialize;
 
 use super::{types::NumericType, ArtifactId, KclValue};
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::{Node, Program};
 use crate::{ModuleId, NodePath, SourceRange};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
@@ -37,32 +39,31 @@ pub enum Operation {
     GroupEnd,
 }
 
-/// A way for sorting the operations in the timeline.  This is used to sort
-/// operations in the timeline and to determine the order of operations.
-/// We use this for the multi-threaded snapshotting, so that we can have deterministic
-/// output.
-impl PartialOrd for Operation {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(match (self, other) {
-            (Self::StdLibCall { source_range: a, .. }, Self::StdLibCall { source_range: b, .. }) => a.cmp(b),
-            (Self::StdLibCall { source_range: a, .. }, Self::GroupBegin { source_range: b, .. }) => a.cmp(b),
-            (Self::StdLibCall { .. }, Self::GroupEnd) => std::cmp::Ordering::Less,
-            (Self::GroupBegin { source_range: a, .. }, Self::GroupBegin { source_range: b, .. }) => a.cmp(b),
-            (Self::GroupBegin { source_range: a, .. }, Self::StdLibCall { source_range: b, .. }) => a.cmp(b),
-            (Self::GroupBegin { .. }, Self::GroupEnd) => std::cmp::Ordering::Less,
-            (Self::GroupEnd, Self::StdLibCall { .. }) => std::cmp::Ordering::Greater,
-            (Self::GroupEnd, Self::GroupBegin { .. }) => std::cmp::Ordering::Greater,
-            (Self::GroupEnd, Self::GroupEnd) => std::cmp::Ordering::Equal,
-        })
-    }
-}
-
 impl Operation {
     /// If the variant is `StdLibCall`, set the `is_error` field.
     pub(crate) fn set_std_lib_call_is_error(&mut self, is_err: bool) {
         match self {
             Self::StdLibCall { ref mut is_error, .. } => *is_error = is_err,
             Self::GroupBegin { .. } | Self::GroupEnd => {}
+        }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn fill_node_paths(&mut self, program: &Node<Program>, cached_body_items: usize) {
+        match self {
+            Operation::StdLibCall {
+                node_path,
+                source_range,
+                ..
+            }
+            | Operation::GroupBegin {
+                node_path,
+                source_range,
+                ..
+            } => {
+                node_path.fill_placeholder(program, cached_body_items, *source_range);
+            }
+            Operation::GroupEnd => {}
         }
     }
 }

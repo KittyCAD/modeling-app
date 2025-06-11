@@ -2,4 +2,17 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed bad_units_in_annotation.kcl
 ---
-[]
+{
+  "rust/kcl-lib/tests/bad_units_in_annotation/input.kcl": [],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
+}

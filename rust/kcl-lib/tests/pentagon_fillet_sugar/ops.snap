@@ -2,376 +2,53 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed pentagon_fillet_sugar.kcl
 ---
-[
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 4
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
+{
+  "rust/kcl-lib/tests/pentagon_fillet_sugar/input.kcl": [
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
         "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 200.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 4
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 5
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "face": {
-        "value": {
-          "type": "TagIdentifier",
-          "value": "c",
+          "type": "Plane",
           "artifact_id": "[uuid]"
         },
         "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 5
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "ReturnStatementArg"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
       },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "face": {
-        "value": {
-          "type": "TagIdentifier",
-          "value": "a",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 5
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "FunctionExpressionBody"
-        },
-        {
-          "type": "FunctionExpressionBodyItem",
-          "index": 0
-        },
-        {
-          "type": "ReturnStatementArg"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "circl",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "c",
-            "artifact_id": "[uuid]"
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
           },
-          "sourceRange": []
-        },
-        "x": {
-          "value": {
-            "type": "Number",
-            "value": -200.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
+          {
+            "type": "VariableDeclarationDeclaration"
           },
-          "sourceRange": []
-        }
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 6
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 100.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
           }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 7
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 1
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "fillet",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
+        ]
       },
       "sourceRange": []
     },
-    "labeledArgs": {
-      "radius": {
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
         "value": {
-          "type": "Number",
-          "value": 5.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
       },
-      "tags": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "TagIdentifier",
-              "value": "arc_tag",
-              "artifact_id": "[uuid]"
-            },
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            }
-          ]
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 7
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 2
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "circl",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
       "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "a",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "x": {
+        "length": {
           "value": {
             "type": "Number",
             "value": 200.0,
@@ -387,145 +64,481 @@ description: Operations executed pentagon_fillet_sugar.kcl
           },
           "sourceRange": []
         }
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 8
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 5
+          }
+        ]
       },
       "sourceRange": []
     },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 100.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 9
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 1
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "fillet",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 5.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
-      "tags": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "circl",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "face": {
+            "value": {
               "type": "TagIdentifier",
-              "value": "arc_tag",
+              "value": "c",
               "artifact_id": "[uuid]"
             },
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            }
-          ]
+            "sourceRange": []
+          },
+          "x": {
+            "value": {
+              "type": "Number",
+              "value": -200.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
         },
         "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 9
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        },
-        {
-          "type": "PipeBodyItem",
-          "index": 2
+      },
+      "labeledArgs": {
+        "face": {
+          "value": {
+            "type": "TagIdentifier",
+            "value": "c",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
         }
-      ]
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ReturnStatementArg"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
-  }
-]
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 100.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "fillet",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "radius": {
+          "value": {
+            "type": "Number",
+            "value": 5.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "tags": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "TagIdentifier",
+                "value": "arc_tag",
+                "artifact_id": "[uuid]"
+              },
+              {
+                "type": "Uuid",
+                "value": "[uuid]"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "circl",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "face": {
+            "value": {
+              "type": "TagIdentifier",
+              "value": "a",
+              "artifact_id": "[uuid]"
+            },
+            "sourceRange": []
+          },
+          "x": {
+            "value": {
+              "type": "Number",
+              "value": 200.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "face": {
+          "value": {
+            "type": "TagIdentifier",
+            "value": "a",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ReturnStatementArg"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 100.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "fillet",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "radius": {
+          "value": {
+            "type": "Number",
+            "value": 5.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "tags": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "TagIdentifier",
+                "value": "arc_tag",
+                "artifact_id": "[uuid]"
+              },
+              {
+                "type": "Uuid",
+                "value": "[uuid]"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
+}

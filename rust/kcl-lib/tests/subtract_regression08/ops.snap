@@ -2,75 +2,66 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed subtract_regression08.kcl
 ---
-[
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 0
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 2
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "sweep",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
+{
+  "rust/kcl-lib/tests/subtract_regression08/input.kcl": [
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
         "value": {
-          "artifactId": "[uuid]"
-        }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
-    "labeledArgs": {
-      "path": {
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "sweep",
+      "unlabeledArg": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -79,98 +70,98 @@ description: Operations executed subtract_regression08.kcl
         },
         "sourceRange": []
       },
-      "sectional": {
+      "labeledArgs": {
+        "path": {
+          "value": {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          "sourceRange": []
+        },
+        "sectional": {
+          "value": {
+            "type": "Bool",
+            "value": true
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
         "value": {
-          "type": "Bool",
-          "value": true
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 4
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 5
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 7
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "sweep",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
         "value": {
-          "artifactId": "[uuid]"
-        }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
-    "labeledArgs": {
-      "path": {
+    {
+      "type": "StdLibCall",
+      "name": "sweep",
+      "unlabeledArg": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -179,44 +170,44 @@ description: Operations executed subtract_regression08.kcl
         },
         "sourceRange": []
       },
-      "sectional": {
-        "value": {
-          "type": "Bool",
-          "value": true
+      "labeledArgs": {
+        "path": {
+          "value": {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          "sourceRange": []
         },
-        "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 9
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
+        "sectional": {
+          "value": {
+            "type": "Bool",
+            "value": true
+          },
+          "sourceRange": []
         }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "subtract",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
-    "labeledArgs": {
-      "tools": {
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
         "value": {
           "type": "Solid",
           "value": {
@@ -224,22 +215,44 @@ description: Operations executed subtract_regression08.kcl
           }
         },
         "sourceRange": []
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 10
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          "sourceRange": []
         }
-      ]
-    },
-    "sourceRange": []
-  }
-]
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
+}

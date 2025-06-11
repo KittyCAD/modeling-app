@@ -2,47 +2,17 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed kw_fn_unlabeled_but_has_label.kcl
 ---
-[
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "add",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "x": {
-          "value": {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        }
-      }
-    },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 1
-        },
-        {
-          "type": "VariableDeclarationDeclaration"
-        },
-        {
-          "type": "VariableDeclarationInit"
-        }
-      ]
-    },
-    "sourceRange": []
-  }
-]
+{
+  "rust/kcl-lib/tests/kw_fn_unlabeled_but_has_label/input.kcl": [],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
+}

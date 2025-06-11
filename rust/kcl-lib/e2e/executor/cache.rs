@@ -301,12 +301,6 @@ extrude001 = extrude(profile001, length = 4)
     let second = &result.last().unwrap().2;
 
     assert!(
-        first.artifact_commands.len() < second.artifact_commands.len(),
-        "Second should have all the artifact commands of the first, plus more. first={:?}, second={:?}",
-        first.artifact_commands.len(),
-        second.artifact_commands.len()
-    );
-    assert!(
         first.artifact_graph.len() < second.artifact_graph.len(),
         "Second should have all the artifacts of the first, plus more. first={:?}, second={:?}",
         first.artifact_graph.len(),
