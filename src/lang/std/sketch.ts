@@ -92,7 +92,6 @@ import {
   areArraysEqual,
   getAngle,
   getLength,
-  normaliseAngle,
   roundOff,
 } from '@src/lib/utils'
 import type { EdgeCutInfo } from '@src/machines/modelingMachine'
