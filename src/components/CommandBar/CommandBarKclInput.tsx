@@ -289,7 +289,8 @@ function CommandBarKclInput({
       <div className="flex items-baseline gap-4 mx-4">
         <input
           type="checkbox"
-          data-testid="create-new-variable-checkbox"
+          id="variable-checkbox"
+          data-testid="cmd-bar-variable-checkbox"
           checked={createNewVariable}
           onChange={(e) => {
             setCreateNewVariable(e.target.checked)
@@ -297,7 +298,7 @@ function CommandBarKclInput({
           className="bg-chalkboard-10 dark:bg-chalkboard-80"
         />
         <label
-          htmlFor="create-new-variable-checkbox"
+          htmlFor="variable-checkbox"
           className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
         >
           Create new variable
