@@ -187,8 +187,7 @@ export const fileLoader: LoaderFunction = async (
     if (
       !replacedWorkspaceThisSession &&
       isInTemporaryWorkspace === true &&
-      codeBeforeDemo !== '' &&
-      codeBeforeDemo !== undefined
+      (codeBeforeDemo !== '' || codeBeforeDemo !== undefined)
     ) {
       localStorage.setItem(LOCAL_STORAGE_TEMPORARY_WORKSPACE, '')
       localStorage.setItem(LOCAL_STORAGE_OLD_CODE, '')

@@ -228,3 +228,4 @@ export const LOCAL_STORAGE_TEMPORARY_WORKSPACE = 'temporaryWorkspace'
 export const LOCAL_STORAGE_OLD_CODE = 'oldCode'
 export const LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION =
   'replacedWorkspaceThisSession'
+export const LOCAL_STORAGE_INSTANCES_OPEN = 'instancesOpen'

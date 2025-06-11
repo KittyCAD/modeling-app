@@ -49,8 +49,39 @@ initPromise
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
-// Used primarily for samples on web.
-localStorage.setItem(LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION, '')
+const BROADCAST_CHANNEL_MAIN = 'main'
+enum BroadcastChannelMainEvents {
+  Ping = 'ping',
+  Pong = 'pong',
+}
+
+// Only used for Share and Sample URLS on web.
+if (!isDesktop()) {
+  const oldReplacedWorkspaceThisSession =
+    localStorage.getItem(LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION) ?? ''
+  localStorage.setItem(LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION, '')
+
+  // Use the Broadcast Channel API for notifying subsequent tab or window
+  // instances of the application.
+  const bc = new BroadcastChannel(BROADCAST_CHANNEL_MAIN)
+
+  bc.onmessage = (event) => {
+    switch (event.data) {
+      case BroadcastChannelMainEvents.Ping:
+        bc.postMessage(BroadcastChannelMainEvents.Pong)
+        break
+      case BroadcastChannelMainEvents.Pong:
+        // Restore the old value if there are any other instances out there.
+        localStorage.setItem(
+          LOCAL_STORAGE_REPLACED_WORKSPACE_THIS_SESSION,
+          oldReplacedWorkspaceThisSession
+        )
+        break
+    }
+  }
+
+  bc.postMessage(BroadcastChannelMainEvents.Ping)
+}
 
 root.render(
   <HotkeysProvider>
