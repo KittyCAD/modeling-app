@@ -582,15 +582,15 @@ impl ExecutorContext {
                     Err(e) => Err(e),
                 }
             }
-            ModuleRepr::Foreign(_, Some(imported)) => Ok(Some(imported.clone())),
+            ModuleRepr::Foreign(_, Some((imported, _))) => Ok(imported.clone()),
             ModuleRepr::Foreign(geom, cached) => {
-                let result = super::import::send_to_engine(geom.clone(), self)
+                let result = super::import::send_to_engine(geom.clone(), exec_state, self)
                     .await
                     .map(|geom| Some(KclValue::ImportedGeometry(geom)));
 
                 match result {
                     Ok(val) => {
-                        *cached = val.clone();
+                        *cached = Some((val.clone(), exec_state.mod_local.artifacts.clone()));
                         Ok(val)
                     }
                     Err(e) => Err(e),

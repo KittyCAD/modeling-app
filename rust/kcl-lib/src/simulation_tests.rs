@@ -103,7 +103,10 @@ impl ExecState {
                 ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts))) => {
                     module_state.insert(relative_path, module_artifacts.clone());
                 }
-                ModuleRepr::Foreign(_, _) | ModuleRepr::Dummy => {}
+                ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
+                    module_state.insert(relative_path, module_artifacts.clone());
+                }
+                ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
             }
         }
         module_state

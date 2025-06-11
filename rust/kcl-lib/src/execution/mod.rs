@@ -836,6 +836,8 @@ impl ExecutorContext {
                 let module_id = *module_id;
                 let module_path = module_path.clone();
                 let source_range = SourceRange::from(import_stmt);
+                // Clone before mutating.
+                let module_exec_state = exec_state.clone();
 
                 self.add_import_module_ops(
                     exec_state,
@@ -847,7 +849,6 @@ impl ExecutorContext {
                 );
 
                 let repr = repr.clone();
-                let exec_state = exec_state.clone();
                 let exec_ctxt = self.clone();
                 let results_tx = results_tx.clone();
 
@@ -867,11 +868,13 @@ impl ExecutorContext {
                             result.map(|val| ModuleRepr::Kcl(program.clone(), Some(val)))
                         }
                         ModuleRepr::Foreign(geom, _) => {
-                            let result = crate::execution::import::send_to_engine(geom.clone(), exec_ctxt)
+                            let result = crate::execution::import::send_to_engine(geom.clone(), exec_state, exec_ctxt)
                                 .await
                                 .map(|geom| Some(KclValue::ImportedGeometry(geom)));
 
-                            result.map(|val| ModuleRepr::Foreign(geom.clone(), val))
+                            result.map(|val| {
+                                ModuleRepr::Foreign(geom.clone(), Some((val, exec_state.mod_local.artifacts.clone())))
+                            })
                         }
                         ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
                             format!("Module {module_path} not found in universe"),
@@ -883,7 +886,7 @@ impl ExecutorContext {
                 #[cfg(target_arch = "wasm32")]
                 {
                     wasm_bindgen_futures::spawn_local(async move {
-                        let mut exec_state = exec_state;
+                        let mut exec_state = module_exec_state;
                         let exec_ctxt = exec_ctxt;
 
                         let result = exec_module(
@@ -905,7 +908,7 @@ impl ExecutorContext {
                 #[cfg(not(target_arch = "wasm32"))]
                 {
                     set.spawn(async move {
-                        let mut exec_state = exec_state;
+                        let mut exec_state = module_exec_state;
                         let exec_ctxt = exec_ctxt;
 
                         let result = exec_module(
@@ -996,6 +999,18 @@ impl ExecutorContext {
         Ok((universe, root_imports))
     }
 
+    #[cfg(not(feature = "artifact-graph"))]
+    fn add_import_module_ops(
+        &self,
+        _exec_state: &mut ExecState,
+        _program: &crate::Program,
+        _module_id: ModuleId,
+        _module_path: &ModulePath,
+        _source_range: SourceRange,
+        _universe_map: &UniverseMap,
+    ) {
+    }
+
     #[cfg(feature = "artifact-graph")]
     fn add_import_module_ops(
         &self,
@@ -1043,18 +1058,6 @@ impl ExecutorContext {
                 // We don't want to display stdlib in the Feature Tree.
             }
         }
-    }
-
-    #[cfg(not(feature = "artifact-graph"))]
-    fn add_import_module_ops(
-        &self,
-        _exec_state: &mut ExecState,
-        _program: &crate::Program,
-        _module_id: ModuleId,
-        _module_path: &ModulePath,
-        _source_range: SourceRange,
-        _universe_map: &UniverseMap,
-    ) {
     }
 
     /// Perform the execution of a program.  Accept all possible parameters and

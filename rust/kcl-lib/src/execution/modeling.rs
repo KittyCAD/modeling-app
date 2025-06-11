@@ -36,6 +36,14 @@ impl<'a> ModelingCmdMeta<'a> {
         }
     }
 
+    pub fn with_id(ctx: &'a ExecutorContext, source_range: SourceRange, id: Uuid) -> Self {
+        ModelingCmdMeta {
+            ctx,
+            source_range,
+            id: Some(id),
+        }
+    }
+
     pub fn from_args_id(args: &'a Args, id: Uuid) -> Self {
         ModelingCmdMeta {
             ctx: &args.ctx,
@@ -129,6 +137,23 @@ impl ExecState {
             command: cmd.clone(),
         });
         meta.ctx.engine.send_modeling_cmd(id, meta.source_range, &cmd).await
+    }
+
+    /// Send the modeling cmd async and don't wait for the response.
+    /// Add it to our list of async commands.
+    pub(crate) async fn async_modeling_cmd(
+        &mut self,
+        mut meta: ModelingCmdMeta<'_>,
+        cmd: &ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        let id = meta.id(self.id_generator());
+        #[cfg(feature = "artifact-graph")]
+        self.push_command(ArtifactCommand {
+            cmd_id: id,
+            range: meta.source_range,
+            command: cmd.clone(),
+        });
+        meta.ctx.engine.async_modeling_cmd(id, meta.source_range, cmd).await
     }
 
     /// Force flush the batch queue.

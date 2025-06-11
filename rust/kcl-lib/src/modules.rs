@@ -135,7 +135,7 @@ pub enum ModuleRepr {
         Node<Program>,
         Option<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState)>,
     ),
-    Foreign(PreImportedGeometry, Option<KclValue>),
+    Foreign(PreImportedGeometry, Option<(Option<KclValue>, ModuleArtifactState)>),
     Dummy,
 }
 
