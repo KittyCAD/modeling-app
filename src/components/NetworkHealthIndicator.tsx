@@ -79,6 +79,9 @@ export const useNetworkHealthStatus = (): StatusBarItemType => {
 
   return {
     id: 'network-health',
+    'data-testid': `network-toggle-${
+      overallState === NetworkHealthState.Ok ? 'ok' : 'other'
+    }`,
     label: `Network health (${NETWORK_HEALTH_TEXT[overallState]})`,
     hideLabel: true,
     element: 'popover',
