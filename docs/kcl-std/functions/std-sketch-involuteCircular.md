@@ -43,11 +43,11 @@ a = 10
 b = 14
 startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> involuteCircular(startRadius = a, endRadius = b, angle = 60)
+  |> involuteCircular(startRadius = a, endRadius = b, angle = 60deg)
   |> involuteCircular(
        startRadius = a,
        endRadius = b,
-       angle = 60,
+       angle = 60deg,
        reverse = true,
      )
 

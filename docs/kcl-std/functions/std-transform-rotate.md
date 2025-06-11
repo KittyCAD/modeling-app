@@ -72,9 +72,9 @@ rotation.
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 // Create a hole for the pipe.
@@ -98,9 +98,9 @@ sweepSketch = startSketchOn(XY)
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 // Create a hole for the pipe.
@@ -124,9 +124,9 @@ sweepSketch = startSketchOn(XY)
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 // Create a hole for the pipe.
@@ -137,7 +137,7 @@ sweepSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 2)
   |> subtract2d(tool = pipeHole)
   |> sweep(path = sweepPath)
-  |> rotate(axis = Z, angle = 90)
+  |> rotate(axis = Z, angle = 90deg)
 
 ```
 
@@ -150,7 +150,7 @@ sweepSketch = startSketchOn(XY)
 import "tests/inputs/cube.sldprt" as cube
 
 cube
-  |> rotate(axis = [0, 0, 1.0], angle = 9)
+  |> rotate(axis = [0, 0, 1.0], angle = 9deg)
 
 ```
 
@@ -163,9 +163,9 @@ cube
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 // Create a hole for the pipe.
@@ -176,7 +176,7 @@ sweepSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 2)
   |> subtract2d(tool = pipeHole)
   |> sweep(path = sweepPath)
-  |> rotate(axis = [0, 0, 1.0], angle = 90)
+  |> rotate(axis = [0, 0, 1.0], angle = 90deg)
 
 ```
 
@@ -199,13 +199,13 @@ circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 sketch002 = startSketchOn(YZ)
 sweepPath = startProfile(sketch002, at = [0, 0])
   |> yLine(length = 231.81)
-  |> tangentialArc(radius = 80, angle = -90)
+  |> tangentialArc(radius = 80, angle = -90deg)
   |> xLine(length = 384.93)
 
 parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
 
 // Rotate the sweeps.
-rotate(parts, axis = [0, 0, 1.0], angle = 90)
+rotate(parts, axis = [0, 0, 1.0], angle = 90deg)
 
 ```
 
@@ -228,7 +228,7 @@ profile001 = square()
 
 profile002 = square()
   |> translate(x = 0, y = 0, z = 20)
-  |> rotate(axis = [0, 0, 1.0], angle = 45)
+  |> rotate(axis = [0, 0, 1.0], angle = 45deg)
 
 loft([profile001, profile002])
 

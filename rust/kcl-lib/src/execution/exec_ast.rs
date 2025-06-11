@@ -1156,7 +1156,7 @@ impl Node<BinaryExpression> {
                 KclValue::Number { value: l / r, meta, ty }
             }
             BinaryOperator::Mod => {
-                let (l, r, ty) = NumericType::combine_div(left, right);
+                let (l, r, ty) = NumericType::combine_mod(left, right);
                 self.warn_on_unknown(&ty, "Modulo of", exec_state);
                 KclValue::Number { value: l % r, meta, ty }
             }
