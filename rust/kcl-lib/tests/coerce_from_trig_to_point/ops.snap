@@ -1,9 +1,38 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Operations executed error_with_point_shows_numeric_units.kcl
+description: Operations executed coerce_from_trig_to_point.kcl
 ---
 {
-  "rust/kcl-lib/tests/error_with_point_shows_numeric_units/input.kcl": [],
+  "rust/kcl-lib/tests/coerce_from_trig_to_point/input.kcl": [
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],
