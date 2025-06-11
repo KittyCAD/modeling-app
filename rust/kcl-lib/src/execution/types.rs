@@ -2342,10 +2342,10 @@ d = cos(30)
         let result = parse_execute(program).await.unwrap();
         assert!(result.exec_state.errors().is_empty());
 
-        assert_value_and_type("a", &result, 1.0, NumericType::count());
+        assert_value_and_type("a", &result, 1.0, NumericType::default());
         assert_value_and_type("b", &result, 3.0, NumericType::default());
-        assert_value_and_type("c", &result, 1.0, NumericType::count());
-        assert_value_and_type("d", &result, 1.0, NumericType::count());
+        assert_value_and_type("c", &result, 1.0, NumericType::default());
+        assert_value_and_type("d", &result, 1.0, NumericType::default());
     }
 
     #[tokio::test(flavor = "multi_thread")]

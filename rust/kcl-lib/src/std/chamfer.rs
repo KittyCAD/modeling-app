@@ -7,7 +7,10 @@ use kittycad_modeling_cmds as kcmc;
 use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, Solid},
+    execution::{
+        types::RuntimeType, ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta,
+        Solid,
+    },
     parsing::ast::types::TagNode,
     std::{fillet::EdgeReference, Args},
 };
@@ -52,20 +55,21 @@ async fn inner_chamfer(
         };
 
         let id = exec_state.next_uuid();
-        args.batch_end_cmd(
-            id,
-            ModelingCmd::from(mcmd::Solid3dFilletEdge {
-                edge_id: None,
-                edge_ids: vec![edge_id],
-                extra_face_ids: vec![],
-                strategy: Default::default(),
-                object_id: solid.id,
-                radius: LengthUnit(length.to_mm()),
-                tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
-                cut_type: CutType::Chamfer,
-            }),
-        )
-        .await?;
+        exec_state
+            .batch_end_cmd(
+                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmd::from(mcmd::Solid3dFilletEdge {
+                    edge_id: None,
+                    edge_ids: vec![edge_id],
+                    extra_face_ids: vec![],
+                    strategy: Default::default(),
+                    object_id: solid.id,
+                    radius: LengthUnit(length.to_mm()),
+                    tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
+                    cut_type: CutType::Chamfer,
+                }),
+            )
+            .await?;
 
         solid.edge_cuts.push(EdgeCut::Chamfer {
             id,

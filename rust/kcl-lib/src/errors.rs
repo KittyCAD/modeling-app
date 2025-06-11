@@ -135,8 +135,10 @@ pub struct KclErrorWithOutputs {
     pub non_fatal: Vec<CompilationError>,
     #[cfg(feature = "artifact-graph")]
     pub operations: Vec<Operation>,
+    // TODO: Remove this field.  Doing so breaks the ts-rs output for some
+    // reason.
     #[cfg(feature = "artifact-graph")]
-    pub artifact_commands: Vec<ArtifactCommand>,
+    pub _artifact_commands: Vec<ArtifactCommand>,
     #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
     pub filenames: IndexMap<ModuleId, ModulePath>,
@@ -162,7 +164,7 @@ impl KclErrorWithOutputs {
             #[cfg(feature = "artifact-graph")]
             operations,
             #[cfg(feature = "artifact-graph")]
-            artifact_commands,
+            _artifact_commands: artifact_commands,
             #[cfg(feature = "artifact-graph")]
             artifact_graph,
             filenames,
@@ -177,7 +179,7 @@ impl KclErrorWithOutputs {
             #[cfg(feature = "artifact-graph")]
             operations: Default::default(),
             #[cfg(feature = "artifact-graph")]
-            artifact_commands: Default::default(),
+            _artifact_commands: Default::default(),
             #[cfg(feature = "artifact-graph")]
             artifact_graph: Default::default(),
             filenames: Default::default(),
