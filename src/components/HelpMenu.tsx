@@ -1,6 +1,5 @@
 import { Popover } from '@headlessui/react'
-import { type NavigateFunction, useLocation } from 'react-router-dom'
-
+import { useLocation, useNavigate } from 'react-router-dom'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
@@ -21,11 +20,8 @@ const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
 )
 
-export function HelpMenu({
-  navigate = () => {},
-}: {
-  navigate?: NavigateFunction
-}) {
+export function HelpMenu() {
+  const navigate = useNavigate()
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
 

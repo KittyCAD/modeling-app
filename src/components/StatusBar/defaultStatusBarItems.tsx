@@ -83,6 +83,7 @@ function BillingStatusBarItem() {
 export const defaultLocalStatusBarItems: StatusBarItemType[] = [
   {
     id: 'help',
+    'data-testid': 'help-button',
     component: HelpMenu,
   },
 ]
