@@ -249,6 +249,7 @@ export function platform(): Platform {
 
   // navigator.platform is deprecated, but many browsers still support it, and
   // it's more accurate than userAgent and userAgentData in Playwright.
+  console.log('navigator.platform:', navigator.platform)
   if (
     navigator.platform?.indexOf('Mac') === 0 ||
     navigator.platform?.indexOf('iPhone') === 0 ||
@@ -271,10 +272,12 @@ export function platform(): Platform {
     'platform' in navigator.userAgentData
   ) {
     userAgentDataPlatform = navigator.userAgentData.platform
+    console.log('navigator.userAgentData.platform:', userAgentDataPlatform)
     if (userAgentDataPlatform === 'macOS') return 'macos'
     if (userAgentDataPlatform === 'Windows') return 'windows'
   }
 
+  console.log('navigator.userAgent:', navigator.userAgent)
   if (navigator.userAgent.indexOf('Mac') !== -1) {
     return 'macos'
   } else if (navigator.userAgent.indexOf('Win') !== -1) {
