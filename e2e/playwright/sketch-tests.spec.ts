@@ -1453,8 +1453,6 @@ solid001 = subtract([extrude001], tools = [extrude002])
     scene,
     cmdBar,
   }) => {
-    const u = await getUtils(page)
-
     const viewportSize = { width: 1500, height: 750 }
     await page.setBodyDimensions(viewportSize)
 
