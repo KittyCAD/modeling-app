@@ -4,7 +4,6 @@ import { defineConfig, devices } from '@playwright/test'
 const platform = os.platform() // 'linux' (Ubuntu), 'darwin' (macOS), 'win32' (Windows)
 
 let workers: number | string
-let userAgent: string | undefined
 
 if (process.env.E2E_WORKERS) {
   workers = process.env.E2E_WORKERS.includes('%')
@@ -15,18 +14,13 @@ if (process.env.E2E_WORKERS) {
 } else {
   // On CI: adjust based on OS
   switch (platform) {
-    case 'darwin':
-      workers = '75%' // Slightly conservative for GUI-based OSes
-      userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)' // only beginning for platform detection
-      break
-    case 'win32':
-      workers = '75%' // Slightly conservative for GUI-based OSes
-      userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' // only beginning for platform detection
-      break
     case 'linux':
+      workers = '100%' // CI Linux runners are generally beefier
+      break
+    case 'darwin':
+    case 'win32':
     default:
-      workers = '100%' // Fallback for unknown platforms
-      userAgent = 'Mozilla/5.0 (X11; Linux x86_64)' // only beginning for platform detection
+      workers = '75%' // Slightly conservative for GUI-based OSes
       break
   }
 }
@@ -57,9 +51,6 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://localhost:3000',
-
-    /* Make sure to set the user agent for the browser context, see #7401 why it's needed*/
-    userAgent: userAgent,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'retain-on-failure',
