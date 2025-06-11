@@ -6,27 +6,27 @@ KCL Engine error
 
   × engine: The Zoo engine cannot handle this 3D union yet.  Please report
   │ this as an issue
-     ╭─[106:6]
- 105 │           ])
- 106 │ ╭──▶   |> union([
- 107 │ ││          %,
- 108 │ ││          heatSetInsertSupport(plane = XY, at = [heatSetInsertOffsets.x, -heatSetInsertOffsets.y])
- 109 │ ├──▶      ])
+     ╭─[110:6]
+ 109 │           ])
+ 110 │ ╭──▶   |> union([
+ 111 │ ││          %,
+ 112 │ ││          heatSetInsertSupport(plane = XY, at = [-heatSetInsertOffsets.x, heatSetInsertOffsets.y])
+ 113 │ ├──▶      ])
      · ╰───── tests/user_reported_union_bug/input.kcl
      · ╰───── tests/user_reported_union_bug/input.kcl
- 110 │        |> union([
+ 114 │        |> union([
      ╰────
   ╰─▶ KCL Engine error
       
         × engine: The Zoo engine cannot handle this 3D union yet.  Please
         │ report this as an issue
-           ╭─[106:6]
-       105 │          ])
-       106 │ ╭─▶   |> union([
-       107 │ │          %,
-       108 │ │          heatSetInsertSupport(plane = XY, at =
-      [heatSetInsertOffsets.x, -heatSetInsertOffsets.y])
-       109 │ ├─▶      ])
+           ╭─[110:6]
+       109 │          ])
+       110 │ ╭─▶   |> union([
+       111 │ │          %,
+       112 │ │          heatSetInsertSupport(plane = XY, at =
+      [-heatSetInsertOffsets.x, heatSetInsertOffsets.y])
+       113 │ ├─▶      ])
            · ╰──── tests/user_reported_union_bug/input.kcl
-       110 │       |> union([
+       114 │       |> union([
            ╰────
