@@ -2,25 +2,39 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_constant.kcl
 ---
-[
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "ModuleInstance",
-      "name": "export_constant.kcl",
-      "moduleId": 0
+{
+  "rust/kcl-lib/tests/import_constant/export_constant.kcl": [],
+  "rust/kcl-lib/tests/import_constant/input.kcl": [
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "export_constant.kcl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "nodePath": {
-      "steps": [
-        {
-          "type": "ProgramBodyItem",
-          "index": 0
-        }
-      ]
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  }
-]
+    {
+      "type": "GroupEnd"
+    }
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
+}

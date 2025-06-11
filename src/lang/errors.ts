@@ -13,7 +13,6 @@ import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
-import type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
@@ -28,7 +27,6 @@ export class KCLError extends Error {
   kclBacktrace: BacktraceItem[]
   nonFatal: CompilationError[]
   operations: Operation[]
-  artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
   filenames: { [x: number]: ModulePath | undefined }
   defaultPlanes: DefaultPlanes | null
@@ -40,7 +38,6 @@ export class KCLError extends Error {
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
-    artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
     defaultPlanes: DefaultPlanes | null
@@ -52,7 +49,6 @@ export class KCLError extends Error {
     this.kclBacktrace = kclBacktrace
     this.nonFatal = nonFatal
     this.operations = operations
-    this.artifactCommands = artifactCommands
     this.artifactGraph = artifactGraph
     this.filenames = filenames
     this.defaultPlanes = defaultPlanes
@@ -67,7 +63,6 @@ export class KCLLexicalError extends KCLError {
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
-    artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
     defaultPlanes: DefaultPlanes | null
@@ -79,7 +74,6 @@ export class KCLLexicalError extends KCLError {
       kclBacktrace,
       nonFatal,
       operations,
-      artifactCommands,
       artifactGraph,
       filenames,
       defaultPlanes
@@ -95,7 +89,6 @@ export class KCLInternalError extends KCLError {
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
-    artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
     defaultPlanes: DefaultPlanes | null
@@ -107,7 +100,6 @@ export class KCLInternalError extends KCLError {
       kclBacktrace,
       nonFatal,
       operations,
-      artifactCommands,
       artifactGraph,
       filenames,
       defaultPlanes
@@ -123,7 +115,6 @@ export class KCLSyntaxError extends KCLError {
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
-    artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
     defaultPlanes: DefaultPlanes | null
@@ -135,7 +126,6 @@ export class KCLSyntaxError extends KCLError {
       kclBacktrace,
       nonFatal,
       operations,
-      artifactCommands,
       artifactGraph,
       filenames,
       defaultPlanes
@@ -151,7 +141,6 @@ export class KCLSemanticError extends KCLError {
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
-    artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
     defaultPlanes: DefaultPlanes | null
@@ -163,7 +152,6 @@ export class KCLSemanticError extends KCLError {
       kclBacktrace,
       nonFatal,
       operations,
-      artifactCommands,
       artifactGraph,
       filenames,
       defaultPlanes
@@ -179,7 +167,6 @@ export class KCLTypeError extends KCLError {
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
-    artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
     defaultPlanes: DefaultPlanes | null
@@ -191,7 +178,6 @@ export class KCLTypeError extends KCLError {
       kclBacktrace,
       nonFatal,
       operations,
-      artifactCommands,
       artifactGraph,
       filenames,
       defaultPlanes
@@ -207,7 +193,6 @@ export class KCLIoError extends KCLError {
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
-    artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
     defaultPlanes: DefaultPlanes | null
@@ -219,7 +204,6 @@ export class KCLIoError extends KCLError {
       kclBacktrace,
       nonFatal,
       operations,
-      artifactCommands,
       artifactGraph,
       filenames,
       defaultPlanes
@@ -235,7 +219,6 @@ export class KCLUnexpectedError extends KCLError {
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
-    artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
     defaultPlanes: DefaultPlanes | null
@@ -247,7 +230,6 @@ export class KCLUnexpectedError extends KCLError {
       kclBacktrace,
       nonFatal,
       operations,
-      artifactCommands,
       artifactGraph,
       filenames,
       defaultPlanes
@@ -263,7 +245,6 @@ export class KCLValueAlreadyDefined extends KCLError {
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
-    artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
     defaultPlanes: DefaultPlanes | null
@@ -275,7 +256,6 @@ export class KCLValueAlreadyDefined extends KCLError {
       kclBacktrace,
       nonFatal,
       operations,
-      artifactCommands,
       artifactGraph,
       filenames,
       defaultPlanes
@@ -291,7 +271,6 @@ export class KCLUndefinedValueError extends KCLError {
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
     operations: Operation[],
-    artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
     defaultPlanes: DefaultPlanes | null
@@ -303,7 +282,6 @@ export class KCLUndefinedValueError extends KCLError {
       kclBacktrace,
       nonFatal,
       operations,
-      artifactCommands,
       artifactGraph,
       filenames,
       defaultPlanes
@@ -327,7 +305,6 @@ export function lspDiagnosticsToKclErrors(
           'unexpected',
           message,
           [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, 0],
-          [],
           [],
           [],
           [],
