@@ -1210,7 +1210,7 @@ impl Node<BinaryExpression> {
             // TODO suggest how to fix this
             exec_state.warn(CompilationError::err(
                 self.as_source_range(),
-                format!("{} numbers which have unknown or incompatible units.", verb),
+                format!("{} numbers which have unknown or incompatible units.\nYou can probably fix this error by specifying the units using type asciption, e.g., `len: number(mm)` or `(a * b): number(deg)`.", verb),
             ));
         }
     }
@@ -1782,7 +1782,7 @@ arr = [0]: [string]
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce an array of `number` (with type `[any; 1]`) to type `[string]`"),
+                .contains("could not coerce an array of `number` with 1 value (with type `[any; 1]`) to type `[string]`"),
             "Expected error but found {err:?}"
         );
 

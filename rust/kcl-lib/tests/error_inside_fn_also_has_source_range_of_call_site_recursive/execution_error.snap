@@ -6,7 +6,7 @@ KCL Semantic error
 
   × semantic: The input argument of `startSketchOn` requires a value with type
   │ `Solid` or a value with type `Plane` (`Solid | Plane`), but found a value
-  │ with type `string`
+  │ with type `string`.
    ╭─[3:9]
  2 │     fn someNestedFunction(@something2) {
  3 │         startSketchOn(something2)
@@ -28,7 +28,7 @@ KCL Semantic error
   │   
   │     × semantic: The input argument of `startSketchOn` requires a value
   │     │ with type `Solid` or a value with type `Plane` (`Solid | Plane`),
-  │     │ but found a value with type `string`
+  │     │ but found a value with type `string`.
   │      ╭─[3:23]
   │    2 │     fn someNestedFunction(@something2) {
   │    3 │         startSketchOn(something2)
@@ -41,7 +41,7 @@ KCL Semantic error
   │   
   │     × semantic: The input argument of `startSketchOn` requires a value
   │     │ with type `Solid` or a value with type `Plane` (`Solid | Plane`),
-  │     │ but found a value with type `string`
+  │     │ but found a value with type `string`.
   │      ╭─[3:9]
   │    2 │     fn someNestedFunction(@something2) {
   │    3 │         startSketchOn(something2)
@@ -54,7 +54,7 @@ KCL Semantic error
       
         × semantic: The input argument of `startSketchOn` requires a value
         │ with type `Solid` or a value with type `Plane` (`Solid | Plane`),
-        │ but found a value with type `string`
+        │ but found a value with type `string`.
          ╭─[6:5]
        5 │
        6 │     someNestedFunction(something)

@@ -560,7 +560,13 @@ fn type_err_str(expected: &Type, found: &KclValue) -> String {
         format!("{found_human} (with type {})", found_ty)
     };
 
-    format!("{expected_str}, but found {found_str}")
+    let mut result = format!("{expected_str}, but found {found_str}.");
+
+    if found.is_unknown_number() {
+        result.push_str("\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type asciption, e.g., `len: number(mm)` or `(a * b): number(deg)`.");
+    }
+
+    result
 }
 
 fn type_check_params_kw(
@@ -948,7 +954,7 @@ msg2 = makeMessage(prefix = 1, suffix = 3)"#;
         let err = parse_execute(program).await.unwrap_err();
         assert_eq!(
             err.message(),
-            "prefix requires a value with type `string`, but found a value with type `number`"
+            "prefix requires a value with type `string`, but found a value with type `number`.\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type asciption, e.g., `len: number(mm)` or `(a * b): number(deg)`."
         )
     }
 }

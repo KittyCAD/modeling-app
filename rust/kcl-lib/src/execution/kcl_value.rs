@@ -589,6 +589,13 @@ impl KclValue {
         })
     }
 
+    pub fn is_unknown_number(&self) -> bool {
+        match self {
+            KclValue::Number { ty, .. } => !ty.is_fully_specified(),
+            _ => false,
+        }
+    }
+
     pub fn value_str(&self) -> Option<String> {
         match self {
             KclValue::Bool { value, .. } => Some(format!("{value}")),

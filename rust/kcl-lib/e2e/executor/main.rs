@@ -1232,7 +1232,7 @@ secondSketch = startSketchOn(part001, face = '')
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
         err.message(),
-        "face requires a value with type `tag`, but found a value with type `string`"
+        "face requires a value with type `tag`, but found a value with type `string`."
     );
 }
 
@@ -1965,7 +1965,7 @@ someFunction('INVALID')
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
         err.message(),
-        "The input argument of `startSketchOn` requires a value with type `Solid` or a value with type `Plane` (`Solid | Plane`), but found a value with type `string`"
+        "The input argument of `startSketchOn` requires a value with type `Solid` or a value with type `Plane` (`Solid | Plane`), but found a value with type `string`."
     );
     assert_eq!(
         err.source_ranges(),
