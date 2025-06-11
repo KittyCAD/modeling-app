@@ -8,7 +8,7 @@ layout: manual
 Compute the tangent of a number.
 
 ```kcl
-tan(@num: number(Angle)): number(_)
+tan(@num: number(Angle)): number
 ```
 
 
@@ -21,7 +21,7 @@ tan(@num: number(Angle)): number(_)
 
 ### Returns
 
-[`number(_)`](/docs/kcl-std/types/std-types-number) - A number.
+[`number`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples

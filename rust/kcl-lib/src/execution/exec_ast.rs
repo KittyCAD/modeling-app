@@ -11,8 +11,8 @@ use crate::{
         memory,
         state::ModuleState,
         types::{NumericType, PrimitiveType, RuntimeType},
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, PlaneType, StatementKind,
-        TagIdentifier,
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta, ModuleArtifactState,
+        PlaneType, StatementKind, TagIdentifier,
     },
     fmt,
     modules::{ModuleId, ModulePath, ModuleRepr},
@@ -83,7 +83,7 @@ impl ExecutorContext {
         preserve_mem: bool,
         module_id: ModuleId,
         path: &ModulePath,
-    ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
+    ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState), KclError> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
         let mut local_state = ModuleState::new(path.clone(), exec_state.stack().memory.clone(), Some(module_id));
@@ -108,13 +108,16 @@ impl ExecutorContext {
         } else {
             exec_state.mut_stack().pop_env()
         };
-        if !preserve_mem {
+        let module_artifacts = if !preserve_mem {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-        }
+            local_state.artifacts
+        } else {
+            Default::default()
+        };
 
         crate::log::log(format!("leave {path}"));
 
-        result.map(|result| (result, env_ref, local_state.module_exports))
+        result.map(|result| (result, env_ref, local_state.module_exports, module_artifacts))
     }
 
     /// Execute an AST's program.
@@ -450,12 +453,12 @@ impl ExecutorContext {
 
         if matches!(body_type, BodyType::Root) {
             // Flush the batch queue.
-            self.engine
+            exec_state
                 .flush_batch(
+                    ModelingCmdMeta::new(self, SourceRange::new(program.end, program.end, program.module_id)),
                     // True here tells the engine to flush all the end commands as well like fillets
                     // and chamfers where the engine would otherwise eat the ID of the segments.
                     true,
-                    SourceRange::new(program.end, program.end, program.module_id),
                 )
                 .await?;
         }
@@ -535,12 +538,12 @@ impl ExecutorContext {
 
         let result = match &mut repr {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
-            ModuleRepr::Kcl(_, Some((_, env_ref, items))) => Ok((*env_ref, items.clone())),
+            ModuleRepr::Kcl(_, Some((_, env_ref, items, _))) => Ok((*env_ref, items.clone())),
             ModuleRepr::Kcl(program, cache) => self
                 .exec_module_from_ast(program, module_id, &path, exec_state, source_range, false)
                 .await
-                .map(|(val, er, items)| {
-                    *cache = Some((val, er, items.clone()));
+                .map(|(val, er, items, module_artifacts)| {
+                    *cache = Some((val, er, items.clone(), module_artifacts.clone()));
                     (er, items)
                 }),
             ModuleRepr::Foreign(geom, _) => Err(KclError::new_semantic(KclErrorDetails::new(
@@ -566,28 +569,28 @@ impl ExecutorContext {
 
         let result = match &mut repr {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
-            ModuleRepr::Kcl(_, Some((val, _, _))) => Ok(val.clone()),
+            ModuleRepr::Kcl(_, Some((val, _, _, _))) => Ok(val.clone()),
             ModuleRepr::Kcl(program, cached_items) => {
                 let result = self
                     .exec_module_from_ast(program, module_id, &path, exec_state, source_range, false)
                     .await;
                 match result {
-                    Ok((val, env, items)) => {
-                        *cached_items = Some((val.clone(), env, items));
+                    Ok((val, env, items, module_artifacts)) => {
+                        *cached_items = Some((val.clone(), env, items, module_artifacts));
                         Ok(val)
                     }
                     Err(e) => Err(e),
                 }
             }
-            ModuleRepr::Foreign(_, Some(imported)) => Ok(Some(imported.clone())),
+            ModuleRepr::Foreign(_, Some((imported, _))) => Ok(imported.clone()),
             ModuleRepr::Foreign(geom, cached) => {
-                let result = super::import::send_to_engine(geom.clone(), self)
+                let result = super::import::send_to_engine(geom.clone(), exec_state, self)
                     .await
                     .map(|geom| Some(KclValue::ImportedGeometry(geom)));
 
                 match result {
                     Ok(val) => {
-                        *cached = val.clone();
+                        *cached = Some((val.clone(), exec_state.mod_local.artifacts.clone()));
                         Ok(val)
                     }
                     Err(e) => Err(e),
@@ -609,7 +612,7 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         source_range: SourceRange,
         preserve_mem: bool,
-    ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
+    ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState), KclError> {
         exec_state.global.mod_loader.enter_module(path);
         let result = self
             .exec_module_body(program, exec_state, preserve_mem, module_id, path)

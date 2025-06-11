@@ -15,7 +15,10 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{annotations, typed_path::TypedPath, types::UnitLen, ExecState, ExecutorContext, ImportedGeometry},
+    execution::{
+        annotations, typed_path::TypedPath, types::UnitLen, ExecState, ExecutorContext, ImportedGeometry,
+        ModelingCmdMeta,
+    },
     fs::FileSystem,
     parsing::ast::types::{Annotation, Node},
     source_range::SourceRange,
@@ -257,15 +260,22 @@ pub struct PreImportedGeometry {
     pub source_range: SourceRange,
 }
 
-pub async fn send_to_engine(pre: PreImportedGeometry, ctxt: &ExecutorContext) -> Result<ImportedGeometry, KclError> {
+pub async fn send_to_engine(
+    pre: PreImportedGeometry,
+    exec_state: &mut ExecState,
+    ctxt: &ExecutorContext,
+) -> Result<ImportedGeometry, KclError> {
     let imported_geometry = ImportedGeometry::new(
         pre.id,
         pre.command.files.iter().map(|f| f.path.to_string()).collect(),
         vec![pre.source_range.into()],
     );
 
-    ctxt.engine
-        .async_modeling_cmd(pre.id, pre.source_range, &ModelingCmd::from(pre.command.clone()))
+    exec_state
+        .async_modeling_cmd(
+            ModelingCmdMeta::with_id(ctxt, pre.source_range, pre.id),
+            &ModelingCmd::from(pre.command.clone()),
+        )
         .await?;
 
     Ok(imported_geometry)
