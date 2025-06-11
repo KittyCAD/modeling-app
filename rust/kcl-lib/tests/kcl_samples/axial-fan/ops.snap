@@ -280,6 +280,50 @@ description: Operations executed axial-fan.kcl
       "sourceRange": []
     },
     {
+      "type": "VariableDeclaration",
+      "name": "housingMiddleLength",
+      "value": {
+        "type": "Number",
+        "value": 40.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "housingMiddleRadius",
+      "value": {
+        "type": "Number",
+        "value": 39.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1654,11 +1698,178 @@ description: Operations executed axial-fan.kcl
       "sourceRange": []
     }
   ],
-  "public/kcl-samples/axial-fan/parameters.kcl": [],
+  "public/kcl-samples/axial-fan/parameters.kcl": [
+    {
+      "type": "VariableDeclaration",
+      "name": "fanSize",
+      "value": {
+        "type": "Number",
+        "value": 120.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "fanHeight",
+      "value": {
+        "type": "Number",
+        "value": 25.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "mountingHoleSpacing",
+      "value": {
+        "type": "Number",
+        "value": 105.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "mountingHoleSize",
+      "value": {
+        "type": "Number",
+        "value": 4.5,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
   "std::appearance": [],
   "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
+  "std::math": [
+    {
+      "type": "VariableDeclaration",
+      "name": "PI",
+      "value": {
+        "type": "Number",
+        "value": 3.142,
+        "ty": {
+          "type": "Unknown"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "E",
+      "value": {
+        "type": "Number",
+        "value": 2.718,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "TAU",
+      "value": {
+        "type": "Number",
+        "value": 6.283,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::prelude": [
+    {
+      "type": "VariableDeclaration",
+      "name": "START",
+      "value": {
+        "type": "String",
+        "value": "start"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "END",
+      "value": {
+        "type": "String",
+        "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
   "std::sketch": [],
   "std::solid": [],
   "std::sweep": [],
