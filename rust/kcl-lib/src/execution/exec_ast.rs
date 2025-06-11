@@ -6,6 +6,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations,
+        cad_op::OpKclValue,
         fn_call::Args,
         kcl_value::{FunctionSource, TypeDef},
         memory,
@@ -332,7 +333,7 @@ impl ExecutorContext {
                     if rhs.show_variable_in_feature_tree() {
                         exec_state.push_op(Operation::VariableDeclaration {
                             name: var_name.clone(),
-                            value: rhs.clone(),
+                            value: OpKclValue::from(&rhs),
                             visibility: variable_declaration.visibility,
                             node_path: NodePath::placeholder(),
                             source_range,

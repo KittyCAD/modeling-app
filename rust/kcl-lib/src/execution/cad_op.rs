@@ -32,7 +32,7 @@ pub enum Operation {
         /// The variable name.
         name: String,
         /// The value of the variable.
-        value: KclValue,
+        value: OpKclValue,
         /// The visibility modifier of the variable, e.g. `export`.  `Default`
         /// means there is no visibility modifier.
         visibility: ItemVisibility,
