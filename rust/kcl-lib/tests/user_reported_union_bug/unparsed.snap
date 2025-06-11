@@ -16,13 +16,12 @@ socketNut = { radius = 38 / 2 }
 cutoutHole = { length = 82 }
 nozzleW = 0.4
 
-// hsi = heat set insert
-hsi = {
+heatSetInsert = {
   diameter = 5.4 + nozzleW,
   supportLength = 4,
   supportThickness = 2
 }
-hsiOffsets = {
+heatSetInsertOffsets = {
   x = (3in + 7in / 16) / 2,
   y = 1in / 2
 }
@@ -78,17 +77,17 @@ panelCutout = oval(
   radius = socketNut.radius,
 )
 
-fn hsiHole(sketch, at) {
-  return circle(sketch, center = at, diameter = hsi.diameter)
+fn heatSetInsertHole(sketch, at) {
+  return circle(sketch, center = at, diameter = heatSetInsert.diameter)
 }
 
-fn hsiSupport(plane, at) {
+fn heatSetInsertSupport(plane, at) {
   return startSketchOn(plane)
-    |> circle(center = at, diameter = hsi.diameter + hsi.supportThickness)
+    |> circle(center = at, diameter = heatSetInsert.diameter + heatSetInsert.supportThickness)
     |> subtract2d(tool = [
-         circle(center = at, diameter = hsi.diameter)
+         circle(center = at, diameter = heatSetInsert.diameter)
        ])
-    |> extrude(length = hsi.supportLength)
+    |> extrude(length = heatSetInsert.supportLength)
 }
 
 lidW = jacks.width + extraRoom
@@ -102,26 +101,74 @@ lid = roundedSquare(
 )
 
 lidWithCutout = subtract2d(lid, tool = panelCutout)
-  |> subtract2d(tool = hsiHole(sketch = %, at = [hsiOffsets.x, hsiOffsets.y]))
-  |> subtract2d(tool = hsiHole(sketch = %, at = [hsiOffsets.x, -hsiOffsets.y]))
-  |> subtract2d(tool = hsiHole(sketch = %, at = [-hsiOffsets.x, hsiOffsets.y]))
-  |> subtract2d(tool = hsiHole(sketch = %, at = [-hsiOffsets.x, -hsiOffsets.y]))
+  |> subtract2d(tool = heatSetInsertHole(
+       sketch = %,
+       at = [
+         heatSetInsertOffsets.x,
+         heatSetInsertOffsets.y
+       ],
+     ))
+  |> subtract2d(tool = heatSetInsertHole(
+       sketch = %,
+       at = [
+         heatSetInsertOffsets.x,
+         -heatSetInsertOffsets.y
+       ],
+     ))
+  |> subtract2d(tool = heatSetInsertHole(
+       sketch = %,
+       at = [
+         -heatSetInsertOffsets.x,
+         heatSetInsertOffsets.y
+       ],
+     ))
+  |> subtract2d(tool = heatSetInsertHole(
+       sketch = %,
+       at = [
+         -heatSetInsertOffsets.x,
+         -heatSetInsertOffsets.y
+       ],
+     ))
   |> extrude(length = th)
   |> union([
        %,
-       hsiSupport(plane = XY, at = [hsiOffsets.x, hsiOffsets.y])
+       heatSetInsertSupport(
+  plane = XY,
+  at = [
+    heatSetInsertOffsets.x,
+    heatSetInsertOffsets.y
+  ],
+)
      ])
   |> union([
        %,
-       hsiSupport(plane = XY, at = [hsiOffsets.x, -hsiOffsets.y])
+       heatSetInsertSupport(
+  plane = XY,
+  at = [
+    heatSetInsertOffsets.x,
+    -heatSetInsertOffsets.y
+  ],
+)
      ])
   |> union([
        %,
-       hsiSupport(plane = XY, at = [-hsiOffsets.x, hsiOffsets.y])
+       heatSetInsertSupport(
+  plane = XY,
+  at = [
+    -heatSetInsertOffsets.x,
+    heatSetInsertOffsets.y
+  ],
+)
      ])
   |> union([
        %,
-       hsiSupport(plane = XY, at = [-hsiOffsets.x, -hsiOffsets.y])
+       heatSetInsertSupport(
+  plane = XY,
+  at = [
+    -heatSetInsertOffsets.x,
+    -heatSetInsertOffsets.y
+  ],
+)
      ])
   |> translate(z = jacks.depth)
 

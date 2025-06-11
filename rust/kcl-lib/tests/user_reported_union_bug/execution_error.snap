@@ -6,27 +6,27 @@ KCL Engine error
 
   × engine: The Zoo engine cannot handle this 3D union yet.  Please report
   │ this as an issue
-     ╭─[103:6]
- 102 │        |> extrude(length = th)
- 103 │ ╭──▶   |> union([
- 104 │ ││          %,
- 105 │ ││          hsiSupport(plane = XY, at = [hsiOffsets.x, hsiOffsets.y])
- 106 │ ├──▶      ])
+     ╭─[114:6]
+ 113 │           ])
+ 114 │ ╭──▶   |> union([
+ 115 │ ││          %,
+ 116 │ ││          heatSetInsertSupport(plane = XY, at = [-heatSetInsertOffsets.x, -heatSetInsertOffsets.y])
+ 117 │ ├──▶      ])
      · ╰───── tests/user_reported_union_bug/input.kcl
      · ╰───── tests/user_reported_union_bug/input.kcl
- 107 │        |> union([
+ 118 │        |> translate(z = jacks.depth)
      ╰────
   ╰─▶ KCL Engine error
       
         × engine: The Zoo engine cannot handle this 3D union yet.  Please
         │ report this as an issue
-           ╭─[103:6]
-       102 │       |> extrude(length = th)
-       103 │ ╭─▶   |> union([
-       104 │ │          %,
-       105 │ │          hsiSupport(plane = XY, at = [hsiOffsets.x,
-      hsiOffsets.y])
-       106 │ ├─▶      ])
+           ╭─[114:6]
+       113 │          ])
+       114 │ ╭─▶   |> union([
+       115 │ │          %,
+       116 │ │          heatSetInsertSupport(plane = XY, at =
+      [-heatSetInsertOffsets.x, -heatSetInsertOffsets.y])
+       117 │ ├─▶      ])
            · ╰──── tests/user_reported_union_bug/input.kcl
-       107 │       |> union([
+       118 │       |> translate(z = jacks.depth)
            ╰────

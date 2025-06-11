@@ -256,7 +256,7 @@ description: Result of parsing user_reported_union_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "hsi",
+            "name": "heatSetInsert",
             "start": 0,
             "type": "Identifier"
           },
@@ -373,11 +373,6 @@ description: Result of parsing user_reported_union_bug.kcl
         },
         "end": 0,
         "kind": "const",
-        "preComments": [
-          "",
-          "",
-          "// hsi = heat set insert"
-        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -390,7 +385,7 @@ description: Result of parsing user_reported_union_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "hsiOffsets",
+            "name": "heatSetInsertOffsets",
             "start": 0,
             "type": "Identifier"
           },
@@ -2885,7 +2880,7 @@ description: Result of parsing user_reported_union_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "hsiHole",
+            "name": "heatSetInsertHole",
             "start": 0,
             "type": "Identifier"
           },
@@ -2941,7 +2936,7 @@ description: Result of parsing user_reported_union_bug.kcl
                             "name": {
                               "commentStart": 0,
                               "end": 0,
-                              "name": "hsi",
+                              "name": "heatSetInsert",
                               "start": 0,
                               "type": "Identifier"
                             },
@@ -3057,7 +3052,7 @@ description: Result of parsing user_reported_union_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "hsiSupport",
+            "name": "heatSetInsertSupport",
             "start": 0,
             "type": "Identifier"
           },
@@ -3156,7 +3151,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "hsi",
+                                    "name": "heatSetInsert",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -3189,7 +3184,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "hsi",
+                                    "name": "heatSetInsert",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -3300,7 +3295,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                           "name": {
                                             "commentStart": 0,
                                             "end": 0,
-                                            "name": "hsi",
+                                            "name": "heatSetInsert",
                                             "start": 0,
                                             "type": "Identifier"
                                           },
@@ -3397,7 +3392,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "name": "hsi",
+                                  "name": "heatSetInsert",
                                   "start": 0,
                                   "type": "Identifier"
                                 },
@@ -3940,7 +3935,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "hsiOffsets",
+                                    "name": "heatSetInsertOffsets",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -3972,7 +3967,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "hsiOffsets",
+                                    "name": "heatSetInsertOffsets",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -4008,7 +4003,7 @@ description: Result of parsing user_reported_union_bug.kcl
                         "name": {
                           "commentStart": 0,
                           "end": 0,
-                          "name": "hsiHole",
+                          "name": "heatSetInsertHole",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -4100,7 +4095,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "hsiOffsets",
+                                    "name": "heatSetInsertOffsets",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -4133,7 +4128,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "hsiOffsets",
+                                      "name": "heatSetInsertOffsets",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -4176,7 +4171,7 @@ description: Result of parsing user_reported_union_bug.kcl
                         "name": {
                           "commentStart": 0,
                           "end": 0,
-                          "name": "hsiHole",
+                          "name": "heatSetInsertHole",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -4269,7 +4264,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "hsiOffsets",
+                                      "name": "heatSetInsertOffsets",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -4308,7 +4303,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "hsiOffsets",
+                                    "name": "heatSetInsertOffsets",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -4344,7 +4339,7 @@ description: Result of parsing user_reported_union_bug.kcl
                         "name": {
                           "commentStart": 0,
                           "end": 0,
-                          "name": "hsiHole",
+                          "name": "heatSetInsertHole",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -4437,7 +4432,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "hsiOffsets",
+                                      "name": "heatSetInsertOffsets",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -4477,7 +4472,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "hsiOffsets",
+                                      "name": "heatSetInsertOffsets",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -4520,7 +4515,7 @@ description: Result of parsing user_reported_union_bug.kcl
                         "name": {
                           "commentStart": 0,
                           "end": 0,
-                          "name": "hsiHole",
+                          "name": "heatSetInsertHole",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -4692,7 +4687,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "hsiOffsets",
+                                    "name": "heatSetInsertOffsets",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -4724,7 +4719,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "hsiOffsets",
+                                    "name": "heatSetInsertOffsets",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -4760,7 +4755,7 @@ description: Result of parsing user_reported_union_bug.kcl
                         "name": {
                           "commentStart": 0,
                           "end": 0,
-                          "name": "hsiSupport",
+                          "name": "heatSetInsertSupport",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -4864,7 +4859,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "hsiOffsets",
+                                    "name": "heatSetInsertOffsets",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -4897,7 +4892,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "hsiOffsets",
+                                      "name": "heatSetInsertOffsets",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -4940,7 +4935,7 @@ description: Result of parsing user_reported_union_bug.kcl
                         "name": {
                           "commentStart": 0,
                           "end": 0,
-                          "name": "hsiSupport",
+                          "name": "heatSetInsertSupport",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -5045,7 +5040,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "hsiOffsets",
+                                      "name": "heatSetInsertOffsets",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -5084,7 +5079,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "hsiOffsets",
+                                    "name": "heatSetInsertOffsets",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -5120,7 +5115,7 @@ description: Result of parsing user_reported_union_bug.kcl
                         "name": {
                           "commentStart": 0,
                           "end": 0,
-                          "name": "hsiSupport",
+                          "name": "heatSetInsertSupport",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -5225,7 +5220,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "hsiOffsets",
+                                      "name": "heatSetInsertOffsets",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -5265,7 +5260,7 @@ description: Result of parsing user_reported_union_bug.kcl
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "hsiOffsets",
+                                      "name": "heatSetInsertOffsets",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -5308,7 +5303,7 @@ description: Result of parsing user_reported_union_bug.kcl
                         "name": {
                           "commentStart": 0,
                           "end": 0,
-                          "name": "hsiSupport",
+                          "name": "heatSetInsertSupport",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -7522,6 +7517,17 @@ description: Result of parsing user_reported_union_bug.kcl
     ],
     "nonCodeMeta": {
       "nonCodeNodes": {
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "11": [
           {
             "commentStart": 0,
