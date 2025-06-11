@@ -803,7 +803,7 @@ export class SceneEntities {
         const callExpName = _node1.node?.callee?.name.name
 
         const initSegment =
-          segment.type === 'TangentialArcTo'
+          segment.type === 'TangentialArcTo' || segment.type === 'TangentialArc'
             ? segmentUtils.tangentialArc.init
             : segment.type === 'Circle'
               ? segmentUtils.circle.init
