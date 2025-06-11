@@ -809,9 +809,14 @@ fn apply_ascription(
         } else {
             ""
         };
+        let ty_str = if let Some(ty) = value.principal_type() {
+            format!("(with type `{ty}`) ")
+        } else {
+            String::new()
+        };
         KclError::new_semantic(KclErrorDetails::new(
             format!(
-                "could not coerce value of type {} to type {ty}{suggestion}",
+                "could not coerce {} {ty_str}to type `{ty}`{suggestion}",
                 value.human_friendly_type()
             ),
             vec![source_range],
@@ -1021,14 +1026,13 @@ impl Node<MemberExpression> {
                     .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
                     .collect(),
             }),
-            (being_indexed, _, _) => {
-                let t = being_indexed.human_friendly_type();
-                let article = article_for(&t);
-                Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!("Only arrays can be indexed, but you're trying to index {article} {t}"),
-                    vec![self.clone().into()],
-                )))
-            }
+            (being_indexed, _, _) => Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Only arrays can be indexed, but you're trying to index {}",
+                    being_indexed.human_friendly_type()
+                ),
+                vec![self.clone().into()],
+            ))),
         }
     }
 }
@@ -1756,7 +1760,7 @@ a = 42: string
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce value of type number(default units) to type string"),
+                .contains("could not coerce a number (with type `number`) to type `string`"),
             "Expected error but found {err:?}"
         );
 
@@ -1767,7 +1771,7 @@ a = 42: Plane
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce value of type number(default units) to type Plane"),
+                .contains("could not coerce a number (with type `number`) to type `Plane`"),
             "Expected error but found {err:?}"
         );
 
@@ -1777,9 +1781,8 @@ arr = [0]: [string]
         let result = parse_execute(program).await;
         let err = result.unwrap_err();
         assert!(
-            err.to_string().contains(
-                "could not coerce value of type array of number(default units) with 1 value to type [string]"
-            ),
+            err.to_string()
+                .contains("could not coerce an array of `number` (with type `[any; 1]`) to type `[string]`"),
             "Expected error but found {err:?}"
         );
 
@@ -1789,8 +1792,9 @@ mixedArr = [0, "a"]: [number(mm)]
         let result = parse_execute(program).await;
         let err = result.unwrap_err();
         assert!(
-            err.to_string()
-                .contains("could not coerce value of type array of number(default units), string with 2 values to type [number(mm)]"),
+            err.to_string().contains(
+                "could not coerce an array of `number`, `string` (with type `[any; 2]`) to type `[number(mm)]`"
+            ),
             "Expected error but found {err:?}"
         );
     }

@@ -532,6 +532,37 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
     Ok(())
 }
 
+fn type_err_str(expected: &Type, found: &KclValue) -> String {
+    fn strip_backticks(s: &str) -> &str {
+        let mut result = s;
+        if s.starts_with('`') {
+            result = &result[1..]
+        }
+        if s.ends_with('`') {
+            result = &result[..result.len() - 1]
+        }
+        result
+    }
+
+    let expected_human = expected.human_friendly_type();
+    let expected_ty = expected.to_string();
+    let expected_str =
+        if expected_human == expected_ty || expected_human == format!("a value with type `{expected_ty}`") {
+            format!("a value with type `{expected_ty}`")
+        } else {
+            format!("{expected_human} (`{expected_ty}`)")
+        };
+    let found_human = found.human_friendly_type();
+    let found_ty = found.principal_type_string();
+    let found_str = if found_human == found_ty || found_human == format!("a {}", strip_backticks(&found_ty)) {
+        format!("a value with type {}", found_ty)
+    } else {
+        format!("{found_human} (with type {})", found_ty)
+    };
+
+    format!("{expected_str}, but found {found_str}")
+}
+
 fn type_check_params_kw(
     fn_name: Option<&str>,
     fn_def: &FunctionDefinition<'_>,
@@ -556,18 +587,19 @@ fn type_check_params_kw(
                 // For optional args, passing None should be the same as not passing an arg.
                 if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. })) {
                     if let Some(ty) = ty {
+                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range)
+                            .map_err(|e| KclError::new_semantic(e.into()))?;
                         arg.value = arg
                             .value
                             .coerce(
-                                &RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range).map_err(|e| KclError::new_semantic(e.into()))?,
+                                &rty,
                                 true,
                                 exec_state,
                             )
                             .map_err(|e| {
                                 let mut message = format!(
-                                    "{label} requires a value with type `{}`, but found {}",
-                                    ty,
-                                    arg.value.human_friendly_type(),
+                                    "{label} requires {}",
+                                    type_err_str(ty, &arg.value),
                                 );
                                 if let Some(ty) = e.explicit_coercion {
                                     // TODO if we have access to the AST for the argument we could choose which example to suggest.
@@ -630,28 +662,20 @@ fn type_check_params_kw(
 
     if let Some(arg) = &mut args.unlabeled {
         if let Some((_, Some(ty))) = &fn_def.input_arg {
-            arg.1.value = arg
-                .1
-                .value
-                .coerce(
-                    &RuntimeType::from_parsed(ty.clone(), exec_state, arg.1.source_range)
-                        .map_err(|e| KclError::new_semantic(e.into()))?,
-                    true,
-                    exec_state,
-                )
-                .map_err(|_| {
-                    KclError::new_semantic(KclErrorDetails::new(
-                        format!(
-                            "The input argument of {} requires a value with type `{}`, but found {}",
-                            fn_name
-                                .map(|n| format!("`{}`", n))
-                                .unwrap_or_else(|| "this function".to_owned()),
-                            ty,
-                            arg.1.value.human_friendly_type()
-                        ),
-                        vec![arg.1.source_range],
-                    ))
-                })?;
+            let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.1.source_range)
+                .map_err(|e| KclError::new_semantic(e.into()))?;
+            arg.1.value = arg.1.value.coerce(&rty, true, exec_state).map_err(|_| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "The input argument of {} requires {}",
+                        fn_name
+                            .map(|n| format!("`{}`", n))
+                            .unwrap_or_else(|| "this function".to_owned()),
+                        type_err_str(ty, &arg.1.value),
+                    ),
+                    vec![arg.1.source_range],
+                ))
+            })?;
         }
     } else if let Some((name, _)) = &fn_def.input_arg {
         if let Some(arg) = args.labeled.get(name) {
@@ -746,11 +770,7 @@ fn coerce_result_type(
                 .map_err(|e| KclError::new_semantic(e.into()))?;
             let val = val.coerce(&ty, true, exec_state).map_err(|_| {
                 KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "This function requires its result to be of type `{}`, but found {}",
-                        ty.human_friendly_type(),
-                        val.human_friendly_type(),
-                    ),
+                    format!("This function requires its result to be {}", type_err_str(ret_ty, &val),),
                     ret_ty.as_source_ranges(),
                 ))
             })?;
@@ -928,7 +948,7 @@ msg2 = makeMessage(prefix = 1, suffix = 3)"#;
         let err = parse_execute(program).await.unwrap_err();
         assert_eq!(
             err.message(),
-            "prefix requires a value with type `string`, but found number(default units)"
+            "prefix requires a value with type `string`, but found a value with type `number`"
         )
     }
 }
