@@ -498,8 +498,8 @@ mod any_type {
         super::execute(TEST_NAME, false).await
     }
 }
-mod error_with_point_shows_numeric_units {
-    const TEST_NAME: &str = "error_with_point_shows_numeric_units";
+mod coerce_from_trig_to_point {
+    const TEST_NAME: &str = "coerce_from_trig_to_point";
 
     /// Test parsing KCL.
     #[test]

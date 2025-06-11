@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Artifact graph flowchart error_with_point_shows_numeric_units.kcl
+description: Artifact graph flowchart coerce_from_trig_to_point.kcl
 extension: md
 snapshot_kind: binary
 ---
