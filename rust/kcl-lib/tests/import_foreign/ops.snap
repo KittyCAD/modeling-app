@@ -25,6 +25,7 @@ description: Operations executed import_foreign.kcl
       "type": "GroupEnd"
     }
   ],
+  "rust/kcl-lib/tests/inputs/cube.gltf": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],

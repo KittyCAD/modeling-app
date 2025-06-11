@@ -323,6 +323,7 @@ description: Operations executed import_mesh_clone.kcl
       "sourceRange": []
     }
   ],
+  "rust/kcl-lib/tests/inputs/cube.obj": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [],
