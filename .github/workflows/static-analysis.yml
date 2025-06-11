@@ -119,6 +119,7 @@ jobs:
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - run: npm run circular-deps:diff
+      - run: npm run url-checker:diff
 
   python-codespell:
     runs-on: ubuntu-22.04
