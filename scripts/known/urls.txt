@@ -17,3 +17,4 @@ URL  STATUS
 301  https://text-to-cad.zoo.dev/dashboard
 307  https://zoo.dev/
 308  https://zoo.dev/docs/api/ml/generate-a-cad-model-from-text
+308  https://zoo.dev/docs/kcl
