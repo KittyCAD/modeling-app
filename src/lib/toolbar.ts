@@ -123,7 +123,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         hotkey: 'E',
         description: 'Pull a sketch into 3D along its normal or perpendicular.',
         links: [
-          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl-std/functions/std-sketch-extrude' },
+          {
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl-std/functions/std-sketch-extrude',
+          },
         ],
       },
       {
