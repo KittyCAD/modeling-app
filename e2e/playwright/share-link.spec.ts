@@ -20,10 +20,11 @@ function getToastError(page: Page) {
 
 test.describe('Share link tests', () => {
   test(
-    `Open in desktop app with 2000-long code doesn't show error on non-Windows`,
+    `Open in desktop app with 2000-long code works non-Windows`,
     { tag: ['@web', '@macos', '@linux'] },
     async ({ page }) => {
       test.skip(process.platform === 'win32')
+      page.on('console', console.log)
       const codeLength = 2000
       await navigateAndClickOpenInDesktopApp(page, codeLength)
       await expect(getToastError(page)).not.toBeVisible()
