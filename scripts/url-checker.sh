@@ -32,7 +32,8 @@ val1=$(grep -Eoh "(https)://[^']+" src/**/*.ts  | remove_after_space | remove_af
 # Search all src/**/*.tsx files
 val2=$(grep -Eoh "(https)://[^']+" src/**/*.tsx  | remove_after_space | remove_after_backtick | remove_after_end_paren | remove_after_double_quote | remove_after_gt | remove_after_comma)
 
-combined="$val1$val2"
+# Required a newline between them when combining since there is not one at the end of val1
+combined="$val1"$'\n'"$val2"
 
 # Merge both ts and tsx results and unique them
 # cat url_result1.txt url_result2.txt > url_result3.txt
