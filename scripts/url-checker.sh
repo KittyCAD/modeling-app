@@ -36,8 +36,6 @@ val2=$(grep -Eoh "(https)://[^']+" src/**/*.tsx  | remove_after_space | remove_a
 combined="$val1"$'\n'"$val2"
 
 # Merge both ts and tsx results and unique them
-# cat url_result1.txt url_result2.txt > url_result3.txt
-# cat url_result3.txt | sort | uniq > url_result4.txt
 uniqued=$(echo "$combined" | sort | uniq)
 
 # All urls and status codes
