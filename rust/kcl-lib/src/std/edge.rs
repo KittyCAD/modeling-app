@@ -9,7 +9,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         types::{ArrayLen, RuntimeType},
-        ExecState, ExtrudeSurface, KclValue, TagIdentifier,
+        ExecState, ExtrudeSurface, KclValue, ModelingCmdMeta, TagIdentifier,
     },
     std::Args,
 };
@@ -35,15 +35,16 @@ async fn inner_get_opposite_edge(
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
 
-    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
+    let tagged_path_id = tagged_path.id;
+    let sketch_id = tagged_path.sketch;
 
-    let resp = args
+    let resp = exec_state
         .send_modeling_cmd(
-            id,
+            (&args).into(),
             ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
-                edge_id: tagged_path.id,
-                object_id: tagged_path.sketch,
+                edge_id: tagged_path_id,
+                object_id: sketch_id,
                 face_id,
             }),
         )
@@ -82,15 +83,16 @@ async fn inner_get_next_adjacent_edge(
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
 
-    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
+    let tagged_path_id = tagged_path.id;
+    let sketch_id = tagged_path.sketch;
 
-    let resp = args
+    let resp = exec_state
         .send_modeling_cmd(
-            id,
+            (&args).into(),
             ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
-                edge_id: tagged_path.id,
-                object_id: tagged_path.sketch,
+                edge_id: tagged_path_id,
+                object_id: sketch_id,
                 face_id,
             }),
         )
@@ -138,15 +140,16 @@ async fn inner_get_previous_adjacent_edge(
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
 
-    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
+    let tagged_path_id = tagged_path.id;
+    let sketch_id = tagged_path.sketch;
 
-    let resp = args
+    let resp = exec_state
         .send_modeling_cmd(
-            id,
+            (&args).into(),
             ModelingCmd::from(mcmd::Solid3dGetPrevAdjacentEdge {
-                edge_id: tagged_path.id,
-                object_id: tagged_path.sketch,
+                edge_id: tagged_path_id,
+                object_id: sketch_id,
                 face_id,
             }),
         )
@@ -221,14 +224,14 @@ async fn inner_get_common_edge(
     // TODO: we likely want to be a lot more persnickety _which_ fillets we are flushing
     // but for now, we'll just flush everything.
     if let Some(ExtrudeSurface::Chamfer { .. } | ExtrudeSurface::Fillet { .. }) = first_tagged_path.surface {
-        args.ctx.engine.flush_batch(true, args.source_range).await?;
+        exec_state.flush_batch((&args).into(), true).await?;
     } else if let Some(ExtrudeSurface::Chamfer { .. } | ExtrudeSurface::Fillet { .. }) = second_tagged_path.surface {
-        args.ctx.engine.flush_batch(true, args.source_range).await?;
+        exec_state.flush_batch((&args).into(), true).await?;
     }
 
-    let resp = args
+    let resp = exec_state
         .send_modeling_cmd(
-            id,
+            ModelingCmdMeta::from_args_id(&args, id),
             ModelingCmd::from(mcmd::Solid3dGetCommonEdge {
                 object_id: first_tagged_path.sketch,
                 face_ids: [first_face_id, second_face_id],

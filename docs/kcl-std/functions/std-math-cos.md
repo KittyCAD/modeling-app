@@ -8,7 +8,7 @@ layout: manual
 Compute the cosine of a number.
 
 ```kcl
-cos(@num: number(Angle)): number(_)
+cos(@num: number(Angle)): number
 ```
 
 
@@ -21,7 +21,7 @@ cos(@num: number(Angle)): number(_)
 
 ### Returns
 
-[`number(_)`](/docs/kcl-std/types/std-types-number) - A number.
+[`number`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples

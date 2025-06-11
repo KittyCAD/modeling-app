@@ -2,31 +2,17 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands error_inside_fn_also_has_source_range_of_call_site_recursive.kcl
 ---
-[
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "edge_lines_visible",
-      "hidden": false
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  }
-]
+{
+  "rust/kcl-lib/tests/error_inside_fn_also_has_source_range_of_call_site_recursive/input.kcl": [],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
+}
