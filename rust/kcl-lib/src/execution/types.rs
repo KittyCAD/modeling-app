@@ -554,7 +554,9 @@ impl NumericType {
             (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) => (a.n, a2.adjust_to(b.n, a1).0, t),
             (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) => (a1.adjust_to(a.n, a2).0, b.n, t),
 
-            (Known(_), Known(_)) | (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => (a.n, b.n, Unknown),
+            (Known(_), Known(_)) | (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => {
+                (a.n, b.n, Unknown)
+            }
         }
     }
 
@@ -621,6 +623,20 @@ impl NumericType {
         match (a.ty, b.ty) {
             (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
             (at, bt) if at == bt => (a.n, b.n, Known(UnitType::Count)),
+            (Default { .. }, Default { .. }) => (a.n, b.n, Unknown),
+            (at, Known(UnitType::Count) | Any) => (a.n, b.n, at),
+            (at @ Known(_), Default { .. }) => (a.n, b.n, at),
+            (Known(UnitType::Count), _) => (a.n, b.n, Known(UnitType::Count)),
+            _ => (a.n, b.n, Unknown),
+        }
+    }
+
+    /// Combine two types for modulo-like operations.
+    pub fn combine_mod(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+        use NumericType::*;
+        match (a.ty, b.ty) {
+            (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
+            (at, bt) if at == bt => (a.n, b.n, at),
             (Default { .. }, Default { .. }) => (a.n, b.n, Unknown),
             (at, Known(UnitType::Count) | Any) => (a.n, b.n, at),
             (at @ Known(_), Default { .. }) => (a.n, b.n, at),
