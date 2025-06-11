@@ -128,7 +128,7 @@
 ///   |> line(end = [-2, 0])
 ///   |> close()
 ///
-/// example = revolve(exampleSketch, axis = Y, angle = 180)
+/// example = revolve(exampleSketch, axis = Y, angle = 180deg)
 ///
 /// exampleSketch002 = startSketchOn(example, face = END)
 ///   |> startProfile(at = [4.5, -5])
@@ -154,7 +154,7 @@
 ///   |> line(end = [-2, 0])
 ///   |> close()
 ///
-/// example = revolve(exampleSketch, axis = Y, angle = 180, tagEnd = $end01)
+/// example = revolve(exampleSketch, axis = Y, angle = 180deg, tagEnd = $end01)
 ///
 /// exampleSketch002 = startSketchOn(example, face = end01)
 ///   |> startProfile(at = [4.5, -5])
@@ -283,7 +283,7 @@ export fn circle(
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> arc(
-///     angleStart = 120,
+///     angleStart = 120deg,
 ///     angleEnd = 0,
 ///     radius = 5,
 ///   )
@@ -303,8 +303,8 @@ export fn circle(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-10, 0])
 ///   |> arc(
-///     angleStart = 120,
-///     angleEnd = -60,
+///     angleStart = 120deg,
+///     angleEnd = -60deg,
 ///     radius = 5,
 ///   )
 ///   |> line(end = [10, 0])
@@ -325,8 +325,8 @@ export fn circle(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-10, 0])
 ///   |> arc(
-///     angleStart = 120,
-///     angleEnd = -60,
+///     angleStart = 120deg,
+///     angleEnd = -60deg,
 ///     radius = 5,
 ///   )
 ///   |> line(end = [10, 0])
@@ -347,8 +347,8 @@ export fn circle(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-10, 0])
 ///   |> arc(
-///     angleStart = 120,
-///     angleEnd = -60,
+///     angleStart = 120deg,
+///     angleEnd = -60deg,
 ///     radius = 5,
 ///   )
 ///   |> line(end = [10, 0])
@@ -404,7 +404,7 @@ export fn extrude(
 ///     |> line(end = [0, -5.5])
 ///     |> line(end = [-2, 0])
 ///     |> close()
-///     |> revolve(axis = Y) // default angle is 360
+///     |> revolve(axis = Y) // default angle is 360deg
 /// ```
 ///
 /// ```kcl
@@ -412,7 +412,7 @@ export fn extrude(
 /// sketch001 = startSketchOn(XY)
 ///     |> circle( center = [15, 0], radius = 5 )
 ///     |> revolve(
-///         angle = 360,
+///         angle = 360deg,
 ///         axis = Y,
 ///     )
 /// ```
@@ -428,7 +428,7 @@ export fn extrude(
 ///     |> line(end = [0, -5.5])
 ///     |> line(end = [-2, 0])
 ///     |> close()
-///     |> revolve(axis = Y, angle = 180)
+///     |> revolve(axis = Y, angle = 180deg)
 /// ```
 ///
 /// ```kcl
@@ -442,7 +442,7 @@ export fn extrude(
 ///     |> line(end = [0, -5.5])
 ///     |> line(end = [-2, 0])
 ///     |> close()
-///     |> revolve(axis = Y, angle = 180)
+///     |> revolve(axis = Y, angle = 180deg)
 ///
 /// part002 = startSketchOn(part001, face = END)
 ///     |> startProfile(at = [4.5, -5])
@@ -465,7 +465,7 @@ export fn extrude(
 /// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
-///         angle = -90,
+///         angle = -90deg,
 ///         axis = Y
 ///     )
 /// ```
@@ -482,7 +482,7 @@ export fn extrude(
 /// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
-///         angle = 90,
+///         angle = 90deg,
 ///         axis = getOppositeEdge(revolveAxis)
 ///     )
 /// ```
@@ -499,7 +499,7 @@ export fn extrude(
 /// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
-///         angle = 90,
+///         angle = 90deg,
 ///         axis = getOppositeEdge(revolveAxis),
 ///         tolerance = 0.0001
 ///     )
@@ -558,7 +558,7 @@ export fn extrude(
 ///
 /// sketch001 = startSketchOn(XY)
 ///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis)
+///     |> revolve(angle = 90deg, axis = revolveAxis)
 /// ```
 ///
 /// ```kcl
@@ -571,7 +571,7 @@ export fn extrude(
 ///
 /// sketch001 = startSketchOn(XY)
 ///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis)
+///     |> revolve(angle = 90deg, axis = revolveAxis)
 /// ```
 ///
 /// ```kcl
@@ -584,7 +584,7 @@ export fn extrude(
 ///
 /// sketch001 = startSketchOn(XY)
 ///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis, symmetric = true)
+///     |> revolve(angle = 90deg, axis = revolveAxis, symmetric = true)
 /// ```
 ///
 /// ```kcl
@@ -597,7 +597,7 @@ export fn extrude(
 ///
 /// sketch001 = startSketchOn(XY)
 ///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis, bidirectionalAngle = 50)
+///     |> revolve(angle = 90deg, axis = revolveAxis, bidirectionalAngle = 50)
 /// ```
 @(impl = std_rust)
 export fn revolve(
@@ -651,16 +651,16 @@ export fn patternTransform2d(
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
-///        angle = 60,
+///        angle = 60deg,
 ///        length = 10,
 ///      )
 ///   |> angledLine(
-///        angle = 120,
+///        angle = 120deg,
 ///        length = 10,
 ///      )
 ///   |> line(end = [-10, 0])
 ///   |> angledLine(
-///        angle = 240,
+///        angle = 240deg,
 ///        length = 10,
 ///        tag = $referenceEdge,
 ///      )
@@ -685,16 +685,16 @@ export fn getOppositeEdge(
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
-///        angle = 60,
+///        angle = 60deg,
 ///        length = 10,
 ///      )
 ///   |> angledLine(
-///        angle = 120,
+///        angle = 120deg,
 ///        length = 10,
 ///      )
 ///   |> line(end = [-10, 0])
 ///   |> angledLine(
-///        angle = 240,
+///        angle = 240deg,
 ///        length = 10,
 ///        tag = $referenceEdge,
 ///      )
@@ -719,16 +719,16 @@ export fn getNextAdjacentEdge(
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
-///        angle = 60,
+///        angle = 60deg,
 ///        length = 10,
 ///      )
 ///   |> angledLine(
-///        angle = 120,
+///        angle = 120deg,
 ///        length = 10,
 ///      )
 ///   |> line(end = [-10, 0])
 ///   |> angledLine(
-///        angle = 240,
+///        angle = 240deg,
 ///        length = 10,
 ///        tag = $referenceEdge,
 ///      )
@@ -855,9 +855,9 @@ export fn polygon(
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -903,7 +903,7 @@ export fn polygon(
 /// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
 ///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
-///         angle = segAng(rectangleSegmentA001) - 90,
+///         angle = segAng(rectangleSegmentA001) - 90deg,
 ///         length = 50.61,
 ///     )
 ///     |> angledLine(
@@ -918,7 +918,7 @@ export fn polygon(
 /// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc(radius = 80, angle = -90)
+///     |> tangentialArc(radius = 80, angle = -90deg)
 ///     |> xLine(length = 384.93)
 ///
 /// sweep([rectangleSketch, circleSketch], path = sweepPath)
@@ -933,7 +933,7 @@ export fn polygon(
 /// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc(radius = 80, angle = -90)
+///     |> tangentialArc(radius = 80, angle = -90deg)
 ///     |> xLine(length = 384.93)
 ///
 /// sweep(circleSketch, path = sweepPath, sectional = true)
@@ -1311,9 +1311,9 @@ export fn lastSegY(
 ///     length = 10,
 ///     tag = $thing,
 ///   )
-///   |> tangentialArc(angle = -120, radius = 5)
+///   |> tangentialArc(angle = -120deg, radius = 5)
 ///   |> angledLine(
-///     angle = -60,
+///     angle = -60deg,
 ///     length = segLen(thing),
 ///   )
 ///   |> close()
@@ -1430,7 +1430,7 @@ export fn tangentToEnd(
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
 ///  |> angledLine(angle = 120, length = 50 , tag = $seg01)
-///  |> angledLine(angle = segAng(seg01) + 120, length = 50 )
+///  |> angledLine(angle = segAng(seg01) + 120deg, length = 50 )
 ///  |> line(end = profileStart(%))
 ///  |> close()
 ///  |> extrude(length = 20)
@@ -1447,8 +1447,8 @@ export fn profileStart(
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
 ///  |> angledLine(angle = -26.6, length = 50)
-///  |> angledLine(angle = 90, length = 50)
-///  |> angledLine(angle = 30, endAbsoluteX = profileStartX(%))
+///  |> angledLine(angle = 90deg, length = 50)
+///  |> angledLine(angle = 30deg, endAbsoluteX = profileStartX(%))
 /// ```
 @(impl = std_rust)
 export fn profileStartX(
@@ -1461,8 +1461,8 @@ export fn profileStartX(
 /// ```kcl
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
-///  |> angledLine(angle = -60, length = 14 )
-///  |> angledLine(angle = 30, endAbsoluteY =  profileStartY(%))
+///  |> angledLine(angle = -60deg, length = 14 )
+///  |> angledLine(angle = 30deg, endAbsoluteY =  profileStartY(%))
 /// ```
 @(impl = std_rust)
 export fn profileStartY(
@@ -1477,8 +1477,8 @@ export fn profileStartY(
 /// b = 14
 /// startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
-///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60)
-///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60, reverse = true)
+///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60deg)
+///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60deg, reverse = true)
 /// ```
 @(impl = std_rust)
 export fn involuteCircular(
@@ -1541,13 +1541,13 @@ export fn line(
 ///   |> startProfile(at = [0, 0])
 ///   |> xLine(length = 15)
 ///   |> angledLine(
-///     angle = 80,
+///     angle = 80deg,
 ///     length = 15,
 ///   )
 ///   |> line(end = [8, -10])
 ///   |> xLine(length = 10)
 ///   |> angledLine(
-///     angle = 120,
+///     angle = 120deg,
 ///     length = 30,
 ///   )
 ///   |> xLine(length = -15)
@@ -1576,7 +1576,7 @@ export fn xLine(
 ///   |> startProfile(at = [0, 0])
 ///   |> yLine(length = 15)
 ///   |> angledLine(
-///     angle = 30,
+///     angle = 30deg,
 ///     length = 15,
 ///   )
 ///   |> line(end = [8, -10])
@@ -1606,7 +1606,7 @@ export fn yLine(
 ///   |> startProfile(at = [0, 0])
 ///   |> yLine(endAbsolute = 15)
 ///   |> angledLine(
-///     angle = 30,
+///     angle = 30deg,
 ///     length = 15,
 ///   )
 ///   |> line(end = [8, -10])
@@ -1646,7 +1646,7 @@ export fn angledLine(
 ///   |> line(endAbsolute = [-10, 10], tag = $lineToIntersect)
 ///   |> line(endAbsolute = [0, 20])
 ///   |> angledLineThatIntersects(
-///        angle = 80,
+///        angle = 80deg,
 ///        intersectTag = lineToIntersect,
 ///        offset = 10,
 ///      )
@@ -1719,7 +1719,7 @@ export fn close(
 ///   |> line(end = [10, 0])
 ///   |> arc(
 ///        angleStart = 0,
-///        angleEnd = 280,
+///        angleEnd = 280deg,
 ///        radius = 16
 ///      )
 ///   |> close()
@@ -1773,7 +1773,7 @@ export fn arc(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 45,
+///     angle = 45deg,
 ///     length = 10,
 ///   )
 ///   |> tangentialArc(end = [0, -10])
@@ -1787,7 +1787,7 @@ export fn arc(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 60,
+///     angle = 60deg,
 ///     length = 10,
 ///   )
 ///   |> tangentialArc(endAbsolute = [15, 15])
@@ -1801,12 +1801,12 @@ export fn arc(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 60,
+///     angle = 60deg,
 ///     length = 10,
 ///   )
-///   |> tangentialArc(radius = 10, angle = -120)
+///   |> tangentialArc(radius = 10, angle = -120deg)
 ///   |> angledLine(
-///     angle = -60,
+///     angle = -60deg,
 ///     length = 10,
 ///   )
 ///   |> close()

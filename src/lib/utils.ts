@@ -261,6 +261,9 @@ export function platform(): Platform {
   if (navigator.platform === 'Windows' || navigator.platform === 'Win32') {
     return 'windows'
   }
+  if (navigator.platform?.indexOf('Linux') === 0) {
+    return 'linux'
+  }
 
   // Chrome only, but more accurate than userAgent.
   let userAgentDataPlatform: unknown

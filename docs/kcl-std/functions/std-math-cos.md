@@ -29,7 +29,7 @@ cos(@num: number(Angle)): number
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 30, length = 3 / cos(30deg))
+  |> angledLine(angle = 30deg, length = 3 / cos(30deg))
   |> yLine(endAbsolute = 0)
   |> close()
 

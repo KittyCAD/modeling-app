@@ -17,7 +17,7 @@ startSketchOn(XZ)
   |> startProfile(at = origin)
   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
   |> angledLine(
-       angle = segAng(rectangleSegmentA001) - 90,
+       angle = segAng(rectangleSegmentA001) - 90deg,
        length = 196.99,
        tag = $rectangleSegmentB001,
      )
@@ -80,7 +80,7 @@ fn rect(origin) {
     |> startProfile(at = origin)
     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
     |> angledLine(
-         angle = segAng(rectangleSegmentA001) - 90,
+         angle = segAng(rectangleSegmentA001) - 90deg,
          length = 196.99
          tag = $rectangleSegmentB001,
        )
