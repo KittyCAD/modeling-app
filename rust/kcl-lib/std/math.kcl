@@ -72,7 +72,7 @@ export TAU = 6.28318530717958647692528676655900577_
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn cos(@num: number(Angle)): number(Count) {}
+export fn cos(@num: number(Angle)): number {}
 
 /// Compute the sine of a number.
 ///
@@ -89,7 +89,7 @@ export fn cos(@num: number(Angle)): number(Count) {}
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn sin(@num: number(Angle)): number(Count) {}
+export fn sin(@num: number(Angle)): number {}
 
 /// Compute the tangent of a number.
 ///
@@ -106,7 +106,7 @@ export fn sin(@num: number(Angle)): number(Count) {}
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn tan(@num: number(Angle)): number(Count) {}
+export fn tan(@num: number(Angle)): number {}
 
 /// Compute the arccosine of a number.
 ///
