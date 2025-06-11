@@ -56,11 +56,9 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
     // This 2046 value comes from https://issues.chromium.org/issues/41322340#comment3
     // and empirical testing on Chrome and Windows 11
     const MAX_URL_LENGTH = 2046
-    const plat = platform()
-    console.log('plat', plat)
-    if (plat === 'windows' && newURL.length > MAX_URL_LENGTH) {
+    if (platform() === 'windows' && newURL.length > MAX_URL_LENGTH) {
       toast.error(
-        `The URL is too long to open in the desktop app ${plat}. Try another platform or use the web app.`
+        'The URL is too long to open in the desktop app on Windows. Try another platform or use the web app.'
       )
       return
     }
