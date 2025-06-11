@@ -1,0 +1,32 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing user_reported_union_bug.kcl
+---
+KCL Engine error
+
+  × engine: The Zoo engine cannot handle this 3D union yet.  Please report
+  │ this as an issue
+     ╭─[103:6]
+ 102 │        |> extrude(length = th)
+ 103 │ ╭──▶   |> union([
+ 104 │ ││          %,
+ 105 │ ││          hsiSupport(plane = XY, at = [hsiOffsets.x, hsiOffsets.y])
+ 106 │ ├──▶      ])
+     · ╰───── tests/user_reported_union_bug/input.kcl
+     · ╰───── tests/user_reported_union_bug/input.kcl
+ 107 │        |> union([
+     ╰────
+  ╰─▶ KCL Engine error
+      
+        × engine: The Zoo engine cannot handle this 3D union yet.  Please
+        │ report this as an issue
+           ╭─[103:6]
+       102 │       |> extrude(length = th)
+       103 │ ╭─▶   |> union([
+       104 │ │          %,
+       105 │ │          hsiSupport(plane = XY, at = [hsiOffsets.x,
+      hsiOffsets.y])
+       106 │ ├─▶      ])
+           · ╰──── tests/user_reported_union_bug/input.kcl
+       107 │       |> union([
+           ╰────

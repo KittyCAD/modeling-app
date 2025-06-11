@@ -3546,3 +3546,52 @@ mod var_ref_in_own_def_decl {
         super::execute(TEST_NAME, true).await
     }
 }
+mod user_reported_union_bug {
+    // TODO IF THIS TEST START PASSING, CLOSE THE FOLLOWING ISSUE 
+    // https://github.com/KittyCAD/modeling-app/issues/7358
+    // and https://github.com/KittyCAD/engine/issues/3538
+    const TEST_NAME: &str = "user_reported_union_bug";
+    
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod user_reported_union_2_bug {
+    // TODO IF THIS TEST START PASSING, CLOSE THE FOLLOWING ISSUE 
+    // https://github.com/KittyCAD/modeling-app/issues/7310
+    // and https://github.com/KittyCAD/engine/issues/3539
+    const TEST_NAME: &str = "user_reported_union_2_bug";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}

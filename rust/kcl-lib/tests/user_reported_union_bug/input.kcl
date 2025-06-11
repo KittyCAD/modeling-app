@@ -1,0 +1,177 @@
+// TODO IF THIS TEST START PASSING, CLOSE THE FOLLOWING ISSUE 
+// https://github.com/KittyCAD/modeling-app/issues/7358
+// and https://github.com/KittyCAD/engine/issues/3538
+
+@settings(defaultLengthUnit = mm)
+
+socketHole = { radius = 14.5, notchradius = 27.5 }
+socketNut = { radius = 38 / 2 }
+cutoutHole = { length = 82 }
+nozzleW = 0.4
+
+// hsi = heat set insert
+hsi = {
+  diameter = 5.4 + nozzleW,
+  supportLength = 4,
+  supportThickness = 2
+}
+hsiOffsets = {
+  x = (3in + 7in / 16) / 2,
+  y = 1in / 2
+}
+jacks = {
+  length = 104,
+  width = 42.21,
+  depth = 60,
+  cornerRad = 8.5,
+  sideOffset = 15.3 + socketHole.radius
+}
+th = 1.2
+extraRoom = 3
+outerRad = jacks.cornerRad + 2
+funnelEndD = 17
+grommetD = 10.7 + nozzleW
+
+fn roundedSquare(plane, at, length, width, radius) {
+  return startSketchOn(plane)
+    |> startProfile(at = [at[0], at[1] - (width / 2)])
+    |> xLine(length = (length - (2 * radius)) / 2)
+    |> tangentialArc(radius = radius, angle = 90)
+    |> yLine(length = width - (2 * radius))
+    |> tangentialArc(radius = radius, angle = 90)
+    |> xLine(endAbsolute = 0)
+    |> mirror2d(axis = Y)
+    |> close()
+}
+
+fn roundedSquareOffset(plane, at, length, width, radius, offset) {
+  return roundedSquare(
+    plane,
+    at,
+    length = length - (2 * offset),
+    width = width - (2 * offset),
+    radius = radius - offset,
+  )
+}
+
+fn oval(plane, at, length, radius) {
+  return startSketchOn(plane)
+    |> startProfile(at = [at[0], at[1] - radius])
+    |> xLine(length = (length - (2 * radius)) / 2)
+    |> tangentialArc(radius = radius, angle = 180)
+    |> xLine(endAbsolute = 0)
+    |> mirror2d(axis = Y)
+    |> close()
+}
+
+panelCutout = oval(
+  plane = XY,
+  at = [0, 0],
+  length = cutoutHole.length,
+  radius = socketNut.radius,
+)
+
+fn hsiHole(sketch, at) {
+  return circle(sketch, center = at, diameter = hsi.diameter)
+}
+
+fn hsiSupport(plane, at) {
+  return startSketchOn(plane)
+    |> circle(center = at, diameter = hsi.diameter + hsi.supportThickness)
+    |> subtract2d(tool = [
+         circle(center = at, diameter = hsi.diameter)
+       ])
+    |> extrude(length = hsi.supportLength)
+}
+
+lidW = jacks.width + extraRoom
+
+lid = roundedSquare(
+  plane = XY,
+  at = [0, 0],
+  length = jacks.length + extraRoom,
+  width = lidW,
+  radius = outerRad,
+)
+
+lidWithCutout = subtract2d(lid, tool = panelCutout)
+  |> subtract2d(tool = hsiHole(sketch = %, at = [hsiOffsets.x, hsiOffsets.y]))
+  |> subtract2d(tool = hsiHole(sketch = %, at = [hsiOffsets.x, -hsiOffsets.y]))
+  |> subtract2d(tool = hsiHole(sketch = %, at = [-hsiOffsets.x, hsiOffsets.y]))
+  |> subtract2d(tool = hsiHole(sketch = %, at = [-hsiOffsets.x, -hsiOffsets.y]))
+  |> extrude(length = th)
+  |> union([
+       %,
+       hsiSupport(plane = XY, at = [hsiOffsets.x, hsiOffsets.y])
+     ])
+  |> union([
+       %,
+       hsiSupport(plane = XY, at = [hsiOffsets.x, -hsiOffsets.y])
+     ])
+  |> union([
+       %,
+       hsiSupport(plane = XY, at = [-hsiOffsets.x, hsiOffsets.y])
+     ])
+  |> union([
+       %,
+       hsiSupport(plane = XY, at = [-hsiOffsets.x, -hsiOffsets.y])
+     ])
+  |> translate(z = jacks.depth)
+
+shellOuterProfile = roundedSquareOffset(
+  plane = XY,
+  at = [0, 0],
+  length = jacks.length + extraRoom,
+  width = lidW,
+  radius = outerRad,
+  offset = 0,
+)
+
+funnelStartOuterProfile = clone(shellOuterProfile)
+
+shellInnerProfile = roundedSquareOffset(
+  plane = XY,
+  at = [0, 0],
+  length = jacks.length + extraRoom,
+  width = lidW,
+  radius = outerRad,
+  offset = th,
+)
+
+funnelStartInnerProfile = roundedSquareOffset(
+  plane = XY,
+  at = [0, 0],
+  length = jacks.length + extraRoom,
+  width = lidW,
+  radius = outerRad,
+  offset = th,
+)
+
+shell = subtract2d(shellOuterProfile, tool = [shellInnerProfile])
+  |> extrude(length = jacks.depth)
+
+funnelEndPlane = offsetPlane(XY, offset = -40)
+funnelEndOuterProfile = startSketchOn(funnelEndPlane)
+  |> circle(center = [0, 0], diameter = funnelEndD)
+
+funnelEndInnerProfile = startSketchOn(funnelEndPlane)
+  |> circle(center = [0, 0], diameter = funnelEndD - th)
+
+funnelOuterSolid = loft([
+  funnelStartOuterProfile,
+  funnelEndOuterProfile
+])
+
+funnelInnerSolid = loft([
+  funnelStartInnerProfile,
+  funnelEndInnerProfile
+])
+
+funnelShell = subtract(funnelOuterSolid, tools = [funnelInnerSolid])
+
+grommetLid = startSketchOn(funnelEndPlane)
+  |> circle(center = [0, 0], diameter = funnelEndD)
+  |> subtract2d(tool = [
+       circle(center = [0, 0], diameter = grommetD)
+     ])
+  |> extrude(length = th)
