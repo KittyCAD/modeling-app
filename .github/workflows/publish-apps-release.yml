@@ -31,42 +31,42 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-arm64-win
+          name: out-arm64-windows
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           
       - uses: actions/download-artifact@v4
         with:
-          name: out-x64-win
+          name: out-x64-windows
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-yml-win
+          name: out-yml-windows
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-arm64-mac
+          name: out-arm64-macos
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-x64-mac
+          name: out-x64-macos
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-yml-mac
+          name: out-yml-macos
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}

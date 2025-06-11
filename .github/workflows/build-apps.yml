@@ -131,9 +131,9 @@ jobs:
       matrix:
         include:
           - os: namespace-profile-macos-6-cores
-            platform: mac
+            platform: macos
           - os: namespace-profile-windows-4-cores
-            platform: win
+            platform: windows
           - os: ubuntu-22.04
             platform: linux
     runs-on: ${{ matrix.os }}
@@ -167,7 +167,7 @@ jobs:
       - run: npm install
 
       - name: Prepare certificate and variables (Windows only)
-        if: ${{ (env.IS_RELEASE == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'win' }}
+        if: ${{ (env.IS_RELEASE == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
         run: |
           echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /c/Certificate_pkcs12.p12
           cat /c/Certificate_pkcs12.p12
@@ -182,7 +182,7 @@ jobs:
         shell: bash
 
       - name: Setup certicate with SSM KSP (Windows only)
-        if: ${{ (env.IS_RELEASE == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'win' }}
+        if: ${{ (env.IS_RELEASE == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
         run: |
           curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
           msiexec /i smtools-windows-x64.msi /quiet /qn
@@ -264,32 +264,32 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-arm64-win
+          name: out-arm64-windows
           path: out
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-x64-win
+          name: out-x64-windows
           path: out
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-yml-win
+          name: out-yml-windows
           path: out
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-arm64-mac
+          name: out-arm64-macos
           path: out
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-x64-mac
+          name: out-x64-macos
           path: out
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-yml-mac
+          name: out-yml-macos
           path: out
 
       - uses: actions/download-artifact@v4
