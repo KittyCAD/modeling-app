@@ -30,6 +30,10 @@ export function normalizeVec(v: Coords2d): Coords2d {
   return [v[0] / magnitude, v[1] / magnitude]
 }
 
+export function cross2d(a: Coords2d, b: Coords2d): number {
+  return a[0] * b[1] - a[1] * b[0]
+}
+
 export function distance2d(a: Coords2d, b: Coords2d): number {
   const dx = a[0] - b[0]
   const dy = a[1] - b[1]

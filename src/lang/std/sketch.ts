@@ -96,7 +96,7 @@ import {
   roundOff,
 } from '@src/lib/utils'
 import type { EdgeCutInfo } from '@src/machines/modelingMachine'
-import { distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
+import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
 
 const STRAIGHT_SEGMENT_ERR = () =>
   new Error('Invalid input, expected "straight-segment"')
@@ -4195,12 +4195,24 @@ const tangentialArcHelpers = {
           line2Angle: getAngle([0, 0], tangentRotated),
         })
         if (isValidNumber(center[0]) && isValidNumber(center[1])) {
-          const radius = distance2d(center, from)
+          // We have the circle center, calculate the angle by calculating the angle for "from" and "to" points
+          // These are in the range of [-180, 180] degrees
           const angle1 = getAngle(center, from)
           const angle2 = getAngle(center, to)
-          const angle = normaliseAngle(angle2 - angle1)
+          let angle = angle2 - angle1
 
-          console.log('radius', radius, 'angle', angle)
+          // Handle the cases where the angle would have an undesired sign.
+          // If the circle is CCW we want the angle to be always positive, otherwise negative.
+          // eg. CCW: angle1 is -90 and angle2 is -175 -> would be -85, but we want it to be 275
+          const isCCW = cross2d(previousEndTangent, dir) > 0
+          if (isCCW) {
+            angle = (angle + 360) % 360 // Ensure angle is positive
+          } else {
+            angle = (angle - 360) % 360 // Ensure angle is negative
+          }
+
+          const radius = distance2d(center, from)
+
           mutateKwArg(
             ARG_RADIUS,
             callExpression,
