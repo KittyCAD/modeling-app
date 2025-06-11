@@ -532,7 +532,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
     Ok(())
 }
 
-fn type_err_str(expected: &Type, found: &KclValue) -> String {
+fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, exec_state: &mut ExecState) -> String {
     fn strip_backticks(s: &str) -> &str {
         let mut result = s;
         if s.starts_with('`') {
@@ -563,7 +563,8 @@ fn type_err_str(expected: &Type, found: &KclValue) -> String {
     let mut result = format!("{expected_str}, but found {found_str}.");
 
     if found.is_unknown_number() {
-        result.push_str("\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type asciption, e.g., `len: number(mm)` or `(a * b): number(deg)`.");
+        exec_state.clear_units_warnings(source_range);
+        result.push_str("\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`.");
     }
 
     result
@@ -605,7 +606,7 @@ fn type_check_params_kw(
                             .map_err(|e| {
                                 let mut message = format!(
                                     "{label} requires {}",
-                                    type_err_str(ty, &arg.value),
+                                    type_err_str(ty, &arg.value, &arg.source_range, exec_state),
                                 );
                                 if let Some(ty) = e.explicit_coercion {
                                     // TODO if we have access to the AST for the argument we could choose which example to suggest.
@@ -677,7 +678,7 @@ fn type_check_params_kw(
                         fn_name
                             .map(|n| format!("`{}`", n))
                             .unwrap_or_else(|| "this function".to_owned()),
-                        type_err_str(ty, &arg.1.value),
+                        type_err_str(ty, &arg.1.value, &arg.1.source_range, exec_state),
                     ),
                     vec![arg.1.source_range],
                 ))
@@ -776,7 +777,10 @@ fn coerce_result_type(
                 .map_err(|e| KclError::new_semantic(e.into()))?;
             let val = val.coerce(&ty, true, exec_state).map_err(|_| {
                 KclError::new_semantic(KclErrorDetails::new(
-                    format!("This function requires its result to be {}", type_err_str(ret_ty, &val),),
+                    format!(
+                        "This function requires its result to be {}",
+                        type_err_str(ret_ty, &val, &(&val).into(), exec_state)
+                    ),
                     ret_ty.as_source_ranges(),
                 ))
             })?;
@@ -954,7 +958,7 @@ msg2 = makeMessage(prefix = 1, suffix = 3)"#;
         let err = parse_execute(program).await.unwrap_err();
         assert_eq!(
             err.message(),
-            "prefix requires a value with type `string`, but found a value with type `number`.\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type asciption, e.g., `len: number(mm)` or `(a * b): number(deg)`."
+            "prefix requires a value with type `string`, but found a value with type `number`.\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`."
         )
     }
 }

@@ -801,6 +801,10 @@ fn apply_ascription(
     let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
         .map_err(|e| KclError::new_semantic(e.into()))?;
 
+    if matches!(&ty, &RuntimeType::Primitive(PrimitiveType::Number(..))) {
+        exec_state.clear_units_warnings(&source_range);
+    }
+
     value.coerce(&ty, false, exec_state).map_err(|_| {
         let suggestion = if ty == RuntimeType::length() {
             ", you might try coercing to a fully specified numeric type such as `number(mm)`"
@@ -1207,11 +1211,14 @@ impl Node<BinaryExpression> {
 
     fn warn_on_unknown(&self, ty: &NumericType, verb: &str, exec_state: &mut ExecState) {
         if ty == &NumericType::Unknown {
-            // TODO suggest how to fix this
-            exec_state.warn(CompilationError::err(
-                self.as_source_range(),
-                format!("{} numbers which have unknown or incompatible units.\nYou can probably fix this error by specifying the units using type asciption, e.g., `len: number(mm)` or `(a * b): number(deg)`.", verb),
-            ));
+            let sr = self.as_source_range();
+            exec_state.clear_units_warnings(&sr);
+            let mut err = CompilationError::err(
+                sr,
+                format!("{} numbers which have unknown or incompatible units.\nYou can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`.", verb),
+            );
+            err.tag = crate::errors::Tag::UnknownNumericUnits;
+            exec_state.warn(err);
         }
     }
 }
@@ -1781,8 +1788,9 @@ arr = [0]: [string]
         let result = parse_execute(program).await;
         let err = result.unwrap_err();
         assert!(
-            err.to_string()
-                .contains("could not coerce an array of `number` with 1 value (with type `[any; 1]`) to type `[string]`"),
+            err.to_string().contains(
+                "could not coerce an array of `number` with 1 value (with type `[any; 1]`) to type `[string]`"
+            ),
             "Expected error but found {err:?}"
         );
 
@@ -2098,5 +2106,20 @@ y = x: number(Length)"#;
             .unwrap();
         assert_eq!(num.n, 2.0);
         assert_eq!(num.ty, NumericType::mm());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn one_warning_unknown() {
+        let ast = r#"
+// Should warn once
+a = PI * 2
+// Should warn once
+b = (PI * 2) / 3
+// Should not warn
+c = ((PI * 2) / 3): number(deg)
+"#;
+
+        let result = parse_execute(ast).await.unwrap();
+        assert_eq!(result.exec_state.errors().len(), 2);
     }
 }

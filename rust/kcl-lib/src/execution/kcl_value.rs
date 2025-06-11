@@ -325,7 +325,7 @@ impl KclValue {
                         result.push_str(&format!(", ... with {len} values"));
                     }
                     if len == 1 {
-                        result.push_str(&format!(" with 1 value"));
+                        result.push_str(" with 1 value");
                     }
                     result
                 }
