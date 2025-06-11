@@ -3547,11 +3547,10 @@ mod var_ref_in_own_def_decl {
     }
 }
 mod user_reported_union_bug {
-    // TODO IF THIS TEST START PASSING, CLOSE THE FOLLOWING ISSUE 
+    // TODO IF THIS TEST START PASSING, CLOSE THE FOLLOWING ISSUE
     // https://github.com/KittyCAD/modeling-app/issues/7358
     // and https://github.com/KittyCAD/engine/issues/3538
     const TEST_NAME: &str = "user_reported_union_bug";
-    
 
     /// Test parsing KCL.
     #[test]
@@ -3572,7 +3571,7 @@ mod user_reported_union_bug {
     }
 }
 mod user_reported_union_2_bug {
-    // TODO IF THIS TEST START PASSING, CLOSE THE FOLLOWING ISSUE 
+    // TODO IF THIS TEST START PASSING, CLOSE THE FOLLOWING ISSUE
     // https://github.com/KittyCAD/modeling-app/issues/7310
     // and https://github.com/KittyCAD/engine/issues/3539
     const TEST_NAME: &str = "user_reported_union_2_bug";
