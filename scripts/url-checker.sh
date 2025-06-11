@@ -27,14 +27,17 @@ remove_after_comma () {
 }
 
 # Search all src/**/*.ts files
-grep -Eoh "(https)://[^']+" src/**/*.ts  | remove_after_space | remove_after_backtick | remove_after_end_paren | remove_after_double_quote | remove_after_gt | remove_after_comma > url_result1.txt
+val1=$(grep -Eoh "(https)://[^']+" src/**/*.ts  | remove_after_space | remove_after_backtick | remove_after_end_paren | remove_after_double_quote | remove_after_gt | remove_after_comma)
 
 # Search all src/**/*.tsx files
-grep -Eoh "(https)://[^']+" src/**/*.tsx  | remove_after_space | remove_after_backtick | remove_after_end_paren | remove_after_double_quote | remove_after_gt | remove_after_comma > url_result2.txt
+val2=$(grep -Eoh "(https)://[^']+" src/**/*.tsx  | remove_after_space | remove_after_backtick | remove_after_end_paren | remove_after_double_quote | remove_after_gt | remove_after_comma)
+
+combined="$val1$val2"
 
 # Merge both ts and tsx results and unique them
-cat url_result1.txt url_result2.txt > url_result3.txt
-cat url_result3.txt | sort | uniq > url_result4.txt
+# cat url_result1.txt url_result2.txt > url_result3.txt
+# cat url_result3.txt | sort | uniq > url_result4.txt
+uniqued=$(echo "$combined" | sort | uniq)
 
 # All urls and status codes
 all="URL\tSTATUS\n"
@@ -50,5 +53,5 @@ while read line; do
         # list status first over line because of white space formatting, less annoying for diffing
         problematic+="$status\t$line\n"
     fi
-done < <(cat url_result4.txt)
+done < <(echo "$uniqued")
 echo -e $problematic | column -t

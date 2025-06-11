@@ -88,6 +88,3 @@ venv
 .vscode-test
 .biome/
 .million
-
-# url checker generated files from ./scripts/url-checker.sh
-url_*
