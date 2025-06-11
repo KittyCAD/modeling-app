@@ -46,3 +46,7 @@ KCL has no support for area, volume, or other higher dimension units. When inter
 ## Explicit conversions
 
 You might sometimes need to convert from one unit to another for some calculation. You can do this implicitly when calling a function (see above), but if you can't or don't want to, then you can use the explicit conversion functions in the [`std::units`](/docs/kcl-std/modules/std-units) module.
+
+KCL cannot know about changes to units caused by arithmetic. For example, you may intend for `10in * 25.4` to be the value `254mm` (i.e., `10in` in mm), however, the result of that computation in KCL is `254in`. It is always better to rely on automatic conversion or to use the explicit conversion functions, where possible.
+
+Converting between degrees and radians using π ([`PI`](/docs/kcl-std/consts/std-math-PI) in KCL) is especially prone to this error and so the `PI` constant always requires specifying units of any computation it is used with. E.g., `radius = (circumference / (2 * PI)): number(mm)`.
