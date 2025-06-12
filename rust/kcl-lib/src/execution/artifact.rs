@@ -673,16 +673,14 @@ impl ArtifactGraph {
         self.map.values()
     }
 
+    pub fn clear(&mut self) {
+        self.map.clear();
+        self.item_count = 0;
+    }
+
     /// Consume the artifact graph and return the map of artifacts.
     fn into_map(self) -> IndexMap<ArtifactId, Artifact> {
         self.map
-    }
-
-    /// Used to make the mermaid tests deterministic.
-    #[cfg(test)]
-    pub(crate) fn sort(&mut self) {
-        self.map
-            .sort_by(|_ak, av, _bk, bv| av.partial_cmp(bv).unwrap_or(std::cmp::Ordering::Equal));
     }
 }
 

@@ -2,10 +2,6 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
-#[cfg(feature = "artifact-graph")]
-use kcmc::websocket::WebSocketResponse;
-#[cfg(feature = "artifact-graph")]
-use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -50,26 +46,18 @@ pub(super) struct GlobalState {
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
     pub errors: Vec<CompilationError>,
-    #[cfg_attr(not(feature = "artifact-graph"), allow(dead_code))]
+    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     pub artifacts: ArtifactState,
-    #[cfg_attr(not(all(test, feature = "artifact-graph")), expect(dead_code))]
+    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     pub root_module_artifacts: ModuleArtifactState,
 }
 
 #[cfg(feature = "artifact-graph")]
 #[derive(Debug, Clone, Default)]
 pub(super) struct ArtifactState {
-    /// Output map of UUIDs to artifacts.
+    /// Internal map of UUIDs to exec artifacts.  This needs to persist across
+    /// executions to allow the graph building to refer to cached artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
-    /// Output commands to allow building the artifact graph by the caller.
-    /// These are accumulated in the [`ExecutorContext`] but moved here for
-    /// convenience of the execution cache.
-    pub commands: Vec<ArtifactCommand>,
-    /// Responses from the engine for `artifact_commands`.  We need to cache
-    /// this so that we can build the artifact graph.  These are accumulated in
-    /// the [`ExecutorContext`] but moved here for convenience of the execution
-    /// cache.
-    pub responses: IndexMap<Uuid, WebSocketResponse>,
     /// Output artifact graph.
     pub graph: ArtifactGraph,
     /// Operations that have been performed in execution order, for display in
@@ -82,16 +70,18 @@ pub(super) struct ArtifactState {
 pub(super) struct ArtifactState {}
 
 /// Artifact state for a single module.
-#[cfg(all(test, feature = "artifact-graph"))]
+#[cfg(feature = "artifact-graph")]
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct ModuleArtifactState {
+    /// Internal map of UUIDs to exec artifacts.
+    pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Outgoing engine commands.
     pub commands: Vec<ArtifactCommand>,
     /// Operations that have been performed in execution order.
     pub operations: Vec<Operation>,
 }
 
-#[cfg(not(all(test, feature = "artifact-graph")))]
+#[cfg(not(feature = "artifact-graph"))]
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct ModuleArtifactState {}
 
@@ -210,7 +200,7 @@ impl ExecState {
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
-        self.global.artifacts.artifacts.insert(id, artifact);
+        self.mod_local.artifacts.artifacts.insert(id, artifact);
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
@@ -224,9 +214,8 @@ impl ExecState {
 
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn push_command(&mut self, command: ArtifactCommand) {
-        #[cfg(all(test, feature = "artifact-graph"))]
         self.mod_local.artifacts.commands.push(command);
-        #[cfg(not(all(test, feature = "artifact-graph")))]
+        #[cfg(not(feature = "artifact-graph"))]
         drop(command);
     }
 
@@ -346,7 +335,7 @@ impl ExecState {
             #[cfg(feature = "artifact-graph")]
             self.global.artifacts.operations.clone(),
             #[cfg(feature = "artifact-graph")]
-            self.global.artifacts.commands.clone(),
+            Default::default(),
             #[cfg(feature = "artifact-graph")]
             self.global.artifacts.graph.clone(),
             module_id_to_module_path,
@@ -361,8 +350,26 @@ impl ExecState {
         engine: &Arc<Box<dyn EngineManager>>,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
     ) -> Result<(), KclError> {
-        let new_commands = engine.take_artifact_commands().await;
+        let mut new_commands = Vec::new();
+        let mut new_exec_artifacts = IndexMap::new();
+        for module in self.global.module_infos.values_mut() {
+            match &mut module.repr {
+                ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts)))
+                | ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
+                    new_commands.extend(module_artifacts.commands.clone());
+                    new_exec_artifacts.extend(module_artifacts.artifacts.clone());
+                }
+                ModuleRepr::Root | ModuleRepr::Kcl(_, None) | ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
+            }
+        }
+        new_commands.extend(self.global.root_module_artifacts.commands.clone());
+        new_exec_artifacts.extend(self.global.root_module_artifacts.artifacts.clone());
         let new_responses = engine.take_responses().await;
+
+        // Move the artifacts into ExecState to simplify cache management and
+        // error creation.
+        self.global.artifacts.artifacts.extend(new_exec_artifacts);
+
         let initial_graph = self.global.artifacts.graph.clone();
 
         // Build the artifact graph.
@@ -373,10 +380,6 @@ impl ExecState {
             &mut self.global.artifacts.artifacts,
             initial_graph,
         );
-        // Move the artifact commands and responses into ExecState to
-        // simplify cache management and error creation.
-        self.global.artifacts.commands.extend(new_commands);
-        self.global.artifacts.responses.extend(new_responses);
 
         let artifact_graph = graph_result?;
         self.global.artifacts.graph = artifact_graph;
@@ -442,7 +445,7 @@ impl ArtifactState {
 
 impl ModuleArtifactState {
     /// When self is a cached state, extend it with new state.
-    #[cfg(all(test, feature = "artifact-graph"))]
+    #[cfg(feature = "artifact-graph")]
     pub(crate) fn extend(&mut self, other: ModuleArtifactState) {
         self.commands.extend(other.commands);
         self.operations.extend(other.operations);

@@ -391,10 +391,6 @@ fn assert_artifact_snapshots(
         let is_writing = matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"));
         if !test.skip_assert_artifact_graph || is_writing {
             assert_snapshot(test, "Artifact graph flowchart", || {
-                let mut artifact_graph = artifact_graph.clone();
-                // Sort the map by artifact where we can.
-                artifact_graph.sort();
-
                 let flowchart = artifact_graph
                     .to_mermaid_flowchart()
                     .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));

@@ -519,6 +519,16 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         source_range: crate::execution::SourceRange,
     ) -> Result<(), KclError> {
+        // Ensure artifact commands are cleared so that we don't accumulate them
+        // across runs.
+        #[cfg(feature = "artifact-graph")]
+        {
+            exec_state.global.root_module_artifacts.commands.clear();
+            exec_state.global.root_module_artifacts.artifacts.clear();
+            exec_state.global.artifacts.artifacts.clear();
+            exec_state.global.artifacts.graph.clear();
+        }
+
         self.engine
             .clear_scene(&mut exec_state.mod_local.id_generator, source_range)
             .await
@@ -965,7 +975,7 @@ impl ExecutorContext {
         // Since we haven't technically started executing the root module yet,
         // the operations corresponding to the imports will be missing unless we
         // track them here.
-        #[cfg(all(test, feature = "artifact-graph"))]
+        #[cfg(feature = "artifact-graph")]
         exec_state
             .global
             .root_module_artifacts
@@ -1128,12 +1138,12 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await;
-        #[cfg(all(test, feature = "artifact-graph"))]
+        #[cfg(feature = "artifact-graph")]
         let exec_result = exec_result.map(|(_, env_ref, _, module_artifacts)| {
             exec_state.global.root_module_artifacts.extend(module_artifacts);
             env_ref
         });
-        #[cfg(not(all(test, feature = "artifact-graph")))]
+        #[cfg(not(feature = "artifact-graph"))]
         let exec_result = exec_result.map(|(_, env_ref, _, _)| env_ref);
 
         #[cfg(feature = "artifact-graph")]
@@ -1143,16 +1153,13 @@ impl ExecutorContext {
             for op in exec_state.global.artifacts.operations.iter_mut().skip(start_op) {
                 op.fill_node_paths(program, cached_body_items);
             }
-            #[cfg(test)]
-            {
-                for op in exec_state.global.root_module_artifacts.operations.iter_mut() {
-                    op.fill_node_paths(program, cached_body_items);
-                }
-                for module in exec_state.global.module_infos.values_mut() {
-                    if let ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts))) = &mut module.repr {
-                        for op in &mut module_artifacts.operations {
-                            op.fill_node_paths(program, cached_body_items);
-                        }
+            for op in exec_state.global.root_module_artifacts.operations.iter_mut() {
+                op.fill_node_paths(program, cached_body_items);
+            }
+            for module in exec_state.global.module_infos.values_mut() {
+                if let ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts))) = &mut module.repr {
+                    for op in &mut module_artifacts.operations {
+                        op.fill_node_paths(program, cached_body_items);
                     }
                 }
             }
