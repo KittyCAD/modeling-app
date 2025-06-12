@@ -51,7 +51,7 @@ describe('test errFromErrWithOutputs', () => {
     const error = errFromErrWithOutputs(blob)
     const errorStr = JSON.stringify(error)
     expect(errorStr).toEqual(
-      '{"kind":"internal","sourceRange":[0,0,0],"msg":"Cache busted","kclBacktrace":[],"nonFatal":[],"operations":[],"artifactCommands":[],"artifactGraph":{},"filenames":{},"defaultPlanes":null}'
+      '{"kind":"internal","sourceRange":[0,0,0],"msg":"Cache busted","kclBacktrace":[],"nonFatal":[],"operations":[],"artifactGraph":{},"filenames":{},"defaultPlanes":null}'
     )
   })
 })

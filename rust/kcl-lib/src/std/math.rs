@@ -18,7 +18,7 @@ pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let n: TyF64 = args.get_unlabeled_kw_arg("number to divide", &RuntimeType::num_any(), exec_state)?;
     let d: TyF64 = args.get_kw_arg("divisor", &RuntimeType::num_any(), exec_state)?;
 
-    let (n, d, ty) = NumericType::combine_div(n, d);
+    let (n, d, ty) = NumericType::combine_mod(n, d);
     if ty == NumericType::Unknown {
         exec_state.err(CompilationError::err(
             args.source_range,
@@ -34,21 +34,21 @@ pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 pub async fn cos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::angle(), exec_state)?;
     let num = num.to_radians();
-    Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.cos())))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(num.cos(), exec_state.current_default_units())))
 }
 
 /// Compute the sine of a number (in radians).
 pub async fn sin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::angle(), exec_state)?;
     let num = num.to_radians();
-    Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.sin())))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(num.sin(), exec_state.current_default_units())))
 }
 
 /// Compute the tangent of a number (in radians).
 pub async fn tan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::angle(), exec_state)?;
     let num = num.to_radians();
-    Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.tan())))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(num.tan(), exec_state.current_default_units())))
 }
 
 /// Compute the square root of a number.

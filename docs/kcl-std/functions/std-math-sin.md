@@ -8,7 +8,7 @@ layout: manual
 Compute the sine of a number.
 
 ```kcl
-sin(@num: number(Angle)): number(_)
+sin(@num: number(Angle)): number
 ```
 
 
@@ -21,7 +21,7 @@ sin(@num: number(Angle)): number(_)
 
 ### Returns
 
-[`number(_)`](/docs/kcl-std/types/std-types-number) - A number.
+[`number`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples
@@ -29,7 +29,7 @@ sin(@num: number(Angle)): number(_)
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 50, length = 15 / sin(135deg))
+  |> angledLine(angle = 50deg, length = 15 / sin(135deg))
   |> yLine(endAbsolute = 0)
   |> close()
 

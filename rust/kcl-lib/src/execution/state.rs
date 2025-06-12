@@ -3,7 +3,9 @@ use std::sync::Arc;
 use anyhow::Result;
 use indexmap::IndexMap;
 #[cfg(feature = "artifact-graph")]
-use kittycad_modeling_cmds::websocket::WebSocketResponse;
+use kcmc::websocket::WebSocketResponse;
+#[cfg(feature = "artifact-graph")]
+use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -50,6 +52,8 @@ pub(super) struct GlobalState {
     pub errors: Vec<CompilationError>,
     #[cfg_attr(not(feature = "artifact-graph"), allow(dead_code))]
     pub artifacts: ArtifactState,
+    #[cfg_attr(not(all(test, feature = "artifact-graph")), expect(dead_code))]
+    pub root_module_artifacts: ModuleArtifactState,
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -77,6 +81,20 @@ pub(super) struct ArtifactState {
 #[derive(Debug, Clone, Default)]
 pub(super) struct ArtifactState {}
 
+/// Artifact state for a single module.
+#[cfg(all(test, feature = "artifact-graph"))]
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
+pub struct ModuleArtifactState {
+    /// Outgoing engine commands.
+    pub commands: Vec<ArtifactCommand>,
+    /// Operations that have been performed in execution order.
+    pub operations: Vec<Operation>,
+}
+
+#[cfg(not(all(test, feature = "artifact-graph")))]
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
+pub struct ModuleArtifactState {}
+
 #[derive(Debug, Clone)]
 pub(super) struct ModuleState {
     /// The id generator for this module.
@@ -96,6 +114,7 @@ pub(super) struct ModuleState {
     pub settings: MetaSettings,
     pub(super) explicit_length_units: bool,
     pub(super) path: ModulePath,
+    pub artifacts: ModuleArtifactState,
 }
 
 impl ExecState {
@@ -126,6 +145,17 @@ impl ExecState {
         self.global.errors.push(e);
     }
 
+    pub fn clear_units_warnings(&mut self, source_range: &SourceRange) {
+        self.global.errors = std::mem::take(&mut self.global.errors)
+            .into_iter()
+            .filter(|e| {
+                e.severity != Severity::Warning
+                    || !source_range.contains_range(&e.source_range)
+                    || e.tag != crate::errors::Tag::UnknownNumericUnits
+            })
+            .collect();
+    }
+
     pub fn errors(&self) -> &[CompilationError] {
         &self.global.errors
     }
@@ -133,7 +163,7 @@ impl ExecState {
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
-    pub async fn to_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
+    pub async fn into_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
@@ -142,21 +172,17 @@ impl ExecState {
             #[cfg(feature = "artifact-graph")]
             operations: self.global.artifacts.operations,
             #[cfg(feature = "artifact-graph")]
-            artifact_commands: self.global.artifacts.commands,
-            #[cfg(feature = "artifact-graph")]
             artifact_graph: self.global.artifacts.graph,
             errors: self.global.errors,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
     }
 
-    pub async fn to_mock_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
+    pub async fn into_mock_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
         ExecOutcome {
             variables: self.mod_local.variables(main_ref),
             #[cfg(feature = "artifact-graph")]
             operations: Default::default(),
-            #[cfg(feature = "artifact-graph")]
-            artifact_commands: Default::default(),
             #[cfg(feature = "artifact-graph")]
             artifact_graph: Default::default(),
             errors: self.global.errors,
@@ -188,10 +214,20 @@ impl ExecState {
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
+        #[cfg(all(test, feature = "artifact-graph"))]
+        self.mod_local.artifacts.operations.push(op.clone());
         #[cfg(feature = "artifact-graph")]
         self.global.artifacts.operations.push(op);
         #[cfg(not(feature = "artifact-graph"))]
         drop(op);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn push_command(&mut self, command: ArtifactCommand) {
+        #[cfg(all(test, feature = "artifact-graph"))]
+        self.mod_local.artifacts.commands.push(command);
+        #[cfg(not(all(test, feature = "artifact-graph")))]
+        drop(command);
     }
 
     pub(super) fn next_module_id(&self) -> ModuleId {
@@ -239,6 +275,21 @@ impl ExecState {
 
     pub fn get_module(&mut self, id: ModuleId) -> Option<&ModuleInfo> {
         self.global.module_infos.get(&id)
+    }
+
+    #[cfg(all(test, feature = "artifact-graph"))]
+    pub(crate) fn modules(&self) -> &ModuleInfoMap {
+        &self.global.module_infos
+    }
+
+    #[cfg(all(test, feature = "artifact-graph"))]
+    pub(crate) fn operations(&self) -> &[Operation] {
+        &self.global.artifacts.operations
+    }
+
+    #[cfg(all(test, feature = "artifact-graph"))]
+    pub(crate) fn root_module_artifact_state(&self) -> &ModuleArtifactState {
+        &self.global.root_module_artifacts
     }
 
     pub fn current_default_units(&self) -> NumericType {
@@ -349,6 +400,7 @@ impl GlobalState {
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
             artifacts: Default::default(),
+            root_module_artifacts: Default::default(),
             mod_loader: Default::default(),
             errors: Default::default(),
             id_to_source: Default::default(),
@@ -388,6 +440,15 @@ impl ArtifactState {
     }
 }
 
+impl ModuleArtifactState {
+    /// When self is a cached state, extend it with new state.
+    #[cfg(all(test, feature = "artifact-graph"))]
+    pub(crate) fn extend(&mut self, other: ModuleArtifactState) {
+        self.commands.extend(other.commands);
+        self.operations.extend(other.operations);
+    }
+}
+
 impl ModuleState {
     pub(super) fn new(path: ModulePath, memory: Arc<ProgramMemory>, module_id: Option<ModuleId>) -> Self {
         ModuleState {
@@ -403,6 +464,7 @@ impl ModuleState {
                 default_angle_units: Default::default(),
                 kcl_version: "0.1".to_owned(),
             },
+            artifacts: Default::default(),
         }
     }
 

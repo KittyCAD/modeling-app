@@ -53,7 +53,7 @@ for to construct your shape, you're likely looking for tangentialArc.
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
-  |> arc(angleStart = 0, angleEnd = 280, radius = 16)
+  |> arc(angleStart = 0, angleEnd = 280deg, radius = 16)
   |> close()
 example = extrude(exampleSketch, length = 10)
 

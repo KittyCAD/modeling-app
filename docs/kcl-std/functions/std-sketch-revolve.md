@@ -62,7 +62,7 @@ part001 = startSketchOn(XY)
   |> line(end = [0, -5.5])
   |> line(end = [-2, 0])
   |> close()
-  |> revolve(axis = Y) // default angle is 360
+  |> revolve(axis = Y) // default angle is 360deg
 
 ```
 
@@ -72,7 +72,7 @@ part001 = startSketchOn(XY)
 // A donut shape.
 sketch001 = startSketchOn(XY)
   |> circle(center = [15, 0], radius = 5)
-  |> revolve(angle = 360, axis = Y)
+  |> revolve(angle = 360deg, axis = Y)
 
 ```
 
@@ -89,7 +89,7 @@ part001 = startSketchOn(XY)
   |> line(end = [0, -5.5])
   |> line(end = [-2, 0])
   |> close()
-  |> revolve(axis = Y, angle = 180)
+  |> revolve(axis = Y, angle = 180deg)
 
 ```
 
@@ -106,7 +106,7 @@ part001 = startSketchOn(XY)
   |> line(end = [0, -5.5])
   |> line(end = [-2, 0])
   |> close()
-  |> revolve(axis = Y, angle = 180)
+  |> revolve(axis = Y, angle = 180deg)
 
 part002 = startSketchOn(part001, face = END)
   |> startProfile(at = [4.5, -5])
@@ -131,7 +131,7 @@ box = startSketchOn(XY)
 
 sketch001 = startSketchOn(box, face = END)
   |> circle(center = [10, 10], radius = 4)
-  |> revolve(angle = -90, axis = Y)
+  |> revolve(angle = -90deg, axis = Y)
 
 ```
 
@@ -148,7 +148,7 @@ box = startSketchOn(XY)
 
 sketch001 = startSketchOn(box, face = END)
   |> circle(center = [10, 10], radius = 4)
-  |> revolve(angle = 90, axis = getOppositeEdge(revolveAxis))
+  |> revolve(angle = 90deg, axis = getOppositeEdge(revolveAxis))
 
 ```
 
@@ -165,7 +165,7 @@ box = startSketchOn(XY)
 
 sketch001 = startSketchOn(box, face = END)
   |> circle(center = [10, 10], radius = 4)
-  |> revolve(angle = 90, axis = getOppositeEdge(revolveAxis), tolerance = 0.0001)
+  |> revolve(angle = 90deg, axis = getOppositeEdge(revolveAxis), tolerance = 0.0001)
 
 ```
 
@@ -229,7 +229,7 @@ profile001 = startSketchOn(XY)
 
 sketch001 = startSketchOn(XY)
   |> circle(center = [-10, 10], radius = 4)
-  |> revolve(angle = 90, axis = revolveAxis)
+  |> revolve(angle = 90deg, axis = revolveAxis)
 
 ```
 
@@ -246,7 +246,7 @@ profile001 = startSketchOn(XY)
 
 sketch001 = startSketchOn(XY)
   |> circle(center = [-10, 10], radius = 4)
-  |> revolve(angle = 90, axis = revolveAxis)
+  |> revolve(angle = 90deg, axis = revolveAxis)
 
 ```
 
@@ -263,7 +263,7 @@ profile001 = startSketchOn(XY)
 
 sketch001 = startSketchOn(XY)
   |> circle(center = [-10, 10], radius = 4)
-  |> revolve(angle = 90, axis = revolveAxis, symmetric = true)
+  |> revolve(angle = 90deg, axis = revolveAxis, symmetric = true)
 
 ```
 
@@ -280,7 +280,7 @@ profile001 = startSketchOn(XY)
 
 sketch001 = startSketchOn(XY)
   |> circle(center = [-10, 10], radius = 4)
-  |> revolve(angle = 90, axis = revolveAxis, bidirectionalAngle = 50)
+  |> revolve(angle = 90deg, axis = revolveAxis, bidirectionalAngle = 50)
 
 ```
 

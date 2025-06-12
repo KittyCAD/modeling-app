@@ -19,8 +19,8 @@ use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::RuntimeType, ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSurface,
-        Solid,
+        types::RuntimeType, ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch,
+        SketchSurface, Solid,
     },
     parsing::ast::types::TagNode,
     std::Args,
@@ -85,7 +85,7 @@ async fn inner_extrude(
 
     for sketch in &sketches {
         let id = exec_state.next_uuid();
-        args.batch_modeling_cmds(&sketch.build_sketch_mode_cmds(
+        let cmds = sketch.build_sketch_mode_cmds(
             exec_state,
             ModelingCmdReq {
                 cmd_id: id.into(),
@@ -96,8 +96,10 @@ async fn inner_extrude(
                     opposite: opposite.clone(),
                 }),
             },
-        ))
-        .await?;
+        );
+        exec_state
+            .batch_modeling_cmds(ModelingCmdMeta::from_args_id(&args, id), &cmds)
+            .await?;
 
         solids.push(
             do_post_extrude(
@@ -139,11 +141,12 @@ pub(crate) async fn do_post_extrude<'a>(
 ) -> Result<Solid, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            args.into(),
+            ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
+        )
+        .await?;
 
     let any_edge_id = if let Some(id) = edge_id {
         id
@@ -168,9 +171,9 @@ pub(crate) async fn do_post_extrude<'a>(
         sketch.id = face.solid.sketch.id;
     }
 
-    let solid3d_info = args
+    let solid3d_info = exec_state
         .send_modeling_cmd(
-            exec_state.next_uuid(),
+            args.into(),
             ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
                 edge_id: any_edge_id,
                 object_id: sketch.id,
@@ -193,14 +196,15 @@ pub(crate) async fn do_post_extrude<'a>(
         // Getting the ids of a sectional sweep does not work well and we cannot guarantee that
         // any of these call will not just fail.
         if !sectional {
-            args.batch_modeling_cmd(
-                exec_state.next_uuid(),
-                ModelingCmd::from(mcmd::Solid3dGetAdjacencyInfo {
-                    object_id: sketch.id,
-                    edge_id: any_edge_id,
-                }),
-            )
-            .await?;
+            exec_state
+                .batch_modeling_cmd(
+                    args.into(),
+                    ModelingCmd::from(mcmd::Solid3dGetAdjacencyInfo {
+                        object_id: sketch.id,
+                        edge_id: any_edge_id,
+                    }),
+                )
+                .await?;
         }
     }
 
