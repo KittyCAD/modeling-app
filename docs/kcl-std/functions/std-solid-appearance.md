@@ -55,7 +55,7 @@ example = extrude(exampleSketch, length = 5)
 // Add color to a revolved solid.
 sketch001 = startSketchOn(XY)
   |> circle(center = [15, 0], radius = 5)
-  |> revolve(angle = 360, axis = Y)
+  |> revolve(angle = 360deg, axis = Y)
   |> appearance(color = '#ff0000', metalness = 90, roughness = 90)
 
 ```
@@ -196,9 +196,9 @@ example = extrude(exampleSketch, length = 1)
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 pipeHole = startSketchOn(XY)

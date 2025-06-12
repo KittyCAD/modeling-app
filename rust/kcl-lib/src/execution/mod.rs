@@ -1943,13 +1943,13 @@ notNull = !myNull
 "#;
         assert_eq!(
             parse_execute(code1).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: number(default units)",
+            "Cannot apply unary operator ! to non-boolean value: a number",
         );
 
         let code2 = "notZero = !0";
         assert_eq!(
             parse_execute(code2).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: number(default units)",
+            "Cannot apply unary operator ! to non-boolean value: a number",
         );
 
         let code3 = r#"
@@ -1957,7 +1957,7 @@ notEmptyString = !""
 "#;
         assert_eq!(
             parse_execute(code3).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: string",
+            "Cannot apply unary operator ! to non-boolean value: a string",
         );
 
         let code4 = r#"
@@ -1966,7 +1966,7 @@ notMember = !obj.a
 "#;
         assert_eq!(
             parse_execute(code4).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: number(default units)",
+            "Cannot apply unary operator ! to non-boolean value: a number",
         );
 
         let code5 = "
@@ -1974,7 +1974,7 @@ a = []
 notArray = !a";
         assert_eq!(
             parse_execute(code5).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: [any; 0]",
+            "Cannot apply unary operator ! to non-boolean value: an empty array",
         );
 
         let code6 = "
@@ -1982,7 +1982,7 @@ x = {}
 notObject = !x";
         assert_eq!(
             parse_execute(code6).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: {  }",
+            "Cannot apply unary operator ! to non-boolean value: an object",
         );
 
         let code7 = "
@@ -2008,7 +2008,7 @@ notTagDeclarator = !myTagDeclarator";
         assert!(
             tag_declarator_err
                 .message()
-                .starts_with("Cannot apply unary operator ! to non-boolean value: tag"),
+                .starts_with("Cannot apply unary operator ! to non-boolean value: a tag declarator"),
             "Actual error: {:?}",
             tag_declarator_err
         );
@@ -2022,7 +2022,7 @@ notTagIdentifier = !myTag";
         assert!(
             tag_identifier_err
                 .message()
-                .starts_with("Cannot apply unary operator ! to non-boolean value: tag"),
+                .starts_with("Cannot apply unary operator ! to non-boolean value: a tag identifier"),
             "Actual error: {:?}",
             tag_identifier_err
         );

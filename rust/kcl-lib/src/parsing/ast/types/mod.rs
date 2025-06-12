@@ -3174,6 +3174,19 @@ impl PrimitiveType {
             _ => None,
         }
     }
+
+    fn display_multiple(&self) -> String {
+        match self {
+            PrimitiveType::Any => "values".to_owned(),
+            PrimitiveType::Number(_) => "numbers".to_owned(),
+            PrimitiveType::String => "strings".to_owned(),
+            PrimitiveType::Boolean => "bools".to_owned(),
+            PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
+            PrimitiveType::Function(_) => "functions".to_owned(),
+            PrimitiveType::Named { id } => format!("`{}`s", id.name),
+            PrimitiveType::Tag => "tags".to_owned(),
+        }
+    }
 }
 
 impl fmt::Display for PrimitiveType {
@@ -3262,6 +3275,53 @@ pub enum Type {
     Object {
         properties: Vec<(Node<Identifier>, Node<Type>)>,
     },
+}
+
+impl Type {
+    pub fn human_friendly_type(&self) -> String {
+        match self {
+            Type::Primitive(ty) => format!("a value with type `{ty}`"),
+            Type::Array {
+                ty,
+                len: ArrayLen::None | ArrayLen::Minimum(0),
+            } => {
+                format!("an array of {}", ty.display_multiple())
+            }
+            Type::Array {
+                ty,
+                len: ArrayLen::Minimum(1),
+            } => format!("one or more {}", ty.display_multiple()),
+            Type::Array {
+                ty,
+                len: ArrayLen::Minimum(n),
+            } => {
+                format!("an array of {n} or more {}", ty.display_multiple())
+            }
+            Type::Array {
+                ty,
+                len: ArrayLen::Known(n),
+            } => format!("an array of {n} {}", ty.display_multiple()),
+            Type::Union { tys } => tys
+                .iter()
+                .map(|t| t.human_friendly_type())
+                .collect::<Vec<_>>()
+                .join(" or "),
+            Type::Object { .. } => format!("an object with fields `{}`", self),
+        }
+    }
+
+    fn display_multiple(&self) -> String {
+        match self {
+            Type::Primitive(ty) => ty.display_multiple(),
+            Type::Array { .. } => "arrays".to_owned(),
+            Type::Union { tys } => tys
+                .iter()
+                .map(|t| t.display_multiple())
+                .collect::<Vec<_>>()
+                .join(" or "),
+            Type::Object { .. } => format!("objects with fields `{self}`"),
+        }
+    }
 }
 
 impl fmt::Display for Type {
