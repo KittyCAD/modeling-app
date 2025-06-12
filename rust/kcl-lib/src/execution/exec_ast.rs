@@ -6,13 +6,14 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations,
+        cad_op::OpKclValue,
         fn_call::Args,
         kcl_value::{FunctionSource, TypeDef},
         memory,
         state::ModuleState,
         types::{NumericType, PrimitiveType, RuntimeType},
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta, ModuleArtifactState,
-        PlaneType, StatementKind, TagIdentifier,
+        Operation, PlaneType, StatementKind, TagIdentifier,
     },
     fmt,
     modules::{ModuleId, ModulePath, ModuleRepr},
@@ -24,7 +25,7 @@ use crate::{
     },
     source_range::SourceRange,
     std::args::TyF64,
-    CompilationError,
+    CompilationError, NodePath,
 };
 
 impl<'a> StatementKind<'a> {
@@ -328,6 +329,16 @@ impl ExecutorContext {
                     exec_state
                         .mut_stack()
                         .add(var_name.clone(), rhs.clone(), source_range)?;
+
+                    if rhs.show_variable_in_feature_tree() {
+                        exec_state.push_op(Operation::VariableDeclaration {
+                            name: var_name.clone(),
+                            value: OpKclValue::from(&rhs),
+                            visibility: variable_declaration.visibility,
+                            node_path: NodePath::placeholder(),
+                            source_range,
+                        });
+                    }
 
                     // Track exports.
                     if let ItemVisibility::Export = variable_declaration.visibility {
