@@ -24,7 +24,7 @@ test.describe('Test network related behaviors', () => {
 
       await homePage.goToModelingScene()
 
-      const networkToggle = page.getByTestId('network-toggle')
+      const networkToggle = page.getByTestId(/network-toggle/)
 
       // This is how we wait until the stream is online
       await expect(
@@ -99,7 +99,7 @@ test.describe('Test network related behaviors', () => {
     'Engine disconnect & reconnect in sketch mode',
     { tag: '@skipLocalEngine' },
     async ({ page, homePage, toolbar, scene, cmdBar }) => {
-      const networkToggle = page.getByTestId('network-toggle')
+      const networkToggle = page.getByTestId(/network-toggle/)
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
       )
@@ -286,7 +286,7 @@ profile001 = startProfile(sketch001, at = [12.34, -12.34])
     'Paused stream freezes view frame, unpause reconnect is seamless to user',
     { tag: ['@desktop', '@skipLocalEngine'] },
     async ({ page, homePage, scene, cmdBar, toolbar, tronApp }) => {
-      const networkToggle = page.getByTestId('network-toggle')
+      const networkToggle = page.getByTestId(/network-toggle/)
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
       )

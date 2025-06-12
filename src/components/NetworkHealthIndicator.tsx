@@ -94,42 +94,6 @@ export const useNetworkHealthStatus = (): StatusBarItemType => {
   }
 }
 
-export const NetworkHealthIndicator = () => {
-  const { hasIssues, overallState } = useNetworkContext()
-
-  return (
-    <Popover className="relative">
-      <Popover.Button
-        className={`p-0 border-none bg-transparent dark:bg-transparent relative ${
-          hasIssues
-            ? 'focus-visible:outline-destroy-80'
-            : 'focus-visible:outline-succeed-80'
-        }`}
-        data-testid="network-toggle"
-      >
-        <ActionIcon
-          icon={overallConnectionStateIcon[overallState]}
-          data-testid={`network-toggle-${
-            overallState === NetworkHealthState.Ok ? 'ok' : 'other'
-          }`}
-          className="p-1"
-          iconClassName={overallConnectionStateColor[overallState].icon}
-          bgClassName={`rounded-sm ${overallConnectionStateColor[overallState].bg}`}
-        />
-        <Tooltip position="top-right" wrapperClassName="ui-open:hidden">
-          Network health ({NETWORK_HEALTH_TEXT[overallState]})
-        </Tooltip>
-      </Popover.Button>
-      <Popover.Panel
-        className="absolute right-0 left-auto bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm"
-        data-testid="network-popover"
-      >
-        <NetworkHealthPopoverContent />
-      </Popover.Panel>
-    </Popover>
-  )
-}
-
 function NetworkHealthPopoverContent() {
   const {
     overallState,
