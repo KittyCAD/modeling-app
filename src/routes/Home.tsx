@@ -403,7 +403,6 @@ const Home = () => {
       </div>
       <StatusBar
         globalItems={[
-          useNetworkHealthStatus(),
           useNetworkMachineStatus(),
           ...defaultGlobalStatusBarItems({ location }),
         ]}
