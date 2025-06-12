@@ -2,7 +2,7 @@ name: Release
 description: Create a new release for the Zoo Design Studio
 title: Cut release v1.?.?
 labels: [release]
-assignees: [${{ github.actor }}]
+assignees: []
 body:
   - type: markdown
     attributes:
