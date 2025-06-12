@@ -256,7 +256,6 @@ impl EngineConnection {
                 let entity_ids = generate_repl_uuids(*num_repetitions as usize);
 
                 this_response = OkModelingCmdResponse::EntityCircularPattern(kcmc::output::EntityCircularPattern {
-                    entity_ids: entity_ids.clone(),
                     entity_face_edge_ids: vec![],
                 });
 
