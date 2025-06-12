@@ -4,8 +4,7 @@ description: Error from executing invalid_member_object.kcl
 ---
 KCL Semantic error
 
-  × semantic: Only arrays can be indexed, but you're trying to index a
-  │ number(default units)
+  × semantic: Only arrays can be indexed, but you're trying to index a number
    ╭─[2:5]
  1 │ num = 999
  2 │ x = num[3]

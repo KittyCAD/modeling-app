@@ -29,7 +29,7 @@ units::toRadians(@num: number(Angle)): number(rad)
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 50, length = 70 * cos(units::toRadians(45)))
+  |> angledLine(angle = 50deg, length = 70 * cos(units::toRadians(45deg)))
   |> yLine(endAbsolute = 0)
   |> close()
 

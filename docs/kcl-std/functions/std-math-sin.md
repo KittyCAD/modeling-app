@@ -29,7 +29,7 @@ sin(@num: number(Angle)): number
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 50, length = 15 / sin(135deg))
+  |> angledLine(angle = 50deg, length = 15 / sin(135deg))
   |> yLine(endAbsolute = 0)
   |> close()
 

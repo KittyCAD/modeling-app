@@ -172,6 +172,10 @@ export class CmdBarFixture {
     return this.page.getByTestId('cmd-bar-arg-value')
   }
 
+  get variableCheckbox() {
+    return this.page.getByTestId('cmd-bar-variable-checkbox')
+  }
+
   get cmdOptions() {
     return this.page.getByTestId('cmd-bar-option')
   }
@@ -191,7 +195,7 @@ export class CmdBarFixture {
    * Clicks the Create new variable button for kcl input
    */
   createNewVariable = async () => {
-    await this.page.getByRole('button', { name: 'Create new variable' }).click()
+    await this.variableCheckbox.click()
   }
 
   /**

@@ -29,7 +29,7 @@ sqrt(@input: number): number
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 50, length = sqrt(2500))
+  |> angledLine(angle = 50deg, length = sqrt(2500))
   |> yLine(endAbsolute = 0)
   |> close()
 

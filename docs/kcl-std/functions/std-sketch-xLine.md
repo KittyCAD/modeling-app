@@ -38,10 +38,10 @@ xLine(
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> xLine(length = 15)
-  |> angledLine(angle = 80, length = 15)
+  |> angledLine(angle = 80deg, length = 15)
   |> line(end = [8, -10])
   |> xLine(length = 10)
-  |> angledLine(angle = 120, length = 30)
+  |> angledLine(angle = 120deg, length = 30)
   |> xLine(length = -15)
   |> close()
 

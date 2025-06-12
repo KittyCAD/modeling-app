@@ -47,7 +47,7 @@ impl Tag {
         match self {
             Tag::Deprecated => Some(vec![DiagnosticTag::DEPRECATED]),
             Tag::Unnecessary => Some(vec![DiagnosticTag::UNNECESSARY]),
-            Tag::None => None,
+            Tag::UnknownNumericUnits | Tag::None => None,
         }
     }
 }
