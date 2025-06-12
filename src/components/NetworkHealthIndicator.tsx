@@ -1,8 +1,5 @@
-import { Popover } from '@headlessui/react'
-
 import type { ActionIconProps } from '@src/components/ActionIcon'
 import { ActionIcon } from '@src/components/ActionIcon'
-import Tooltip from '@src/components/Tooltip'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import type { ConnectingTypeGroup } from '@src/lang/std/engineConnection'
