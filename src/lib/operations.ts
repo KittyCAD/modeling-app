@@ -1041,6 +1041,8 @@ export function getOperationLabel(op: Operation): string {
   switch (op.type) {
     case 'StdLibCall':
       return stdLibMap[op.name]?.label ?? op.name
+    case 'VariableDeclaration':
+      return 'Parameter'
     case 'GroupBegin':
       if (op.group.type === 'FunctionCall') {
         return op.group.name ?? 'anonymous'
@@ -1065,6 +1067,8 @@ export function getOperationIcon(op: Operation): CustomIconName {
   switch (op.type) {
     case 'StdLibCall':
       return stdLibMap[op.name]?.icon ?? 'questionMark'
+    case 'VariableDeclaration':
+      return 'make-variable'
     case 'GroupBegin':
       if (op.group.type === 'ModuleInstance') {
         return 'import' // TODO: Use insert icon.
@@ -1086,6 +1090,9 @@ export function getOperationVariableName(
   op: Operation,
   program: Program
 ): string | undefined {
+  if (op.type === 'VariableDeclaration') {
+    return op.name
+  }
   if (
     op.type !== 'StdLibCall' &&
     !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall')

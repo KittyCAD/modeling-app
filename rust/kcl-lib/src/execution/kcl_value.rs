@@ -277,6 +277,31 @@ impl KclValue {
         }
     }
 
+    /// Returns true if we should generate an [`crate::execution::Operation`] to
+    /// display in the Feature Tree for variable declarations initialized with
+    /// this value.
+    pub(crate) fn show_variable_in_feature_tree(&self) -> bool {
+        match self {
+            KclValue::Uuid { .. } => false,
+            KclValue::Bool { .. } | KclValue::Number { .. } | KclValue::String { .. } => true,
+            KclValue::Tuple { .. }
+            | KclValue::HomArray { .. }
+            | KclValue::Object { .. }
+            | KclValue::TagIdentifier(_)
+            | KclValue::TagDeclarator(_)
+            | KclValue::Plane { .. }
+            | KclValue::Face { .. }
+            | KclValue::Sketch { .. }
+            | KclValue::Solid { .. }
+            | KclValue::Helix { .. }
+            | KclValue::ImportedGeometry(_)
+            | KclValue::Function { .. }
+            | KclValue::Module { .. }
+            | KclValue::Type { .. }
+            | KclValue::KclNone { .. } => false,
+        }
+    }
+
     /// Human readable type name used in error messages.  Should not be relied
     /// on for program logic.
     pub(crate) fn human_friendly_type(&self) -> String {
