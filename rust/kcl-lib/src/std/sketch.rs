@@ -684,7 +684,7 @@ async fn inner_angled_line_to_y(
 pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
     let angle: TyF64 = args.get_kw_arg("angle", &RuntimeType::angle(), exec_state)?;
-    let intersect_tag: TagIdentifier = args.get_kw_arg("intersectTag", &RuntimeType::tag_identifier(), exec_state)?;
+    let intersect_tag: TagIdentifier = args.get_kw_arg("intersectTag", &RuntimeType::tagged_edge(), exec_state)?;
     let offset = args.get_kw_arg_opt("offset", &RuntimeType::length(), exec_state)?;
     let tag: Option<TagNode> = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
     let new_sketch =
@@ -776,7 +776,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
         &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::plane()]),
         exec_state,
     )?;
-    let face = args.get_kw_arg_opt("face", &RuntimeType::tag_identifier(), exec_state)?;
+    let face = args.get_kw_arg_opt("face", &RuntimeType::tagged_face(), exec_state)?;
 
     match inner_start_sketch_on(data, face, exec_state, &args).await? {
         SketchSurface::Plane(value) => Ok(KclValue::Plane { value }),

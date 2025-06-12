@@ -8,9 +8,13 @@ layout: manual
 An abstract 3d plane aligned with the X and Z axes. Its normal is the negative Y axis.
 
 ```kcl
-XZ
+XZ: Plane
 ```
 
 
+
+### Type
+
+[`Plane`](/docs/kcl-std/types/std-types-Plane) - An abstract plane.
 
 

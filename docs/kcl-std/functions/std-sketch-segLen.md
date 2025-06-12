@@ -8,7 +8,7 @@ layout: manual
 Compute the length of the provided line segment.
 
 ```kcl
-segLen(@tag: tagIdent): number(Length)
+segLen(@tag: TaggedEdge): number(Length)
 ```
 
 
@@ -17,7 +17,7 @@ segLen(@tag: tagIdent): number(Length)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`tagIdent`](/docs/kcl-std/types/std-types-tagIdent) | The line segment being queried by its tag. | Yes |
+| `tag` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The line segment being queried by its tag. | Yes |
 
 ### Returns
 

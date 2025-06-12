@@ -64,10 +64,10 @@ export Z = {
 }: Axis3d
 
 /// Identifies the starting face of an extrusion. I.e., the face which is extruded.
-export START = 'start'
+export START = 'start': TaggedFace
 
 /// Identifies the ending face of an extrusion. I.e., the new face created by an extrusion.
-export END = 'end'
+export END = 'end': TaggedFace
 
 /// Create a helix.
 ///

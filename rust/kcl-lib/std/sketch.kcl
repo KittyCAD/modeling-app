@@ -186,7 +186,7 @@ export fn startSketchOn(
   /// Profile whose start is being used.
   @planeOrSolid: Solid | Plane,
   /// Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`).
-  face?: tagIdent,
+  face?: TaggedFace,
 ): Plane | Face {}
 
 /// Start a new profile at a given point.
@@ -675,7 +675,7 @@ export fn patternTransform2d(
 @(impl = std_rust)
 export fn getOppositeEdge(
   /// The tag of the edge you want to find the opposite edge of.
-  @edge: tagIdent,
+  @edge: TaggedEdge,
 ): Edge {}
 
 /// Get the next adjacent edge to the edge given.
@@ -709,7 +709,7 @@ export fn getOppositeEdge(
 @(impl = std_rust)
 export fn getNextAdjacentEdge(
   /// The tag of the edge you want to find the next adjacent edge of.
-  @edge: tagIdent,
+  @edge: TaggedEdge,
 ): Edge {}
 
 /// Get the previous adjacent edge to the edge given.
@@ -743,7 +743,7 @@ export fn getNextAdjacentEdge(
 @(impl = std_rust)
 export fn getPreviousAdjacentEdge(
   /// The tag of the edge you want to find the previous adjacent edge of.
-  @edge: tagIdent,
+  @edge: TaggedEdge,
 ): Edge {}
 
 /// Get the shared edge between two faces.
@@ -772,7 +772,7 @@ export fn getPreviousAdjacentEdge(
 @(impl = std_rust)
 export fn getCommonEdge(
   /// The tags of the faces you want to find the common edge between.
-  faces: [tagIdent; 2],
+  faces: [TaggedFace; 2],
 ): Edge {}
 
 /// Construct a circle derived from 3 points.
@@ -1151,7 +1151,7 @@ export fn patternCircular2d(
 @(impl = std_rust)
 export fn segEnd(
   /// The line segment being queried by its tag.
-  @tag: tagIdent,
+  @tag: TaggedEdge,
 ): Point2d {}
 
 /// Compute the ending point of the provided line segment along the 'x' axis.
@@ -1170,7 +1170,7 @@ export fn segEnd(
 @(impl = std_rust)
 export fn segEndX(
   /// The line segment being queried by its tag.
-  @tag: tagIdent,
+  @tag: TaggedEdge,
 ): number(Length) {}
 
 /// Compute the ending point of the provided line segment along the 'y' axis.
@@ -1190,7 +1190,7 @@ export fn segEndX(
 @(impl = std_rust)
 export fn segEndY(
   /// The line segment being queried by its tag.
-  @tag: tagIdent,
+  @tag: TaggedEdge,
 ): number(Length) {}
 
 /// Compute the starting point of the provided line segment.
@@ -1221,7 +1221,7 @@ export fn segEndY(
 @(impl = std_rust)
 export fn segStart(
   /// The line segment being queried by its tag.
-  @tag: tagIdent,
+  @tag: TaggedEdge,
 ): Point2d {}
 
 /// Compute the starting point of the provided line segment along the 'x' axis.
@@ -1240,7 +1240,7 @@ export fn segStart(
 @(impl = std_rust)
 export fn segStartX(
   /// The line segment being queried by its tag.
-  @tag: tagIdent,
+  @tag: TaggedEdge,
 ): number(Length) {}
 
 /// Compute the starting point of the provided line segment along the 'y' axis.
@@ -1260,7 +1260,7 @@ export fn segStartX(
 @(impl = std_rust)
 export fn segStartY(
   /// The line segment being queried by its tag.
-  @tag: tagIdent,
+  @tag: TaggedEdge,
 ): number(Length) {}
 
 /// Extract the 'x' axis value of the last line segment in the provided 2-d sketch.
@@ -1323,7 +1323,7 @@ export fn lastSegY(
 @(impl = std_rust)
 export fn segLen(
   /// The line segment being queried by its tag.
-  @tag: tagIdent,
+  @tag: TaggedEdge,
 ): number(Length) {}
 
 /// Compute the angle (in degrees) of the provided line segment.
@@ -1344,7 +1344,7 @@ export fn segLen(
 @(impl = std_rust)
 export fn segAng(
   /// The line segment being queried by its tag.
-  @tag: tagIdent,
+  @tag: TaggedEdge,
 ): number(Angle) {}
 
 /// Returns the angle coming out of the end of the segment in degrees.
@@ -1421,7 +1421,7 @@ export fn segAng(
 @(impl = std_rust)
 export fn tangentToEnd(
   /// The line segment being queried by its tag.
-  @tag: tagIdent,
+  @tag: TaggedEdge,
 ): number(Angle) {}
 
 /// Extract the provided 2-dimensional sketch's profile's origin value.
@@ -1661,7 +1661,7 @@ export fn angledLineThatIntersects(
   /// Which angle should the line be drawn at?
   angle: number(Angle),
   /// The tag of the line to intersect with.
-  intersectTag: tagIdent,
+  intersectTag: TaggedEdge,
   /// The offset from the intersecting line.
   offset?: number(Length) = 0mm,
   /// Create a new tag which refers to this line.

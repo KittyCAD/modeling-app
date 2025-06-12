@@ -13,6 +13,10 @@ TAU: number = 6.28318530717958647692528676655900577_
 
 
 
+### Type
+
+[`number`](/docs/kcl-std/types/std-types-number) - A number.
+
 ### Examples
 
 ```kcl
