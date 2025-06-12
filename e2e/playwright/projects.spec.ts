@@ -170,7 +170,7 @@ test(
       // error text on hover
       await page.hover('.cm-lint-marker-error')
       const crypticErrorText =
-        'tag requires a value with type `tag`, but found string'
+        'tag requires a value with type `tag`, but found a value with type `string`.'
       await expect(page.getByText(crypticErrorText).first()).toBeVisible()
 
       // black pixel means the scene has been cleared.
@@ -369,7 +369,7 @@ test(
       // error text on hover
       await page.hover('.cm-lint-marker-error')
       const crypticErrorText =
-        'tag requires a value with type `tag`, but found string'
+        'tag requires a value with type `tag`, but found a value with type `string`.'
       await expect(page.getByText(crypticErrorText).first()).toBeVisible()
 
       // black pixel means the scene has been cleared.
@@ -408,7 +408,7 @@ test(
     // error text on hover
     await page.hover('.cm-lint-marker-error')
     const crypticErrorText =
-      'tag requires a value with type `tag`, but found string'
+      'tag requires a value with type `tag`, but found a value with type `string`.'
     await expect(page.getByText(crypticErrorText).first()).toBeVisible()
   }
 )

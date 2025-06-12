@@ -145,6 +145,17 @@ impl ExecState {
         self.global.errors.push(e);
     }
 
+    pub fn clear_units_warnings(&mut self, source_range: &SourceRange) {
+        self.global.errors = std::mem::take(&mut self.global.errors)
+            .into_iter()
+            .filter(|e| {
+                e.severity != Severity::Warning
+                    || !source_range.contains_range(&e.source_range)
+                    || e.tag != crate::errors::Tag::UnknownNumericUnits
+            })
+            .collect();
+    }
+
     pub fn errors(&self) -> &[CompilationError] {
         &self.global.errors
     }

@@ -438,7 +438,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Any => write!(f, "any"),
             PrimitiveType::Number(NumericType::Known(unit)) => write!(f, "number({unit})"),
             PrimitiveType::Number(NumericType::Unknown) => write!(f, "number(unknown units)"),
-            PrimitiveType::Number(NumericType::Default { .. }) => write!(f, "number(default units)"),
+            PrimitiveType::Number(NumericType::Default { .. }) => write!(f, "number"),
             PrimitiveType::Number(NumericType::Any) => write!(f, "number(any units)"),
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
@@ -453,8 +453,8 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Axis2d => write!(f, "Axis2d"),
             PrimitiveType::Axis3d => write!(f, "Axis3d"),
             PrimitiveType::Helix => write!(f, "Helix"),
-            PrimitiveType::ImportedGeometry => write!(f, "imported geometry"),
-            PrimitiveType::Function => write!(f, "function"),
+            PrimitiveType::ImportedGeometry => write!(f, "ImportedGeometry"),
+            PrimitiveType::Function => write!(f, "fn"),
         }
     }
 }
@@ -1507,6 +1507,23 @@ impl KclValue {
             KclValue::Function { .. } => Some(RuntimeType::Primitive(PrimitiveType::Function)),
             KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => None,
         }
+    }
+
+    pub fn principal_type_string(&self) -> String {
+        if let Some(ty) = self.principal_type() {
+            return format!("`{ty}`");
+        }
+
+        match self {
+            KclValue::Module { .. } => "module",
+            KclValue::KclNone { .. } => "none",
+            KclValue::Type { .. } => "type",
+            _ => {
+                debug_assert!(false);
+                "<unexpected type>"
+            }
+        }
+        .to_owned()
     }
 }
 
