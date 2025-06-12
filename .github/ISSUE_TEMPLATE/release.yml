@@ -2,8 +2,10 @@ name: Release
 description: Create a new release for the Zoo Design Studio
 title: Cut release v1.?.?
 labels: [release]
-assignees: []
 body:
+  - type: textarea
+    attributes:
+      label: "What is the version number for this release?"
   - type: markdown
     attributes:
       value: |
