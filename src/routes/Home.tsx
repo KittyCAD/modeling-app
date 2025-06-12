@@ -61,6 +61,8 @@ import {
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
+import { FileExplorer} from "@src/components/Explorer/FileExplorer"
+import { FileExplorerHeaderActions } from "@src/components/Explorer/FileExplorerHeaderActions"
 
 type ReadWriteProjectState = {
   value: boolean
@@ -387,8 +389,30 @@ const Home = () => {
             </li>
           </ul>
         </aside>
-        <ProjectGrid
-          searchResults={searchResults}
+
+      <section data-testid="file-explorer-section" className="w-96">
+      <div className="flex flex-row justify-between">
+      <div>{projects.length > 0 ? projects[0].name : ''}</div>
+      <div className="h-6 flex flex-row gap-1">
+            <FileExplorerHeaderActions
+              onCreateFile={()=>{console.log('onCreateFile TODO')}}
+              onCreateFolder={()=>{console.log('onCreateFolder TODO')}}
+              onRefreshExplorer={()=>{console.log('onRefreshExplorer TODO')}}
+              onCollapseExplorer={()=>{console.log('onCollapseExplorer TODO')}}
+      >
+      </FileExplorerHeaderActions>
+          </div>
+        </div>
+        <div className="h-96 overflow-y-auto overflow-x-hidden">
+      { projects.length > 0 &&
+          <FileExplorer
+            parentProject={projects[0]}
+        ></FileExplorer>
+        }
+        </div>
+      </section >
+      <ProjectGrid
+    searchResults={searchResults}
           projects={projects}
           query={query}
           sort={sort}
