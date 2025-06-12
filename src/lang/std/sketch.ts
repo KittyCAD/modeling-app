@@ -3987,7 +3987,14 @@ export function getArgForEnd(lineCall: CallExpressionKw):
     case 'line': {
       const arg = findKwArgAny(DETERMINING_ARGS, lineCall)
       if (arg === undefined) {
-        return new Error("no end of the line was found in fn '" + name + "'")
+        const angle = findKwArg(ARG_ANGLE, lineCall)
+        const radius = findKwArg(ARG_RADIUS, lineCall)
+        if (name === 'tangentialArc' && angle && radius) {
+          // tangentialArc may use angle and radius instead of end
+          return { val: [angle, radius], tag: findKwArg(ARG_TAG, lineCall) }
+        } else {
+          return new Error("no end of the line was found in fn '" + name + "'")
+        }
       }
       return getValuesForXYFns(arg)
     }
