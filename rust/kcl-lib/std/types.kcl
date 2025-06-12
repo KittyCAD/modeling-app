@@ -65,7 +65,7 @@ export type string
 ///
 /// ### Tag Declaration
 ///
-/// The syntax for declaring a tag is `$myTag` you would use it in the following
+/// The syntax for declaring a tag is `$myTag`. You would use it in the following
 /// way:
 ///
 /// ```norun,inline
@@ -101,7 +101,8 @@ export type string
 ///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001) - 90,
 ///          length = 196.99,
-///          tag = $rectangleSegmentB001)
+///          tag = $rectangleSegmentB001
+///        )
 ///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001),
 ///          length = -segLen(rectangleSegmentA001),
@@ -129,12 +130,12 @@ export type string
 ///     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
 ///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001) - 90deg,
-///          length = 196.99
+///          length = 196.99,
 ///          tag = $rectangleSegmentB001,
 ///        )
 ///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001),
-///          length = -segLen(rectangleSegmentA001)
+///          length = -segLen(rectangleSegmentA001),
 ///          tag = $rectangleSegmentC001,
 ///        )
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -155,9 +156,30 @@ export type string
 @(impl = primitive)
 export type TagDecl
 
+/// A tag which references a line, arc, or other edge in a sketch or an edge of a solid.
+///
+/// Created by using a tag declarator (see the docs for `TagDecl`). Can be used where an `Edge` is
+/// required.
+///
+/// If a line in a sketch is tagged and then the sketch is extruded, the tag is a `TaggedEdge` before
+/// extrusion and a `TaggedFace` after extrusion.
+@(impl = std_rust)
+export type TaggedEdge
+
+/// A tag which references a face of a solid, including the distinguished tags `START` and `END`.
+///
+/// Created by using a tag declarator (see the docs for `TagDecl`).
+///
+/// If a line in a sketch is tagged and then the sketch is extruded, the tag is a `TaggedEdge` before
+/// extrusion and a `TaggedFace` after extrusion.
+@(impl = std_rust)
+export type TaggedFace
+
 /// Reference a previously created tag. Used much like a variable.
-@(impl = primitive)
-export type tagIdent
+///
+/// Prefer to use `TaggedEdge` or `TaggedFace`. For more details on tags, see the docs for `TagDecl`.
+@(deprecated = true)
+export type tag = TaggedEdge
 
 /// Represents geometry which is defined using some other CAD system and imported into KCL.
 @(impl = primitive)

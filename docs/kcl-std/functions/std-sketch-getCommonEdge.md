@@ -8,7 +8,7 @@ layout: manual
 Get the shared edge between two faces.
 
 ```kcl
-getCommonEdge(faces: [tagIdent; 2]): Edge
+getCommonEdge(faces: [TaggedFace; 2]): Edge
 ```
 
 
@@ -17,7 +17,7 @@ getCommonEdge(faces: [tagIdent; 2]): Edge
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `faces` | `[tagIdent; 2]` | The tags of the faces you want to find the common edge between. | Yes |
+| `faces` | `[TaggedFace; 2]` | The tags of the faces you want to find the common edge between. | Yes |
 
 ### Returns
 

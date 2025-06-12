@@ -8,7 +8,7 @@ layout: manual
 Get the previous adjacent edge to the edge given.
 
 ```kcl
-getPreviousAdjacentEdge(@edge: tagIdent): Edge
+getPreviousAdjacentEdge(@edge: TaggedEdge): Edge
 ```
 
 
@@ -17,7 +17,7 @@ getPreviousAdjacentEdge(@edge: tagIdent): Edge
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `edge` | [`tagIdent`](/docs/kcl-std/types/std-types-tagIdent) | The tag of the edge you want to find the previous adjacent edge of. | Yes |
+| `edge` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The tag of the edge you want to find the previous adjacent edge of. | Yes |
 
 ### Returns
 

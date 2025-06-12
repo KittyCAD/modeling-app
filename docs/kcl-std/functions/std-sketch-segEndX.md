@@ -8,7 +8,7 @@ layout: manual
 Compute the ending point of the provided line segment along the 'x' axis.
 
 ```kcl
-segEndX(@tag: tagIdent): number(Length)
+segEndX(@tag: TaggedEdge): number(Length)
 ```
 
 
@@ -17,7 +17,7 @@ segEndX(@tag: tagIdent): number(Length)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`tagIdent`](/docs/kcl-std/types/std-types-tagIdent) | The line segment being queried by its tag. | Yes |
+| `tag` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The line segment being queried by its tag. | Yes |
 
 ### Returns
 

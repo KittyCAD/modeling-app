@@ -9,7 +9,7 @@ Tags are used to give a name (tag) to a specific path.
 
 ### Tag Declaration
 
-The syntax for declaring a tag is `$myTag` you would use it in the following
+The syntax for declaring a tag is `$myTag`. You would use it in the following
 way:
 
 ```js
@@ -17,7 +17,7 @@ startSketchOn(XZ)
   |> startProfile(at = origin)
   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
   |> angledLine(
-       angle = segAng(rectangleSegmentA001) - 90,
+       angle = segAng(rectangleSegmentA001) - 90deg,
        length = 196.99,
        tag = $rectangleSegmentB001,
      )
@@ -45,7 +45,8 @@ fn rect(origin) {
     |> angledLine(
          angle = segAng(rectangleSegmentA001) - 90,
          length = 196.99,
-         tag = $rectangleSegmentB001)
+         tag = $rectangleSegmentB001
+       )
     |> angledLine(
          angle = segAng(rectangleSegmentA001),
          length = -segLen(rectangleSegmentA001),
@@ -72,13 +73,13 @@ fn rect(origin) {
     |> startProfile(at = origin)
     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
     |> angledLine(
-         angle = segAng(rectangleSegmentA001) - 90,
-         length = 196.99
+         angle = segAng(rectangleSegmentA001) - 90deg,
+         length = 196.99,
          tag = $rectangleSegmentB001,
        )
     |> angledLine(
          angle = segAng(rectangleSegmentA001),
-         length = -segLen(rectangleSegmentA001)
+         length = -segLen(rectangleSegmentA001),
          tag = $rectangleSegmentC001,
        )
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])

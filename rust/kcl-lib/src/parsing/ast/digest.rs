@@ -224,7 +224,6 @@ impl PrimitiveType {
             PrimitiveType::Number(suffix) => hasher.update(suffix.digestable_id()),
             PrimitiveType::Boolean => hasher.update(b"bool"),
             PrimitiveType::TagDecl => hasher.update(b"TagDecl"),
-            PrimitiveType::TagId => hasher.update(b"tagIdent"),
             PrimitiveType::ImportedGeometry => hasher.update(b"ImportedGeometry"),
             PrimitiveType::Function(f) => hasher.update(f.compute_digest()),
         }

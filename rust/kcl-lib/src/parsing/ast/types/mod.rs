@@ -3153,8 +3153,6 @@ pub enum PrimitiveType {
     Boolean,
     /// A tag declaration.
     TagDecl,
-    /// A tag identifier.
-    TagId,
     /// Imported from other CAD system.
     ImportedGeometry,
     /// `fn`, type of functions.
@@ -3170,7 +3168,6 @@ impl PrimitiveType {
             ("string", None) => Some(PrimitiveType::String),
             ("bool", None) => Some(PrimitiveType::Boolean),
             ("TagDecl", None) => Some(PrimitiveType::TagDecl),
-            ("tagIdent", None) => Some(PrimitiveType::TagId),
             ("number", None) => Some(PrimitiveType::Number(NumericSuffix::None)),
             ("number", Some(s)) => Some(PrimitiveType::Number(s)),
             ("ImportedGeometry", None) => Some(PrimitiveType::ImportedGeometry),
@@ -3187,7 +3184,7 @@ impl PrimitiveType {
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
             PrimitiveType::Function(_) => "functions".to_owned(),
             PrimitiveType::Named { id } => format!("`{}`s", id.name),
-            PrimitiveType::Tag => "tags".to_owned(),
+            PrimitiveType::TagDecl => "tag declarations".to_owned(),
         }
     }
 }
@@ -3206,7 +3203,6 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
             PrimitiveType::TagDecl => write!(f, "TagDecl"),
-            PrimitiveType::TagId => write!(f, "tagIdent"),
             PrimitiveType::ImportedGeometry => write!(f, "ImportedGeometry"),
             PrimitiveType::Function(t) => {
                 write!(f, "fn")?;

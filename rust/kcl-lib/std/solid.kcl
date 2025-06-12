@@ -304,7 +304,7 @@ export fn shell(
   /// The thickness of the shell
   thickness: number(Length),
   /// The faces you want removed
-  faces: [tagIdent; 1+],
+  faces: [TaggedFace; 1+],
 ): [Solid] {}
 
 
