@@ -21,6 +21,8 @@ interface LoadingProps extends React.PropsWithChildren {
   isDummy?: boolean
   className?: string
   dataTestId?: string
+  retryAttemptCountdown?: number
+  isRetrying?: boolean
 }
 
 const markedOptions: MarkedOptions = {
@@ -47,7 +49,7 @@ export const CONNECTION_ERROR_CALL_TO_ACTION_TEXT: Record<
   [ConnectionError.DataChannelError]:
     'A modeling session was created, but there was an issue creating a modeling commands channel.',
   [ConnectionError.WebSocketError]:
-    "An unexpected issue regarding the connection to Zoo's KittyCAD API happened. We suggest re-opening Zoo Design Studio to try again.",
+    "An unexpected issue regarding the connection to Zoo's KittyCAD API happened. Design Studio will try to reconnect.",
   [ConnectionError.LocalDescriptionInvalid]:
     'The modeling session was created, but there is an issue connecting to the stream.',
   [ConnectionError.MissingAuthToken]:
@@ -73,10 +75,21 @@ const Loading = ({
   children,
   className,
   dataTestId,
+  retryAttemptCountdown,
+  isRetrying,
 }: LoadingProps) => {
   const [error, setError] = useState<ErrorType>({
     error: ConnectionError.Unset,
   })
+  const [countdown, setCountdown] = useState<undefined | number>(
+    isRetrying && retryAttemptCountdown !== undefined
+      ? Math.trunc(retryAttemptCountdown / 1000)
+      : undefined
+  )
+  const [timeoutIdCountdown, setTimeoutIdCountdown] = useState<
+    ReturnType<typeof setTimeout> | undefined
+  >(undefined)
+
   const isUnrecoverableError = error.error > ConnectionError.VeryLongLoadingTime
   const colorClass =
     error.error === ConnectionError.Unset
@@ -84,6 +97,27 @@ const Loading = ({
       : !isUnrecoverableError
         ? 'text-warn-60'
         : 'text-chalkboard-60 dark:text-chalkboard-40'
+
+  useEffect(() => {
+    if (retryAttemptCountdown === undefined) return
+
+    setCountdown(Math.trunc(retryAttemptCountdown / 1000))
+  }, [retryAttemptCountdown])
+
+  useEffect(() => {
+    if (countdown === undefined || countdown < 0) return
+
+    clearTimeout(timeoutIdCountdown)
+    setTimeoutIdCountdown(
+      setTimeout(() => {
+        setCountdown(countdown - 1)
+      }, 1000)
+    )
+    return () => {
+      clearTimeout(timeoutIdCountdown)
+    }
+  }, [countdown])
+
   useEffect(() => {
     const onConnectionStateChange = ({ detail: state }: CustomEvent) => {
       if (
@@ -183,6 +217,18 @@ const Loading = ({
       <p className={`text-base mt-4`}>
         {isUnrecoverableError ? '' : children || 'Loading'}
       </p>
+      <div
+        className={
+          `text-base h-[1em] ` +
+          (countdown !== undefined &&
+            countdown <= 1 &&
+            'transition-opacity duration-1000 opacity-0')
+        }
+      >
+        {countdown !== undefined && countdown > 0 && isRetrying && (
+          <span>Connecting in {countdown}s</span>
+        )}
+      </div>
       {CONNECTION_ERROR_TEXT[error.error] && (
         <div>
           <div className="max-w-3xl text-base flex flex-col gap-2 px-2 pt-2 mt-2 pb-6 mb-6 border-b border-chalkboard-30">
