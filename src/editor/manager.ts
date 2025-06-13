@@ -65,7 +65,7 @@ export default class EditorManager {
 
   private _highlightRange: Array<[number, number]> = [[0, 0]]
 
-  public _editorView: EditorView | null = null
+  private _editorView: EditorView | null = null
   public kclManager?: KclManager
 
   constructor(engineCommandManager: EngineCommandManager) {

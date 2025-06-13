@@ -186,11 +186,11 @@ export class EditorFixture {
         // error TS2339: Property 'docView' does not exist on type 'EditorView'.
         // Except it does so :shrug:
         // @ts-ignore
-        let index = window.editorManager._editorView?.docView.view.state.doc
+        let index = window.editorManager.editorView?.docView.view.state.doc
           .toString()
           .indexOf(args.text)
-        window.editorManager._editorView?.focus()
-        window.editorManager._editorView?.dispatch({
+        window.editorManager.editorView?.focus()
+        window.editorManager.editorView?.dispatch({
           selection: window.EditorSelection.create([
             window.EditorSelection.cursor(index),
           ]),
