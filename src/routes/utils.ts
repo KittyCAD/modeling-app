@@ -39,7 +39,10 @@ export function generateSignInUrl() {
   )
   const finalURL =
     typeof window !== 'undefined' &&
-    (window.location.origin + queryParamsNext).replace('?&', '?')
+    (window.location.origin + encodeURIComponent(queryParamsNext)).replace(
+      '?&',
+      '?'
+    )
 
   return `${VITE_KC_SITE_BASE_URL}${
     PATHS.SIGN_IN
