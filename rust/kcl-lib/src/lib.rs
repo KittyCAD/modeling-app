@@ -110,7 +110,7 @@ pub use unparser::{recast_dir, walk_dir};
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
     #[cfg(feature = "artifact-graph")]
-    pub use crate::execution::ArtifactCommand;
+    pub use crate::execution::{ArtifactCommand, Operation};
     pub use crate::execution::{
         types::{NumericType, UnitAngle, UnitLen, UnitType},
         DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,

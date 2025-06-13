@@ -73,6 +73,10 @@ pub(super) struct ArtifactState {}
 pub struct ModuleArtifactState {
     /// Internal map of UUIDs to exec artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
+    /// Outgoing engine commands that have not yet been processed and integrated
+    /// into the artifact graph.
+    #[serde(skip)]
+    pub unprocessed_commands: Vec<ArtifactCommand>,
     /// Outgoing engine commands.
     pub commands: Vec<ArtifactCommand>,
     /// Operations that have been performed in execution order.
@@ -212,7 +216,7 @@ impl ExecState {
 
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn push_command(&mut self, command: ArtifactCommand) {
-        self.mod_local.artifacts.commands.push(command);
+        self.mod_local.artifacts.unprocessed_commands.push(command);
         #[cfg(not(feature = "artifact-graph"))]
         drop(command);
     }
@@ -354,18 +358,22 @@ impl ExecState {
             match &mut module.repr {
                 ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts)))
                 | ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
-                    new_commands.extend(module_artifacts.commands.clone());
+                    new_commands.extend(module_artifacts.process_commands());
                     new_exec_artifacts.extend(module_artifacts.artifacts.clone());
                 }
                 ModuleRepr::Root | ModuleRepr::Kcl(_, None) | ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
             }
         }
-        new_commands.extend(self.global.root_module_artifacts.commands.clone());
+        // Take from the module artifacts so that we don't try to process them
+        // again next time due to execution caching.
+        new_commands.extend(self.global.root_module_artifacts.process_commands());
+        // Note: These will get re-processed, but since we're just adding them
+        // to a map, it's fine.
         new_exec_artifacts.extend(self.global.root_module_artifacts.artifacts.clone());
         let new_responses = engine.take_responses().await;
 
-        // Move the artifacts into ExecState to simplify cache management and
-        // error creation.
+        // Move the artifacts into ExecState global to simplify cache
+        // management.
         self.global.artifacts.artifacts.extend(new_exec_artifacts);
 
         let initial_graph = self.global.artifacts.graph.clone();
@@ -455,6 +463,7 @@ impl ModuleArtifactState {
         #[cfg(feature = "artifact-graph")]
         {
             self.artifacts.clear();
+            self.unprocessed_commands.clear();
             self.commands.clear();
             self.operations.clear();
         }
@@ -466,8 +475,21 @@ impl ModuleArtifactState {
     /// When self is a cached state, extend it with new state.
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn extend(&mut self, other: ModuleArtifactState) {
+        self.artifacts.extend(other.artifacts);
+        self.unprocessed_commands.extend(other.unprocessed_commands);
         self.commands.extend(other.commands);
         self.operations.extend(other.operations);
+    }
+
+    // Move unprocessed artifact commands so that we don't try to process them
+    // again next time due to execution caching.  Returns a clone of the
+    // commands that were moved.
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn process_commands(&mut self) -> Vec<ArtifactCommand> {
+        let unprocessed = std::mem::take(&mut self.unprocessed_commands);
+        let new_module_commands = unprocessed.clone();
+        self.commands.extend(unprocessed);
+        new_module_commands
     }
 }
 

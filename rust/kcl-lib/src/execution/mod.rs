@@ -656,8 +656,8 @@ impl ExecutorContext {
                             let (new_universe, new_universe_map) =
                                 self.get_universe(&program, &mut new_exec_state).await?;
 
-                            let clear_scene = new_universe.keys().any(|key| {
-                                let id = new_universe[key].1;
+                            let clear_scene = new_universe.values().any(|value| {
+                                let id = value.1;
                                 match (
                                     cached_state.exec_state.get_source(id),
                                     new_exec_state.global.get_source(id),
@@ -1135,6 +1135,8 @@ impl ExecutorContext {
             .await;
         #[cfg(feature = "artifact-graph")]
         let exec_result = exec_result.map(|(_, env_ref, _, module_artifacts)| {
+            // We need to extend because it may already have operations from
+            // imports.
             exec_state.global.root_module_artifacts.extend(module_artifacts);
             env_ref
         });

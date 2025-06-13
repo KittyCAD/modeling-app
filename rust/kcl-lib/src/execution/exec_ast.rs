@@ -113,7 +113,9 @@ impl ExecutorContext {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
             local_state.artifacts
         } else {
-            Default::default()
+            // Artifacts are returned, but a copy is also left behind in
+            // mod_local.
+            exec_state.mod_local.artifacts.clone()
         };
 
         crate::log::log(format!("leave {path}"));
