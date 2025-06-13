@@ -1,13 +1,12 @@
 import type { Project, FileEntry } from '@src/lib/project'
-import { FILE_EXT} from '@src/lib/constants'
+import { FILE_EXT } from '@src/lib/constants'
 import type { ReactNode } from 'react'
 import { useState, useEffect } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 
-
-interface FileExplorerEntry extends FileEntry {
+export interface FileExplorerEntry extends FileEntry {
   parentPath: string
   level: number
 }
@@ -32,18 +31,14 @@ const StatusDot = () => {
  */
 const Spacer = (level: number) => {
   const remSpacing = `${level}rem`
-  return level === 0 ? (
-    <div></div>
-  ) : (
-    <div style={{ width: remSpacing }}></div>
-  )
+  return level === 0 ? <div></div> : <div style={{ width: remSpacing }}></div>
 }
 
-const constructPath = ({
+export const constructPath = ({
   parentPath,
-  name
+  name,
 }: {
-  parentPath: string,
+  parentPath: string
   name: string
 }) => {
   // do not worry about the forward slash, this is not a real disk path
@@ -60,13 +55,13 @@ const flattenProjectHelper = (
   f: FileEntry,
   list: FileExplorerEntry[], // accumulator list that is built up through recursion
   parentPath: string, // the parentPath for the given f:FileEntry passed in
-  level: number, // the level within the tree for the given f:FileEntry, level starts at 0 goes to positive N
+  level: number // the level within the tree for the given f:FileEntry, level starts at 0 goes to positive N
 ) => {
   // mark the parent and level of the FileEntry
-  const content : FileExplorerEntry= {
+  const content: FileExplorerEntry = {
     ...f,
     parentPath,
-    level
+    level,
   }
   // keep track of the file once within the recursive list that will be built up
   list.push(content)
@@ -78,7 +73,12 @@ const flattenProjectHelper = (
 
   // keep recursing down the children
   for (let i = 0; i < f.children.length; i++) {
-    flattenProjectHelper(f.children[i], list, constructPath({parentPath: parentPath, name: f.name}), level + 1)
+    flattenProjectHelper(
+      f.children[i],
+      list,
+      constructPath({ parentPath: parentPath, name: f.name }),
+      level + 1
+    )
   }
 }
 
@@ -88,7 +88,10 @@ const flattenProjectHelper = (
  *
  * fileEntries should be sorted already with sortFilesAndDirectories
  */
-const flattenProject = (projectChildren: FileEntry[], projectName:string): FileExplorerEntry[] => {
+const flattenProject = (
+  projectChildren: FileEntry[],
+  projectName: string
+): FileExplorerEntry[] => {
   const flattenTreeInOrder: FileExplorerEntry[] = []
   // For all children of the project, start the recursion to flatten the tree data structure
   for (let index = 0; index < projectChildren.length; index++) {
@@ -106,11 +109,21 @@ const flattenProject = (projectChildren: FileEntry[], projectName:string): FileE
  * Render all the rows of the file explorer in linear layout in the DOM.
  * each row is rendered one after another in the same parent DOM element
  * rows will have aria support to understand the linear div soup layout
+ *
+ * externall control the openedRows and selectedRows since actions need to know
+ * what is opened and selected outside of this logic level.
+ *
  */
 export const FileExplorer = ({
   parentProject,
+  openedRows,
+  selectedRow,
+  onRowClickCallback
 }: {
-  parentProject: Project
+  parentProject: Project,
+  openedRows: {[key:string]: boolean},
+  selectedRow: FileEntry | null,
+  onRowClickCallback: (file: FileExplorerEntry) => void
 }) => {
   // Wrap the FileEntry in a FileExplorerEntry to keep track for more metadata
   let flattenedData: FileExplorerEntry[] = []
@@ -122,13 +135,7 @@ export const FileExplorer = ({
     flattenedData = flattenProject(sortedData, parentProject.name)
   }
 
-  // cache the state of opened rows to allow nested rows to be opened if a parent one is closed
-  // when the parent opens the children will already be opened
-  const [openedRows, setOpenedRows] = useState<{ [key: string]: boolean }>({})
-  const [rowsToRender, setRowsToRender] = useState<FileExplorerRow[]>(
-    []
-  )
-  const [selectedRow, setSelectedRow] = useState<FileEntry | null>(null)
+  const [rowsToRender, setRowsToRender] = useState<FileExplorerRow[]>([])
 
   useEffect(() => {
     // TODO What to do when a different parentProject comes in? Clear old state.
@@ -136,7 +143,7 @@ export const FileExplorer = ({
     // Clear rowsToRender
     // Clear selected information
 
-    const requestedRowsToRender : FileExplorerRow[] =
+    const requestedRowsToRender: FileExplorerRow[] =
       flattenedData.map((child) => {
         const isFile = child.children === null
         const isKCLFile = isFile && child.name?.endsWith(FILE_EXT)
@@ -153,7 +160,6 @@ export const FileExplorer = ({
          */
         let isAnyParentClosed = false
         const pathIterator = child.parentPath.split('/')
-
         while (pathIterator.length > 0) {
           const key = pathIterator.join('/')
           const isOpened = openedRows[key] || parentProject.name === key
@@ -161,7 +167,7 @@ export const FileExplorer = ({
           pathIterator.pop()
         }
 
-        const row : FileExplorerRow =  {
+        const row: FileExplorerRow = {
           // copy over all the other data that was built up to the DOM render row
           ...child,
           icon: icon,
@@ -172,15 +178,7 @@ export const FileExplorer = ({
               parentProject.name === child.parentPath) &&
             !isAnyParentClosed,
           rowClicked: () => {
-            const newOpenedRows = { ...openedRows }
-            const key = constructPath({
-              parentPath: child.parentPath,
-              name: child.name
-            })
-            const value = openedRows[key]
-            newOpenedRows[key] = !value
-            setOpenedRows(newOpenedRows)
-            setSelectedRow(child)
+            onRowClickCallback(child)
           },
         }
 
@@ -195,7 +193,12 @@ export const FileExplorer = ({
   return (
     <div>
       {rowsToRender.map((row) => {
-        return row.isOpen ? <FileExplorerRow row={row} selectedRow={selectedRow}></FileExplorerRow> : null
+        return row.isOpen ? (
+          <FileExplorerRow
+            row={row}
+            selectedRow={selectedRow}
+          ></FileExplorerRow>
+        ) : null
       })}
     </div>
   )
@@ -207,10 +210,10 @@ export const FileExplorer = ({
  */
 export const FileExplorerRow = ({
   row,
-  selectedRow
+  selectedRow,
 }: {
-  row: any,
-  selectedRow : any
+  row: any
+  selectedRow: any
 }) => {
   return (
     <div

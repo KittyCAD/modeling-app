@@ -61,7 +61,7 @@ import {
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
-import { ProjectExplorer } from "@src/components/Explorer/ProjectExplorer"
+import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -211,7 +211,9 @@ const Home = () => {
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
 
-  const kclSamples = projects.find((p)=>{ return p.name === 'level1'})
+  const kclSamples = projects.find((p) => {
+    return p.name === 'level1'
+  })
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
       <AppHeader
@@ -391,9 +393,7 @@ const Home = () => {
         </aside>
 
         <section data-testid="file-explorer-section" className="w-96">
-          <ProjectExplorer
-            project={kclSamples}
-          ></ProjectExplorer>
+          <ProjectExplorer project={kclSamples}></ProjectExplorer>
         </section>
         <ProjectGrid
           searchResults={searchResults}
