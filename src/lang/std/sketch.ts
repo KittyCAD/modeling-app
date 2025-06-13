@@ -1,4 +1,7 @@
-import { perpendicularDistance } from 'sketch-helpers'
+import {
+  calculateIntersectionOfTwoLines,
+  perpendicularDistance,
+} from 'sketch-helpers'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
@@ -28,6 +31,7 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
+  createLiteralMaybeSuffix,
   createLocalName,
   createPipeExpression,
   createTagDeclarator,
@@ -83,8 +87,15 @@ import type {
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
-import { allLabels, getAngle, getLength, roundOff } from '@src/lib/utils'
+import {
+  allLabels,
+  areArraysEqual,
+  getAngle,
+  getLength,
+  roundOff,
+} from '@src/lib/utils'
 import type { EdgeCutInfo } from '@src/machines/modelingMachine'
+import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
 
 const STRAIGHT_SEGMENT_ERR = () =>
   new Error('Invalid input, expected "straight-segment"')
@@ -3976,7 +3987,14 @@ export function getArgForEnd(lineCall: CallExpressionKw):
     case 'line': {
       const arg = findKwArgAny(DETERMINING_ARGS, lineCall)
       if (arg === undefined) {
-        return new Error("no end of the line was found in fn '" + name + "'")
+        const angle = findKwArg(ARG_ANGLE, lineCall)
+        const radius = findKwArg(ARG_RADIUS, lineCall)
+        if (name === 'tangentialArc' && angle && radius) {
+          // tangentialArc may use angle and radius instead of end
+          return { val: [angle, radius], tag: findKwArg(ARG_TAG, lineCall) }
+        } else {
+          return new Error("no end of the line was found in fn '" + name + "'")
+        }
       }
       return getValuesForXYFns(arg)
     }
@@ -4145,27 +4163,101 @@ const tangentialArcHelpers = {
       )
     }
 
-    const argLabel = isAbsolute ? ARG_END_ABSOLUTE : ARG_END
-    const functionName = isAbsolute ? 'tangentialArcTo' : 'tangentialArc'
+    // All function arguments, except the tag
+    const functionArguments = callExpression.arguments
+      .map((arg) => arg.label?.name)
+      .filter((n) => n && n !== ARG_TAG)
 
-    for (const arg of callExpression.arguments) {
-      if (arg.label?.name !== argLabel && arg.label?.name !== ARG_TAG) {
+    if (areArraysEqual(functionArguments, [ARG_ANGLE, ARG_RADIUS])) {
+      // Using length and radius -> convert "from", "to" to the matching length and radius
+      const previousEndTangent = input.previousEndTangent
+      if (previousEndTangent) {
+        // Find a circle with these two lines:
+        // - We know "from" and "to" are on the circle, so we can use their perpendicular bisector as the first line
+        // - The second line goes from "from" to the tangentRotated direction
+        // Intersecting these two lines will give us the center of the circle.
+
+        // line 1
+        const midPoint: [number, number] = [
+          (from[0] + to[0]) / 2,
+          (from[1] + to[1]) / 2,
+        ]
+        const dir = subVec(to, from)
+        const perpDir = [-dir[1], dir[0]]
+        const line1PointB: Coords2d = [
+          midPoint[0] + perpDir[0],
+          midPoint[1] + perpDir[1],
+        ]
+
+        // line 2
+        const tangentRotated: Coords2d = [
+          -previousEndTangent[1],
+          previousEndTangent[0],
+        ]
+
+        const center = calculateIntersectionOfTwoLines({
+          line1: [midPoint, line1PointB],
+          line2Point: from,
+          line2Angle: getAngle([0, 0], tangentRotated),
+        })
+        if (isValidNumber(center[0]) && isValidNumber(center[1])) {
+          // We have the circle center, calculate the angle by calculating the angle for "from" and "to" points
+          // These are in the range of [-180, 180] degrees
+          const angleFrom = getAngle(center, from)
+          const angleTo = getAngle(center, to)
+          let angle = angleTo - angleFrom
+
+          // Handle the cases where the angle would have an undesired sign.
+          // If the circle is CCW we want the angle to be always positive, otherwise negative.
+          // eg. CCW: angleFrom is -90 and angleTo is -175 -> would be -85, but we want it to be 275
+          const isCCW = cross2d(previousEndTangent, dir) > 0
+          if (isCCW) {
+            angle = (angle + 360) % 360 // Ensure angle is positive
+          } else {
+            angle = (angle - 360) % 360 // Ensure angle is negative
+          }
+
+          const radius = distance2d(center, from)
+
+          mutateKwArg(
+            ARG_RADIUS,
+            callExpression,
+            createLiteral(roundOff(radius, 2))
+          )
+          const angleValue = createLiteralMaybeSuffix({
+            value: roundOff(angle, 2),
+            suffix: 'Deg',
+          })
+          if (!err(angleValue)) {
+            mutateKwArg(ARG_ANGLE, callExpression, angleValue)
+          }
+        } else {
+          console.debug('Invalid center calculated for tangential arc')
+        }
+      } else {
+        console.debug('No previous end tangent found, cannot calculate radius')
+      }
+    } else {
+      const argLabel = isAbsolute ? ARG_END_ABSOLUTE : ARG_END
+      if (areArraysEqual(functionArguments, [argLabel])) {
+        // Using end or endAbsolute
+        const toArrExp = createArrayExpression([
+          createLiteral(roundOff(isAbsolute ? to[0] : to[0] - from[0], 2)),
+          createLiteral(roundOff(isAbsolute ? to[1] : to[1] - from[1], 2)),
+        ])
+
+        mutateKwArg(argLabel, callExpression, toArrExp)
+      } else {
+        // Unsupported arguments
+        const functionName =
+          callExpression.callee.name.name ??
+          (isAbsolute ? 'tangentialArcTo' : 'tangentialArc')
         console.debug(
           `Trying to edit unsupported ${functionName} keyword arguments; skipping`
         )
-        return {
-          modifiedAst: _node,
-          pathToNode,
-        }
       }
     }
 
-    const toArrExp = createArrayExpression([
-      createLiteral(roundOff(isAbsolute ? to[0] : to[0] - from[0], 2)),
-      createLiteral(roundOff(isAbsolute ? to[1] : to[1] - from[1], 2)),
-    ])
-
-    mutateKwArg(argLabel, callExpression, toArrExp)
     return {
       modifiedAst: _node,
       pathToNode,
