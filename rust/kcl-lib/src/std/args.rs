@@ -166,8 +166,12 @@ impl Args {
             KclError::new_semantic(KclErrorDetails::new(message, arg.source_ranges()))
         })?;
 
-        // TODO unnecessary cloning
-        Ok(T::from_kcl_val(&arg).unwrap())
+        T::from_kcl_val(&arg).ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                format!("Mismatch between type coercion and value extraction (this isn't your fault).\nTo assist in bug-reporting, expected type: {ty:?}; actual value: {arg:?}"),
+                vec![self.source_range],
+           ))
+        })
     }
 
     /// Get a labelled keyword arg, check it's an array, and return all items in the array
