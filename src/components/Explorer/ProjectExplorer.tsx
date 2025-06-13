@@ -6,6 +6,10 @@ import {
 import type { FileExplorerEntry } from '@src/components/Explorer/FileExplorer'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { useState } from 'react'
+import {
+  systemIOActor,
+} from '@src/lib/singletons'
+import {SystemIOMachineEvents} from "@src/machines/systemIO/utils"
 
 /**
  * Wrap the header and the tree into a single component
@@ -52,7 +56,11 @@ export const ProjectExplorer = ({
               console.log('onCreateFolder TODO')
             }}
             onRefreshExplorer={() => {
-              console.log('onRefreshExplorer TODO')
+              // TODO: Refresh only this path from the Project. This will refresh your entire application project directory
+              // It is correct but can be slow if there are many projects
+              systemIOActor.send({
+                type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+              })
             }}
             onCollapseExplorer={() => {
               setOpenedRows({})
