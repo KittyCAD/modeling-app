@@ -380,6 +380,39 @@ export fn extrude(
   tagEnd?: tag,
 ): [Solid; 1+] {}
 
+/// Works just like the `extrude` command, but also twists the sketch around
+/// some center point while it's extruding.
+///
+/// You can provide more than one sketch to extrude, and they will all be
+/// extruded in the same direction with the same twist.
+///
+/// ```kcl
+/// example = startSketchOn(XZ)
+///   |> polygon(radius = 10, numSides = 3, center = [0, 0])
+///   |> extrudeTwist(length = 10, angle = 120deg)
+/// ```
+@(impl = std_rust)
+export fn extrudeTwist(
+  /// Which sketch or sketches should be extruded.
+  @sketches: [Sketch; 1+],
+  /// The total angle that the sketch will be twisted around
+  angle: number(Angle),
+  /// How far to extrude the given sketches.
+  length: number(Length),
+  /// The size of each intermediate angle as the sketch twists around.
+  /// Must be between 4 and 90 degrees.
+  /// Defaults to 15 degrees.
+  angleStep?: number(Angle),
+  /// A named tag for the face at the start of the extrusion, i.e. the original sketch.
+  tagStart?: tag,
+  /// A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch.
+  tagEnd?: tag,
+  /// The center around which the sketch will be twisted. Relative to the sketch's center.
+  /// If not given, defaults to 0,0 i.e. the sketch's center.
+  @(snippetArray = ["0", "0"])
+  center?: Point2d,
+): [Solid; 1+] {}
+
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
 ///
 /// This, like extrude, is able to create a 3-dimensional solid from a
