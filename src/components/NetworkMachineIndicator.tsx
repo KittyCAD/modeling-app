@@ -41,23 +41,9 @@ export const NetworkMachineIndicator = ({
 }
 
 export const useNetworkMachineStatus = (): StatusBarItemType => {
-  const {
-    noMachinesReason,
-    machines,
-    machines: { length: machineCount },
-  } = useContext(MachineManagerContext)
-  const reason = noMachinesReason()
-
   return {
     id: 'network-machines',
-    label: `Network machines (${machineCount}) ${reason && `: ${reason}`}`,
-    hideLabel: true,
-    element: 'popover',
-    toolTip: {
-      children: `Network machines (${machineCount}) ${reason && `: ${reason}`}`,
-    },
-    icon: 'printer3d',
-    popoverContent: <NetworkMachinesPopoverContent machines={machines} />,
+    component: NetworkMachineIndicator,
   }
 }
 

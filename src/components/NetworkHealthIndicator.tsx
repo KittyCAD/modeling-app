@@ -83,9 +83,6 @@ export const useNetworkHealthStatus = (): StatusBarItemType => {
     hideLabel: true,
     element: 'popover',
     className: overallConnectionStateColor[overallState].icon,
-    toolTip: {
-      children: `Network health (${NETWORK_HEALTH_TEXT[overallState]})`,
-    },
     icon: overallConnectionStateIcon[overallState],
     popoverContent: <NetworkHealthPopoverContent />,
   }

@@ -60,13 +60,14 @@ function StatusBarItem(
           className={`${defaultClassNames} ${props.className}`}
           data-testid={props['data-testid']}
         >
-          {'label' in props && props.label && (
-            <span className={props.hideLabel ? 'sr-only' : ''}>
-              {props.label}
-            </span>
+          {'label' in props && props.label && !props.hideLabel && (
+            <span>{props.label}</span>
           )}
-          {props.toolTip && (
-            <Tooltip {...props.toolTip} position={tooltipPosition} />
+          {(props.toolTip || (props.label && props.hideLabel)) && (
+            <Tooltip
+              {...(props.toolTip || { children: props.label })}
+              position={tooltipPosition}
+            />
           )}
         </ActionButton>
       )
@@ -89,14 +90,12 @@ function StatusBarItem(
             className={`${defaultClassNames} ${props.className}`}
             data-testid={props['data-testid']}
           >
-            {'label' in props && props.label && (
-              <span className={props.hideLabel ? 'sr-only' : ''}>
-                {props.label}
-              </span>
+            {'label' in props && props.label && !props.hideLabel && (
+              <span>{props.label}</span>
             )}
-            {props.toolTip && (
+            {(props.toolTip || (props.label && props.hideLabel)) && (
               <Tooltip
-                {...props.toolTip}
+                {...(props.toolTip || { children: props.label })}
                 wrapperClassName={`${
                   props.toolTip?.wrapperClassName || ''
                 } ui-open:hidden`}
@@ -120,13 +119,14 @@ function StatusBarItem(
               bgClassName="bg-transparent dark:bg-transparent"
             />
           )}
-          {'label' in props && props.label && (
-            <span className={props.hideLabel ? 'sr-only' : ''}>
-              {props.label}
-            </span>
+          {'label' in props && props.label && !props.hideLabel && (
+            <span>{props.label}</span>
           )}
-          {props.toolTip && (
-            <Tooltip {...props.toolTip} position={tooltipPosition} />
+          {(props.toolTip || (props.label && props.hideLabel)) && (
+            <Tooltip
+              {...(props.toolTip || { children: props.label })}
+              position={tooltipPosition}
+            />
           )}
         </div>
       )
@@ -146,13 +146,14 @@ function StatusBarItem(
           className={`${defaultClassNames} ${props.className}`}
           data-testid={props['data-testid']}
         >
-          {'label' in props && props.label && (
-            <span className={props.hideLabel ? 'sr-only' : ''}>
-              {props.label}
-            </span>
+          {'label' in props && props.label && !props.hideLabel && (
+            <span>{props.label}</span>
           )}
-          {props.toolTip && (
-            <Tooltip {...props.toolTip} position={tooltipPosition} />
+          {(props.toolTip || (props.label && props.hideLabel)) && (
+            <Tooltip
+              {...(props.toolTip || { children: props.label })}
+              position={tooltipPosition}
+            />
           )}
         </ActionButton>
       )
