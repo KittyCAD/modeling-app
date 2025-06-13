@@ -24,16 +24,15 @@ test.describe('Test network related behaviors', () => {
 
       await homePage.goToModelingScene()
 
-      const networkToggle = page.getByTestId('network-toggle')
+      const networkToggle = page.getByTestId(/network-toggle/)
 
       // This is how we wait until the stream is online
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled({ timeout: 15000 })
 
-      const networkWidget = page.locator('[data-testid="network-toggle"]')
-      await expect(networkWidget).toBeVisible()
-      await networkWidget.hover()
+      await expect(networkToggle).toBeVisible()
+      await networkToggle.hover()
 
       const networkPopover = page.locator('[data-testid="network-popover"]')
       await expect(networkPopover).not.toBeVisible()
@@ -44,7 +43,7 @@ test.describe('Test network related behaviors', () => {
       ).toBeVisible()
 
       // Click the network widget
-      await networkWidget.click()
+      await networkToggle.click()
 
       // Check the modal opened.
       await expect(networkPopover).toBeVisible()
@@ -65,8 +64,8 @@ test.describe('Test network related behaviors', () => {
       // Expect the network to be down
       await expect(networkToggle).toContainText('Network health (Offline)')
 
-      // Click the network widget
-      await networkWidget.click()
+      // Click the network toggle
+      await networkToggle.click()
 
       // Check the modal opened.
       await expect(networkPopover).toBeVisible()
@@ -99,7 +98,7 @@ test.describe('Test network related behaviors', () => {
     'Engine disconnect & reconnect in sketch mode',
     { tag: '@skipLocalEngine' },
     async ({ page, homePage, toolbar, scene, cmdBar }) => {
-      const networkToggle = page.getByTestId('network-toggle')
+      const networkToggle = page.getByTestId(/network-toggle/)
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
       )
@@ -286,7 +285,7 @@ profile001 = startProfile(sketch001, at = [12.34, -12.34])
     'Paused stream freezes view frame, unpause reconnect is seamless to user',
     { tag: ['@desktop', '@skipLocalEngine'] },
     async ({ page, homePage, scene, cmdBar, toolbar, tronApp }) => {
-      const networkToggle = page.getByTestId('network-toggle')
+      const networkToggle = page.getByTestId(/network-toggle/)
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
       )

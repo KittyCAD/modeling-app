@@ -8,7 +8,7 @@ type LeftOrRight = 'left' | 'right'
 type Corner = `${TopOrBottom}-${LeftOrRight}`
 type TooltipPosition = TopOrBottom | LeftOrRight | Corner
 
-interface TooltipProps extends React.PropsWithChildren {
+export interface TooltipProps extends React.PropsWithChildren {
   position?: TooltipPosition
   wrapperClassName?: string
   contentClassName?: string

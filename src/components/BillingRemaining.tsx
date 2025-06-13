@@ -89,20 +89,19 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
   const isFlex = props.mode === BillingRemainingMode.ProgressBarStretch
   const cssWrapper = [
     'bg-ml-green',
+    'dark:bg-transparent',
     'select-none',
     'cursor-pointer',
-    'py-1',
-    'rounded',
     '!no-underline',
     'text-xs',
     '!text-chalkboard-100',
-    'dark:!text-chalkboard-0',
+    'dark:!text-ml-green',
   ]
 
   return (
     <div
       data-testid="billing-remaining"
-      className={[isFlex ? 'flex flex-col gap-1' : 'px-2']
+      className={[isFlex ? 'flex flex-col gap-1' : 'px-2 flex items-stretch']
         .concat(cssWrapper)
         .join(' ')}
     >

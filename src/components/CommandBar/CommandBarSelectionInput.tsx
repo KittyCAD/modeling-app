@@ -2,12 +2,12 @@ import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { StateFrom } from 'xstate'
 
-import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
+  getSemanticSelectionType,
   type Selections,
 } from '@src/lib/selections'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
@@ -15,29 +15,6 @@ import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { modelingMachine } from '@src/machines/modelingMachine'
-
-const semanticEntityNames: {
-  [key: string]: Array<Artifact['type'] | 'defaultPlane'>
-} = {
-  face: ['wall', 'cap'],
-  profile: ['solid2d'],
-  edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
-  point: [],
-  plane: ['defaultPlane'],
-}
-
-function getSemanticSelectionType(selectionType: Array<Artifact['type']>) {
-  const semanticSelectionType = new Set()
-  selectionType.forEach((type) => {
-    Object.entries(semanticEntityNames).forEach(([entity, entityTypes]) => {
-      if (entityTypes.includes(type)) {
-        semanticSelectionType.add(entity)
-      }
-    })
-  })
-
-  return Array.from(semanticSelectionType)
-}
 
 const selectionSelector = (snapshot?: StateFrom<typeof modelingMachine>) =>
   snapshot?.context.selectionRanges
