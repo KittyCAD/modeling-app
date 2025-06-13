@@ -117,7 +117,6 @@ pub const TEST_NAMES: &[&str] = &[
     "std-sketch-getOppositeEdge-0",
     "std-sketch-getPreviousAdjacentEdge-0",
     "std-sketch-getNextAdjacentEdge-0",
-    "std-sketch-extrudeTwist-0",
     "std-sketch-extrude-0",
     "std-sketch-extrude-1",
     "std-sketch-extrude-2",

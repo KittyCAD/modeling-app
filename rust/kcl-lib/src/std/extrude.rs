@@ -12,13 +12,10 @@ use kcmc::{
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
     ModelingCmd,
 };
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    shared::{Angle, Point2d},
-};
+use kittycad_modeling_cmds::{self as kcmc};
 use uuid::Uuid;
 
-use super::{args::TyF64, utils::point_to_mm, DEFAULT_TOLERANCE};
+use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -97,85 +94,6 @@ async fn inner_extrude(
                     distance: LengthUnit(length.to_mm()),
                     faces: Default::default(),
                     opposite: opposite.clone(),
-                }),
-            },
-        );
-        exec_state
-            .batch_modeling_cmds(ModelingCmdMeta::from_args_id(&args, id), &cmds)
-            .await?;
-
-        solids.push(
-            do_post_extrude(
-                sketch,
-                id.into(),
-                length.clone(),
-                false,
-                &NamedCapTags {
-                    start: tag_start.as_ref(),
-                    end: tag_end.as_ref(),
-                },
-                exec_state,
-                &args,
-                None,
-            )
-            .await?,
-        );
-    }
-
-    Ok(solids)
-}
-/// Extrudes by a given amount, twisting the sketch as it goes.
-pub async fn extrude_twist(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
-    let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
-    let angle: TyF64 = args.get_kw_arg("angle", &RuntimeType::degrees(), exec_state)?;
-    let angle_step: Option<TyF64> = args.get_kw_arg_opt("angleStep", &RuntimeType::degrees(), exec_state)?;
-    let center: Option<[TyF64; 2]> = args.get_kw_arg_opt("center", &RuntimeType::point2d(), exec_state)?;
-    let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
-    let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
-
-    let result = inner_extrude_twist(
-        sketches, length, tag_start, tag_end, center, angle, angle_step, tolerance, exec_state, args,
-    )
-    .await?;
-
-    Ok(result.into())
-}
-
-#[allow(clippy::too_many_arguments)]
-async fn inner_extrude_twist(
-    sketches: Vec<Sketch>,
-    length: TyF64,
-    tag_start: Option<TagNode>,
-    tag_end: Option<TagNode>,
-    center: Option<[TyF64; 2]>,
-    angle: TyF64,
-    angle_step: Option<TyF64>,
-    tolerance: Option<TyF64>,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<Vec<Solid>, KclError> {
-    // Extrude the element(s).
-    let mut solids = Vec::new();
-    let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE));
-    let center = center.map(point_to_mm).map(Point2d::from).unwrap_or_default();
-    let angle_step_size = Angle::from_degrees(angle_step.map(|a| a.to_degrees()).unwrap_or(15.0));
-
-    for sketch in &sketches {
-        let id = exec_state.next_uuid();
-        let cmds = sketch.build_sketch_mode_cmds(
-            exec_state,
-            ModelingCmdReq {
-                cmd_id: id.into(),
-                cmd: ModelingCmd::from(mcmd::TwistExtrude {
-                    target: sketch.id.into(),
-                    distance: LengthUnit(length.to_mm()),
-                    faces: Default::default(),
-                    center_2d: center,
-                    total_rotation_angle: Angle::from_degrees(angle.to_degrees()),
-                    angle_step_size,
-                    tolerance,
                 }),
             },
         );
