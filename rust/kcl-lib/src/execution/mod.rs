@@ -1133,12 +1133,21 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await;
-        let exec_result = exec_result.map(|(_, env_ref, _, module_artifacts)| {
-            // We need to extend because it may already have operations from
-            // imports.
-            exec_state.global.root_module_artifacts.extend(module_artifacts);
-            env_ref
-        });
+        let exec_result = exec_result
+            .map(|(_, env_ref, _, module_artifacts)| {
+                // We need to extend because it may already have operations from
+                // imports.
+                exec_state.global.root_module_artifacts.extend(module_artifacts);
+                env_ref
+            })
+            .map_err(|(err, module_artifacts)| {
+                if let Some(module_artifacts) = module_artifacts {
+                    // We need to extend because it may already have operations
+                    // from imports.
+                    exec_state.global.root_module_artifacts.extend(module_artifacts);
+                }
+                err
+            });
 
         #[cfg(feature = "artifact-graph")]
         {
