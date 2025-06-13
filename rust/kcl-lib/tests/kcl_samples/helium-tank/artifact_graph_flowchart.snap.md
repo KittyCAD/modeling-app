@@ -385,6 +385,18 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   220["SweepEdge Opposite"]
   221["SweepEdge Adjacent"]
+  222["StartSketchOnPlane<br>[1713, 1770, 0]"]
+    %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  223["StartSketchOnPlane<br>[2447, 2505, 0]"]
+    %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  224["StartSketchOnPlane<br>[3145, 3203, 0]"]
+    %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  225["StartSketchOnPlane<br>[3781, 3839, 0]"]
+    %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  226["StartSketchOnPlane<br>[4169, 4229, 0]"]
+    %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  227["StartSketchOnPlane<br>[4671, 4729, 0]"]
+    %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -608,6 +620,7 @@ flowchart LR
   76 <--x 43
   78 <--x 43
   80 --- 81
+  80 <--x 222
   81 --- 82
   81 --- 83
   81 ---- 84
@@ -646,6 +659,7 @@ flowchart LR
   99 --- 103
   102 <--x 101
   105 --- 106
+  105 <--x 223
   106 --- 107
   106 --- 108
   106 --- 109
@@ -666,6 +680,7 @@ flowchart LR
   106 --- 124
   106 --- 125
   126 --- 127
+  126 <--x 224
   127 --- 128
   127 --- 129
   127 --- 130
@@ -812,6 +827,7 @@ flowchart LR
   181 <--x 160
   183 --- 184
   183 --- 187
+  183 <--x 225
   184 --- 185
   184 --- 186
   184 ---- 190
@@ -832,6 +848,7 @@ flowchart LR
   194 <--x 193
   196 --- 208
   197 --- 198
+  197 <--x 226
   198 --- 199
   198 --- 200
   198 ---- 201
@@ -851,6 +868,7 @@ flowchart LR
   207 --- 208
   209 --- 210
   209 --- 213
+  209 <--x 227
   210 --- 211
   210 --- 212
   210 ---- 216

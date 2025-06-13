@@ -227,7 +227,24 @@ flowchart LR
   120["SweepEdge Adjacent"]
   121["SweepEdge Opposite"]
   122["SweepEdge Adjacent"]
+  123["StartSketchOnPlane<br>[551, 593, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  124["StartSketchOnPlane<br>[551, 593, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  125["StartSketchOnPlane<br>[551, 593, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  126["StartSketchOnPlane<br>[551, 593, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  127["StartSketchOnPlane<br>[551, 593, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  128["StartSketchOnPlane<br>[551, 593, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  129["StartSketchOnPlane<br>[551, 593, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  130["StartSketchOnPlane<br>[1754, 1819, 0]"]
+    %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
+  1 <--x 123
   2 --- 3
   2 --- 4
   2 ---- 5
@@ -244,6 +261,7 @@ flowchart LR
   6 --- 10
   9 <--x 8
   11 --- 12
+  11 <--x 124
   12 --- 13
   12 --- 14
   12 ---- 15
@@ -260,6 +278,7 @@ flowchart LR
   16 --- 20
   19 <--x 18
   21 --- 22
+  21 <--x 125
   22 --- 23
   22 --- 24
   22 ---- 25
@@ -276,6 +295,7 @@ flowchart LR
   26 --- 30
   29 <--x 28
   31 --- 32
+  31 <--x 126
   32 --- 33
   32 --- 34
   32 ---- 35
@@ -292,6 +312,7 @@ flowchart LR
   36 --- 40
   39 <--x 38
   41 --- 42
+  41 <--x 127
   42 --- 43
   42 --- 44
   42 ---- 45
@@ -308,6 +329,7 @@ flowchart LR
   46 --- 50
   49 <--x 48
   51 --- 52
+  51 <--x 128
   52 --- 53
   52 --- 54
   52 ---- 55
@@ -324,6 +346,7 @@ flowchart LR
   56 --- 60
   59 <--x 58
   61 --- 62
+  61 <--x 129
   62 --- 63
   62 --- 64
   62 ---- 65
@@ -373,6 +396,7 @@ flowchart LR
   89 <--x 88
   91 --- 92
   91 --- 101
+  91 <--x 130
   92 --- 93
   92 --- 94
   92 ---- 95

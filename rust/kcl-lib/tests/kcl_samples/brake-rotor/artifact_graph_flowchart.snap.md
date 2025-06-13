@@ -174,7 +174,7 @@ flowchart LR
   83[Wall]
     %% face_code_ref=Missing NodePath
   84[Wall]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 38 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   85[Wall]
     %% face_code_ref=Missing NodePath
   86[Wall]
@@ -210,6 +210,12 @@ flowchart LR
     %% [ProgramBodyItem { index: 41 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   110["Sweep Extrusion<br>[5097, 5152, 0]"]
     %% [ProgramBodyItem { index: 41 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  111["StartSketchOnPlane<br>[2502, 2526, 0]"]
+    %% [ProgramBodyItem { index: 24 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  112["StartSketchOnPlane<br>[1380, 1400, 0]"]
+    %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  113["StartSketchOnFace<br>[4755, 4796, 0]"]
+    %% [ProgramBodyItem { index: 38 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 --- 5
   1 --- 8
@@ -239,6 +245,7 @@ flowchart LR
   18 --- 22
   21 <--x 20
   23 --- 24
+  23 <--x 111
   24 --- 25
   24 --- 26
   24 --- 27
@@ -298,6 +305,7 @@ flowchart LR
   47 --- 54
   47 --- 57
   47 --- 60
+  47 <--x 112
   48 --- 49
   48 --- 50
   48 ---- 63
@@ -386,6 +394,7 @@ flowchart LR
   84 --- 93
   84 --- 100
   101 <--x 84
+  84 <--x 113
   93 <--x 85
   85 --- 94
   94 <--x 86

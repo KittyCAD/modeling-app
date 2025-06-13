@@ -251,7 +251,7 @@ flowchart LR
   89["Cap Start"]
     %% face_code_ref=Missing NodePath
   90["Cap End"]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   91["SweepEdge Opposite"]
   92["SweepEdge Adjacent"]
   93["SweepEdge Opposite"]
@@ -327,7 +327,7 @@ flowchart LR
   162["Cap Start"]
     %% face_code_ref=Missing NodePath
   163["Cap End"]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   164["SweepEdge Opposite"]
   165["SweepEdge Adjacent"]
   166["SweepEdge Opposite"]
@@ -365,7 +365,7 @@ flowchart LR
   201[Wall]
     %% face_code_ref=Missing NodePath
   202[Wall]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   203[Wall]
     %% face_code_ref=Missing NodePath
   204["Cap Start"]
@@ -452,6 +452,12 @@ flowchart LR
   279["SweepEdge Adjacent"]
   280["SweepEdge Opposite"]
   281["SweepEdge Adjacent"]
+  282["StartSketchOnFace<br>[2237, 2273, 0]"]
+    %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  283["StartSketchOnFace<br>[3588, 3626, 0]"]
+    %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  284["StartSketchOnFace<br>[3845, 3881, 0]"]
+    %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -775,6 +781,7 @@ flowchart LR
   113 <--x 90
   115 <--x 90
   90 --- 135
+  90 <--x 282
   117 --- 118
   118 --- 119
   118 --- 120
@@ -965,6 +972,7 @@ flowchart LR
   184 <--x 163
   186 <--x 163
   163 --- 239
+  163 <--x 284
   188 --- 189
   189 --- 190
   189 --- 191
@@ -1034,6 +1042,7 @@ flowchart LR
   202 --- 214
   202 --- 215
   202 --- 218
+  202 <--x 283
   215 <--x 203
   203 --- 216
   203 --- 217

@@ -213,6 +213,8 @@ flowchart LR
   119["SweepEdge Adjacent"]
   120["CompositeSolid Subtract<br>[4864, 4911, 0]"]
     %% [ProgramBodyItem { index: 42 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  121["StartSketchOnPlane<br>[4661, 4684, 0]"]
+    %% [ProgramBodyItem { index: 39 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -458,6 +460,7 @@ flowchart LR
   108 --- 109
   109 --- 120
   110 --- 111
+  110 <--x 121
   111 --- 112
   111 --- 113
   111 ---- 114

@@ -59,7 +59,7 @@ flowchart LR
   9[Wall]
     %% face_code_ref=Missing NodePath
   10[Wall]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   11[Wall]
     %% face_code_ref=Missing NodePath
   12["Cap Start"]
@@ -81,7 +81,7 @@ flowchart LR
   29[Wall]
     %% face_code_ref=Missing NodePath
   30["Cap End"]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   31["SweepEdge Opposite"]
   32["SweepEdge Adjacent"]
   33["SweepEdge Opposite"]
@@ -95,7 +95,7 @@ flowchart LR
   45[Wall]
     %% face_code_ref=Missing NodePath
   46[Wall]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   47["Cap End"]
     %% face_code_ref=Missing NodePath
   48["SweepEdge Opposite"]
@@ -120,6 +120,12 @@ flowchart LR
   68["SweepEdge Adjacent"]
   69["SweepEdge Opposite"]
   70["SweepEdge Adjacent"]
+  71["StartSketchOnFace<br>[255, 294, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  72["StartSketchOnFace<br>[511, 550, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  73["StartSketchOnFace<br>[780, 819, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -160,6 +166,7 @@ flowchart LR
   21 <--x 10
   22 <--x 10
   23 <--x 10
+  10 <--x 71
   15 <--x 11
   11 --- 18
   11 --- 19
@@ -207,6 +214,7 @@ flowchart LR
   38 <--x 30
   39 <--x 30
   40 <--x 30
+  30 <--x 72
   37 --- 38
   37 --- 39
   37 --- 40
@@ -245,6 +253,7 @@ flowchart LR
   55 <--x 46
   56 <--x 46
   57 <--x 46
+  46 <--x 73
   48 <--x 47
   50 <--x 47
   52 <--x 47

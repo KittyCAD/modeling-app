@@ -620,7 +620,7 @@ flowchart LR
   9["Sweep Extrusion<br>[869, 891, 0]"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
   10[Wall]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   11[Wall]
     %% face_code_ref=Missing NodePath
   12[Wall]
@@ -1681,6 +1681,8 @@ flowchart LR
   1031["SweepEdge Adjacent"]
   1032["SweepEdge Opposite"]
   1033["SweepEdge Adjacent"]
+  1034["StartSketchOnFace<br>[1169, 1207, 0]"]
+    %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -1730,6 +1732,7 @@ flowchart LR
   32 <--x 10
   10 --- 34
   35 <--x 10
+  10 <--x 1034
   11 --- 18
   11 --- 19
   21 <--x 11

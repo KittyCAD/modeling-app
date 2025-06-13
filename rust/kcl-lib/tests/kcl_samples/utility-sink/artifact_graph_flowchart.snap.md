@@ -383,9 +383,9 @@ flowchart LR
   157[Wall]
     %% face_code_ref=Missing NodePath
   158["Cap Start"]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 38 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   159["Cap End"]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 40 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   160["SweepEdge Opposite"]
   161["SweepEdge Adjacent"]
   162["SweepEdge Opposite"]
@@ -546,6 +546,30 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   312["SweepEdge Opposite"]
   313["SweepEdge Adjacent"]
+  314["StartSketchOnPlane<br>[1237, 1306, 0]"]
+    %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  315["StartSketchOnPlane<br>[2317, 2383, 0]"]
+    %% [ProgramBodyItem { index: 22 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  316["StartSketchOnPlane<br>[2956, 3008, 0]"]
+    %% [ProgramBodyItem { index: 25 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  317["StartSketchOnPlane<br>[3841, 3893, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  318["StartSketchOnFace<br>[4405, 4446, 0]"]
+    %% [ProgramBodyItem { index: 38 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  319["StartSketchOnFace<br>[4845, 4884, 0]"]
+    %% [ProgramBodyItem { index: 40 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  320["StartSketchOnPlane<br>[5429, 5481, 0]"]
+    %% [ProgramBodyItem { index: 42 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  321["StartSketchOnPlane<br>[5674, 5726, 0]"]
+    %% [ProgramBodyItem { index: 43 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  322["StartSketchOnPlane<br>[5919, 5975, 0]"]
+    %% [ProgramBodyItem { index: 44 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  323["StartSketchOnPlane<br>[6184, 6240, 0]"]
+    %% [ProgramBodyItem { index: 45 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  324["StartSketchOnPlane<br>[6761, 6825, 0]"]
+    %% [ProgramBodyItem { index: 52 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  325["StartSketchOnPlane<br>[8078, 8144, 0]"]
+    %% [ProgramBodyItem { index: 65 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -602,6 +626,7 @@ flowchart LR
   22 <--x 15
   27 --- 28
   27 --- 51
+  27 <--x 314
   28 --- 29
   28 --- 30
   28 --- 31
@@ -709,6 +734,7 @@ flowchart LR
   69 <--x 64
   71 <--x 64
   74 --- 75
+  74 <--x 315
   75 --- 76
   75 --- 77
   75 --- 78
@@ -764,6 +790,7 @@ flowchart LR
   95 <--x 88
   98 --- 99
   98 --- 122
+  98 <--x 316
   99 --- 100
   99 --- 101
   99 --- 102
@@ -871,6 +898,7 @@ flowchart LR
   140 <--x 134
   142 <--x 134
   145 --- 146
+  145 <--x 317
   146 --- 147
   146 --- 148
   146 --- 149
@@ -929,11 +957,13 @@ flowchart LR
   170 <--x 158
   171 <--x 158
   172 <--x 158
+  158 <--x 318
   159 --- 189
   190 <--x 159
   191 <--x 159
   192 <--x 159
   193 <--x 159
+  159 <--x 319
   168 --- 169
   168 --- 170
   168 --- 171
@@ -1031,6 +1061,7 @@ flowchart LR
   206 <--x 201
   208 <--x 201
   210 --- 211
+  210 <--x 320
   211 --- 212
   211 --- 213
   211 ---- 214
@@ -1047,6 +1078,7 @@ flowchart LR
   215 --- 219
   218 <--x 217
   220 --- 221
+  220 <--x 321
   221 --- 222
   221 --- 223
   221 ---- 224
@@ -1063,6 +1095,7 @@ flowchart LR
   225 --- 229
   228 <--x 227
   230 --- 231
+  230 <--x 322
   231 --- 232
   231 --- 233
   231 ---- 234
@@ -1079,6 +1112,7 @@ flowchart LR
   235 --- 239
   238 <--x 237
   240 --- 241
+  240 <--x 323
   241 --- 242
   241 --- 243
   241 ---- 244
@@ -1096,6 +1130,7 @@ flowchart LR
   248 <--x 247
   250 --- 251
   250 --- 274
+  250 <--x 324
   251 --- 252
   251 --- 253
   251 --- 254
@@ -1203,6 +1238,7 @@ flowchart LR
   292 <--x 287
   294 <--x 287
   297 --- 298
+  297 <--x 325
   298 --- 299
   298 --- 300
   298 --- 301

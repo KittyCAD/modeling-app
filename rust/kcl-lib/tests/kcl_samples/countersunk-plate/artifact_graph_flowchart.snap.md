@@ -67,7 +67,7 @@ flowchart LR
   25["Cap Start"]
     %% face_code_ref=Missing NodePath
   26["Cap End"]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   27["SweepEdge Opposite"]
   28["SweepEdge Adjacent"]
   29["SweepEdge Opposite"]
@@ -100,6 +100,10 @@ flowchart LR
   57["SweepEdge Adjacent"]
   58["EdgeCut Chamfer<br>[1830, 1877, 0]"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 3 }]
+  59["StartSketchOnFace<br>[1606, 1642, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
+  60["StartSketchOnFace<br>[1606, 1642, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   1 --- 2
   1 --- 13
   2 --- 3
@@ -211,6 +215,8 @@ flowchart LR
   44 <--x 26
   26 --- 51
   52 <--x 26
+  26 <--x 59
+  26 <--x 60
   43 --- 44
   43 --- 45
   43 ---- 46

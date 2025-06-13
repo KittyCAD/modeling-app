@@ -92,7 +92,7 @@ flowchart LR
   24[Wall]
     %% face_code_ref=Missing NodePath
   25[Wall]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   26[Wall]
     %% face_code_ref=Missing NodePath
   27[Wall]
@@ -190,6 +190,18 @@ flowchart LR
   105["SweepEdge Adjacent"]
   106["EdgeCut Chamfer<br>[1930, 1969, 0]"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 3 }]
+  107["StartSketchOnFace<br>[1747, 1802, 0]"]
+    %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
+  108["StartSketchOnFace<br>[1747, 1802, 0]"]
+    %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
+  109["StartSketchOnFace<br>[1747, 1802, 0]"]
+    %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
+  110["StartSketchOnFace<br>[1747, 1802, 0]"]
+    %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
+  111["StartSketchOnFace<br>[1747, 1802, 0]"]
+    %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
+  112["StartSketchOnFace<br>[1747, 1802, 0]"]
+    %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -316,6 +328,12 @@ flowchart LR
   92 <--x 25
   25 --- 99
   100 <--x 25
+  25 <--x 107
+  25 <--x 108
+  25 <--x 109
+  25 <--x 110
+  25 <--x 111
+  25 <--x 112
   43 <--x 26
   26 --- 44
   44 <--x 27

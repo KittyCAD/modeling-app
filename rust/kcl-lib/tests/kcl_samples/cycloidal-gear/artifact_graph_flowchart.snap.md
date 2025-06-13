@@ -102,8 +102,15 @@ flowchart LR
   52["SweepEdge Adjacent"]
   53["SweepEdge Adjacent"]
   54["SweepEdge Adjacent"]
+  55["StartSketchOnPlane<br>[605, 653, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  56["StartSketchOnPlane<br>[605, 653, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  57["StartSketchOnPlane<br>[605, 653, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   1 --- 11
+  1 <--x 55
   2 --- 3
   2 --- 4
   2 --- 5
@@ -141,6 +148,7 @@ flowchart LR
   11 --- 13
   14 --- 15
   14 --- 24
+  14 <--x 56
   15 --- 16
   15 --- 17
   15 --- 18
@@ -154,6 +162,7 @@ flowchart LR
   24 --- 26
   27 --- 28
   27 --- 37
+  27 <--x 57
   28 x--> 29
   28 x--> 30
   28 x--> 31

@@ -253,7 +253,16 @@ flowchart LR
   140["SweepEdge Adjacent"]
   141["EdgeCut Fillet<br>[5816, 6160, 0]"]
     %% [ProgramBodyItem { index: 27 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  142["StartSketchOnPlane<br>[913, 933, 0]"]
+    %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  143["StartSketchOnPlane<br>[913, 933, 0]"]
+    %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  144["StartSketchOnPlane<br>[4207, 4227, 0]"]
+    %% [ProgramBodyItem { index: 20 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  145["StartSketchOnPlane<br>[2715, 2735, 0]"]
+    %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
+  1 <--x 142
   2 --- 3
   2 --- 4
   2 --- 5
@@ -319,6 +328,7 @@ flowchart LR
   23 <--x 16
   25 <--x 16
   27 --- 28
+  27 <--x 143
   28 --- 29
   28 --- 30
   28 --- 31
@@ -461,6 +471,8 @@ flowchart LR
   92 <--x 99
   100 --- 101
   100 --- 107
+  100 <--x 144
+  100 <--x 145
   101 --- 102
   101 --- 103
   101 --- 104

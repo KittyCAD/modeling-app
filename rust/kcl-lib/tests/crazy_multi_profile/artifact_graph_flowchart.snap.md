@@ -132,7 +132,7 @@ flowchart LR
   9[Wall]
     %% face_code_ref=Missing NodePath
   10[Wall]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   11[Wall]
     %% face_code_ref=Missing NodePath
   12["Cap Start"]
@@ -207,6 +207,8 @@ flowchart LR
   108["SweepEdge Adjacent"]
   109["SweepEdge Opposite"]
   110["SweepEdge Adjacent"]
+  111["StartSketchOnFace<br>[309, 348, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -248,6 +250,7 @@ flowchart LR
   10 --- 30
   10 --- 36
   10 --- 39
+  10 <--x 111
   15 <--x 11
   11 --- 18
   11 --- 19

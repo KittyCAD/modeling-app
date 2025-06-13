@@ -42,9 +42,9 @@ flowchart LR
   13[Wall]
     %% face_code_ref=Missing NodePath
   14[Wall]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   15[Wall]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 22 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   16[Wall]
     %% face_code_ref=Missing NodePath
   17[Wall]
@@ -91,6 +91,10 @@ flowchart LR
     %% [ProgramBodyItem { index: 24 }, ExpressionStatementExpr]
   52["EdgeCut Fillet<br>[3780, 3922, 0]"]
     %% [ProgramBodyItem { index: 25 }, ExpressionStatementExpr]
+  53["StartSketchOnFace<br>[2555, 2595, 0]"]
+    %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  54["StartSketchOnFace<br>[3179, 3219, 0]"]
+    %% [ProgramBodyItem { index: 22 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -158,11 +162,13 @@ flowchart LR
   14 --- 25
   14 --- 32
   33 <--x 14
+  14 <--x 53
   25 <--x 15
   15 --- 26
   15 --- 27
   15 --- 42
   43 <--x 15
+  15 <--x 54
   27 <--x 16
   16 --- 28
   16 --- 29

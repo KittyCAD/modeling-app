@@ -95,6 +95,10 @@ flowchart LR
   52["SweepEdge Adjacent"]
   53["SweepEdge Opposite"]
   54["SweepEdge Adjacent"]
+  55["StartSketchOnFace<br>[674, 713, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  56["StartSketchOnFace<br>[1141, 1180, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -152,11 +156,13 @@ flowchart LR
   20 <--x 15
   22 <--x 15
   25 --- 27
+  25 <--x 55
   26 --- 34
   35 <--x 26
   36 <--x 26
   37 <--x 26
   38 <--x 26
+  26 <--x 56
   27 --- 28
   27 --- 29
   27 --- 30

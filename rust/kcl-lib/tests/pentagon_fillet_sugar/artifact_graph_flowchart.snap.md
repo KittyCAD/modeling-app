@@ -33,11 +33,11 @@ flowchart LR
   6["Sweep Extrusion<br>[309, 341, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
   7[Wall]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
   8[Wall]
     %% face_code_ref=Missing NodePath
   9[Wall]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
   10["Cap Start"]
     %% face_code_ref=Missing NodePath
   11["Cap End"]
@@ -68,6 +68,10 @@ flowchart LR
   36["SweepEdge Adjacent"]
   37["EdgeCut Fillet<br>[896, 1023, 0]"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
+  38["StartSketchOnFace<br>[372, 401, 0]"]
+    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  39["StartSketchOnFace<br>[372, 401, 0]"]
+    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -101,6 +105,7 @@ flowchart LR
   17 <--x 7
   7 --- 28
   29 <--x 7
+  7 <--x 39
   13 <--x 8
   8 --- 14
   8 --- 15
@@ -109,6 +114,7 @@ flowchart LR
   9 --- 17
   9 --- 18
   19 <--x 9
+  9 <--x 38
   12 <--x 11
   14 <--x 11
   16 <--x 11

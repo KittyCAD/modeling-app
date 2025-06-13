@@ -246,7 +246,7 @@ flowchart LR
   102["Cap Start"]
     %% face_code_ref=Missing NodePath
   103["Cap End"]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   104["SweepEdge Opposite"]
   105["SweepEdge Adjacent"]
   106["SweepEdge Opposite"]
@@ -281,6 +281,8 @@ flowchart LR
   146["SweepEdge Adjacent"]
   147["EdgeCut Fillet<br>[5381, 5663, 0]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+  148["StartSketchOnFace<br>[3930, 3967, 0]"]
+    %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -483,6 +485,7 @@ flowchart LR
   103 --- 123
   103 --- 126
   103 --- 129
+  103 <--x 148
   105 <--x 112
   113 --- 114
   113 --- 115

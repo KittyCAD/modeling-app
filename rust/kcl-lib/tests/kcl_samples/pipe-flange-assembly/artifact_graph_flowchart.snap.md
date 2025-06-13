@@ -145,9 +145,7 @@ flowchart LR
   27[Wall]
     %% face_code_ref=Missing NodePath
   28["Cap Start"]
-    %% face_code_ref=Missing NodePath
   29["Cap End"]
-    %% face_code_ref=Missing NodePath
   30["SweepEdge Opposite"]
   31["SweepEdge Adjacent"]
   35["Sweep Extrusion<br>[1287, 1324, 3]"]
@@ -161,7 +159,6 @@ flowchart LR
   44[Wall]
     %% face_code_ref=Missing NodePath
   45["Cap End"]
-    %% face_code_ref=Missing NodePath
   46["SweepEdge Opposite"]
   47["SweepEdge Adjacent"]
   51["Sweep Extrusion<br>[1669, 1711, 3]"]
@@ -175,9 +172,7 @@ flowchart LR
   64[Wall]
     %% face_code_ref=Missing NodePath
   65["Cap Start"]
-    %% face_code_ref=Missing NodePath
   66["Cap End"]
-    %% face_code_ref=Missing NodePath
   67["SweepEdge Opposite"]
   68["SweepEdge Adjacent"]
   72["Sweep Extrusion<br>[1287, 1324, 3]"]
@@ -191,7 +186,6 @@ flowchart LR
   81[Wall]
     %% face_code_ref=Missing NodePath
   82["Cap End"]
-    %% face_code_ref=Missing NodePath
   83["SweepEdge Opposite"]
   84["SweepEdge Adjacent"]
   88["Sweep Extrusion<br>[1669, 1711, 3]"]
@@ -206,7 +200,6 @@ flowchart LR
   98["Cap Start"]
     %% face_code_ref=Missing NodePath
   99["Cap End"]
-    %% face_code_ref=Missing NodePath
   100["SweepEdge Opposite"]
   101["SweepEdge Adjacent"]
   105["Sweep Extrusion<br>[679, 716, 4]"]
@@ -219,9 +212,7 @@ flowchart LR
   114[Wall]
     %% face_code_ref=Missing NodePath
   115["Cap Start"]
-    %% face_code_ref=Missing NodePath
   116["Cap End"]
-    %% face_code_ref=Missing NodePath
   117["SweepEdge Opposite"]
   118["SweepEdge Adjacent"]
   119["EdgeCut Fillet<br>[576, 642, 5]"]
@@ -276,7 +267,6 @@ flowchart LR
   172["Cap Start"]
     %% face_code_ref=Missing NodePath
   173["Cap End"]
-    %% face_code_ref=Missing NodePath
   174["SweepEdge Opposite"]
   175["SweepEdge Adjacent"]
   176["SweepEdge Opposite"]
@@ -301,7 +291,6 @@ flowchart LR
   199["Cap Start"]
     %% face_code_ref=Missing NodePath
   200["Cap End"]
-    %% face_code_ref=Missing NodePath
   201["SweepEdge Opposite"]
   202["SweepEdge Adjacent"]
   206["Sweep Extrusion<br>[608, 640, 7]"]
@@ -316,7 +305,6 @@ flowchart LR
   216["Cap Start"]
     %% face_code_ref=Missing NodePath
   217["Cap End"]
-    %% face_code_ref=Missing NodePath
   218["SweepEdge Opposite"]
   219["SweepEdge Adjacent"]
   223["Sweep Extrusion<br>[608, 640, 7]"]
@@ -325,6 +313,18 @@ flowchart LR
   225["SweepEdge Opposite"]
   226["SweepEdge Adjacent"]
   227["StartSketchOnFace<br>[597, 634, 2]"]
+  228["StartSketchOnFace<br>[1173, 1212, 3]"]
+  229["StartSketchOnFace<br>[1341, 1378, 3]"]
+  230["StartSketchOnFace<br>[1562, 1600, 3]"]
+  231["StartSketchOnFace<br>[1173, 1212, 3]"]
+  232["StartSketchOnFace<br>[1341, 1378, 3]"]
+  233["StartSketchOnFace<br>[1562, 1600, 3]"]
+  234["StartSketchOnFace<br>[574, 611, 4]"]
+  235["StartSketchOnFace<br>[751, 788, 5]"]
+  236["StartSketchOnFace<br>[1287, 1322, 5]"]
+  237["StartSketchOnFace<br>[940, 977, 6]"]
+  238["StartSketchOnFace<br>[502, 537, 7]"]
+  239["StartSketchOnFace<br>[502, 537, 7]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -376,9 +376,11 @@ flowchart LR
   27 --- 31
   28 --- 32
   33 <--x 28
+  28 <--x 228
   30 <--x 29
   29 --- 40
   41 <--x 29
+  29 <--x 229
   32 --- 33
   32 --- 34
   32 ---- 35
@@ -408,6 +410,7 @@ flowchart LR
   46 <--x 45
   45 --- 48
   49 <--x 45
+  45 <--x 230
   48 --- 49
   48 --- 50
   48 ---- 51
@@ -439,9 +442,11 @@ flowchart LR
   64 --- 68
   65 --- 69
   70 <--x 65
+  65 <--x 231
   67 <--x 66
   66 --- 77
   78 <--x 66
+  66 <--x 232
   69 --- 70
   69 --- 71
   69 ---- 72
@@ -471,6 +476,7 @@ flowchart LR
   83 <--x 82
   82 --- 85
   86 <--x 82
+  82 <--x 233
   85 --- 86
   85 --- 87
   85 ---- 88
@@ -501,6 +507,7 @@ flowchart LR
   100 <--x 99
   99 --- 102
   103 <--x 99
+  99 <--x 234
   102 --- 103
   102 --- 104
   102 ---- 105
@@ -536,8 +543,10 @@ flowchart LR
   124 <--x 115
   125 <--x 115
   126 <--x 115
+  115 <--x 235
   116 --- 148
   149 <--x 116
+  116 <--x 236
   120 --- 121
   120 --- 122
   120 --- 123
@@ -700,6 +709,7 @@ flowchart LR
   184 <--x 173
   173 --- 186
   187 <--x 173
+  173 <--x 237
   186 --- 187
   186 --- 188
   186 ---- 189
@@ -730,6 +740,7 @@ flowchart LR
   201 <--x 200
   200 --- 203
   204 <--x 200
+  200 <--x 238
   203 --- 204
   203 --- 205
   203 ---- 206
@@ -760,6 +771,7 @@ flowchart LR
   218 <--x 217
   217 --- 220
   221 <--x 217
+  217 <--x 239
   220 --- 221
   220 --- 222
   220 ---- 223

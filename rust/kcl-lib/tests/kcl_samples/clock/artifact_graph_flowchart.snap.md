@@ -528,9 +528,9 @@ flowchart LR
   6[Wall]
     %% face_code_ref=Missing NodePath
   7["Cap Start"]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 71 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   8["Cap End"]
-    %% face_code_ref=Missing NodePath
+    %% face_code_ref=[ProgramBodyItem { index: 23 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   9["SweepEdge Opposite"]
   10["SweepEdge Adjacent"]
   11["EdgeCut Fillet<br>[987, 1110, 0]"]
@@ -1439,6 +1439,68 @@ flowchart LR
   867["SweepEdge Adjacent"]
   868["SweepEdge Opposite"]
   869["SweepEdge Adjacent"]
+  870["StartSketchOnFace<br>[1179, 1215, 0]"]
+    %% [ProgramBodyItem { index: 23 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  871["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  872["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  873["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  874["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  875["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  876["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  877["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  878["StartSketchOnPlane<br>[6359, 6402, 0]"]
+    %% [ProgramBodyItem { index: 31 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  879["StartSketchOnPlane<br>[6359, 6402, 0]"]
+    %% [ProgramBodyItem { index: 31 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  880["StartSketchOnPlane<br>[6359, 6402, 0]"]
+    %% [ProgramBodyItem { index: 31 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  881["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  882["StartSketchOnPlane<br>[6359, 6402, 0]"]
+    %% [ProgramBodyItem { index: 31 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  883["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  884["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  885["StartSketchOnPlane<br>[6359, 6402, 0]"]
+    %% [ProgramBodyItem { index: 31 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  886["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  887["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  888["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  889["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  890["StartSketchOnPlane<br>[5389, 5432, 0]"]
+    %% [ProgramBodyItem { index: 30 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  891["StartSketchOnPlane<br>[5389, 5432, 0]"]
+    %% [ProgramBodyItem { index: 30 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  892["StartSketchOnPlane<br>[5389, 5432, 0]"]
+    %% [ProgramBodyItem { index: 30 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  893["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  894["StartSketchOnPlane<br>[5389, 5432, 0]"]
+    %% [ProgramBodyItem { index: 30 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  895["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  896["StartSketchOnPlane<br>[4907, 4950, 0]"]
+    %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  897["StartSketchOnFace<br>[9040, 9076, 0]"]
+    %% [ProgramBodyItem { index: 58 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
+  898["StartSketchOnPlane<br>[9203, 9246, 0]"]
+    %% [ProgramBodyItem { index: 59 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  899["StartSketchOnPlane<br>[10722, 10765, 0]"]
+    %% [ProgramBodyItem { index: 63 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  900["StartSketchOnFace<br>[12333, 12371, 0]"]
+    %% [ProgramBodyItem { index: 71 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -1460,11 +1522,14 @@ flowchart LR
   851 <--x 7
   852 <--x 7
   853 <--x 7
+  7 <--x 900
   9 <--x 8
   8 --- 12
   8 --- 15
   8 --- 765
   766 <--x 8
+  8 <--x 870
+  8 <--x 897
   12 --- 13
   12 --- 14
   12 ---- 18
@@ -1484,6 +1549,7 @@ flowchart LR
   22 <--x 21
   22 <--x 24
   25 --- 26
+  25 <--x 871
   26 --- 27
   26 --- 28
   26 --- 29
@@ -1537,6 +1603,7 @@ flowchart LR
   43 <--x 38
   45 <--x 38
   47 --- 48
+  47 <--x 872
   48 --- 49
   48 --- 50
   48 --- 51
@@ -1590,6 +1657,7 @@ flowchart LR
   65 <--x 60
   67 <--x 60
   69 --- 70
+  69 <--x 873
   70 --- 71
   70 --- 72
   70 --- 73
@@ -1643,6 +1711,7 @@ flowchart LR
   87 <--x 82
   89 <--x 82
   91 --- 92
+  91 <--x 874
   92 --- 93
   92 --- 94
   92 --- 95
@@ -1696,6 +1765,7 @@ flowchart LR
   109 <--x 104
   111 <--x 104
   113 --- 114
+  113 <--x 875
   114 --- 115
   114 --- 116
   114 --- 117
@@ -1749,6 +1819,7 @@ flowchart LR
   131 <--x 126
   133 <--x 126
   135 --- 136
+  135 <--x 876
   136 --- 137
   136 --- 138
   136 --- 139
@@ -1802,6 +1873,7 @@ flowchart LR
   153 <--x 148
   155 <--x 148
   157 --- 158
+  157 <--x 877
   158 --- 159
   158 --- 160
   158 --- 161
@@ -1855,6 +1927,7 @@ flowchart LR
   175 <--x 170
   177 <--x 170
   179 --- 180
+  179 <--x 878
   180 --- 181
   180 --- 182
   180 --- 183
@@ -1932,6 +2005,7 @@ flowchart LR
   205 <--x 196
   207 <--x 196
   209 --- 210
+  209 <--x 879
   210 --- 211
   210 --- 212
   210 --- 213
@@ -2009,6 +2083,7 @@ flowchart LR
   235 <--x 226
   237 <--x 226
   239 --- 240
+  239 <--x 880
   240 --- 241
   240 --- 242
   240 --- 243
@@ -2086,6 +2161,7 @@ flowchart LR
   265 <--x 256
   267 <--x 256
   269 --- 270
+  269 <--x 881
   270 --- 271
   270 --- 272
   270 --- 273
@@ -2139,6 +2215,7 @@ flowchart LR
   287 <--x 282
   289 <--x 282
   291 --- 292
+  291 <--x 882
   292 --- 293
   292 --- 294
   292 --- 295
@@ -2216,6 +2293,7 @@ flowchart LR
   317 <--x 308
   319 <--x 308
   321 --- 322
+  321 <--x 883
   322 --- 323
   322 --- 324
   322 --- 325
@@ -2269,6 +2347,7 @@ flowchart LR
   339 <--x 334
   341 <--x 334
   343 --- 344
+  343 <--x 884
   344 --- 345
   344 --- 346
   344 --- 347
@@ -2322,6 +2401,7 @@ flowchart LR
   361 <--x 356
   363 <--x 356
   365 --- 366
+  365 <--x 885
   366 --- 367
   366 --- 368
   366 --- 369
@@ -2399,6 +2479,7 @@ flowchart LR
   391 <--x 382
   393 <--x 382
   395 --- 396
+  395 <--x 886
   396 --- 397
   396 --- 398
   396 --- 399
@@ -2452,6 +2533,7 @@ flowchart LR
   413 <--x 408
   415 <--x 408
   417 --- 418
+  417 <--x 887
   418 --- 419
   418 --- 420
   418 --- 421
@@ -2505,6 +2587,7 @@ flowchart LR
   435 <--x 430
   437 <--x 430
   439 --- 440
+  439 <--x 888
   440 --- 441
   440 --- 442
   440 --- 443
@@ -2558,6 +2641,7 @@ flowchart LR
   457 <--x 452
   459 <--x 452
   461 --- 462
+  461 <--x 889
   462 --- 463
   462 --- 464
   462 --- 465
@@ -2611,6 +2695,7 @@ flowchart LR
   479 <--x 474
   481 <--x 474
   483 --- 484
+  483 <--x 890
   484 --- 485
   484 --- 486
   484 --- 487
@@ -2760,6 +2845,7 @@ flowchart LR
   533 <--x 512
   535 <--x 512
   537 --- 538
+  537 <--x 891
   538 --- 539
   538 --- 540
   538 --- 541
@@ -2909,6 +2995,7 @@ flowchart LR
   587 <--x 566
   589 <--x 566
   591 --- 592
+  591 <--x 892
   592 --- 593
   592 --- 594
   592 --- 595
@@ -3058,6 +3145,7 @@ flowchart LR
   641 <--x 620
   643 <--x 620
   645 --- 646
+  645 <--x 893
   646 --- 647
   646 --- 648
   646 --- 649
@@ -3111,6 +3199,7 @@ flowchart LR
   663 <--x 658
   665 <--x 658
   667 --- 668
+  667 <--x 894
   668 --- 669
   668 --- 670
   668 --- 671
@@ -3260,6 +3349,7 @@ flowchart LR
   717 <--x 696
   719 <--x 696
   721 --- 722
+  721 <--x 895
   722 --- 723
   722 --- 724
   722 --- 725
@@ -3313,6 +3403,7 @@ flowchart LR
   739 <--x 734
   741 <--x 734
   743 --- 744
+  743 <--x 896
   744 --- 745
   744 --- 746
   744 --- 747
@@ -3380,6 +3471,7 @@ flowchart LR
   771 <--x 770
   773 --- 774
   773 --- 784
+  773 <--x 898
   774 --- 775
   774 --- 776
   774 --- 777
@@ -3473,6 +3565,7 @@ flowchart LR
   809 <--x 796
   811 --- 812
   811 --- 822
+  811 <--x 899
   812 --- 813
   812 --- 814
   812 --- 815

@@ -202,7 +202,24 @@ flowchart LR
   102["SweepEdge Adjacent"]
   103["SweepEdge Opposite"]
   104["SweepEdge Adjacent"]
+  105["StartSketchOnPlane<br>[3780, 3833, 0]"]
+    %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  106["StartSketchOnPlane<br>[5032, 5085, 0]"]
+    %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  107["StartSketchOnPlane<br>[3780, 3833, 0]"]
+    %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  108["StartSketchOnPlane<br>[5032, 5085, 0]"]
+    %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  109["StartSketchOnPlane<br>[1156, 1209, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  110["StartSketchOnPlane<br>[1156, 1209, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  111["StartSketchOnPlane<br>[1156, 1209, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  112["StartSketchOnPlane<br>[1156, 1209, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
+  1 <--x 105
   2 --- 3
   2 --- 4
   2 --- 5
@@ -210,6 +227,7 @@ flowchart LR
   2 --- 7
   2 --- 8
   9 --- 10
+  9 <--x 106
   10 --- 11
   10 --- 12
   10 ---- 25
@@ -218,6 +236,7 @@ flowchart LR
   11 --- 29
   11 --- 30
   13 --- 14
+  13 <--x 107
   14 --- 15
   14 --- 16
   14 --- 17
@@ -225,6 +244,7 @@ flowchart LR
   14 --- 19
   14 --- 20
   21 --- 22
+  21 <--x 108
   22 --- 23
   22 --- 24
   22 x---> 25
@@ -238,6 +258,7 @@ flowchart LR
   29 <--x 28
   31 --- 32
   31 --- 39
+  31 <--x 109
   32 --- 33
   32 --- 34
   32 --- 35
@@ -265,6 +286,7 @@ flowchart LR
   39 --- 41
   42 --- 43
   42 --- 50
+  42 <--x 110
   43 --- 44
   43 --- 45
   43 --- 46
@@ -305,6 +327,7 @@ flowchart LR
   66 <--x 59
   68 --- 69
   68 --- 76
+  68 <--x 111
   69 --- 70
   69 --- 71
   69 --- 72
@@ -332,6 +355,7 @@ flowchart LR
   76 --- 78
   79 --- 80
   79 --- 87
+  79 <--x 112
   80 --- 81
   80 --- 82
   80 --- 83

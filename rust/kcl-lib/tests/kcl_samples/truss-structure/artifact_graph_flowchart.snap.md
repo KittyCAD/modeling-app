@@ -344,6 +344,10 @@ flowchart LR
   200["SweepEdge Adjacent"]
   201["SweepEdge Opposite"]
   202["SweepEdge Adjacent"]
+  203["StartSketchOnPlane<br>[1740, 1783, 0]"]
+    %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  204["StartSketchOnPlane<br>[2555, 2598, 0]"]
+    %% [ProgramBodyItem { index: 24 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 --- 9
   1 --- 15
@@ -424,6 +428,7 @@ flowchart LR
   37 <--x 28
   39 --- 40
   39 --- 61
+  39 <--x 203
   40 --- 41
   40 --- 42
   40 --- 43
@@ -534,6 +539,7 @@ flowchart LR
   83 --- 127
   84 --- 85
   84 --- 91
+  84 <--x 204
   85 --- 86
   85 --- 87
   85 --- 88
