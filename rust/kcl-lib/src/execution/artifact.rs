@@ -165,7 +165,7 @@ pub struct Sweep {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, PartialOrd, Ord, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum SweepSubType {
@@ -239,7 +239,7 @@ pub struct Cap {
     pub cmd_id: uuid::Uuid,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Ord, PartialOrd, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum CapSubType {
@@ -263,7 +263,7 @@ pub struct SweepEdge {
     pub common_surface_ids: Vec<ArtifactId>,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Ord, PartialOrd, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum SweepEdgeSubType {
@@ -285,7 +285,7 @@ pub struct EdgeCut {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, PartialOrd, Ord, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum EdgeCutSubType {
@@ -340,135 +340,6 @@ pub enum Artifact {
     EdgeCut(EdgeCut),
     EdgeCutEdge(EdgeCutEdge),
     Helix(Helix),
-}
-
-impl Artifact {
-    pub(crate) fn rank(&self) -> u8 {
-        match self {
-            Artifact::Plane(_) => 0,
-            Artifact::StartSketchOnPlane(_) => 1,
-            Artifact::StartSketchOnFace(_) => 2,
-            Artifact::Path(_) => 3,
-            Artifact::Segment(_) => 4,
-            Artifact::Solid2d(_) => 5,
-            Artifact::Sweep(_) => 6,
-            Artifact::CompositeSolid(_) => 7,
-            Artifact::Wall(_) => 8,
-            Artifact::Cap(Cap { sub_type, .. }) if *sub_type == CapSubType::Start => 9,
-            Artifact::Cap(Cap { sub_type, .. }) if *sub_type == CapSubType::Start => 10,
-            Artifact::Cap(_) => 11,
-            Artifact::SweepEdge(SweepEdge { sub_type, .. }) if *sub_type == SweepEdgeSubType::Adjacent => 12,
-            Artifact::SweepEdge(SweepEdge { sub_type, .. }) if *sub_type == SweepEdgeSubType::Opposite => 13,
-            Artifact::SweepEdge(_) => 14,
-            Artifact::EdgeCut(_) => 15,
-            Artifact::EdgeCutEdge(_) => 16,
-            Artifact::Helix(_) => 17,
-        }
-    }
-}
-
-impl PartialOrd for Artifact {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        // The only thing we want to sort is if we have two sweep edges, we want
-        // to sort them by the sub_type.
-        match (self, other) {
-            (Artifact::SweepEdge(a), Artifact::SweepEdge(b)) => {
-                if a.sub_type != b.sub_type {
-                    return Some(a.sub_type.cmp(&b.sub_type));
-                }
-                if a.sweep_id != b.sweep_id {
-                    return Some(a.sweep_id.cmp(&b.sweep_id));
-                }
-                if a.cmd_id != b.cmd_id {
-                    return Some(a.cmd_id.cmp(&b.cmd_id));
-                }
-                if a.index != b.index {
-                    return Some(a.index.cmp(&b.index));
-                }
-                Some(a.id.cmp(&b.id))
-            }
-            (Artifact::EdgeCut(a), Artifact::EdgeCut(b)) => {
-                if a.code_ref.range != b.code_ref.range {
-                    return Some(a.code_ref.range.cmp(&b.code_ref.range));
-                }
-                Some(a.id.cmp(&b.id))
-            }
-            (Artifact::EdgeCutEdge(a), Artifact::EdgeCutEdge(b)) => Some(a.edge_cut_id.cmp(&b.edge_cut_id)),
-            (Artifact::Sweep(a), Artifact::Sweep(b)) => {
-                if a.code_ref.range != b.code_ref.range {
-                    return Some(a.code_ref.range.cmp(&b.code_ref.range));
-                }
-                Some(a.id.cmp(&b.id))
-            }
-            // Sort the planes by their code_ref range.
-            (Artifact::Plane(a), Artifact::Plane(b)) => {
-                if a.code_ref.range != b.code_ref.range {
-                    return Some(a.code_ref.range.cmp(&b.code_ref.range));
-                }
-                Some(a.id.cmp(&b.id))
-            }
-            // Sort the paths by their code_ref range.
-            (Artifact::Path(a), Artifact::Path(b)) => {
-                if a.code_ref.range != b.code_ref.range {
-                    return Some(a.code_ref.range.cmp(&b.code_ref.range));
-                }
-                Some(a.id.cmp(&b.id))
-            }
-            // Sort the segments by their code_ref range.
-            (Artifact::Segment(a), Artifact::Segment(b)) => {
-                if a.code_ref.range != b.code_ref.range {
-                    return Some(a.code_ref.range.cmp(&b.code_ref.range));
-                }
-                Some(a.id.cmp(&b.id))
-            }
-            // Sort the solid2d by their id.
-            (Artifact::Solid2d(a), Artifact::Solid2d(b)) => {
-                if a.path_id != b.path_id {
-                    return Some(a.path_id.cmp(&b.path_id));
-                }
-                Some(a.id.cmp(&b.id))
-            }
-            // Sort the walls by their code_ref range.
-            (Artifact::Wall(a), Artifact::Wall(b)) => {
-                if a.sweep_id != b.sweep_id {
-                    return Some(a.sweep_id.cmp(&b.sweep_id));
-                }
-                if a.cmd_id != b.cmd_id {
-                    return Some(a.cmd_id.cmp(&b.cmd_id));
-                }
-                if a.face_code_ref.range != b.face_code_ref.range {
-                    return Some(a.face_code_ref.range.cmp(&b.face_code_ref.range));
-                }
-                if a.seg_id != b.seg_id {
-                    return Some(a.seg_id.cmp(&b.seg_id));
-                }
-                Some(a.id.cmp(&b.id))
-            }
-            // Sort the caps by their code_ref range.
-            (Artifact::Cap(a), Artifact::Cap(b)) => {
-                if a.sub_type != b.sub_type {
-                    return Some(a.sub_type.cmp(&b.sub_type));
-                }
-                if a.cmd_id != b.cmd_id {
-                    return Some(a.cmd_id.cmp(&b.cmd_id));
-                }
-                if a.sweep_id != b.sweep_id {
-                    return Some(a.sweep_id.cmp(&b.sweep_id));
-                }
-                if a.face_code_ref.range != b.face_code_ref.range {
-                    return Some(a.face_code_ref.range.cmp(&b.face_code_ref.range));
-                }
-                Some(a.id.cmp(&b.id))
-            }
-            (Artifact::CompositeSolid(a), Artifact::CompositeSolid(b)) => Some(a.id.cmp(&b.id)),
-            (Artifact::StartSketchOnFace(a), Artifact::StartSketchOnFace(b)) => Some(a.id.cmp(&b.id)),
-            (Artifact::StartSketchOnPlane(a), Artifact::StartSketchOnPlane(b)) => Some(a.id.cmp(&b.id)),
-            // Planes are first, then paths, then segments, then solids2ds, then sweeps, then
-            // walls, then caps, then sweep edges, then edge cuts, then edge cut edges, then
-            // helixes.
-            _ => Some(self.rank().cmp(&other.rank())),
-        }
-    }
 }
 
 impl Artifact {
