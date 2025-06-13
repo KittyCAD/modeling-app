@@ -1133,15 +1133,12 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await;
-        #[cfg(feature = "artifact-graph")]
         let exec_result = exec_result.map(|(_, env_ref, _, module_artifacts)| {
             // We need to extend because it may already have operations from
             // imports.
             exec_state.global.root_module_artifacts.extend(module_artifacts);
             env_ref
         });
-        #[cfg(not(feature = "artifact-graph"))]
-        let exec_result = exec_result.map(|(_, env_ref, _, _)| env_ref);
 
         #[cfg(feature = "artifact-graph")]
         {
