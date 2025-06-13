@@ -29,6 +29,7 @@ import {
   codeManager,
   kclManager,
   settingsActor,
+  editorManager,
 } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -93,6 +94,16 @@ export function App() {
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
+  })
+  // Since these already exist in the editor, we don't need to define them
+  // with the wrapper.
+  useHotkeys('mod+z', (e) => {
+    e.preventDefault()
+    editorManager.undo()
+  })
+  useHotkeys('mod+shift+z', (e) => {
+    e.preventDefault()
+    editorManager.redo()
   })
   useHotkeyWrapper(
     [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],

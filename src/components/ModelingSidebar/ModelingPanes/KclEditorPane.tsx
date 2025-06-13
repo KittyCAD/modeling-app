@@ -75,17 +75,6 @@ export const KclEditorPane = () => {
       : context.app.theme.current
   const { copilotLSP, kclLSP } = useLspContext()
 
-  // Since these already exist in the editor, we don't need to define them
-  // with the wrapper.
-  useHotkeys('mod+z', (e) => {
-    e.preventDefault()
-    editorManager.undo()
-  })
-  useHotkeys('mod+shift+z', (e) => {
-    e.preventDefault()
-    editorManager.redo()
-  })
-
   // When this component unmounts, we need to tell the machine that the editor
   useEffect(() => {
     return () => {
