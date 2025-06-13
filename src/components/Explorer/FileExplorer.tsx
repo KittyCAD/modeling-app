@@ -70,7 +70,7 @@ const flattenProjectHelper = (
     ...f,
     parentPath,
     level,
-    index
+    index,
   }
   // keep track of the file once within the recursive list that will be built up
   list.push(content)
@@ -117,7 +117,7 @@ const flattenProject = (
 
 const insertFakeRowAtFirstPositionUnderParentAfterFolder = (
   fileExplorerEntries: FileExplorerEntry[],
-  fakeRow: {entry: FileExplorerEntry | null, isFile: boolean} | null
+  fakeRow: { entry: FileExplorerEntry | null; isFile: boolean } | null
 ): void => {
   if (!fakeRow) {
     // no op
@@ -130,8 +130,6 @@ const insertFakeRowAtFirstPositionUnderParentAfterFolder = (
   //   ...fakeRow,
   // }
   // fileExplorerEntries.splice(insertIndex, 0, requestedEntry)
-
-
 }
 
 /**
@@ -152,9 +150,9 @@ export const FileExplorer = ({
 }: {
   parentProject: Project
   openedRows: { [key: string]: boolean }
-  selectedRow: FileEntry | null
+  selectedRow: FileExplorerEntry | null
   onRowClickCallback: (file: FileExplorerEntry) => void
-  fakeRow: {entry: FileExplorerEntry | null, isFile: boolean} | null
+  fakeRow: { entry: FileExplorerEntry | null; isFile: boolean } | null
 }) => {
   // Wrap the FileEntry in a FileExplorerEntry to keep track for more metadata
   let flattenedData: FileExplorerEntry[] = []
@@ -247,11 +245,11 @@ export const FileExplorerRow = ({
   selectedRow,
 }: {
   row: FileExplorerRow
-  selectedRow: FileExplorerEntry
+  selectedRow: FileExplorerEntry | null
 }) => {
   return (
     <div
-      className={`h-6 flex flex-row items-center text-xs ${row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath ? 'bg-red-200' : ''}`}
+    className={`h-6 flex flex-row items-center text-xs cursor-pointer hover:bg-sky-400 ${row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath ? 'bg-sky-800' : ''}`}
       onClick={() => {
         row.rowClicked()
       }}
