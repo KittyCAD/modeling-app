@@ -9,6 +9,7 @@ import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 export interface FileExplorerEntry extends FileEntry {
   parentPath: string
   level: number
+  index: number
 }
 
 interface FileExplorerRow extends FileExplorerEntry {
@@ -63,11 +64,13 @@ const flattenProjectHelper = (
   parentPath: string, // the parentPath for the given f:FileEntry passed in
   level: number // the level within the tree for the given f:FileEntry, level starts at 0 goes to positive N
 ) => {
+  const index = list.length
   // mark the parent and level of the FileEntry
   const content: FileExplorerEntry = {
     ...f,
     parentPath,
     level,
+    index
   }
   // keep track of the file once within the recursive list that will be built up
   list.push(content)
@@ -112,51 +115,23 @@ const flattenProject = (
   return flattenTreeInOrder
 }
 
-const insertFakeRowAtFirstPositionUnderParentAfterFolder = (fileExplorerEntries: FileExplorerEntry[], fakeRow: {path: string, isFile: boolean} | null) : void => {
+const insertFakeRowAtFirstPositionUnderParentAfterFolder = (
+  fileExplorerEntries: FileExplorerEntry[],
+  fakeRow: {entry: FileExplorerEntry | null, isFile: boolean} | null
+): void => {
   if (!fakeRow) {
     // no op
     return
   }
 
-  let insertIndex = -1
-  let foundEntry = null
-  for (let index = 0; index < fileExplorerEntries.length; index++) {
-    const entry = fileExplorerEntries[index]
-    const path = entry.parentPath
-    const isFolder = entry.children !== null
-    const nextEntry = index + 1 < fileExplorerEntries.length ? fileExplorerEntries[index+1] : null
+  console.log(fakeRow.entry)
 
-    // Found first folder and my fake row is a folder
-    if (path === fakeRow.path && isFolder && !fakeRow.isFile) {
-      console.log('exited1')
-      insertIndex = index
-      foundEntry = entry
-      break
-    }
+  // const requestedEntry: FileExplorerEntry = {
+  //   ...fakeRow,
+  // }
+  // fileExplorerEntries.splice(insertIndex, 0, requestedEntry)
 
-    if (fakeRow.isFile && (nextEntry === null || nextEntry.path !== fakeRow.path)) {
-      insertIndex = index
-      foundEntry = entry
-      console.log('inserting file', insertIndex)
-      break
-    }
-    // if (path === fakeRow.path && isFolder && fakeRow.isFile && nextEntry && nextEntry.path !== fakeRow.path) {
-    //   console.log('exited2')
-    //   insertIndex = index
-    //   foundEntry = entry
-    //   break
-    // }
-  }
 
-  if (insertIndex >= 0 && foundEntry) {
-    const requestedEntry : FileExplorerEntry = {
-      ...foundEntry,
-      children: fakeRow.isFile ? null : [],
-      name: 'dog'
-    }
-    console.log(requestedEntry)
-    fileExplorerEntries.splice(insertIndex, 0, requestedEntry);
-  }
 }
 
 /**
@@ -164,7 +139,7 @@ const insertFakeRowAtFirstPositionUnderParentAfterFolder = (fileExplorerEntries:
  * each row is rendered one after another in the same parent DOM element
  * rows will have aria support to understand the linear div soup layout
  *
- * externall control the openedRows and selectedRows since actions need to know
+
  * what is opened and selected outside of this logic level.
  *
  */
@@ -173,13 +148,13 @@ export const FileExplorer = ({
   openedRows,
   selectedRow,
   onRowClickCallback,
-  fakeRow
+  fakeRow,
 }: {
   parentProject: Project
   openedRows: { [key: string]: boolean }
   selectedRow: FileEntry | null
   onRowClickCallback: (file: FileExplorerEntry) => void
-  fakeRow: {path: string, isFile: boolean} | null
+  fakeRow: {entry: FileExplorerEntry | null, isFile: boolean} | null
 }) => {
   // Wrap the FileEntry in a FileExplorerEntry to keep track for more metadata
   let flattenedData: FileExplorerEntry[] = []
@@ -187,10 +162,8 @@ export const FileExplorer = ({
   if (parentProject && parentProject.children) {
     // moves all folders up and files down, files are sorted within folders
     const sortedData = sortFilesAndDirectories(parentProject.children)
-    console.log(sortedData)
     // pre order traversal of the tree
     flattenedData = flattenProject(sortedData, parentProject.name)
-
     // insert fake row if one is present
     // insertFakeRowAtFirstPositionUnderParentAfterFolder(flattenedData, fakeRow)
   }
@@ -240,7 +213,7 @@ export const FileExplorer = ({
           rowClicked: () => {
             onRowClickCallback(child)
           },
-          isFake: false
+          isFake: false,
         }
 
         return row

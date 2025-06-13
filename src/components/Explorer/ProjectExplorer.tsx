@@ -31,7 +31,7 @@ export const ProjectExplorer = ({
 
   // fake row is used for new files or folders
   // you should not be able to have multiple fake rows for creation
-  const [fakeRow, setFakeRow] = useState<{path: string, isFile: boolean} | null>(null)
+  const [fakeRow, setFakeRow] = useState<{entry: FileExplorerEntry | null, isFile: boolean} | null>(null)
 
   const onRowClickCallback = (file: FileExplorerEntry) => {
     const newOpenedRows = { ...openedRows }
@@ -53,12 +53,7 @@ export const ProjectExplorer = ({
         <div className="h-6 flex flex-row gap-1">
           <FileExplorerHeaderActions
             onCreateFile={() => {
-              // Use the selected level within the file tree or the root level of the project
-              const folderPath = selectedRow?.parentPath ? constructPath({parentPath: selectedRow?.parentPath, name: selectedRow.name}) : null
-              const parentPath = selectedRow?.parentPath
-              const isFile = selectedRow?.children === null
-              const path = (isFile ? parentPath : folderPath) || project.name
-              setFakeRow({path, isFile})
+              setFakeRow({entry: selectedRow, isFile: true})
             }}
             onCreateFolder={() => {
               console.log('onCreateFolder TODO')
