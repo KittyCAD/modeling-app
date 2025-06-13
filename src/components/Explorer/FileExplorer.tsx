@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
+import { uuidv4 } from '@src/lib/utils'
 
 export interface FileExplorerEntry extends FileEntry {
   parentPath: string
@@ -38,17 +39,30 @@ const StatusDot = () => {
  */
 const Spacer = (level: number) => {
   const containerRemSpacing = `${level}rem`
-  return level === 0 ? <div></div> : (
-    <div style={{width: containerRemSpacing}} className="h-full flex flex-row">
-      {
-        Array(level).fill(0).map((value, index)=>{
+  return level === 0 ? (
+    <div></div>
+  ) : (
+    <div
+      style={{ width: containerRemSpacing }}
+      className="h-full flex flex-row"
+    >
+      {Array(level)
+        .fill(0)
+        .map((value, index) => {
           const remSpacing = `${0.5}rem`
-          return (<>
-            <div key={index} style={{ width: remSpacing }} className={`h-full border-r border-sky-600`}></div>
-            <div key={index} style={{ width: remSpacing }} className={`h-full`}></div>
-            </>)
-        })
-      }
+          return (
+            <div className="h-full w-full" key={uuidv4()}>
+              <div
+                style={{ width: remSpacing }}
+                className={`h-full border-r border-sky-600`}
+              ></div>
+              <div
+                style={{ width: remSpacing }}
+                className={`h-full`}
+              ></div>
+            </div>
+          )
+        })}
     </div>
   )
 }
@@ -244,10 +258,10 @@ export const FileExplorer = ({
   // diff this against new Project value that comes in
   return (
     <div>
-      {rowsToRender.map((row, index) => {
+      {rowsToRender.map((row) => {
         return row.isOpen ? (
           <FileExplorerRow
-            key={index}
+          key={uuidv4()}
             row={row}
             selectedRow={selectedRow}
           ></FileExplorerRow>
