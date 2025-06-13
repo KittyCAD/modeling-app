@@ -37,8 +37,20 @@ const StatusDot = () => {
  * level 0 to level N
  */
 const Spacer = (level: number) => {
-  const remSpacing = `${level}rem`
-  return level === 0 ? <div></div> : <div style={{ width: remSpacing }}></div>
+  const containerRemSpacing = `${level}rem`
+  return level === 0 ? <div></div> : (
+    <div style={{width: containerRemSpacing}} className="h-full flex flex-row">
+      {
+        Array(level).fill(0).map((value, index)=>{
+          const remSpacing = `${0.5}rem`
+          return (<>
+            <div key={index} style={{ width: remSpacing }} className={`h-full border-r border-sky-600`}></div>
+            <div key={index} style={{ width: remSpacing }} className={`h-full`}></div>
+            </>)
+        })
+      }
+    </div>
+  )
 }
 
 export const constructPath = ({
@@ -232,9 +244,10 @@ export const FileExplorer = ({
   // diff this against new Project value that comes in
   return (
     <div>
-      {rowsToRender.map((row) => {
+      {rowsToRender.map((row, index) => {
         return row.isOpen ? (
           <FileExplorerRow
+            key={index}
             row={row}
             selectedRow={selectedRow}
           ></FileExplorerRow>
