@@ -6,10 +6,8 @@ import {
 import type { FileExplorerEntry } from '@src/components/Explorer/FileExplorer'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { useState } from 'react'
-import {
-  systemIOActor,
-} from '@src/lib/singletons'
-import {SystemIOMachineEvents} from "@src/machines/systemIO/utils"
+import { systemIOActor } from '@src/lib/singletons'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
 /**
  * Wrap the header and the tree into a single component
@@ -29,7 +27,11 @@ export const ProjectExplorer = ({
   // cache the state of opened rows to allow nested rows to be opened if a parent one is closed
   // when the parent opens the children will already be opened
   const [openedRows, setOpenedRows] = useState<{ [key: string]: boolean }>({})
-  const [selectedRow, setSelectedRow] = useState<FileEntry | null>(null)
+  const [selectedRow, setSelectedRow] = useState<FileExplorerEntry | null>(null)
+
+  // fake row is used for new files or folders
+  // you should not be able to have multiple fake rows for creation
+  const [fakeRow, setFakeRow] = useState<{path: string, isFile: boolean} | null>(null)
 
   const onRowClickCallback = (file: FileExplorerEntry) => {
     const newOpenedRows = { ...openedRows }
@@ -40,6 +42,7 @@ export const ProjectExplorer = ({
     const value = openedRows[key]
     newOpenedRows[key] = !value
     setOpenedRows(newOpenedRows)
+    console.log(file)
     setSelectedRow(file)
   }
 
@@ -50,7 +53,12 @@ export const ProjectExplorer = ({
         <div className="h-6 flex flex-row gap-1">
           <FileExplorerHeaderActions
             onCreateFile={() => {
-              console.log('onCreateFile TODO')
+              // Use the selected level within the file tree or the root level of the project
+              const folderPath = selectedRow?.parentPath ? constructPath({parentPath: selectedRow?.parentPath, name: selectedRow.name}) : null
+              const parentPath = selectedRow?.parentPath
+              const isFile = selectedRow?.children === null
+              const path = (isFile ? parentPath : folderPath) || project.name
+              setFakeRow({path, isFile})
             }}
             onCreateFolder={() => {
               console.log('onCreateFolder TODO')
@@ -75,6 +83,7 @@ export const ProjectExplorer = ({
             openedRows={openedRows}
             selectedRow={selectedRow}
             onRowClickCallback={onRowClickCallback}
+            fakeRow={fakeRow}
           ></FileExplorer>
         )}
       </div>

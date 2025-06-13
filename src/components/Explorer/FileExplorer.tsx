@@ -18,6 +18,12 @@ interface FileExplorerRow extends FileExplorerEntry {
   status?: ReactNode
   isOpen: boolean
   rowClicked: () => void
+  /**
+   * Fake file or folder rows are the placeholders for users to input a value
+   * and write that to disk to be read as a real one.
+   * they are placed in the DOM as if they are real but not from the source of truth
+   */
+  isFake: boolean
 }
 
 const StatusDot = () => {
@@ -71,10 +77,11 @@ const flattenProjectHelper = (
     return
   }
 
+  const sortedChildren = sortFilesAndDirectories(f.children.slice())
   // keep recursing down the children
-  for (let i = 0; i < f.children.length; i++) {
+  for (let i = 0; i < sortedChildren.length; i++) {
     flattenProjectHelper(
-      f.children[i],
+      sortedChildren[i],
       list,
       constructPath({ parentPath: parentPath, name: f.name }),
       level + 1
@@ -105,6 +112,53 @@ const flattenProject = (
   return flattenTreeInOrder
 }
 
+const insertFakeRowAtFirstPositionUnderParentAfterFolder = (fileExplorerEntries: FileExplorerEntry[], fakeRow: {path: string, isFile: boolean} | null) : void => {
+  if (!fakeRow) {
+    // no op
+    return
+  }
+
+  let insertIndex = -1
+  let foundEntry = null
+  for (let index = 0; index < fileExplorerEntries.length; index++) {
+    const entry = fileExplorerEntries[index]
+    const path = entry.parentPath
+    const isFolder = entry.children !== null
+    const nextEntry = index + 1 < fileExplorerEntries.length ? fileExplorerEntries[index+1] : null
+
+    // Found first folder and my fake row is a folder
+    if (path === fakeRow.path && isFolder && !fakeRow.isFile) {
+      console.log('exited1')
+      insertIndex = index
+      foundEntry = entry
+      break
+    }
+
+    if (fakeRow.isFile && (nextEntry === null || nextEntry.path !== fakeRow.path)) {
+      insertIndex = index
+      foundEntry = entry
+      console.log('inserting file', insertIndex)
+      break
+    }
+    // if (path === fakeRow.path && isFolder && fakeRow.isFile && nextEntry && nextEntry.path !== fakeRow.path) {
+    //   console.log('exited2')
+    //   insertIndex = index
+    //   foundEntry = entry
+    //   break
+    // }
+  }
+
+  if (insertIndex >= 0 && foundEntry) {
+    const requestedEntry : FileExplorerEntry = {
+      ...foundEntry,
+      children: fakeRow.isFile ? null : [],
+      name: 'dog'
+    }
+    console.log(requestedEntry)
+    fileExplorerEntries.splice(insertIndex, 0, requestedEntry);
+  }
+}
+
 /**
  * Render all the rows of the file explorer in linear layout in the DOM.
  * each row is rendered one after another in the same parent DOM element
@@ -119,11 +173,13 @@ export const FileExplorer = ({
   openedRows,
   selectedRow,
   onRowClickCallback,
+  fakeRow
 }: {
   parentProject: Project
   openedRows: { [key: string]: boolean }
   selectedRow: FileEntry | null
   onRowClickCallback: (file: FileExplorerEntry) => void
+  fakeRow: {path: string, isFile: boolean} | null
 }) => {
   // Wrap the FileEntry in a FileExplorerEntry to keep track for more metadata
   let flattenedData: FileExplorerEntry[] = []
@@ -131,8 +187,12 @@ export const FileExplorer = ({
   if (parentProject && parentProject.children) {
     // moves all folders up and files down, files are sorted within folders
     const sortedData = sortFilesAndDirectories(parentProject.children)
+    console.log(sortedData)
     // pre order traversal of the tree
     flattenedData = flattenProject(sortedData, parentProject.name)
+
+    // insert fake row if one is present
+    // insertFakeRowAtFirstPositionUnderParentAfterFolder(flattenedData, fakeRow)
   }
 
   const [rowsToRender, setRowsToRender] = useState<FileExplorerRow[]>([])
@@ -180,13 +240,14 @@ export const FileExplorer = ({
           rowClicked: () => {
             onRowClickCallback(child)
           },
+          isFake: false
         }
 
         return row
       }) || []
 
     setRowsToRender(requestedRowsToRender)
-  }, [parentProject, openedRows])
+  }, [parentProject, openedRows, fakeRow])
 
   // Local state for selection and what is opened
   // diff this against new Project value that comes in
@@ -212,12 +273,12 @@ export const FileExplorerRow = ({
   row,
   selectedRow,
 }: {
-  row: any
-  selectedRow: any
+  row: FileExplorerRow
+  selectedRow: FileExplorerEntry
 }) => {
   return (
     <div
-      className={`h-6 flex flex-row items-center text-xs ${row.name === selectedRow?.name ? 'bg-red-200' : ''}`}
+      className={`h-6 flex flex-row items-center text-xs ${row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath ? 'bg-red-200' : ''}`}
       onClick={() => {
         row.rowClicked()
       }}
