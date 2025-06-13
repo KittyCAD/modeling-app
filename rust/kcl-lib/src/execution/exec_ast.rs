@@ -67,11 +67,51 @@ impl ExecutorContext {
                         "The standard library can only be skipped at the top level scope of a file",
                     ));
                 }
+            } else if annotation.name() == Some(annotations::WARNINGS) {
+                // TODO we should support setting warnings for the whole project, not just one file
+                if matches!(body_type, BodyType::Root) {
+                    let props = annotations::expect_properties(annotations::WARNINGS, annotation)?;
+                    for p in props {
+                        match &*p.inner.key.name {
+                            annotations::WARN_ALLOW => {
+                                let allowed = annotations::many_of(
+                                    &p.inner.value,
+                                    &annotations::WARN_VALUES,
+                                    annotation.as_source_range(),
+                                )?;
+                                exec_state.mod_local.allowed_warnings = allowed;
+                            }
+                            annotations::WARN_DENY => {
+                                let denied = annotations::many_of(
+                                    &p.inner.value,
+                                    &annotations::WARN_VALUES,
+                                    annotation.as_source_range(),
+                                )?;
+                                exec_state.mod_local.denied_warnings = denied;
+                            }
+                            name => {
+                                return Err(KclError::new_semantic(KclErrorDetails::new(
+                                    format!(
+                                        "Unexpected warnings key: `{name}`; expected one of `{}`, `{}`",
+                                        annotations::WARN_ALLOW,
+                                        annotations::WARN_DENY,
+                                    ),
+                                    vec![annotation.as_source_range()],
+                                )))
+                            }
+                        }
+                    }
+                } else {
+                    exec_state.err(CompilationError::err(
+                        annotation.as_source_range(),
+                        "Warnings can only be customized at the top level scope of a file",
+                    ));
+                }
             } else {
-                exec_state.warn(CompilationError::err(
-                    annotation.as_source_range(),
-                    "Unknown annotation",
-                ));
+                exec_state.warn(
+                    CompilationError::err(annotation.as_source_range(), "Unknown annotation"),
+                    annotations::WARN_UNKNOWN_ATTR,
+                );
             }
         }
         Ok(no_prelude)
@@ -685,7 +725,8 @@ impl ExecutorContext {
                             exec_state.warn(CompilationError::err(
                                 metadata.source_range,
                                 "Imported module has no return value. The last statement of the module must be an expression, usually the Solid.",
-                            ));
+                            ),
+                        annotations::WARN_MOD_RETURN_VALUE);
 
                             let mut new_meta = vec![metadata.to_owned()];
                             new_meta.extend(meta);
@@ -1237,7 +1278,7 @@ impl Node<BinaryExpression> {
                 format!("{} numbers which have unknown or incompatible units.\nYou can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`.", verb),
             );
             err.tag = crate::errors::Tag::UnknownNumericUnits;
-            exec_state.warn(err);
+            exec_state.warn(err, annotations::WARN_UNKNOWN_UNITS);
         }
     }
 }
@@ -1728,11 +1769,11 @@ impl Node<PipeExpression> {
 #[cfg(test)]
 mod test {
     use std::sync::Arc;
-
     use tokio::io::AsyncWriteExt;
 
     use super::*;
     use crate::{
+        errors::Severity,
         exec::UnitType,
         execution::{parse_execute, ContextType},
         ExecutorSettings, UnitLen,
@@ -2140,5 +2181,30 @@ c = ((PI * 2) / 3): number(deg)
 
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(result.exec_state.errors().len(), 2);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn custom_warning() {
+        let warn = r#"
+a = PI * 2
+"#;
+        let result = parse_execute(warn).await.unwrap();
+        assert_eq!(result.exec_state.errors().len(), 1);
+        assert_eq!(result.exec_state.errors()[0].severity, Severity::Warning);
+
+        let allow = r#"
+@warnings(allow = unknownUnits)
+a = PI * 2
+"#;
+        let result = parse_execute(allow).await.unwrap();
+        assert_eq!(result.exec_state.errors().len(), 0);
+
+        let deny = r#"
+@warnings(deny = [unknownUnits])
+a = PI * 2
+"#;
+        let result = parse_execute(deny).await.unwrap();
+        assert_eq!(result.exec_state.errors().len(), 1);
+        assert_eq!(result.exec_state.errors()[0].severity, Severity::Error);
     }
 }
