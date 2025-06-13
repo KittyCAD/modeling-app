@@ -16,8 +16,8 @@ However, `PI` is nearly always used for converting between different units - usu
 from radians. Therefore, `PI` is treated a bit specially by KCL and always has unknown units. This
 means that if you use `PI`, you will need to give KCL some extra information about the units of numbers.
 Usually you should use type ascription on the result of calculations, e.g., `(2 * PI): number(rad)`.
-You might prefer to use `units::toRadians` or `units::toDegrees` to convert between angles with
-different units.
+It is better to use `units::toRadians` or `units::toDegrees` to convert between angles with
+different units where possible.
 
 ### Examples
 

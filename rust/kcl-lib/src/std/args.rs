@@ -160,7 +160,7 @@ impl Args {
                 None => msg_base,
                 Some(sugg) => format!("{msg_base}. {sugg}"),
             };
-            if message.contains("one or more Solids or imported geometry but it's actually of type Sketch") {
+            if message.contains("one or more Solids or ImportedGeometry but it's actually of type Sketch") {
                 message = format!("{message}. {ERROR_STRING_SKETCH_TO_SOLID_HELPER}");
             }
             KclError::new_semantic(KclErrorDetails::new(message, arg.source_ranges()))
@@ -257,7 +257,7 @@ impl Args {
                 Some(sugg) => format!("{msg_base}. {sugg}"),
             };
 
-            if message.contains("one or more Solids or imported geometry but it's actually of type Sketch") {
+            if message.contains("one or more Solids or ImportedGeometry but it's actually of type Sketch") {
                 message = format!("{message}. {ERROR_STRING_SKETCH_TO_SOLID_HELPER}");
             }
             KclError::new_semantic(KclErrorDetails::new(message, arg.source_ranges()))
@@ -448,105 +448,10 @@ impl Args {
     }
 }
 
-/// Types which impl this trait can be read out of the `Args` passed into a KCL function.
-pub trait FromArgs<'a>: Sized {
-    /// Get this type from the args passed into a KCL function, at the given index in the argument list.
-    fn from_args(args: &'a Args, index: usize) -> Result<Self, KclError>;
-}
-
 /// Types which impl this trait can be extracted from a `KclValue`.
 pub trait FromKclValue<'a>: Sized {
     /// Try to convert a KclValue into this type.
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self>;
-}
-
-impl<'a, T> FromArgs<'a> for T
-where
-    T: FromKclValue<'a> + Sized,
-{
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let Some(arg) = args.args.get(i) else {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Expected an argument at index {i}"),
-                vec![args.source_range],
-            )));
-        };
-        let Some(val) = T::from_kcl_val(&arg.value) else {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!(
-                    "Argument at index {i} was supposed to be type {} but found {}",
-                    tynm::type_name::<T>(),
-                    arg.value.human_friendly_type(),
-                ),
-                arg.source_ranges(),
-            )));
-        };
-        Ok(val)
-    }
-}
-
-impl<'a, T> FromArgs<'a> for Option<T>
-where
-    T: FromKclValue<'a> + Sized,
-{
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let Some(arg) = args.args.get(i) else { return Ok(None) };
-        if crate::parsing::ast::types::KclNone::from_kcl_val(&arg.value).is_some() {
-            return Ok(None);
-        }
-        let Some(val) = T::from_kcl_val(&arg.value) else {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!(
-                    "Argument at index {i} was supposed to be type Option<{}> but found {}",
-                    tynm::type_name::<T>(),
-                    arg.value.human_friendly_type()
-                ),
-                arg.source_ranges(),
-            )));
-        };
-        Ok(Some(val))
-    }
-}
-
-impl<'a, A, B> FromArgs<'a> for (A, B)
-where
-    A: FromArgs<'a>,
-    B: FromArgs<'a>,
-{
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let a = A::from_args(args, i)?;
-        let b = B::from_args(args, i + 1)?;
-        Ok((a, b))
-    }
-}
-
-impl<'a, A, B, C> FromArgs<'a> for (A, B, C)
-where
-    A: FromArgs<'a>,
-    B: FromArgs<'a>,
-    C: FromArgs<'a>,
-{
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let a = A::from_args(args, i)?;
-        let b = B::from_args(args, i + 1)?;
-        let c = C::from_args(args, i + 2)?;
-        Ok((a, b, c))
-    }
-}
-impl<'a, A, B, C, D> FromArgs<'a> for (A, B, C, D)
-where
-    A: FromArgs<'a>,
-    B: FromArgs<'a>,
-    C: FromArgs<'a>,
-    D: FromArgs<'a>,
-{
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let a = A::from_args(args, i)?;
-        let b = B::from_args(args, i + 1)?;
-        let c = C::from_args(args, i + 2)?;
-        let d = D::from_args(args, i + 3)?;
-        Ok((a, b, c, d))
-    }
 }
 
 impl<'a> FromKclValue<'a> for TagNode {

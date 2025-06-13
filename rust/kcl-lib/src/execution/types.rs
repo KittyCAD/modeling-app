@@ -438,7 +438,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Any => write!(f, "any"),
             PrimitiveType::Number(NumericType::Known(unit)) => write!(f, "number({unit})"),
             PrimitiveType::Number(NumericType::Unknown) => write!(f, "number(unknown units)"),
-            PrimitiveType::Number(NumericType::Default { .. }) => write!(f, "number(default units)"),
+            PrimitiveType::Number(NumericType::Default { .. }) => write!(f, "number"),
             PrimitiveType::Number(NumericType::Any) => write!(f, "number(any units)"),
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
@@ -453,8 +453,8 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Axis2d => write!(f, "Axis2d"),
             PrimitiveType::Axis3d => write!(f, "Axis3d"),
             PrimitiveType::Helix => write!(f, "Helix"),
-            PrimitiveType::ImportedGeometry => write!(f, "imported geometry"),
-            PrimitiveType::Function => write!(f, "function"),
+            PrimitiveType::ImportedGeometry => write!(f, "ImportedGeometry"),
+            PrimitiveType::Function => write!(f, "fn"),
         }
     }
 }
@@ -499,20 +499,6 @@ impl NumericType {
         NumericType::Known(UnitType::Angle(UnitAngle::Degrees))
     }
 
-    pub fn expect_default_length(&self) -> Self {
-        match self {
-            NumericType::Default { len, .. } => NumericType::Known(UnitType::Length(*len)),
-            _ => unreachable!(),
-        }
-    }
-
-    pub fn expect_default_angle(&self) -> Self {
-        match self {
-            NumericType::Default { angle, .. } => NumericType::Known(UnitType::Angle(*angle)),
-            _ => unreachable!(),
-        }
-    }
-
     /// Combine two types when we expect them to be equal, erring on the side of less coercion. To be
     /// precise, only adjusting one number or the other when they are of known types.
     ///
@@ -554,14 +540,9 @@ impl NumericType {
             (at, Any) => (a.n, b.n, at),
             (Any, bt) => (a.n, b.n, bt),
 
-            (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => (a.n, b.n, Unknown),
-
             // Known types and compatible, but needs adjustment.
             (t @ Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => (a.n, l2.adjust_to(b.n, l1).0, t),
             (t @ Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => (a.n, a2.adjust_to(b.n, a1).0, t),
-
-            // Known but incompatible.
-            (Known(_), Known(_)) => (a.n, b.n, Unknown),
 
             // Known and unknown => we assume the known one, possibly with adjustment
             (Known(UnitType::Count), Default { .. }) | (Default { .. }, Known(UnitType::Count)) => {
@@ -570,9 +551,12 @@ impl NumericType {
 
             (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) => (a.n, l2.adjust_to(b.n, l1).0, t),
             (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) => (l1.adjust_to(a.n, l2).0, b.n, t),
-
             (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) => (a.n, a2.adjust_to(b.n, a1).0, t),
             (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) => (a1.adjust_to(a.n, a2).0, b.n, t),
+
+            (Known(_), Known(_)) | (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => {
+                (a.n, b.n, Unknown)
+            }
         }
     }
 
@@ -639,6 +623,20 @@ impl NumericType {
         match (a.ty, b.ty) {
             (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
             (at, bt) if at == bt => (a.n, b.n, Known(UnitType::Count)),
+            (Default { .. }, Default { .. }) => (a.n, b.n, Unknown),
+            (at, Known(UnitType::Count) | Any) => (a.n, b.n, at),
+            (at @ Known(_), Default { .. }) => (a.n, b.n, at),
+            (Known(UnitType::Count), _) => (a.n, b.n, Known(UnitType::Count)),
+            _ => (a.n, b.n, Unknown),
+        }
+    }
+
+    /// Combine two types for modulo-like operations.
+    pub fn combine_mod(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+        use NumericType::*;
+        match (a.ty, b.ty) {
+            (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
+            (at, bt) if at == bt => (a.n, b.n, at),
             (Default { .. }, Default { .. }) => (a.n, b.n, Unknown),
             (at, Known(UnitType::Count) | Any) => (a.n, b.n, at),
             (at @ Known(_), Default { .. }) => (a.n, b.n, at),
@@ -851,7 +849,7 @@ impl std::fmt::Display for UnitType {
     }
 }
 
-// TODO called UnitLen so as not to clash with UnitLength in settings)
+// TODO called UnitLen so as not to clash with UnitLength in settings.
 /// A unit of length.
 #[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
@@ -1509,6 +1507,23 @@ impl KclValue {
             KclValue::Function { .. } => Some(RuntimeType::Primitive(PrimitiveType::Function)),
             KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => None,
         }
+    }
+
+    pub fn principal_type_string(&self) -> String {
+        if let Some(ty) = self.principal_type() {
+            return format!("`{ty}`");
+        }
+
+        match self {
+            KclValue::Module { .. } => "module",
+            KclValue::KclNone { .. } => "none",
+            KclValue::Type { .. } => "type",
+            _ => {
+                debug_assert!(false);
+                "<unexpected type>"
+            }
+        }
+        .to_owned()
     }
 }
 

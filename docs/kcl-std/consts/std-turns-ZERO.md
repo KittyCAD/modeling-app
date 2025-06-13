@@ -8,7 +8,7 @@ layout: manual
 No turn, zero degrees/radians.
 
 ```kcl
-turns::ZERO: number = 0
+turns::ZERO
 ```
 
 

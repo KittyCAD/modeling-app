@@ -302,7 +302,7 @@ test.describe('Command bar tests', () => {
 
     // Assert that the an alternative variable name is chosen,
     // since the default variable name is already in use (distance)
-    await page.getByRole('button', { name: 'Create new variable' }).click()
+    await cmdBar.variableCheckbox.click()
     await expect(page.getByPlaceholder('Variable name')).toHaveValue(
       'length001'
     )

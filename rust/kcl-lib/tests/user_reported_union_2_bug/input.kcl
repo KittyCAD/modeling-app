@@ -1,0 +1,44 @@
+// TODO IF THIS TEST START PASSING, CLOSE THE FOLLOWING ISSUE 
+// https://github.com/KittyCAD/modeling-app/issues/7310
+// and https://github.com/KittyCAD/engine/issues/3539
+
+@settings(defaultLengthUnit = mm)
+
+// Define dimensions
+triangleSide = 140
+triangleHeight = 60
+triangleFilletRadius = 3
+delta = 1
+
+cubeSize = 5
+cubeLength = 45
+cubeSpacing = 30
+
+// Function to create a cube
+fn createCube(center) {
+  cubeSketch = startSketchOn(XY)
+    |> startProfile(at = [center[0] - cubeSize / 2, center[1] - cubeLength / 2])
+    |> line(endAbsolute = [center[0] + cubeSize / 2, center[1] - cubeLength / 2])
+    |> line(endAbsolute = [center[0] + cubeSize / 2, center[1] + cubeLength / 2])
+    |> line(endAbsolute = [center[0] - cubeSize / 2, center[1] + cubeLength / 2])
+    |> close()
+    |> translate(x = 0, y = -cubeLength/2, z = 0)
+  return extrude(cubeSketch, length = cubeSize)
+}
+
+// Create 4 cubes around the triangle
+cube1 = createCube(center = [cubeSpacing /2, delta])
+
+
+// Create the rounded triangle
+triangleSketch = startSketchOn(XY)
+  |> startProfile(at = [-triangleSide / 4, 0])
+  |> line(end = [triangleSide / 2, 0], tag = $edge1)
+  |> line(end = [-triangleSide / 4, triangleHeight], tag = $edge2)
+  |> close(tag = $edge3)
+
+roundedTriangle = extrude(triangleSketch, length = 5)
+  |> rotate(roll=3, pitch=0, yaw=0)
+
+
+intermediateUnion1 = union([roundedTriangle, cube1])

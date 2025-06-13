@@ -4,7 +4,7 @@ use serde::Serialize;
 use super::{types::NumericType, ArtifactId, KclValue};
 #[cfg(feature = "artifact-graph")]
 use crate::parsing::ast::types::{Node, Program};
-use crate::{ModuleId, NodePath, SourceRange};
+use crate::{parsing::ast::types::ItemVisibility, ModuleId, NodePath, SourceRange};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
@@ -28,6 +28,20 @@ pub enum Operation {
         is_error: bool,
     },
     #[serde(rename_all = "camelCase")]
+    VariableDeclaration {
+        /// The variable name.
+        name: String,
+        /// The value of the variable.
+        value: OpKclValue,
+        /// The visibility modifier of the variable, e.g. `export`.  `Default`
+        /// means there is no visibility modifier.
+        visibility: ItemVisibility,
+        /// The node path of the operation in the source code.
+        node_path: NodePath,
+        /// The source range of the operation in the source code.
+        source_range: SourceRange,
+    },
+    #[serde(rename_all = "camelCase")]
     GroupBegin {
         /// The details of the group.
         group: Group,
@@ -44,7 +58,7 @@ impl Operation {
     pub(crate) fn set_std_lib_call_is_error(&mut self, is_err: bool) {
         match self {
             Self::StdLibCall { ref mut is_error, .. } => *is_error = is_err,
-            Self::GroupBegin { .. } | Self::GroupEnd => {}
+            Self::VariableDeclaration { .. } | Self::GroupBegin { .. } | Self::GroupEnd => {}
         }
     }
 
@@ -52,6 +66,11 @@ impl Operation {
     pub(crate) fn fill_node_paths(&mut self, program: &Node<Program>, cached_body_items: usize) {
         match self {
             Operation::StdLibCall {
+                node_path,
+                source_range,
+                ..
+            }
+            | Operation::VariableDeclaration {
                 node_path,
                 source_range,
                 ..

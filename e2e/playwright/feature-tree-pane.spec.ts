@@ -281,10 +281,7 @@ test.describe('Feature Tree pane', () => {
 
     await test.step('Add a named constant for distance argument and submit', async () => {
       await expect(cmdBar.currentArgumentInput).toBeVisible()
-      const addVariableButton = page.getByRole('button', {
-        name: 'Create new variable',
-      })
-      await addVariableButton.click()
+      await cmdBar.variableCheckbox.click()
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
