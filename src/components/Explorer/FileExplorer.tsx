@@ -179,7 +179,6 @@ export const FileExplorer = ({
         const isFile = child.children === null
         const isKCLFile = isFile && child.name?.endsWith(FILE_EXT)
 
-
         /**
          * If any parent is closed, keep the history of open children
          */
@@ -192,10 +191,13 @@ export const FileExplorer = ({
           pathIterator.pop()
         }
 
-
-        const amIOpen = openedRows[constructPath({parentPath: child.parentPath, name: child.name})]
-        const isOpen  = (openedRows[child.parentPath] ||
-          parentProject.name === child.parentPath) &&
+        const amIOpen =
+          openedRows[
+            constructPath({ parentPath: child.parentPath, name: child.name })
+          ]
+        const isOpen =
+          (openedRows[child.parentPath] ||
+            parentProject.name === child.parentPath) &&
           !isAnyParentClosed
 
         let icon: CustomIconName = 'file'
@@ -203,7 +205,7 @@ export const FileExplorer = ({
           icon = 'kcl'
         } else if (!isFile && !amIOpen) {
           icon = 'folder'
-        } else if(!isFile && amIOpen) {
+        } else if (!isFile && amIOpen) {
           icon = 'folderOpen'
         }
 
