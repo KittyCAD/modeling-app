@@ -521,13 +521,9 @@ impl ExecutorContext {
     ) -> Result<(), KclError> {
         // Ensure artifact commands are cleared so that we don't accumulate them
         // across runs.
-        #[cfg(feature = "artifact-graph")]
-        {
-            exec_state.global.root_module_artifacts.commands.clear();
-            exec_state.global.root_module_artifacts.artifacts.clear();
-            exec_state.global.artifacts.artifacts.clear();
-            exec_state.global.artifacts.graph.clear();
-        }
+        exec_state.mod_local.artifacts.clear();
+        exec_state.global.root_module_artifacts.clear();
+        exec_state.global.artifacts.clear();
 
         self.engine
             .clear_scene(&mut exec_state.mod_local.id_generator, source_range)
@@ -975,7 +971,6 @@ impl ExecutorContext {
         // Since we haven't technically started executing the root module yet,
         // the operations corresponding to the imports will be missing unless we
         // track them here.
-        #[cfg(feature = "artifact-graph")]
         exec_state
             .global
             .root_module_artifacts

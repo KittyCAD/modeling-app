@@ -46,9 +46,7 @@ pub(super) struct GlobalState {
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
     pub errors: Vec<CompilationError>,
-    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     pub artifacts: ArtifactState,
-    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     pub root_module_artifacts: ModuleArtifactState,
 }
 
@@ -436,14 +434,35 @@ impl GlobalState {
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 impl ArtifactState {
+    #[cfg(feature = "artifact-graph")]
     pub fn cached_body_items(&self) -> usize {
         self.graph.item_count
+    }
+
+    pub(crate) fn clear(&mut self) {
+        #[cfg(feature = "artifact-graph")]
+        {
+            self.artifacts.clear();
+            self.graph.clear();
+            self.operations.clear();
+        }
     }
 }
 
 impl ModuleArtifactState {
+    pub(crate) fn clear(&mut self) {
+        #[cfg(feature = "artifact-graph")]
+        {
+            self.artifacts.clear();
+            self.commands.clear();
+            self.operations.clear();
+        }
+    }
+
+    #[cfg(not(feature = "artifact-graph"))]
+    pub(crate) fn extend(&mut self, _other: ModuleArtifactState) {}
+
     /// When self is a cached state, extend it with new state.
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn extend(&mut self, other: ModuleArtifactState) {
