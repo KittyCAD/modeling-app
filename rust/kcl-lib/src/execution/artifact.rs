@@ -170,6 +170,7 @@ pub struct Sweep {
 #[serde(rename_all = "camelCase")]
 pub enum SweepSubType {
     Extrusion,
+    ExtrusionTwist,
     Revolve,
     RevolveAboutEdge,
     Loft,
@@ -1082,11 +1083,13 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::Extrude(kcmc::Extrude { target, .. })
+        | ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
         | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
         | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
         | ModelingCmd::Sweep(kcmc::Sweep { target, .. }) => {
             let sub_type = match cmd {
                 ModelingCmd::Extrude(_) => SweepSubType::Extrusion,
+                ModelingCmd::TwistExtrude(_) => SweepSubType::ExtrusionTwist,
                 ModelingCmd::Revolve(_) => SweepSubType::Revolve,
                 ModelingCmd::RevolveAboutEdge(_) => SweepSubType::RevolveAboutEdge,
                 ModelingCmd::Sweep(_) => SweepSubType::Sweep,
