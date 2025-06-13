@@ -298,26 +298,29 @@ export function ModelingSidebar() {
             (context.store?.openPanes.length >= 1 ? `w-full` : `hidden`)
           }
         >
-          {filteredPanes
-            .filter((pane) => context?.store.openPanes.includes(pane.id))
-            .map((pane) => (
-              <ModelingPane
-                key={pane.id}
-                icon={pane.icon}
-                title={pane.sidebarName}
-                onClose={() => {}}
-                id={`${pane.id}-pane`}
-              >
-                {pane.Content instanceof Function ? (
-                  <pane.Content
-                    id={pane.id}
-                    onClose={() => togglePane(pane.id)}
-                  />
-                ) : (
-                  pane.Content
-                )}
-              </ModelingPane>
-            ))}
+          {filteredPanes.map((pane) => (
+            <ModelingPane
+              key={pane.id}
+              icon={pane.icon}
+              title={pane.sidebarName}
+              onClose={() => {}}
+              id={`${pane.id}-pane`}
+              style={
+                context?.store.openPanes.includes(pane.id)
+                  ? {}
+                  : { display: 'none' }
+              }
+            >
+              {pane.Content instanceof Function ? (
+                <pane.Content
+                  id={pane.id}
+                  onClose={() => togglePane(pane.id)}
+                />
+              ) : (
+                pane.Content
+              )}
+            </ModelingPane>
+          ))}
         </ul>
       </div>
     </Resizable>

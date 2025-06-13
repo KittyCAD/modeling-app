@@ -17,6 +17,7 @@ export interface ModelingPaneProps {
   Menu?: React.ReactNode | React.FC
   detailsTestId?: string
   onClose: () => void
+  style?: React.CSSProperties
 }
 
 export const ModelingPaneHeader = ({
@@ -64,11 +65,13 @@ export const ModelingPane = ({
   detailsTestId,
   onClose,
   title,
+  style,
   ...props
 }: ModelingPaneProps) => {
   return (
     <section
       {...props}
+      style={style}
       aria-label={title && typeof title === 'string' ? title : ''}
       data-testid={detailsTestId}
       id={id}
