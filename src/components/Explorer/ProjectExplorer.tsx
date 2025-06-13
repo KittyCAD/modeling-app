@@ -1,8 +1,11 @@
 import type { Project, FileEntry } from '@src/lib/project'
-import { FileExplorer, constructPath } from '@src/components/Explorer/FileExplorer'
-import type {FileExplorerEntry} from '@src/components/Explorer/FileExplorer'
+import {
+  FileExplorer,
+  constructPath,
+} from '@src/components/Explorer/FileExplorer'
+import type { FileExplorerEntry } from '@src/components/Explorer/FileExplorer'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
-import {useState} from 'react'
+import { useState } from 'react'
 
 /**
  * Wrap the header and the tree into a single component
@@ -52,18 +55,20 @@ export const ProjectExplorer = ({
               console.log('onRefreshExplorer TODO')
             }}
             onCollapseExplorer={() => {
-              console.log('onCollapseExplorer TODO')
+              setOpenedRows({})
             }}
           ></FileExplorerHeaderActions>
         </div>
       </div>
       <div className="h-96 overflow-y-auto overflow-x-hidden">
-        {project && <FileExplorer
-                      parentProject={project}
-                      openedRows={openedRows}
-                      selectedRow={selectedRow}
-                      onRowClickCallback={onRowClickCallback}
-                    ></FileExplorer>}
+        {project && (
+          <FileExplorer
+            parentProject={project}
+            openedRows={openedRows}
+            selectedRow={selectedRow}
+            onRowClickCallback={onRowClickCallback}
+          ></FileExplorer>
+        )}
       </div>
     </div>
   )

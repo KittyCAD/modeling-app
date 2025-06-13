@@ -118,11 +118,11 @@ export const FileExplorer = ({
   parentProject,
   openedRows,
   selectedRow,
-  onRowClickCallback
+  onRowClickCallback,
 }: {
-  parentProject: Project,
-  openedRows: {[key:string]: boolean},
-  selectedRow: FileEntry | null,
+  parentProject: Project
+  openedRows: { [key: string]: boolean }
+  selectedRow: FileEntry | null
   onRowClickCallback: (file: FileExplorerEntry) => void
 }) => {
   // Wrap the FileEntry in a FileExplorerEntry to keep track for more metadata
