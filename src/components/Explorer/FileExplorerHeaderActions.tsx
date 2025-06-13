@@ -11,7 +11,7 @@ export const FileExplorerHeaderActions = ({
   onCreateFile,
   onCreateFolder,
   onRefreshExplorer,
-  onCollapseExplorer
+  onCollapseExplorer,
 }: {
   onCreateFile: () => void
   onCreateFolder: () => void
