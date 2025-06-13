@@ -179,12 +179,6 @@ export const FileExplorer = ({
         const isFile = child.children === null
         const isKCLFile = isFile && child.name?.endsWith(FILE_EXT)
 
-        let icon: CustomIconName = 'file'
-        if (isKCLFile) {
-          icon = 'kcl'
-        } else if (!isFile) {
-          icon = 'folder'
-        }
 
         /**
          * If any parent is closed, keep the history of open children
@@ -198,16 +192,28 @@ export const FileExplorer = ({
           pathIterator.pop()
         }
 
+
+        const amIOpen = openedRows[constructPath({parentPath: child.parentPath, name: child.name})]
+        const isOpen  = (openedRows[child.parentPath] ||
+          parentProject.name === child.parentPath) &&
+          !isAnyParentClosed
+
+        let icon: CustomIconName = 'file'
+        if (isKCLFile) {
+          icon = 'kcl'
+        } else if (!isFile && !amIOpen) {
+          icon = 'folder'
+        } else if(!isFile && amIOpen) {
+          icon = 'folderOpen'
+        }
+
         const row: FileExplorerRow = {
           // copy over all the other data that was built up to the DOM render row
           ...child,
           icon: icon,
           isFolder: !isFile,
           status: StatusDot(),
-          isOpen:
-            (openedRows[child.parentPath] ||
-              parentProject.name === child.parentPath) &&
-            !isAnyParentClosed,
+          isOpen,
           rowClicked: () => {
             onRowClickCallback(child)
           },
@@ -249,7 +255,7 @@ export const FileExplorerRow = ({
 }) => {
   return (
     <div
-    className={`h-6 flex flex-row items-center text-xs cursor-pointer hover:bg-sky-400 ${row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath ? 'bg-sky-800' : ''}`}
+      className={`h-6 flex flex-row items-center text-xs cursor-pointer hover:bg-sky-400 ${row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath ? 'bg-sky-800' : ''}`}
       onClick={() => {
         row.rowClicked()
       }}
