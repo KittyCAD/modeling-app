@@ -104,14 +104,15 @@ export default class CodeManager {
    */
   updateCodeEditor(code: string, clearHistory?: boolean): void {
     this.code = code
-    if (editorManager.editorView) {
+    const editorView = editorManager.getEditorView()
+    if (editorView) {
       if (clearHistory) {
-        clearCodeMirrorHistory(editorManager.editorView)
+        clearCodeMirrorHistory(editorView)
       }
-      editorManager.editorView.dispatch({
+      editorView.dispatch({
         changes: {
           from: 0,
-          to: editorManager.editorView.state.doc.length,
+          to: editorView.state.doc.length,
           insert: code,
         },
         annotations: [

@@ -85,12 +85,13 @@ export const KclEditorPane = () => {
   }, [])
 
   useEffect(() => {
-    if (!editorIsMounted || !lastSelectionEvent || !editorManager.editorView) {
+    const editorView = editorManager.getEditorView()
+    if (!editorIsMounted || !lastSelectionEvent || !editorView) {
       return
     }
 
     try {
-      editorManager.editorView.dispatch({
+      editorView.dispatch({
         selection: lastSelectionEvent.codeMirrorSelection,
         annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
         scrollIntoView: lastSelectionEvent.scrollIntoView,

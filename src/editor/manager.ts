@@ -86,6 +86,10 @@ export default class EditorManager {
     this.overrideTreeHighlighterUpdateForPerformanceTracking()
   }
 
+  getEditorView(): EditorView | null {
+    return this._editorView
+  }
+
   overrideTreeHighlighterUpdateForPerformanceTracking() {
     // @ts-ignore
     this._editorView?.plugins.forEach((e) => {
@@ -130,10 +134,6 @@ export default class EditorManager {
 
   get isAllTextSelected() {
     return this._isAllTextSelected
-  }
-
-  get editorView(): EditorView | null {
-    return this._editorView
   }
 
   get isShiftDown(): boolean {

@@ -82,14 +82,14 @@ export function Toolbar({
       modelingState: state,
       modelingSend: send,
       sketchPathId,
-      editorHasFocus: editorManager.editorView?.hasFocus,
+      editorHasFocus: editorManager.getEditorView()?.hasFocus,
     }),
     [
       state,
       send,
       commandBarActor.send,
       sketchPathId,
-      editorManager.editorView?.hasFocus,
+      editorManager.getEditorView()?.hasFocus,
     ]
   )
 
