@@ -217,11 +217,18 @@ const Loading = ({
       <p className={`text-base mt-4`}>
         {isUnrecoverableError ? '' : children || 'Loading'}
       </p>
-      {countdown !== undefined && countdown > 0 && isRetrying && (
-        <p className="text-base mt-4">
+      <div
+        className={
+          `text-base h-[1em] ` +
+          (countdown !== undefined &&
+            countdown <= 1 &&
+            'transition-opacity duration-1000 opacity-0')
+        }
+      >
+        {countdown !== undefined && countdown > 0 && isRetrying && (
           <span>Connecting in {countdown}s</span>
-        </p>
-      )}
+        )}
+      </div>
       {CONNECTION_ERROR_TEXT[error.error] && (
         <div>
           <div className="max-w-3xl text-base flex flex-col gap-2 px-2 pt-2 mt-2 pb-6 mb-6 border-b border-chalkboard-30">
