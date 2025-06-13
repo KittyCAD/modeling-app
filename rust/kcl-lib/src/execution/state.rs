@@ -46,7 +46,9 @@ pub(super) struct GlobalState {
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
     pub errors: Vec<CompilationError>,
+    /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
+    /// Artifacts for only the root module.
     pub root_module_artifacts: ModuleArtifactState,
 }
 
@@ -79,7 +81,8 @@ pub struct ModuleArtifactState {
     pub unprocessed_commands: Vec<ArtifactCommand>,
     /// Outgoing engine commands.
     pub commands: Vec<ArtifactCommand>,
-    /// Operations that have been performed in execution order.
+    /// Operations that have been performed in execution order, for display in
+    /// the Feature Tree.
     pub operations: Vec<Operation>,
 }
 
@@ -106,6 +109,7 @@ pub(super) struct ModuleState {
     pub settings: MetaSettings,
     pub(super) explicit_length_units: bool,
     pub(super) path: ModulePath,
+    /// Artifacts for only this module.
     pub artifacts: ModuleArtifactState,
 }
 

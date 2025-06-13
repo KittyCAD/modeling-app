@@ -1132,8 +1132,7 @@ impl ExecutorContext {
                 ModuleId::default(),
                 &ModulePath::Main,
             )
-            .await;
-        let exec_result = exec_result
+            .await
             .map(|(_, env_ref, _, module_artifacts)| {
                 // We need to extend because it may already have operations from
                 // imports.
