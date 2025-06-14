@@ -3,7 +3,41 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed invalid_index_negative.kcl
 ---
 {
-  "rust/kcl-lib/tests/invalid_index_negative/input.kcl": [],
+  "rust/kcl-lib/tests/invalid_index_negative/input.kcl": [
+    {
+      "type": "VariableDeclaration",
+      "name": "i",
+      "value": {
+        "type": "Number",
+        "value": -1.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
   "std::appearance": [],
   "std::array": [],
   "std::math": [

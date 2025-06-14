@@ -13,7 +13,7 @@ use crate::{
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
-    execution::{ArtifactGraph, Operation},
+    execution::ArtifactGraph,
     modules::{ModulePath, ModuleRepr},
 };
 
@@ -281,7 +281,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             #[cfg(not(feature = "artifact-graph"))]
             drop(module_state);
             #[cfg(feature = "artifact-graph")]
-            assert_artifact_snapshots(test, module_state, outcome.operations, outcome.artifact_graph);
+            assert_artifact_snapshots(test, module_state, outcome.artifact_graph);
             mem_result.unwrap();
         }
         Err(e) => {
@@ -312,21 +312,11 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
                     #[cfg(feature = "artifact-graph")]
                     {
-                        let global_operations = if !error.operations.is_empty() {
-                            error.operations
-                        } else if let Some(exec_state) = &e.exec_state {
-                            // Non-fatal compilation errors don't have artifact
-                            // output attached, so we need to get it from
-                            // ExecState.
-                            exec_state.operations().to_vec()
-                        } else {
-                            Vec::new()
-                        };
                         let module_state = e
                             .exec_state
                             .map(|e| e.to_module_state(&test.input_dir))
                             .unwrap_or_default();
-                        assert_artifact_snapshots(test, module_state, global_operations, error.artifact_graph);
+                        assert_artifact_snapshots(test, module_state, error.artifact_graph);
                     }
                     err_result.unwrap();
                 }
@@ -347,7 +337,6 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 fn assert_artifact_snapshots(
     test: &Test,
     module_state: IndexMap<String, ModuleArtifactState>,
-    global_operations: Vec<Operation>,
     artifact_graph: ArtifactGraph,
 ) {
     let module_operations = module_state
@@ -391,22 +380,12 @@ fn assert_artifact_snapshots(
         let is_writing = matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"));
         if !test.skip_assert_artifact_graph || is_writing {
             assert_snapshot(test, "Artifact graph flowchart", || {
-                let mut artifact_graph = artifact_graph.clone();
-                // Sort the map by artifact where we can.
-                artifact_graph.sort();
-
                 let flowchart = artifact_graph
                     .to_mermaid_flowchart()
                     .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
                 // Change the snapshot suffix so that it is rendered as a Markdown file
                 // in GitHub.
-                // Ignore the cpu cooler for now because its being a little bitch.
-                if test.name != "cpu-cooler"
-                    && test.name != "subtract_regression08"
-                    && test.name != "subtract_regression10"
-                {
-                    insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
-                }
+                insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
             })
         }
     }));
@@ -414,25 +393,6 @@ fn assert_artifact_snapshots(
     result1.unwrap();
     result2.unwrap();
     result3.unwrap();
-
-    // The global operations should be a superset of the main module.  But it
-    // won't always be a superset of the operations of all modules.
-    let repo_root = std::path::Path::new(REPO_ROOT).canonicalize().unwrap();
-    let root_string: String = test
-        .entry_point
-        .canonicalize()
-        .unwrap_or_else(|_| panic!("Should be able to canonicalize the entry point {:?}", &test.entry_point))
-        .strip_prefix(&repo_root)
-        .expect("Repo root dir should be a prefix of the entry point")
-        .to_string_lossy()
-        .into_owned();
-    let main_operations = module_operations
-        .get(&root_string)
-        .expect("Main module state not found");
-    assert!(
-        global_operations.len() >= main_operations.len(),
-        "global_operations={global_operations:#?}, main_operations={main_operations:#?}"
-    );
 }
 
 mod cube {
