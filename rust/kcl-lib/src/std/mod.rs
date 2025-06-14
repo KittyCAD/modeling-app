@@ -260,6 +260,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::extrude::extrude(e, a)),
             StdFnProps::default("std::sketch::extrude").include_in_feature_tree(),
         ),
+        ("sketch", "extrudeTwist") => (
+            |e, a| Box::pin(crate::std::extrude::extrude_twist(e, a)),
+            StdFnProps::default("std::sketch::extrudeTwist").include_in_feature_tree(),
+        ),
         ("sketch", "patternTransform2d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
             StdFnProps::default("std::sketch::patternTransform2d"),

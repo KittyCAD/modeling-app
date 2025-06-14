@@ -55,6 +55,7 @@ layout: manual
   * [`circleThreePoint`](/docs/kcl-std/functions/std-sketch-circleThreePoint)
   * [`close`](/docs/kcl-std/functions/std-sketch-close)
   * [`extrude`](/docs/kcl-std/functions/std-sketch-extrude)
+  * [`extrudeTwist`](/docs/kcl-std/functions/std-sketch-extrudeTwist)
   * [`getCommonEdge`](/docs/kcl-std/functions/std-sketch-getCommonEdge)
   * [`getNextAdjacentEdge`](/docs/kcl-std/functions/std-sketch-getNextAdjacentEdge)
   * [`getOppositeEdge`](/docs/kcl-std/functions/std-sketch-getOppositeEdge)
