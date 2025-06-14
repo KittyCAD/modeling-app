@@ -385,13 +385,7 @@ fn assert_artifact_snapshots(
                     .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
                 // Change the snapshot suffix so that it is rendered as a Markdown file
                 // in GitHub.
-                // Ignore the cpu cooler for now because its being a little bitch.
-                if test.name != "cpu-cooler"
-                    && test.name != "subtract_regression08"
-                    && test.name != "subtract_regression10"
-                {
-                    insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
-                }
+                insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
             })
         }
     }));
