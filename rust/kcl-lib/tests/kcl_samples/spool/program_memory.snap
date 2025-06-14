@@ -147,7 +147,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "type": "Arc",
@@ -161,7 +161,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "tag": null,
@@ -624,7 +624,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "type": "Arc",
@@ -638,7 +638,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "tag": null,
@@ -1101,7 +1101,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "type": "Arc",
@@ -1115,7 +1115,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "tag": null,
@@ -1578,7 +1578,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "type": "Arc",
@@ -1592,7 +1592,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "tag": null,
@@ -2055,7 +2055,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "type": "Arc",
@@ -2069,7 +2069,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "tag": null,
@@ -2532,7 +2532,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "type": "Arc",
@@ -2546,7 +2546,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "tag": null,
@@ -3009,7 +3009,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "type": "Arc",
@@ -3023,7 +3023,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "tag": null,
@@ -3486,7 +3486,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "type": "Arc",
@@ -3500,7 +3500,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   65.0
                 ],
                 "tag": null,
@@ -3968,7 +3968,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -3982,7 +3982,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -4445,7 +4445,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -4459,7 +4459,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -4922,7 +4922,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -4936,7 +4936,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -5399,7 +5399,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -5413,7 +5413,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -5876,7 +5876,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -5890,7 +5890,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -6353,7 +6353,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -6367,7 +6367,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -6830,7 +6830,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -6844,7 +6844,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -7307,7 +7307,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -7321,7 +7321,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -7784,7 +7784,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -7798,7 +7798,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -8261,7 +8261,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -8275,7 +8275,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -8738,7 +8738,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -8752,7 +8752,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -9215,7 +9215,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -9229,7 +9229,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -9692,7 +9692,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -9706,7 +9706,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -10169,7 +10169,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -10183,7 +10183,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -10646,7 +10646,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -10660,7 +10660,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
@@ -11123,7 +11123,7 @@ description: Variables in memory after executing spool.kcl
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "type": "Arc",
@@ -11137,7 +11137,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  -0.0,
                   122.5
                 ],
                 "tag": null,
