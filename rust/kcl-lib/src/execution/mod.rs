@@ -519,8 +519,8 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         source_range: crate::execution::SourceRange,
     ) -> Result<(), KclError> {
-        // Ensure artifact commands are cleared so that we don't accumulate them
-        // across runs.
+        // Ensure artifacts are cleared so that we don't accumulate them across
+        // runs.
         exec_state.mod_local.artifacts.clear();
         exec_state.global.root_module_artifacts.clear();
         exec_state.global.artifacts.clear();

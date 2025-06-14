@@ -636,6 +636,8 @@ impl ExecutorContext {
             .await;
         exec_state.global.mod_loader.leave_module(path);
 
+        // TODO: ModuleArtifactState is getting dropped here when there's an
+        // error.  Should we propagate it for non-root modules?
         result.map_err(|(err, _)| {
             if let KclError::ImportCycle { .. } = err {
                 // It was an import cycle.  Keep the original message.
