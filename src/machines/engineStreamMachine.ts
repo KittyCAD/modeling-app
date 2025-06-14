@@ -229,7 +229,11 @@ export const engineStreamMachine = setup({
           }
         }
 
-        await rootContext.sceneInfra.camControls.saveRemoteCameraState()
+        try {
+          await rootContext.sceneInfra.camControls.saveRemoteCameraState()
+        } catch (e) {
+          console.warn('Save remote camera state timed out', e)
+        }
 
         // Make sure we're on the next frame for no flickering between canvas
         // and the video elements.
