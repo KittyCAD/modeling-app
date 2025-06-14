@@ -283,6 +283,9 @@ mod tests {
   bidirectionalLength?: number(Length),
   tagStart?: tag,
   tagEnd?: tag,
+  twistAngle?: number(Angle),
+  twistAngleStep?: number(Angle),
+  twistCenter?: Point2d,
 ): [Solid; 1+]"#
         );
     }

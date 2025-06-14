@@ -364,6 +364,11 @@ export fn circle(
 ///
 /// example = extrude(exampleSketch, length = 10, bidirectionalLength = 50)
 /// ```
+/// ```kcl
+/// example = startSketchOn(XZ)
+///   |> polygon(radius = 10, numSides = 3, center = [0, 0])
+///   |> extrude(length = 10, twistAngle = 120deg)
+/// ```
 @(impl = std_rust)
 export fn extrude(
   /// Which sketch or sketches should be extruded.
@@ -378,6 +383,16 @@ export fn extrude(
   tagStart?: tag,
   /// A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch.
   tagEnd?: tag,
+  /// If given, the sketch will be twisted around this angle while being extruded.
+  twistAngle?: number(Angle),
+  /// The size of each intermediate angle as the sketch twists around.
+  /// Must be between 4 and 90 degrees.
+  /// Only used if `twistAngle` is given, defaults to 15 degrees.
+  twistAngleStep?: number(Angle),
+  /// The center around which the sketch will be twisted. Relative to the sketch's center.
+  /// Only used if `twistAngle` is given, defaults to [0, 0] i.e. sketch's center.
+  @(snippetArray = ["0", "0"])
+  twistCenter?: Point2d,
 ): [Solid; 1+] {}
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
