@@ -14,7 +14,7 @@ bench = false
 [dependencies]
 anyhow = { workspace = true }
 clap = { workspace = true, features = ["cargo", "derive", "env", "unicode"] }
-flate2 = "1.1.1"
+flate2 = "1.1.2"
 lazy_static = { workspace = true }
 log = { version = "0.4.27", features = ["serde"] }
 slog = { workspace = true }
