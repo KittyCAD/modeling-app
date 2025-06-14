@@ -11,9 +11,9 @@ Draw an angled line from the current origin, constructing a line segment such th
 angledLineThatIntersects(
   @sketch: Sketch,
   angle: number(Angle),
-  intersectTag: tag,
+  intersectTag: TaggedEdge,
   offset?: number(Length),
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -25,9 +25,9 @@ angledLineThatIntersects(
 |----------|------|-------------|----------|
 | `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
 | `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Which angle should the line be drawn at? | Yes |
-| `intersectTag` | [`tag`](/docs/kcl-std/types/std-types-tag) | The tag of the line to intersect with. | Yes |
+| `intersectTag` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The tag of the line to intersect with. | Yes |
 | `offset` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The offset from the intersecting line. | No |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this line. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this line. | No |
 
 ### Returns
 

@@ -8,9 +8,13 @@ layout: manual
 No turn, zero degrees/radians.
 
 ```kcl
-turns::ZERO
+turns::ZERO: number(Angle)
 ```
 
 
+
+### Type
+
+[`number(Angle)`](/docs/kcl-std/types/std-types-number) - A number.
 
 

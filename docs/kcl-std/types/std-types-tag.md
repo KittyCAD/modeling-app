@@ -1,109 +1,19 @@
 ---
 title: "tag"
 subtitle: "Type in std::types"
-excerpt: "Tags are used to give a name (tag) to a specific path."
+excerpt: "Reference a previously created tag. Used much like a variable."
 layout: manual
 ---
 
-Tags are used to give a name (tag) to a specific path.
+**WARNING:** This type is deprecated.
 
-### Tag Declaration
+Reference a previously created tag. Used much like a variable.
 
-The syntax for declaring a tag is `$myTag` you would use it in the following
-way:
-
-```js
-startSketchOn(XZ)
-  |> startProfile(at = origin)
-  |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
-  |> angledLine(
-       angle = segAng(rectangleSegmentA001) - 90deg,
-       length = 196.99,
-       tag = $rectangleSegmentB001,
-     )
-  |> angledLine(
-       angle = segAng(rectangleSegmentA001),
-       length = -segLen(rectangleSegmentA001),
-       tag = $rectangleSegmentC001,
-     )
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
+```kcl
+type tag = TaggedEdge
 ```
 
-### Tag Identifier
-
-As per the example above you can use the tag identifier to get a reference to the
-tagged object. The syntax for this is `myTag`.
-
-In the example above we use the tag identifier to get the angle of the segment
-`segAng(rectangleSegmentA001)`.
-
-### Tag Scope
-
-Tags are scoped globally if in the root context meaning in this example you can
-use the tag `rectangleSegmentA001` in any function or expression in the file.
-
-However if the code was written like this:
-
-```js
-fn rect(origin) {
-  return startSketchOn(XZ)
-    |> startProfile(at = origin)
-    |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
-    |> angledLine(
-         angle = segAng(rectangleSegmentA001) - 90,
-         length = 196.99,
-         tag = $rectangleSegmentB001)
-    |> angledLine(
-         angle = segAng(rectangleSegmentA001),
-         length = -segLen(rectangleSegmentA001),
-         tag = $rectangleSegmentC001
-       )
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-}
-
-rect(origin = [0, 0])
-rect(origin = [20, 0])
-```
-
-Those tags would only be available in the `rect` function and not globally.
-
-However you likely want to use those tags somewhere outside the `rect` function.
-
-Tags are accessible through the sketch group they are declared in.
-For example the following code works.
-
-```js
-fn rect(origin) {
-  return startSketchOn(XZ)
-    |> startProfile(at = origin)
-    |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
-    |> angledLine(
-         angle = segAng(rectangleSegmentA001) - 90deg,
-         length = 196.99
-         tag = $rectangleSegmentB001,
-       )
-    |> angledLine(
-         angle = segAng(rectangleSegmentA001),
-         length = -segLen(rectangleSegmentA001)
-         tag = $rectangleSegmentC001,
-       )
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-}
-
-rect(origin = [0, 0])
-myRect = rect(origin = [20, 0])
-
-myRect
-  |> extrude(length = 10)
-  |> fillet(radius = 0.5, tags = [myRect.tags.rectangleSegmentA001])
-```
-
-See how we use the tag `rectangleSegmentA001` in the `fillet` function outside
-the `rect` function. This is because the `rect` function is returning the
-sketch group that contains the tags.
+Prefer to use [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace). For more details on tags, see the docs for [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl).
 
 
 

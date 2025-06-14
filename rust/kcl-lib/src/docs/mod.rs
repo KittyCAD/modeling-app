@@ -281,8 +281,8 @@ mod tests {
   length: number(Length),
   symmetric?: bool,
   bidirectionalLength?: number(Length),
-  tagStart?: tag,
-  tagEnd?: tag,
+  tagStart?: TagDecl,
+  tagEnd?: TagDecl,
 ): [Solid; 1+]"#
         );
     }

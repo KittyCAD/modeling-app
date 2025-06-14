@@ -8,7 +8,7 @@ layout: manual
 Get the next adjacent edge to the edge given.
 
 ```kcl
-getNextAdjacentEdge(@edge: tag): Edge
+getNextAdjacentEdge(@edge: TaggedEdge): Edge
 ```
 
 
@@ -17,7 +17,7 @@ getNextAdjacentEdge(@edge: tag): Edge
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `edge` | [`tag`](/docs/kcl-std/types/std-types-tag) | The tag of the edge you want to find the next adjacent edge of. | Yes |
+| `edge` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The tag of the edge you want to find the next adjacent edge of. | Yes |
 
 ### Returns
 

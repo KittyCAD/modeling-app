@@ -15,8 +15,8 @@ revolve(
   tolerance?: number(Length),
   symmetric?: bool,
   bidirectionalAngle?: number(Angle),
-  tagStart?: tag,
-  tagEnd?: tag,
+  tagStart?: TagDecl,
+  tagEnd?: TagDecl,
 ): [Solid; 1+]
 ```
 
@@ -41,8 +41,8 @@ revolved around the same axis.
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Tolerance for the revolve operation. | No |
 | `symmetric` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |
 | `bidirectionalAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored. | No |
-| `tagStart` | [`tag`](/docs/kcl-std/types/std-types-tag) | A named tag for the face at the start of the revolve, i.e. the original sketch. | No |
-| `tagEnd` | [`tag`](/docs/kcl-std/types/std-types-tag) | A named tag for the face at the end of the revolve. | No |
+| `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the revolve, i.e. the original sketch. | No |
+| `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the revolve. | No |
 
 ### Returns
 

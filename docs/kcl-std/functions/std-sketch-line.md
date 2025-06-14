@@ -12,7 +12,7 @@ line(
   @sketch: Sketch,
   endAbsolute?: Point2d,
   end?: Point2d,
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -25,7 +25,7 @@ line(
 | `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
 | `endAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Which absolute point should this line go to? Incompatible with `end`. | No |
 | `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | How far away (along the X and Y axes) should this line go? Incompatible with `endAbsolute`. | No |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this line. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this line. | No |
 
 ### Returns
 

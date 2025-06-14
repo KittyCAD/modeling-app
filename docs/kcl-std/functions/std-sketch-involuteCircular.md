@@ -14,7 +14,7 @@ involuteCircular(
   endRadius: number(Length),
   angle: number(Angle),
   reverse?: bool,
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -29,7 +29,7 @@ involuteCircular(
 | `endRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The involute is described between two circles, end_radius is the radius of the outer circle. | Yes |
 | `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The angle to rotate the involute by. A value of zero will produce a curve with a tangent along the x-axis at the start point of the curve. | Yes |
 | `reverse` | [`bool`](/docs/kcl-std/types/std-types-bool) | If reverse is true, the segment will start from the end of the involute, otherwise it will start from that start. | No |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this line. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this line. | No |
 
 ### Returns
 

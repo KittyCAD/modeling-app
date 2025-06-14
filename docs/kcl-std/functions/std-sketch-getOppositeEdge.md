@@ -8,7 +8,7 @@ layout: manual
 Get the opposite edge to the edge given.
 
 ```kcl
-getOppositeEdge(@edge: tag): Edge
+getOppositeEdge(@edge: TaggedEdge): Edge
 ```
 
 
@@ -17,7 +17,7 @@ getOppositeEdge(@edge: tag): Edge
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `edge` | [`tag`](/docs/kcl-std/types/std-types-tag) | The tag of the edge you want to find the opposite edge of. | Yes |
+| `edge` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The tag of the edge you want to find the opposite edge of. | Yes |
 
 ### Returns
 

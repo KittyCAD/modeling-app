@@ -8,7 +8,7 @@ layout: manual
 Compute the angle (in degrees) of the provided line segment.
 
 ```kcl
-segAng(@tag: tag): number(Angle)
+segAng(@tag: TaggedEdge): number(Angle)
 ```
 
 
@@ -17,7 +17,7 @@ segAng(@tag: tag): number(Angle)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | The line segment being queried by its tag. | Yes |
+| `tag` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The line segment being queried by its tag. | Yes |
 
 ### Returns
 

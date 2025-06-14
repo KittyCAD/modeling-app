@@ -13,4 +13,8 @@ turns::QUARTER_TURN: number(deg) = 90deg
 
 
 
+### Type
+
+[`number(deg)`](/docs/kcl-std/types/std-types-number) - A number.
+
 
