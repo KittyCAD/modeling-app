@@ -316,6 +316,13 @@ extrude001 = extrude(profile001, length = 4)
         panic!("Last operation should be stdlib call extrude");
     };
     assert_eq!(name, "extrude");
+    // Make sure there are no duplicates.
+    assert_eq!(
+        second.operations.len(),
+        3,
+        "There should be exactly 4 operations in the second run. {:#?}",
+        &second.operations
+    );
     // Make sure we have NodePaths referring to the old code.
     let graph = &second.artifact_graph;
     assert!(!graph.is_empty());

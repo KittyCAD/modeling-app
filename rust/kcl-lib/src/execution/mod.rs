@@ -974,7 +974,7 @@ impl ExecutorContext {
         exec_state
             .global
             .root_module_artifacts
-            .extend(exec_state.mod_local.artifacts.clone());
+            .extend(std::mem::take(&mut exec_state.mod_local.artifacts));
 
         self.inner_run(program, exec_state, preserve_mem).await
     }
@@ -1119,7 +1119,7 @@ impl ExecutorContext {
         // Because of execution caching, we may start with operations from a
         // previous run.
         #[cfg(feature = "artifact-graph")]
-        let start_op = exec_state.global.artifacts.operations.len();
+        let start_op = exec_state.global.root_module_artifacts.operations.len();
 
         self.eval_prelude(exec_state, SourceRange::from(program).start_as_range())
             .await?;
@@ -1152,10 +1152,13 @@ impl ExecutorContext {
         {
             // Fill in NodePath for operations.
             let cached_body_items = exec_state.global.artifacts.cached_body_items();
-            for op in exec_state.global.artifacts.operations.iter_mut().skip(start_op) {
-                op.fill_node_paths(program, cached_body_items);
-            }
-            for op in exec_state.global.root_module_artifacts.operations.iter_mut() {
+            for op in exec_state
+                .global
+                .root_module_artifacts
+                .operations
+                .iter_mut()
+                .skip(start_op)
+            {
                 op.fill_node_paths(program, cached_body_items);
             }
             for module in exec_state.global.module_infos.values_mut() {
@@ -1186,7 +1189,7 @@ impl ExecutorContext {
     async fn eval_prelude(&self, exec_state: &mut ExecState, source_range: SourceRange) -> Result<(), KclError> {
         if exec_state.stack().memory.requires_std() {
             #[cfg(feature = "artifact-graph")]
-            let initial_ops = exec_state.global.artifacts.operations.len();
+            let initial_ops = exec_state.mod_local.artifacts.operations.len();
 
             let path = vec!["std".to_owned(), "prelude".to_owned()];
             let resolved_path = ModulePath::from_std_import_path(&path)?;
@@ -1203,7 +1206,7 @@ impl ExecutorContext {
             // TODO: Should we also clear them out of each module so that they
             // don't appear in test output?
             #[cfg(feature = "artifact-graph")]
-            exec_state.global.artifacts.operations.truncate(initial_ops);
+            exec_state.mod_local.artifacts.operations.truncate(initial_ops);
         }
 
         Ok(())
@@ -2281,6 +2284,39 @@ w = f() + f()
 
         ctx.close().await;
         ctx2.close().await;
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sim_sketch_mode_real_mock_real() {
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let code = r#"sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> line(end = [0, -10])
+  |> close()
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_with_caching(program).await.unwrap();
+        assert_eq!(result.operations.len(), 1);
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let mock_program = crate::Program::parse_no_errs(code).unwrap();
+        let mock_result = mock_ctx.run_mock(mock_program, true).await.unwrap();
+        assert_eq!(mock_result.operations.len(), 0);
+
+        let code2 = code.to_owned()
+            + r#"
+extrude001 = extrude(profile001, length = 10)
+"#;
+        let program2 = crate::Program::parse_no_errs(&code2).unwrap();
+        let result = ctx.run_with_caching(program2).await.unwrap();
+        assert_eq!(result.operations.len(), 2);
+
+        ctx.close().await;
+        mock_ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

@@ -60,9 +60,6 @@ pub(super) struct ArtifactState {
     pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Output artifact graph.
     pub graph: ArtifactGraph,
-    /// Operations that have been performed in execution order, for display in
-    /// the Feature Tree.
-    pub operations: Vec<Operation>,
 }
 
 #[cfg(not(feature = "artifact-graph"))]
@@ -166,7 +163,7 @@ impl ExecState {
             variables: self.mod_local.variables(main_ref),
             filenames: self.global.filenames(),
             #[cfg(feature = "artifact-graph")]
-            operations: self.global.artifacts.operations,
+            operations: self.global.root_module_artifacts.operations,
             #[cfg(feature = "artifact-graph")]
             artifact_graph: self.global.artifacts.graph,
             errors: self.global.errors,
@@ -210,10 +207,8 @@ impl ExecState {
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
-        #[cfg(all(test, feature = "artifact-graph"))]
-        self.mod_local.artifacts.operations.push(op.clone());
         #[cfg(feature = "artifact-graph")]
-        self.global.artifacts.operations.push(op);
+        self.mod_local.artifacts.operations.push(op.clone());
         #[cfg(not(feature = "artifact-graph"))]
         drop(op);
     }
@@ -278,11 +273,6 @@ impl ExecState {
     }
 
     #[cfg(all(test, feature = "artifact-graph"))]
-    pub(crate) fn operations(&self) -> &[Operation] {
-        &self.global.artifacts.operations
-    }
-
-    #[cfg(all(test, feature = "artifact-graph"))]
     pub(crate) fn root_module_artifact_state(&self) -> &ModuleArtifactState {
         &self.global.root_module_artifacts
     }
@@ -339,7 +329,7 @@ impl ExecState {
             error,
             self.errors().to_vec(),
             #[cfg(feature = "artifact-graph")]
-            self.global.artifacts.operations.clone(),
+            self.global.root_module_artifacts.operations.clone(),
             #[cfg(feature = "artifact-graph")]
             Default::default(),
             #[cfg(feature = "artifact-graph")]
@@ -457,7 +447,6 @@ impl ArtifactState {
         {
             self.artifacts.clear();
             self.graph.clear();
-            self.operations.clear();
         }
     }
 }

@@ -109,12 +109,12 @@ pub use unparser::{recast_dir, walk_dir};
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
-    #[cfg(feature = "artifact-graph")]
-    pub use crate::execution::{ArtifactCommand, Operation};
     pub use crate::execution::{
         types::{NumericType, UnitAngle, UnitLen, UnitType},
         DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
     };
+    #[cfg(feature = "artifact-graph")]
+    pub use crate::execution::{ArtifactCommand, Operation};
 }
 
 #[cfg(target_arch = "wasm32")]
