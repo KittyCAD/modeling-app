@@ -49,8 +49,10 @@ export const AppHeader = ({
         file={project?.file}
       />
       {/* Toolbar if the context deems it */}
-      <div className="flex-grow flex justify-center max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">
-        {showToolbar && <Toolbar />}
+      <div className="flex flex-col items-center gap-2">
+        <div className="flex-grow flex justify-center max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">
+          {showToolbar && <Toolbar />}
+        </div>
       </div>
       <div className="flex items-center gap-2 py-1 ml-auto">
         {/* If there are children, show them, otherwise show User menu */}

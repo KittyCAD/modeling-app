@@ -536,7 +536,7 @@ profile001 = startProfile(sketch001, at = [-484.34, 484.95])
 `
         const targetURL = `?create-file=true&name=test&units=mm&code=${encodeURIComponent(btoa(code))}&ask-open-desktop=true`
         await page.goto(page.url() + targetURL)
-        expect(page.url()).toContain(targetURL)
+        await expect.poll(() => page.url()).toContain(targetURL)
       })
 
       await test.step(`Submit the command`, async () => {
