@@ -1,0 +1,68 @@
+// Spool
+// A spool is a winding device for storing large batches of filament, wire, tape, etc
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define shaft parameters
+hubDiameter = 2in
+spoolDiameter = 305
+spoolThickness = 267
+coreDiameter = 150
+webThickness = 10
+stockDiameter = 5
+
+// Sketch the revolved profile of one side of the spool
+spoolBase = startSketchOn(XY)
+  |> startProfile(at = [0, coreDiameter / 2])
+  |> xLine(length = spoolThickness / 2)
+  |> yLine(endAbsolute = spoolDiameter / 2 - webThickness)
+  |> tangentialArc(angle = -270, radius = webThickness)
+  |> yLine(endAbsolute = hubDiameter / 2, tag = $seg01)
+  |> xLine(endAbsolute = profileStartX())
+  |> yLine(endAbsolute = profileStartY())
+  |> close()
+  |> revolve(axis = X)
+  |> appearance(color = "#010101", metalness = 10, roughness = 70)
+
+// Create a function that draws an indent on the outer faces of the spool
+fn score(radius, length, depth) {
+  scoreFn = startSketchOn(spoolBase, face = seg01)
+    |> startProfile(at = [0, radius])
+    |> arc(angleStart = 90, angleEnd = 55, radius = profileStartY(%))
+    |> angledLine(angle = 55, length = length)
+    |> arc(
+         %,
+         angleStart = 55,
+         angleEnd = 90,
+         radius = profileStartY(%) + length,
+       )
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+    |> patternCircular2d(instances = 8, center = [0, 0])
+    |> extrude(length = -depth)
+
+  return scoreFn
+}
+
+// Circular pattern indents around each side face of the spool
+scoreSketch01 = score(radius = hubDiameter / 2 + webThickness, length = (coreDiameter - hubDiameter) / 2 - (2 * webThickness), depth = spoolThickness / 2)
+scoreSketch02 = score(radius = coreDiameter / 2, length = (spoolDiameter - coreDiameter) / 2 - (webThickness * 3), depth = webThickness / 2)
+  // Mirror the spool base piece across the Y axis
+  |> patternCircular3d(instances = 2, axis = [0, 1, 0], center = [0, 0, 0])
+
+// Model a wound coil on the spool diameter
+hel01 = helix(
+  revolutions = spoolThickness / stockDiameter / 1.5,
+  angleStart = 0,
+  radius = (coreDiameter + stockDiameter) / 2,
+  axis = X,
+  length = spoolThickness,
+)
+
+// Sweep and color the coil
+stock = startSketchOn(XZ)
+  |> circle(center = [0, -(coreDiameter + stockDiameter) / 2], diameter = stockDiameter)
+  |> sweep(path = hel01)
+  |> translate(x = -spoolThickness / 2)
+  |> appearance(color = "#f2471c", metalness = 70, roughness = 30)
