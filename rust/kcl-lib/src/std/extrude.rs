@@ -149,7 +149,6 @@ async fn inner_extrude(
     Ok(solids)
 }
 
-#[allow(clippy::too_many_arguments)]
 #[derive(Debug, Default)]
 pub(crate) struct NamedCapTags<'a> {
     pub start: Option<&'a TagNode>,
