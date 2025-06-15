@@ -550,7 +550,10 @@ class TangentialArcToSegment implements SegmentUtils {
 
 export function getTanPreviousPoint(prevSegment: Sketch['paths'][number]) {
   let previousPoint = prevSegment.from
-  if (prevSegment.type === 'TangentialArcTo') {
+  if (
+    prevSegment.type === 'TangentialArcTo' ||
+    prevSegment.type === 'TangentialArc'
+  ) {
     previousPoint = getTangentPointFromPreviousArc(
       prevSegment.center,
       prevSegment.ccw,
