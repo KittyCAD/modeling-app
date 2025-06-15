@@ -11,7 +11,7 @@ Remove volume from a 3-dimensional shape such that a wall of the provided thickn
 shell(
   @solids: [Solid; 1+],
   thickness: number(Length),
-  faces: [tag; 1+],
+  faces: [TaggedFace; 1+],
 ): [Solid]
 ```
 
@@ -23,7 +23,7 @@ shell(
 |----------|------|-------------|----------|
 | `solids` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) | Which solid (or solids) to shell out | Yes |
 | `thickness` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The thickness of the shell | Yes |
-| `faces` | [`[tag; 1+]`](/docs/kcl-std/types/std-types-tag) | The faces you want removed | Yes |
+| `faces` | [`[TaggedFace; 1+]`](/docs/kcl-std/types/std-types-TaggedFace) | The faces you want removed | Yes |
 
 ### Returns
 
