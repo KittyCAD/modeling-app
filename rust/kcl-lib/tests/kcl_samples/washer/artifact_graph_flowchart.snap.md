@@ -3,14 +3,14 @@ flowchart LR
   subgraph path2 [Path]
     2["Path<br>[740, 791, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    4["Segment<br>[740, 791, 0]"]
+    3["Segment<br>[740, 791, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    6[Solid2d]
+    4[Solid2d]
   end
-  subgraph path3 [Path]
-    3["Path<br>[815, 866, 0]"]
+  subgraph path5 [Path]
+    5["Path<br>[815, 866, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }, CallKwArg { index: 0 }]
-    5["Segment<br>[815, 866, 0]"]
+    6["Segment<br>[815, 866, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }, CallKwArg { index: 0 }]
     7[Solid2d]
   end
@@ -27,16 +27,16 @@ flowchart LR
   12["SweepEdge Opposite"]
   13["SweepEdge Adjacent"]
   1 --- 2
-  1 --- 3
+  1 --- 5
+  2 --- 3
   2 --- 4
-  2 --- 6
   2 ---- 8
-  3 --- 5
-  3 --- 7
-  4 --- 9
-  4 x--> 10
-  4 --- 12
-  4 --- 13
+  3 --- 9
+  3 x--> 10
+  3 --- 12
+  3 --- 13
+  5 --- 6
+  5 --- 7
   8 --- 9
   8 --- 10
   8 --- 11

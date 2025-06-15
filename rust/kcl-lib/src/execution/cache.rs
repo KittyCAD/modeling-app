@@ -109,7 +109,7 @@ impl GlobalState {
             variables: self.main.exec_state.variables(self.main.result_env),
             filenames: self.exec_state.filenames(),
             #[cfg(feature = "artifact-graph")]
-            operations: self.exec_state.artifacts.operations,
+            operations: self.exec_state.root_module_artifacts.operations,
             #[cfg(feature = "artifact-graph")]
             artifact_graph: self.exec_state.artifacts.graph,
             errors: self.exec_state.errors,
