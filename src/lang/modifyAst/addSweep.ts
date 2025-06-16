@@ -37,11 +37,13 @@ export function addExtrude({
   ast,
   sketches,
   length,
+  symmetric,
   nodeToEdit,
 }: {
   ast: Node<Program>
   sketches: Selections
   length: KclCommandValue
+  symmetric?: boolean
   nodeToEdit?: PathToNode
 }):
   | {
@@ -63,9 +65,15 @@ export function addExtrude({
     return sketchesExprList
   }
 
+  // Extra labeled args expressions
+  const symmetricExpr = symmetric
+    ? [createLabeledArg('symmetric', createLiteral(symmetric))]
+    : []
+
   const sketchesExpr = createSketchExpression(sketchesExprList)
   const call = createCallExpressionStdLibKw('extrude', sketchesExpr, [
     createLabeledArg('length', valueOrVariable(length)),
+    ...symmetricExpr,
   ])
 
   // Insert variables for labeled arguments if provided
