@@ -218,7 +218,7 @@ export function ModelingSidebar() {
 
   return (
     <Resizable
-      className={`z-20 group flex-1 flex flex-col z-10 my-2 pr-1 ${pointerEventsCssClass}`}
+      className={`group flex-1 flex flex-col z-10 my-2 pr-1 ${pointerEventsCssClass}`}
       defaultSize={{
         width: '550px',
         height: 'auto',

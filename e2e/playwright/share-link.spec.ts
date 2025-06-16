@@ -35,5 +35,4 @@ test.describe('Share link tests', () => {
       await expect(getToastError(page)).toBeVisible()
     }
   )
-
 })
