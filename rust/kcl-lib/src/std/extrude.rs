@@ -230,9 +230,12 @@ pub(crate) async fn do_post_extrude<'a>(
         )
         .await?;
 
-    let any_edge_id = if let Some(id) = edge_id {
+    let any_edge_id =  if let Some(edge_id) = sketch.mirror {
+        edge_id
+    } else if let Some(id) = edge_id {
         id
-    } else {
+    } 
+    else {
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
         // So, let's just use the first one.
         let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
