@@ -9,9 +9,9 @@ import { useState, useRef, useEffect } from 'react'
 import { systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
-const NOTHING_IS_SELECTED : number = -2
-const CONTAINER_IS_SELECTED : number = -1
-const STARTING_INDEX_TO_SELECT : number = 0
+const NOTHING_IS_SELECTED: number = -2
+const CONTAINER_IS_SELECTED: number = -1
+const STARTING_INDEX_TO_SELECT: number = 0
 
 /**
  * Wrap the header and the tree into a single component
@@ -68,21 +68,21 @@ export const ProjectExplorer = ({
 
     const keyDownHandler = (event) => {
       const key = event.key
-      switch(key) {
-        case "ArrowLeft":
-          break;
-        case "ArrowRight":
-          break;
-        case "ArrowUp":
+      switch (key) {
+        case 'ArrowLeft':
+          break
+        case 'ArrowRight':
+          break
+        case 'ArrowUp':
           if (activeIndex === NOTHING_IS_SELECTED) {
             setActiveIndex(STARTING_INDEX_TO_SELECT)
           }
-          break;
-        case "ArrowDown":
+          break
+        case 'ArrowDown':
           if (activeIndex === NOTHING_IS_SELECTED) {
             setActiveIndex(STARTING_INDEX_TO_SELECT)
           }
-          break;
+          break
       }
     }
     document.addEventListener('keydown', keyDownHandler)

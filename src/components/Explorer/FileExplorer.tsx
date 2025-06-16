@@ -33,6 +33,7 @@ const StatusDot = () => {
   return <span>•</span>
 }
 
+
 /**
  * Implement a dynamic spacer with rem to offset the row
  * in the tree based on the level within the tree
@@ -148,7 +149,6 @@ const insertFakeRowAtFirstPositionUnderParentAfterFolder = (
     return
   }
 
-
   // const requestedEntry: FileExplorerEntry = {
   //   ...fakeRow,
   // }
@@ -245,7 +245,7 @@ export const FileExplorer = ({
             onRowClickCallback(child, domIndex)
           },
           isFake: false,
-          activeIndex: activeIndex
+          activeIndex: activeIndex,
         }
 
         return row
@@ -257,7 +257,7 @@ export const FileExplorer = ({
   // Local state for selection and what is opened
   // diff this against new Project value that comes in
   return (
-    <div role="presentation">
+    <div role="presentation" className="p-px">
       {rowsToRender
         .filter((row) => {
           return row.isOpen
@@ -292,11 +292,11 @@ export const FileExplorerRow = ({
   const isSelected =
     row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
   const isIndexActive = row.domIndex === row.activeIndex
-  const outlineCSS = isIndexActive ? 'border-sky-500' : ''
+  const outlineCSS = isIndexActive ? 'outline outline-1 outline-sky-500 ' : 'outline-0 outline-none'
   return (
     <div
       role="treeitem"
-      className={`h-6 flex flex-row items-center text-xs cursor-pointer border border-transparent ${outlineCSS} hover:bg-sky-400 ${isSelected ? 'bg-sky-800' : ''}`}
+      className={`h-6 flex flex-row items-center text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:outline-sky-500 hover:bg-sky-400 ${isSelected ? 'bg-sky-800' : ''}`}
       data-index={row.domIndex}
       data-last-element={row.domIndex === row.domLength - 1}
       data-parity={row.domIndex % 2 === 0}
@@ -310,6 +310,7 @@ export const FileExplorerRow = ({
         row.rowClicked(row.domIndex)
       }}
     >
+      <div style={{width: '0.25rem'}}></div>
       {Spacer(row.level)}
       <CustomIcon
         name={row.icon}
@@ -319,6 +320,7 @@ export const FileExplorerRow = ({
         {row.name}
       </span>
       <div className="ml-auto">{row.status}</div>
+      <div style={{width: '0.25rem'}}></div>
     </div>
   )
 }
