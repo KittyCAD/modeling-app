@@ -30,6 +30,14 @@ export interface FileExplorerRender extends FileExplorerRow {
   domLength: number
 }
 
+export interface FileExplorerRowContextMenuProps {
+  itemRef: React.RefObject<HTMLElement>
+  onRename: () => void
+  onDelete: () => void
+  onClone: () => void
+  onOpenInNewWindow: () => void
+}
+
 export const constructPath = ({
   parentPath,
   name,
@@ -92,6 +100,7 @@ export const flattenProject = (
   projectName: string
 ): FileExplorerEntry[] => {
   const flattenTreeInOrder: FileExplorerEntry[] = []
+
   // For all children of the project, start the recursion to flatten the tree data structure
   for (let index = 0; index < projectChildren.length; index++) {
     flattenProjectHelper(

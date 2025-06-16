@@ -3,14 +3,14 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { FILE_EXT } from '@src/lib/constants'
 import { FileExplorer, StatusDot } from '@src/components/Explorer/FileExplorer'
 import {
-  FileExplorerRow,
   constructPath,
   flattenProject,
   NOTHING_IS_SELECTED,
   CONTAINER_IS_SELECTED,
   STARTING_INDEX_TO_SELECT,
 } from '@src/components/Explorer/utils'
-import type { FileExplorerEntry } from '@src/components/Explorer/utils'
+import type { FileExplorerEntry ,
+  FileExplorerRow} from '@src/components/Explorer/utils'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { useState, useRef, useEffect } from 'react'
 import { systemIOActor } from '@src/lib/singletons'
@@ -99,6 +99,7 @@ export const ProjectExplorer = ({
 
     if (project && project.children) {
       // moves all folders up and files down, files are sorted within folders
+      // gotcha: this only sorts the current level, not recursive for all children!
       const sortedData = sortFilesAndDirectories(project.children)
       flattenedData = flattenProject(sortedData, project.name)
       // insert fake row if one is present
