@@ -63,9 +63,6 @@ export const FileExplorer = ({
   return (
     <div role="presentation" className="p-px">
       {rowsToRender
-        .filter((row) => {
-          return row.isOpen
-        })
         .map((row, index, original) => {
           const renderRow: FileExplorerRender = {
             ...row,

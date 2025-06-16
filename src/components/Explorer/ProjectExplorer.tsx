@@ -41,6 +41,7 @@ export const ProjectExplorer = ({
   const [rowsToRender, setRowsToRender] = useState<FileExplorerRow[]>([])
   const fileExplorerContainer = useRef(null)
   const openedRowsRef = useRef(openedRows)
+  const rowsToRenderRef = useRef(rowsToRender)
 
   // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
   const [fakeRow, setFakeRow] = useState<{
@@ -84,7 +85,7 @@ export const ProjectExplorer = ({
       // insert fake row if one is present
     }
 
-    const requestedRowsToRender: FileExplorerRow[] =
+    const requestedRows: FileExplorerRow[] =
       flattenedData.map((child) => {
         const isFile = child.children === null
         const isKCLFile = isFile && child.name?.endsWith(FILE_EXT)
@@ -134,8 +135,11 @@ export const ProjectExplorer = ({
 
         return row
       }) || []
-
+    const requestedRowsToRender = requestedRows.filter((row) => {
+      return row.isOpen
+    })
     setRowsToRender(requestedRowsToRender)
+    rowsToRenderRef.current = requestedRowsToRender
   }, [project, openedRows, fakeRow, activeIndex])
 
   // Handle clicks and keyboard presses within the global DOM level
@@ -144,7 +148,7 @@ export const ProjectExplorer = ({
       const path = event.composedPath ? event.composedPath() : []
 
       if (!path.includes(fileExplorerContainer.current)) {
-        setActiveIndex(-2)
+        setActiveIndex(NOTHING_IS_SELECTED)
       }
     }
 
