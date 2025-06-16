@@ -399,9 +399,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       symmetric: {
         inputType: 'options',
         skip: true,
-        defaultValue: false,
-        hidden: false,
-        required: true,
+        required: false,
         options: [
           { name: 'False', value: false },
           { name: 'True', value: true },
@@ -448,9 +446,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sectional: {
         inputType: 'options',
         skip: true,
-        defaultValue: false,
-        hidden: false,
-        required: true,
+        required: false,
         options: [
           { name: 'False', value: false },
           { name: 'True', value: true },

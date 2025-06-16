@@ -105,6 +105,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
             {Object.entries(nonHiddenArgs || {})
               .filter(
                 ([_, argConfig]) =>
+                  isReviewing ||
                   argConfig.skip === false ||
                   (typeof argConfig.required === 'function'
                     ? argConfig.required(commandBarState.context)
