@@ -19,8 +19,6 @@ use std::{
 
 pub use async_tasks::AsyncTasks;
 use indexmap::IndexMap;
-#[cfg(feature = "artifact-graph")]
-use kcmc::id::ModelingCmdId;
 use kcmc::{
     each_cmd as mcmd,
     length_unit::LengthUnit,
@@ -39,8 +37,6 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::ArtifactCommand;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{types::UnitLen, DefaultPlanes, IdGenerator, PlaneInfo, Point3d},
@@ -113,10 +109,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the command responses from the engine.
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>;
 
-    /// Get the artifact commands that have accumulated so far.
-    #[cfg(feature = "artifact-graph")]
-    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
-
     /// Get the ids of the async commands we are waiting for.
     fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>>;
 
@@ -131,18 +123,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Take the batch of end commands that have accumulated so far and clear them.
     async fn take_batch_end(&self) -> IndexMap<Uuid, (WebSocketRequest, SourceRange)> {
         std::mem::take(&mut *self.batch_end().write().await)
-    }
-
-    /// Clear all artifact commands that have accumulated so far.
-    #[cfg(feature = "artifact-graph")]
-    async fn clear_artifact_commands(&self) {
-        self.artifact_commands().write().await.clear();
-    }
-
-    /// Take the artifact commands that have accumulated so far and clear them.
-    #[cfg(feature = "artifact-graph")]
-    async fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
-        std::mem::take(&mut *self.artifact_commands().write().await)
     }
 
     /// Take the ids of async commands that have accumulated so far and clear them.
@@ -236,11 +216,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
         self.flush_batch(false, source_range).await?;
-
-        // Ensure artifact commands are cleared so that we don't accumulate them
-        // across runs.
-        #[cfg(feature = "artifact-graph")]
-        self.clear_artifact_commands().await;
 
         // Do the after clear scene hook.
         self.clear_scene_post_hook(id_generator, source_range).await?;
@@ -338,28 +313,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         )
         .await?;
 
-        Ok(())
-    }
-
-    #[cfg(feature = "artifact-graph")]
-    async fn handle_artifact_command(
-        &self,
-        cmd: &ModelingCmd,
-        cmd_id: ModelingCmdId,
-        id_to_source_range: &HashMap<Uuid, SourceRange>,
-    ) -> Result<(), KclError> {
-        let cmd_id = *cmd_id.as_ref();
-        let range = id_to_source_range
-            .get(&cmd_id)
-            .copied()
-            .ok_or_else(|| KclError::internal(format!("Failed to get source range for command ID: {:?}", cmd_id)))?;
-
-        // Add artifact command.
-        self.artifact_commands().write().await.push(ArtifactCommand {
-            cmd_id,
-            range,
-            command: cmd.clone(),
-        });
         Ok(())
     }
 
@@ -483,11 +436,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Add the command ID to the list of async commands.
         self.ids_of_async_commands().write().await.insert(id, source_range);
 
-        // Add to artifact commands.
-        #[cfg(feature = "artifact-graph")]
-        self.handle_artifact_command(cmd, id.into(), &HashMap::from([(id, source_range)]))
-            .await?;
-
         // Fire off the command now, but don't wait for the response, we don't care about it.
         self.inner_fire_modeling_cmd(
             id,
@@ -554,24 +502,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                         vec![*range],
                     )));
                 }
-            }
-        }
-
-        // Do the artifact commands.
-        #[cfg(feature = "artifact-graph")]
-        for (req, _) in orig_requests.iter() {
-            match &req {
-                WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
-                    for request in requests {
-                        self.handle_artifact_command(&request.cmd, request.cmd_id, &id_to_source_range)
-                            .await?;
-                    }
-                }
-                WebSocketRequest::ModelingCmdReq(request) => {
-                    self.handle_artifact_command(&request.cmd, request.cmd_id, &id_to_source_range)
-                        .await?;
-                }
-                _ => {}
             }
         }
 

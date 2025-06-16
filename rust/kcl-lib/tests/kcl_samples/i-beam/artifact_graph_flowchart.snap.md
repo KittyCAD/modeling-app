@@ -109,38 +109,38 @@ flowchart LR
   53["Cap End"]
     %% face_code_ref=Missing NodePath
   54["SweepEdge Opposite"]
-  55["SweepEdge Opposite"]
+  55["SweepEdge Adjacent"]
   56["SweepEdge Opposite"]
-  57["SweepEdge Opposite"]
+  57["SweepEdge Adjacent"]
   58["SweepEdge Opposite"]
-  59["SweepEdge Opposite"]
+  59["SweepEdge Adjacent"]
   60["SweepEdge Opposite"]
-  61["SweepEdge Opposite"]
+  61["SweepEdge Adjacent"]
   62["SweepEdge Opposite"]
-  63["SweepEdge Opposite"]
+  63["SweepEdge Adjacent"]
   64["SweepEdge Opposite"]
-  65["SweepEdge Opposite"]
+  65["SweepEdge Adjacent"]
   66["SweepEdge Opposite"]
-  67["SweepEdge Opposite"]
+  67["SweepEdge Adjacent"]
   68["SweepEdge Opposite"]
-  69["SweepEdge Opposite"]
+  69["SweepEdge Adjacent"]
   70["SweepEdge Opposite"]
   71["SweepEdge Adjacent"]
-  72["SweepEdge Adjacent"]
+  72["SweepEdge Opposite"]
   73["SweepEdge Adjacent"]
-  74["SweepEdge Adjacent"]
+  74["SweepEdge Opposite"]
   75["SweepEdge Adjacent"]
-  76["SweepEdge Adjacent"]
+  76["SweepEdge Opposite"]
   77["SweepEdge Adjacent"]
-  78["SweepEdge Adjacent"]
+  78["SweepEdge Opposite"]
   79["SweepEdge Adjacent"]
-  80["SweepEdge Adjacent"]
+  80["SweepEdge Opposite"]
   81["SweepEdge Adjacent"]
-  82["SweepEdge Adjacent"]
+  82["SweepEdge Opposite"]
   83["SweepEdge Adjacent"]
-  84["SweepEdge Adjacent"]
+  84["SweepEdge Opposite"]
   85["SweepEdge Adjacent"]
-  86["SweepEdge Adjacent"]
+  86["SweepEdge Opposite"]
   87["SweepEdge Adjacent"]
   1 --- 2
   2 --- 3
@@ -177,72 +177,72 @@ flowchart LR
   2 ---- 34
   17 --- 35
   17 x--> 52
-  17 --- 62
-  17 --- 79
+  17 --- 54
+  17 --- 55
   18 --- 36
   18 x--> 52
-  18 --- 61
-  18 --- 78
+  18 --- 56
+  18 --- 57
   19 --- 37
   19 x--> 52
-  19 --- 54
-  19 --- 71
+  19 --- 58
+  19 --- 59
   20 --- 38
   20 x--> 52
-  20 --- 64
-  20 --- 81
+  20 --- 60
+  20 --- 61
   21 --- 39
   21 x--> 52
-  21 --- 68
-  21 --- 85
+  21 --- 62
+  21 --- 63
   22 --- 40
   22 x--> 52
-  22 --- 56
-  22 --- 73
+  22 --- 64
+  22 --- 65
   23 --- 41
   23 x--> 52
-  23 --- 65
-  23 --- 82
+  23 --- 66
+  23 --- 67
   24 --- 42
   24 x--> 52
-  24 --- 67
-  24 --- 84
+  24 --- 68
+  24 --- 69
   25 --- 43
   25 x--> 52
-  25 --- 69
-  25 --- 86
+  25 --- 70
+  25 --- 71
   26 --- 44
   26 x--> 52
-  26 --- 57
-  26 --- 74
+  26 --- 72
+  26 --- 73
   27 --- 45
   27 x--> 52
-  27 --- 58
+  27 --- 74
   27 --- 75
   28 --- 46
   28 x--> 52
-  28 --- 55
-  28 --- 72
+  28 --- 76
+  28 --- 77
   29 --- 47
   29 x--> 52
-  29 --- 60
-  29 --- 77
+  29 --- 78
+  29 --- 79
   30 --- 48
   30 x--> 52
-  30 --- 70
-  30 --- 87
+  30 --- 80
+  30 --- 81
   31 --- 49
   31 x--> 52
-  31 --- 66
+  31 --- 82
   31 --- 83
   32 --- 50
   32 x--> 52
-  32 --- 59
-  32 --- 76
+  32 --- 84
+  32 --- 85
   33 --- 51
   33 x--> 52
-  33 --- 63
-  33 --- 80
+  33 --- 86
+  33 --- 87
   34 --- 35
   34 --- 36
   34 --- 37
@@ -296,72 +296,72 @@ flowchart LR
   34 --- 85
   34 --- 86
   34 --- 87
-  35 --- 62
-  78 <--x 35
-  35 --- 79
-  36 --- 61
-  77 <--x 36
-  36 --- 78
-  37 --- 54
-  37 --- 71
-  87 <--x 37
-  38 --- 64
-  80 <--x 38
-  38 --- 81
-  39 --- 68
-  84 <--x 39
-  39 --- 85
-  40 --- 56
-  72 <--x 40
-  40 --- 73
-  41 --- 65
-  81 <--x 41
-  41 --- 82
-  42 --- 67
-  83 <--x 42
-  42 --- 84
-  43 --- 69
-  85 <--x 43
-  43 --- 86
-  44 --- 57
-  73 <--x 44
-  44 --- 74
-  45 --- 58
-  74 <--x 45
+  35 --- 54
+  35 --- 55
+  87 <--x 35
+  55 <--x 36
+  36 --- 56
+  36 --- 57
+  57 <--x 37
+  37 --- 58
+  37 --- 59
+  59 <--x 38
+  38 --- 60
+  38 --- 61
+  61 <--x 39
+  39 --- 62
+  39 --- 63
+  63 <--x 40
+  40 --- 64
+  40 --- 65
+  65 <--x 41
+  41 --- 66
+  41 --- 67
+  67 <--x 42
+  42 --- 68
+  42 --- 69
+  69 <--x 43
+  43 --- 70
+  43 --- 71
+  71 <--x 44
+  44 --- 72
+  44 --- 73
+  73 <--x 45
+  45 --- 74
   45 --- 75
-  46 --- 55
-  71 <--x 46
-  46 --- 72
-  47 --- 60
-  76 <--x 47
-  47 --- 77
-  48 --- 70
-  86 <--x 48
-  48 --- 87
-  49 --- 66
-  82 <--x 49
+  75 <--x 46
+  46 --- 76
+  46 --- 77
+  77 <--x 47
+  47 --- 78
+  47 --- 79
+  79 <--x 48
+  48 --- 80
+  48 --- 81
+  81 <--x 49
+  49 --- 82
   49 --- 83
-  50 --- 59
-  75 <--x 50
-  50 --- 76
-  51 --- 63
-  79 <--x 51
-  51 --- 80
+  83 <--x 50
+  50 --- 84
+  50 --- 85
+  85 <--x 51
+  51 --- 86
+  51 --- 87
   54 <--x 53
-  55 <--x 53
   56 <--x 53
-  57 <--x 53
   58 <--x 53
-  59 <--x 53
   60 <--x 53
-  61 <--x 53
   62 <--x 53
-  63 <--x 53
   64 <--x 53
-  65 <--x 53
   66 <--x 53
-  67 <--x 53
   68 <--x 53
-  69 <--x 53
   70 <--x 53
+  72 <--x 53
+  74 <--x 53
+  76 <--x 53
+  78 <--x 53
+  80 <--x 53
+  82 <--x 53
+  84 <--x 53
+  86 <--x 53
 ```
