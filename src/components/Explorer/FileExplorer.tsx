@@ -1,6 +1,4 @@
-import type { FileEntry } from '@src/lib/project'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import { uuidv4 } from '@src/lib/utils'
 import {
   FileExplorerEntry,
@@ -44,79 +42,6 @@ const Spacer = (level: number) => {
   )
 }
 
-export const constructPath = ({
-  parentPath,
-  name,
-}: {
-  parentPath: string
-  name: string
-}) => {
-  // do not worry about the forward slash, this is not a real disk path
-  // the slash could be any delimiter this will be used as a key to parse
-  // and use in a hash table
-  return parentPath + '/' + name
-}
-
-/**
- * Recursive helper function to traverse the project tree and flatten the tree structure
- * into an array called list.
- */
-const flattenProjectHelper = (
-  f: FileEntry,
-  list: FileExplorerEntry[], // accumulator list that is built up through recursion
-  parentPath: string, // the parentPath for the given f:FileEntry passed in
-  level: number // the level within the tree for the given f:FileEntry, level starts at 0 goes to positive N
-) => {
-  const index = list.length
-  // mark the parent and level of the FileEntry
-  const content: FileExplorerEntry = {
-    ...f,
-    parentPath,
-    level,
-    index,
-  }
-  // keep track of the file once within the recursive list that will be built up
-  list.push(content)
-
-  // if a FileEntry has no children stop
-  if (f.children === null) {
-    return
-  }
-
-  const sortedChildren = sortFilesAndDirectories(f.children.slice())
-  // keep recursing down the children
-  for (let i = 0; i < sortedChildren.length; i++) {
-    flattenProjectHelper(
-      sortedChildren[i],
-      list,
-      constructPath({ parentPath: parentPath, name: f.name }),
-      level + 1
-    )
-  }
-}
-
-/**
- * A Project type will have a set of children, pass the children as fileEntries
- * since that is level 0 of the tree, everything is under the projectName
- *
- * fileEntries should be sorted already with sortFilesAndDirectories
- */
-export const flattenProject = (
-  projectChildren: FileEntry[],
-  projectName: string
-): FileExplorerEntry[] => {
-  const flattenTreeInOrder: FileExplorerEntry[] = []
-  // For all children of the project, start the recursion to flatten the tree data structure
-  for (let index = 0; index < projectChildren.length; index++) {
-    flattenProjectHelper(
-      projectChildren[index],
-      flattenTreeInOrder,
-      projectName, // first parent
-      0
-    )
-  }
-  return flattenTreeInOrder
-}
 
 /**
  * Render all the rows of the file explorer in linear layout in the DOM.
@@ -129,7 +54,7 @@ export const flattenProject = (
  */
 export const FileExplorer = ({
   rowsToRender,
-  selectedRow
+  selectedRow,
 }: {
   rowsToRender: FileExplorerRow[]
   selectedRow: FileExplorerEntry | null
@@ -143,10 +68,10 @@ export const FileExplorer = ({
           return row.isOpen
         })
         .map((row, index, original) => {
-          const renderRow : FileExplorerRender= {
+          const renderRow: FileExplorerRender = {
             ...row,
             domIndex: index,
-            domLength: original.length
+            domLength: original.length,
           }
           return (
             <FileExplorerRowElement

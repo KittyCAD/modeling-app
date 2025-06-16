@@ -1,13 +1,17 @@
 import type { Project } from '@src/lib/project'
+import type { CustomIconName } from '@src/components/CustomIcon'
 import { FILE_EXT } from '@src/lib/constants'
 import {
   FileExplorer,
-  constructPath,
-  flattenProject,
-  StatusDot
+  StatusDot,
 } from '@src/components/Explorer/FileExplorer'
 import {
   FileExplorerRow,
+  constructPath,
+  flattenProject,
+  NOTHING_IS_SELECTED,
+  CONTAINER_IS_SELECTED,
+  STARTING_INDEX_TO_SELECT
 } from '@src/components/Explorer/utils'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
@@ -15,10 +19,6 @@ import { useState, useRef, useEffect } from 'react'
 import { systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
-
-const NOTHING_IS_SELECTED: number = -2
-const CONTAINER_IS_SELECTED: number = -1
-const STARTING_INDEX_TO_SELECT: number = 0
 
 /**
  * Wrap the header and the tree into a single component
@@ -41,34 +41,43 @@ export const ProjectExplorer = ({
   const [selectedRow, setSelectedRow] = useState<FileExplorerEntry | null>(null)
   // -1 is the parent container, -2 is nothing is selected
   const [activeIndex, setActiveIndex] = useState<number>(NOTHING_IS_SELECTED)
+  const [rowsToRender, setRowsToRender] = useState<FileExplorerRow[]>([])
   const fileExplorerContainer = useRef(null)
 
-  // fake row is used for new files or folders
-  // you should not be able to have multiple fake rows for creation
+  // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
   const [fakeRow, setFakeRow] = useState<{
     entry: FileExplorerEntry | null
     isFile: boolean
   } | null>(null)
 
-  // Wrap the FileEntry in a FileExplorerEntry to keep track for more metadata
-  let flattenedData: FileExplorerEntry[] = []
-
-  if (project && project.children) {
-    // moves all folders up and files down, files are sorted within folders
-    const sortedData = sortFilesAndDirectories(project.children)
-    // pre order traversal of the tree
-    flattenedData = flattenProject(sortedData, project.name)
-    // insert fake row if one is present
-    // insertFakeRowAtFirstPositionUnderParentAfterFolder(flattenedData, fakeRow)
+  const onRowClickCallback = (file: FileExplorerEntry, domIndex: number) => {
+    const newOpenedRows = { ...openedRows }
+    const key = constructPath({
+      parentPath: file.parentPath,
+      name: file.name,
+    })
+    const value = openedRows[key]
+    newOpenedRows[key] = !value
+    setOpenedRows(newOpenedRows)
+    setSelectedRow(file)
+    setActiveIndex(domIndex)
   }
-
-  const [rowsToRender, setRowsToRender] = useState<FileExplorerRow[]>([])
 
   useEffect(() => {
     // TODO What to do when a different project comes in? Clear old state.
     // Clear openedRows
     // Clear rowsToRender
     // Clear selected information
+
+    // Wrap the FileEntry in a FileExplorerEntry to keep track for more metadata
+    let flattenedData: FileExplorerEntry[] = []
+
+    if (project && project.children) {
+      // moves all folders up and files down, files are sorted within folders
+      const sortedData = sortFilesAndDirectories(project.children)
+      flattenedData = flattenProject(sortedData, project.name)
+      // insert fake row if one is present
+    }
 
     const requestedRowsToRender: FileExplorerRow[] =
       flattenedData.map((child) => {
@@ -92,8 +101,7 @@ export const ProjectExplorer = ({
             constructPath({ parentPath: child.parentPath, name: child.name })
           ]
         const isOpen =
-          (openedRows[child.parentPath] ||
-            project.name === child.parentPath) &&
+          (openedRows[child.parentPath] || project.name === child.parentPath) &&
           !isAnyParentClosed
 
         let icon: CustomIconName = 'file'
@@ -125,21 +133,7 @@ export const ProjectExplorer = ({
     setRowsToRender(requestedRowsToRender)
   }, [project, openedRows, fakeRow, activeIndex])
 
-
-  const onRowClickCallback = (file: FileExplorerEntry, domIndex: number) => {
-    const newOpenedRows = { ...openedRows }
-    const key = constructPath({
-      parentPath: file.parentPath,
-      name: file.name,
-    })
-    const value = openedRows[key]
-    newOpenedRows[key] = !value
-    setOpenedRows(newOpenedRows)
-    setSelectedRow(file)
-    setActiveIndex(domIndex)
-  }
-
-  // Handle outside clicks
+  // Handle clicks and keyboard presses within the global DOM level
   useEffect(() => {
     const handleClickOutside = (event) => {
       const path = event.composedPath ? event.composedPath() : []
@@ -231,8 +225,8 @@ export const ProjectExplorer = ({
         {activeIndex}
         {project && (
           <FileExplorer
-          rowsToRender={rowsToRender}
-          selectedRow={selectedRow}
+            rowsToRender={rowsToRender}
+            selectedRow={selectedRow}
           ></FileExplorer>
         )}
       </div>
