@@ -5,7 +5,7 @@ import {
 } from '@src/components/Explorer/FileExplorer'
 import type { FileExplorerEntry } from '@src/components/Explorer/FileExplorer'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
@@ -28,6 +28,9 @@ export const ProjectExplorer = ({
   // when the parent opens the children will already be opened
   const [openedRows, setOpenedRows] = useState<{ [key: string]: boolean }>({})
   const [selectedRow, setSelectedRow] = useState<FileExplorerEntry | null>(null)
+  // -1 is the parent container, -2 is nothing is selected
+  const [activeIndex, setActiveIndex] = useState<number>(-1)
+  const fileExplorerContainer = useRef(null)
 
   // fake row is used for new files or folders
   // you should not be able to have multiple fake rows for creation
@@ -36,7 +39,7 @@ export const ProjectExplorer = ({
     isFile: boolean
   } | null>(null)
 
-  const onRowClickCallback = (file: FileExplorerEntry) => {
+  const onRowClickCallback = (file: FileExplorerEntry, domIndex: number) => {
     const newOpenedRows = { ...openedRows }
     const key = constructPath({
       parentPath: file.parentPath,
@@ -46,7 +49,24 @@ export const ProjectExplorer = ({
     newOpenedRows[key] = !value
     setOpenedRows(newOpenedRows)
     setSelectedRow(file)
+    setActiveIndex(domIndex)
   }
+
+  // Handle outside clicks
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     console.log(event.target)
+  //     if (fileExplorerContainer.current && !fileExplorerContainer.current.contains(event.target)) {
+  //       console.log(fileExplorerContainer.current)
+  //       setActiveIndex(-2);
+  //     }
+  //   };
+
+  //   document.addEventListener('click', handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener('click', handleClickOutside);
+  //   };
+  // }, []);
 
   return (
     <div>
@@ -73,7 +93,17 @@ export const ProjectExplorer = ({
           ></FileExplorerHeaderActions>
         </div>
       </div>
-      <div className="h-96 overflow-y-auto overflow-x-hidden">
+      <div className={`h-96 overflow-y-auto overflow-x-hidden border border-transparent ${activeIndex === -1 ? 'border-sky-500' : ''}`} tabIndex={0}
+    role="tree"
+    ref={fileExplorerContainer}
+    onClick={(event)=>{
+      if (event.target === fileExplorerContainer.current) {
+        setActiveIndex(-1)
+        setSelectedRow(null)
+          }
+        }}
+      >
+      {activeIndex}
         {project && (
           <FileExplorer
             parentProject={project}
@@ -81,6 +111,7 @@ export const ProjectExplorer = ({
             selectedRow={selectedRow}
             onRowClickCallback={onRowClickCallback}
             fakeRow={fakeRow}
+            activeIndex={activeIndex}
           ></FileExplorer>
         )}
       </div>

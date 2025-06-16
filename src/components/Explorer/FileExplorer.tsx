@@ -19,7 +19,7 @@ interface FileExplorerRow extends FileExplorerEntry {
   isFolder: boolean
   status?: ReactNode
   isOpen: boolean
-  rowClicked: () => void
+  rowClicked: (domIndex: number) => void
   /**
    * Fake file or folder rows are the placeholders for users to input a value
    * and write that to disk to be read as a real one.
@@ -56,10 +56,7 @@ const Spacer = (level: number) => {
                 style={{ width: remSpacing }}
                 className={`h-full border-r border-sky-600`}
               ></div>
-              <div
-                style={{ width: remSpacing }}
-                className={`h-full`}
-              ></div>
+              <div style={{ width: remSpacing }} className={`h-full`}></div>
             </div>
           )
         })}
@@ -173,12 +170,14 @@ export const FileExplorer = ({
   selectedRow,
   onRowClickCallback,
   fakeRow,
+  activeIndex,
 }: {
   parentProject: Project
   openedRows: { [key: string]: boolean }
   selectedRow: FileExplorerEntry | null
-  onRowClickCallback: (file: FileExplorerEntry) => void
+  onRowClickCallback: (file: FileExplorerEntry, domIndex: number) => void
   fakeRow: { entry: FileExplorerEntry | null; isFile: boolean } | null
+  activeIndex: number
 }) => {
   // Wrap the FileEntry in a FileExplorerEntry to keep track for more metadata
   let flattenedData: FileExplorerEntry[] = []
@@ -242,8 +241,8 @@ export const FileExplorer = ({
           isFolder: !isFile,
           status: StatusDot(),
           isOpen,
-          rowClicked: () => {
-            onRowClickCallback(child)
+          rowClicked: (domIndex: number) => {
+            onRowClickCallback(child, domIndex)
           },
           isFake: false,
         }
@@ -258,15 +257,20 @@ export const FileExplorer = ({
   // diff this against new Project value that comes in
   return (
     <div>
-      {rowsToRender.map((row) => {
-        return row.isOpen ? (
-          <FileExplorerRow
-          key={uuidv4()}
-            row={row}
-            selectedRow={selectedRow}
-          ></FileExplorerRow>
-        ) : null
-      })}
+      {rowsToRender
+        .filter((row) => {
+          return row.isOpen
+        })
+        .map((row, index) => {
+          row.domIndex = index
+          return (
+            <FileExplorerRow
+              key={uuidv4()}
+              row={row}
+              selectedRow={selectedRow}
+            ></FileExplorerRow>
+          )
+        })}
     </div>
   )
 }
@@ -286,7 +290,7 @@ export const FileExplorerRow = ({
     <div
       className={`h-6 flex flex-row items-center text-xs cursor-pointer hover:bg-sky-400 ${row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath ? 'bg-sky-800' : ''}`}
       onClick={() => {
-        row.rowClicked()
+        row.rowClicked(row.domIndex)
       }}
     >
       {Spacer(row.level)}
