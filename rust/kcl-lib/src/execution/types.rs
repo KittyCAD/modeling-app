@@ -506,7 +506,12 @@ impl NumericType {
     ///
     /// This combinator function is suitable for comparisons where uncertainty should
     /// be handled by the user.
-    pub fn combine_eq(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+    pub fn combine_eq(
+        a: TyF64,
+        b: TyF64,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+    ) -> (f64, f64, NumericType) {
         use NumericType::*;
         match (a.ty, b.ty) {
             (at, bt) if at == bt => (a.n, b.n, at),
@@ -521,8 +526,24 @@ impl NumericType {
             }
             (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) if l1 == l2 => (a.n, b.n, t),
             (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) if l1 == l2 => (a.n, b.n, t),
-            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 => (a.n, b.n, t),
-            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) if a1 == a2 => (a.n, b.n, t),
+            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 => {
+                if b.n != 0.0 {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                (a.n, b.n, t)
+            }
+            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) if a1 == a2 => {
+                if a.n != 0.0 {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                (a.n, b.n, t)
+            }
 
             _ => (a.n, b.n, Unknown),
         }
@@ -535,7 +556,11 @@ impl NumericType {
     /// coerced together, for example two arguments to the same function or two numbers in an array being used as a point.
     ///
     /// Prefer to use `combine_eq` if possible since using that prioritises correctness over ergonomics.
-    pub fn combine_eq_coerce(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+    pub fn combine_eq_coerce(
+        a: TyF64,
+        b: TyF64,
+        for_errs: Option<(&mut ExecState, SourceRange)>,
+    ) -> (f64, f64, NumericType) {
         use NumericType::*;
         match (a.ty, b.ty) {
             (at, bt) if at == bt => (a.n, b.n, at),
@@ -553,8 +578,28 @@ impl NumericType {
 
             (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) => (a.n, l2.adjust_to(b.n, l1).0, t),
             (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) => (l1.adjust_to(a.n, l2).0, b.n, t),
-            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) => (a.n, a2.adjust_to(b.n, a1).0, t),
-            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) => (a1.adjust_to(a.n, a2).0, b.n, t),
+            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) => {
+                if let Some((exec_state, source_range)) = for_errs {
+                    if b.n != 0.0 {
+                        exec_state.warn(
+                            CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                            annotations::WARN_ANGLE_UNITS,
+                        );
+                    }
+                }
+                (a.n, a2.adjust_to(b.n, a1).0, t)
+            }
+            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) => {
+                if let Some((exec_state, source_range)) = for_errs {
+                    if a.n != 0.0 {
+                        exec_state.warn(
+                            CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                            annotations::WARN_ANGLE_UNITS,
+                        );
+                    }
+                }
+                (a1.adjust_to(a.n, a2).0, b.n, t)
+            }
 
             (Known(_), Known(_)) | (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => {
                 (a.n, b.n, Unknown)
@@ -2350,14 +2395,18 @@ b = 180 / PI * a + 360
     #[tokio::test(flavor = "multi_thread")]
     async fn cos_coercions() {
         let program = r#"
-a = cos(units::toRadians(30))
+a = cos(units::toRadians(30deg))
 b = 3 / a
 c = cos(30deg)
-d = cos(30)
+d = cos(1rad)
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        assert!(result.exec_state.errors().is_empty());
+        assert!(
+            result.exec_state.errors().is_empty(),
+            "{:?}",
+            result.exec_state.errors()
+        );
 
         assert_value_and_type("a", &result, 1.0, NumericType::default());
         assert_value_and_type("b", &result, 3.0, NumericType::default());

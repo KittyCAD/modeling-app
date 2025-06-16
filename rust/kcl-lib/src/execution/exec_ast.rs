@@ -49,8 +49,19 @@ impl ExecutorContext {
         for annotation in annotations {
             if annotation.name() == Some(annotations::SETTINGS) {
                 if matches!(body_type, BodyType::Root) {
-                    if exec_state.mod_local.settings.update_from_annotation(annotation)? {
+                    let (updated_len, updated_angle) =
+                        exec_state.mod_local.settings.update_from_annotation(annotation)?;
+                    if updated_len {
                         exec_state.mod_local.explicit_length_units = true;
+                    }
+                    if updated_angle {
+                        exec_state.warn(
+                            CompilationError::err(
+                                annotation.as_source_range(),
+                                "Prefer to use explicit units for angles",
+                            ),
+                            annotations::WARN_ANGLE_UNITS,
+                        );
                     }
                 } else {
                     exec_state.err(CompilationError::err(
@@ -1204,12 +1215,12 @@ impl Node<BinaryExpression> {
 
         let value = match self.operator {
             BinaryOperator::Add => {
-                let (l, r, ty) = NumericType::combine_eq_coerce(left, right);
+                let (l, r, ty) = NumericType::combine_eq_coerce(left, right, None);
                 self.warn_on_unknown(&ty, "Adding", exec_state);
                 KclValue::Number { value: l + r, meta, ty }
             }
             BinaryOperator::Sub => {
-                let (l, r, ty) = NumericType::combine_eq_coerce(left, right);
+                let (l, r, ty) = NumericType::combine_eq_coerce(left, right, None);
                 self.warn_on_unknown(&ty, "Subtracting", exec_state);
                 KclValue::Number { value: l - r, meta, ty }
             }
@@ -1234,32 +1245,32 @@ impl Node<BinaryExpression> {
                 ty: exec_state.current_default_units(),
             },
             BinaryOperator::Neq => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq(left, right, exec_state, self.as_source_range());
                 self.warn_on_unknown(&ty, "Comparing", exec_state);
                 KclValue::Bool { value: l != r, meta }
             }
             BinaryOperator::Gt => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq(left, right, exec_state, self.as_source_range());
                 self.warn_on_unknown(&ty, "Comparing", exec_state);
                 KclValue::Bool { value: l > r, meta }
             }
             BinaryOperator::Gte => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq(left, right, exec_state, self.as_source_range());
                 self.warn_on_unknown(&ty, "Comparing", exec_state);
                 KclValue::Bool { value: l >= r, meta }
             }
             BinaryOperator::Lt => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq(left, right, exec_state, self.as_source_range());
                 self.warn_on_unknown(&ty, "Comparing", exec_state);
                 KclValue::Bool { value: l < r, meta }
             }
             BinaryOperator::Lte => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq(left, right, exec_state, self.as_source_range());
                 self.warn_on_unknown(&ty, "Comparing", exec_state);
                 KclValue::Bool { value: l <= r, meta }
             }
             BinaryOperator::Eq => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq(left, right, exec_state, self.as_source_range());
                 self.warn_on_unknown(&ty, "Comparing", exec_state);
                 KclValue::Bool { value: l == r, meta }
             }

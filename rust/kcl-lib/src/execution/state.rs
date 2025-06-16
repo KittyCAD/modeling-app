@@ -542,10 +542,11 @@ impl MetaSettings {
     pub(crate) fn update_from_annotation(
         &mut self,
         annotation: &crate::parsing::ast::types::Node<Annotation>,
-    ) -> Result<bool, KclError> {
+    ) -> Result<(bool, bool), KclError> {
         let properties = annotations::expect_properties(annotations::SETTINGS, annotation)?;
 
         let mut updated_len = false;
+        let mut updated_angle = false;
         for p in properties {
             match &*p.inner.key.name {
                 annotations::SETTINGS_UNIT_LENGTH => {
@@ -558,6 +559,7 @@ impl MetaSettings {
                     let value = annotations::expect_ident(&p.inner.value)?;
                     let value = types::UnitAngle::from_str(value, annotation.as_source_range())?;
                     self.default_angle_units = value;
+                    updated_angle = true;
                 }
                 annotations::SETTINGS_VERSION => {
                     let value = annotations::expect_number(&p.inner.value)?;
@@ -576,6 +578,6 @@ impl MetaSettings {
             }
         }
 
-        Ok(updated_len)
+        Ok((updated_len, updated_angle))
     }
 }
