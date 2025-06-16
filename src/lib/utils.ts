@@ -651,7 +651,7 @@ export async function engineViewIsometricWithoutGeometryPresent({
   // will be at some fixed distance. This means the grid could be way too zoomed in or out.
   // So, adjust the zoom depending on the chosen unit.
   const scaleFactor = (() => {
-    const mmScale = 100
+    const mmScale = 300
     const cmScale = mmScale / 10
     const mScale = cmScale / 100
     const inScale = mmScale / 25.4
