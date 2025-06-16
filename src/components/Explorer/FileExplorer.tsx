@@ -121,6 +121,20 @@ export const FileExplorerRowElement = ({
       onClick={() => {
         row.rowClicked(row.domIndex)
       }}
+      draggable="true"
+      onDragOver={(event)=>{
+        if (!row.isOpen && row.isFolder) {
+          // on drag over, open!
+          row.rowOpen()
+        }
+        event.preventDefault()
+      }}
+      onDragStart={((event)=>{
+        console.log(event.target.innerText,'onDragStart')
+      })}
+      onDrop={(event)=>{
+        console.log(event.target.innerText,'onDrop')
+      }}
     >
       <div style={{ width: '0.25rem' }}></div>
       {Spacer(row.level)}

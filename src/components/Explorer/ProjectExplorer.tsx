@@ -122,20 +122,20 @@ export const ProjectExplorer = ({
           pathIterator.pop()
         }
 
-        const amIOpen =
+        const isOpen =
           openedRows[
             constructPath({ parentPath: child.parentPath, name: child.name })
           ]
-        const isOpen =
+        const render =
           (openedRows[child.parentPath] || project.name === child.parentPath) &&
           !isAnyParentClosed
 
         let icon: CustomIconName = 'file'
         if (isKCLFile) {
           icon = 'kcl'
-        } else if (!isFile && !amIOpen) {
+        } else if (!isFile && !isOpen) {
           icon = 'folder'
-        } else if (!isFile && amIOpen) {
+        } else if (!isFile && isOpen) {
           icon = 'folderOpen'
         }
 
@@ -146,8 +146,18 @@ export const ProjectExplorer = ({
           isFolder: !isFile,
           status: StatusDot(),
           isOpen,
+          render: render,
           rowClicked: (domIndex: number) => {
             onRowClickCallback(child, domIndex)
+          },
+          rowOpen: () => {
+            const newOpenedRows = { ...openedRowsRef.current }
+            const key = constructPath({
+              parentPath: child.parentPath,
+              name: child.name,
+            })
+            newOpenedRows[key] = true
+            setOpenedRows(newOpenedRows)
           },
           isFake: false,
           activeIndex: activeIndex,
@@ -157,7 +167,7 @@ export const ProjectExplorer = ({
       }) || []
 
     const requestedRowsToRender = requestedRows.filter((row) => {
-      return row.isOpen
+      return row.render
     })
 
     setRowsToRender(requestedRowsToRender)
