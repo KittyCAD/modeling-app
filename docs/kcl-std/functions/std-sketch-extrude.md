@@ -13,8 +13,8 @@ extrude(
   length: number(Length),
   symmetric?: bool,
   bidirectionalLength?: number(Length),
-  tagStart?: tag,
-  tagEnd?: tag,
+  tagStart?: TagDecl,
+  tagEnd?: TagDecl,
   twistAngle?: number(Angle),
   twistAngleStep?: number(Angle),
   twistCenter?: Point2d,
@@ -32,8 +32,8 @@ extruded in the same direction.
 | `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | How far to extrude the given sketches. | Yes |
 | `symmetric` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |
 | `bidirectionalLength` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored. | No |
-| `tagStart` | [`tag`](/docs/kcl-std/types/std-types-tag) | A named tag for the face at the start of the extrusion, i.e. the original sketch. | No |
-| `tagEnd` | [`tag`](/docs/kcl-std/types/std-types-tag) | A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch. | No |
+| `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the extrusion, i.e. the original sketch. | No |
+| `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch. | No |
 | `twistAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | If given, the sketch will be twisted around this angle while being extruded. | No |
 | `twistAngleStep` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The size of each intermediate angle as the sketch twists around. Must be between 4 and 90 degrees. Only used if `twistAngle` is given, defaults to 15 degrees. | No |
 | `twistCenter` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center around which the sketch will be twisted. Relative to the sketch's center. Only used if `twistAngle` is given, defaults to [0, 0] i.e. sketch's center. | No |

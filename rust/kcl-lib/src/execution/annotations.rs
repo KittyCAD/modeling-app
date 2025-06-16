@@ -32,6 +32,8 @@ pub(crate) const IMPL_KCL: &str = "kcl";
 pub(crate) const IMPL_PRIMITIVE: &str = "primitive";
 pub(super) const IMPL_VALUES: [&str; 3] = [IMPL_RUST, IMPL_KCL, IMPL_PRIMITIVE];
 
+pub(crate) const DEPRECATED: &str = "deprecated";
+
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Default)]
 pub enum Impl {
     #[default]
