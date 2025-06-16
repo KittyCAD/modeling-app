@@ -1,0 +1,106 @@
+// Teapot
+// A vessel with a spout and a handle used for serving tea and boiling water on a stovetop
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+teapotHeight = 130
+beltlineDiameter = 160
+wallThickness = 6
+outletHeight = 26
+spoutDiameter = 12
+
+// Sketch the path of the teapot spout
+spoutPath = startSketchOn(XZ)
+  |> startProfile(at = [-beltlineDiameter / 2.5, outletHeight])
+  |> xLine(length = -15.05)
+  |> tangentialArc(angle = -110, radius = 30, tag = $seg01)
+  |> angledLine(angle = tangentToEnd(seg01), length = 16.84)
+  |> tangentialArc(angle = 100, radius = 30)
+
+// Sweep a hollow spout
+spout = startSketchOn(offsetPlane(YZ, offset = -beltlineDiameter / 2.5))
+  |> circle(center = [0, outletHeight], diameter = spoutDiameter)
+  |> subtract2d(tool = circle(center = [0, outletHeight], diameter = spoutDiameter * 0.8))
+  |> sweep(path = spoutPath)
+
+// Model the perimeter of the teapot body, to be used to trim the handle so that it fits snug to the body
+tools = startSketchOn(YZ)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = beltlineDiameter / 5)
+  |> tangentialArc(endAbsolute = [
+       beltlineDiameter / 2.1,
+       teapotHeight / 2.5
+     ])
+  |> tangentialArc(endAbsolute = [
+       beltlineDiameter / 3,
+       teapotHeight / 1.1
+     ])
+  |> tangentialArc(endAbsolute = [beltlineDiameter / 4, teapotHeight])
+  |> xLine(endAbsolute = profileStartX(%))
+  |> line(endAbsolute = profileStart(%))
+  |> close()
+  |> revolve(axis = Y)
+
+// Sketch the path of the handle
+handlePath = startSketchOn(XZ)
+  |> startProfile(at = [0, outletHeight])
+  |> xLine(endAbsolute = 76)
+  |> tangentialArc(end = [12.98, 6.64])
+  |> tangentialArc(end = [28.39, 63.11])
+  |> tangentialArc(end = [-10.27, 14.8])
+  |> tangentialArc(end = [-48.01, 1.81], tag = $seg02)
+  |> angledLine(angle = tangentToEnd(seg02), endAbsoluteX = 0)
+
+// Sweep the handle
+handle = startSketchOn(YZ)
+  |> startProfile(at = [-10, outletHeight + 3.5])
+  |> arc(interiorAbsolute = [0, outletHeight + 5], endAbsolute = [10, profileStartY(%)])
+  |> tangentialArc(end = [0, -7])
+  |> tangentialArc(end = [-20, 0])
+  |> tangentialArc(endAbsolute = profileStart())
+  |> close()
+  |> sweep(path = handlePath)
+  |> subtract(tools)
+
+// Create a cutout in the body for the spout outlet
+spoutHole = startSketchOn(YZ)
+  |> circle(center = [0, outletHeight], diameter = spoutDiameter)
+  |> extrude(length = -beltlineDiameter / 2)
+
+// Model the body of the teapot
+body = startSketchOn(YZ)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = beltlineDiameter / 5)
+  |> tangentialArc(endAbsolute = [
+       beltlineDiameter / 2.1,
+       teapotHeight / 2.5
+     ])
+  |> tangentialArc(endAbsolute = [
+       beltlineDiameter / 3,
+       teapotHeight / 1.1
+     ])
+  |> tangentialArc(endAbsolute = [beltlineDiameter / 4, teapotHeight])
+  |> tangentialArc(angle = 190, diameter = wallThickness)
+  |> tangentialArc(endAbsolute = [
+       beltlineDiameter / 3 - wallThickness,
+       teapotHeight / 1.1
+     ])
+  |> tangentialArc(endAbsolute = [
+       beltlineDiameter / 2.1 - wallThickness,
+       teapotHeight / 2.5
+     ])
+  |> tangentialArc(endAbsolute = [
+       beltlineDiameter / 5,
+       profileStartY() + wallThickness
+     ])
+  |> xLine(endAbsolute = profileStartX(%))
+  |> line(endAbsolute = profileStart(%))
+  |> close()
+  |> revolve(axis = Y)
+  |> subtract(tools = [spoutHole])
+
+// Join each component of the teapot and add an appearance
+[body, handle, spout]
+  |> appearance(color = "#1f9896", metalness = 40, roughness = 30)

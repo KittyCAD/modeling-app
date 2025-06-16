@@ -15,7 +15,7 @@ tangentialArc(
   radius?: number(Length),
   diameter?: number(Length),
   angle?: number(Angle),
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -35,7 +35,7 @@ for 'angle' degrees along the imaginary circle.
 | `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Radius of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute` and `diameter`. | No |
 | `diameter` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Diameter of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute` and `radius`. | No |
 | `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Offset of the arc. `radius` must be given. Incompatible with `end` and `endAbsolute`. | No |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this arc. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this arc. | No |
 
 ### Returns
 

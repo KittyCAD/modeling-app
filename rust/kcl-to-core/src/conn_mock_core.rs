@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::Arc};
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_lib::{
-    exec::{ArtifactCommand, DefaultPlanes, IdGenerator},
+    exec::{DefaultPlanes, IdGenerator},
     AsyncTasks, EngineStats, KclError,
 };
 use kittycad_modeling_cmds::{
@@ -256,7 +256,6 @@ impl EngineConnection {
                 let entity_ids = generate_repl_uuids(*num_repetitions as usize);
 
                 this_response = OkModelingCmdResponse::EntityCircularPattern(kcmc::output::EntityCircularPattern {
-                    entity_ids: entity_ids.clone(),
                     entity_face_edge_ids: vec![],
                 });
 
@@ -378,10 +377,6 @@ impl kcl_lib::EngineManager for EngineConnection {
 
     fn stats(&self) -> &EngineStats {
         &self.stats
-    }
-
-    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
-        Arc::new(RwLock::new(Vec::new()))
     }
 
     fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, kcl_lib::SourceRange>>> {
