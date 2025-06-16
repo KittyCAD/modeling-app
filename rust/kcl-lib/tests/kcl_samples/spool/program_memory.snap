@@ -226,10 +226,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -320,10 +320,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -663,10 +663,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -757,10 +757,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1100,10 +1100,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1194,10 +1194,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1537,10 +1537,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1631,10 +1631,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1974,10 +1974,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2068,10 +2068,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2411,10 +2411,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2505,10 +2505,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2848,10 +2848,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2942,10 +2942,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -3285,10 +3285,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -3379,10 +3379,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -3727,10 +3727,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -3821,10 +3821,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -4164,10 +4164,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -4258,10 +4258,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -4601,10 +4601,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -4695,10 +4695,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -5038,10 +5038,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -5132,10 +5132,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -5475,10 +5475,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -5569,10 +5569,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -5912,10 +5912,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -6006,10 +6006,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -6349,10 +6349,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -6443,10 +6443,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -6786,10 +6786,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -6880,10 +6880,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -7223,10 +7223,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -7317,10 +7317,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -7660,10 +7660,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -7754,10 +7754,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -8097,10 +8097,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -8191,10 +8191,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -8534,10 +8534,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -8628,10 +8628,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -8971,10 +8971,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -9065,10 +9065,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -9408,10 +9408,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -9502,10 +9502,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -9845,10 +9845,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -9939,10 +9939,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -10282,10 +10282,10 @@ description: Variables in memory after executing spool.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 621,
-                      "end": 627,
+                      "commentStart": 624,
+                      "end": 630,
                       "moduleId": 0,
-                      "start": 621,
+                      "start": 624,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -10376,10 +10376,10 @@ description: Variables in memory after executing spool.kcl
                         132.5
                       ],
                       "tag": {
-                        "commentStart": 621,
-                        "end": 627,
+                        "commentStart": 624,
+                        "end": 630,
                         "moduleId": 0,
-                        "start": 621,
+                        "start": 624,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -10573,10 +10573,10 @@ description: Variables in memory after executing spool.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 621,
-            "end": 627,
+            "commentStart": 624,
+            "end": 630,
             "moduleId": 0,
-            "start": 621,
+            "start": 624,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -10667,10 +10667,10 @@ description: Variables in memory after executing spool.kcl
               132.5
             ],
             "tag": {
-              "commentStart": 621,
-              "end": 627,
+              "commentStart": 624,
+              "end": 630,
               "moduleId": 0,
-              "start": 621,
+              "start": 624,
               "type": "TagDeclarator",
               "value": "seg01"
             },

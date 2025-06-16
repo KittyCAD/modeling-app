@@ -593,13 +593,13 @@ description: Result of parsing spool.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "270",
+                        "raw": "270deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 270.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -1322,13 +1322,13 @@ description: Result of parsing spool.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "90",
+                                "raw": "90deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 90.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -1346,13 +1346,13 @@ description: Result of parsing spool.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "55",
+                                "raw": "55deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 55.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -1443,13 +1443,13 @@ description: Result of parsing spool.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "55",
+                                "raw": "55deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 55.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -1524,13 +1524,13 @@ description: Result of parsing spool.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "55",
+                                "raw": "55deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 55.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -1548,13 +1548,13 @@ description: Result of parsing spool.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "90",
+                                "raw": "90deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 90.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -3002,13 +3002,13 @@ description: Result of parsing spool.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "0",
+                  "raw": "0deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 0.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 }
               },
