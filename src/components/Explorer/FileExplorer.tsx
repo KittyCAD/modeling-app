@@ -62,21 +62,20 @@ export const FileExplorer = ({
   // diff this against new Project value that comes in
   return (
     <div role="presentation" className="p-px">
-      {rowsToRender
-        .map((row, index, original) => {
-          const renderRow: FileExplorerRender = {
-            ...row,
-            domIndex: index,
-            domLength: original.length,
-          }
-          return (
-            <FileExplorerRowElement
-              key={uuidv4()}
-              row={renderRow}
-              selectedRow={selectedRow}
-            ></FileExplorerRowElement>
-          )
-        })}
+      {rowsToRender.map((row, index, original) => {
+        const renderRow: FileExplorerRender = {
+          ...row,
+          domIndex: index,
+          domLength: original.length,
+        }
+        return (
+          <FileExplorerRowElement
+            key={uuidv4()}
+            row={renderRow}
+            selectedRow={selectedRow}
+          ></FileExplorerRowElement>
+        )
+      })}
     </div>
   )
 }

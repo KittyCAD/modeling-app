@@ -17,6 +17,14 @@ import { systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 
+const isFileExplorerEntryOpened = (rows : {[key:string]: boolean}, entry:FileExplorerEntry) : boolean => {
+  const key = constructPath({
+    parentPath: entry.parentPath,
+    name: entry.name,
+  })
+  return rows[key]
+}
+
 /**
  * Wrap the header and the tree into a single component
  * This is important because the action header buttons need to know
@@ -42,12 +50,19 @@ export const ProjectExplorer = ({
   const fileExplorerContainer = useRef(null)
   const openedRowsRef = useRef(openedRows)
   const rowsToRenderRef = useRef(rowsToRender)
+  const activeIndexRef = useRef(activeIndex)
+  const selectedRowRef = useRef(selectedRow)
 
   // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
   const [fakeRow, setFakeRow] = useState<{
     entry: FileExplorerEntry | null
     isFile: boolean
   } | null>(null)
+
+  const setSelectedRowWrapper = (row: FileExplorerEntry | null) => {
+    setSelectedRow(row)
+    selectedRowRef.current = row
+  }
 
   /**
    * Gotcha: closure
@@ -62,7 +77,7 @@ export const ProjectExplorer = ({
     const value = openedRowsRef.current[key]
     newOpenedRows[key] = !value
     setOpenedRows(newOpenedRows)
-    setSelectedRow(file)
+    setSelectedRowWrapper(file)
     setActiveIndex(domIndex)
   }
 
@@ -74,6 +89,7 @@ export const ProjectExplorer = ({
 
     // gotcha: sync state
     openedRowsRef.current = openedRows
+    activeIndexRef.current = activeIndex
 
     // Wrap the FileEntry in a FileExplorerEntry to keep track for more metadata
     let flattenedData: FileExplorerEntry[] = []
@@ -135,9 +151,11 @@ export const ProjectExplorer = ({
 
         return row
       }) || []
+
     const requestedRowsToRender = requestedRows.filter((row) => {
       return row.isOpen
     })
+
     setRowsToRender(requestedRowsToRender)
     rowsToRenderRef.current = requestedRowsToRender
   }, [project, openedRows, fakeRow, activeIndex])
@@ -153,17 +171,45 @@ export const ProjectExplorer = ({
     }
 
     const keyDownHandler = (event) => {
+      if (activeIndexRef.current === NOTHING_IS_SELECTED) {
+        // NO OP you are not focused in this DOM element
+        return
+      }
+
       const key = event.key
+      const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
+      const shouldCheckOpened = focusedEntry
+      const isEntryOpened = shouldCheckOpened && isFileExplorerEntryOpened(openedRowsRef.current, focusedEntry)
       switch (key) {
         case 'ArrowLeft':
-          setActiveIndex((previous) => {
-            return NOTHING_IS_SELECTED
-          })
+          if (activeIndexRef.current === CONTAINER_IS_SELECTED) {
+            // NO OP
+          } else if (shouldCheckOpened && isEntryOpened){
+            // close
+            const newOpenedRows = { ...openedRowsRef.current }
+            const key = constructPath({
+              parentPath: focusedEntry.parentPath,
+              name: focusedEntry.name,
+            })
+            const value = openedRowsRef.current[key]
+            newOpenedRows[key] = !value
+            setOpenedRows(newOpenedRows)
+          }
           break
         case 'ArrowRight':
-          setActiveIndex((previous) => {
-            return NOTHING_IS_SELECTED
-          })
+          if (activeIndexRef.current === CONTAINER_IS_SELECTED) {
+            // NO OP
+          } else if (shouldCheckOpened && !isEntryOpened) {
+            // open!
+            const newOpenedRows = { ...openedRowsRef.current }
+            const key = constructPath({
+              parentPath: focusedEntry.parentPath,
+              name: focusedEntry.name,
+            })
+            const value = openedRowsRef.current[key]
+            newOpenedRows[key] = !value
+            setOpenedRows(newOpenedRows)
+          }
           break
         case 'ArrowUp':
           setActiveIndex((previous) => {
@@ -182,6 +228,19 @@ export const ProjectExplorer = ({
               fileExplorerContainer.current.children[0].children.length - 1
             return Math.min(numberOfDOMRows, previous + 1)
           })
+          break
+        case 'Enter':
+          if (activeIndexRef.current >= STARTING_INDEX_TO_SELECT) {
+            // open close folder
+            const newOpenedRows = { ...openedRowsRef.current }
+            const key = constructPath({
+              parentPath: focusedEntry.parentPath,
+              name: focusedEntry.name,
+            })
+            const value = openedRowsRef.current[key]
+            newOpenedRows[key] = !value
+            setOpenedRows(newOpenedRows)
+          }
           break
       }
     }
@@ -227,7 +286,7 @@ export const ProjectExplorer = ({
         onClick={(event) => {
           if (event.target === fileExplorerContainer.current) {
             setActiveIndex(CONTAINER_IS_SELECTED)
-            setSelectedRow(null)
+            setSelectedRowWrapper(null)
           }
         }}
       >
