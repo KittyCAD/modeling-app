@@ -47,6 +47,7 @@ kcl-derive-docs = { version = "0.1", path = "../kcl-derive-docs" }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 lazy_static = { workspace = true }
+libm = "0.2.15"
 measurements = "0.11.0"
 miette = { workspace = true }
 mime_guess = "2.0.5"
