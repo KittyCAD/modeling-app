@@ -11,7 +11,7 @@ centerHoleDiameter = 1 + 3 / 4
 plateThickness = 0.375
 
 // Check that the plate is thick enough to countersink a hole
-// assertGreaterThan(plateThickness, boltDiameter, "This plate is not thick enough for the necessary countersink dimensions")
+assert(plateThickness, isGreaterThan = boltDiameter, error = "This plate is not thick enough for the necessary countersink dimensions")
 
 // A bit of math to calculate the tangent line between the two diameters
 r1 = centerHoleDiameter / 2 * 1.5 + .35

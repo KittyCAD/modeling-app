@@ -202,6 +202,103 @@ description: Result of parsing countersunk-plate.kcl
       },
       {
         "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "isGreaterThan",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "boltDiameter",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"This plate is not thick enough for the necessary countersink dimensions\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "This plate is not thick enough for the necessary countersink dimensions"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "plateThickness",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
+        },
+        "preComments": [
+          "",
+          "",
+          "// Check that the plate is thick enough to countersink a hole"
+        ],
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 0,
         "declaration": {
           "commentStart": 0,
           "end": 0,
@@ -294,10 +391,6 @@ description: Result of parsing countersunk-plate.kcl
         "end": 0,
         "kind": "const",
         "preComments": [
-          "",
-          "",
-          "// Check that the plate is thick enough to countersink a hole",
-          "// assertGreaterThan(plateThickness, boltDiameter, \"This plate is not thick enough for the necessary countersink dimensions\")",
           "",
           "",
           "// A bit of math to calculate the tangent line between the two diameters"
@@ -2560,7 +2653,7 @@ description: Result of parsing countersunk-plate.kcl
     ],
     "nonCodeMeta": {
       "nonCodeNodes": {
-        "8": [
+        "9": [
           {
             "commentStart": 0,
             "end": 0,
