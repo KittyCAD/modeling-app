@@ -2429,14 +2429,21 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { nodeToEdit, sketches, length, bidirectionalLength, symmetric } =
-          input
+        const {
+          nodeToEdit,
+          sketches,
+          length,
+          bidirectionalLength,
+          twistAngle,
+          symmetric,
+        } = input
         const { ast } = kclManager
         const astResult = addExtrude({
           ast,
           sketches,
           length,
           bidirectionalLength,
+          twistAngle,
           symmetric,
           nodeToEdit,
         })

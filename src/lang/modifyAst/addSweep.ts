@@ -38,6 +38,7 @@ export function addExtrude({
   sketches,
   length,
   bidirectionalLength,
+  twistAngle,
   symmetric,
   nodeToEdit,
 }: {
@@ -45,6 +46,7 @@ export function addExtrude({
   sketches: Selections
   length: KclCommandValue
   bidirectionalLength?: KclCommandValue
+  twistAngle?: KclCommandValue
   symmetric?: boolean
   nodeToEdit?: PathToNode
 }):
@@ -76,6 +78,9 @@ export function addExtrude({
         ),
       ]
     : []
+  const twistAngleExpr = twistAngle
+    ? [createLabeledArg('twistAngle', valueOrVariable(twistAngle))]
+    : []
   const symmetricExpr = symmetric
     ? [createLabeledArg('symmetric', createLiteral(symmetric))]
     : []
@@ -84,6 +89,7 @@ export function addExtrude({
   const call = createCallExpressionStdLibKw('extrude', sketchesExpr, [
     createLabeledArg('length', valueOrVariable(length)),
     ...bidirectionalLengthExpr,
+    ...twistAngleExpr,
     ...symmetricExpr,
   ])
 

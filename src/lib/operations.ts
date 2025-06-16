@@ -116,6 +116,23 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     return { reason: "Couldn't retrieve bidirectionalLength argument" }
   }
 
+  // twistAngle argument from a string to a KCL expression
+  let twistAngle: KclCommandValue | Error | ParseResult | undefined
+  if (
+    'twistAngle' in operation.labeledArgs &&
+    operation.labeledArgs.twistAngle
+  ) {
+    twistAngle = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.twistAngle.sourceRange[0],
+        operation.labeledArgs.twistAngle.sourceRange[1]
+      )
+    )
+  }
+  if (err(twistAngle) || (twistAngle && 'errors' in twistAngle)) {
+    return { reason: "Couldn't retrieve twistAngle argument" }
+  }
+
   // symmetric argument from a string to boolean
   let symmetric: boolean | undefined
   if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
@@ -133,6 +150,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     sketches,
     length,
     bidirectionalLength,
+    twistAngle,
     symmetric,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }

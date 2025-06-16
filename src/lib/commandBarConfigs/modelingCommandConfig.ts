@@ -62,6 +62,7 @@ export type ModelingCommandSchema = {
     length: KclCommandValue
     symmetric?: boolean
     bidirectionalLength?: KclCommandValue
+    twistAngle?: KclCommandValue
   }
   Sweep: {
     // Enables editing workflow
@@ -406,6 +407,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
       },
       bidirectionalLength: {
+        inputType: 'kcl',
+        skip: true,
+        required: false,
+      },
+      twistAngle: {
         inputType: 'kcl',
         skip: true,
         required: false,
