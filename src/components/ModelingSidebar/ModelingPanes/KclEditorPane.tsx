@@ -37,7 +37,6 @@ import interact from '@replit/codemirror-interact'
 import { TEST } from '@src/env'
 import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useRef } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 
 import { useLspContext } from '@src/components/LspProvider'
 import CodeEditor from '@src/components/ModelingSidebar/ModelingPanes/CodeEditor'

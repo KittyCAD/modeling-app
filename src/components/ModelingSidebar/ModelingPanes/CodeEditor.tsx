@@ -175,7 +175,7 @@ export function useCodeMirror(props: UseCodeMirror) {
     }
   }, [targetExtensions, view, isFirstRender])
 
-  return { view, setView, container, setContainer, state, setState }
+  return { view, container, setContainer, state }
 }
 
 export default CodeEditor
