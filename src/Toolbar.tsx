@@ -398,6 +398,7 @@ export function Toolbar({
               Temporary workspace
             </div>
             <button
+              data-testid="tws-save"
               onClick={onClickSave}
               className="mt-2 py-1 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-90 px-2"
             >
