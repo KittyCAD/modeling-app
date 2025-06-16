@@ -183,15 +183,14 @@ export class EditorFixture {
   scrollToText(text: string, placeCursor?: boolean) {
     return this.page.evaluate(
       (args: { text: string; placeCursor?: boolean }) => {
+        const editorView = window.editorManager.getEditorView()
         // error TS2339: Property 'docView' does not exist on type 'EditorView'.
         // Except it does so :shrug:
         // @ts-ignore
-        let index = window.editorManager
-          .getEditorView()
-          ?.docView.view.state.doc.toString()
+        const index = editorView?.docView.view.state.doc.toString()
           .indexOf(args.text)
-        window.editorManager.getEditorView()?.focus()
-        window.editorManager.getEditorView()?.dispatch({
+        editorView?.focus()
+        editorView?.dispatch({
           selection: window.EditorSelection.create([
             window.EditorSelection.cursor(index),
           ]),
