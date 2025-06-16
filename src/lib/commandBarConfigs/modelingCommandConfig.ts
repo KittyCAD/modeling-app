@@ -407,7 +407,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       bidirectionalLength: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
         skip: true,
         required: false,
       },
