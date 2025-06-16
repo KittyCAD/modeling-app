@@ -24,7 +24,7 @@ startProfile(kinematicSketch, at = [0, 0])
        ],
        tag = $seg02,
      )
-  |> angledLine(angle = segAng(seg02) - 90, length = 1, tag = $seg03)
+  |> angledLine(angle = segAng(seg02) - 90deg, length = 1, tag = $seg03)
 
 // Sketch a profile with a total width equal to half the bore of the piston head. Include lands and gaps for compression rings. Then revolve the profile about the center axis to form the start of a piston head
 pistonBore = startSketchOn(XZ)
@@ -48,7 +48,7 @@ pistonBore = startSketchOn(XZ)
   |> yLine(endAbsolute = profileStartY(%) - pistonHeight - 3)
   |> xLine(length = -8)
   |> yLine(endAbsolute = profileStartY(%) - 8 - (bore / 4))
-  |> tangentialArc(angle = 90, radius = bore / 4)
+  |> tangentialArc(angle = 90deg, radius = bore / 4)
   |> xLine(endAbsolute = profileStartX(%))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -73,7 +73,7 @@ cutDivots = patternCircular3d(
   instances = 2,
   axis = [0, 0, 1],
   center = [0, 0, 0],
-  arcDegrees = 360,
+  arcDegrees = 360deg,
   rotateDuplicates = true,
 )
 
@@ -119,24 +119,24 @@ connectingRodProfile = startSketchOn(XZ)
        segEndX(seg01) - (1.25 * crankRadius * cos(segAng(seg02))),
        segEndY(seg01) - (1.25 * crankRadius * sin(segAng(seg02)))
      ])
-  |> angledLine(angle = segAng(seg02) - 90, length = crankRadius / 2)
-  |> tangentialArc(angle = 45, radius = 5)
-  |> angledLine(angle = segAng(seg02) - 45, length = crankRadius / 2)
-  |> tangentialArc(angle = -45, radius = 5)
-  |> angledLine(angle = segAng(seg02) - 90, length = crankRadius / 2)
+  |> angledLine(angle = segAng(seg02) - 90deg, length = crankRadius / 2)
+  |> tangentialArc(angle = 45deg, radius = 5)
+  |> angledLine(angle = segAng(seg02) - 45deg, length = crankRadius / 2)
+  |> tangentialArc(angle = -45deg, radius = 5)
+  |> angledLine(angle = segAng(seg02) - 90deg, length = crankRadius / 2)
   |> angledLine(angle = segAng(seg02), length = crankRadius * 1.625)
-  |> angledLine(angle = segAng(seg02) + 90, length = crankRadius / 2)
-  |> tangentialArc(angle = -45, radius = 5)
-  |> angledLine(angle = segAng(seg02) + 45, length = crankRadius / 2)
-  |> tangentialArc(angle = -45, radius = crankRadius)
+  |> angledLine(angle = segAng(seg02) + 90deg, length = crankRadius / 2)
+  |> tangentialArc(angle = -45deg, radius = 5)
+  |> angledLine(angle = segAng(seg02) + 45deg, length = crankRadius / 2)
+  |> tangentialArc(angle = -45deg, radius = crankRadius)
   |> angledLineThatIntersects(angle = segAng(seg02), intersectTag = seg03, offset = -crankRadius / 2)
-  |> tangentialArc(angle = -45, radius = 5)
-  |> angledLine(angle = segAng(seg02) - 45, length = crankRadius / 5)
-  |> tangentialArc(angle = -45, radius = 5)
-  |> angledLine(angle = segAng(seg02) - 90, length = crankRadius / 5)
+  |> tangentialArc(angle = -45deg, radius = 5)
+  |> angledLine(angle = segAng(seg02) - 45deg, length = crankRadius / 5)
+  |> tangentialArc(angle = -45deg, radius = 5)
+  |> angledLine(angle = segAng(seg02) - 90deg, length = crankRadius / 5)
   |> angledLineThatIntersects(angle = segAng(seg02), intersectTag = seg03, offset = crankRadius / 3)
-  |> angledLineThatIntersects(angle = segAng(seg02) + 45, intersectTag = seg03, offset = crankRadius / 2)
-  |> angledLineThatIntersects(%, angle = segAng(seg02) + 90, intersectTag = seg02)
+  |> angledLineThatIntersects(angle = segAng(seg02) + 45deg, intersectTag = seg03, offset = crankRadius / 2)
+  |> angledLineThatIntersects(%, angle = segAng(seg02) + 90deg, intersectTag = seg02)
   |> mirror2d(axis = seg02)
   |> close()
   |> extrude(length = 54, symmetric = true)
@@ -160,9 +160,9 @@ connectingRodPlane = {
 connectingRodShape = startSketchOn(connectingRodPlane)
   |> startProfile(at = [crankRadius * 1.5, 0])
   |> yLine(length = 4)
-  |> tangentialArc(angle = 80, radius = 8)
+  |> tangentialArc(angle = 80deg, radius = 8)
   |> tangentialArc(endAbsolute = [-lastSegX(%), lastSegY(%)])
-  |> tangentialArc(angle = 80, radius = 8)
+  |> tangentialArc(angle = 80deg, radius = 8)
   |> yLine(endAbsolute = profileStartY(%))
   |> mirror2d(axis = X)
   |> close()
@@ -197,7 +197,7 @@ boltHoles = startSketchOn(connectingRodPlane)
   |> patternCircular2d(
        instances = 2,
        center = [0, 0],
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
   |> extrude(length = 300)

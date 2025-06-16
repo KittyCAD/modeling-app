@@ -318,13 +318,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "120",
+                        "raw": "120deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 120.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -399,13 +399,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "30",
+                        "raw": "30deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 30.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -502,13 +502,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "120",
+                        "raw": "120deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 120.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -582,13 +582,13 @@ description: Result of parsing prosthetic-hip.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "30",
+                      "raw": "30deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 30.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1186,13 +1186,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "120",
+                        "raw": "120deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 120.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -1267,13 +1267,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "30",
+                        "raw": "30deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 30.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -1370,13 +1370,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "120",
+                        "raw": "120deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 120.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -1450,13 +1450,13 @@ description: Result of parsing prosthetic-hip.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "30",
+                      "raw": "30deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 30.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2074,13 +2074,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "120",
+                        "raw": "120deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 120.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -2155,13 +2155,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "30",
+                        "raw": "30deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 30.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -2258,13 +2258,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "120",
+                        "raw": "120deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 120.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -2338,13 +2338,13 @@ description: Result of parsing prosthetic-hip.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "30",
+                      "raw": "30deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 30.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -3072,13 +3072,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "120",
+                        "raw": "120deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 120.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -3153,13 +3153,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "30",
+                        "raw": "30deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 30.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -3256,13 +3256,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "120",
+                        "raw": "120deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 120.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -3336,13 +3336,13 @@ description: Result of parsing prosthetic-hip.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "30",
+                      "raw": "30deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 30.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -4070,13 +4070,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "120",
+                        "raw": "120deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 120.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -4151,13 +4151,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "30",
+                        "raw": "30deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 30.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -4254,13 +4254,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "120",
+                        "raw": "120deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 120.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -4334,13 +4334,13 @@ description: Result of parsing prosthetic-hip.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "30",
+                      "raw": "30deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 30.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -5068,13 +5068,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "120",
+                        "raw": "120deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 120.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -5149,13 +5149,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "30",
+                        "raw": "30deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 30.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -5252,13 +5252,13 @@ description: Result of parsing prosthetic-hip.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "120",
+                        "raw": "120deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 120.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -5332,13 +5332,13 @@ description: Result of parsing prosthetic-hip.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "30",
+                      "raw": "30deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 30.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -6248,13 +6248,13 @@ description: Result of parsing prosthetic-hip.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -6317,13 +6317,13 @@ description: Result of parsing prosthetic-hip.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -6441,13 +6441,13 @@ description: Result of parsing prosthetic-hip.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -6635,13 +6635,13 @@ description: Result of parsing prosthetic-hip.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "360",
+                      "raw": "360deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 360.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -7427,13 +7427,13 @@ description: Result of parsing prosthetic-hip.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "360",
+                      "raw": "360deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 360.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -8211,13 +8211,13 @@ description: Result of parsing prosthetic-hip.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "360",
+                      "raw": "360deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 360.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },

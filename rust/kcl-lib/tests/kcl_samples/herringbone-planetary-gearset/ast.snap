@@ -935,13 +935,13 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                                                   "left": {
                                                     "commentStart": 0,
                                                     "end": 0,
-                                                    "raw": "160",
+                                                    "raw": "160deg",
                                                     "start": 0,
                                                     "type": "Literal",
                                                     "type": "Literal",
                                                     "value": {
                                                       "value": 160.0,
-                                                      "suffix": "None"
+                                                      "suffix": "Deg"
                                                     }
                                                   },
                                                   "operator": "/",
@@ -1435,13 +1435,13 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                                                   "left": {
                                                     "commentStart": 0,
                                                     "end": 0,
-                                                    "raw": "360",
+                                                    "raw": "360deg",
                                                     "start": 0,
                                                     "type": "Literal",
                                                     "type": "Literal",
                                                     "value": {
                                                       "value": 360.0,
-                                                      "suffix": "None"
+                                                      "suffix": "Deg"
                                                     }
                                                   },
                                                   "operator": "/",
@@ -1663,13 +1663,13 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                                         "arg": {
                                           "commentStart": 0,
                                           "end": 0,
-                                          "raw": "360",
+                                          "raw": "360deg",
                                           "start": 0,
                                           "type": "Literal",
                                           "type": "Literal",
                                           "value": {
                                             "value": 360.0,
-                                            "suffix": "None"
+                                            "suffix": "Deg"
                                           }
                                         }
                                       },
@@ -3474,13 +3474,13 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                                                   "left": {
                                                     "commentStart": 0,
                                                     "end": 0,
-                                                    "raw": "220",
+                                                    "raw": "220deg",
                                                     "start": 0,
                                                     "type": "Literal",
                                                     "type": "Literal",
                                                     "value": {
                                                       "value": 220.0,
-                                                      "suffix": "None"
+                                                      "suffix": "Deg"
                                                     }
                                                   },
                                                   "operator": "/",
@@ -3974,13 +3974,13 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                                                   "left": {
                                                     "commentStart": 0,
                                                     "end": 0,
-                                                    "raw": "360",
+                                                    "raw": "360deg",
                                                     "start": 0,
                                                     "type": "Literal",
                                                     "type": "Literal",
                                                     "value": {
                                                       "value": 360.0,
-                                                      "suffix": "None"
+                                                      "suffix": "Deg"
                                                     }
                                                   },
                                                   "operator": "/",
@@ -4202,13 +4202,13 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                                         "arg": {
                                           "commentStart": 0,
                                           "end": 0,
-                                          "raw": "360",
+                                          "raw": "360deg",
                                           "start": 0,
                                           "type": "Literal",
                                           "type": "Literal",
                                           "value": {
                                             "value": 360.0,
-                                            "suffix": "None"
+                                            "suffix": "Deg"
                                           }
                                         }
                                       },
@@ -5304,13 +5304,13 @@ description: Result of parsing herringbone-planetary-gearset.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
-                "raw": "14",
+                "raw": "14deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 14.0,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               }
             },
@@ -5327,13 +5327,13 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
-                  "raw": "35",
+                  "raw": "35deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 35.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 },
                 "commentStart": 0,
@@ -5459,13 +5459,13 @@ description: Result of parsing herringbone-planetary-gearset.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
-                "raw": "14",
+                "raw": "14deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 14.0,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               }
             },
@@ -5481,13 +5481,13 @@ description: Result of parsing herringbone-planetary-gearset.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
-                "raw": "35",
+                "raw": "35deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 35.0,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               }
             },
@@ -5646,13 +5646,13 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "14",
+                    "raw": "14deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 14.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   }
                 },
@@ -5669,13 +5669,13 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                     "argument": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "35",
+                      "raw": "35deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 35.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     },
                     "commentStart": 0,
@@ -5968,13 +5968,13 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "360",
+                    "raw": "360deg",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
                       "value": 360.0,
-                      "suffix": "None"
+                      "suffix": "Deg"
                     }
                   }
                 },

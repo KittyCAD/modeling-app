@@ -5271,9 +5271,9 @@ description: Variables in memory after executing subtract_regression10.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2986,
-            "end": 2992,
-            "start": 2986,
+            "commentStart": 2995,
+            "end": 3001,
+            "start": 2995,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -5300,9 +5300,9 @@ description: Variables in memory after executing subtract_regression10.kcl
             ],
             "radius": 7.5,
             "tag": {
-              "commentStart": 2986,
-              "end": 2992,
-              "start": 2986,
+              "commentStart": 2995,
+              "end": 3001,
+              "start": 2995,
               "type": "TagDeclarator",
               "value": "seg04"
             },

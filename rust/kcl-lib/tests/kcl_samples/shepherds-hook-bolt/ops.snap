@@ -176,13 +176,9 @@ description: Operations executed shepherds-hook-bolt.kcl
         "type": "Number",
         "value": 290.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -209,13 +205,9 @@ description: Operations executed shepherds-hook-bolt.kcl
         "type": "Number",
         "value": 150.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -506,13 +498,9 @@ description: Operations executed shepherds-hook-bolt.kcl
               "type": "Number",
               "value": 290.0,
               "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "type": "Known",
+                "type": "Angle",
+                "type": "Degrees"
               }
             },
             "sourceRange": []
@@ -667,13 +655,9 @@ description: Operations executed shepherds-hook-bolt.kcl
               "type": "Number",
               "value": 150.0,
               "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "type": "Known",
+                "type": "Angle",
+                "type": "Degrees"
               }
             },
             "sourceRange": []
@@ -1113,13 +1097,9 @@ description: Operations executed shepherds-hook-bolt.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
