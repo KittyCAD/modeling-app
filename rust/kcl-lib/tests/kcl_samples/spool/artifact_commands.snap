@@ -297,7 +297,7 @@ description: Artifact commands spool.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0,
+            "x": -0.000000000000002167624834490815,
             "y": -0.0
           },
           "radius": 35.4,
@@ -322,8 +322,8 @@ description: Artifact commands spool.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 16.978,
-            "y": 24.247,
+            "x": 16.977862515990964,
+            "y": 24.24690051095416,
             "z": 0.0
           },
           "relative": true
@@ -897,7 +897,7 @@ description: Artifact commands spool.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0,
+            "x": -0.000000000000004592425496802574,
             "y": -0.0
           },
           "radius": 75.0,
@@ -922,8 +922,8 @@ description: Artifact commands spool.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 27.245,
-            "y": 38.91,
+            "x": 27.244880726674687,
+            "y": 38.90972210372711,
             "z": 0.0
           },
           "relative": true

@@ -106,7 +106,7 @@ description: Variables in memory after executing i_shape.kcl
           ],
           "tag": null,
           "to": [
-            55.6,
+            55.60000000000001,
             30.0
           ],
           "type": "ToPoint",
@@ -121,16 +121,16 @@ description: Variables in memory after executing i_shape.kcl
           },
           "ccw": false,
           "center": [
-            55.6,
+            55.60000000000001,
             35.0
           ],
           "from": [
-            55.6,
+            55.60000000000001,
             30.0
           ],
           "tag": null,
           "to": [
-            50.6,
+            50.60000000000001,
             35.0
           ],
           "type": "TangentialArcTo",
@@ -144,12 +144,12 @@ description: Variables in memory after executing i_shape.kcl
             "sourceRange": []
           },
           "from": [
-            50.6,
+            50.60000000000001,
             35.0
           ],
           "tag": null,
           "to": [
-            50.6,
+            50.60000000000001,
             97.0
           ],
           "type": "ToPoint",
@@ -164,16 +164,16 @@ description: Variables in memory after executing i_shape.kcl
           },
           "ccw": false,
           "center": [
-            55.6,
+            55.60000000000001,
             97.0
           ],
           "from": [
-            50.6,
+            50.60000000000001,
             97.0
           ],
           "tag": null,
           "to": [
-            55.6,
+            55.60000000000001,
             102.0
           ],
           "type": "TangentialArcTo",
@@ -187,12 +187,12 @@ description: Variables in memory after executing i_shape.kcl
             "sourceRange": []
           },
           "from": [
-            55.6,
+            55.60000000000001,
             102.0
           ],
           "tag": null,
           "to": [
-            60.6,
+            60.60000000000001,
             102.0
           ],
           "type": "ToPoint",
@@ -207,16 +207,16 @@ description: Variables in memory after executing i_shape.kcl
           },
           "ccw": true,
           "center": [
-            60.6,
+            60.60000000000001,
             107.0
           ],
           "from": [
-            60.6,
+            60.60000000000001,
             102.0
           ],
           "tag": null,
           "to": [
-            65.6,
+            65.60000000000001,
             107.0
           ],
           "type": "TangentialArcTo",
@@ -230,12 +230,12 @@ description: Variables in memory after executing i_shape.kcl
             "sourceRange": []
           },
           "from": [
-            65.6,
+            65.60000000000001,
             107.0
           ],
           "tag": null,
           "to": [
-            65.6,
+            65.60000000000001,
             125.0
           ],
           "type": "ToPoint",
@@ -250,16 +250,16 @@ description: Variables in memory after executing i_shape.kcl
           },
           "ccw": true,
           "center": [
-            60.6,
+            60.60000000000001,
             125.0
           ],
           "from": [
-            65.6,
+            65.60000000000001,
             125.0
           ],
           "tag": null,
           "to": [
-            60.6,
+            60.60000000000001,
             130.0
           ],
           "type": "TangentialArcTo",
@@ -273,12 +273,12 @@ description: Variables in memory after executing i_shape.kcl
             "sourceRange": []
           },
           "from": [
-            60.6,
+            60.60000000000001,
             130.0
           ],
           "tag": null,
           "to": [
-            16.6,
+            16.60000000000001,
             130.0
           ],
           "type": "ToPoint",
@@ -293,16 +293,16 @@ description: Variables in memory after executing i_shape.kcl
           },
           "ccw": true,
           "center": [
-            16.6,
+            16.60000000000001,
             125.0
           ],
           "from": [
-            16.6,
+            16.60000000000001,
             130.0
           ],
           "tag": null,
           "to": [
-            11.6,
+            11.600000000000009,
             125.0
           ],
           "type": "TangentialArcTo",
@@ -316,12 +316,12 @@ description: Variables in memory after executing i_shape.kcl
             "sourceRange": []
           },
           "from": [
-            11.6,
+            11.600000000000009,
             125.0
           ],
           "tag": null,
           "to": [
-            11.6,
+            11.600000000000009,
             107.0
           ],
           "type": "ToPoint",
@@ -336,16 +336,16 @@ description: Variables in memory after executing i_shape.kcl
           },
           "ccw": true,
           "center": [
-            16.6,
+            16.60000000000001,
             107.0
           ],
           "from": [
-            11.6,
+            11.600000000000009,
             107.0
           ],
           "tag": null,
           "to": [
-            16.6,
+            16.60000000000001,
             102.0
           ],
           "type": "TangentialArcTo",
@@ -359,12 +359,12 @@ description: Variables in memory after executing i_shape.kcl
             "sourceRange": []
           },
           "from": [
-            16.6,
+            16.60000000000001,
             102.0
           ],
           "tag": null,
           "to": [
-            21.6,
+            21.60000000000001,
             102.0
           ],
           "type": "ToPoint",
@@ -379,16 +379,16 @@ description: Variables in memory after executing i_shape.kcl
           },
           "ccw": false,
           "center": [
-            21.6,
+            21.60000000000001,
             97.0
           ],
           "from": [
-            21.6,
+            21.60000000000001,
             102.0
           ],
           "tag": null,
           "to": [
-            26.6,
+            26.60000000000001,
             97.0
           ],
           "type": "TangentialArcTo",
@@ -402,12 +402,12 @@ description: Variables in memory after executing i_shape.kcl
             "sourceRange": []
           },
           "from": [
-            26.6,
+            26.60000000000001,
             97.0
           ],
           "tag": null,
           "to": [
-            26.6,
+            26.60000000000001,
             35.0
           ],
           "type": "ToPoint",
@@ -422,16 +422,16 @@ description: Variables in memory after executing i_shape.kcl
           },
           "ccw": false,
           "center": [
-            21.6,
+            21.60000000000001,
             35.0
           ],
           "from": [
-            26.6,
+            26.60000000000001,
             35.0
           ],
           "tag": null,
           "to": [
-            21.6,
+            21.60000000000001,
             30.0
           ],
           "type": "TangentialArcTo",
@@ -445,12 +445,12 @@ description: Variables in memory after executing i_shape.kcl
             "sourceRange": []
           },
           "from": [
-            21.6,
+            21.60000000000001,
             30.0
           ],
           "tag": null,
           "to": [
-            5.0,
+            5.000000000000014,
             30.0
           ],
           "type": "ToPoint",
@@ -465,16 +465,16 @@ description: Variables in memory after executing i_shape.kcl
           },
           "ccw": true,
           "center": [
-            5.0,
+            5.000000000000014,
             25.0
           ],
           "from": [
-            5.0,
+            5.000000000000014,
             30.0
           ],
           "tag": null,
           "to": [
-            0.0,
+            0.000000000000014210854715202004,
             25.0
           ],
           "type": "TangentialArcTo",
@@ -488,12 +488,12 @@ description: Variables in memory after executing i_shape.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
+            0.000000000000014210854715202004,
             25.0
           ],
           "tag": null,
           "to": [
-            0.0,
+            0.000000000000014210854715202004,
             5.0
           ],
           "type": "ToPoint",
@@ -508,16 +508,16 @@ description: Variables in memory after executing i_shape.kcl
           },
           "ccw": true,
           "center": [
-            5.0,
+            5.000000000000014,
             5.0
           ],
           "from": [
-            0.0,
+            0.000000000000014210854715202004,
             5.0
           ],
           "tag": null,
           "to": [
-            5.0,
+            5.000000000000014,
             0.0
           ],
           "type": "TangentialArcTo",
@@ -531,7 +531,7 @@ description: Variables in memory after executing i_shape.kcl
             "sourceRange": []
           },
           "from": [
-            5.0,
+            5.000000000000014,
             0.0
           ],
           "tag": null,
@@ -947,7 +947,7 @@ description: Variables in memory after executing i_shape.kcl
             ],
             "tag": null,
             "to": [
-              55.6,
+              55.60000000000001,
               30.0
             ],
             "type": "ToPoint",
@@ -962,16 +962,16 @@ description: Variables in memory after executing i_shape.kcl
             },
             "ccw": false,
             "center": [
-              55.6,
+              55.60000000000001,
               35.0
             ],
             "from": [
-              55.6,
+              55.60000000000001,
               30.0
             ],
             "tag": null,
             "to": [
-              50.6,
+              50.60000000000001,
               35.0
             ],
             "type": "TangentialArcTo",
@@ -985,12 +985,12 @@ description: Variables in memory after executing i_shape.kcl
               "sourceRange": []
             },
             "from": [
-              50.6,
+              50.60000000000001,
               35.0
             ],
             "tag": null,
             "to": [
-              50.6,
+              50.60000000000001,
               97.0
             ],
             "type": "ToPoint",
@@ -1005,16 +1005,16 @@ description: Variables in memory after executing i_shape.kcl
             },
             "ccw": false,
             "center": [
-              55.6,
+              55.60000000000001,
               97.0
             ],
             "from": [
-              50.6,
+              50.60000000000001,
               97.0
             ],
             "tag": null,
             "to": [
-              55.6,
+              55.60000000000001,
               102.0
             ],
             "type": "TangentialArcTo",
@@ -1028,12 +1028,12 @@ description: Variables in memory after executing i_shape.kcl
               "sourceRange": []
             },
             "from": [
-              55.6,
+              55.60000000000001,
               102.0
             ],
             "tag": null,
             "to": [
-              60.6,
+              60.60000000000001,
               102.0
             ],
             "type": "ToPoint",
@@ -1048,16 +1048,16 @@ description: Variables in memory after executing i_shape.kcl
             },
             "ccw": true,
             "center": [
-              60.6,
+              60.60000000000001,
               107.0
             ],
             "from": [
-              60.6,
+              60.60000000000001,
               102.0
             ],
             "tag": null,
             "to": [
-              65.6,
+              65.60000000000001,
               107.0
             ],
             "type": "TangentialArcTo",
@@ -1071,12 +1071,12 @@ description: Variables in memory after executing i_shape.kcl
               "sourceRange": []
             },
             "from": [
-              65.6,
+              65.60000000000001,
               107.0
             ],
             "tag": null,
             "to": [
-              65.6,
+              65.60000000000001,
               125.0
             ],
             "type": "ToPoint",
@@ -1091,16 +1091,16 @@ description: Variables in memory after executing i_shape.kcl
             },
             "ccw": true,
             "center": [
-              60.6,
+              60.60000000000001,
               125.0
             ],
             "from": [
-              65.6,
+              65.60000000000001,
               125.0
             ],
             "tag": null,
             "to": [
-              60.6,
+              60.60000000000001,
               130.0
             ],
             "type": "TangentialArcTo",
@@ -1114,12 +1114,12 @@ description: Variables in memory after executing i_shape.kcl
               "sourceRange": []
             },
             "from": [
-              60.6,
+              60.60000000000001,
               130.0
             ],
             "tag": null,
             "to": [
-              16.6,
+              16.60000000000001,
               130.0
             ],
             "type": "ToPoint",
@@ -1134,16 +1134,16 @@ description: Variables in memory after executing i_shape.kcl
             },
             "ccw": true,
             "center": [
-              16.6,
+              16.60000000000001,
               125.0
             ],
             "from": [
-              16.6,
+              16.60000000000001,
               130.0
             ],
             "tag": null,
             "to": [
-              11.6,
+              11.600000000000009,
               125.0
             ],
             "type": "TangentialArcTo",
@@ -1157,12 +1157,12 @@ description: Variables in memory after executing i_shape.kcl
               "sourceRange": []
             },
             "from": [
-              11.6,
+              11.600000000000009,
               125.0
             ],
             "tag": null,
             "to": [
-              11.6,
+              11.600000000000009,
               107.0
             ],
             "type": "ToPoint",
@@ -1177,16 +1177,16 @@ description: Variables in memory after executing i_shape.kcl
             },
             "ccw": true,
             "center": [
-              16.6,
+              16.60000000000001,
               107.0
             ],
             "from": [
-              11.6,
+              11.600000000000009,
               107.0
             ],
             "tag": null,
             "to": [
-              16.6,
+              16.60000000000001,
               102.0
             ],
             "type": "TangentialArcTo",
@@ -1200,12 +1200,12 @@ description: Variables in memory after executing i_shape.kcl
               "sourceRange": []
             },
             "from": [
-              16.6,
+              16.60000000000001,
               102.0
             ],
             "tag": null,
             "to": [
-              21.6,
+              21.60000000000001,
               102.0
             ],
             "type": "ToPoint",
@@ -1220,16 +1220,16 @@ description: Variables in memory after executing i_shape.kcl
             },
             "ccw": false,
             "center": [
-              21.6,
+              21.60000000000001,
               97.0
             ],
             "from": [
-              21.6,
+              21.60000000000001,
               102.0
             ],
             "tag": null,
             "to": [
-              26.6,
+              26.60000000000001,
               97.0
             ],
             "type": "TangentialArcTo",
@@ -1243,12 +1243,12 @@ description: Variables in memory after executing i_shape.kcl
               "sourceRange": []
             },
             "from": [
-              26.6,
+              26.60000000000001,
               97.0
             ],
             "tag": null,
             "to": [
-              26.6,
+              26.60000000000001,
               35.0
             ],
             "type": "ToPoint",
@@ -1263,16 +1263,16 @@ description: Variables in memory after executing i_shape.kcl
             },
             "ccw": false,
             "center": [
-              21.6,
+              21.60000000000001,
               35.0
             ],
             "from": [
-              26.6,
+              26.60000000000001,
               35.0
             ],
             "tag": null,
             "to": [
-              21.6,
+              21.60000000000001,
               30.0
             ],
             "type": "TangentialArcTo",
@@ -1286,12 +1286,12 @@ description: Variables in memory after executing i_shape.kcl
               "sourceRange": []
             },
             "from": [
-              21.6,
+              21.60000000000001,
               30.0
             ],
             "tag": null,
             "to": [
-              5.0,
+              5.000000000000014,
               30.0
             ],
             "type": "ToPoint",
@@ -1306,16 +1306,16 @@ description: Variables in memory after executing i_shape.kcl
             },
             "ccw": true,
             "center": [
-              5.0,
+              5.000000000000014,
               25.0
             ],
             "from": [
-              5.0,
+              5.000000000000014,
               30.0
             ],
             "tag": null,
             "to": [
-              0.0,
+              0.000000000000014210854715202004,
               25.0
             ],
             "type": "TangentialArcTo",
@@ -1329,12 +1329,12 @@ description: Variables in memory after executing i_shape.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
+              0.000000000000014210854715202004,
               25.0
             ],
             "tag": null,
             "to": [
-              0.0,
+              0.000000000000014210854715202004,
               5.0
             ],
             "type": "ToPoint",
@@ -1349,16 +1349,16 @@ description: Variables in memory after executing i_shape.kcl
             },
             "ccw": true,
             "center": [
-              5.0,
+              5.000000000000014,
               5.0
             ],
             "from": [
-              0.0,
+              0.000000000000014210854715202004,
               5.0
             ],
             "tag": null,
             "to": [
-              5.0,
+              5.000000000000014,
               0.0
             ],
             "type": "TangentialArcTo",
@@ -1372,7 +1372,7 @@ description: Variables in memory after executing i_shape.kcl
               "sourceRange": []
             },
             "from": [
-              5.0,
+              5.000000000000014,
               0.0
             ],
             "tag": null,

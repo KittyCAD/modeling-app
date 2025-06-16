@@ -267,7 +267,7 @@ description: Artifact commands spheres.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0,
+            "x": -0.0000000000000003061616997868383,
             "y": 5.0
           },
           "radius": 5.0,

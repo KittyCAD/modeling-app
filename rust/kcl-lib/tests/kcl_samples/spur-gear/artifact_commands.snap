@@ -59,7 +59,7 @@ description: Artifact commands spur-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.291,
+          "x": 2.29128784747792,
           "y": 1.0,
           "z": 0.0
         }
@@ -133,12 +133,12 @@ description: Artifact commands spur-gear.kcl
           "type": "arc",
           "center": {
             "x": -0.0,
-            "y": 0.0
+            "y": 0.0000000000000002220446049250313
           },
           "radius": 2.5,
           "start": {
             "unit": "degrees",
-            "value": 336.422
+            "value": 336.42182152179817
           },
           "end": {
             "unit": "degrees",
@@ -158,7 +158,7 @@ description: Artifact commands spur-gear.kcl
           "type": "arc",
           "center": {
             "x": -0.0,
-            "y": 0.0
+            "y": 0.00000000000000022204460492503126
           },
           "radius": 2.5,
           "start": {
@@ -167,7 +167,7 @@ description: Artifact commands spur-gear.kcl
           },
           "end": {
             "unit": "degrees",
-            "value": 23.578
+            "value": 23.578178478201835
           },
           "relative": false
         }
@@ -236,7 +236,7 @@ description: Artifact commands spur-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 15.282,
+          "x": 15.282157688846944,
           "y": 0.0,
           "z": 0.0
         }
@@ -276,8 +276,8 @@ description: Artifact commands spur-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 17.098,
-            "y": 2.287,
+            "x": 17.09770867996297,
+            "y": 2.287106883186467,
             "z": 0.0
           },
           "relative": false
@@ -296,7 +296,7 @@ description: Artifact commands spur-gear.kcl
           "end_radius": 17.25,
           "angle": {
             "unit": "degrees",
-            "value": -10.934
+            "value": -10.934457859443263
           },
           "reverse": true
         }
@@ -311,8 +311,8 @@ description: Artifact commands spur-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14.603,
-            "y": 4.504,
+            "x": 14.603214301197719,
+            "y": 4.504495054951021,
             "z": 0.0
           },
           "relative": false
