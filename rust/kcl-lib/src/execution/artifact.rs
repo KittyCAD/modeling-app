@@ -45,26 +45,6 @@ pub struct ArtifactCommand {
     pub command: ModelingCmd,
 }
 
-impl PartialOrd for ArtifactCommand {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        // Order by the source range.
-        let range = self.range.cmp(&other.range);
-        if range != std::cmp::Ordering::Equal {
-            return Some(range);
-        }
-        #[cfg(test)]
-        {
-            // If the ranges are equal, order by the serde variant.
-            Some(
-                crate::variant_name::variant_name(&self.command)
-                    .cmp(&crate::variant_name::variant_name(&other.command)),
-            )
-        }
-        #[cfg(not(test))]
-        self.cmd_id.partial_cmp(&other.cmd_id)
-    }
-}
-
 pub type DummyPathToNode = Vec<()>;
 
 fn serialize_dummy_path_to_node<S>(_path_to_node: &DummyPathToNode, serializer: S) -> Result<S::Ok, S::Error>
@@ -190,6 +170,7 @@ pub struct Sweep {
 #[serde(rename_all = "camelCase")]
 pub enum SweepSubType {
     Extrusion,
+    ExtrusionTwist,
     Revolve,
     RevolveAboutEdge,
     Loft,
@@ -1102,11 +1083,13 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::Extrude(kcmc::Extrude { target, .. })
+        | ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
         | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
         | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
         | ModelingCmd::Sweep(kcmc::Sweep { target, .. }) => {
             let sub_type = match cmd {
                 ModelingCmd::Extrude(_) => SweepSubType::Extrusion,
+                ModelingCmd::TwistExtrude(_) => SweepSubType::ExtrusionTwist,
                 ModelingCmd::Revolve(_) => SweepSubType::Revolve,
                 ModelingCmd::RevolveAboutEdge(_) => SweepSubType::RevolveAboutEdge,
                 ModelingCmd::Sweep(_) => SweepSubType::Sweep,

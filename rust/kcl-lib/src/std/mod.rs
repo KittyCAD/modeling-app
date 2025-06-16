@@ -260,6 +260,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::extrude::extrude(e, a)),
             StdFnProps::default("std::sketch::extrude").include_in_feature_tree(),
         ),
+        ("sketch", "extrudeTwist") => (
+            |e, a| Box::pin(crate::std::extrude::extrude_twist(e, a)),
+            StdFnProps::default("std::sketch::extrudeTwist").include_in_feature_tree(),
+        ),
         ("sketch", "patternTransform2d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
             StdFnProps::default("std::sketch::patternTransform2d"),
@@ -374,47 +378,47 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "involuteCircular") => (
             |e, a| Box::pin(crate::std::sketch::involute_circular(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::involuteCircular"),
         ),
         ("sketch", "line") => (
             |e, a| Box::pin(crate::std::sketch::line(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::line"),
         ),
         ("sketch", "xLine") => (
             |e, a| Box::pin(crate::std::sketch::x_line(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::xLine"),
         ),
         ("sketch", "yLine") => (
             |e, a| Box::pin(crate::std::sketch::y_line(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::yLine"),
         ),
         ("sketch", "angledLine") => (
             |e, a| Box::pin(crate::std::sketch::angled_line(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::angledLine"),
         ),
         ("sketch", "angledLineThatIntersects") => (
             |e, a| Box::pin(crate::std::sketch::angled_line_that_intersects(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::angledLineThatIntersects"),
         ),
         ("sketch", "close") => (
             |e, a| Box::pin(crate::std::sketch::close(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::close"),
         ),
         ("sketch", "arc") => (
             |e, a| Box::pin(crate::std::sketch::arc(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::arc"),
         ),
         ("sketch", "tangentialArc") => (
             |e, a| Box::pin(crate::std::sketch::tangential_arc(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::tangentialArc"),
         ),
         ("sketch", "bezierCurve") => (
             |e, a| Box::pin(crate::std::sketch::bezier_curve(e, a)),
-            StdFnProps::default("std::sketch::startProfile"),
+            StdFnProps::default("std::sketch::bezierCurve"),
         ),
         ("sketch", "subtract2d") => (
             |e, a| Box::pin(crate::std::sketch::subtract_2d(e, a)),
-            StdFnProps::default("std::sketch::startProfile").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::subtract2d").include_in_feature_tree(),
         ),
         ("appearance", "hexString") => (
             |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),
@@ -436,6 +440,8 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
         ("types", "Edge") => (PrimitiveType::Edge, StdFnProps::default("std::types::Edge")),
         ("types", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::types::Axis2d")),
         ("types", "Axis3d") => (PrimitiveType::Axis3d, StdFnProps::default("std::types::Axis3d")),
+        ("types", "TaggedEdge") => (PrimitiveType::TaggedEdge, StdFnProps::default("std::types::TaggedEdge")),
+        ("types", "TaggedFace") => (PrimitiveType::TaggedFace, StdFnProps::default("std::types::TaggedFace")),
         _ => unreachable!(),
     }
 }

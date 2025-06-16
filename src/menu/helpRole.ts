@@ -4,6 +4,7 @@ import { shell } from 'electron'
 import { reportRejection } from '@src/lib/trap'
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
+import { getAutoUpdater } from '@src/updater'
 
 export const helpRole = (
   mainWindow: BrowserWindow
@@ -103,6 +104,12 @@ export const helpRole = (
           shell
             .openExternal('https://github.com/KittyCAD/modeling-app/releases')
             .catch(reportRejection)
+        },
+      },
+      {
+        label: 'Check for updates',
+        click: () => {
+          getAutoUpdater().checkForUpdates().catch(reportRejection)
         },
       },
       { type: 'separator' },

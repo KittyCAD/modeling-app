@@ -8,18 +8,16 @@ use kittycad_modeling_cmds::{
 };
 
 use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{
+    errors::{KclError, KclErrorDetails}, execution::{
         types::{PrimitiveType, RuntimeType},
         ExecState, KclValue, Sketch,
-    },
-    std::{axis_or_reference::Axis2dOrEdgeReference, Args},
+    }, std::{axis_or_reference::Axis2dOrEdgeReference, Args}
 };
 
 /// Mirror a sketch.
 pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let axis = args.get_kw_arg_typed(
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let axis = args.get_kw_arg(
         "axis",
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Edge),
@@ -49,8 +47,8 @@ async fn inner_mirror_2d(
 
     match axis {
         Axis2dOrEdgeReference::Axis { direction, origin } => {
-            let resp = args.send_modeling_cmd(
-                exec_state.next_uuid(),
+            let resp = exec_state.send_modeling_cmd(
+                (&args).into(),
                 ModelingCmd::from(mcmd::EntityMirror {
                     ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
                     axis: Point3d {
@@ -76,7 +74,7 @@ async fn inner_mirror_2d(
             } else if args.ctx.no_engine_commands().await {
                 &mock_ids
             } else {
-                return Err(KclError::Engine(KclErrorDetails::new(
+                return Err(KclError::new_engine(KclErrorDetails::new(
                     format!("EntityLinearPattern response was not as expected: {:?}", resp),
                     vec![args.source_range],
                 )));
@@ -88,8 +86,8 @@ async fn inner_mirror_2d(
         Axis2dOrEdgeReference::Edge(edge) => {
             let edge_id = edge.get_engine_id(exec_state, &args)?;
 
-            let resp = args.send_modeling_cmd(
-                exec_state.next_uuid(),
+            let resp = exec_state.send_modeling_cmd(
+                (&args).into(),
                 ModelingCmd::from(mcmd::EntityMirrorAcrossEdge {
                     ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
                     edge_id,
@@ -106,7 +104,7 @@ async fn inner_mirror_2d(
             } else if args.ctx.no_engine_commands().await {
                 &mock_ids
             } else {
-                return Err(KclError::Engine(KclErrorDetails::new(
+                return Err(KclError::new_engine(KclErrorDetails::new(
                     format!("EntityLinearPattern response was not as expected: {:?}", resp),
                     vec![args.source_range],
                 )));

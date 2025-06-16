@@ -11,7 +11,7 @@ use crate::{
     errors::KclError,
     execution::{
         types::{NumericType, RuntimeType},
-        ExecState, Helix, KclValue, Sketch, Solid,
+        ExecState, Helix, KclValue, ModelingCmdMeta, Sketch, Solid,
     },
     parsing::ast::types::TagNode,
     std::{extrude::do_post_extrude, Args},
@@ -29,17 +29,17 @@ pub enum SweepPath {
 
 /// Extrude a sketch along a path.
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let path: SweepPath = args.get_kw_arg_typed(
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let path: SweepPath = args.get_kw_arg(
         "path",
         &RuntimeType::Union(vec![RuntimeType::sketch(), RuntimeType::helix()]),
         exec_state,
     )?;
-    let sectional = args.get_kw_arg_opt_typed("sectional", &RuntimeType::bool(), exec_state)?;
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
-    let relative_to: Option<String> = args.get_kw_arg_opt_typed("relativeTo", &RuntimeType::string(), exec_state)?;
-    let tag_start = args.get_kw_arg_opt("tagStart")?;
-    let tag_end = args.get_kw_arg_opt("tagEnd")?;
+    let sectional = args.get_kw_arg_opt("sectional", &RuntimeType::bool(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+    let relative_to: Option<String> = args.get_kw_arg_opt("relativeTo", &RuntimeType::string(), exec_state)?;
+    let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
+    let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
 
     let value = inner_sweep(
         sketches,
@@ -86,17 +86,18 @@ async fn inner_sweep(
     let mut solids = Vec::new();
     for sketch in &sketches {
         let id = exec_state.next_uuid();
-        args.batch_modeling_cmd(
-            id,
-            ModelingCmd::from(mcmd::Sweep {
-                target: sketch.id.into(),
-                trajectory,
-                sectional: sectional.unwrap_or(false),
-                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
-                relative_to,
-            }),
-        )
-        .await?;
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmd::from(mcmd::Sweep {
+                    target: sketch.id.into(),
+                    trajectory,
+                    sectional: sectional.unwrap_or(false),
+                    tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
+                    relative_to,
+                }),
+            )
+            .await?;
 
         solids.push(
             do_post_extrude(
@@ -117,14 +118,15 @@ async fn inner_sweep(
     }
 
     // Hide the artifact from the sketch or helix.
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::ObjectVisible {
-            object_id: trajectory.into(),
-            hidden: true,
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            (&args).into(),
+            ModelingCmd::from(mcmd::ObjectVisible {
+                object_id: trajectory.into(),
+                hidden: true,
+            }),
+        )
+        .await?;
 
     Ok(solids)
 }

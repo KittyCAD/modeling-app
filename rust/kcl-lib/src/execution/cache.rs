@@ -111,8 +111,6 @@ impl GlobalState {
             #[cfg(feature = "artifact-graph")]
             operations: self.exec_state.artifacts.operations,
             #[cfg(feature = "artifact-graph")]
-            artifact_commands: self.exec_state.artifacts.commands,
-            #[cfg(feature = "artifact-graph")]
             artifact_graph: self.exec_state.artifacts.graph,
             errors: self.exec_state.errors,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),

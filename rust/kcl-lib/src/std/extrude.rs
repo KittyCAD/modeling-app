@@ -12,15 +12,18 @@ use kcmc::{
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
     ModelingCmd,
 };
-use kittycad_modeling_cmds::{self as kcmc};
+use kittycad_modeling_cmds::{
+    self as kcmc,
+    shared::{Angle, Point2d},
+};
 use uuid::Uuid;
 
-use super::args::TyF64;
+use super::{args::TyF64, utils::point_to_mm, DEFAULT_TOLERANCE};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::RuntimeType, ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSurface,
-        Solid,
+        types::RuntimeType, ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch,
+        SketchSurface, Solid,
     },
     parsing::ast::types::TagNode,
     std::Args,
@@ -28,13 +31,13 @@ use crate::{
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let length: TyF64 = args.get_kw_arg_typed("length", &RuntimeType::length(), exec_state)?;
-    let symmetric = args.get_kw_arg_opt_typed("symmetric", &RuntimeType::bool(), exec_state)?;
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
+    let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_length: Option<TyF64> =
-        args.get_kw_arg_opt_typed("bidirectionalLength", &RuntimeType::length(), exec_state)?;
-    let tag_start = args.get_kw_arg_opt("tagStart")?;
-    let tag_end = args.get_kw_arg_opt("tagEnd")?;
+        args.get_kw_arg_opt("bidirectionalLength", &RuntimeType::length(), exec_state)?;
+    let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
+    let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
 
     let result = inner_extrude(
         sketches,
@@ -85,7 +88,7 @@ async fn inner_extrude(
 
     for sketch in &sketches {
         let id = exec_state.next_uuid();
-        args.batch_modeling_cmds(&sketch.build_sketch_mode_cmds(
+        let cmds = sketch.build_sketch_mode_cmds(
             exec_state,
             ModelingCmdReq {
                 cmd_id: id.into(),
@@ -96,8 +99,89 @@ async fn inner_extrude(
                     opposite: opposite.clone(),
                 }),
             },
-        ))
-        .await?;
+        );
+        exec_state
+            .batch_modeling_cmds(ModelingCmdMeta::from_args_id(&args, id), &cmds)
+            .await?;
+
+        solids.push(
+            do_post_extrude(
+                sketch,
+                id.into(),
+                length.clone(),
+                false,
+                &NamedCapTags {
+                    start: tag_start.as_ref(),
+                    end: tag_end.as_ref(),
+                },
+                exec_state,
+                &args,
+                None,
+            )
+            .await?,
+        );
+    }
+
+    Ok(solids)
+}
+/// Extrudes by a given amount, twisting the sketch as it goes.
+pub async fn extrude_twist(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+    let angle: TyF64 = args.get_kw_arg("angle", &RuntimeType::degrees(), exec_state)?;
+    let angle_step: Option<TyF64> = args.get_kw_arg_opt("angleStep", &RuntimeType::degrees(), exec_state)?;
+    let center: Option<[TyF64; 2]> = args.get_kw_arg_opt("center", &RuntimeType::point2d(), exec_state)?;
+    let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
+    let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
+
+    let result = inner_extrude_twist(
+        sketches, length, tag_start, tag_end, center, angle, angle_step, tolerance, exec_state, args,
+    )
+    .await?;
+
+    Ok(result.into())
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn inner_extrude_twist(
+    sketches: Vec<Sketch>,
+    length: TyF64,
+    tag_start: Option<TagNode>,
+    tag_end: Option<TagNode>,
+    center: Option<[TyF64; 2]>,
+    angle: TyF64,
+    angle_step: Option<TyF64>,
+    tolerance: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Vec<Solid>, KclError> {
+    // Extrude the element(s).
+    let mut solids = Vec::new();
+    let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE));
+    let center = center.map(point_to_mm).map(Point2d::from).unwrap_or_default();
+    let angle_step_size = Angle::from_degrees(angle_step.map(|a| a.to_degrees()).unwrap_or(15.0));
+
+    for sketch in &sketches {
+        let id = exec_state.next_uuid();
+        let cmds = sketch.build_sketch_mode_cmds(
+            exec_state,
+            ModelingCmdReq {
+                cmd_id: id.into(),
+                cmd: ModelingCmd::from(mcmd::TwistExtrude {
+                    target: sketch.id.into(),
+                    distance: LengthUnit(length.to_mm()),
+                    faces: Default::default(),
+                    center_2d: center,
+                    total_rotation_angle: Angle::from_degrees(angle.to_degrees()),
+                    angle_step_size,
+                    tolerance,
+                }),
+            },
+        );
+        exec_state
+            .batch_modeling_cmds(ModelingCmdMeta::from_args_id(&args, id), &cmds)
+            .await?;
 
         solids.push(
             do_post_extrude(
@@ -139,11 +223,12 @@ pub(crate) async fn do_post_extrude<'a>(
 ) -> Result<Solid, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            args.into(),
+            ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
+        )
+        .await?;
 
     let any_edge_id = if let Some(id) = edge_id {
         id
@@ -166,9 +251,9 @@ pub(crate) async fn do_post_extrude<'a>(
         sketch.id = face.solid.sketch.id;
     }
 
-    let solid3d_info = args
+    let solid3d_info = exec_state
         .send_modeling_cmd(
-            exec_state.next_uuid(),
+            args.into(),
             ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
                 edge_id: any_edge_id,
                 object_id: sketch.id,
@@ -191,14 +276,15 @@ pub(crate) async fn do_post_extrude<'a>(
         // Getting the ids of a sectional sweep does not work well and we cannot guarantee that
         // any of these call will not just fail.
         if !sectional {
-            args.batch_modeling_cmd(
-                exec_state.next_uuid(),
-                ModelingCmd::from(mcmd::Solid3dGetAdjacencyInfo {
-                    object_id: sketch.id,
-                    edge_id: any_edge_id,
-                }),
-            )
-            .await?;
+            exec_state
+                .batch_modeling_cmd(
+                    args.into(),
+                    ModelingCmd::from(mcmd::Solid3dGetAdjacencyInfo {
+                        object_id: sketch.id,
+                        edge_id: any_edge_id,
+                    }),
+                )
+                .await?;
         }
     }
 

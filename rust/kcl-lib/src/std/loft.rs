@@ -11,7 +11,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         types::{NumericType, RuntimeType},
-        ExecState, KclValue, Sketch, Solid,
+        ExecState, KclValue, ModelingCmdMeta, Sketch, Solid,
     },
     parsing::ast::types::TagNode,
     std::{extrude::do_post_extrude, Args},
@@ -21,23 +21,22 @@ const DEFAULT_V_DEGREE: u32 = 2;
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
 pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
     let v_degree: NonZeroU32 = args
-        .get_kw_arg_opt_typed("vDegree", &RuntimeType::count(), exec_state)?
+        .get_kw_arg_opt("vDegree", &RuntimeType::count(), exec_state)?
         .unwrap_or(NonZeroU32::new(DEFAULT_V_DEGREE).unwrap());
     // Attempt to approximate rational curves (such as arcs) using a bezier.
     // This will remove banding around interpolations between arcs and non-arcs.  It may produce errors in other scenarios
     // Over time, this field won't be necessary.
     let bez_approximate_rational = args
-        .get_kw_arg_opt_typed("bezApproximateRational", &RuntimeType::bool(), exec_state)?
+        .get_kw_arg_opt("bezApproximateRational", &RuntimeType::bool(), exec_state)?
         .unwrap_or(false);
     // This can be set to override the automatically determined topological base curve, which is usually the first section encountered.
-    let base_curve_index: Option<u32> =
-        args.get_kw_arg_opt_typed("baseCurveIndex", &RuntimeType::count(), exec_state)?;
+    let base_curve_index: Option<u32> = args.get_kw_arg_opt("baseCurveIndex", &RuntimeType::count(), exec_state)?;
     // Tolerance for the loft operation.
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
-    let tag_start = args.get_kw_arg_opt("tagStart")?;
-    let tag_end = args.get_kw_arg_opt("tagEnd")?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+    let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
+    let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
 
     let value = inner_loft(
         sketches,
@@ -78,17 +77,18 @@ async fn inner_loft(
     }
 
     let id = exec_state.next_uuid();
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::Loft {
-            section_ids: sketches.iter().map(|group| group.id).collect(),
-            base_curve_index,
-            bez_approximate_rational,
-            tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
-            v_degree,
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::Loft {
+                section_ids: sketches.iter().map(|group| group.id).collect(),
+                base_curve_index,
+                bez_approximate_rational,
+                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
+                v_degree,
+            }),
+        )
+        .await?;
 
     // Using the first sketch as the base curve, idk we might want to change this later.
     let mut sketch = sketches[0].clone();

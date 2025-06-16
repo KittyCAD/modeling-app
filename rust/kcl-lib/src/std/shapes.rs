@@ -20,11 +20,10 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         types::{RuntimeType, UnitLen},
-        BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface,
+        BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface,
     },
     parsing::ast::types::TagNode,
     std::{
-        sketch::NEW_TAG_KW,
         utils::{calculate_circle_center, distance},
         Args,
     },
@@ -43,11 +42,11 @@ pub enum SketchOrSurface {
 /// Sketch a circle.
 pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_or_surface =
-        args.get_unlabeled_kw_arg_typed("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
-    let center = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
-    let radius: Option<TyF64> = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;
-    let diameter: Option<TyF64> = args.get_kw_arg_opt_typed("diameter", &RuntimeType::length(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+        args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
+    let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let radius: Option<TyF64> = args.get_kw_arg_opt("radius", &RuntimeType::length(), exec_state)?;
+    let diameter: Option<TyF64> = args.get_kw_arg_opt("diameter", &RuntimeType::length(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let sketch = inner_circle(sketch_or_surface, center, radius, diameter, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
@@ -83,20 +82,21 @@ async fn inner_circle(
 
     let id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Arc {
-                start: angle_start,
-                end: angle_end,
-                center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
-                radius: LengthUnit(radius.to_mm()),
-                relative: false,
-            },
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Arc {
+                    start: angle_start,
+                    end: angle_end,
+                    center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
+                    radius: LengthUnit(radius.to_mm()),
+                    relative: false,
+                },
+            }),
+        )
+        .await?;
 
     let current_path = Path::Circle {
         base: BasePath {
@@ -121,7 +121,11 @@ async fn inner_circle(
 
     new_sketch.paths.push(current_path);
 
-    args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }))
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
+        )
         .await?;
 
     Ok(new_sketch)
@@ -130,11 +134,11 @@ async fn inner_circle(
 /// Sketch a 3-point circle.
 pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_or_surface =
-        args.get_unlabeled_kw_arg_typed("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
-    let p1 = args.get_kw_arg_typed("p1", &RuntimeType::point2d(), exec_state)?;
-    let p2 = args.get_kw_arg_typed("p2", &RuntimeType::point2d(), exec_state)?;
-    let p3 = args.get_kw_arg_typed("p3", &RuntimeType::point2d(), exec_state)?;
-    let tag = args.get_kw_arg_opt("tag")?;
+        args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
+    let p1 = args.get_kw_arg("p1", &RuntimeType::point2d(), exec_state)?;
+    let p2 = args.get_kw_arg("p2", &RuntimeType::point2d(), exec_state)?;
+    let p3 = args.get_kw_arg("p3", &RuntimeType::point2d(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let sketch = inner_circle_three_point(sketch_or_surface, p1, p2, p3, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
@@ -181,20 +185,21 @@ async fn inner_circle_three_point(
 
     let id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Arc {
-                start: angle_start,
-                end: angle_end,
-                center: KPoint2d::from(untyped_point_to_mm(center, units)).map(LengthUnit),
-                radius: units.adjust_to(radius, UnitLen::Mm).0.into(),
-                relative: false,
-            },
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Arc {
+                    start: angle_start,
+                    end: angle_end,
+                    center: KPoint2d::from(untyped_point_to_mm(center, units)).map(LengthUnit),
+                    radius: units.adjust_to(radius, UnitLen::Mm).0.into(),
+                    relative: false,
+                },
+            }),
+        )
+        .await?;
 
     let current_path = Path::CircleThreePoint {
         base: BasePath {
@@ -220,7 +225,11 @@ async fn inner_circle_three_point(
 
     new_sketch.paths.push(current_path);
 
-    args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }))
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
+        )
         .await?;
 
     Ok(new_sketch)
@@ -239,11 +248,11 @@ pub enum PolygonType {
 /// Create a regular polygon with the specified number of sides and radius.
 pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_or_surface =
-        args.get_unlabeled_kw_arg_typed("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
-    let radius: TyF64 = args.get_kw_arg_typed("radius", &RuntimeType::length(), exec_state)?;
-    let num_sides: TyF64 = args.get_kw_arg_typed("numSides", &RuntimeType::count(), exec_state)?;
-    let center = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
-    let inscribed = args.get_kw_arg_opt_typed("inscribed", &RuntimeType::bool(), exec_state)?;
+        args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
+    let radius: TyF64 = args.get_kw_arg("radius", &RuntimeType::length(), exec_state)?;
+    let num_sides: TyF64 = args.get_kw_arg("numSides", &RuntimeType::count(), exec_state)?;
+    let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let inscribed = args.get_kw_arg_opt("inscribed", &RuntimeType::bool(), exec_state)?;
 
     let sketch = inner_polygon(
         sketch_or_surface,
@@ -327,19 +336,20 @@ async fn inner_polygon(
         let from = sketch.current_pen_position()?;
         let id = exec_state.next_uuid();
 
-        args.batch_modeling_cmd(
-            id,
-            ModelingCmd::from(mcmd::ExtendPath {
-                path: sketch.id.into(),
-                segment: PathSegment::Line {
-                    end: KPoint2d::from(untyped_point_to_mm(*vertex, units))
-                        .with_z(0.0)
-                        .map(LengthUnit),
-                    relative: false,
-                },
-            }),
-        )
-        .await?;
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmd::from(mcmd::ExtendPath {
+                    path: sketch.id.into(),
+                    segment: PathSegment::Line {
+                        end: KPoint2d::from(untyped_point_to_mm(*vertex, units))
+                            .with_z(0.0)
+                            .map(LengthUnit),
+                        relative: false,
+                    },
+                }),
+            )
+            .await?;
 
         let current_path = Path::ToPoint {
             base: BasePath {
@@ -361,19 +371,20 @@ async fn inner_polygon(
     let from = sketch.current_pen_position()?;
     let close_id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
-        close_id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Line {
-                end: KPoint2d::from(untyped_point_to_mm(vertices[0], units))
-                    .with_z(0.0)
-                    .map(LengthUnit),
-                relative: false,
-            },
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, close_id),
+            ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Line {
+                    end: KPoint2d::from(untyped_point_to_mm(vertices[0], units))
+                        .with_z(0.0)
+                        .map(LengthUnit),
+                    relative: false,
+                },
+            }),
+        )
+        .await?;
 
     let current_path = Path::ToPoint {
         base: BasePath {
@@ -390,11 +401,12 @@ async fn inner_polygon(
 
     sketch.paths.push(current_path);
 
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            (&args).into(),
+            ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
+        )
+        .await?;
 
     Ok(sketch)
 }

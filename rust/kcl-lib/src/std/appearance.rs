@@ -22,7 +22,7 @@ lazy_static::lazy_static! {
 
 /// Construct a color from its red, blue and green components.
 pub async fn hex_string(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let rgb: [TyF64; 3] = args.get_unlabeled_kw_arg_typed(
+    let rgb: [TyF64; 3] = args.get_unlabeled_kw_arg(
         "rgb",
         &RuntimeType::Array(Box::new(RuntimeType::count()), ArrayLen::Known(3)),
         exec_state,
@@ -50,15 +50,15 @@ async fn inner_hex_string(rgb: [TyF64; 3], _: &mut ExecState, args: Args) -> Res
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
 pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed(
+    let solids = args.get_unlabeled_kw_arg(
         "solids",
         &RuntimeType::Union(vec![RuntimeType::solids(), RuntimeType::imported()]),
         exec_state,
     )?;
 
-    let color: String = args.get_kw_arg_typed("color", &RuntimeType::string(), exec_state)?;
-    let metalness: Option<TyF64> = args.get_kw_arg_opt_typed("metalness", &RuntimeType::count(), exec_state)?;
-    let roughness: Option<TyF64> = args.get_kw_arg_opt_typed("roughness", &RuntimeType::count(), exec_state)?;
+    let color: String = args.get_kw_arg("color", &RuntimeType::string(), exec_state)?;
+    let metalness: Option<TyF64> = args.get_kw_arg_opt("metalness", &RuntimeType::count(), exec_state)?;
+    let roughness: Option<TyF64> = args.get_kw_arg_opt("roughness", &RuntimeType::count(), exec_state)?;
 
     // Make sure the color if set is valid.
     if !HEX_REGEX.is_match(&color) {
@@ -106,17 +106,18 @@ async fn inner_appearance(
             a: 100.0,
         };
 
-        args.batch_modeling_cmd(
-            exec_state.next_uuid(),
-            ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
-                object_id: solid_id,
-                color,
-                metalness: metalness.unwrap_or_default() as f32 / 100.0,
-                roughness: roughness.unwrap_or_default() as f32 / 100.0,
-                ambient_occlusion: 0.0,
-            }),
-        )
-        .await?;
+        exec_state
+            .batch_modeling_cmd(
+                (&args).into(),
+                ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
+                    object_id: solid_id,
+                    color,
+                    metalness: metalness.unwrap_or_default() as f32 / 100.0,
+                    roughness: roughness.unwrap_or_default() as f32 / 100.0,
+                    ambient_occlusion: 0.0,
+                }),
+            )
+            .await?;
 
         // Idk if we want to actually modify the memory for the colors, but I'm not right now since
         // I can't think of a use case for it.

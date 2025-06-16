@@ -1,7 +1,7 @@
 import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
-import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
+import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { AsyncFn } from '@src/lib/types'
 
@@ -260,6 +260,9 @@ export function platform(): Platform {
   }
   if (navigator.platform === 'Windows' || navigator.platform === 'Win32') {
     return 'windows'
+  }
+  if (navigator.platform?.indexOf('Linux') === 0) {
+    return 'linux'
   }
 
   // Chrome only, but more accurate than userAgent.
@@ -520,6 +523,20 @@ export function binaryToUuid(
 
 export function getModuleId(sourceRange: SourceRange) {
   return sourceRange[2]
+}
+
+export function getModuleIdByFileName(
+  fileName: string,
+  fileNames: ExecState['filenames']
+) {
+  const module = Object.entries(fileNames).find(
+    ([, moduleInfo]) =>
+      moduleInfo?.type === 'Local' && moduleInfo.value === fileName
+  )
+  if (module) {
+    return Number(module[0]) // Return the module ID
+  }
+  return -1
 }
 
 export function getInVariableCase(name: string, prefixIfDigit = 'm') {
