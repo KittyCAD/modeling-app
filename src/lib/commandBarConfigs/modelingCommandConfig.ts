@@ -61,7 +61,7 @@ export type ModelingCommandSchema = {
     sketches: Selections
     length: KclCommandValue
     symmetric?: boolean
-    // bidirectionalLength?: KclCommandValue
+    bidirectionalLength?: KclCommandValue
   }
   Sweep: {
     // Enables editing workflow
@@ -405,13 +405,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'True', value: true },
         ],
       },
-      // bidirectionalLength: {
-      //   inputType: 'kcl',
-      //   defaultValue: KCL_DEFAULT_LENGTH,
-      //   skip: true,
-      //   hidden: false,
-      //   required: false,
-      // },
+      bidirectionalLength: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        skip: true,
+        required: false,
+      },
     },
   },
   Sweep: {

@@ -20,12 +20,13 @@ import {
   type Program,
   pathToNodeFromRustNodePath,
   type VariableDeclaration,
+  type ParseResult,
 } from '@src/lang/wasm'
 import type {
   HelixModes,
   ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import type { KclExpression } from '@src/lib/commandTypes'
+import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import {
   stringToKclExpression,
   retrieveArgFromPipedCallExpression,
@@ -95,7 +96,27 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     return { reason: "Couldn't retrieve length argument" }
   }
 
-  // symmetric argument from a string to a KCL expression
+  // bidirectionalLength argument from a string to a KCL expression
+  let bidirectionalLength: KclCommandValue | Error | ParseResult | undefined
+  if (
+    'bidirectionalLength' in operation.labeledArgs &&
+    operation.labeledArgs.bidirectionalLength
+  ) {
+    bidirectionalLength = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.bidirectionalLength.sourceRange[0],
+        operation.labeledArgs.bidirectionalLength.sourceRange[1]
+      )
+    )
+  }
+  if (
+    err(bidirectionalLength) ||
+    (bidirectionalLength && 'errors' in bidirectionalLength)
+  ) {
+    return { reason: "Couldn't retrieve bidirectionalLength argument" }
+  }
+
+  // symmetric argument from a string to boolean
   let symmetric: boolean | undefined
   if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
     symmetric =
@@ -111,6 +132,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   const argDefaultValues: ModelingCommandSchema['Extrude'] = {
     sketches,
     length,
+    bidirectionalLength,
     symmetric,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
