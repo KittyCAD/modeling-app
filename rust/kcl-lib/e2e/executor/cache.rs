@@ -320,7 +320,7 @@ extrude001 = extrude(profile001, length = 4)
     assert_eq!(
         second.operations.len(),
         3,
-        "There should be exactly 4 operations in the second run. {:#?}",
+        "There should be exactly this many operations in the second run. {:#?}",
         &second.operations
     );
     // Make sure we have NodePaths referring to the old code.
