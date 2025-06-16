@@ -13,7 +13,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { Themes, darkModeMatcher, setThemeClass } from '@src/lib/theme'
 import toast from 'react-hot-toast'
 import { platform } from '@src/lib/utils'
-import { goIntoTemporaryWorkspaceModeWithCode } from '@src/lib/goToTemporaryWorkspace'
+import { codeManager } from '@src/lib/singletons'
 import { Logo } from '@src/components/Logo'
 import { useEffect } from 'react'
 
@@ -41,14 +41,14 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
   }, [])
 
   useEffect(() => {
-    if (!hasAskToOpenParam || isDesktop()) {
+    if (!hasAskToOpenParam) {
       return
     }
 
     const codeB64 = base64ToString(
       decodeURIComponent(searchParams.get('code') ?? '')
     )
-    goIntoTemporaryWorkspaceModeWithCode(codeB64)
+    codeManager.goIntoTemporaryWorkspaceModeWithCode(codeB64)
   }, [hasAskToOpenParam])
 
   /**

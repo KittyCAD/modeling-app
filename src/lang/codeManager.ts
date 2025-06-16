@@ -28,6 +28,8 @@ export default class CodeManager {
 
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
 
+  public isBufferMode = false
+
   constructor() {
     if (isDesktop()) {
       this.code = ''
@@ -134,6 +136,8 @@ export default class CodeManager {
   }
 
   async writeToFile() {
+    if (this.isBufferMode) return
+
     if (isDesktop()) {
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during
@@ -185,6 +189,16 @@ export default class CodeManager {
       return
     }
     this.updateCodeStateEditor(newCode)
+    this.writeToFile().catch(reportRejection)
+  }
+
+  goIntoTemporaryWorkspaceModeWithCode(code: string) {
+    this.isBufferMode = true
+    this.updateCodeStateEditor(code, true)
+  }
+
+  exitFromTemporaryWorkspaceMode() {
+    this.isBufferMode = false
     this.writeToFile().catch(reportRejection)
   }
 }

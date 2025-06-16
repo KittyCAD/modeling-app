@@ -16,10 +16,9 @@ import {
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
-import { commandBarActor, useAuthState } from '@src/lib/singletons'
+import { codeManager, commandBarActor, useAuthState } from '@src/lib/singletons'
 import { findKclSample } from '@src/lib/kclSamples'
 import { webSafePathSplit } from '@src/lib/paths'
-import { goIntoTemporaryWorkspaceModeWithCode } from '@src/lib/goToTemporaryWorkspace'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -152,12 +151,7 @@ export function useQueryParamEffects() {
         return response.text()
       })
       .then((code) => {
-        // Only create a temporary workspace on web.
-        if (isDesktop()) {
-          return
-        }
-
-        goIntoTemporaryWorkspaceModeWithCode(code)
+        codeManager.goIntoTemporaryWorkspaceModeWithCode(code)
       })
       .catch((error) => {
         console.error('Error loading KCL sample:', error)
