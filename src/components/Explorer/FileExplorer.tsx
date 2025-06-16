@@ -1,31 +1,12 @@
 import type { FileEntry } from '@src/lib/project'
-import type { ReactNode } from 'react'
-import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import { uuidv4 } from '@src/lib/utils'
-
-export interface FileExplorerEntry extends FileEntry {
-  parentPath: string
-  level: number
-  index: number
-}
-
-export interface FileExplorerRow extends FileExplorerEntry {
-  icon: CustomIconName
-  name: string
-  isFolder: boolean
-  status?: ReactNode
-  isOpen: boolean
-  rowClicked: (domIndex: number) => void
-  /**
-   * Fake file or folder rows are the placeholders for users to input a value
-   * and write that to disk to be read as a real one.
-   * they are placed in the DOM as if they are real but not from the source of truth
-   */
-  isFake: boolean
-  activeIndex: number
-}
+import {
+  FileExplorerEntry,
+  FileExplorerRow,
+  FileExplorerRender,
+} from '@src/components/Explorer/utils'
 
 export const StatusDot = () => {
   return <span>•</span>
@@ -47,7 +28,7 @@ const Spacer = (level: number) => {
     >
       {Array(level)
         .fill(0)
-        .map((value, index) => {
+        .map(() => {
           const remSpacing = `${0.5}rem`
           return (
             <div className="h-full w-full" key={uuidv4()}>
@@ -137,21 +118,6 @@ export const flattenProject = (
   return flattenTreeInOrder
 }
 
-const insertFakeRowAtFirstPositionUnderParentAfterFolder = (
-  fileExplorerEntries: FileExplorerEntry[],
-  fakeRow: { entry: FileExplorerEntry | null; isFile: boolean } | null
-): void => {
-  if (!fakeRow) {
-    // no op
-    return
-  }
-
-  // const requestedEntry: FileExplorerEntry = {
-  //   ...fakeRow,
-  // }
-  // fileExplorerEntries.splice(insertIndex, 0, requestedEntry)
-}
-
 /**
  * Render all the rows of the file explorer in linear layout in the DOM.
  * each row is rendered one after another in the same parent DOM element
@@ -177,14 +143,17 @@ export const FileExplorer = ({
           return row.isOpen
         })
         .map((row, index, original) => {
-          row.domIndex = index
-          row.domLength = original.length
+          const renderRow : FileExplorerRender= {
+            ...row,
+            domIndex: index,
+            domLength: original.length
+          }
           return (
-            <FileExplorerRow
+            <FileExplorerRowElement
               key={uuidv4()}
-              row={row}
+              row={renderRow}
               selectedRow={selectedRow}
-            ></FileExplorerRow>
+            ></FileExplorerRowElement>
           )
         })}
     </div>
@@ -195,11 +164,11 @@ export const FileExplorer = ({
  * Making div soup!
  * A row is a folder or a file.
  */
-export const FileExplorerRow = ({
+export const FileExplorerRowElement = ({
   row,
   selectedRow,
 }: {
-  row: FileExplorerRow
+  row: FileExplorerRender
   selectedRow: FileExplorerEntry | null
   domLength: number
 }) => {

@@ -1,14 +1,15 @@
-import type { Project, FileEntry } from '@src/lib/project'
+import type { Project } from '@src/lib/project'
 import { FILE_EXT } from '@src/lib/constants'
 import {
   FileExplorer,
   constructPath,
-  FileExplorerEntry,
-  FileExplorerRow,
   flattenProject,
   StatusDot
 } from '@src/components/Explorer/FileExplorer'
-import type { FileExplorerEntry } from '@src/components/Explorer/FileExplorer'
+import {
+  FileExplorerRow,
+} from '@src/components/Explorer/utils'
+import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { useState, useRef, useEffect } from 'react'
 import { systemIOActor } from '@src/lib/singletons'
