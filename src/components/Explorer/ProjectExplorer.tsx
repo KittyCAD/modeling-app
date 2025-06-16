@@ -40,6 +40,7 @@ export const ProjectExplorer = ({
   const [activeIndex, setActiveIndex] = useState<number>(NOTHING_IS_SELECTED)
   const [rowsToRender, setRowsToRender] = useState<FileExplorerRow[]>([])
   const fileExplorerContainer = useRef(null)
+  const openedRowsRef = useRef(openedRows)
 
   // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
   const [fakeRow, setFakeRow] = useState<{
@@ -47,13 +48,17 @@ export const ProjectExplorer = ({
     isFile: boolean
   } | null>(null)
 
+  /**
+   * Gotcha: closure
+   * Needs a reference to openedRows since it is a callback
+   */
   const onRowClickCallback = (file: FileExplorerEntry, domIndex: number) => {
-    const newOpenedRows = { ...openedRows }
+    const newOpenedRows = { ...openedRowsRef.current }
     const key = constructPath({
       parentPath: file.parentPath,
       name: file.name,
     })
-    const value = openedRows[key]
+    const value = openedRowsRef.current[key]
     newOpenedRows[key] = !value
     setOpenedRows(newOpenedRows)
     setSelectedRow(file)
@@ -65,6 +70,9 @@ export const ProjectExplorer = ({
     // Clear openedRows
     // Clear rowsToRender
     // Clear selected information
+
+    // gotcha: sync state
+    openedRowsRef.current = openedRows
 
     // Wrap the FileEntry in a FileExplorerEntry to keep track for more metadata
     let flattenedData: FileExplorerEntry[] = []
