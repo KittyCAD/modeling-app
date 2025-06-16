@@ -187,7 +187,8 @@ export class EditorFixture {
         // error TS2339: Property 'docView' does not exist on type 'EditorView'.
         // Except it does so :shrug:
         // @ts-ignore
-        const index = editorView?.docView.view.state.doc.toString()
+        const index = editorView?.docView.view.state.doc
+          .toString()
           .indexOf(args.text)
         editorView?.focus()
         editorView?.dispatch({
