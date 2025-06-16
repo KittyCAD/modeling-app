@@ -1049,23 +1049,35 @@ export class CameraControls {
     })
   }
 
-  async saveRemoteCameraState() {
-    const cameraViewStateResponse =
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: { type: 'default_camera_get_view' },
-      })
-    if (!cameraViewStateResponse) return
-    if (
-      'resp' in cameraViewStateResponse &&
-      'modeling_response' in cameraViewStateResponse.resp.data &&
-      'data' in cameraViewStateResponse.resp.data.modeling_response &&
-      'view' in cameraViewStateResponse.resp.data.modeling_response.data
-    ) {
-      this.oldCameraState =
-        cameraViewStateResponse.resp.data.modeling_response.data.view
-    }
+  saveRemoteCameraState(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // It's possible we've hit a disconnection, but the browser or nothing
+      // indicates this, other than the amount of time between our request
+      // and its response. Typically round-trip time is < 30ms. It seems safe
+      // then to wait 1 magnitude of time before calling this request toasted.
+      const timeoutId = setTimeout(reject, 300)
+      ;(async () => {
+        const cameraViewStateResponse =
+          await this.engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'default_camera_get_view' },
+          })
+        if (!cameraViewStateResponse) return
+        if (
+          'resp' in cameraViewStateResponse &&
+          'modeling_response' in cameraViewStateResponse.resp.data &&
+          'data' in cameraViewStateResponse.resp.data.modeling_response &&
+          'view' in cameraViewStateResponse.resp.data.modeling_response.data
+        ) {
+          this.oldCameraState =
+            cameraViewStateResponse.resp.data.modeling_response.data.view
+        }
+
+        clearTimeout(timeoutId)
+        resolve()
+      })().catch(reject)
+    })
   }
 
   async tweenCameraToQuaternion(

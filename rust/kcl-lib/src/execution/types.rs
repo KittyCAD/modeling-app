@@ -84,16 +84,16 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Face)
     }
 
-    pub fn tag() -> Self {
-        RuntimeType::Primitive(PrimitiveType::Tag)
-    }
-
     pub fn tag_decl() -> Self {
         RuntimeType::Primitive(PrimitiveType::TagDecl)
     }
 
-    pub fn tag_identifier() -> Self {
-        RuntimeType::Primitive(PrimitiveType::TagId)
+    pub fn tagged_face() -> Self {
+        RuntimeType::Primitive(PrimitiveType::TaggedFace)
+    }
+
+    pub fn tagged_edge() -> Self {
+        RuntimeType::Primitive(PrimitiveType::TaggedEdge)
     }
 
     pub fn bool() -> Self {
@@ -196,7 +196,7 @@ impl RuntimeType {
                 RuntimeType::Primitive(PrimitiveType::Number(ty))
             }
             AstPrimitiveType::Named { id } => Self::from_alias(&id.name, exec_state, source_range)?,
-            AstPrimitiveType::Tag => RuntimeType::Primitive(PrimitiveType::Tag),
+            AstPrimitiveType::TagDecl => RuntimeType::Primitive(PrimitiveType::TagDecl),
             AstPrimitiveType::ImportedGeometry => RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
             AstPrimitiveType::Function(_) => RuntimeType::Primitive(PrimitiveType::Function),
         })
@@ -383,8 +383,8 @@ pub enum PrimitiveType {
     Number(NumericType),
     String,
     Boolean,
-    Tag,
-    TagId,
+    TaggedEdge,
+    TaggedFace,
     TagDecl,
     Sketch,
     Solid,
@@ -416,9 +416,9 @@ impl PrimitiveType {
             PrimitiveType::Axis3d => "3d axes".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
             PrimitiveType::Function => "functions".to_owned(),
-            PrimitiveType::Tag => "tags".to_owned(),
             PrimitiveType::TagDecl => "tag declarators".to_owned(),
-            PrimitiveType::TagId => "tag identifiers".to_owned(),
+            PrimitiveType::TaggedEdge => "tagged edges".to_owned(),
+            PrimitiveType::TaggedFace => "tagged faces".to_owned(),
         }
     }
 
@@ -426,7 +426,8 @@ impl PrimitiveType {
         match (self, other) {
             (_, PrimitiveType::Any) => true,
             (PrimitiveType::Number(n1), PrimitiveType::Number(n2)) => n1.subtype(n2),
-            (PrimitiveType::TagId, PrimitiveType::Tag) | (PrimitiveType::TagDecl, PrimitiveType::Tag) => true,
+            (PrimitiveType::TaggedEdge, PrimitiveType::TaggedFace)
+            | (PrimitiveType::TaggedEdge, PrimitiveType::Edge) => true,
             (t1, t2) => t1 == t2,
         }
     }
@@ -442,9 +443,9 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Number(NumericType::Any) => write!(f, "number(any units)"),
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
-            PrimitiveType::Tag => write!(f, "tag"),
             PrimitiveType::TagDecl => write!(f, "tag declarator"),
-            PrimitiveType::TagId => write!(f, "tag identifier"),
+            PrimitiveType::TaggedEdge => write!(f, "tagged edge"),
+            PrimitiveType::TaggedFace => write!(f, "tagged face"),
             PrimitiveType::Sketch => write!(f, "Sketch"),
             PrimitiveType::Solid => write!(f, "Solid"),
             PrimitiveType::Plane => write!(f, "Plane"),
@@ -1207,6 +1208,17 @@ impl KclValue {
                 KclValue::TagIdentifier { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::TaggedEdge => match self {
+                KclValue::TagIdentifier { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
+            PrimitiveType::TaggedFace => match self {
+                KclValue::TagIdentifier { .. } => Ok(self.clone()),
+                s @ KclValue::String { value, .. } if ["start", "end", "START", "END"].contains(&&**value) => {
+                    Ok(s.clone())
+                }
+                _ => Err(self.into()),
+            },
             PrimitiveType::Axis2d => match self {
                 KclValue::Object { value: values, meta } => {
                     if values
@@ -1295,21 +1307,8 @@ impl KclValue {
                 KclValue::Function { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            PrimitiveType::TagId => match self {
-                KclValue::TagIdentifier { .. } => Ok(self.clone()),
-                _ => Err(self.into()),
-            },
             PrimitiveType::TagDecl => match self {
                 KclValue::TagDeclarator { .. } => Ok(self.clone()),
-                _ => Err(self.into()),
-            },
-            PrimitiveType::Tag => match self {
-                KclValue::TagDeclarator { .. } | KclValue::TagIdentifier { .. } | KclValue::Uuid { .. } => {
-                    Ok(self.clone())
-                }
-                s @ KclValue::String { value, .. } if ["start", "end", "START", "END"].contains(&&**value) => {
-                    Ok(s.clone())
-                }
                 _ => Err(self.into()),
             },
         }
@@ -1501,9 +1500,9 @@ impl KclValue {
             KclValue::HomArray { ty, value, .. } => {
                 Some(RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(value.len())))
             }
-            KclValue::TagIdentifier(_) => Some(RuntimeType::Primitive(PrimitiveType::TagId)),
+            KclValue::TagIdentifier(_) => Some(RuntimeType::Primitive(PrimitiveType::TaggedEdge)),
             KclValue::TagDeclarator(_) => Some(RuntimeType::Primitive(PrimitiveType::TagDecl)),
-            KclValue::Uuid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Tag)),
+            KclValue::Uuid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Edge)),
             KclValue::Function { .. } => Some(RuntimeType::Primitive(PrimitiveType::Function)),
             KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => None,
         }

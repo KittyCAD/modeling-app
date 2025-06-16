@@ -1232,7 +1232,7 @@ secondSketch = startSketchOn(part001, face = '')
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
         err.message(),
-        "face requires a value with type `tag`, but found a value with type `string`."
+        "face requires a value with type `TaggedFace`, but found a value with type `string`."
     );
 }
 

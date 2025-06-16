@@ -30,8 +30,8 @@ extruded in the same direction with the same twist.
 | `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The total angle that the sketch will be twisted around | Yes |
 | `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | How far to extrude the given sketches. | Yes |
 | `angleStep` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The size of each intermediate angle as the sketch twists around. Must be between 4 and 90 degrees. Defaults to 15 degrees. | No |
-| `tagStart` | [`tag`](/docs/kcl-std/types/std-types-tag) | A named tag for the face at the start of the extrusion, i.e. the original sketch. | No |
-| `tagEnd` | [`tag`](/docs/kcl-std/types/std-types-tag) | A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch. | No |
+| `tagStart` | `tag` | A named tag for the face at the start of the extrusion, i.e. the original sketch. | No |
+| `tagEnd` | `tag` | A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch. | No |
 | `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center around which the sketch will be twisted. Relative to the sketch's center. If not given, defaults to 0,0 i.e. the sketch's center. | No |
 
 ### Returns

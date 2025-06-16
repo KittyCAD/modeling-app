@@ -12,7 +12,7 @@ xLine(
   @sketch: Sketch,
   length?: number(Length),
   endAbsolute?: number(Length),
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -25,7 +25,7 @@ xLine(
 | `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
 | `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | How far away along the X axis should this line go? Incompatible with `endAbsolute`. | No |
 | `endAbsolute` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Which absolute X value should this line go to? Incompatible with `length`. | No |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this line. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this line. | No |
 
 ### Returns
 
