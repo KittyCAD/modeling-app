@@ -52,13 +52,13 @@ description: Variables in memory after executing subtract_regression08.kcl
             0.0
           ],
           "from": [
-            1.1875,
+            1.188,
             0.0
           ],
           "radius": 1.1875,
           "tag": null,
           "to": [
-            1.1875,
+            1.188,
             0.0
           ],
           "type": "Circle",
@@ -99,11 +99,11 @@ description: Variables in memory after executing subtract_regression08.kcl
       },
       "start": {
         "from": [
-          1.1875,
+          1.188,
           0.0
         ],
         "to": [
-          1.1875,
+          1.188,
           0.0
         ],
         "units": {
@@ -328,13 +328,13 @@ description: Variables in memory after executing subtract_regression08.kcl
             0.0
           ],
           "from": [
-            0.9375,
+            0.938,
             0.0
           ],
           "radius": 0.9375,
           "tag": null,
           "to": [
-            0.9375,
+            0.938,
             0.0
           ],
           "type": "Circle",
@@ -375,11 +375,11 @@ description: Variables in memory after executing subtract_regression08.kcl
       },
       "start": {
         "from": [
-          0.9375,
+          0.938,
           0.0
         ],
         "to": [
-          0.9375,
+          0.938,
           0.0
         ],
         "units": {
@@ -585,13 +585,13 @@ description: Variables in memory after executing subtract_regression08.kcl
               0.0
             ],
             "from": [
-              1.1875,
+              1.188,
               0.0
             ],
             "radius": 1.1875,
             "tag": null,
             "to": [
-              1.1875,
+              1.188,
               0.0
             ],
             "type": "Circle",
@@ -632,11 +632,11 @@ description: Variables in memory after executing subtract_regression08.kcl
         },
         "start": {
           "from": [
-            1.1875,
+            1.188,
             0.0
           ],
           "to": [
-            1.1875,
+            1.188,
             0.0
           ],
           "units": {
@@ -693,13 +693,13 @@ description: Variables in memory after executing subtract_regression08.kcl
               0.0
             ],
             "from": [
-              0.9375,
+              0.938,
               0.0
             ],
             "radius": 0.9375,
             "tag": null,
             "to": [
-              0.9375,
+              0.938,
               0.0
             ],
             "type": "Circle",
@@ -740,11 +740,11 @@ description: Variables in memory after executing subtract_regression08.kcl
         },
         "start": {
           "from": [
-            0.9375,
+            0.938,
             0.0
           ],
           "to": [
-            0.9375,
+            0.938,
             0.0
           ],
           "units": {
@@ -801,13 +801,13 @@ description: Variables in memory after executing subtract_regression08.kcl
               0.0
             ],
             "from": [
-              1.1875,
+              1.188,
               0.0
             ],
             "radius": 1.1875,
             "tag": null,
             "to": [
-              1.1875,
+              1.188,
               0.0
             ],
             "type": "Circle",
@@ -848,11 +848,11 @@ description: Variables in memory after executing subtract_regression08.kcl
         },
         "start": {
           "from": [
-            1.1875,
+            1.188,
             0.0
           ],
           "to": [
-            1.1875,
+            1.188,
             0.0
           ],
           "units": {

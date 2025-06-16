@@ -226,8 +226,9 @@ use crate::{
 
 /// The distinguished name of the return value of a function.
 pub(crate) const RETURN_NAME: &str = "__return";
-/// Low-budget namespacing for types.
+/// Low-budget namespacing for types and modules.
 pub(crate) const TYPE_PREFIX: &str = "__ty_";
+pub(crate) const MODULE_PREFIX: &str = "__mod_";
 
 /// KCL memory. There should be only one ProgramMemory for the interpretation of a program (
 /// including other modules). Multiple interpretation runs should have fresh instances.
@@ -364,10 +365,12 @@ impl ProgramMemory {
             };
         }
 
-        Err(KclError::UndefinedValue(KclErrorDetails::new(
-            format!("`{}` is not defined", var),
-            vec![source_range],
-        )))
+        let name = var.trim_start_matches(TYPE_PREFIX).trim_start_matches(MODULE_PREFIX);
+
+        Err(KclError::new_undefined_value(
+            KclErrorDetails::new(format!("`{name}` is not defined"), vec![source_range]),
+            Some(name.to_owned()),
+        ))
     }
 
     /// Iterate over all key/value pairs in the specified environment which satisfy the provided
@@ -485,10 +488,10 @@ impl ProgramMemory {
             };
         }
 
-        Err(KclError::UndefinedValue(KclErrorDetails::new(
-            format!("`{}` is not defined", var),
-            vec![],
-        )))
+        Err(KclError::new_undefined_value(
+            KclErrorDetails::new(format!("`{}` is not defined", var), vec![]),
+            Some(var.to_owned()),
+        ))
     }
 }
 
@@ -643,7 +646,7 @@ impl Stack {
     pub fn add(&mut self, key: String, value: KclValue, source_range: SourceRange) -> Result<(), KclError> {
         let env = self.memory.get_env(self.current_env.index());
         if env.contains_key(&key) {
-            return Err(KclError::ValueAlreadyDefined(KclErrorDetails::new(
+            return Err(KclError::new_value_already_defined(KclErrorDetails::new(
                 format!("Cannot redefine `{}`", key),
                 vec![source_range],
             )));

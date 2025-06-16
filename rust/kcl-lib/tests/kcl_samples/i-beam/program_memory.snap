@@ -73,7 +73,7 @@ description: Variables in memory after executing i-beam.kcl
             ],
             "tag": null,
             "to": [
-              1.3315,
+              1.332,
               2.0
             ],
             "type": "ToPoint",
@@ -87,12 +87,12 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              1.3315,
+              1.332,
               2.0
             ],
             "tag": null,
             "to": [
-              1.3315,
+              1.332,
               1.707
             ],
             "type": "ToPoint",
@@ -106,12 +106,12 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              1.3315,
+              1.332,
               1.707
             ],
             "tag": null,
             "to": [
-              0.5535,
+              0.554,
               1.707
             ],
             "type": "ToPoint",
@@ -126,16 +126,16 @@ description: Variables in memory after executing i-beam.kcl
             },
             "ccw": true,
             "center": [
-              0.5535,
+              0.554,
               1.25
             ],
             "from": [
-              0.5535,
+              0.554,
               1.707
             ],
             "tag": null,
             "to": [
-              0.0965,
+              0.096,
               1.25
             ],
             "type": "TangentialArc",
@@ -149,12 +149,12 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              0.0965,
+              0.096,
               1.25
             ],
             "tag": null,
             "to": [
-              0.0965,
+              0.096,
               0.0
             ],
             "type": "ToPoint",

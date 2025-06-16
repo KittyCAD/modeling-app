@@ -10,7 +10,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'export works on the first try',
-  { tag: ['@electron', '@macos', '@windows', '@skipLocalEngine'] },
+  { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
   async ({ page, context, scene, tronApp, cmdBar }, testInfo) => {
     if (!tronApp) {
       fail()

@@ -47,6 +47,7 @@ type HelpRoleLabel =
   | 'KCL docs'
   | 'Replay onboarding tutorial'
   | 'Show release notes'
+  | 'Check for updates'
   | 'Manage account'
   | 'Get started with Text-to-CAD'
   | 'Show all commands'

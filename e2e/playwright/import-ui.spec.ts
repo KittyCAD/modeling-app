@@ -5,7 +5,7 @@ import * as fsp from 'fs/promises'
 test.describe('Import UI tests', () => {
   test(
     'shows toast when trying to sketch on imported face, and hovering over imported geometry should NOT highlight any code',
-    { tag: ['@electron', '@macos', '@windows'] },
+    { tag: ['@desktop', '@macos', '@windows'] },
     async ({ context, page, homePage, toolbar, scene, editor, cmdBar }) => {
       await context.folderSetupFn(async (dir) => {
         const projectDir = path.join(dir, 'import-test')

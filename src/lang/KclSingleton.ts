@@ -64,7 +64,11 @@ interface Singletons {
   sceneInfra: SceneInfra
 }
 
-export class KclManager {
+export enum KclManagerEvents {
+  LongExecution = 'long-execution',
+}
+
+export class KclManager extends EventTarget {
   /**
    * The artifactGraph is a client-side representation of the commands that have been sent
    * see: src/lang/std/artifactGraph-README.md for a full explanation.
@@ -117,6 +121,10 @@ export class KclManager {
   private _fileSettings: KclSettingsAnnotation = {}
   private _kclVersion: string | undefined = undefined
   private singletons: Singletons
+  private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
+    undefined
+  // In the future this could be a setting.
+  public longExecutionTimeMs = 1000 * 60 * 5
 
   engineCommandManager: EngineCommandManager
 
@@ -261,6 +269,7 @@ export class KclManager {
     engineCommandManager: EngineCommandManager,
     singletons: Singletons
   ) {
+    super()
     this.engineCommandManager = engineCommandManager
     this.singletons = singletons
 
@@ -569,6 +578,18 @@ export class KclManager {
       this.clearAst()
       return
     }
+
+    clearTimeout(this.executionTimeoutId)
+
+    // We consider anything taking longer than 5 minutes a long execution.
+    this.executionTimeoutId = setTimeout(() => {
+      if (!this.isExecuting) {
+        clearTimeout(this.executionTimeoutId)
+        return
+      }
+
+      this.dispatchEvent(new CustomEvent(KclManagerEvents.LongExecution, {}))
+    }, this.longExecutionTimeMs)
 
     return this.executeAst({ ast })
   }

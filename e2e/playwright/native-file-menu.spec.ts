@@ -13,7 +13,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
  */
 test.describe(
   'Native file menu',
-  { tag: ['@electron', '@macos', '@windows'] },
+  { tag: ['@desktop', '@macos', '@windows'] },
   () => {
     test('Home page', async ({ tronApp, cmdBar, page, homePage }) => {
       if (!tronApp) fail()

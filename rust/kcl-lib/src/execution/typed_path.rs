@@ -104,6 +104,16 @@ impl TypedPath {
         }
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn strip_prefix(&self, base: impl AsRef<std::path::Path>) -> Result<Self, std::path::StripPrefixError> {
+        self.0.strip_prefix(base).map(|p| TypedPath(p.to_path_buf()))
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn canonicalize(&self) -> Result<Self, std::io::Error> {
+        self.0.canonicalize().map(|p| TypedPath(p.to_path_buf()))
+    }
+
     pub fn to_string_lossy(&self) -> String {
         #[cfg(target_arch = "wasm32")]
         {
@@ -220,6 +230,7 @@ impl schemars::JsonSchema for TypedPath {
 ///
 /// * Does **not** touch `..` or symlinks – call `canonicalize()` if you need that.
 /// * Returns an owned `PathBuf` only when normalisation was required.
+#[cfg(not(target_arch = "wasm32"))]
 fn normalise_import<S: AsRef<str>>(raw: S) -> std::path::PathBuf {
     let s = raw.as_ref();
     // On Unix we need to swap `\` → `/`.  On Windows we leave it alone.

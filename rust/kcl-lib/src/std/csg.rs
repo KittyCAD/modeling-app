@@ -1,7 +1,6 @@
 //! Constructive Solid Geometry (CSG) operations.
 
 use anyhow::Result;
-use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
 use kittycad_modeling_cmds::{
     self as kcmc,
@@ -13,18 +12,18 @@ use kittycad_modeling_cmds::{
 use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, KclValue, Solid},
+    execution::{types::RuntimeType, ExecState, KclValue, ModelingCmdMeta, Solid},
     std::{patterns::GeometryTrait, Args},
 };
 
 /// Union two or more solids into a single solid.
 pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solids: Vec<Solid> =
-        args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::Union(vec![RuntimeType::solids()]), exec_state)?;
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
+        args.get_unlabeled_kw_arg("solids", &RuntimeType::Union(vec![RuntimeType::solids()]), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
 
     if solids.len() < 2 {
-        return Err(KclError::UndefinedValue(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             "At least two solids are required for a union operation.".to_string(),
             vec![args.source_range],
         )));
@@ -34,86 +33,6 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     Ok(solids.into())
 }
 
-/// Union two or more solids into a single solid.
-///
-/// ```no_run
-/// // Union two cubes using the stdlib functions.
-///
-/// fn cube(center, size) {
-///     return startSketchOn(XY)
-///         |> startProfile(at = [center[0] - size, center[1] - size])
-///         |> line(endAbsolute = [center[0] + size, center[1] - size])
-///         |> line(endAbsolute = [center[0] + size, center[1] + size])
-///         |> line(endAbsolute = [center[0] - size, center[1] + size])
-///         |> close()
-///         |> extrude(length = 10)
-/// }
-///
-/// part001 = cube(center = [0, 0], size = 10)
-/// part002 = cube(center = [7, 3], size = 5)
-///     |> translate(z = 1)
-///
-/// unionedPart = union([part001, part002])
-/// ```
-///
-/// ```no_run
-/// // Union two cubes using operators.
-/// // NOTE: This will not work when using codemods through the UI.
-/// // Codemods will generate the stdlib function call instead.
-///
-/// fn cube(center, size) {
-///     return startSketchOn(XY)
-///         |> startProfile(at = [center[0] - size, center[1] - size])
-///         |> line(endAbsolute = [center[0] + size, center[1] - size])
-///         |> line(endAbsolute = [center[0] + size, center[1] + size])
-///         |> line(endAbsolute = [center[0] - size, center[1] + size])
-///         |> close()
-///         |> extrude(length = 10)
-/// }
-///
-/// part001 = cube(center = [0, 0], size = 10)
-/// part002 = cube(center = [7, 3], size = 5)
-///     |> translate(z = 1)
-///
-/// // This is the equivalent of: union([part001, part002])
-/// unionedPart = part001 + part002
-/// ```
-///
-/// ```no_run
-/// // Union two cubes using the more programmer-friendly operator.
-/// // NOTE: This will not work when using codemods through the UI.
-/// // Codemods will generate the stdlib function call instead.
-///
-/// fn cube(center, size) {
-///     return startSketchOn(XY)
-///         |> startProfile(at = [center[0] - size, center[1] - size])
-///         |> line(endAbsolute = [center[0] + size, center[1] - size])
-///         |> line(endAbsolute = [center[0] + size, center[1] + size])
-///         |> line(endAbsolute = [center[0] - size, center[1] + size])
-///         |> close()
-///         |> extrude(length = 10)
-/// }
-///
-/// part001 = cube(center = [0, 0], size = 10)
-/// part002 = cube(center = [7, 3], size = 5)
-///     |> translate(z = 1)
-///
-/// // This is the equivalent of: union([part001, part002])
-/// // Programmers will understand `|` as a union operation, but mechanical engineers
-/// // will understand `+`, we made both work.
-/// unionedPart = part001 | part002
-/// ```
-#[stdlib {
-    name = "union",
-    feature_tree_operation = true,
-    keywords = true,
-    unlabeled_first = true,
-    args = {
-        solids = {docs = "The solids to union."},
-        tolerance = {docs = "The tolerance to use for the union operation."},
-    },
-    tags = ["solid"]
-}]
 pub(crate) async fn inner_union(
     solids: Vec<Solid>,
     tolerance: Option<TyF64>,
@@ -131,11 +50,11 @@ pub(crate) async fn inner_union(
     }
 
     // Flush the fillets for the solids.
-    args.flush_batch_for_solids(exec_state, &solids).await?;
+    exec_state.flush_batch_for_solids((&args).into(), &solids).await?;
 
-    let result = args
+    let result = exec_state
         .send_modeling_cmd(
-            solid_out_id,
+            ModelingCmdMeta::from_args_id(&args, solid_out_id),
             ModelingCmd::from(mcmd::BooleanUnion {
                 solid_ids: solids.iter().map(|s| s.id).collect(),
                 tolerance: LengthUnit(tolerance.map(|t| t.n).unwrap_or(DEFAULT_TOLERANCE)),
@@ -147,7 +66,7 @@ pub(crate) async fn inner_union(
         modeling_response: OkModelingCmdResponse::BooleanUnion(BooleanUnion { extra_solid_ids }),
     } = result
     else {
-        return Err(KclError::Internal(KclErrorDetails::new(
+        return Err(KclError::new_internal(KclErrorDetails::new(
             "Failed to get the result of the union operation.".to_string(),
             vec![args.source_range],
         )));
@@ -165,11 +84,11 @@ pub(crate) async fn inner_union(
 /// Intersect returns the shared volume between multiple solids, preserving only
 /// overlapping regions.
 pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids: Vec<Solid> = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
+    let solids: Vec<Solid> = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
 
     if solids.len() < 2 {
-        return Err(KclError::UndefinedValue(KclErrorDetails::new(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
             "At least two solids are required for an intersect operation.".to_string(),
             vec![args.source_range],
         )));
@@ -179,67 +98,6 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     Ok(solids.into())
 }
 
-/// Intersect returns the shared volume between multiple solids, preserving only
-/// overlapping regions.
-///
-/// Intersect computes the geometric intersection of multiple solid bodies,
-/// returning a new solid representing the volume that is common to all input
-/// solids. This operation is useful for determining shared material regions,
-/// verifying fit, and analyzing overlapping geometries in assemblies.
-///
-/// ```no_run
-/// // Intersect two cubes using the stdlib functions.
-///
-/// fn cube(center, size) {
-///     return startSketchOn(XY)
-///         |> startProfile(at = [center[0] - size, center[1] - size])
-///         |> line(endAbsolute = [center[0] + size, center[1] - size])
-///         |> line(endAbsolute = [center[0] + size, center[1] + size])
-///         |> line(endAbsolute = [center[0] - size, center[1] + size])
-///         |> close()
-///         |> extrude(length = 10)
-/// }
-///
-/// part001 = cube(center = [0, 0], size = 10)
-/// part002 = cube(center = [7, 3], size = 5)
-///     |> translate(z = 1)
-///
-/// intersectedPart = intersect([part001, part002])
-/// ```
-///
-/// ```no_run
-/// // Intersect two cubes using operators.
-/// // NOTE: This will not work when using codemods through the UI.
-/// // Codemods will generate the stdlib function call instead.
-///
-/// fn cube(center, size) {
-///     return startSketchOn(XY)
-///         |> startProfile(at = [center[0] - size, center[1] - size])
-///         |> line(endAbsolute = [center[0] + size, center[1] - size])
-///         |> line(endAbsolute = [center[0] + size, center[1] + size])
-///         |> line(endAbsolute = [center[0] - size, center[1] + size])
-///         |> close()
-///         |> extrude(length = 10)
-/// }
-///
-/// part001 = cube(center = [0, 0], size = 10)
-/// part002 = cube(center = [7, 3], size = 5)
-///     |> translate(z = 1)
-///
-/// // This is the equivalent of: intersect([part001, part002])
-/// intersectedPart = part001 & part002
-/// ```
-#[stdlib {
-    name = "intersect",
-    feature_tree_operation = true,
-    keywords = true,
-    unlabeled_first = true,
-    args = {
-        solids = {docs = "The solids to intersect."},
-        tolerance = {docs = "The tolerance to use for the intersection operation."},
-    },
-    tags = ["solid"]
-}]
 pub(crate) async fn inner_intersect(
     solids: Vec<Solid>,
     tolerance: Option<TyF64>,
@@ -257,11 +115,11 @@ pub(crate) async fn inner_intersect(
     }
 
     // Flush the fillets for the solids.
-    args.flush_batch_for_solids(exec_state, &solids).await?;
+    exec_state.flush_batch_for_solids((&args).into(), &solids).await?;
 
-    let result = args
+    let result = exec_state
         .send_modeling_cmd(
-            solid_out_id,
+            ModelingCmdMeta::from_args_id(&args, solid_out_id),
             ModelingCmd::from(mcmd::BooleanIntersection {
                 solid_ids: solids.iter().map(|s| s.id).collect(),
                 tolerance: LengthUnit(tolerance.map(|t| t.n).unwrap_or(DEFAULT_TOLERANCE)),
@@ -273,7 +131,7 @@ pub(crate) async fn inner_intersect(
         modeling_response: OkModelingCmdResponse::BooleanIntersection(BooleanIntersection { extra_solid_ids }),
     } = result
     else {
-        return Err(KclError::Internal(KclErrorDetails::new(
+        return Err(KclError::new_internal(KclErrorDetails::new(
             "Failed to get the result of the intersection operation.".to_string(),
             vec![args.source_range],
         )));
@@ -290,77 +148,15 @@ pub(crate) async fn inner_intersect(
 
 /// Subtract removes tool solids from base solids, leaving the remaining material.
 pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids: Vec<Solid> = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
-    let tools: Vec<Solid> = args.get_kw_arg_typed("tools", &RuntimeType::solids(), exec_state)?;
+    let solids: Vec<Solid> = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
+    let tools: Vec<Solid> = args.get_kw_arg("tools", &RuntimeType::solids(), exec_state)?;
 
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
 
     let solids = inner_subtract(solids, tools, tolerance, exec_state, args).await?;
     Ok(solids.into())
 }
 
-/// Subtract removes tool solids from base solids, leaving the remaining material.
-///
-/// Performs a boolean subtraction operation, removing the volume of one or more
-/// tool solids from one or more base solids. The result is a new solid
-/// representing the material that remains after all tool solids have been cut
-/// away. This function is essential for machining simulations, cavity creation,
-/// and complex multi-body part modeling.
-///
-/// ```no_run
-/// // Subtract a cylinder from a cube using the stdlib functions.
-///
-/// fn cube(center, size) {
-///     return startSketchOn(XY)
-///         |> startProfile(at = [center[0] - size, center[1] - size])
-///         |> line(endAbsolute = [center[0] + size, center[1] - size])
-///         |> line(endAbsolute = [center[0] + size, center[1] + size])
-///         |> line(endAbsolute = [center[0] - size, center[1] + size])
-///         |> close()
-///         |> extrude(length = 10)
-/// }
-///
-/// part001 = cube(center = [0, 0], size = 10)
-/// part002 = cube(center = [7, 3], size = 5)
-///     |> translate(z = 1)
-///
-/// subtractedPart = subtract([part001], tools=[part002])
-/// ```
-///
-/// ```no_run
-/// // Subtract a cylinder from a cube using operators.
-/// // NOTE: This will not work when using codemods through the UI.
-/// // Codemods will generate the stdlib function call instead.
-///
-/// fn cube(center, size) {
-///     return startSketchOn(XY)
-///         |> startProfile(at = [center[0] - size, center[1] - size])
-///         |> line(endAbsolute = [center[0] + size, center[1] - size])
-///         |> line(endAbsolute = [center[0] + size, center[1] + size])
-///         |> line(endAbsolute = [center[0] - size, center[1] + size])
-///         |> close()
-///         |> extrude(length = 10)
-/// }
-///
-/// part001 = cube(center = [0, 0], size = 10)
-/// part002 = cube(center = [7, 3], size = 5)
-///     |> translate(z = 1)
-///
-/// // This is the equivalent of: subtract([part001], tools=[part002])
-/// subtractedPart = part001 - part002
-/// ```
-#[stdlib {
-    name = "subtract",
-    feature_tree_operation = true,
-    keywords = true,
-    unlabeled_first = true,
-    args = {
-        solids = {docs = "The solids to use as the base to subtract from."},
-        tools = {docs = "The solids to subtract."},
-        tolerance = {docs = "The tolerance to use for the subtraction operation."},
-    },
-    tags = ["solid"]
-}]
 pub(crate) async fn inner_subtract(
     solids: Vec<Solid>,
     tools: Vec<Solid>,
@@ -380,11 +176,13 @@ pub(crate) async fn inner_subtract(
 
     // Flush the fillets for the solids and the tools.
     let combined_solids = solids.iter().chain(tools.iter()).cloned().collect::<Vec<Solid>>();
-    args.flush_batch_for_solids(exec_state, &combined_solids).await?;
+    exec_state
+        .flush_batch_for_solids((&args).into(), &combined_solids)
+        .await?;
 
-    let result = args
+    let result = exec_state
         .send_modeling_cmd(
-            solid_out_id,
+            ModelingCmdMeta::from_args_id(&args, solid_out_id),
             ModelingCmd::from(mcmd::BooleanSubtract {
                 target_ids: solids.iter().map(|s| s.id).collect(),
                 tool_ids: tools.iter().map(|s| s.id).collect(),
@@ -397,7 +195,7 @@ pub(crate) async fn inner_subtract(
         modeling_response: OkModelingCmdResponse::BooleanSubtract(BooleanSubtract { extra_solid_ids }),
     } = result
     else {
-        return Err(KclError::Internal(KclErrorDetails::new(
+        return Err(KclError::new_internal(KclErrorDetails::new(
             "Failed to get the result of the subtract operation.".to_string(),
             vec![args.source_range],
         )));

@@ -171,10 +171,15 @@ description: Variables in memory after executing keyboard.kcl
           },
           {
             "type": "Number",
-            "value": 0.1219,
+            "value": 0.122,
             "ty": {
-              "type": "Known",
-              "type": "Count"
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
             }
           }
         ]
@@ -347,10 +352,15 @@ description: Variables in memory after executing keyboard.kcl
           },
           {
             "type": "Number",
-            "value": 0.1219,
+            "value": 0.122,
             "ty": {
-              "type": "Known",
-              "type": "Count"
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
             }
           }
         ]

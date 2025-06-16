@@ -123,13 +123,13 @@ description: Variables in memory after executing flange.kcl
                     0.0
                   ],
                   "from": [
-                    2.3125,
+                    2.313,
                     0.0
                   ],
                   "radius": 2.3125,
                   "tag": null,
                   "to": [
-                    2.3125,
+                    2.313,
                     0.0
                   ],
                   "type": "Circle",
@@ -170,11 +170,11 @@ description: Variables in memory after executing flange.kcl
               },
               "start": {
                 "from": [
-                  2.3125,
+                  2.313,
                   0.0
                 ],
                 "to": [
-                  2.3125,
+                  2.313,
                   0.0
                 ],
                 "units": {
@@ -283,13 +283,13 @@ description: Variables in memory after executing flange.kcl
                 0.0
               ],
               "from": [
-                2.0625,
+                2.063,
                 0.0
               ],
               "radius": 0.3125,
               "tag": null,
               "to": [
-                2.0625,
+                2.063,
                 0.0
               ],
               "type": "Circle",
@@ -330,11 +330,11 @@ description: Variables in memory after executing flange.kcl
           },
           "start": {
             "from": [
-              2.0625,
+              2.063,
               0.0
             ],
             "to": [
-              2.0625,
+              2.063,
               0.0
             ],
             "units": {
@@ -370,13 +370,13 @@ description: Variables in memory after executing flange.kcl
                 0.0
               ],
               "from": [
-                2.0625,
+                2.063,
                 0.0
               ],
               "radius": 0.3125,
               "tag": null,
               "to": [
-                2.0625,
+                2.063,
                 0.0
               ],
               "type": "Circle",
@@ -417,11 +417,11 @@ description: Variables in memory after executing flange.kcl
           },
           "start": {
             "from": [
-              2.0625,
+              2.063,
               0.0
             ],
             "to": [
-              2.0625,
+              2.063,
               0.0
             ],
             "units": {
@@ -457,13 +457,13 @@ description: Variables in memory after executing flange.kcl
                 0.0
               ],
               "from": [
-                2.0625,
+                2.063,
                 0.0
               ],
               "radius": 0.3125,
               "tag": null,
               "to": [
-                2.0625,
+                2.063,
                 0.0
               ],
               "type": "Circle",
@@ -504,11 +504,11 @@ description: Variables in memory after executing flange.kcl
           },
           "start": {
             "from": [
-              2.0625,
+              2.063,
               0.0
             ],
             "to": [
-              2.0625,
+              2.063,
               0.0
             ],
             "units": {
@@ -544,13 +544,13 @@ description: Variables in memory after executing flange.kcl
                 0.0
               ],
               "from": [
-                2.0625,
+                2.063,
                 0.0
               ],
               "radius": 0.3125,
               "tag": null,
               "to": [
-                2.0625,
+                2.063,
                 0.0
               ],
               "type": "Circle",
@@ -591,11 +591,11 @@ description: Variables in memory after executing flange.kcl
           },
           "start": {
             "from": [
-              2.0625,
+              2.063,
               0.0
             ],
             "to": [
-              2.0625,
+              2.063,
               0.0
             ],
             "units": {
@@ -646,13 +646,13 @@ description: Variables in memory after executing flange.kcl
               0.0
             ],
             "from": [
-              2.3125,
+              2.313,
               0.0
             ],
             "radius": 2.3125,
             "tag": null,
             "to": [
-              2.3125,
+              2.313,
               0.0
             ],
             "type": "Circle",
@@ -693,11 +693,11 @@ description: Variables in memory after executing flange.kcl
         },
         "start": {
           "from": [
-            2.3125,
+            2.313,
             0.0
           ],
           "to": [
-            2.3125,
+            2.313,
             0.0
           ],
           "units": {
@@ -870,13 +870,13 @@ description: Variables in memory after executing flange.kcl
                     0.0
                   ],
                   "from": [
-                    1.1565,
+                    1.157,
                     0.0
                   ],
                   "radius": 1.1565,
                   "tag": null,
                   "to": [
-                    1.1565,
+                    1.157,
                     0.0
                   ],
                   "type": "Circle",
@@ -934,13 +934,13 @@ description: Variables in memory after executing flange.kcl
                           0.0
                         ],
                         "from": [
-                          2.3125,
+                          2.313,
                           0.0
                         ],
                         "radius": 2.3125,
                         "tag": null,
                         "to": [
-                          2.3125,
+                          2.313,
                           0.0
                         ],
                         "type": "Circle",
@@ -981,11 +981,11 @@ description: Variables in memory after executing flange.kcl
                     },
                     "start": {
                       "from": [
-                        2.3125,
+                        2.313,
                         0.0
                       ],
                       "to": [
-                        2.3125,
+                        2.313,
                         0.0
                       ],
                       "units": {
@@ -1017,11 +1017,11 @@ description: Variables in memory after executing flange.kcl
               },
               "start": {
                 "from": [
-                  1.1565,
+                  1.157,
                   0.0
                 ],
                 "to": [
-                  1.1565,
+                  1.157,
                   0.0
                 ],
                 "units": {
@@ -1114,13 +1114,13 @@ description: Variables in memory after executing flange.kcl
               0.0
             ],
             "from": [
-              1.1565,
+              1.157,
               0.0
             ],
             "radius": 1.1565,
             "tag": null,
             "to": [
-              1.1565,
+              1.157,
               0.0
             ],
             "type": "Circle",
@@ -1178,13 +1178,13 @@ description: Variables in memory after executing flange.kcl
                     0.0
                   ],
                   "from": [
-                    2.3125,
+                    2.313,
                     0.0
                   ],
                   "radius": 2.3125,
                   "tag": null,
                   "to": [
-                    2.3125,
+                    2.313,
                     0.0
                   ],
                   "type": "Circle",
@@ -1225,11 +1225,11 @@ description: Variables in memory after executing flange.kcl
               },
               "start": {
                 "from": [
-                  2.3125,
+                  2.313,
                   0.0
                 ],
                 "to": [
-                  2.3125,
+                  2.313,
                   0.0
                 ],
                 "units": {
@@ -1261,11 +1261,11 @@ description: Variables in memory after executing flange.kcl
         },
         "start": {
           "from": [
-            1.1565,
+            1.157,
             0.0
           ],
           "to": [
-            1.1565,
+            1.157,
             0.0
           ],
           "units": {

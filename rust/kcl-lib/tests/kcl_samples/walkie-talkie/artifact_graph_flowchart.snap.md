@@ -463,18 +463,15 @@ flowchart LR
   347["EdgeCut Chamfer<br>[657, 888, 2]"]
   348["EdgeCut Chamfer<br>[657, 888, 2]"]
   349["EdgeCut Fillet<br>[667, 873, 6]"]
-  350["EdgeCut Fillet<br>[667, 873, 6]"]
-  351["EdgeCut Fillet<br>[667, 873, 6]"]
-  352["EdgeCut Fillet<br>[667, 873, 6]"]
-  353["EdgeCut Fillet<br>[443, 512, 7]"]
+  350["EdgeCut Fillet<br>[443, 512, 7]"]
+  351["EdgeCut Chamfer<br>[707, 853, 8]"]
+  352["EdgeCut Chamfer<br>[707, 853, 8]"]
+  353["EdgeCut Chamfer<br>[707, 853, 8]"]
   354["EdgeCut Chamfer<br>[707, 853, 8]"]
   355["EdgeCut Chamfer<br>[707, 853, 8]"]
   356["EdgeCut Chamfer<br>[707, 853, 8]"]
   357["EdgeCut Chamfer<br>[707, 853, 8]"]
   358["EdgeCut Chamfer<br>[707, 853, 8]"]
-  359["EdgeCut Chamfer<br>[707, 853, 8]"]
-  360["EdgeCut Chamfer<br>[707, 853, 8]"]
-  361["EdgeCut Chamfer<br>[707, 853, 8]"]
   1 --- 18
   2 --- 22
   3 --- 23
@@ -1230,21 +1227,18 @@ flowchart LR
   285 <--x 238
   286 <--x 238
   287 <--x 238
-  283 <--x 353
-  296 <--x 352
-  297 <--x 351
-  298 <--x 349
-  299 <--x 350
-  300 <--x 360
-  301 <--x 359
+  283 <--x 350
+  299 <--x 349
+  300 <--x 357
+  301 <--x 356
   308 <--x 348
   309 <--x 345
   310 <--x 346
   311 <--x 347
-  332 <--x 357
-  333 <--x 358
-  337 <--x 356
-  338 <--x 361
-  341 <--x 355
-  342 <--x 354
+  332 <--x 354
+  333 <--x 355
+  337 <--x 353
+  338 <--x 358
+  341 <--x 352
+  342 <--x 351
 ```

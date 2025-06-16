@@ -76,8 +76,8 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
           ],
           "tag": null,
           "to": [
-            100.1962,
-            -106.2608
+            100.196,
+            -106.261
           ],
           "type": "ToPoint",
           "units": {

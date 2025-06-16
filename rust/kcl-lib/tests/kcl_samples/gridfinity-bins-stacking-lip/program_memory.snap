@@ -12943,329 +12943,324 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     }
   },
   "binTop": {
-    "type": "HomArray",
-    "value": [
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4704,
+            "end": 4712,
+            "start": 4704,
+            "type": "TagDeclarator",
+            "value": "line010"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4783,
+            "end": 4791,
+            "start": 4783,
+            "type": "TagDeclarator",
+            "value": "line011"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4842,
+            "end": 4850,
+            "start": 4842,
+            "type": "TagDeclarator",
+            "value": "line012"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4869,
+            "end": 4877,
+            "start": 4869,
+            "type": "TagDeclarator",
+            "value": "line013"
+          },
+          "type": "extrudePlane"
+        }
+      ],
+      "sketch": {
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 4704,
-                "end": 4712,
-                "start": 4704,
-                "type": "TagDeclarator",
-                "value": "line010"
-              },
-              "type": "extrudePlane"
+              "sourceRange": []
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 4783,
-                "end": 4791,
-                "start": 4783,
-                "type": "TagDeclarator",
-                "value": "line011"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 4842,
-                "end": 4850,
-                "start": 4842,
-                "type": "TagDeclarator",
-                "value": "line012"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 4869,
-                "end": 4877,
-                "start": 4869,
-                "type": "TagDeclarator",
-                "value": "line013"
-              },
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "commentStart": 4704,
-                  "end": 4712,
-                  "start": 4704,
-                  "type": "TagDeclarator",
-                  "value": "line010"
-                },
-                "to": [
-                  84.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  84.0,
-                  0.0
-                ],
-                "tag": {
-                  "commentStart": 4783,
-                  "end": 4791,
-                  "start": 4783,
-                  "type": "TagDeclarator",
-                  "value": "line011"
-                },
-                "to": [
-                  84.0,
-                  126.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  84.0,
-                  126.0
-                ],
-                "tag": {
-                  "commentStart": 4842,
-                  "end": 4850,
-                  "start": 4842,
-                  "type": "TagDeclarator",
-                  "value": "line012"
-                },
-                "to": [
-                  0.0,
-                  126.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  126.0
-                ],
-                "tag": {
-                  "commentStart": 4869,
-                  "end": 4877,
-                  "start": 4869,
-                  "type": "TagDeclarator",
-                  "value": "line013"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
+            "from": [
+              0.0,
+              0.0
             ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 4.75,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "type": "plane",
-              "value": "Custom",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              }
+            "tag": {
+              "commentStart": 4704,
+              "end": 4712,
+              "start": 4704,
+              "type": "TagDeclarator",
+              "value": "line010"
             },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "tags": {
-              "line010": {
-                "type": "TagIdentifier",
-                "value": "line010"
-              },
-              "line011": {
-                "type": "TagIdentifier",
-                "value": "line011"
-              },
-              "line012": {
-                "type": "TagIdentifier",
-                "value": "line012"
-              },
-              "line013": {
-                "type": "TagIdentifier",
-                "value": "line013"
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "to": [
+              84.0,
+              0.0
+            ],
+            "type": "ToPoint",
             "units": {
               "type": "Mm"
             }
           },
-          "height": 7.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
+          {
+            "__geoMeta": {
               "id": "[uuid]",
-              "radius": {
-                "n": 3.75,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
+              "sourceRange": []
             },
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 3.75,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
+            "from": [
+              84.0,
+              0.0
+            ],
+            "tag": {
+              "commentStart": 4783,
+              "end": 4791,
+              "start": 4783,
+              "type": "TagDeclarator",
+              "value": "line011"
             },
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 3.75,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            },
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 3.75,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
+            "to": [
+              84.0,
+              126.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
             }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              84.0,
+              126.0
+            ],
+            "tag": {
+              "commentStart": 4842,
+              "end": 4850,
+              "start": 4842,
+              "type": "TagDeclarator",
+              "value": "line012"
+            },
+            "to": [
+              0.0,
+              126.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              126.0
+            ],
+            "tag": {
+              "commentStart": 4869,
+              "end": 4877,
+              "start": 4869,
+              "type": "TagDeclarator",
+              "value": "line013"
+            },
+            "to": [
+              0.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
+        "on": {
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
+          "origin": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 4.75,
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "type": "plane",
+          "value": "Custom",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          }
+        },
+        "start": {
+          "from": [
+            0.0,
+            0.0
+          ],
+          "to": [
+            0.0,
+            0.0
           ],
           "units": {
             "type": "Mm"
           },
-          "sectional": false
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          }
+        },
+        "tags": {
+          "line010": {
+            "type": "TagIdentifier",
+            "value": "line010"
+          },
+          "line011": {
+            "type": "TagIdentifier",
+            "value": "line011"
+          },
+          "line012": {
+            "type": "TagIdentifier",
+            "value": "line012"
+          },
+          "line013": {
+            "type": "TagIdentifier",
+            "value": "line013"
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": {
+          "type": "Mm"
         }
-      }
-    ]
+      },
+      "height": 7.0,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
+      "edgeCuts": [
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 3.75,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 3.75,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 3.75,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        },
+        {
+          "type": "fillet",
+          "id": "[uuid]",
+          "radius": {
+            "n": 3.75,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "edgeId": "[uuid]",
+          "tag": null
+        }
+      ],
+      "units": {
+        "type": "Mm"
+      },
+      "sectional": false
+    }
   },
   "cornerRadius": {
     "type": "Number",
@@ -14401,7 +14396,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "to": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -14416,11 +14411,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "ccw": false,
                 "center": [
                   0.5,
-                  5.7929
+                  5.793
                 ],
                 "from": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "radius": 0.5,
                 "tag": {
@@ -14431,8 +14426,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc000"
                 },
                 "to": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "type": "Arc",
                 "units": {
@@ -14445,8 +14440,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "tag": {
                   "commentStart": 5705,
@@ -14741,7 +14736,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "to": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -14756,11 +14751,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "ccw": false,
                 "center": [
                   0.5,
-                  5.7929
+                  5.793
                 ],
                 "from": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "radius": 0.5,
                 "tag": {
@@ -14771,8 +14766,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc000"
                 },
                 "to": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "type": "Arc",
                 "units": {
@@ -14785,8 +14780,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "tag": {
                   "commentStart": 5705,
@@ -15086,7 +15081,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "to": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -15101,11 +15096,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "ccw": false,
                 "center": [
                   0.5,
-                  5.7929
+                  5.793
                 ],
                 "from": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "radius": 0.5,
                 "tag": {
@@ -15116,8 +15111,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc000"
                 },
                 "to": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "type": "Arc",
                 "units": {
@@ -15130,8 +15125,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "tag": {
                   "commentStart": 5705,
@@ -15426,7 +15421,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "to": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -15441,11 +15436,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "ccw": false,
                 "center": [
                   0.5,
-                  5.7929
+                  5.793
                 ],
                 "from": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "radius": 0.5,
                 "tag": {
@@ -15456,8 +15451,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc000"
                 },
                 "to": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "type": "Arc",
                 "units": {
@@ -15470,8 +15465,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "tag": {
                   "commentStart": 5705,
@@ -15788,7 +15783,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "to": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -15803,11 +15798,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "ccw": false,
                 "center": [
                   0.5,
-                  5.7929
+                  5.793
                 ],
                 "from": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "radius": 0.5,
                 "tag": {
@@ -15818,8 +15813,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc000"
                 },
                 "to": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "type": "Arc",
                 "units": {
@@ -15832,8 +15827,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "tag": {
                   "commentStart": 5705,
@@ -16128,7 +16123,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "to": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -16143,11 +16138,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "ccw": false,
                 "center": [
                   0.5,
-                  5.7929
+                  5.793
                 ],
                 "from": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "radius": 0.5,
                 "tag": {
@@ -16158,8 +16153,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc000"
                 },
                 "to": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "type": "Arc",
                 "units": {
@@ -16172,8 +16167,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "tag": {
                   "commentStart": 5705,
@@ -16483,7 +16478,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "to": [
               0.0,
-              5.7929
+              5.793
             ],
             "type": "ToPoint",
             "units": {
@@ -16498,11 +16493,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "ccw": false,
             "center": [
               0.5,
-              5.7929
+              5.793
             ],
             "from": [
               0.0,
-              5.7929
+              5.793
             ],
             "radius": 0.5,
             "tag": {
@@ -16513,8 +16508,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "arc000"
             },
             "to": [
-              0.8536,
-              6.1464
+              0.854,
+              6.146
             ],
             "type": "Arc",
             "units": {
@@ -16527,8 +16522,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "sourceRange": []
             },
             "from": [
-              0.8536,
-              6.1464
+              0.854,
+              6.146
             ],
             "tag": {
               "commentStart": 5705,
@@ -16823,7 +16818,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "to": [
               0.0,
-              5.7929
+              5.793
             ],
             "type": "ToPoint",
             "units": {
@@ -16838,11 +16833,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "ccw": false,
             "center": [
               0.5,
-              5.7929
+              5.793
             ],
             "from": [
               0.0,
-              5.7929
+              5.793
             ],
             "radius": 0.5,
             "tag": {
@@ -16853,8 +16848,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "arc000"
             },
             "to": [
-              0.8536,
-              6.1464
+              0.854,
+              6.146
             ],
             "type": "Arc",
             "units": {
@@ -16867,8 +16862,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "sourceRange": []
             },
             "from": [
-              0.8536,
-              6.1464
+              0.854,
+              6.146
             ],
             "tag": {
               "commentStart": 5705,
@@ -17163,7 +17158,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "to": [
               0.0,
-              5.7929
+              5.793
             ],
             "type": "ToPoint",
             "units": {
@@ -17178,11 +17173,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "ccw": false,
             "center": [
               0.5,
-              5.7929
+              5.793
             ],
             "from": [
               0.0,
-              5.7929
+              5.793
             ],
             "radius": 0.5,
             "tag": {
@@ -17193,8 +17188,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "arc000"
             },
             "to": [
-              0.8536,
-              6.1464
+              0.854,
+              6.146
             ],
             "type": "Arc",
             "units": {
@@ -17207,8 +17202,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "sourceRange": []
             },
             "from": [
-              0.8536,
-              6.1464
+              0.854,
+              6.146
             ],
             "tag": {
               "commentStart": 5705,
@@ -17503,7 +17498,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "to": [
               0.0,
-              5.7929
+              5.793
             ],
             "type": "ToPoint",
             "units": {
@@ -17518,11 +17513,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "ccw": false,
             "center": [
               0.5,
-              5.7929
+              5.793
             ],
             "from": [
               0.0,
-              5.7929
+              5.793
             ],
             "radius": 0.5,
             "tag": {
@@ -17533,8 +17528,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "arc000"
             },
             "to": [
-              0.8536,
-              6.1464
+              0.854,
+              6.146
             ],
             "type": "Arc",
             "units": {
@@ -17547,8 +17542,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "sourceRange": []
             },
             "from": [
-              0.8536,
-              6.1464
+              0.854,
+              6.146
             ],
             "tag": {
               "commentStart": 5705,
@@ -17911,7 +17906,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "to": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -17926,11 +17921,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "ccw": false,
                 "center": [
                   0.5,
-                  5.7929
+                  5.793
                 ],
                 "from": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "radius": 0.5,
                 "tag": {
@@ -17941,8 +17936,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc000"
                 },
                 "to": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "type": "Arc",
                 "units": {
@@ -17955,8 +17950,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "tag": {
                   "commentStart": 5705,
@@ -18251,7 +18246,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "to": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -18266,11 +18261,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "ccw": false,
                 "center": [
                   0.5,
-                  5.7929
+                  5.793
                 ],
                 "from": [
                   0.0,
-                  5.7929
+                  5.793
                 ],
                 "radius": 0.5,
                 "tag": {
@@ -18281,8 +18276,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc000"
                 },
                 "to": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "type": "Arc",
                 "units": {
@@ -18295,8 +18290,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  0.8536,
-                  6.1464
+                  0.854,
+                  6.146
                 ],
                 "tag": {
                   "commentStart": 5705,

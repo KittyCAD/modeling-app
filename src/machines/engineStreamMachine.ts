@@ -70,7 +70,6 @@ export async function holdOntoVideoFrameInCanvas(
   video: HTMLVideoElement,
   canvas: HTMLCanvasElement
 ) {
-  video.pause()
   canvas.width = video.videoWidth
   canvas.height = video.videoHeight
   canvas.style.width = video.videoWidth + 'px'
@@ -220,14 +219,21 @@ export const engineStreamMachine = setup({
         if (context.videoRef.current && context.canvasRef.current) {
           await context.videoRef.current.pause()
 
-          await holdOntoVideoFrameInCanvas(
-            context.videoRef.current,
-            context.canvasRef.current
-          )
-          context.videoRef.current.style.display = 'none'
+          // It's possible we've already frozen the frame due to a disconnect.
+          if (context.videoRef.current.style.display !== 'none') {
+            await holdOntoVideoFrameInCanvas(
+              context.videoRef.current,
+              context.canvasRef.current
+            )
+            context.videoRef.current.style.display = 'none'
+          }
         }
 
-        await rootContext.sceneInfra.camControls.saveRemoteCameraState()
+        try {
+          await rootContext.sceneInfra.camControls.saveRemoteCameraState()
+        } catch (e) {
+          console.warn('Save remote camera state timed out', e)
+        }
 
         // Make sure we're on the next frame for no flickering between canvas
         // and the video elements.
@@ -365,8 +371,11 @@ export const engineStreamMachine = setup({
         }),
       },
       on: {
-        [EngineStreamTransition.StartOrReconfigureEngine]: {
+        [EngineStreamTransition.Resume]: {
           target: EngineStreamState.Resuming,
+        },
+        [EngineStreamTransition.Stop]: {
+          target: EngineStreamState.Stopped,
         },
       },
     },
@@ -398,11 +407,17 @@ export const engineStreamMachine = setup({
           rootContext: args.self.system.get('root').getSnapshot().context,
           event: args.event,
         }),
+        // Usually only fails if there was a disconnection mid-way.
+        onError: [
+          {
+            target: EngineStreamState.WaitingForDependencies,
+            reenter: true,
+          },
+        ],
       },
       on: {
-        // The stream can be paused as it's resuming.
-        [EngineStreamTransition.Pause]: {
-          target: EngineStreamState.Paused,
+        [EngineStreamTransition.Stop]: {
+          target: EngineStreamState.Stopped,
         },
         [EngineStreamTransition.SetMediaStream]: {
           target: EngineStreamState.Playing,

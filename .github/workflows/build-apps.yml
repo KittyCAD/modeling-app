@@ -10,7 +10,7 @@ on:
 
 env:
   IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
-  IS_NIGHTLY: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+  IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -91,14 +91,14 @@ jobs:
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         run: "npm run build:wasm"
 
-      - name: Set nightly version, product name, release notes, and icons
-        if: ${{ env.IS_NIGHTLY == 'true' }}
+      - name: Set staging version, product name, release notes, and icons
+        if: ${{ env.IS_STAGING == 'true' }}
         run: |
           COMMIT=$(git rev-parse --short HEAD)
           DATE=$(date +'%-y.%-m.%-d')
           export VERSION=$DATE-main.$COMMIT
           npm run files:set-version
-          npm run files:flip-to-nightly
+          npm run files:flip-to-staging
 
       - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
@@ -130,13 +130,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-14
-            platform: mac
-          - os: windows-2022
-            platform: win
+          - os: namespace-profile-macos-6-cores
+            platform: macos
+          - os: namespace-profile-windows-4-cores
+            platform: windows
           - os: ubuntu-22.04
             platform: linux
     runs-on: ${{ matrix.os }}
+    name: build-apps (${{ matrix.platform }})
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
     steps:
@@ -166,14 +167,14 @@ jobs:
       - run: npm install
 
       - name: Prepare certificate and variables (Windows only)
-        if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
+        if: ${{ (env.IS_RELEASE == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
         run: |
-          echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12
-          cat /d/Certificate_pkcs12.p12
+          echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /c/Certificate_pkcs12.p12
+          cat /c/Certificate_pkcs12.p12
           echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
           echo "SM_HOST=${{ secrets.SM_HOST }}" >> "$GITHUB_ENV"
           echo "SM_API_KEY=${{ secrets.SM_API_KEY }}" >> "$GITHUB_ENV"
-          echo "SM_CLIENT_CERT_FILE=D:\\Certificate_pkcs12.p12" >> "$GITHUB_ENV"
+          echo "SM_CLIENT_CERT_FILE=C:\\Certificate_pkcs12.p12" >> "$GITHUB_ENV"
           echo "SM_CLIENT_CERT_PASSWORD=${{ secrets.SM_CLIENT_CERT_PASSWORD }}" >> "$GITHUB_ENV"
           echo "C:\Program Files (x86)\Windows Kits\10\App Certification Kit" >> $GITHUB_PATH
           echo "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools" >> $GITHUB_PATH
@@ -181,7 +182,7 @@ jobs:
         shell: bash
 
       - name: Setup certicate with SSM KSP (Windows only)
-        if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
+        if: ${{ (env.IS_RELEASE == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
         run: |
           curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
           msiexec /i smtools-windows-x64.msi /quiet /qn
@@ -191,7 +192,7 @@ jobs:
           smksp_cert_sync.exe
           smctl windows certsync
         # This last line `smctl windows certsync` was added after windows codesign failures started happening
-        # with nightly-v25.4.10. It looks like `smksp_cert_sync.exe` used to do the sync to the local cert store,
+        # with staging-v25.4.10. It looks like `smksp_cert_sync.exe` used to do the sync to the local cert store,
         # but stopped doing it overnight. This extra call that I randomly got from this azure-related doc page
         # https://docs.digicert.com/en/digicert-keylocker/code-signing/sign-with-third-party-signing-tools/windows-applications/sign-azure-apps-with-signtool-using-ksp-library.html#sync-certificates--windows-only--618365
         # seems to be doing that extra sync that we need for scripts/sign-win.js to work.
@@ -199,13 +200,13 @@ jobs:
         shell: cmd
 
       - name: Build the app (debug)
-        if: ${{ env.IS_RELEASE == 'false' && env.IS_NIGHTLY == 'false' }}
+        if: ${{ env.IS_RELEASE == 'false' && env.IS_STAGING == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
         # this is just not doing any codesign or release yml generation, and points to dev infra
         run: npm run tronb:package:dev
 
       - name: Build the app (release)
-        if: ${{ env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true' }}
+        if: ${{ env.IS_RELEASE == 'true' || env.IS_STAGING == 'true' }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
@@ -215,7 +216,7 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
-        run: npm run tronb:package:prod
+        run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'dev' || 'prod' }}
 
       - name: List artifacts in out/
         run: ls -R out
@@ -239,20 +240,20 @@ jobs:
             out/*-x86_64-linux.*
 
       - uses: actions/upload-artifact@v4
-        if: ${{ env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true' }}
+        if: ${{ env.IS_RELEASE == 'true' || env.IS_STAGING == 'true' }}
         with:
           name: out-yml-${{ matrix.platform }}
           path: |
             out/latest*.yml
 
-      # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
+      # TODO: add the 'Build for Mac TestFlight' stage back
 
 
   upload-apps-release:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    # Equivalent to IS_RELEASE || IS_NIGHTLY (but we can't access those env vars here)
+    # Equivalent to IS_RELEASE || IS_STAGING (but we can't access those env vars here)
     if: ${{ (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
@@ -263,32 +264,32 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-arm64-win
+          name: out-arm64-windows
           path: out
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-x64-win
+          name: out-x64-windows
           path: out
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-yml-win
+          name: out-yml-windows
           path: out
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-arm64-mac
+          name: out-arm64-macos
           path: out
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-x64-mac
+          name: out-x64-macos
           path: out
 
       - uses: actions/download-artifact@v4
         with:
-          name: out-yml-mac
+          name: out-yml-macos
           path: out
 
       - uses: actions/download-artifact@v4
@@ -310,8 +311,8 @@ jobs:
         env:
           NOTES: ${{ needs.prepare-files.outputs.notes }}
           PUB_DATE: ${{ github.event.repository.updated_at }}
-          WEBSITE_DIR: ${{ env.IS_NIGHTLY == 'true' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
-          URL_CODED_NAME: ${{ env.IS_NIGHTLY == 'true' && 'Zoo%20Design%20Studio%20%28Nightly%29' || 'Zoo%20Design%20Studio' }}
+          WEBSITE_DIR: ${{ env.IS_STAGING == 'true' && 'dl.zoo.dev/releases/modeling-app/staging' || 'dl.zoo.dev/releases/modeling-app' }}
+          URL_CODED_NAME: ${{ env.IS_STAGING == 'true' && 'Zoo%20Design%20Studio%20%28Staging%29' || 'Zoo%20Design%20Studio' }}
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
           jq --null-input \
@@ -360,26 +361,26 @@ jobs:
         run: "ls -R out"
 
       - name: Authenticate to Google Cloud
-        if: ${{ env.IS_NIGHTLY == 'true' }}
+        if: ${{ env.IS_STAGING == 'true' }}
         uses: 'google-github-actions/auth@v2.1.8'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
       - name: Set up Google Cloud SDK
-        if: ${{ env.IS_NIGHTLY == 'true' }}
+        if: ${{ env.IS_STAGING == 'true' }}
         uses: google-github-actions/setup-gcloud@v2.1.4
         with:
           project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
 
-      - name: Upload nightly files to public bucket
-        if: ${{ env.IS_NIGHTLY == 'true' }}
+      - name: Upload staging files to public bucket
+        if: ${{ env.IS_STAGING == 'true' }}
         uses: google-github-actions/upload-cloud-storage@v2.2.2
         with:
           path: out
           glob: '*'
           parent: false
-          destination: 'dl.kittycad.io/releases/modeling-app/nightly'
+          destination: 'dl.kittycad.io/releases/modeling-app/staging'
 
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
-        if: ${{ env.IS_NIGHTLY == 'true' }}
-        run: npm run files:invalidate-bucket:nightly
+        if: ${{ env.IS_STAGING == 'true' }}
+        run: npm run files:invalidate-bucket:staging

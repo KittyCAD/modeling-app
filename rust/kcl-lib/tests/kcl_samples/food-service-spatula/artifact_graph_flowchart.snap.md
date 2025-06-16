@@ -245,11 +245,7 @@ flowchart LR
   142["SweepEdge Adjacent"]
   143["EdgeCut Fillet<br>[2546, 2687, 0]"]
     %% [ProgramBodyItem { index: 18 }, ExpressionStatementExpr]
-  144["EdgeCut Fillet<br>[2546, 2687, 0]"]
-    %% [ProgramBodyItem { index: 18 }, ExpressionStatementExpr]
-  145["EdgeCut Fillet<br>[3357, 3488, 0]"]
-    %% [ProgramBodyItem { index: 22 }, ExpressionStatementExpr]
-  146["EdgeCut Fillet<br>[3357, 3488, 0]"]
+  144["EdgeCut Fillet<br>[3357, 3488, 0]"]
     %% [ProgramBodyItem { index: 22 }, ExpressionStatementExpr]
   1 --- 6
   1 --- 8
@@ -582,8 +578,6 @@ flowchart LR
   116 <--x 94
   117 <--x 94
   118 <--x 94
-  119 <--x 145
-  122 <--x 146
-  138 <--x 143
-  139 <--x 144
+  119 <--x 144
+  139 <--x 143
 ```

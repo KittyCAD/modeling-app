@@ -96,12 +96,12 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             },
             "from": [
               2.04,
-              -52.1378
+              -52.138
             ],
             "tag": null,
             "to": [
               2.5,
-              -51.7628
+              -51.763
             ],
             "type": "ToPoint",
             "units": {
@@ -115,12 +115,12 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             },
             "from": [
               2.5,
-              -51.7628
+              -51.763
             ],
             "tag": null,
             "to": [
               2.04,
-              -51.3878
+              -51.388
             ],
             "type": "ToPoint",
             "units": {
@@ -134,12 +134,12 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             },
             "from": [
               2.04,
-              -51.3878
+              -51.388
             ],
             "tag": null,
             "to": [
               0.204,
-              -51.3878
+              -51.388
             ],
             "type": "ToPoint",
             "units": {
@@ -153,12 +153,12 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             },
             "from": [
               0.204,
-              -51.3878
+              -51.388
             ],
             "tag": null,
             "to": [
               0.204,
-              -81.3878
+              -81.388
             ],
             "type": "ToPoint",
             "units": {
@@ -172,12 +172,12 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             },
             "from": [
               0.204,
-              -81.3878
+              -81.388
             ],
             "tag": null,
             "to": [
               2.04,
-              -52.1378
+              -52.138
             ],
             "type": "ToPoint",
             "units": {
@@ -191,12 +191,12 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             },
             "from": [
               2.04,
-              -52.1378
+              -52.138
             ],
             "tag": null,
             "to": [
               2.04,
-              -52.1378
+              -52.138
             ],
             "type": "ToPoint",
             "units": {
@@ -237,11 +237,11 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         "start": {
           "from": [
             2.04,
-            -52.1378
+            -52.138
           ],
           "to": [
             2.04,
-            -52.1378
+            -52.138
           ],
           "units": {
             "type": "Mm"
@@ -312,12 +312,12 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           },
           "from": [
             2.04,
-            -52.1378
+            -52.138
           ],
           "tag": null,
           "to": [
             2.5,
-            -51.7628
+            -51.763
           ],
           "type": "ToPoint",
           "units": {
@@ -331,12 +331,12 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           },
           "from": [
             2.5,
-            -51.7628
+            -51.763
           ],
           "tag": null,
           "to": [
             2.04,
-            -51.3878
+            -51.388
           ],
           "type": "ToPoint",
           "units": {
@@ -350,12 +350,12 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           },
           "from": [
             2.04,
-            -51.3878
+            -51.388
           ],
           "tag": null,
           "to": [
             0.204,
-            -51.3878
+            -51.388
           ],
           "type": "ToPoint",
           "units": {
@@ -369,12 +369,12 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           },
           "from": [
             0.204,
-            -51.3878
+            -51.388
           ],
           "tag": null,
           "to": [
             0.204,
-            -81.3878
+            -81.388
           ],
           "type": "ToPoint",
           "units": {
@@ -388,12 +388,12 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           },
           "from": [
             0.204,
-            -81.3878
+            -81.388
           ],
           "tag": null,
           "to": [
             2.04,
-            -52.1378
+            -52.138
           ],
           "type": "ToPoint",
           "units": {
@@ -407,12 +407,12 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           },
           "from": [
             2.04,
-            -52.1378
+            -52.138
           ],
           "tag": null,
           "to": [
             2.04,
-            -52.1378
+            -52.138
           ],
           "type": "ToPoint",
           "units": {
@@ -453,11 +453,11 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
       "start": {
         "from": [
           2.04,
-          -52.1378
+          -52.138
         ],
         "to": [
           2.04,
-          -52.1378
+          -52.138
         ],
         "units": {
           "type": "Mm"
@@ -536,7 +536,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": -22.13777608090537,
+            "z": -22.138,
             "units": {
               "type": "Mm"
             }
@@ -651,12 +651,12 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           },
           "from": [
             0.0,
-            -22.1378
+            -22.138
           ],
           "tag": null,
           "to": [
             0.0,
-            -17.1378
+            -17.138
           ],
           "type": "ToPoint",
           "units": {
@@ -670,17 +670,17 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           },
           "ccw": false,
           "center": [
-            6.2376,
-            -17.1378
+            6.238,
+            -17.138
           ],
           "from": [
             0.0,
-            -17.1378
+            -17.138
           ],
           "tag": null,
           "to": [
-            4.1042,
-            -11.2763
+            4.104,
+            -11.276
           ],
           "type": "TangentialArcTo",
           "units": {
@@ -698,8 +698,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             0.0
           ],
           "from": [
-            4.1042,
-            -11.2763
+            4.104,
+            -11.276
           ],
           "tag": {
             "commentStart": 1558,
@@ -709,7 +709,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             "value": "hook"
           },
           "to": [
-            -10.3923,
+            -10.392,
             6.0
           ],
           "type": "TangentialArcTo",
@@ -751,11 +751,11 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
       "start": {
         "from": [
           0.0,
-          -22.1378
+          -22.138
         ],
         "to": [
           0.0,
-          -22.1378
+          -22.138
         ],
         "units": {
           "type": "Mm"
@@ -800,7 +800,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": -22.13777608090537,
+        "z": -22.138,
         "units": {
           "type": "Mm"
         }
@@ -862,7 +862,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": -22.13777608090537,
+          "z": -22.138,
           "units": {
             "type": "Mm"
           }
@@ -926,7 +926,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
   },
   "hypotenuse": {
     "type": "Number",
-    "value": 12.7701,
+    "value": 12.77,
     "ty": {
       "type": "Default",
       "len": {
@@ -987,7 +987,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
   },
   "shankOffset": {
     "type": "Number",
-    "value": 17.1378,
+    "value": 17.138,
     "ty": {
       "type": "Default",
       "len": {
@@ -1000,7 +1000,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
   },
   "side": {
     "type": "Number",
-    "value": 4.3676,
+    "value": 4.368,
     "ty": {
       "type": "Default",
       "len": {
@@ -1018,7 +1018,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
   },
   "threadDepth": {
     "type": "Number",
-    "value": 0.4601,
+    "value": 0.46,
     "ty": {
       "type": "Default",
       "len": {
@@ -1195,7 +1195,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": -22.13777608090537,
+                  "z": -22.138,
                   "units": {
                     "type": "Mm"
                   }
@@ -1393,7 +1393,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             "origin": {
               "x": 0.0,
               "y": 0.0,
-              "z": -22.13777608090537,
+              "z": -22.138,
               "units": {
                 "type": "Mm"
               }
@@ -1562,7 +1562,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": -22.13777608090537,
+                "z": -22.138,
                 "units": {
                   "type": "Mm"
                 }

@@ -1,7 +1,7 @@
 import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
-import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
+import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { AsyncFn } from '@src/lib/types'
 
@@ -260,6 +260,9 @@ export function platform(): Platform {
   }
   if (navigator.platform === 'Windows' || navigator.platform === 'Win32') {
     return 'windows'
+  }
+  if (navigator.platform?.indexOf('Linux') === 0) {
+    return 'linux'
   }
 
   // Chrome only, but more accurate than userAgent.
@@ -522,6 +525,20 @@ export function getModuleId(sourceRange: SourceRange) {
   return sourceRange[2]
 }
 
+export function getModuleIdByFileName(
+  fileName: string,
+  fileNames: ExecState['filenames']
+) {
+  const module = Object.entries(fileNames).find(
+    ([, moduleInfo]) =>
+      moduleInfo?.type === 'Local' && moduleInfo.value === fileName
+  )
+  if (module) {
+    return Number(module[0]) // Return the module ID
+  }
+  return -1
+}
+
 export function getInVariableCase(name: string, prefixIfDigit = 'm') {
   // As of 2025-04-08, standard case for KCL variables is camelCase
   const startsWithANumber = !Number.isNaN(Number(name.charAt(0)))
@@ -648,7 +665,8 @@ export async function engineViewIsometricWithoutGeometryPresent({
     fov_y: 45,
     ortho_scale_factor: 1.4063792,
     is_ortho: cameraProjection !== 'perspective',
-    ortho_scale_enabled: cameraProjection !== 'perspective',
+    // always keep this enabled
+    ortho_scale_enabled: true,
     world_coord_system: 'right_handed_up_z',
   }
   await engineCommandManager.sendSceneCommand({

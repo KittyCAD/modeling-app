@@ -2,7 +2,7 @@
 
 # Zoo Design Studio
 
-[zoo.dev/modeling-app](https://zoo.dev/modeling-app)
+[zoo.dev/design-studio](https://zoo.dev/design-studio)
 
 A CAD application from the future, brought to you by the [Zoo team](https://zoo.dev).
 
@@ -40,12 +40,8 @@ The 3D view in Design Studio is just a video stream from our hosted geometry eng
 
 ## Get Started
 
-We recommend downloading the latest application binary from our [releases](https://github.com/KittyCAD/modeling-app/releases) page. If you don't see your platform or architecture supported there, please file an issue.
+We recommend downloading the latest application binary from our [website](https://zoo.dev/design-studio/download). If you don't see your platform or architecture supported there, please file an issue. See the [installation guide](INSTALL.md) for additional instructions.
 
 ## Developing
 
-Finally, if you'd like to run a development build or contribute to the project, please visit our [contributor guide](CONTRIBUTING.md) to get started.
-
-## KCL
-
-To contribute to the KittyCAD Language, see the [README](https://github.com/KittyCAD/modeling-app/tree/main/rust/kcl-lib) for KCL.
+Finally, if you'd like to run a development build or contribute to the project, please visit our [contributor guide](CONTRIBUTING.md) to get started. To contribute to the KittyCAD Language, see the dedicated [readme](rust/kcl-lib/README.md) for KCL.

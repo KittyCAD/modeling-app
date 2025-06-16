@@ -61,7 +61,7 @@ description: Variables in memory after executing scale_after_fillet.kcl
   },
   "boltHexFlatLength": {
     "type": "Number",
-    "value": 0.2887,
+    "value": 0.289,
     "ty": {
       "type": "Default",
       "len": {

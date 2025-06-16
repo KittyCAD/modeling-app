@@ -18,8 +18,8 @@ use crate::{
 
 /// Mirror a sketch.
 pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let axis = args.get_kw_arg_typed(
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let axis = args.get_kw_arg(
         "axis",
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Edge),
@@ -52,35 +52,37 @@ async fn inner_mirror_2d(
 
     match axis {
         Axis2dOrEdgeReference::Axis { direction, origin } => {
-            args.batch_modeling_cmd(
-                exec_state.next_uuid(),
-                ModelingCmd::from(mcmd::EntityMirror {
-                    ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
-                    axis: Point3d {
-                        x: direction[0].to_mm(),
-                        y: direction[1].to_mm(),
-                        z: 0.0,
-                    },
-                    point: Point3d {
-                        x: LengthUnit(origin[0].to_mm()),
-                        y: LengthUnit(origin[1].to_mm()),
-                        z: LengthUnit(0.0),
-                    },
-                }),
-            )
-            .await?;
+            exec_state
+                .batch_modeling_cmd(
+                    (&args).into(),
+                    ModelingCmd::from(mcmd::EntityMirror {
+                        ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
+                        axis: Point3d {
+                            x: direction[0].to_mm(),
+                            y: direction[1].to_mm(),
+                            z: 0.0,
+                        },
+                        point: Point3d {
+                            x: LengthUnit(origin[0].to_mm()),
+                            y: LengthUnit(origin[1].to_mm()),
+                            z: LengthUnit(0.0),
+                        },
+                    }),
+                )
+                .await?;
         }
         Axis2dOrEdgeReference::Edge(edge) => {
             let edge_id = edge.get_engine_id(exec_state, &args)?;
 
-            args.batch_modeling_cmd(
-                exec_state.next_uuid(),
-                ModelingCmd::from(mcmd::EntityMirrorAcrossEdge {
-                    ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
-                    edge_id,
-                }),
-            )
-            .await?;
+            exec_state
+                .batch_modeling_cmd(
+                    (&args).into(),
+                    ModelingCmd::from(mcmd::EntityMirrorAcrossEdge {
+                        ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
+                        edge_id,
+                    }),
+                )
+                .await?;
         }
     };
 
@@ -90,9 +92,9 @@ async fn inner_mirror_2d(
     // using the IDs we already have.
     // We only do this with mirrors because otherwise it is a waste of a websocket call.
     for sketch in &mut starting_sketches {
-        let response = args
+        let response = exec_state
             .send_modeling_cmd(
-                exec_state.next_uuid(),
+                (&args).into(),
                 ModelingCmd::from(mcmd::EntityGetAllChildUuids { entity_id: sketch.id }),
             )
             .await?;
@@ -101,7 +103,7 @@ async fn inner_mirror_2d(
                 OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids { entity_ids: child_ids }),
         } = response
         else {
-            return Err(KclError::Internal(KclErrorDetails::new(
+            return Err(KclError::new_internal(KclErrorDetails::new(
                 "Expected a successful response from EntityGetAllChildUuids".to_string(),
                 vec![args.source_range],
             )));
@@ -112,7 +114,7 @@ async fn inner_mirror_2d(
             let child_id = child_ids[1];
             sketch.mirror = Some(child_id);
         } else {
-            return Err(KclError::Type(KclErrorDetails::new(
+            return Err(KclError::new_type(KclErrorDetails::new(
                 "Expected child uuids to be >= 2".to_string(),
                 vec![args.source_range],
             )));

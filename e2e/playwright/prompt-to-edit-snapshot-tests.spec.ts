@@ -63,7 +63,7 @@ test.describe('edit with AI example snapshots', () => {
   test(
     `change colour`,
     // TODO this is more of a snapshot, but atm it needs to be manually run locally to update the files
-    { tag: ['@electron'] },
+    { tag: ['@desktop'] },
     async ({ context, homePage, cmdBar, editor, page, scene }) => {
       const project = 'test-dir'
       await context.folderSetupFn(async (dir) => {

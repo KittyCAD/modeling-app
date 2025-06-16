@@ -105,7 +105,7 @@ export default async function getCurrentProjectFile(
 // You can edit this file to add your own content.
 // But we recommend you keep the import statement as it is.
 // For more information on the import statement, see the documentation at:
-// https://zoo.dev/docs/kcl/import
+// https://zoo.dev/docs/kcl-lang/modules
 import "${importFileName}" as ${alias}`
       await fs.writeFile(kclWrapperFilePath, content)
     }

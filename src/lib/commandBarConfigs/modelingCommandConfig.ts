@@ -478,7 +478,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         defaultValue: 'Axis',
         options: [
-          { name: 'Axis', isCurrent: true, value: 'Axis' },
+          { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
           { name: 'Edge', isCurrent: false, value: 'Edge' },
         ],
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -489,6 +489,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             commandContext.argumentsToSubmit.axisOrEdge as string
           ),
         inputType: 'options',
+        displayName: 'Sketch Axis',
         options: [
           { name: 'X Axis', isCurrent: true, value: 'X' },
           { name: 'Y Axis', isCurrent: false, value: 'Y' },
@@ -1124,7 +1125,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           )
         },
         validation: async ({ data }: { data: string }) => {
-          const variableExists = kclManager.variables[data]
+          // Be conservative and error out if there is an item or module with the same name.
+          const variableExists =
+            kclManager.variables[data] || kclManager.variables['__mod_' + data]
           if (variableExists) {
             return 'This variable name is already in use.'
           }

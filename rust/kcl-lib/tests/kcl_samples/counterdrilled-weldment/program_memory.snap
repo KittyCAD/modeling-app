@@ -182,7 +182,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   },
   "counterdrillDepth": {
     "type": "Number",
-    "value": 0.1875,
+    "value": 0.188,
     "ty": {
       "type": "Default",
       "len": {
@@ -195,7 +195,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   },
   "counterdrillDiameter": {
     "type": "Number",
-    "value": 0.4375,
+    "value": 0.438,
     "ty": {
       "type": "Default",
       "len": {

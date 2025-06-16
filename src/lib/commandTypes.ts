@@ -15,8 +15,8 @@ import type {
 } from '@src/machines/commandBarMachine'
 
 type Icon = CustomIconName
-const _PLATFORMS = ['both', 'web', 'desktop'] as const
-type PLATFORM = typeof _PLATFORMS
+const _TARGETS = ['both', 'web', 'desktop'] as const
+type TARGET = typeof _TARGETS
 const _INPUT_TYPES = [
   'options',
   'string',
@@ -101,7 +101,7 @@ export type Command<
   displayName?: string
   description?: string
   icon?: Icon
-  hide?: PLATFORM[number]
+  hide?: TARGET[number]
   hideFromSearch?: boolean
   disabled?: boolean
   status?: CommandStatus

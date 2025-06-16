@@ -3,9 +3,25 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing walkie-talkie.kcl
 ---
 {
-  "antenna": {
+  "__mod_antenna": {
     "type": "Module",
     "value": 5
+  },
+  "__mod_body": {
+    "type": "Module",
+    "value": 2
+  },
+  "__mod_case": {
+    "type": "Module",
+    "value": 3
+  },
+  "__mod_knob": {
+    "type": "Module",
+    "value": 7
+  },
+  "__mod_talkButton": {
+    "type": "Module",
+    "value": 6
   },
   "antennaBaseHeight": {
     "type": "Number",
@@ -72,10 +88,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       }
     }
   },
-  "body": {
-    "type": "Module",
-    "value": 2
-  },
   "button": {
     "type": "Function",
     "value": null
@@ -119,10 +131,6 @@ description: Variables in memory after executing walkie-talkie.kcl
       }
     }
   },
-  "case": {
-    "type": "Module",
-    "value": 3
-  },
   "caseTolerance": {
     "type": "Number",
     "value": 0.01,
@@ -161,10 +169,6 @@ description: Variables in memory after executing walkie-talkie.kcl
         "type": "Degrees"
       }
     }
-  },
-  "knob": {
-    "type": "Module",
-    "value": 7
   },
   "knobBend": {
     "type": "TagIdentifier",
@@ -225,7 +229,7 @@ description: Variables in memory after executing walkie-talkie.kcl
   },
   "screenDepth": {
     "type": "Number",
-    "value": -0.0625,
+    "value": -0.063,
     "ty": {
       "type": "Default",
       "len": {
@@ -303,7 +307,7 @@ description: Variables in memory after executing walkie-talkie.kcl
   },
   "squareHoleSideLength": {
     "type": "Number",
-    "value": 0.0625,
+    "value": 0.063,
     "ty": {
       "type": "Default",
       "len": {
@@ -333,10 +337,6 @@ description: Variables in memory after executing walkie-talkie.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "tag4"
-  },
-  "talkButton": {
-    "type": "Module",
-    "value": 6
   },
   "talkButtonHeight": {
     "type": "Number",

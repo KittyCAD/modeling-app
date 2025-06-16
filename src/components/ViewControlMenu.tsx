@@ -42,6 +42,7 @@ export function useViewControlMenuItems() {
           resetCameraPosition().catch(reportRejection)
         }}
         disabled={shouldLockView}
+        hotkey="mod+alt+x"
       >
         Reset view
       </ContextMenuItem>,
@@ -50,6 +51,7 @@ export function useViewControlMenuItems() {
           modelingSend({ type: 'Center camera on selection' })
         }}
         disabled={shouldLockView}
+        hotkey={`mod+alt+c`}
       >
         Center view on selection
       </ContextMenuItem>,

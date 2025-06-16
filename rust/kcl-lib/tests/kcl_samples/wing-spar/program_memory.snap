@@ -9132,8 +9132,8 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  88.2087,
-                  -553.9567
+                  88.209,
+                  -553.957
                 ],
                 "from": [
                   205.0,
@@ -9157,7 +9157,7 @@ description: Variables in memory after executing wing-spar.kcl
                 "ccw": true,
                 "center": [
                   36.382,
-                  2.6768
+                  2.677
                 ],
                 "from": [
                   33.0,
@@ -9180,8 +9180,8 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  17.9515,
-                  1.3208
+                  17.951,
+                  1.321
                 ],
                 "from": [
                   0.0,
@@ -9189,7 +9189,7 @@ description: Variables in memory after executing wing-spar.kcl
                 ],
                 "tag": null,
                 "to": [
-                  14.8902,
+                  14.89,
                   -16.417
                 ],
                 "type": "TangentialArc",
@@ -9204,11 +9204,11 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  114.7706,
-                  562.3084
+                  114.771,
+                  562.308
                 ],
                 "from": [
-                  14.8902,
+                  14.89,
                   -16.417
                 ],
                 "tag": null,
@@ -9229,7 +9229,7 @@ description: Variables in memory after executing wing-spar.kcl
                 "ccw": false,
                 "center": [
                   538.359,
-                  -2161.9915
+                  -2161.991
                 ],
                 "from": [
                   205.0,
@@ -9408,8 +9408,8 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  88.2087,
-                  -553.9567
+                  88.209,
+                  -553.957
                 ],
                 "from": [
                   205.0,
@@ -9433,7 +9433,7 @@ description: Variables in memory after executing wing-spar.kcl
                 "ccw": true,
                 "center": [
                   36.382,
-                  2.6768
+                  2.677
                 ],
                 "from": [
                   33.0,
@@ -9456,8 +9456,8 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  17.9515,
-                  1.3208
+                  17.951,
+                  1.321
                 ],
                 "from": [
                   0.0,
@@ -9465,7 +9465,7 @@ description: Variables in memory after executing wing-spar.kcl
                 ],
                 "tag": null,
                 "to": [
-                  14.8902,
+                  14.89,
                   -16.417
                 ],
                 "type": "TangentialArc",
@@ -9480,11 +9480,11 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  114.7706,
-                  562.3084
+                  114.771,
+                  562.308
                 ],
                 "from": [
-                  14.8902,
+                  14.89,
                   -16.417
                 ],
                 "tag": null,
@@ -9505,7 +9505,7 @@ description: Variables in memory after executing wing-spar.kcl
                 "ccw": false,
                 "center": [
                   538.359,
-                  -2161.9915
+                  -2161.991
                 ],
                 "from": [
                   205.0,
@@ -9684,8 +9684,8 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  88.2087,
-                  -553.9567
+                  88.209,
+                  -553.957
                 ],
                 "from": [
                   205.0,
@@ -9709,7 +9709,7 @@ description: Variables in memory after executing wing-spar.kcl
                 "ccw": true,
                 "center": [
                   36.382,
-                  2.6768
+                  2.677
                 ],
                 "from": [
                   33.0,
@@ -9732,8 +9732,8 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  17.9515,
-                  1.3208
+                  17.951,
+                  1.321
                 ],
                 "from": [
                   0.0,
@@ -9741,7 +9741,7 @@ description: Variables in memory after executing wing-spar.kcl
                 ],
                 "tag": null,
                 "to": [
-                  14.8902,
+                  14.89,
                   -16.417
                 ],
                 "type": "TangentialArc",
@@ -9756,11 +9756,11 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  114.7706,
-                  562.3084
+                  114.771,
+                  562.308
                 ],
                 "from": [
-                  14.8902,
+                  14.89,
                   -16.417
                 ],
                 "tag": null,
@@ -9781,7 +9781,7 @@ description: Variables in memory after executing wing-spar.kcl
                 "ccw": false,
                 "center": [
                   538.359,
-                  -2161.9915
+                  -2161.991
                 ],
                 "from": [
                   205.0,
@@ -9960,8 +9960,8 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  88.2087,
-                  -553.9567
+                  88.209,
+                  -553.957
                 ],
                 "from": [
                   205.0,
@@ -9985,7 +9985,7 @@ description: Variables in memory after executing wing-spar.kcl
                 "ccw": true,
                 "center": [
                   36.382,
-                  2.6768
+                  2.677
                 ],
                 "from": [
                   33.0,
@@ -10008,8 +10008,8 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  17.9515,
-                  1.3208
+                  17.951,
+                  1.321
                 ],
                 "from": [
                   0.0,
@@ -10017,7 +10017,7 @@ description: Variables in memory after executing wing-spar.kcl
                 ],
                 "tag": null,
                 "to": [
-                  14.8902,
+                  14.89,
                   -16.417
                 ],
                 "type": "TangentialArc",
@@ -10032,11 +10032,11 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  114.7706,
-                  562.3084
+                  114.771,
+                  562.308
                 ],
                 "from": [
-                  14.8902,
+                  14.89,
                   -16.417
                 ],
                 "tag": null,
@@ -10057,7 +10057,7 @@ description: Variables in memory after executing wing-spar.kcl
                 "ccw": false,
                 "center": [
                   538.359,
-                  -2161.9915
+                  -2161.991
                 ],
                 "from": [
                   205.0,
@@ -10236,8 +10236,8 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  88.2087,
-                  -553.9567
+                  88.209,
+                  -553.957
                 ],
                 "from": [
                   205.0,
@@ -10261,7 +10261,7 @@ description: Variables in memory after executing wing-spar.kcl
                 "ccw": true,
                 "center": [
                   36.382,
-                  2.6768
+                  2.677
                 ],
                 "from": [
                   33.0,
@@ -10284,8 +10284,8 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  17.9515,
-                  1.3208
+                  17.951,
+                  1.321
                 ],
                 "from": [
                   0.0,
@@ -10293,7 +10293,7 @@ description: Variables in memory after executing wing-spar.kcl
                 ],
                 "tag": null,
                 "to": [
-                  14.8902,
+                  14.89,
                   -16.417
                 ],
                 "type": "TangentialArc",
@@ -10308,11 +10308,11 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  114.7706,
-                  562.3084
+                  114.771,
+                  562.308
                 ],
                 "from": [
-                  14.8902,
+                  14.89,
                   -16.417
                 ],
                 "tag": null,
@@ -10333,7 +10333,7 @@ description: Variables in memory after executing wing-spar.kcl
                 "ccw": false,
                 "center": [
                   538.359,
-                  -2161.9915
+                  -2161.991
                 ],
                 "from": [
                   205.0,

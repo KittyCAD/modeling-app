@@ -4,7 +4,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test.describe('Authentication tests', () => {
   test(
     `The user can sign out and back in`,
-    { tag: ['@electron'] },
+    { tag: ['@desktop'] },
     async ({ page, homePage, signInPage, toolbar, tronApp }) => {
       if (!tronApp) {
         fail()

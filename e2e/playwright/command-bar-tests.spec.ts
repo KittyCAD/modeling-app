@@ -45,14 +45,15 @@ test.describe('Command bar tests', () => {
     await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
-      currentArgKey: 'length',
-      currentArgValue: '5',
+      currentArgKey: 'sketches',
+      currentArgValue: '',
       headerArguments: {
-        Profiles: '1 profile',
+        Profiles: '',
         Length: '',
       },
-      highlightedHeaderArg: 'length',
+      highlightedHeaderArg: 'Profiles',
     })
+    await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -301,7 +302,7 @@ test.describe('Command bar tests', () => {
 
     // Assert that the an alternative variable name is chosen,
     // since the default variable name is already in use (distance)
-    await page.getByRole('button', { name: 'Create new variable' }).click()
+    await cmdBar.variableCheckbox.click()
     await expect(page.getByPlaceholder('Variable name')).toHaveValue(
       'length001'
     )
@@ -518,7 +519,7 @@ test.describe('Command bar tests', () => {
     `Zoom to fit to shared model on web`,
     { tag: ['@web'] },
     async ({ page, scene }) => {
-      if (process.env.PLATFORM !== 'web') {
+      if (process.env.TARGET !== 'web') {
         // This test is web-only
         // TODO: re-enable on CI as part of a new @web test suite
         return
@@ -533,7 +534,7 @@ profile001 = startProfile(sketch001, at = [-484.34, 484.95])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 `
-        const targetURL = `?create-file&name=test&units=mm&code=${encodeURIComponent(btoa(code))}&ask-open-desktop`
+        const targetURL = `?create-file=true&name=test&units=mm&code=${encodeURIComponent(btoa(code))}&ask-open-desktop=true`
         await page.goto(page.url() + targetURL)
         expect(page.url()).toContain(targetURL)
       })

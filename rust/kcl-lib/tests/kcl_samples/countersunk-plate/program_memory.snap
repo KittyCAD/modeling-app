@@ -133,13 +133,13 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              0.6068,
-              1.5478
+              0.607,
+              1.548
             ],
             "tag": null,
             "to": [
-              2.7738,
-              0.6983
+              2.774,
+              0.698
             ],
             "type": "ToPoint",
             "units": {
@@ -157,13 +157,13 @@ description: Variables in memory after executing countersunk-plate.kcl
               -0.0
             ],
             "from": [
-              2.7738,
-              0.6983
+              2.774,
+              0.698
             ],
             "tag": null,
             "to": [
-              2.7737,
-              -0.6983
+              2.774,
+              -0.698
             ],
             "type": "TangentialArc",
             "units": {
@@ -176,13 +176,13 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              2.7737,
-              -0.6983
+              2.774,
+              -0.698
             ],
             "tag": null,
             "to": [
-              0.6068,
-              -1.5478
+              0.607,
+              -1.548
             ],
             "type": "ToPoint",
             "units": {
@@ -200,13 +200,13 @@ description: Variables in memory after executing countersunk-plate.kcl
               -0.0
             ],
             "from": [
-              0.6068,
-              -1.5478
+              0.607,
+              -1.548
             ],
             "tag": null,
             "to": [
-              -0.6068,
-              -1.5478
+              -0.607,
+              -1.548
             ],
             "type": "TangentialArc",
             "units": {
@@ -219,13 +219,13 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -0.6068,
-              -1.5478
+              -0.607,
+              -1.548
             ],
             "tag": null,
             "to": [
-              -2.7738,
-              -0.6983
+              -2.774,
+              -0.698
             ],
             "type": "ToPoint",
             "units": {
@@ -243,13 +243,13 @@ description: Variables in memory after executing countersunk-plate.kcl
               -0.0
             ],
             "from": [
-              -2.7738,
-              -0.6983
+              -2.774,
+              -0.698
             ],
             "tag": null,
             "to": [
-              -2.7738,
-              0.6983
+              -2.774,
+              0.698
             ],
             "type": "TangentialArc",
             "units": {
@@ -262,13 +262,13 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -2.7738,
-              0.6983
+              -2.774,
+              0.698
             ],
             "tag": null,
             "to": [
-              -0.6068,
-              1.5478
+              -0.607,
+              1.548
             ],
             "type": "ToPoint",
             "units": {
@@ -286,13 +286,13 @@ description: Variables in memory after executing countersunk-plate.kcl
               -0.0
             ],
             "from": [
-              -0.6068,
-              1.5478
+              -0.607,
+              1.548
             ],
             "tag": null,
             "to": [
-              0.6068,
-              1.5478
+              0.607,
+              1.548
             ],
             "type": "TangentialArcTo",
             "units": {
@@ -305,13 +305,13 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              0.6068,
-              1.5478
+              0.607,
+              1.548
             ],
             "tag": null,
             "to": [
-              0.6068,
-              1.5478
+              0.607,
+              1.548
             ],
             "type": "ToPoint",
             "units": {
@@ -351,12 +351,12 @@ description: Variables in memory after executing countersunk-plate.kcl
         },
         "start": {
           "from": [
-            0.6068,
-            1.5478
+            0.607,
+            1.548
           ],
           "to": [
-            0.6068,
-            1.5478
+            0.607,
+            1.548
           ],
           "units": {
             "type": "Inches"
@@ -397,7 +397,7 @@ description: Variables in memory after executing countersunk-plate.kcl
   },
   "r1": {
     "type": "Number",
-    "value": 1.6625,
+    "value": 1.663,
     "ty": {
       "type": "Default",
       "len": {
@@ -423,7 +423,7 @@ description: Variables in memory after executing countersunk-plate.kcl
   },
   "tangentAngle": {
     "type": "Number",
-    "value": 0.3736,
+    "value": 0.374,
     "ty": {
       "type": "Known",
       "type": "Angle",
@@ -432,7 +432,7 @@ description: Variables in memory after executing countersunk-plate.kcl
   },
   "tangentLength": {
     "type": "Number",
-    "value": 2.3275,
+    "value": 2.328,
     "ty": {
       "type": "Default",
       "len": {

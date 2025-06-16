@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use super::{BodyItem, Expr, MemberObject, Node, Program};
+use super::{BodyItem, Expr, Node, Program};
 use crate::SourceRange;
 
 /// A traversal path through the AST to a node.
@@ -60,6 +60,20 @@ pub enum Step {
 }
 
 impl NodePath {
+    /// Placeholder for when the AST isn't available to create a real path.  It
+    /// will be filled in later.
+    pub(crate) fn placeholder() -> Self {
+        Self::default()
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn fill_placeholder(&mut self, program: &Node<Program>, cached_body_items: usize, range: SourceRange) {
+        if !self.is_empty() {
+            return;
+        }
+        *self = Self::from_range(program, cached_body_items, range).unwrap_or_default();
+    }
+
     /// Given a program and a [`SourceRange`], return the path to the node that
     /// contains the range.
     pub(crate) fn from_range(program: &Node<Program>, cached_body_items: usize, range: SourceRange) -> Option<Self> {
@@ -248,7 +262,7 @@ impl NodePath {
             Expr::MemberExpression(node) => {
                 if node.object.contains_range(&range) {
                     path.push(Step::MemberExpressionObject);
-                    return Self::from_member_expr_object(&node.object, range, path);
+                    return NodePath::from_expr(&node.object, range, path);
                 }
                 if node.property.contains_range(&range) {
                     path.push(Step::MemberExpressionProperty);
@@ -308,18 +322,6 @@ impl NodePath {
                 // TODO: Check the type annotation.
             }
             Expr::None(_) => {}
-        }
-
-        Some(path)
-    }
-
-    fn from_member_expr_object(mut expr: &MemberObject, range: SourceRange, mut path: NodePath) -> Option<NodePath> {
-        while let MemberObject::MemberExpression(node) = expr {
-            if !node.object.contains_range(&range) {
-                break;
-            }
-            path.push(Step::MemberExpressionObject);
-            expr = &node.object;
         }
 
         Some(path)
@@ -399,6 +401,21 @@ mod tests {
                     Step::CallKwArg { index: 1 },
                     Step::ArrayElement { index: 1 }
                 ],
+            }
+        );
+    }
+
+    #[test]
+    fn test_node_path_from_range_import() {
+        let code = r#"import "cube.step" as cube
+import "cylinder.kcl" as cylinder
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        // The entire cylinder import statement.
+        assert_eq!(
+            NodePath::from_range(&program.ast, 0, range(27, 60)).unwrap(),
+            NodePath {
+                steps: vec![Step::ProgramBodyItem { index: 1 }],
             }
         );
     }

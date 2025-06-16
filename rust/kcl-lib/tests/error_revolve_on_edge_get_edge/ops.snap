@@ -2,114 +2,95 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed error_revolve_on_edge_get_edge.kcl
 ---
-[
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
+{
+  "rust/kcl-lib/tests/error_revolve_on_edge_get_edge/input.kcl": [],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [
+    {
+      "type": "VariableDeclaration",
+      "name": "PI",
       "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {},
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "extrude",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
+        "type": "Number",
+        "value": 3.142,
+        "ty": {
+          "type": "Unknown"
         }
       },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
       "sourceRange": []
     },
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 10.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "startSketchOn",
-    "unlabeledArg": {
+    {
+      "type": "VariableDeclaration",
+      "name": "E",
       "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
+        "type": "Number",
+        "value": 2.718,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
         }
       },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
       "sourceRange": []
     },
-    "labeledArgs": {
-      "face": {
-        "value": {
-          "type": "TagIdentifier",
-          "value": "revolveAxis",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "StdLibCall",
-    "name": "revolve",
-    "unlabeledArg": {
+    {
+      "type": "VariableDeclaration",
+      "name": "TAU",
       "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
+        "type": "Number",
+        "value": 6.283,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
         }
       },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::prelude": [
+    {
+      "type": "VariableDeclaration",
+      "name": "START",
+      "value": {
+        "type": "String",
+        "value": "start"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
       "sourceRange": []
     },
-    "labeledArgs": {
-      "angle": {
-        "value": {
-          "type": "Number",
-          "value": 90.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
+    {
+      "type": "VariableDeclaration",
+      "name": "END",
+      "value": {
+        "type": "String",
+        "value": "end"
       },
-      "axis": {
-        "value": {
-          "type": "TagIdentifier",
-          "value": "revolveAxis",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  }
-]
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
+}

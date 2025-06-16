@@ -1,6 +1,5 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 187
 description: Variables in memory after executing involute_circular_units.kcl
 ---
 {
@@ -32,7 +31,7 @@ description: Variables in memory after executing involute_circular_units.kcl
   },
   "baseDiameter": {
     "type": "Number",
-    "value": 9.8668,
+    "value": 9.867,
     "ty": {
       "type": "Default",
       "len": {
@@ -199,7 +198,7 @@ description: Variables in memory after executing involute_circular_units.kcl
               "sourceRange": []
             },
             "from": [
-              4.9334,
+              4.933,
               0.0
             ],
             "tag": {
@@ -210,8 +209,8 @@ description: Variables in memory after executing involute_circular_units.kcl
               "value": "seg01"
             },
             "to": [
-              5.7399,
-              0.3404
+              5.74,
+              0.34
             ],
             "type": "ToPoint",
             "units": {
@@ -224,13 +223,13 @@ description: Variables in memory after executing involute_circular_units.kcl
               "sourceRange": []
             },
             "from": [
-              5.7399,
-              0.3404
+              5.74,
+              0.34
             ],
             "tag": null,
             "to": [
-              5.7399,
-              0.3404
+              5.74,
+              0.34
             ],
             "type": "ToPoint",
             "units": {
@@ -245,11 +244,11 @@ description: Variables in memory after executing involute_circular_units.kcl
             "ccw": true,
             "center": [
               0.0,
-              -0.0006
+              -0.001
             ],
             "from": [
-              5.7399,
-              0.3404
+              5.74,
+              0.34
             ],
             "radius": 5.75,
             "tag": {
@@ -260,8 +259,8 @@ description: Variables in memory after executing involute_circular_units.kcl
               "value": "seg02"
             },
             "to": [
-              5.6792,
-              0.8989
+              5.679,
+              0.899
             ],
             "type": "Arc",
             "units": {
@@ -274,13 +273,13 @@ description: Variables in memory after executing involute_circular_units.kcl
               "sourceRange": []
             },
             "from": [
-              5.6792,
-              0.8989
+              5.679,
+              0.899
             ],
             "tag": null,
             "to": [
-              4.8196,
-              1.0642
+              4.82,
+              1.064
             ],
             "type": "ToPoint",
             "units": {
@@ -293,13 +292,13 @@ description: Variables in memory after executing involute_circular_units.kcl
               "sourceRange": []
             },
             "from": [
-              4.8196,
-              1.0642
+              4.82,
+              1.064
             ],
             "tag": null,
             "to": [
-              4.8196,
-              1.0642
+              4.82,
+              1.064
             ],
             "type": "ToPoint",
             "units": {
@@ -312,13 +311,13 @@ description: Variables in memory after executing involute_circular_units.kcl
               "sourceRange": []
             },
             "from": [
-              4.8196,
-              1.0642
+              4.82,
+              1.064
             ],
             "tag": null,
             "to": [
-              4.7142,
-              1.4541
+              4.714,
+              1.454
             ],
             "type": "ToPoint",
             "units": {
@@ -331,12 +330,12 @@ description: Variables in memory after executing involute_circular_units.kcl
               "sourceRange": []
             },
             "from": [
-              4.7142,
-              1.4541
+              4.714,
+              1.454
             ],
             "tag": null,
             "to": [
-              4.9334,
+              4.933,
               0.0
             ],
             "type": "ToPoint",
@@ -377,11 +376,11 @@ description: Variables in memory after executing involute_circular_units.kcl
         },
         "start": {
           "from": [
-            4.9334,
+            4.933,
             0.0
           ],
           "to": [
-            4.9334,
+            4.933,
             0.0
           ],
           "units": {

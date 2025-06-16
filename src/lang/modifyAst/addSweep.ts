@@ -136,14 +136,10 @@ export function addSweep({
     return sketchesExprList
   }
 
-  // Extra roundabout to find the trajectory (or path) declaration for the labeled argument
-  const pathNodePath = getNodePathFromSourceRange(
-    ast,
-    path.graphSelections[0].codeRef.range
-  )
+  // Find the path declaration for the labeled argument
   const pathDeclaration = getNodeFromPath<VariableDeclaration>(
     ast,
-    pathNodePath,
+    path.graphSelections[0].codeRef.pathToNode,
     'VariableDeclaration'
   )
   if (err(pathDeclaration)) {

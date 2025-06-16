@@ -76,6 +76,15 @@ test.describe('Point-and-click tests', () => {
       await toolbar.extrudeButton.click()
       await cmdBar.expectState({
         stage: 'arguments',
+        currentArgKey: 'sketches',
+        currentArgValue: '',
+        headerArguments: { Profiles: '', Length: '' },
+        highlightedHeaderArg: 'Profiles',
+        commandName: 'Extrude',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
         currentArgKey: 'length',
         currentArgValue: '5',
         headerArguments: { Profiles: '1 profile', Length: '' },
@@ -1646,6 +1655,15 @@ sketch002 = startSketchOn(plane001)
         await test.step(`Go through the command bar flow with preselected sketches`, async () => {
           await toolbar.loftButton.click()
           await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'sketches',
+            currentArgValue: '',
+            headerArguments: { Profiles: '' },
+            highlightedHeaderArg: 'Profiles',
+            commandName: 'Loft',
+          })
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
             stage: 'review',
             headerArguments: { Profiles: '2 profiles' },
             commandName: 'Loft',
@@ -1748,7 +1766,7 @@ loft001 = loft([sketch001, sketch002])
 sketch001 = startSketchOn(YZ)
 profile001 = circle(sketch001, center = [0, 0], radius = 500)
 sketch002 = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+profile002 = startProfile(sketch002, at = [0, 0])
   |> xLine(length = -500)
   |> tangentialArc(endAbsolute = [-2000, 500])`,
     },
@@ -1764,7 +1782,7 @@ profile001 = startProfile(sketch001, at = [-400, -400])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch002 = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+profile002 = startProfile(sketch002, at = [0, 0])
   |> xLine(length = -500)
   |> tangentialArc(endAbsolute = [-2000, 500])`,
     },
@@ -1792,9 +1810,9 @@ sketch002 = startSketchOn(XZ)
         testPoint.x - 50,
         testPoint.y
       )
-      const sweepDeclaration = 'sweep001 = sweep(profile001, path = sketch002)'
+      const sweepDeclaration = 'sweep001 = sweep(profile001, path = profile002)'
       const editedSweepDeclaration =
-        'sweep001 = sweep(profile001, path = sketch002, sectional = true)'
+        'sweep001 = sweep(profile001, path = profile002, sectional = true)'
 
       await test.step(`Look for sketch001`, async () => {
         await toolbar.closePane('code')
@@ -2092,6 +2110,18 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Apply fillet to the preselected edge`, async () => {
       await page.waitForTimeout(100)
       await toolbar.filletButton.click()
+      await cmdBar.expectState({
+        commandName: 'Fillet',
+        highlightedHeaderArg: 'selection',
+        currentArgKey: 'selection',
+        currentArgValue: '',
+        headerArguments: {
+          Selection: '',
+          Radius: '',
+        },
+        stage: 'arguments',
+      })
+      await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Fillet',
         highlightedHeaderArg: 'radius',
@@ -2623,6 +2653,18 @@ extrude001 = extrude(profile001, length = 5)
         await toolbar.filletButton.click()
         await cmdBar.expectState({
           commandName: 'Fillet',
+          highlightedHeaderArg: 'selection',
+          currentArgKey: 'selection',
+          currentArgValue: '',
+          headerArguments: {
+            Selection: '',
+            Radius: '',
+          },
+          stage: 'arguments',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          commandName: 'Fillet',
           highlightedHeaderArg: 'radius',
           currentArgKey: 'radius',
           currentArgValue: '5',
@@ -2726,6 +2768,19 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Apply chamfer to the preselected edge`, async () => {
       await page.waitForTimeout(100)
       await toolbar.chamferButton.click()
+      await cmdBar.expectState({
+        commandName: 'Chamfer',
+        highlightedHeaderArg: 'selection',
+        currentArgKey: 'selection',
+        currentArgValue: '',
+        headerArguments: {
+          Selection: '',
+          Length: '',
+        },
+        stage: 'arguments',
+      })
+      await cmdBar.progressCmdBar()
+      await page.waitForTimeout(1000)
       await cmdBar.expectState({
         commandName: 'Chamfer',
         highlightedHeaderArg: 'length',
@@ -3209,6 +3264,8 @@ extrude001 = extrude(sketch001, length = 30)
         await test.step(`Go through the command bar flow with a preselected face (cap)`, async () => {
           await toolbar.shellButton.click()
           await cmdBar.progressCmdBar()
+          await page.waitForTimeout(500)
+          await cmdBar.progressCmdBar()
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
@@ -3642,9 +3699,8 @@ tag=$rectangleSegmentC002,
       // revolve
       await editor.scrollToText(codeToSelection)
       await page.getByText(codeToSelection).click()
-      // Wait for the selection to register (TODO: we need a definitive way to wait for this)
-      await page.waitForTimeout(200)
       await toolbar.revolveButton.click()
+      await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
@@ -3751,7 +3807,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         stage: 'arguments',
       })
       await page.keyboard.insertText(newAngle)
-      await page.getByRole('button', { name: 'Create new variable' }).click()
+      await cmdBar.variableCheckbox.click()
       await expect(page.getByPlaceholder('Variable name')).toHaveValue(
         'angle001'
       )
@@ -4579,6 +4635,18 @@ path001 = startProfile(sketch001, at = [0, 0])
       await toolbar.extrudeButton.click()
       await cmdBar.expectState({
         stage: 'arguments',
+        currentArgKey: 'sketches',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '',
+          Length: '',
+        },
+        highlightedHeaderArg: 'Profiles',
+        commandName: 'Extrude',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
         currentArgKey: 'length',
         currentArgValue: '5',
         headerArguments: {
@@ -4659,6 +4727,19 @@ path001 = startProfile(sketch001, at = [0, 0])
 
     await test.step('Go through command bar flow', async () => {
       await toolbar.sweepButton.click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'sketches',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '',
+          Path: '',
+          Sectional: '',
+        },
+        highlightedHeaderArg: 'Profiles',
+        commandName: 'Sweep',
+      })
+      await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'path',
@@ -4743,6 +4824,19 @@ path001 = startProfile(sketch001, at = [0, 0])
     await test.step('Go through command bar flow', async () => {
       await toolbar.closePane('code')
       await toolbar.revolveButton.click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'sketches',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '',
+          AxisOrEdge: '',
+          Angle: '',
+        },
+        highlightedHeaderArg: 'Profiles',
+        commandName: 'Revolve',
+      })
+      await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'axisOrEdge',

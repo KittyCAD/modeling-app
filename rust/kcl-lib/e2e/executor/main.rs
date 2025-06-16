@@ -762,7 +762,7 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
     };
     assert_eq!(
         err.error.message(),
-        "This function requires a keyword argument 'center'"
+        "This function requires a keyword argument `center`"
     );
 }
 
@@ -1232,7 +1232,7 @@ secondSketch = startSketchOn(part001, face = '')
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
         err.message(),
-        "The arg face was given, but it was the wrong type. It should be type FaceTag but it was string"
+        "face requires a value with type `TaggedFace`, but found a value with type `string`."
     );
 }
 
@@ -1684,10 +1684,16 @@ example = extrude(exampleSketch, length = 10)
     assert_eq!(err.message(), "Cannot have an x constrained angle of 90 degrees");
     assert_eq!(
         err.backtrace(),
-        vec![BacktraceItem {
-            source_range: SourceRange::new(70, 111, ModuleId::default()),
-            fn_name: Some("angledLine".to_owned())
-        }]
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(70, 111, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(70, 111, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1709,10 +1715,16 @@ example = extrude(exampleSketch, length = 10)
     assert_eq!(err.message(), "Cannot have an x constrained angle of 270 degrees");
     assert_eq!(
         err.backtrace(),
-        vec![BacktraceItem {
-            source_range: SourceRange::new(70, 112, ModuleId::default()),
-            fn_name: Some("angledLine".to_owned())
-        }]
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(70, 112, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(70, 112, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1734,10 +1746,16 @@ example = extrude(exampleSketch, length = 10)
     assert_eq!(err.message(), "Cannot have a y constrained angle of 0 degrees");
     assert_eq!(
         err.backtrace(),
-        vec![BacktraceItem {
-            source_range: SourceRange::new(70, 110, ModuleId::default()),
-            fn_name: Some("angledLine".to_owned())
-        }]
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(70, 110, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(70, 110, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1759,10 +1777,16 @@ example = extrude(exampleSketch, length = 10)
     assert_eq!(err.message(), "Cannot have a y constrained angle of 180 degrees");
     assert_eq!(
         err.backtrace(),
-        vec![BacktraceItem {
-            source_range: SourceRange::new(70, 112, ModuleId::default()),
-            fn_name: Some("angledLine".to_owned())
-        }]
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(70, 112, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(70, 112, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1784,10 +1808,16 @@ extrusion = extrude(sketch001, length = 10)
     assert_eq!(err.message(), "Cannot have an x constrained angle of 90 degrees");
     assert_eq!(
         err.backtrace(),
-        vec![BacktraceItem {
-            source_range: SourceRange::new(66, 116, ModuleId::default()),
-            fn_name: Some("angledLine".to_owned())
-        }]
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(66, 116, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(66, 116, ModuleId::default()),
+                fn_name: None,
+            }
+        ]
     );
 }
 
@@ -1809,10 +1839,16 @@ extrusion = extrude(sketch001, length = 10)
     assert_eq!(err.message(), "Cannot have an x constrained angle of 270 degrees");
     assert_eq!(
         err.backtrace(),
-        vec![BacktraceItem {
-            source_range: SourceRange::new(66, 117, ModuleId::default()),
-            fn_name: Some("angledLine".to_owned())
-        }]
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(66, 117, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(66, 117, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1836,10 +1872,16 @@ example = extrude(exampleSketch, length = 10)
     assert_eq!(err.message(), "Cannot have a y constrained angle of 0 degrees");
     assert_eq!(
         err.backtrace(),
-        vec![BacktraceItem {
-            source_range: SourceRange::new(95, 130, ModuleId::default()),
-            fn_name: Some("angledLine".to_owned())
-        }]
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(95, 130, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(95, 130, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1863,10 +1905,16 @@ example = extrude(exampleSketch, length = 10)
     assert_eq!(err.message(), "Cannot have a y constrained angle of 180 degrees");
     assert_eq!(
         err.backtrace(),
-        vec![BacktraceItem {
-            source_range: SourceRange::new(95, 132, ModuleId::default()),
-            fn_name: Some("angledLine".to_owned())
-        }]
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(95, 132, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(95, 132, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1890,10 +1938,16 @@ example = extrude(exampleSketch, length = 10)
     assert_eq!(err.message(), "Cannot have a y constrained angle of 180 degrees");
     assert_eq!(
         err.backtrace(),
-        vec![BacktraceItem {
-            source_range: SourceRange::new(95, 133, ModuleId::default()),
-            fn_name: Some("angledLine".to_owned())
-        }]
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(95, 133, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(95, 133, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1911,12 +1965,13 @@ someFunction('INVALID')
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
         err.message(),
-        "This function expected the input argument to be Solid or Plane but it's actually of type string"
+        "The input argument of `startSketchOn` requires a value with type `Solid` or a value with type `Plane` (`Solid | Plane`), but found a value with type `string`."
     );
     assert_eq!(
         err.source_ranges(),
         vec![
             SourceRange::new(46, 55, ModuleId::default()),
+            SourceRange::new(32, 56, ModuleId::default()),
             SourceRange::new(60, 83, ModuleId::default()),
         ]
     );
@@ -1925,6 +1980,10 @@ someFunction('INVALID')
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(46, 55, ModuleId::default()),
+                fn_name: Some("startSketchOn".to_owned()),
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(32, 56, ModuleId::default()),
                 fn_name: Some("someFunction".to_owned()),
             },
             BacktraceItem {
@@ -2031,7 +2090,7 @@ async fn kcl_test_better_type_names() {
         },
         None => todo!(),
     };
-    assert_eq!(err, "This function expected the input argument to be one or more Solids or imported geometry but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`");
+    assert_eq!(err, "This function expected the input argument to be one or more Solids or ImportedGeometry but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`");
 }
 
 #[tokio::test(flavor = "multi_thread")]

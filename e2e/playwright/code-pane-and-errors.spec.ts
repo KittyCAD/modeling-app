@@ -78,11 +78,10 @@ extrude001 = extrude(sketch001, length = 5)`
 
     // Delete a character to break the KCL
     await editor.openPane()
-    await editor.scrollToText('bracketLeg1Sketch, length = thickness)')
-    await page
-      .getByText('extrude(bracketLeg1Sketch, length = thickness)')
-      .click()
-    await page.keyboard.press('Backspace')
+    await editor.scrollToText('extrude(%, length = width)')
+    await page.getByText('extrude(%, length = width)').click()
+
+    await page.keyboard.press(')')
 
     // Ensure that a badge appears on the button
     await expect(codePaneButtonHolder).toContainText('notification')
@@ -99,16 +98,11 @@ extrude001 = extrude(sketch001, length = 5)`
 
     await page.waitForTimeout(500)
 
-    // Ensure that a badge appears on the button
-    await expect(codePaneButtonHolder).toContainText('notification')
-    // Ensure we have no errors in the gutter.
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-
     // Open the code pane
     await editor.openPane()
 
-    // Go to our problematic code again (missing closing paren!)
-    await editor.scrollToText('extrude(bracketLeg1Sketch, length = thickness')
+    // Go to our problematic code again
+    await editor.scrollToText('extrude(%, length = w')
 
     // Ensure that a badge appears on the button
     await expect(codePaneButtonHolder).toContainText('notification')
@@ -271,6 +265,7 @@ middle(0)
     })
     await expect(
       page.getByText(`assert failed: Expected 0 to be greater than 0 but it wasn't
+assert()
 check()
 middle()`)
     ).toBeVisible()
@@ -281,7 +276,7 @@ middle()`)
 
 test(
   'Opening multiple panes persists when switching projects',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page }, testInfo) => {
     // Setup multiple projects.
     await context.folderSetupFn(async (dir) => {
@@ -352,7 +347,7 @@ test(
 
 test(
   'external change of file contents are reflected in editor',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page }, testInfo) => {
     const PROJECT_DIR_NAME = 'lee-was-here'
     const { dir: projectsDir } = await context.folderSetupFn(async (dir) => {

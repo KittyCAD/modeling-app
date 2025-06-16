@@ -1120,7 +1120,7 @@ part002 = startSketchOn(XZ)
 test.describe('Electron constraint tests', () => {
   test(
     'Able to double click label to set constraint',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'test-sample')

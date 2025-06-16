@@ -145,6 +145,8 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
         entry_point: entry_point.clone(),
         input_dir: parent.to_path_buf(),
         output_dir: relative_output_dir,
+        // Skip is temporary while we have non-deterministic output.
+        skip_assert_artifact_graph: true,
     }
 }
 

@@ -3,6 +3,10 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing import_mesh_clone.kcl
 ---
 {
+  "__mod_yellow": {
+    "type": "Module",
+    "value": 1
+  },
   "blue": {
     "type": "ImportedGeometry",
     "id": "[uuid]",
@@ -23,9 +27,5 @@ description: Variables in memory after executing import_mesh_clone.kcl
     "value": [
       "cube.obj"
     ]
-  },
-  "yellow": {
-    "type": "Module",
-    "value": 1
   }
 }

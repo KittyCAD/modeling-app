@@ -3,7 +3,7 @@ import type { Models } from '@kittycad/lib/dist/types/src'
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 export const APP_NAME = 'Design Studio'
-export const APP_DOWNLOAD_PATH = 'modeling-app/download'
+export const APP_DOWNLOAD_PATH = 'design-studio/download'
 /** Search string in new project names to increment as an index */
 export const INDEX_IDENTIFIER = '$n'
 /** The maximum number of 0's to pad a default project name's index with */
@@ -217,3 +217,6 @@ export const POOL_QUERY_PARAM = 'pool'
  * @deprecated: supporting old share links with this. For new command URLs, use "cmd"
  */
 export const CREATE_FILE_URL_PARAM = 'create-file'
+/** A query parameter to skip the sign-on view if unnecessary. */
+export const IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM =
+  'immediate-sign-in-if-necessary'

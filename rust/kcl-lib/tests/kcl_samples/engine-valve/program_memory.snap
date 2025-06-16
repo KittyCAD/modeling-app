@@ -3807,7 +3807,7 @@ description: Variables in memory after executing engine-valve.kcl
             "ccw": false,
             "center": [
               -15.475,
-              14.9917
+              14.992
             ],
             "from": [
               -2.99,
@@ -3836,8 +3836,8 @@ description: Variables in memory after executing engine-valve.kcl
             },
             "ccw": true,
             "center": [
-              -10.7759,
-              -1.2241
+              -10.776,
+              -1.224
             ],
             "from": [
               -12.0,
@@ -4108,7 +4108,7 @@ description: Variables in memory after executing engine-valve.kcl
           "ccw": false,
           "center": [
             -15.475,
-            14.9917
+            14.992
           ],
           "from": [
             -2.99,
@@ -4137,8 +4137,8 @@ description: Variables in memory after executing engine-valve.kcl
           },
           "ccw": true,
           "center": [
-            -10.7759,
-            -1.2241
+            -10.776,
+            -1.224
           ],
           "from": [
             -12.0,

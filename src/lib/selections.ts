@@ -703,7 +703,8 @@ export async function sendSelectEventToEngine(
     cmd_id: uuidv4(),
   })
   if (!res) {
-    return Promise.reject('no response')
+    console.warn('No response')
+    return undefined
   }
 
   if (isArray(res)) {
