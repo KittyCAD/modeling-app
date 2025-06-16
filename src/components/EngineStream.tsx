@@ -54,7 +54,8 @@ export const EngineStream = (props: {
   const { file, project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const last = useRef<number>(Date.now())
 
-  const [firstPlay, setFirstPlay] = useState(true)
+  const [firstRun, setFirstRun] = useState(true)
+  const [needsExecution, setNeedsExecution] = useState(true)
   const [goRestart, setGoRestart] = useState(false)
   const [timeoutId, setTimeoutId] = useState<
     ReturnType<typeof setTimeout> | undefined
@@ -183,13 +184,14 @@ export const EngineStream = (props: {
     // Reset the restart timeouts
     setAttemptTimes([0, TIME_1_SECOND])
 
-    console.log(firstPlay)
-    if (!firstPlay) return
+    console.log(needsExecution)
+    if (!needsExecution) return
 
-    setFirstPlay(false)
-    console.log('firstPlay true, zoom to fit')
+    setNeedsExecution(false)
+    console.log('needsExecution true, zoom to fit')
     kmp
       .then(async () => {
+        setFirstRun(false)
         await resetCameraPosition()
 
         if (project && project.path) {
@@ -212,7 +214,7 @@ export const EngineStream = (props: {
         executeKcl
       )
     }
-  }, [firstPlay])
+  }, [needsExecution])
 
   useEffect(() => {
     // We do a back-off restart, using a fibonacci sequence, since it
@@ -226,7 +228,7 @@ export const EngineStream = (props: {
           engineStreamState.context.videoRef.current?.pause()
           engineCommandManager.tearDown()
           startOrReconfigureEngine()
-          setFirstPlay(true)
+          setNeedsExecution(true)
 
           setTimeoutId(undefined)
           setGoRestart(false)
@@ -602,8 +604,13 @@ export const EngineStream = (props: {
         EngineStreamState.Paused,
         EngineStreamState.Resuming,
       ].some((s) => s === engineStreamState.value) && (
-        <Loading dataTestId="loading-engine" className="fixed inset-0 h-screen">
-          Connecting to engine...
+        <Loading
+          isRetrying={timeoutId !== undefined && !firstRun}
+          retryAttemptCountdown={attemptTimes[1]}
+          dataTestId="loading-engine"
+          className="fixed inset-0 h-screen"
+        >
+          Connecting and setting up scene
         </Loading>
       )}
     </div>

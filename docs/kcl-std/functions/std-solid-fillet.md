@@ -13,7 +13,7 @@ fillet(
   radius: number(Length),
   tags: [Edge; 1+],
   tolerance?: number(Length),
-  tag?: tag,
+  tag?: TagDecl,
 ): Solid
 ```
 
@@ -29,7 +29,7 @@ will smoothly blend the transition.
 | `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The radius of the fillet | Yes |
 | `tags` | [`[Edge; 1+]`](/docs/kcl-std/types/std-types-Edge) | The paths you want to fillet | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The tolerance for this fillet | No |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this fillet | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this fillet | No |
 
 ### Returns
 

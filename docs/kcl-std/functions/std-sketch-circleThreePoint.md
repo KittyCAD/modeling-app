@@ -13,7 +13,7 @@ circleThreePoint(
   p1: Point2d,
   p2: Point2d,
   p3: Point2d,
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -27,7 +27,7 @@ circleThreePoint(
 | `p1` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | 1st point to derive the circle. | Yes |
 | `p2` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | 2nd point to derive the circle. | Yes |
 | `p3` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | 3rd point to derive the circle. | Yes |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Identifier for the circle to reference elsewhere. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Identifier for the circle to reference elsewhere. | No |
 
 ### Returns
 
