@@ -1,7 +1,5 @@
-import type { Project, FileEntry } from '@src/lib/project'
-import { FILE_EXT } from '@src/lib/constants'
+import type { FileEntry } from '@src/lib/project'
 import type { ReactNode } from 'react'
-import { useState, useEffect } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
@@ -13,7 +11,7 @@ export interface FileExplorerEntry extends FileEntry {
   index: number
 }
 
-interface FileExplorerRow extends FileExplorerEntry {
+export interface FileExplorerRow extends FileExplorerEntry {
   icon: CustomIconName
   name: string
   isFolder: boolean
@@ -29,7 +27,7 @@ interface FileExplorerRow extends FileExplorerEntry {
   activeIndex: number
 }
 
-const StatusDot = () => {
+export const StatusDot = () => {
   return <span>•</span>
 }
 
@@ -122,7 +120,7 @@ const flattenProjectHelper = (
  *
  * fileEntries should be sorted already with sortFilesAndDirectories
  */
-const flattenProject = (
+export const flattenProject = (
   projectChildren: FileEntry[],
   projectName: string
 ): FileExplorerEntry[] => {
@@ -164,95 +162,12 @@ const insertFakeRowAtFirstPositionUnderParentAfterFolder = (
  *
  */
 export const FileExplorer = ({
-  parentProject,
-  openedRows,
-  selectedRow,
-  onRowClickCallback,
-  fakeRow,
-  activeIndex,
+  rowsToRender,
+  selectedRow
 }: {
-  parentProject: Project
-  openedRows: { [key: string]: boolean }
+  rowsToRender: FileExplorerRow[]
   selectedRow: FileExplorerEntry | null
-  onRowClickCallback: (file: FileExplorerEntry, domIndex: number) => void
-  fakeRow: { entry: FileExplorerEntry | null; isFile: boolean } | null
-  activeIndex: number
 }) => {
-  // Wrap the FileEntry in a FileExplorerEntry to keep track for more metadata
-  let flattenedData: FileExplorerEntry[] = []
-
-  if (parentProject && parentProject.children) {
-    // moves all folders up and files down, files are sorted within folders
-    const sortedData = sortFilesAndDirectories(parentProject.children)
-    // pre order traversal of the tree
-    flattenedData = flattenProject(sortedData, parentProject.name)
-    // insert fake row if one is present
-    // insertFakeRowAtFirstPositionUnderParentAfterFolder(flattenedData, fakeRow)
-  }
-
-  const [rowsToRender, setRowsToRender] = useState<FileExplorerRow[]>([])
-
-  useEffect(() => {
-    // TODO What to do when a different parentProject comes in? Clear old state.
-    // Clear openedRows
-    // Clear rowsToRender
-    // Clear selected information
-
-    const requestedRowsToRender: FileExplorerRow[] =
-      flattenedData.map((child) => {
-        const isFile = child.children === null
-        const isKCLFile = isFile && child.name?.endsWith(FILE_EXT)
-
-        /**
-         * If any parent is closed, keep the history of open children
-         */
-        let isAnyParentClosed = false
-        const pathIterator = child.parentPath.split('/')
-        while (pathIterator.length > 0) {
-          const key = pathIterator.join('/')
-          const isOpened = openedRows[key] || parentProject.name === key
-          isAnyParentClosed = isAnyParentClosed || !isOpened
-          pathIterator.pop()
-        }
-
-        const amIOpen =
-          openedRows[
-            constructPath({ parentPath: child.parentPath, name: child.name })
-          ]
-        const isOpen =
-          (openedRows[child.parentPath] ||
-            parentProject.name === child.parentPath) &&
-          !isAnyParentClosed
-
-        let icon: CustomIconName = 'file'
-        if (isKCLFile) {
-          icon = 'kcl'
-        } else if (!isFile && !amIOpen) {
-          icon = 'folder'
-        } else if (!isFile && amIOpen) {
-          icon = 'folderOpen'
-        }
-
-        const row: FileExplorerRow = {
-          // copy over all the other data that was built up to the DOM render row
-          ...child,
-          icon: icon,
-          isFolder: !isFile,
-          status: StatusDot(),
-          isOpen,
-          rowClicked: (domIndex: number) => {
-            onRowClickCallback(child, domIndex)
-          },
-          isFake: false,
-          activeIndex: activeIndex,
-        }
-
-        return row
-      }) || []
-
-    setRowsToRender(requestedRowsToRender)
-  }, [parentProject, openedRows, fakeRow, activeIndex])
-
   // Local state for selection and what is opened
   // diff this against new Project value that comes in
   return (

@@ -1,13 +1,19 @@
 import type { Project, FileEntry } from '@src/lib/project'
+import { FILE_EXT } from '@src/lib/constants'
 import {
   FileExplorer,
   constructPath,
+  FileExplorerEntry,
+  FileExplorerRow,
+  flattenProject,
+  StatusDot
 } from '@src/components/Explorer/FileExplorer'
 import type { FileExplorerEntry } from '@src/components/Explorer/FileExplorer'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { useState, useRef, useEffect } from 'react'
 import { systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 
 const NOTHING_IS_SELECTED: number = -2
 const CONTAINER_IS_SELECTED: number = -1
@@ -43,6 +49,82 @@ export const ProjectExplorer = ({
     isFile: boolean
   } | null>(null)
 
+  // Wrap the FileEntry in a FileExplorerEntry to keep track for more metadata
+  let flattenedData: FileExplorerEntry[] = []
+
+  if (project && project.children) {
+    // moves all folders up and files down, files are sorted within folders
+    const sortedData = sortFilesAndDirectories(project.children)
+    // pre order traversal of the tree
+    flattenedData = flattenProject(sortedData, project.name)
+    // insert fake row if one is present
+    // insertFakeRowAtFirstPositionUnderParentAfterFolder(flattenedData, fakeRow)
+  }
+
+  const [rowsToRender, setRowsToRender] = useState<FileExplorerRow[]>([])
+
+  useEffect(() => {
+    // TODO What to do when a different project comes in? Clear old state.
+    // Clear openedRows
+    // Clear rowsToRender
+    // Clear selected information
+
+    const requestedRowsToRender: FileExplorerRow[] =
+      flattenedData.map((child) => {
+        const isFile = child.children === null
+        const isKCLFile = isFile && child.name?.endsWith(FILE_EXT)
+
+        /**
+         * If any parent is closed, keep the history of open children
+         */
+        let isAnyParentClosed = false
+        const pathIterator = child.parentPath.split('/')
+        while (pathIterator.length > 0) {
+          const key = pathIterator.join('/')
+          const isOpened = openedRows[key] || project.name === key
+          isAnyParentClosed = isAnyParentClosed || !isOpened
+          pathIterator.pop()
+        }
+
+        const amIOpen =
+          openedRows[
+            constructPath({ parentPath: child.parentPath, name: child.name })
+          ]
+        const isOpen =
+          (openedRows[child.parentPath] ||
+            project.name === child.parentPath) &&
+          !isAnyParentClosed
+
+        let icon: CustomIconName = 'file'
+        if (isKCLFile) {
+          icon = 'kcl'
+        } else if (!isFile && !amIOpen) {
+          icon = 'folder'
+        } else if (!isFile && amIOpen) {
+          icon = 'folderOpen'
+        }
+
+        const row: FileExplorerRow = {
+          // copy over all the other data that was built up to the DOM render row
+          ...child,
+          icon: icon,
+          isFolder: !isFile,
+          status: StatusDot(),
+          isOpen,
+          rowClicked: (domIndex: number) => {
+            onRowClickCallback(child, domIndex)
+          },
+          isFake: false,
+          activeIndex: activeIndex,
+        }
+
+        return row
+      }) || []
+
+    setRowsToRender(requestedRowsToRender)
+  }, [project, openedRows, fakeRow, activeIndex])
+
+
   const onRowClickCallback = (file: FileExplorerEntry, domIndex: number) => {
     const newOpenedRows = { ...openedRows }
     const key = constructPath({
@@ -70,35 +152,32 @@ export const ProjectExplorer = ({
       const key = event.key
       switch (key) {
         case 'ArrowLeft':
-          setActiveIndex((previous)=>{
+          setActiveIndex((previous) => {
             return NOTHING_IS_SELECTED
           })
           break
         case 'ArrowRight':
-          setActiveIndex((previous)=>{
+          setActiveIndex((previous) => {
             return NOTHING_IS_SELECTED
           })
           break
         case 'ArrowUp':
-          setActiveIndex(
-            (previous) => {
-              if (previous === NOTHING_IS_SELECTED) {
-                return STARTING_INDEX_TO_SELECT
-              }
-              return Math.max(STARTING_INDEX_TO_SELECT, previous-1)
+          setActiveIndex((previous) => {
+            if (previous === NOTHING_IS_SELECTED) {
+              return STARTING_INDEX_TO_SELECT
             }
-          )
+            return Math.max(STARTING_INDEX_TO_SELECT, previous - 1)
+          })
           break
         case 'ArrowDown':
-          setActiveIndex(
-            (previous) => {
-              if (previous === NOTHING_IS_SELECTED) {
-                return STARTING_INDEX_TO_SELECT
-              }
-              const numberOfDOMRows = fileExplorerContainer.current.children[0].children.length-1
-              return Math.min(numberOfDOMRows, previous+1)
+          setActiveIndex((previous) => {
+            if (previous === NOTHING_IS_SELECTED) {
+              return STARTING_INDEX_TO_SELECT
             }
-          )
+            const numberOfDOMRows =
+              fileExplorerContainer.current.children[0].children.length - 1
+            return Math.min(numberOfDOMRows, previous + 1)
+          })
           break
       }
     }
@@ -151,12 +230,8 @@ export const ProjectExplorer = ({
         {activeIndex}
         {project && (
           <FileExplorer
-            parentProject={project}
-            openedRows={openedRows}
-            selectedRow={selectedRow}
-            onRowClickCallback={onRowClickCallback}
-            fakeRow={fakeRow}
-            activeIndex={activeIndex}
+          rowsToRender={rowsToRender}
+          selectedRow={selectedRow}
           ></FileExplorer>
         )}
       </div>
