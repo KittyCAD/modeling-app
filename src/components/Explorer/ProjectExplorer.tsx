@@ -17,7 +17,10 @@ import { systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 
-const isFileExplorerEntryOpened = (rows : {[key:string]: boolean}, entry:FileExplorerEntry) : boolean => {
+const isFileExplorerEntryOpened = (
+  rows: { [key: string]: boolean },
+  entry: FileExplorerEntry
+): boolean => {
   const key = constructPath({
     parentPath: entry.parentPath,
     name: entry.name,
@@ -179,12 +182,14 @@ export const ProjectExplorer = ({
       const key = event.key
       const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
       const shouldCheckOpened = focusedEntry
-      const isEntryOpened = shouldCheckOpened && isFileExplorerEntryOpened(openedRowsRef.current, focusedEntry)
+      const isEntryOpened =
+        shouldCheckOpened &&
+        isFileExplorerEntryOpened(openedRowsRef.current, focusedEntry)
       switch (key) {
         case 'ArrowLeft':
           if (activeIndexRef.current === CONTAINER_IS_SELECTED) {
             // NO OP
-          } else if (shouldCheckOpened && isEntryOpened){
+          } else if (shouldCheckOpened && isEntryOpened) {
             // close
             const newOpenedRows = { ...openedRowsRef.current }
             const key = constructPath({

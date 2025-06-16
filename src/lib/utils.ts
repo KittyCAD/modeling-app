@@ -644,7 +644,7 @@ export async function engineViewIsometricWithoutGeometryPresent({
   cameraProjection: CameraProjectionType
 }) {
   // If you load an empty scene with any file unit it will have an eye offset of this
-  const MAGIC_ENGINE_EYE_OFFSET = 200.0057
+  const MAGIC_ENGINE_EYE_OFFSET = 1378.0057
   const quat = computeIsometricQuaternionForEmptyScene()
   const isometricView: CameraViewState_type = {
     pivot_rotation: {
