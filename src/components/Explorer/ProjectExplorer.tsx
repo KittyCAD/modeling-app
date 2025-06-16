@@ -55,18 +55,18 @@ export const ProjectExplorer = ({
   // Handle outside clicks
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const path = event.composedPath ? event.composedPath() : [];
+      const path = event.composedPath ? event.composedPath() : []
 
       if (!path.includes(fileExplorerContainer.current)) {
-        setActiveIndex(-2);
+        setActiveIndex(-2)
       }
-    };
+    }
 
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener('click', handleClickOutside)
     return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, []);
+      document.removeEventListener('click', handleClickOutside)
+    }
+  }, [])
 
   return (
     <div>
