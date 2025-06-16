@@ -94,7 +94,6 @@ zip = { workspace = true }
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = { workspace = true }
 futures-lite = "2.6.0"
-instant = { version = "0.1.13", features = ["wasm-bindgen", "inaccurate"] }
 js-sys = { version = "0.3.72" }
 tokio = { workspace = true, features = ["sync", "time"] }
 tower-lsp = { workspace = true, features = ["runtime-agnostic"] }
@@ -105,7 +104,6 @@ wasm-timer = { package = "zduny-wasm-timer", version = "0.2.5" }
 web-sys = { version = "0.3.76", features = ["console"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-instant = "0.1.13"
 tokio = { workspace = true, features = ["full"] }
 tokio-tungstenite = { version = "0.26.2", features = [
     "rustls-tls-native-roots",
