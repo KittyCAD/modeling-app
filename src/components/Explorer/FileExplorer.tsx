@@ -256,13 +256,14 @@ export const FileExplorer = ({
   // Local state for selection and what is opened
   // diff this against new Project value that comes in
   return (
-    <div>
+    <div role="presentation">
       {rowsToRender
         .filter((row) => {
           return row.isOpen
         })
-        .map((row, index) => {
+        .map((row, index, original) => {
           row.domIndex = index
+          row.domLength = original.length
           return (
             <FileExplorerRow
               key={uuidv4()}
@@ -285,10 +286,22 @@ export const FileExplorerRow = ({
 }: {
   row: FileExplorerRow
   selectedRow: FileExplorerEntry | null
+  domLength: number
 }) => {
+  const isSelected =row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
   return (
     <div
-      className={`h-6 flex flex-row items-center text-xs cursor-pointer hover:bg-sky-400 ${row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath ? 'bg-sky-800' : ''}`}
+      role="treeitem"
+      className={`h-6 flex flex-row items-center text-xs cursor-pointer hover:bg-sky-400 ${ isSelected ? 'bg-sky-800' : ''}`}
+      data-index={row.domIndex}
+      data-last-element={row.domIndex === row.domLength -1 }
+      data-parity={row.domIndex % 2 === 0 }
+      aria-setsize={row.domLength}
+      aria-posinset={row.domIndex+1}
+      aria-label={row.name}
+      aria-selected={isSelected}
+      aria-level={row.level+1}
+      aria-expanded={row.isFolder && row.isOpen}
       onClick={() => {
         row.rowClicked(row.domIndex)
       }}

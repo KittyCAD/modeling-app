@@ -93,17 +93,20 @@ export const ProjectExplorer = ({
           ></FileExplorerHeaderActions>
         </div>
       </div>
-      <div className={`h-96 overflow-y-auto overflow-x-hidden border border-transparent ${activeIndex === -1 ? 'border-sky-500' : ''}`} tabIndex={0}
-    role="tree"
-    ref={fileExplorerContainer}
-    onClick={(event)=>{
-      if (event.target === fileExplorerContainer.current) {
-        setActiveIndex(-1)
-        setSelectedRow(null)
+      <div
+        className={`h-96 overflow-y-auto overflow-x-hidden border border-transparent ${activeIndex === -1 ? 'border-sky-500' : ''}`}
+        tabIndex={0}
+        role="tree"
+        aria-label="Files Explorer"
+        ref={fileExplorerContainer}
+        onClick={(event) => {
+          if (event.target === fileExplorerContainer.current) {
+            setActiveIndex(-1)
+            setSelectedRow(null)
           }
         }}
       >
-      {activeIndex}
+        {activeIndex}
         {project && (
           <FileExplorer
             parentProject={project}
