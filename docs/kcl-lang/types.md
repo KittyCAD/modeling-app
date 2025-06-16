@@ -44,7 +44,7 @@ detail on importing geometry.
 
 Tags are used to give a name (tag) to a specific path.
 
-### `TagDeclarator`
+### Tag declarations - `TagDecl`
 
 The syntax for declaring a tag is `$myTag` you would use it in the following
 way:
@@ -67,24 +67,28 @@ startSketchOn(XZ)
   |> close()
 ```
 
-### `TagIdentifier`
+When a function requires declaring a new tag (using the `$` syntax), the argument has type [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl).
 
-As per the example above you can use the tag identifier to get a reference to the 
-tagged object. The syntax for this is `myTag`.
+### Tag identifiers
 
-In the example above we use the tag identifier to get the angle of the segment
-`segAng(rectangleSegmentA001)`.
+A tag created using a tag declarator can be used by writing its name without the `$`, e.g., `myTag`.
+Where necessary to disambiguate from tag declarations, we call these tag identifiers.
 
-### `Start`
+In the example above we use the tag identifier `rectangleSegmentA001` to get the angle of the segment
+using `segAng(rectangleSegmentA001)`.
 
-There is a special tag, `START` (with type `Start`, although under the cover, it's a string)
-for identifying the face of a solid which was the start of an extrusion (i.e., the surface which
-is extruded).
+Tags can identify either an edge or face of a solid, or a line or other edge of a sketch. Functions
+which take a tag identifier as an argument will use either [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) (for the edge of a
+solid or sketch) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace).
 
-### `End`
+If a line in a sketch is tagged and then the sketch is extruded, the tag is a `TaggedEdge` before
+extrusion and a `TaggedFace` after extrusion.
 
-There is a special tag, `END` (with type `End`, although under the cover, it's a string)
-for identifying the face of a solid which was finishes an extrusion.
+#### `START` and `END`
+
+[`START`](/docs/kcl-std/consts/std-START) and [`END`](/docs/kcl-std/consts/std-END) are special tags
+for identifying the starting and ending faces of an extruded solid.
+
 
 ### Tag Scope
 
