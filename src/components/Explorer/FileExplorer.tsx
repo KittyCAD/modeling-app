@@ -33,7 +33,6 @@ const StatusDot = () => {
   return <span>•</span>
 }
 
-
 /**
  * Implement a dynamic spacer with rem to offset the row
  * in the tree based on the level within the tree
@@ -292,7 +291,9 @@ export const FileExplorerRow = ({
   const isSelected =
     row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
   const isIndexActive = row.domIndex === row.activeIndex
-  const outlineCSS = isIndexActive ? 'outline outline-1 outline-sky-500 ' : 'outline-0 outline-none'
+  const outlineCSS = isIndexActive
+    ? 'outline outline-1 outline-sky-500 '
+    : 'outline-0 outline-none'
   return (
     <div
       role="treeitem"
@@ -310,7 +311,7 @@ export const FileExplorerRow = ({
         row.rowClicked(row.domIndex)
       }}
     >
-      <div style={{width: '0.25rem'}}></div>
+      <div style={{ width: '0.25rem' }}></div>
       {Spacer(row.level)}
       <CustomIcon
         name={row.icon}
@@ -320,7 +321,7 @@ export const FileExplorerRow = ({
         {row.name}
       </span>
       <div className="ml-auto">{row.status}</div>
-      <div style={{width: '0.25rem'}}></div>
+      <div style={{ width: '0.25rem' }}></div>
     </div>
   )
 }

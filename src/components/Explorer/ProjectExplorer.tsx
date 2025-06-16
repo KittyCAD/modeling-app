@@ -70,18 +70,35 @@ export const ProjectExplorer = ({
       const key = event.key
       switch (key) {
         case 'ArrowLeft':
+          setActiveIndex((previous)=>{
+            return NOTHING_IS_SELECTED
+          })
           break
         case 'ArrowRight':
+          setActiveIndex((previous)=>{
+            return NOTHING_IS_SELECTED
+          })
           break
         case 'ArrowUp':
-          if (activeIndex === NOTHING_IS_SELECTED) {
-            setActiveIndex(STARTING_INDEX_TO_SELECT)
-          }
+          setActiveIndex(
+            (previous) => {
+              if (previous === NOTHING_IS_SELECTED) {
+                return STARTING_INDEX_TO_SELECT
+              }
+              return Math.max(STARTING_INDEX_TO_SELECT, previous-1)
+            }
+          )
           break
         case 'ArrowDown':
-          if (activeIndex === NOTHING_IS_SELECTED) {
-            setActiveIndex(STARTING_INDEX_TO_SELECT)
-          }
+          setActiveIndex(
+            (previous) => {
+              if (previous === NOTHING_IS_SELECTED) {
+                return STARTING_INDEX_TO_SELECT
+              }
+              const numberOfDOMRows = fileExplorerContainer.current.children[0].children.length-1
+              return Math.min(numberOfDOMRows, previous+1)
+            }
+          )
           break
       }
     }
