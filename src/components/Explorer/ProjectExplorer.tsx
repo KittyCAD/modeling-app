@@ -9,6 +9,10 @@ import { useState, useRef, useEffect } from 'react'
 import { systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
+const NOTHING_IS_SELECTED : number = -2
+const CONTAINER_IS_SELECTED : number = -1
+const STARTING_INDEX_TO_SELECT : number = 0
+
 /**
  * Wrap the header and the tree into a single component
  * This is important because the action header buttons need to know
@@ -29,7 +33,7 @@ export const ProjectExplorer = ({
   const [openedRows, setOpenedRows] = useState<{ [key: string]: boolean }>({})
   const [selectedRow, setSelectedRow] = useState<FileExplorerEntry | null>(null)
   // -1 is the parent container, -2 is nothing is selected
-  const [activeIndex, setActiveIndex] = useState<number>(-1)
+  const [activeIndex, setActiveIndex] = useState<number>(NOTHING_IS_SELECTED)
   const fileExplorerContainer = useRef(null)
 
   // fake row is used for new files or folders
@@ -62,9 +66,30 @@ export const ProjectExplorer = ({
       }
     }
 
+    const keyDownHandler = (event) => {
+      const key = event.key
+      switch(key) {
+        case "ArrowLeft":
+          break;
+        case "ArrowRight":
+          break;
+        case "ArrowUp":
+          if (activeIndex === NOTHING_IS_SELECTED) {
+            setActiveIndex(STARTING_INDEX_TO_SELECT)
+          }
+          break;
+        case "ArrowDown":
+          if (activeIndex === NOTHING_IS_SELECTED) {
+            setActiveIndex(STARTING_INDEX_TO_SELECT)
+          }
+          break;
+      }
+    }
+    document.addEventListener('keydown', keyDownHandler)
     document.addEventListener('click', handleClickOutside)
     return () => {
       document.removeEventListener('click', handleClickOutside)
+      document.removeEventListener('keydown', keyDownHandler)
     }
   }, [])
 
@@ -101,7 +126,7 @@ export const ProjectExplorer = ({
         ref={fileExplorerContainer}
         onClick={(event) => {
           if (event.target === fileExplorerContainer.current) {
-            setActiveIndex(-1)
+            setActiveIndex(CONTAINER_IS_SELECTED)
             setSelectedRow(null)
           }
         }}

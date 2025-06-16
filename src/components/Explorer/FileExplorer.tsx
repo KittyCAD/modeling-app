@@ -26,6 +26,7 @@ interface FileExplorerRow extends FileExplorerEntry {
    * they are placed in the DOM as if they are real but not from the source of truth
    */
   isFake: boolean
+  activeIndex: number
 }
 
 const StatusDot = () => {
@@ -147,7 +148,6 @@ const insertFakeRowAtFirstPositionUnderParentAfterFolder = (
     return
   }
 
-  console.log(fakeRow.entry)
 
   // const requestedEntry: FileExplorerEntry = {
   //   ...fakeRow,
@@ -245,13 +245,14 @@ export const FileExplorer = ({
             onRowClickCallback(child, domIndex)
           },
           isFake: false,
+          activeIndex: activeIndex
         }
 
         return row
       }) || []
 
     setRowsToRender(requestedRowsToRender)
-  }, [parentProject, openedRows, fakeRow])
+  }, [parentProject, openedRows, fakeRow, activeIndex])
 
   // Local state for selection and what is opened
   // diff this against new Project value that comes in
@@ -290,10 +291,12 @@ export const FileExplorerRow = ({
 }) => {
   const isSelected =
     row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
+  const isIndexActive = row.domIndex === row.activeIndex
+  const outlineCSS = isIndexActive ? 'border-sky-500' : ''
   return (
     <div
       role="treeitem"
-      className={`h-6 flex flex-row items-center text-xs cursor-pointer hover:bg-sky-400 ${isSelected ? 'bg-sky-800' : ''}`}
+      className={`h-6 flex flex-row items-center text-xs cursor-pointer border border-transparent ${outlineCSS} hover:bg-sky-400 ${isSelected ? 'bg-sky-800' : ''}`}
       data-index={row.domIndex}
       data-last-element={row.domIndex === row.domLength - 1}
       data-parity={row.domIndex % 2 === 0}
