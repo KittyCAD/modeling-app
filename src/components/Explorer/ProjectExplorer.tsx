@@ -53,20 +53,20 @@ export const ProjectExplorer = ({
   }
 
   // Handle outside clicks
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     console.log(event.target)
-  //     if (fileExplorerContainer.current && !fileExplorerContainer.current.contains(event.target)) {
-  //       console.log(fileExplorerContainer.current)
-  //       setActiveIndex(-2);
-  //     }
-  //   };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const path = event.composedPath ? event.composedPath() : [];
 
-  //   document.addEventListener('click', handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener('click', handleClickOutside);
-  //   };
-  // }, []);
+      if (!path.includes(fileExplorerContainer.current)) {
+        setActiveIndex(-2);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div>

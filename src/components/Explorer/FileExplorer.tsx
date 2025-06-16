@@ -288,19 +288,20 @@ export const FileExplorerRow = ({
   selectedRow: FileExplorerEntry | null
   domLength: number
 }) => {
-  const isSelected =row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
+  const isSelected =
+    row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
   return (
     <div
       role="treeitem"
-      className={`h-6 flex flex-row items-center text-xs cursor-pointer hover:bg-sky-400 ${ isSelected ? 'bg-sky-800' : ''}`}
+      className={`h-6 flex flex-row items-center text-xs cursor-pointer hover:bg-sky-400 ${isSelected ? 'bg-sky-800' : ''}`}
       data-index={row.domIndex}
-      data-last-element={row.domIndex === row.domLength -1 }
-      data-parity={row.domIndex % 2 === 0 }
+      data-last-element={row.domIndex === row.domLength - 1}
+      data-parity={row.domIndex % 2 === 0}
       aria-setsize={row.domLength}
-      aria-posinset={row.domIndex+1}
+      aria-posinset={row.domIndex + 1}
       aria-label={row.name}
       aria-selected={isSelected}
-      aria-level={row.level+1}
+      aria-level={row.level + 1}
       aria-expanded={row.isFolder && row.isOpen}
       onClick={() => {
         row.rowClicked(row.domIndex)
