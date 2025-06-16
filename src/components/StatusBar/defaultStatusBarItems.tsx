@@ -11,6 +11,7 @@ import { BillingDialog } from '@src/components/BillingDialog'
 import { Popover } from '@headlessui/react'
 import Tooltip from '@src/components/Tooltip'
 import { HelpMenu } from '@src/components/HelpMenu'
+import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 
 export const defaultGlobalStatusBarItems = ({
   location,
@@ -30,7 +31,7 @@ export const defaultGlobalStatusBarItems = ({
     id: 'telemetry',
     element: 'link',
     icon: 'stopwatch',
-    href: `.${PATHS.TELEMETRY}`,
+    href: `${makeUrlPathRelative(PATHS.TELEMETRY)}`,
     'data-testid': 'telemetry-link',
     label: 'Telemetry',
     hideLabel: true,
@@ -42,7 +43,7 @@ export const defaultGlobalStatusBarItems = ({
     id: 'settings',
     element: 'link',
     icon: 'settings',
-    href: `.${PATHS.SETTINGS}${location.pathname.includes(PATHS.FILE) ? '?tab=project' : ''}`,
+    href: `${makeUrlPathRelative(PATHS.SETTINGS)}${location.pathname.includes(PATHS.FILE) ? '?tab=project' : ''}`,
     'data-testid': 'settings-link',
     label: 'Settings',
   },

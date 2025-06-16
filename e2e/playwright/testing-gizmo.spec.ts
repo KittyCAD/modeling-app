@@ -20,7 +20,7 @@ test.describe('Testing Gizmo', () => {
     },
     {
       testDescription: 'right view',
-      clickPosition: { x: 929, y: 437 },
+      clickPosition: { x: 929, y: 438 },
       expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
