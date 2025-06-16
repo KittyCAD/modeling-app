@@ -42,7 +42,6 @@ const Spacer = (level: number) => {
   )
 }
 
-
 /**
  * Render all the rows of the file explorer in linear layout in the DOM.
  * each row is rendered one after another in the same parent DOM element

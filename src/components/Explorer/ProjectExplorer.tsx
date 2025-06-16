@@ -1,17 +1,14 @@
 import type { Project } from '@src/lib/project'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { FILE_EXT } from '@src/lib/constants'
-import {
-  FileExplorer,
-  StatusDot,
-} from '@src/components/Explorer/FileExplorer'
+import { FileExplorer, StatusDot } from '@src/components/Explorer/FileExplorer'
 import {
   FileExplorerRow,
   constructPath,
   flattenProject,
   NOTHING_IS_SELECTED,
   CONTAINER_IS_SELECTED,
-  STARTING_INDEX_TO_SELECT
+  STARTING_INDEX_TO_SELECT,
 } from '@src/components/Explorer/utils'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
