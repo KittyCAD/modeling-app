@@ -104,23 +104,22 @@ export default class CodeManager {
    */
   updateCodeEditor(code: string, clearHistory?: boolean): void {
     this.code = code
-    const editorView = editorManager.getEditorView()
-    if (editorView) {
-      if (clearHistory) {
-        clearCodeMirrorHistory(editorView)
-      }
-      editorView.dispatch({
-        changes: {
-          from: 0,
-          to: editorView.state.doc.length,
-          insert: code,
-        },
-        annotations: [
-          codeManagerUpdateEvent,
-          Transaction.addToHistory.of(!clearHistory),
-        ],
-      })
+    if (clearHistory) {
+      // TODO make this work without EditorView
+      const editorView = editorManager.getEditorView()
+      if (editorView) clearCodeMirrorHistory(editorView)
     }
+    editorManager.dispatch({
+      changes: {
+        from: 0,
+        to: editorManager.editorState?.doc.length || 0,
+        insert: code,
+      },
+      annotations: [
+        codeManagerUpdateEvent,
+        Transaction.addToHistory.of(!clearHistory),
+      ],
+    })
   }
 
   /**

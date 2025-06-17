@@ -65,7 +65,7 @@ const CodeEditor = forwardRef<CodeEditorRef, CodeEditorProps>((props, ref) => {
   } = props
   const editor = useRef<HTMLDivElement>(null)
 
-  const { view, state, container } = useCodeMirror({
+  const { view, container } = useCodeMirror({
     container: editor.current,
     onCreateEditor,
     extensions,
@@ -77,8 +77,8 @@ const CodeEditor = forwardRef<CodeEditorRef, CodeEditorProps>((props, ref) => {
 
   useImperativeHandle(
     ref,
-    () => ({ editor: editor.current, view: view, state: state }),
-    [editor, container, view, state]
+    () => ({ editor: editor.current, view: view, state: view?.state }),
+    [editor, container, view]
   )
 
   return <div ref={editor}></div>

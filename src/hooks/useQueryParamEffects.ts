@@ -49,8 +49,6 @@ export function useQueryParamEffects() {
     searchParams.has(CMD_NAME_QUERY_PARAM) &&
     searchParams.has(CMD_GROUP_QUERY_PARAM)
 
-  console.log(window.location.href)
-
   /**
    * Watches for legacy `?create-file` hook, which share links currently use.
    */

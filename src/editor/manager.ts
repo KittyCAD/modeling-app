@@ -1,10 +1,22 @@
-import { redo, undo } from '@codemirror/commands'
+import {
+  defaultKeymap,
+  history,
+  historyKeymap,
+  redo,
+  undo,
+} from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
-import { Annotation, EditorSelection, Transaction } from '@codemirror/state'
+import {
+  Annotation,
+  EditorSelection,
+  EditorState,
+  Transaction,
+  type TransactionSpec,
+} from '@codemirror/state'
 import type { ViewUpdate } from '@codemirror/view'
-import { EditorView } from '@codemirror/view'
+import { EditorView, keymap } from '@codemirror/view'
 import type { StateFrom } from 'xstate'
 
 import {
@@ -22,6 +34,8 @@ import type {
   ModelingMachineEvent,
   modelingMachine,
 } from '@src/machines/modelingMachine'
+import { codeManagerHistoryCompartment } from '@src/lang/codeManager'
+import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 
 declare global {
   interface Window {
@@ -65,11 +79,27 @@ export default class EditorManager {
 
   private _highlightRange: Array<[number, number]> = [[0, 0]]
 
+  private _editorState: EditorState
   private _editorView: EditorView | null = null
   public kclManager?: KclManager
 
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
+
+    this._editorState = EditorState.create({
+      doc: '',
+      extensions: [
+        codeManagerHistoryCompartment.of(history()),
+        keymap.of([...defaultKeymap, ...historyKeymap]),
+      ],
+    })
+  }
+
+  get editorState(): EditorState {
+    return this._editorView?.state || this._editorState
+  }
+  get state() {
+    return this.editorState
   }
 
   setCopilotEnabled(enabled: boolean) {
@@ -81,6 +111,11 @@ export default class EditorManager {
   }
 
   setEditorView(editorView: EditorView) {
+    if (this._editorView !== editorView) {
+      if (this._editorView) {
+        // this._editorView.destroy()
+      }
+    }
     this._editorView = editorView
     kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
     this.overrideTreeHighlighterUpdateForPerformanceTracking()
@@ -285,14 +320,41 @@ export default class EditorManager {
   }
 
   undo() {
-    if (this._editorView) {
-      undo(this._editorView)
+    const state = this.editorState
+    if (state) {
+      console.log('before', state.doc.length, state.doc.toString())
+      const undoPerformed = undo(this)
+      if (undoPerformed) {
+        codeManager.code = state.doc.toString()
+        void kclManager.executeCode()
+      }
+      console.log(state.doc.length, state.doc.toString())
     }
   }
 
   redo() {
     if (this._editorView) {
       redo(this._editorView)
+    } else {
+      const state = this.editorState
+      if (state) {
+        console.log('before', state.doc.length, state.doc.toString())
+        const redoPerformed = redo(this)
+        if (redoPerformed) {
+          codeManager.code = state.doc.toString()
+          void kclManager.executeCode()
+        }
+        console.log(state.doc.length, state.doc.toString())
+      }
+    }
+  }
+
+  // Invoked by codeMirror with incorrect "this" so it needs to be an arrow function
+  dispatch = (spec: TransactionSpec) => {
+    if (this._editorView) {
+      this._editorView.dispatch(spec)
+    } else if (this._editorState) {
+      this._editorState = this._editorState.update(spec).state
     }
   }
 
