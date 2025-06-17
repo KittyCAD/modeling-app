@@ -11,7 +11,7 @@ import {
   lspPlugin,
   lspRenameEvent,
 } from '@kittycad/codemirror-lsp-client'
-import { updateOutsideEditorEvent } from '@src/editor/manager'
+import { updateOutsideEditorEvent } from '@src/editor/editorManager'
 import { codeManagerUpdateEvent } from '@src/lang/codeManager'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 import { deferExecution } from '@src/lib/utils'

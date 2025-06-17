@@ -96,7 +96,7 @@ import {
   getTanPreviousPoint,
   segmentUtils,
 } from '@src/clientSideScene/segments'
-import type EditorManager from '@src/editor/manager'
+import type EditorManager from '@src/editor/editorManager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
 import { ARG_END, ARG_AT, ARG_END_ABSOLUTE } from '@src/lang/constants'

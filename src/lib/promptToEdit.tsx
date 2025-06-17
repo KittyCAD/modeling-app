@@ -16,7 +16,7 @@ import {
   ToastPromptToEditCadSuccess,
   writeOverFilesAndExecute,
 } from '@src/components/ToastTextToCad'
-import { modelingMachineEvent } from '@src/editor/manager'
+import { modelingMachineEvent } from '@src/editor/editorManager'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'

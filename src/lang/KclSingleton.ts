@@ -4,7 +4,7 @@ import type {
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type EditorManager from '@src/editor/manager'
+import type EditorManager from '@src/editor/editorManager'
 import type CodeManager from '@src/lang/codeManager'
 import type RustContext from '@src/lib/rustContext'
 

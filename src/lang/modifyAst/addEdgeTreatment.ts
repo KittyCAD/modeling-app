@@ -1,7 +1,7 @@
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import type EditorManager from '@src/editor/manager'
+import type EditorManager from '@src/editor/editorManager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
 import { ARG_TAG } from '@src/lang/constants'

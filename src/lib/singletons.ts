@@ -1,6 +1,6 @@
 import { VITE_KC_API_BASE_URL } from '@src/env'
 
-import EditorManager from '@src/editor/manager'
+import EditorManager from '@src/editor/editorManager'
 import { KclManager } from '@src/lang/KclSingleton'
 import CodeManager from '@src/lang/codeManager'
 import { EngineCommandManager } from '@src/lang/std/engineConnection'
