@@ -1122,7 +1122,7 @@ description: Result of parsing helical-gear.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "name": "radius",
+                                "name": "diameter",
                                 "start": 0,
                                 "type": "Identifier"
                               },
@@ -1133,7 +1133,7 @@ description: Result of parsing helical-gear.kcl
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "name": "holeRadius",
+                                  "name": "holeDiam",
                                   "start": 0,
                                   "type": "Identifier"
                                 },
@@ -1221,7 +1221,7 @@ description: Result of parsing helical-gear.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "name": "radius",
+                                "name": "diameter",
                                 "start": 0,
                                 "type": "Identifier"
                               },
@@ -1232,7 +1232,7 @@ description: Result of parsing helical-gear.kcl
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "name": "holeRadius",
+                                  "name": "holeDiam",
                                   "start": 0,
                                   "type": "Identifier"
                                 },
@@ -1287,13 +1287,64 @@ description: Result of parsing helical-gear.kcl
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "length",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "gearHeight",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "extrude",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
+                          },
+                          "commentStart": 0,
+                          "end": 0,
+                          "start": 0,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         }
                       ],
                       "commentStart": 0,
                       "end": 0,
                       "nonCodeMeta": {
                         "nonCodeNodes": {
-                          "7": [
+                          "8": [
                             {
                               "commentStart": 0,
                               "end": 0,
@@ -1342,158 +1393,6 @@ description: Result of parsing helical-gear.kcl
                     "init": {
                       "body": {
                         "body": [
-                          {
-                            "commentStart": 0,
-                            "declaration": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "id": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "helixCalc",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "init": {
-                                "callee": {
-                                  "abs_path": false,
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "acos",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name"
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "start": 0,
-                                "type": "CallExpressionKw",
-                                "type": "CallExpressionKw",
-                                "unlabeled": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "left": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "left": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "offsetHeight",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "operator": "*",
-                                    "right": {
-                                      "callee": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": "tan",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name"
-                                      },
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "start": 0,
-                                      "type": "CallExpressionKw",
-                                      "type": "CallExpressionKw",
-                                      "unlabeled": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": "helixAngle",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      }
-                                    },
-                                    "start": 0,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
-                                  "operator": "/",
-                                  "right": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "left": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "tipDiameter",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "operator": "/",
-                                    "right": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "raw": "2",
-                                      "start": 0,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 2.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 0,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                }
-                              },
-                              "start": 0,
-                              "type": "VariableDeclarator"
-                            },
-                            "end": 0,
-                            "kind": "const",
-                            "preComments": [
-                              "// Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height"
-                            ],
-                            "start": 0,
-                            "type": "VariableDeclaration",
-                            "type": "VariableDeclaration"
-                          },
                           {
                             "commentStart": 0,
                             "declaration": {
@@ -1619,20 +1518,16 @@ description: Result of parsing helical-gear.kcl
                                                 "type": "Identifier"
                                               },
                                               "arg": {
-                                                "abs_path": false,
                                                 "commentStart": 0,
                                                 "end": 0,
-                                                "name": {
-                                                  "commentStart": 0,
-                                                  "end": 0,
-                                                  "name": "helixCalc",
-                                                  "start": 0,
-                                                  "type": "Identifier"
-                                                },
-                                                "path": [],
+                                                "raw": "0",
                                                 "start": 0,
-                                                "type": "Name",
-                                                "type": "Name"
+                                                "type": "Literal",
+                                                "type": "Literal",
+                                                "value": {
+                                                  "value": 0.0,
+                                                  "suffix": "None"
+                                                }
                                               }
                                             },
                                             {
@@ -1832,20 +1727,16 @@ description: Result of parsing helical-gear.kcl
                                           "type": "Identifier"
                                         },
                                         "arg": {
-                                          "abs_path": false,
                                           "commentStart": 0,
                                           "end": 0,
-                                          "name": {
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": "helixCalc",
-                                            "start": 0,
-                                            "type": "Identifier"
-                                          },
-                                          "path": [],
+                                          "raw": "0",
                                           "start": 0,
-                                          "type": "Name",
-                                          "type": "Name"
+                                          "type": "Literal",
+                                          "type": "Literal",
+                                          "value": {
+                                            "value": 0.0,
+                                            "suffix": "None"
+                                          }
                                         }
                                       },
                                       {
@@ -1917,40 +1808,16 @@ description: Result of parsing helical-gear.kcl
                                                 "left": {
                                                   "commentStart": 0,
                                                   "end": 0,
-                                                  "left": {
-                                                    "commentStart": 0,
-                                                    "end": 0,
-                                                    "raw": "160",
-                                                    "start": 0,
-                                                    "type": "Literal",
-                                                    "type": "Literal",
-                                                    "value": {
-                                                      "value": 160.0,
-                                                      "suffix": "None"
-                                                    }
-                                                  },
-                                                  "operator": "/",
-                                                  "right": {
-                                                    "abs_path": false,
-                                                    "commentStart": 0,
-                                                    "end": 0,
-                                                    "name": {
-                                                      "commentStart": 0,
-                                                      "end": 0,
-                                                      "name": "nTeeth",
-                                                      "start": 0,
-                                                      "type": "Identifier"
-                                                    },
-                                                    "path": [],
-                                                    "start": 0,
-                                                    "type": "Name",
-                                                    "type": "Name"
-                                                  },
+                                                  "raw": "160",
                                                   "start": 0,
-                                                  "type": "BinaryExpression",
-                                                  "type": "BinaryExpression"
+                                                  "type": "Literal",
+                                                  "type": "Literal",
+                                                  "value": {
+                                                    "value": 160.0,
+                                                    "suffix": "None"
+                                                  }
                                                 },
-                                                "operator": "+",
+                                                "operator": "/",
                                                 "right": {
                                                   "abs_path": false,
                                                   "commentStart": 0,
@@ -1958,7 +1825,7 @@ description: Result of parsing helical-gear.kcl
                                                   "name": {
                                                     "commentStart": 0,
                                                     "end": 0,
-                                                    "name": "helixCalc",
+                                                    "name": "nTeeth",
                                                     "start": 0,
                                                     "type": "Identifier"
                                                   },
@@ -2175,165 +2042,121 @@ description: Result of parsing helical-gear.kcl
                                             "left": {
                                               "commentStart": 0,
                                               "end": 0,
-                                              "left": {
-                                                "commentStart": 0,
-                                                "end": 0,
-                                                "raw": "4",
-                                                "start": 0,
-                                                "type": "Literal",
-                                                "type": "Literal",
-                                                "value": {
-                                                  "value": 4.0,
-                                                  "suffix": "None"
-                                                }
-                                              },
-                                              "operator": "*",
-                                              "right": {
-                                                "callee": {
-                                                  "abs_path": false,
-                                                  "commentStart": 0,
-                                                  "end": 0,
-                                                  "name": {
-                                                    "commentStart": 0,
-                                                    "end": 0,
-                                                    "name": "atan",
-                                                    "start": 0,
-                                                    "type": "Identifier"
-                                                  },
-                                                  "path": [],
-                                                  "start": 0,
-                                                  "type": "Name"
-                                                },
-                                                "commentStart": 0,
-                                                "end": 0,
-                                                "start": 0,
-                                                "type": "CallExpressionKw",
-                                                "type": "CallExpressionKw",
-                                                "unlabeled": {
-                                                  "commentStart": 0,
-                                                  "end": 0,
-                                                  "left": {
-                                                    "callee": {
-                                                      "abs_path": false,
-                                                      "commentStart": 0,
-                                                      "end": 0,
-                                                      "name": {
-                                                        "commentStart": 0,
-                                                        "end": 0,
-                                                        "name": "segEndY",
-                                                        "start": 0,
-                                                        "type": "Identifier"
-                                                      },
-                                                      "path": [],
-                                                      "start": 0,
-                                                      "type": "Name"
-                                                    },
-                                                    "commentStart": 0,
-                                                    "end": 0,
-                                                    "start": 0,
-                                                    "type": "CallExpressionKw",
-                                                    "type": "CallExpressionKw",
-                                                    "unlabeled": {
-                                                      "abs_path": false,
-                                                      "commentStart": 0,
-                                                      "end": 0,
-                                                      "name": {
-                                                        "commentStart": 0,
-                                                        "end": 0,
-                                                        "name": "seg01",
-                                                        "start": 0,
-                                                        "type": "Identifier"
-                                                      },
-                                                      "path": [],
-                                                      "start": 0,
-                                                      "type": "Name",
-                                                      "type": "Name"
-                                                    }
-                                                  },
-                                                  "operator": "/",
-                                                  "right": {
-                                                    "callee": {
-                                                      "abs_path": false,
-                                                      "commentStart": 0,
-                                                      "end": 0,
-                                                      "name": {
-                                                        "commentStart": 0,
-                                                        "end": 0,
-                                                        "name": "segEndX",
-                                                        "start": 0,
-                                                        "type": "Identifier"
-                                                      },
-                                                      "path": [],
-                                                      "start": 0,
-                                                      "type": "Name"
-                                                    },
-                                                    "commentStart": 0,
-                                                    "end": 0,
-                                                    "start": 0,
-                                                    "type": "CallExpressionKw",
-                                                    "type": "CallExpressionKw",
-                                                    "unlabeled": {
-                                                      "abs_path": false,
-                                                      "commentStart": 0,
-                                                      "end": 0,
-                                                      "name": {
-                                                        "commentStart": 0,
-                                                        "end": 0,
-                                                        "name": "seg01",
-                                                        "start": 0,
-                                                        "type": "Identifier"
-                                                      },
-                                                      "path": [],
-                                                      "start": 0,
-                                                      "type": "Name",
-                                                      "type": "Name"
-                                                    }
-                                                  },
-                                                  "start": 0,
-                                                  "type": "BinaryExpression",
-                                                  "type": "BinaryExpression"
-                                                }
-                                              },
+                                              "raw": "4",
                                               "start": 0,
-                                              "type": "BinaryExpression",
-                                              "type": "BinaryExpression"
+                                              "type": "Literal",
+                                              "type": "Literal",
+                                              "value": {
+                                                "value": 4.0,
+                                                "suffix": "None"
+                                              }
                                             },
-                                            "operator": "-",
+                                            "operator": "*",
                                             "right": {
-                                              "commentStart": 0,
-                                              "end": 0,
-                                              "left": {
-                                                "commentStart": 0,
-                                                "end": 0,
-                                                "raw": "3",
-                                                "start": 0,
-                                                "type": "Literal",
-                                                "type": "Literal",
-                                                "value": {
-                                                  "value": 3.0,
-                                                  "suffix": "None"
-                                                }
-                                              },
-                                              "operator": "*",
-                                              "right": {
+                                              "callee": {
                                                 "abs_path": false,
                                                 "commentStart": 0,
                                                 "end": 0,
                                                 "name": {
                                                   "commentStart": 0,
                                                   "end": 0,
-                                                  "name": "helixCalc",
+                                                  "name": "atan",
                                                   "start": 0,
                                                   "type": "Identifier"
                                                 },
                                                 "path": [],
                                                 "start": 0,
-                                                "type": "Name",
                                                 "type": "Name"
                                               },
+                                              "commentStart": 0,
+                                              "end": 0,
                                               "start": 0,
-                                              "type": "BinaryExpression",
-                                              "type": "BinaryExpression"
+                                              "type": "CallExpressionKw",
+                                              "type": "CallExpressionKw",
+                                              "unlabeled": {
+                                                "commentStart": 0,
+                                                "end": 0,
+                                                "left": {
+                                                  "callee": {
+                                                    "abs_path": false,
+                                                    "commentStart": 0,
+                                                    "end": 0,
+                                                    "name": {
+                                                      "commentStart": 0,
+                                                      "end": 0,
+                                                      "name": "segEndY",
+                                                      "start": 0,
+                                                      "type": "Identifier"
+                                                    },
+                                                    "path": [],
+                                                    "start": 0,
+                                                    "type": "Name"
+                                                  },
+                                                  "commentStart": 0,
+                                                  "end": 0,
+                                                  "start": 0,
+                                                  "type": "CallExpressionKw",
+                                                  "type": "CallExpressionKw",
+                                                  "unlabeled": {
+                                                    "abs_path": false,
+                                                    "commentStart": 0,
+                                                    "end": 0,
+                                                    "name": {
+                                                      "commentStart": 0,
+                                                      "end": 0,
+                                                      "name": "seg01",
+                                                      "start": 0,
+                                                      "type": "Identifier"
+                                                    },
+                                                    "path": [],
+                                                    "start": 0,
+                                                    "type": "Name",
+                                                    "type": "Name"
+                                                  }
+                                                },
+                                                "operator": "/",
+                                                "right": {
+                                                  "callee": {
+                                                    "abs_path": false,
+                                                    "commentStart": 0,
+                                                    "end": 0,
+                                                    "name": {
+                                                      "commentStart": 0,
+                                                      "end": 0,
+                                                      "name": "segEndX",
+                                                      "start": 0,
+                                                      "type": "Identifier"
+                                                    },
+                                                    "path": [],
+                                                    "start": 0,
+                                                    "type": "Name"
+                                                  },
+                                                  "commentStart": 0,
+                                                  "end": 0,
+                                                  "start": 0,
+                                                  "type": "CallExpressionKw",
+                                                  "type": "CallExpressionKw",
+                                                  "unlabeled": {
+                                                    "abs_path": false,
+                                                    "commentStart": 0,
+                                                    "end": 0,
+                                                    "name": {
+                                                      "commentStart": 0,
+                                                      "end": 0,
+                                                      "name": "seg01",
+                                                      "start": 0,
+                                                      "type": "Identifier"
+                                                    },
+                                                    "path": [],
+                                                    "start": 0,
+                                                    "type": "Name",
+                                                    "type": "Name"
+                                                  }
+                                                },
+                                                "start": 0,
+                                                "type": "BinaryExpression",
+                                                "type": "BinaryExpression"
+                                              }
                                             },
                                             "start": 0,
                                             "type": "BinaryExpression",
@@ -2417,40 +2240,16 @@ description: Result of parsing helical-gear.kcl
                                                 "left": {
                                                   "commentStart": 0,
                                                   "end": 0,
-                                                  "left": {
-                                                    "commentStart": 0,
-                                                    "end": 0,
-                                                    "raw": "360",
-                                                    "start": 0,
-                                                    "type": "Literal",
-                                                    "type": "Literal",
-                                                    "value": {
-                                                      "value": 360.0,
-                                                      "suffix": "None"
-                                                    }
-                                                  },
-                                                  "operator": "/",
-                                                  "right": {
-                                                    "abs_path": false,
-                                                    "commentStart": 0,
-                                                    "end": 0,
-                                                    "name": {
-                                                      "commentStart": 0,
-                                                      "end": 0,
-                                                      "name": "nTeeth",
-                                                      "start": 0,
-                                                      "type": "Identifier"
-                                                    },
-                                                    "path": [],
-                                                    "start": 0,
-                                                    "type": "Name",
-                                                    "type": "Name"
-                                                  },
+                                                  "raw": "360",
                                                   "start": 0,
-                                                  "type": "BinaryExpression",
-                                                  "type": "BinaryExpression"
+                                                  "type": "Literal",
+                                                  "type": "Literal",
+                                                  "value": {
+                                                    "value": 360.0,
+                                                    "suffix": "None"
+                                                  }
                                                 },
-                                                "operator": "+",
+                                                "operator": "/",
                                                 "right": {
                                                   "abs_path": false,
                                                   "commentStart": 0,
@@ -2458,7 +2257,7 @@ description: Result of parsing helical-gear.kcl
                                                   "name": {
                                                     "commentStart": 0,
                                                     "end": 0,
-                                                    "name": "helixCalc",
+                                                    "name": "nTeeth",
                                                     "start": 0,
                                                     "type": "Identifier"
                                                   },
@@ -2635,47 +2434,6 @@ description: Result of parsing helical-gear.kcl
                                           "type": "ArrayExpression",
                                           "type": "ArrayExpression"
                                         }
-                                      },
-                                      {
-                                        "type": "LabeledArg",
-                                        "label": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": "arcDegrees",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "arg": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "raw": "360",
-                                          "start": 0,
-                                          "type": "Literal",
-                                          "type": "Literal",
-                                          "value": {
-                                            "value": 360.0,
-                                            "suffix": "None"
-                                          }
-                                        }
-                                      },
-                                      {
-                                        "type": "LabeledArg",
-                                        "label": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": "rotateDuplicates",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "arg": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "raw": "true",
-                                          "start": 0,
-                                          "type": "Literal",
-                                          "type": "Literal",
-                                          "value": true
-                                        }
                                       }
                                     ],
                                     "callee": {
@@ -2715,57 +2473,6 @@ description: Result of parsing helical-gear.kcl
                                         "commentStart": 0,
                                         "end": 0,
                                         "name": "close",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name"
-                                    },
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "start": 0,
-                                    "type": "CallExpressionKw",
-                                    "type": "CallExpressionKw",
-                                    "unlabeled": null
-                                  },
-                                  {
-                                    "arguments": [
-                                      {
-                                        "type": "LabeledArg",
-                                        "label": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": "tool",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "arg": {
-                                          "abs_path": false,
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": {
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": "holeWithKeyway",
-                                            "start": 0,
-                                            "type": "Identifier"
-                                          },
-                                          "path": [],
-                                          "start": 0,
-                                          "type": "Name",
-                                          "type": "Name"
-                                        }
-                                      }
-                                    ],
-                                    "callee": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "subtract2d",
                                         "start": 0,
                                         "type": "Identifier"
                                       },
@@ -2824,8 +2531,6 @@ description: Result of parsing helical-gear.kcl
                             "end": 0,
                             "kind": "const",
                             "preComments": [
-                              "",
-                              "",
                               "// Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter"
                             ],
                             "start": 0,
@@ -2888,105 +2593,67 @@ description: Result of parsing helical-gear.kcl
                   "type": "VariableDeclaration"
                 },
                 {
-                  "commentStart": 0,
-                  "declaration": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "gearSketch001",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": "offsetHeight",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "raw": "0",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.0,
-                              "suffix": "None"
+                  "argument": {
+                    "body": [
+                      {
+                        "arguments": [
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "offsetHeight",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "raw": "0",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
                             }
                           }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
+                        ],
+                        "callee": {
+                          "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
-                          "name": "helicalGearSketch",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "preComments": [
-                    "",
-                    "",
-                    "// Draw a gear sketch on the base plane"
-                  ],
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "commentStart": 0,
-                  "declaration": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "gearSketch002",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
+                          "name": {
                             "commentStart": 0,
                             "end": 0,
-                            "name": "offsetHeight",
+                            "name": "helicalGearSketch",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "left": {
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 0,
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "length",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
@@ -3001,263 +2668,146 @@ description: Result of parsing helical-gear.kcl
                               "start": 0,
                               "type": "Name",
                               "type": "Name"
-                            },
-                            "operator": "/",
-                            "right": {
+                            }
+                          },
+                          {
+                            "type": "LabeledArg",
+                            "label": {
                               "commentStart": 0,
                               "end": 0,
-                              "raw": "2",
+                              "name": "twistAngle",
                               "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 2.0,
-                                "suffix": "None"
-                              }
+                              "type": "Identifier"
                             },
-                            "start": 0,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
+                            "arg": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "helixAngle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            }
                           }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
+                        ],
+                        "callee": {
+                          "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
-                          "name": "helicalGearSketch",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "preComments": [
-                    "",
-                    "",
-                    "// Draw a rotated gear sketch on a middle interstitial plane"
-                  ],
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "commentStart": 0,
-                  "declaration": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "gearSketch003",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
+                          "name": {
                             "commentStart": 0,
                             "end": 0,
-                            "name": "offsetHeight",
+                            "name": "extrude",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "gearHeight",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
                         "commentStart": 0,
                         "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "helicalGearSketch",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
                         "start": 0,
-                        "type": "Name"
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
                       },
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "preComments": [
-                    "",
-                    "",
-                    "// Draw a rotated gear sketch at the gear height offset plane"
-                  ],
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "commentStart": 0,
-                  "declaration": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "helicalGear",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "loft",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "commentStart": 0,
-                        "elements": [
+                      {
+                        "arguments": [
                           {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": {
+                            "type": "LabeledArg",
+                            "label": {
                               "commentStart": 0,
                               "end": 0,
-                              "name": "gearSketch001",
+                              "name": "tools",
                               "start": 0,
                               "type": "Identifier"
                             },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": {
+                            "arg": {
                               "commentStart": 0,
+                              "elements": [
+                                {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "holeWithKeyway",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                }
+                              ],
                               "end": 0,
-                              "name": "gearSketch002",
                               "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "gearSketch003",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
                           }
                         ],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "subtract",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": {
+                          "commentStart": 0,
+                          "elements": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "start": 0,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "end": 0,
+                          "start": 0,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
                       }
-                    },
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "preComments": [
-                    "",
-                    "",
-                    "// Loft each rotated gear sketch together to form a helical gear"
-                  ],
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "argument": {
-                    "abs_path": false,
+                    ],
                     "commentStart": 0,
                     "end": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "helicalGear",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
                     "start": 0,
-                    "type": "Name",
-                    "type": "Name"
+                    "type": "PipeExpression",
+                    "type": "PipeExpression"
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "preComments": [
+                    "",
+                    "",
+                    "// Draw a gear sketch on the base plane"
+                  ],
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -3265,22 +2815,6 @@ description: Result of parsing helical-gear.kcl
               ],
               "commentStart": 0,
               "end": 0,
-              "nonCodeMeta": {
-                "nonCodeNodes": {
-                  "15": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "start": 0,
-                      "type": "NonCodeNode",
-                      "value": {
-                        "type": "newLine"
-                      }
-                    }
-                  ]
-                },
-                "startNodes": []
-              },
               "start": 0
             },
             "commentStart": 0,
@@ -3349,6 +2883,39 @@ description: Result of parsing helical-gear.kcl
         "preComments": [
           "// Define a function to create a helical gear"
         ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "gearHeight",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "raw": "7",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 7.0,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3448,24 +3015,22 @@ description: Result of parsing helical-gear.kcl
             },
             {
               "type": "LabeledArg",
-              "label": {
-                "commentStart": 0,
-                "end": 0,
-                "name": "gearHeight",
-                "start": 0,
-                "type": "Identifier"
-              },
+              "label": null,
               "arg": {
+                "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
-                "raw": "7",
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "gearHeight",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 7.0,
-                  "suffix": "None"
-                }
+                "type": "Name",
+                "type": "Name"
               }
             }
           ],
@@ -3554,6 +3119,17 @@ description: Result of parsing helical-gear.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "2": [
           {
             "commentStart": 0,
             "end": 0,

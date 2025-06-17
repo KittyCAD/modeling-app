@@ -3,6 +3,19 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing helical-gear.kcl
 ---
 {
+  "gearHeight": {
+    "type": "Number",
+    "value": 7.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
   "helicalGear": {
     "type": "Function",
     "value": null
