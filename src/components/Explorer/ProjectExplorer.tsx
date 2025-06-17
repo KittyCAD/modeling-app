@@ -167,7 +167,7 @@ export const ProjectExplorer = ({
             newOpenedRows[key] = true
             setOpenedRows(newOpenedRows)
           },
-          rowContextMenu: () => {
+          onContextMenuOpen: () => {
             // NO OP
           },
           isFake: false,
@@ -260,7 +260,7 @@ export const ProjectExplorer = ({
     // Gotcha: you will see if you spam the context menu you will not be able to select a new one
     // until closing
     requestedRowsToRender.forEach((r, index) => {
-      r.rowContextMenu = () => {
+      r.onContextMenuOpen = () => {
         setActiveIndex(index)
         setContextMenuRow(r)
       }

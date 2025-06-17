@@ -273,7 +273,7 @@ export const FileExplorerRowElement = ({
         onOpenInNewWindow={() => {
           row.rowOpenInNewWindow()
         }}
-        callback={row.rowContextMenu}
+        callback={row.onContextMenuOpen}
       />
     </div>
   )

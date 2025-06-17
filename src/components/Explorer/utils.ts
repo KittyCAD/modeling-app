@@ -28,6 +28,7 @@ export interface FileExplorerRow extends FileExplorerEntry {
   /* handlers */
   onClick: (domIndex: number) => void
   onOpen: () => void
+  onContextMenuOpen: () => void
 }
 
 export interface FileExplorerRender extends FileExplorerRow {
