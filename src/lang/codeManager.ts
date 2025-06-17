@@ -103,6 +103,7 @@ export default class CodeManager {
 
   /**
    * Update the code in the editor.
+   * This is invoked when a segment is being dragged on the canvas, among other things.
    */
   updateCodeEditor(code: string, clearHistory?: boolean): void {
     this.code = code
