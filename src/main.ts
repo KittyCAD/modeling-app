@@ -39,6 +39,7 @@ import {
   enableMenu,
 } from '@src/menu'
 import fs from 'fs'
+import { installExtension, REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
 // If we're on Windows, pull the local system TLS CAs in
 require('win-ca')
@@ -79,6 +80,12 @@ process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
 // Likely convenient to keep for debugging
 console.log('Environment vars', process.env)
 console.log('Parsed CLI args', args)
+
+app.whenReady().then(() => {
+  installExtension([REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS])
+    .then(([redux, react]) => console.log(`Added Extensions:  ${redux.name}, ${react.name}`))
+    .catch((err) => console.log('An error occurred: ', err));
+});
 
 /// Register our application to handle all "zoo-studio:" protocols.
 const singleInstanceLock = app.requestSingleInstanceLock()
