@@ -250,7 +250,7 @@ async fn inner_tangent_to_end(tag: &TagIdentifier, exec_state: &mut ExecState, a
 
     // Calculate the end point from the angle and radius.
     // atan2 outputs radians.
-    let previous_end_tangent = Angle::from_radians(f64::atan2(
+    let previous_end_tangent = Angle::from_radians(libm::atan2(
         from[1] - tan_previous_point[1],
         from[0] - tan_previous_point[0],
     ));

@@ -59,8 +59,8 @@ description: Artifact commands coerce_from_trig_to_point.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1.918,
-          "y": 0.397,
+          "x": 1.917754625683981,
+          "y": 0.39714789063478056,
           "z": 0.0
         }
       }
@@ -81,8 +81,8 @@ description: Artifact commands coerce_from_trig_to_point.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.918,
-            "y": 0.397
+            "x": 0.9177546256839811,
+            "y": 0.39714789063478056
           },
           "radius": 1.0,
           "start": {

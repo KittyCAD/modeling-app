@@ -84,7 +84,10 @@ impl ExecutorContext {
         preserve_mem: bool,
         module_id: ModuleId,
         path: &ModulePath,
-    ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState), KclError> {
+    ) -> Result<
+        (Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState),
+        (KclError, Option<ModuleArtifactState>),
+    > {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
         let mut local_state = ModuleState::new(path.clone(), exec_state.stack().memory.clone(), Some(module_id));
@@ -94,7 +97,8 @@ impl ExecutorContext {
 
         let no_prelude = self
             .handle_annotations(program.inner_attrs.iter(), crate::execution::BodyType::Root, exec_state)
-            .await?;
+            .await
+            .map_err(|err| (err, None))?;
 
         if !preserve_mem {
             exec_state.mut_stack().push_new_root_env(!no_prelude);
@@ -113,12 +117,14 @@ impl ExecutorContext {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
             local_state.artifacts
         } else {
-            Default::default()
+            std::mem::take(&mut exec_state.mod_local.artifacts)
         };
 
         crate::log::log(format!("leave {path}"));
 
-        result.map(|result| (result, env_ref, local_state.module_exports, module_artifacts))
+        result
+            .map_err(|err| (err, Some(module_artifacts.clone())))
+            .map(|result| (result, env_ref, local_state.module_exports, module_artifacts))
     }
 
     /// Execute an AST's program.
@@ -630,7 +636,9 @@ impl ExecutorContext {
             .await;
         exec_state.global.mod_loader.leave_module(path);
 
-        result.map_err(|err| {
+        // TODO: ModuleArtifactState is getting dropped here when there's an
+        // error.  Should we propagate it for non-root modules?
+        result.map_err(|(err, _)| {
             if let KclError::ImportCycle { .. } = err {
                 // It was an import cycle.  Keep the original message.
                 err.override_source_ranges(vec![source_range])

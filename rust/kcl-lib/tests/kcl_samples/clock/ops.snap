@@ -980,7 +980,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": 93.75,
+              "value": 93.75000000000001,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -996,7 +996,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": 162.38,
+              "value": 162.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -1292,7 +1292,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": 152.38,
+              "value": 152.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -1308,7 +1308,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": 93.75,
+              "value": 93.74999999999999,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -1604,7 +1604,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": 167.38,
+              "value": 167.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -1620,7 +1620,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": 93.75,
+              "value": 93.74999999999999,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -2852,7 +2852,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": 152.38,
+              "value": 152.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -2868,7 +2868,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": -93.75,
+              "value": -93.74999999999999,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -3164,7 +3164,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": 175.38,
+              "value": 175.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -3180,7 +3180,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": -93.75,
+              "value": -93.74999999999999,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -3476,7 +3476,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": 93.75,
+              "value": 93.75000000000001,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -3492,7 +3492,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": -162.38,
+              "value": -162.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -3788,7 +3788,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": -10.0,
+              "value": -9.99999999999999,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -4100,7 +4100,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": 12.0,
+              "value": 12.00000000000001,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -4412,7 +4412,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": -108.75,
+              "value": -108.74999999999996,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -4428,7 +4428,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": -162.38,
+              "value": -162.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -4724,7 +4724,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": -88.75,
+              "value": -88.74999999999996,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -4740,7 +4740,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": -162.38,
+              "value": -162.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -5036,7 +5036,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": -73.75,
+              "value": -73.74999999999996,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -5052,7 +5052,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": -162.38,
+              "value": -162.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -5348,7 +5348,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": -172.38,
+              "value": -172.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -5364,7 +5364,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": -93.75,
+              "value": -93.74999999999999,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -5660,7 +5660,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": -152.38,
+              "value": -152.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -5676,7 +5676,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": -93.75,
+              "value": -93.74999999999999,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -5972,7 +5972,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": -137.38,
+              "value": -137.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -5988,7 +5988,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": -93.75,
+              "value": -93.74999999999999,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -6284,7 +6284,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": -122.38,
+              "value": -122.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -6300,7 +6300,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": -93.75,
+              "value": -93.74999999999999,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -6612,7 +6612,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": 0.0,
+              "value": 0.000000000000022962127484012872,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -6924,7 +6924,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": 0.0,
+              "value": 0.000000000000022962127484012872,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -7220,7 +7220,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": -157.38,
+              "value": -157.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -7236,7 +7236,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": 93.75,
+              "value": 93.74999999999999,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -7532,7 +7532,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": -93.75,
+              "value": -93.74999999999996,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -7548,7 +7548,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": 162.38,
+              "value": 162.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -7844,7 +7844,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": -83.75,
+              "value": -83.74999999999996,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -7860,7 +7860,7 @@ description: Operations executed clock.kcl
           "startY": {
             "value": {
               "type": "Number",
-              "value": 162.38,
+              "value": 162.37976320958225,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -8156,7 +8156,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": -10.0,
+              "value": -9.99999999999999,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -8468,7 +8468,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": 5.0,
+              "value": 5.0000000000000115,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -8780,7 +8780,7 @@ description: Operations executed clock.kcl
           "startX": {
             "value": {
               "type": "Number",
-              "value": 20.0,
+              "value": 20.00000000000001,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -9716,7 +9716,7 @@ description: Operations executed clock.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -9732,7 +9732,7 @@ description: Operations executed clock.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -9749,7 +9749,7 @@ description: Operations executed clock.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

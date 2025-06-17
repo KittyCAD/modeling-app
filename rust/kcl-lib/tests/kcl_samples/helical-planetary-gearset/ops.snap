@@ -250,7 +250,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "baseDiameter",
       "value": {
         "type": "Number",
-        "value": 61.129,
+        "value": 61.128630755387775,
         "ty": {
           "type": "Default",
           "len": {
@@ -397,7 +397,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "helixCalc",
       "value": {
         "type": "Number",
-        "value": 1.571,
+        "value": 1.5707963267948966,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -592,7 +592,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.571,
+              "value": 1.5707963267948966,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -604,7 +604,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 30.564,
+              "value": 30.564315377693887,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -674,7 +674,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 0.0,
+        "value": 0.0000000000000018715245497711523,
         "ty": {
           "type": "Default",
           "len": {
@@ -696,7 +696,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 30.564,
+        "value": 30.564315377693887,
         "ty": {
           "type": "Default",
           "len": {
@@ -727,7 +727,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.654,
+              "value": 1.6539072435565312,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -809,7 +809,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -2.74,
+        "value": -2.7395038903503175,
         "ty": {
           "type": "Default",
           "len": {
@@ -831,7 +831,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 32.886,
+        "value": 32.88609308560011,
         "ty": {
           "type": "Default",
           "len": {
@@ -862,7 +862,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.72,
+              "value": 1.720395976965839,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -874,7 +874,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 30.564,
+              "value": 30.564315377693887,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -944,7 +944,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -4.555,
+        "value": -4.55537482801479,
         "ty": {
           "type": "Default",
           "len": {
@@ -966,7 +966,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 30.223,
+        "value": 30.222937227930448,
         "ty": {
           "type": "Default",
           "len": {
@@ -1252,7 +1252,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "helixCalc",
       "value": {
         "type": "Number",
-        "value": 1.606,
+        "value": 1.6061300162478944,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -1447,7 +1447,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.606,
+              "value": 1.6061300162478944,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1459,7 +1459,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 30.564,
+              "value": 30.564315377693887,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -1529,7 +1529,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -1.08,
+        "value": -1.0797253277941856,
         "ty": {
           "type": "Default",
           "len": {
@@ -1551,7 +1551,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 30.545,
+        "value": 30.54523805315085,
         "ty": {
           "type": "Default",
           "len": {
@@ -1582,7 +1582,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.689,
+              "value": 1.689240933009529,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1664,7 +1664,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -3.9,
+        "value": -3.899539205840894,
         "ty": {
           "type": "Default",
           "len": {
@@ -1686,7 +1686,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 32.769,
+        "value": 32.768789937715276,
         "ty": {
           "type": "Default",
           "len": {
@@ -1717,7 +1717,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.756,
+              "value": 1.7557296664188369,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1729,7 +1729,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 30.564,
+              "value": 30.564315377693887,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -1799,7 +1799,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -5.62,
+        "value": -5.620197188311242,
         "ty": {
           "type": "Default",
           "len": {
@@ -1821,7 +1821,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 30.043,
+        "value": 30.043148271638135,
         "ty": {
           "type": "Default",
           "len": {
@@ -2107,7 +2107,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "helixCalc",
       "value": {
         "type": "Number",
-        "value": 1.642,
+        "value": 1.6415079153836443,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -2302,7 +2302,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.642,
+              "value": 1.6415079153836443,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -2314,7 +2314,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 30.564,
+              "value": 30.564315377693887,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -2384,7 +2384,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -2.159,
+        "value": -2.159450655588373,
         "ty": {
           "type": "Default",
           "len": {
@@ -2406,7 +2406,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 30.488,
+        "value": 30.487934455669738,
         "ty": {
           "type": "Default",
           "len": {
@@ -2437,7 +2437,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.725,
+              "value": 1.724618832145279,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -2519,7 +2519,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -5.056,
+        "value": -5.056148270092621,
         "ty": {
           "type": "Default",
           "len": {
@@ -2541,7 +2541,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 32.61,
+        "value": 32.61035670873349,
         "ty": {
           "type": "Default",
           "len": {
@@ -2572,7 +2572,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.791,
+              "value": 1.7911075655545867,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -2584,7 +2584,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 30.564,
+              "value": 30.564315377693887,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -2654,7 +2654,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -6.679,
+        "value": -6.679322218261533,
         "ty": {
           "type": "Default",
           "len": {
@@ -2676,7 +2676,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 29.826,
+        "value": 29.825559998292956,
         "ty": {
           "type": "Default",
           "len": {
@@ -3210,7 +3210,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "baseDiameter",
       "value": {
         "type": "Number",
-        "value": 17.465,
+        "value": 17.465323072967937,
         "ty": {
           "type": "Default",
           "len": {
@@ -3486,7 +3486,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "startAngle",
       "value": {
         "type": "Number",
-        "value": 0.143,
+        "value": 0.14334756890536535,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -3627,7 +3627,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "helixCalc",
       "value": {
         "type": "Number",
-        "value": 1.571,
+        "value": 1.5707963267948966,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -3822,7 +3822,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.571,
+              "value": 1.5707963267948966,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -3834,7 +3834,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 8.733,
+              "value": 8.732661536483969,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -3904,7 +3904,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 0.0,
+        "value": 0.000000000000000534721299934615,
         "ty": {
           "type": "Default",
           "len": {
@@ -3926,7 +3926,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 8.733,
+        "value": 8.732661536483969,
         "ty": {
           "type": "Default",
           "len": {
@@ -3957,7 +3957,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.804,
+              "value": 1.8035068937274739,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -4039,7 +4039,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -2.421,
+        "value": -2.4214666427956213,
         "ty": {
           "type": "Default",
           "len": {
@@ -4061,7 +4061,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 10.217,
+        "value": 10.21697114108815,
         "ty": {
           "type": "Default",
           "len": {
@@ -4092,7 +4092,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 2.094,
+              "value": 2.0943951023931953,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -4104,7 +4104,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 8.733,
+              "value": 8.732661536483969,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -4174,7 +4174,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -4.366,
+        "value": -4.3663307682419825,
         "ty": {
           "type": "Default",
           "len": {
@@ -4196,7 +4196,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 7.563,
+        "value": 7.562706733246366,
         "ty": {
           "type": "Default",
           "len": {
@@ -4348,7 +4348,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "helixCalc",
       "value": {
         "type": "Number",
-        "value": 1.46,
+        "value": 1.4595413228372676,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -4543,7 +4543,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.46,
+              "value": 1.4595413228372676,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -4555,7 +4555,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 8.733,
+              "value": 8.732661536483969,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -4625,7 +4625,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 0.97,
+        "value": 0.969549273937636,
         "ty": {
           "type": "Default",
           "len": {
@@ -4647,7 +4647,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 8.679,
+        "value": 8.678672232328719,
         "ty": {
           "type": "Default",
           "len": {
@@ -4678,7 +4678,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.692,
+              "value": 1.6922518897698449,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -4760,7 +4760,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -1.272,
+        "value": -1.2721503422803828,
         "ty": {
           "type": "Default",
           "len": {
@@ -4782,7 +4782,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 10.423,
+        "value": 10.422650023225183,
         "ty": {
           "type": "Default",
           "len": {
@@ -4813,7 +4813,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.983,
+              "value": 1.9831400984355665,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -4825,7 +4825,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 8.733,
+              "value": 8.732661536483969,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -4895,7 +4895,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -3.5,
+        "value": -3.4996818147136093,
         "ty": {
           "type": "Default",
           "len": {
@@ -4917,7 +4917,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 8.001,
+        "value": 8.000725261284092,
         "ty": {
           "type": "Default",
           "len": {
@@ -5069,7 +5069,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "helixCalc",
       "value": {
         "type": "Number",
-        "value": 1.347,
+        "value": 1.3468785716349654,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -5264,7 +5264,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.347,
+              "value": 1.3468785716349654,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -5276,7 +5276,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 8.733,
+              "value": 8.732661536483969,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -5346,7 +5346,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 1.939,
+        "value": 1.9390985478752714,
         "ty": {
           "type": "Default",
           "len": {
@@ -5368,7 +5368,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 8.515,
+        "value": 8.514650570188689,
         "ty": {
           "type": "Default",
           "len": {
@@ -5399,7 +5399,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.58,
+              "value": 1.5795891385675427,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -5481,7 +5481,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -0.092,
+        "value": -0.09232333396144166,
         "ty": {
           "type": "Default",
           "len": {
@@ -5503,7 +5503,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 10.5,
+        "value": 10.499594106536035,
         "ty": {
           "type": "Default",
           "len": {
@@ -5534,7 +5534,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.87,
+              "value": 1.870477347233264,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -5546,7 +5546,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 8.733,
+              "value": 8.732661536483969,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -5616,7 +5616,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -2.578,
+        "value": -2.5780166821928425,
         "ty": {
           "type": "Default",
           "len": {
@@ -5638,7 +5638,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 8.343,
+        "value": 8.343452972068697,
         "ty": {
           "type": "Default",
           "len": {
@@ -6075,7 +6075,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "baseDiameter",
       "value": {
         "type": "Number",
-        "value": 17.465,
+        "value": 17.465323072967937,
         "ty": {
           "type": "Default",
           "len": {
@@ -6351,7 +6351,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "startAngle",
       "value": {
         "type": "Number",
-        "value": 0.143,
+        "value": 0.14334756890536535,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -6492,7 +6492,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "helixCalc",
       "value": {
         "type": "Number",
-        "value": 1.571,
+        "value": 1.5707963267948966,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -6687,7 +6687,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.571,
+              "value": 1.5707963267948966,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -6699,7 +6699,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 8.733,
+              "value": 8.732661536483969,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -6769,7 +6769,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 0.0,
+        "value": 0.000000000000000534721299934615,
         "ty": {
           "type": "Default",
           "len": {
@@ -6791,7 +6791,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 8.733,
+        "value": 8.732661536483969,
         "ty": {
           "type": "Default",
           "len": {
@@ -6822,7 +6822,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.804,
+              "value": 1.8035068937274739,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -6904,7 +6904,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -2.421,
+        "value": -2.4214666427956213,
         "ty": {
           "type": "Default",
           "len": {
@@ -6926,7 +6926,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 10.217,
+        "value": 10.21697114108815,
         "ty": {
           "type": "Default",
           "len": {
@@ -6957,7 +6957,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 2.094,
+              "value": 2.0943951023931953,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -6969,7 +6969,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 8.733,
+              "value": 8.732661536483969,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -7039,7 +7039,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -4.366,
+        "value": -4.3663307682419825,
         "ty": {
           "type": "Default",
           "len": {
@@ -7061,7 +7061,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 7.563,
+        "value": 7.562706733246366,
         "ty": {
           "type": "Default",
           "len": {
@@ -7213,7 +7213,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "helixCalc",
       "value": {
         "type": "Number",
-        "value": 1.682,
+        "value": 1.6820513307525258,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -7408,7 +7408,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.682,
+              "value": 1.6820513307525258,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -7420,7 +7420,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 8.733,
+              "value": 8.732661536483969,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -7490,7 +7490,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -0.97,
+        "value": -0.9695492739376368,
         "ty": {
           "type": "Default",
           "len": {
@@ -7512,7 +7512,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 8.679,
+        "value": 8.678672232328719,
         "ty": {
           "type": "Default",
           "len": {
@@ -7543,7 +7543,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.915,
+              "value": 1.914761897685103,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -7625,7 +7625,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -3.541,
+        "value": -3.5408417166794406,
         "ty": {
           "type": "Default",
           "len": {
@@ -7647,7 +7647,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 9.885,
+        "value": 9.884960290128767,
         "ty": {
           "type": "Default",
           "len": {
@@ -7678,7 +7678,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 2.206,
+              "value": 2.2056501063508245,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -7690,7 +7690,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 8.733,
+              "value": 8.732661536483969,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -7760,7 +7760,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -5.179,
+        "value": -5.17899041761511,
         "ty": {
           "type": "Default",
           "len": {
@@ -7782,7 +7782,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 7.031,
+        "value": 7.031175987346457,
         "ty": {
           "type": "Default",
           "len": {
@@ -7934,7 +7934,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "helixCalc",
       "value": {
         "type": "Number",
-        "value": 1.795,
+        "value": 1.794714081954828,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -8129,7 +8129,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.795,
+              "value": 1.794714081954828,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -8141,7 +8141,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 8.733,
+              "value": 8.732661536483969,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -8211,7 +8211,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -1.939,
+        "value": -1.9390985478752725,
         "ty": {
           "type": "Default",
           "len": {
@@ -8233,7 +8233,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 8.515,
+        "value": 8.514650570188689,
         "ty": {
           "type": "Default",
           "len": {
@@ -8264,7 +8264,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 2.027,
+              "value": 2.027424648887405,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -8346,7 +8346,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -4.63,
+        "value": -4.629706082759553,
         "ty": {
           "type": "Default",
           "len": {
@@ -8368,7 +8368,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 9.424,
+        "value": 9.424214640343205,
         "ty": {
           "type": "Default",
           "len": {
@@ -8399,7 +8399,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 2.318,
+              "value": 2.318312857553127,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -8411,7 +8411,7 @@ description: Operations executed helical-planetary-gearset.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 8.733,
+              "value": 8.732661536483969,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -8481,7 +8481,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -5.937,
+        "value": -5.936633887995845,
         "ty": {
           "type": "Default",
           "len": {
@@ -8503,7 +8503,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 6.404,
+        "value": 6.404354424193422,
         "ty": {
           "type": "Default",
           "len": {
@@ -8868,7 +8868,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -8884,7 +8884,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -8901,7 +8901,7 @@ description: Operations executed helical-planetary-gearset.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

@@ -82,7 +82,7 @@ description: Artifact commands helium-tank.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -15.24,
+            "y": -15.239999999999998,
             "z": 0.0
           },
           "relative": true
@@ -195,8 +195,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 114.3,
-            "y": 38.1,
+            "x": 114.29999999999727,
+            "y": 38.099999999999994,
             "z": 0.0
           },
           "relative": false
@@ -228,8 +228,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.025,
-            "y": -12.7,
+            "x": 0.0254,
+            "y": -12.699999999999564,
             "z": 0.0
           },
           "relative": false
@@ -262,7 +262,7 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 63.475,
+            "x": 63.47459999999707,
             "y": 0.0,
             "z": 0.0
           },
@@ -296,7 +296,7 @@ description: Artifact commands helium-tank.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 590.453,
+            "y": 590.4527637033384,
             "z": 0.0
           },
           "relative": true
@@ -328,8 +328,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 13.335,
-            "y": 706.658,
+            "x": 13.334999999999999,
+            "y": 706.6577637033388,
             "z": 0.0
           },
           "relative": false
@@ -345,7 +345,7 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 13.335,
+            "x": 13.334999999999999,
             "y": 762.0,
             "z": 0.0
           },
@@ -507,7 +507,7 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 16.711,
+          "x": 16.710526315789473,
           "y": 0.0,
           "z": 0.0
         }
@@ -697,8 +697,8 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 10.583,
-          "y": 769.62,
+          "x": 10.583333333333334,
+          "y": 769.6199999999999,
           "z": 0.0
         }
       }
@@ -720,7 +720,7 @@ description: Artifact commands helium-tank.kcl
           "type": "arc",
           "center": {
             "x": 0.0,
-            "y": 769.62
+            "y": 769.6199999999999
           },
           "radius": 10.583333333333334,
           "start": {
@@ -773,8 +773,8 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 9.769,
-          "y": 769.62,
+          "x": 9.76923076923077,
+          "y": 769.6199999999999,
           "z": 0.0
         }
       }
@@ -796,7 +796,7 @@ description: Artifact commands helium-tank.kcl
           "type": "arc",
           "center": {
             "x": 0.0,
-            "y": 769.62
+            "y": 769.6199999999999
           },
           "radius": 9.76923076923077,
           "start": {
@@ -1075,8 +1075,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 5.671,
-            "y": 32.161,
+            "x": 5.67085334495147,
+            "y": 32.161007476941535,
             "z": 0.0
           },
           "relative": true
@@ -1109,7 +1109,7 @@ description: Artifact commands helium-tank.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 134.167,
+            "y": 134.16670162040836,
             "z": 0.0
           },
           "relative": false
@@ -1301,8 +1301,8 @@ description: Artifact commands helium-tank.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 5.671,
-            "y": 32.161,
+            "x": 5.670853344951464,
+            "y": 32.16100747694154,
             "z": 0.0
           },
           "relative": true
@@ -1335,7 +1335,7 @@ description: Artifact commands helium-tank.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 137.342,
+            "y": 137.34170162040837,
             "z": 0.0
           },
           "relative": false
@@ -1534,8 +1534,8 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 120.65,
-          "y": 1.588,
+          "x": 120.64999999999999,
+          "y": 1.5875,
           "z": 0.0
         }
       }
@@ -1557,7 +1557,7 @@ description: Artifact commands helium-tank.kcl
           "type": "arc",
           "center": {
             "x": 0.0,
-            "y": 1.588
+            "y": 1.5875
           },
           "radius": 120.64999999999999,
           "start": {
@@ -1620,7 +1620,7 @@ description: Artifact commands helium-tank.kcl
         "path": "[uuid]",
         "to": {
           "x": 118.11,
-          "y": 1.588,
+          "y": 1.5875,
           "z": 0.0
         }
       }
@@ -1642,7 +1642,7 @@ description: Artifact commands helium-tank.kcl
           "type": "arc",
           "center": {
             "x": 0.0,
-            "y": 1.588
+            "y": 1.5875
           },
           "radius": 118.11,
           "start": {
@@ -1764,7 +1764,7 @@ description: Artifact commands helium-tank.kcl
         "type": "make_plane",
         "origin": {
           "x": 0.0,
-          "y": 120.316,
+          "y": 120.31578947368422,
           "z": 0.0
         },
         "x_axis": {
@@ -1835,7 +1835,7 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 53.975,
+          "x": 53.974999999999994,
           "y": 510.54,
           "z": 0.0
         }
@@ -2102,8 +2102,8 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 120.316,
-          "y": 1.969,
+          "x": 120.31578947368422,
+          "y": 1.9685,
           "z": 0.0
         }
       }
@@ -2125,7 +2125,7 @@ description: Artifact commands helium-tank.kcl
           "type": "arc",
           "center": {
             "x": 0.0,
-            "y": 1.969
+            "y": 1.9685
           },
           "radius": 120.31578947368422,
           "start": {
@@ -2187,8 +2187,8 @@ description: Artifact commands helium-tank.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 117.776,
-          "y": 1.969,
+          "x": 117.77578947368423,
+          "y": 1.9685,
           "z": 0.0
         }
       }
@@ -2210,7 +2210,7 @@ description: Artifact commands helium-tank.kcl
           "type": "arc",
           "center": {
             "x": 0.0,
-            "y": 1.969
+            "y": 1.9685
           },
           "radius": 117.77578947368423,
           "start": {

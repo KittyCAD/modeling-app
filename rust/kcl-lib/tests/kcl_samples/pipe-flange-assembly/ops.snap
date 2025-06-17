@@ -1845,7 +1845,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.469,
+            "value": -0.46875,
             "ty": {
               "type": "Default",
               "len": {
@@ -2299,7 +2299,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 0.547,
+            "value": 0.546875,
             "ty": {
               "type": "Default",
               "len": {
@@ -2360,7 +2360,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.547,
+            "value": -0.546875,
             "ty": {
               "type": "Default",
               "len": {
@@ -2430,7 +2430,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "z": {
           "value": {
             "type": "Number",
-            "value": -1.42,
+            "value": -1.419875,
             "ty": {
               "type": "Default",
               "len": {
@@ -2891,7 +2891,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "z": {
           "value": {
             "type": "Number",
-            "value": 0.44,
+            "value": 0.43999999999999995,
             "ty": {
               "type": "Default",
               "len": {
@@ -3631,7 +3631,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "name": "boltHexFlatLength",
       "value": {
         "type": "Number",
-        "value": 0.289,
+        "value": 0.28867513459481287,
         "ty": {
           "type": "Default",
           "len": {
@@ -3697,7 +3697,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "name": "hexNutFlatToFlat",
       "value": {
         "type": "Number",
-        "value": 0.938,
+        "value": 0.9375,
         "ty": {
           "type": "Default",
           "len": {
@@ -3719,7 +3719,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "name": "hexNutThickness",
       "value": {
         "type": "Number",
-        "value": 0.547,
+        "value": 0.546875,
         "ty": {
           "type": "Default",
           "len": {
@@ -3741,7 +3741,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "name": "hexNutFlatLength",
       "value": {
         "type": "Number",
-        "value": 0.541,
+        "value": 0.5412658773652741,
         "ty": {
           "type": "Default",
           "len": {
@@ -3899,7 +3899,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -3915,7 +3915,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -3932,7 +3932,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

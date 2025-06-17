@@ -2443,7 +2443,7 @@ description: Operations executed cpu-cooler.kcl
         "distance": {
           "value": {
             "type": "Number",
-            "value": 3.667,
+            "value": 3.6666666666666665,
             "ty": {
               "type": "Default",
               "len": {
@@ -2594,7 +2594,7 @@ description: Operations executed cpu-cooler.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 30.0,
+            "value": 30.000000000000004,
             "ty": {
               "type": "Known",
               "type": "Length",
@@ -2721,7 +2721,7 @@ description: Operations executed cpu-cooler.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 22.5,
+            "value": 22.500000000000004,
             "ty": {
               "type": "Known",
               "type": "Length",
@@ -2952,7 +2952,7 @@ description: Operations executed cpu-cooler.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 1.594,
+            "value": 1.59375,
             "ty": {
               "type": "Default",
               "len": {
@@ -4986,7 +4986,7 @@ description: Operations executed cpu-cooler.kcl
         "offset": {
           "value": {
             "type": "Number",
-            "value": 152.653,
+            "value": 152.65270364466613,
             "ty": {
               "type": "Known",
               "type": "Length",
@@ -5031,7 +5031,7 @@ description: Operations executed cpu-cooler.kcl
         "offset": {
           "value": {
             "type": "Number",
-            "value": 47.347,
+            "value": 47.34729635533386,
             "ty": {
               "type": "Known",
               "type": "Length",
@@ -5076,7 +5076,7 @@ description: Operations executed cpu-cooler.kcl
         "offset": {
           "value": {
             "type": "Number",
-            "value": -43.88,
+            "value": -43.87966230538214,
             "ty": {
               "type": "Known",
               "type": "Length",
@@ -5440,7 +5440,7 @@ description: Operations executed cpu-cooler.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -5456,7 +5456,7 @@ description: Operations executed cpu-cooler.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -5473,7 +5473,7 @@ description: Operations executed cpu-cooler.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"
