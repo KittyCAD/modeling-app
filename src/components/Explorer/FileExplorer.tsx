@@ -5,7 +5,6 @@ import {
   type FileExplorerRow,
   type FileExplorerRender,
   type FileExplorerRowContextMenuProps,
-  constructPath,
 } from '@src/components/Explorer/utils'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { useRef } from 'react'
@@ -59,19 +58,18 @@ const Spacer = (level: number) => {
 export const FileExplorer = ({
   rowsToRender,
   selectedRow,
+  renamingRow,
 }: {
   rowsToRender: FileExplorerRow[]
   selectedRow: FileExplorerEntry | null
+  renamingRow: FileExplorerRow | null
 }) => {
   // Local state for selection and what is opened
   // diff this against new Project value that comes in
   return (
     <div role="presentation" className="p-px">
       {rowsToRender.map((row, index, original) => {
-        const key = constructPath({
-          parentPath: row.parentPath,
-          name: row.name,
-        })
+        const key = row.key
         const renderRow: FileExplorerRender = {
           ...row,
           domIndex: index,
@@ -82,10 +80,120 @@ export const FileExplorer = ({
             key={key}
             row={renderRow}
             selectedRow={selectedRow}
+            renamingRow={renamingRow}
           ></FileExplorerRowElement>
         )
       })}
     </div>
+  )
+}
+
+function FileExplorerRowContextMenu({
+  itemRef,
+  onRename,
+  onDelete,
+  onClone,
+  onOpenInNewWindow,
+  callback,
+}: FileExplorerRowContextMenuProps) {
+  const platform = usePlatform()
+  const metaKey = platform === 'macos' ? '⌘' : 'Ctrl'
+  return (
+    <ContextMenu
+      menuTargetElement={itemRef}
+      callback={callback}
+      items={[
+        <ContextMenuItem
+          data-testid="context-menu-rename"
+          onClick={onRename}
+          hotkey="Enter"
+        >
+          Rename
+        </ContextMenuItem>,
+        <ContextMenuItem
+          data-testid="context-menu-delete"
+          onClick={onDelete}
+          hotkey={metaKey + ' + Del'}
+        >
+          Delete
+        </ContextMenuItem>,
+        <ContextMenuItem
+          data-testid="context-menu-clone"
+          onClick={onClone}
+          hotkey=""
+        >
+          Clone
+        </ContextMenuItem>,
+        <ContextMenuItem
+          data-testid="context-menu-open-in-new-window"
+        onClick={onOpenInNewWindow}
+          >
+          Open in new window
+        </ContextMenuItem>,
+      ]}
+      />
+  )
+}
+
+function RenameForm({
+  row,
+  onSubmit,
+}: {
+  row: FileExplorerRender
+  onSubmit: () => void
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  function handleRenameSubmit(e: React.KeyboardEvent<HTMLElement>) {
+    if (e.key !== 'Enter') {
+      return
+    }
+
+    // TODO: Do the renaming
+    // newName: inputRef.current?.value || fileOrDir.name || '',
+
+    // To get out of the renaming state, without this the current file is still in renaming mode
+    onSubmit()
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Escape') {
+      e.stopPropagation()
+      onSubmit()
+    } else if (e.key === 'Enter') {
+      // This is needed to prevent events to bubble up and the form to be submitted.
+      // (Alternatively the form could be changed into a div.)
+      // Bug without this:
+      // - open a parent folder (close and open if it's already open)
+      // - right click -> rename one of its children
+      // - give new name and press enter
+      // -> new name is not applied, old name is reverted
+      e.preventDefault()
+      e.stopPropagation()
+    }
+  }
+
+  return (
+    <form onKeyUp={handleRenameSubmit}>
+      <label>
+        <span className="sr-only">Rename file</span>
+        <input
+          data-testid="file-rename-field"
+          ref={inputRef}
+          type="text"
+          autoFocus
+          autoCapitalize="off"
+          autoCorrect="off"
+          placeholder={row.name}
+          className="w-full py-1 bg-transparent text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:outline-none focus:ring-0"
+          onKeyDown={handleKeyDown}
+          onBlur={onSubmit}
+        />
+      </label>
+      <button className="sr-only" type="submit">
+        Submit
+      </button>
+    </form>
   )
 }
 
@@ -96,9 +204,11 @@ export const FileExplorer = ({
 export const FileExplorerRowElement = ({
   row,
   selectedRow,
+  renamingRow
 }: {
   row: FileExplorerRender
   selectedRow: FileExplorerEntry | null
+  renamingRow: FileExplorerRow | null
   domLength: number
 }) => {
   const isSelected =
@@ -161,52 +271,5 @@ export const FileExplorerRowElement = ({
         callback={row.rowContextMenu}
       />
     </div>
-  )
-}
-
-function FileExplorerRowContextMenu({
-  itemRef,
-  onRename,
-  onDelete,
-  onClone,
-  onOpenInNewWindow,
-  callback,
-}: FileExplorerRowContextMenuProps) {
-  const platform = usePlatform()
-  const metaKey = platform === 'macos' ? '⌘' : 'Ctrl'
-  return (
-    <ContextMenu
-      menuTargetElement={itemRef}
-      callback={callback}
-      items={[
-        <ContextMenuItem
-          data-testid="context-menu-rename"
-          onClick={onRename}
-          hotkey="Enter"
-        >
-          Rename
-        </ContextMenuItem>,
-        <ContextMenuItem
-          data-testid="context-menu-delete"
-          onClick={onDelete}
-          hotkey={metaKey + ' + Del'}
-        >
-          Delete
-        </ContextMenuItem>,
-        <ContextMenuItem
-          data-testid="context-menu-clone"
-          onClick={onClone}
-          hotkey=""
-        >
-          Clone
-        </ContextMenuItem>,
-        <ContextMenuItem
-          data-testid="context-menu-open-in-new-window"
-          onClick={onOpenInNewWindow}
-        >
-          Open in new window
-        </ContextMenuItem>,
-      ]}
-    />
   )
 }

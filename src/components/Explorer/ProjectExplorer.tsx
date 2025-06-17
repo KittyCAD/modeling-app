@@ -23,11 +23,7 @@ const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
   entry: FileExplorerEntry
 ): boolean => {
-  const key = constructPath({
-    parentPath: entry.parentPath,
-    name: entry.name,
-  })
-  return rows[key]
+  return rows[entry.key]
 }
 
 /**
@@ -52,6 +48,8 @@ export const ProjectExplorer = ({
   // -1 is the parent container, -2 is nothing is selected
   const [activeIndex, setActiveIndex] = useState<number>(NOTHING_IS_SELECTED)
   const [rowsToRender, setRowsToRender] = useState<FileExplorerRow[]>([])
+  const [renamingRow, setRenamingRow] = useState<FileExplorerRow | null>(null)
+
   const fileExplorerContainer = useRef(null)
   const openedRowsRef = useRef(openedRows)
   const rowsToRenderRef = useRef(rowsToRender)
@@ -75,10 +73,7 @@ export const ProjectExplorer = ({
    */
   const onRowClickCallback = (file: FileExplorerEntry, domIndex: number) => {
     const newOpenedRows = { ...openedRowsRef.current }
-    const key = constructPath({
-      parentPath: file.parentPath,
-      name: file.name,
-    })
+    const key = file.key
     const value = openedRowsRef.current[key]
     newOpenedRows[key] = !value
     setOpenedRows(newOpenedRows)
@@ -127,7 +122,7 @@ export const ProjectExplorer = ({
 
         const isOpen =
           openedRows[
-            constructPath({ parentPath: child.parentPath, name: child.name })
+            child.key
           ]
         const render =
           (openedRows[child.parentPath] || project.name === child.parentPath) &&
@@ -155,10 +150,7 @@ export const ProjectExplorer = ({
           },
           rowOpen: () => {
             const newOpenedRows = { ...openedRowsRef.current }
-            const key = constructPath({
-              parentPath: child.parentPath,
-              name: child.name,
-            })
+            const key = child.key
             newOpenedRows[key] = true
             setOpenedRows(newOpenedRows)
           },
@@ -182,6 +174,7 @@ export const ProjectExplorer = ({
     requestedRowsToRender.forEach((r, index) => {
       r.rowContextMenu = () => {
         setActiveIndex(index)
+        setRenamingRow(r)
       }
     })
 
@@ -219,10 +212,7 @@ export const ProjectExplorer = ({
           } else if (shouldCheckOpened && isEntryOpened) {
             // close
             const newOpenedRows = { ...openedRowsRef.current }
-            const key = constructPath({
-              parentPath: focusedEntry.parentPath,
-              name: focusedEntry.name,
-            })
+            const key = focusedEntry.key
             const value = openedRowsRef.current[key]
             newOpenedRows[key] = !value
             setOpenedRows(newOpenedRows)
@@ -234,10 +224,7 @@ export const ProjectExplorer = ({
           } else if (shouldCheckOpened && !isEntryOpened) {
             // open!
             const newOpenedRows = { ...openedRowsRef.current }
-            const key = constructPath({
-              parentPath: focusedEntry.parentPath,
-              name: focusedEntry.name,
-            })
+            const key = focusedEntry.key
             const value = openedRowsRef.current[key]
             newOpenedRows[key] = !value
             setOpenedRows(newOpenedRows)
@@ -265,10 +252,7 @@ export const ProjectExplorer = ({
           if (activeIndexRef.current >= STARTING_INDEX_TO_SELECT) {
             // open close folder
             const newOpenedRows = { ...openedRowsRef.current }
-            const key = constructPath({
-              parentPath: focusedEntry.parentPath,
-              name: focusedEntry.name,
-            })
+            const key = focusedEntry.key
             const value = openedRowsRef.current[key]
             newOpenedRows[key] = !value
             setOpenedRows(newOpenedRows)

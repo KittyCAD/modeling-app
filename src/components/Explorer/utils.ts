@@ -7,6 +7,7 @@ export interface FileExplorerEntry extends FileEntry {
   parentPath: string
   level: number
   index: number
+  key: string
 }
 
 export interface FileExplorerRow extends FileExplorerEntry {
@@ -70,6 +71,10 @@ const flattenProjectHelper = (
     parentPath,
     level,
     index,
+    key: constructPath({
+      parentPath,
+      name: f.name
+    })
   }
   // keep track of the file once within the recursive list that will be built up
   list.push(content)
