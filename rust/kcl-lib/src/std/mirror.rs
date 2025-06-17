@@ -3,15 +3,18 @@
 use anyhow::Result;
 use kcmc::{each_cmd as mcmd, ModelingCmd};
 use kittycad_modeling_cmds::{
-    self as kcmc, length_unit::LengthUnit, ok_response::OkModelingCmdResponse,
-    shared::Point3d, websocket::OkWebSocketResponseData,
+    self as kcmc, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Point3d,
+    websocket::OkWebSocketResponseData,
 };
+use uuid::Uuid;
 
 use crate::{
-    errors::{KclError, KclErrorDetails}, execution::{
+    errors::{KclError, KclErrorDetails},
+    execution::{
         types::{PrimitiveType, RuntimeType},
         ExecState, KclValue, Sketch,
-    }, std::{axis_or_reference::Axis2dOrEdgeReference, Args}
+    },
+    std::{axis_or_reference::Axis2dOrEdgeReference, Args},
 };
 
 /// Mirror a sketch.
@@ -46,79 +49,75 @@ async fn inner_mirror_2d(
     let mut mirrored_ids = Vec::new();
     let mirrored_edge_ids = match axis {
         Axis2dOrEdgeReference::Axis { direction, origin } => {
-            let resp = exec_state.send_modeling_cmd(
-                (&args).into(),
-                ModelingCmd::from(mcmd::EntityMirror {
-                    ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
-                    axis: Point3d {
-                        x: direction[0].to_mm(),
-                        y: direction[1].to_mm(),
-                        z: 0.0,
-                    },
-                    point: Point3d {
-                        x: LengthUnit(origin[0].to_mm()),
-                        y: LengthUnit(origin[1].to_mm()),
-                        z: LengthUnit(0.0),
-                    },
-                }),
-            )
-            .await?;
+            let resp = exec_state
+                .send_modeling_cmd(
+                    (&args).into(),
+                    ModelingCmd::from(mcmd::EntityMirror {
+                        ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
+                        axis: Point3d {
+                            x: direction[0].to_mm(),
+                            y: direction[1].to_mm(),
+                            z: 0.0,
+                        },
+                        point: Point3d {
+                            x: LengthUnit(origin[0].to_mm()),
+                            y: LengthUnit(origin[1].to_mm()),
+                            z: LengthUnit(0.0),
+                        },
+                    }),
+                )
+                .await?;
 
-            let mock_ids = Vec::new();
             let mut edge_ids = Vec::new();
-            let entity_ids = if let OkWebSocketResponseData::Modeling {
+            let entity_ids : &Vec<Uuid> = if let OkWebSocketResponseData::Modeling {
                 modeling_response: OkModelingCmdResponse::EntityMirror(mirror_info),
             } = &resp
             {
-                edge_ids = mirror_info.entity_face_edge_ids.iter()
+                edge_ids = mirror_info
+                    .entity_face_edge_ids
+                    .iter()
                     .map(|x| x.edges.first().copied().unwrap_or_default())
                     .collect();
                 &mirror_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
-            } else if args.ctx.no_engine_commands().await {
-                &mock_ids
             } else {
                 return Err(KclError::new_engine(KclErrorDetails::new(
                     format!("EntityLinearPattern response was not as expected: {:?}", resp),
                     vec![args.source_range],
                 )));
             };
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::log_1(&format!("entityidsnew{:?}", entity_ids).into());
             mirrored_ids.extend(entity_ids.iter().cloned());
             edge_ids
         }
         Axis2dOrEdgeReference::Edge(edge) => {
             let edge_id = edge.get_engine_id(exec_state, &args)?;
 
-            let resp = exec_state.send_modeling_cmd(
-                (&args).into(),
-                ModelingCmd::from(mcmd::EntityMirrorAcrossEdge {
-                    ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
-                    edge_id,
-                }),
-            )
-            .await?;
+            let resp = exec_state
+                .send_modeling_cmd(
+                    (&args).into(),
+                    ModelingCmd::from(mcmd::EntityMirrorAcrossEdge {
+                        ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
+                        edge_id,
+                    }),
+                )
+                .await?;
 
-            let mock_ids = Vec::new();
             let mut edge_ids = Vec::new();
-            let entity_ids = if let OkWebSocketResponseData::Modeling {
+            let entity_ids : Vec<Uuid> = if let OkWebSocketResponseData::Modeling {
                 modeling_response: OkModelingCmdResponse::EntityMirrorAcrossEdge(mirror_info),
             } = &resp
             {
-                edge_ids = mirror_info.entity_face_edge_ids.iter()
-                .map(|x| x.edges.first().copied().unwrap_or_default())
-                .collect();
-               &mirror_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
-            } else if args.ctx.no_engine_commands().await {
-                &mock_ids
+                edge_ids = mirror_info
+                    .entity_face_edge_ids
+                    .iter()
+                    .map(|x| x.edges.first().copied().unwrap_or_default())
+                    .collect();
+                mirror_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
             } else {
                 return Err(KclError::new_engine(KclErrorDetails::new(
                     format!("EntityLinearPattern response was not as expected: {:?}", resp),
                     vec![args.source_range],
                 )));
             };
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::log_1(&format!("entityidsnew{:?}", entity_ids).into());
             mirrored_ids.extend(entity_ids.iter().cloned());
             edge_ids
         }
@@ -136,8 +135,6 @@ async fn inner_mirror_2d(
             starting_sketches[i].mirror = Some(mirrored_edge_ids[i]);
             starting_sketches[i].id = mirrored_ids[i];
         }
-        #[cfg(target_arch = "wasm32")]
-web_sys::console::log_1(&format!("mirroredid{:?}", mirrored_ids[i]).into());
     }
 
     Ok(starting_sketches)
