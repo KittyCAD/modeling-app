@@ -82,6 +82,8 @@ export function App() {
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const { onProjectOpen } = useLspContext()
+  const networkHealthStatus = useNetworkHealthStatus()
+  const networkMachineStatus = useNetworkMachineStatus()
   // We need the ref for the outermost div so we can screenshot the app for
   // the coredump.
 
@@ -253,8 +255,8 @@ export function App() {
       </div>
       <StatusBar
         globalItems={[
-          useNetworkHealthStatus(),
-          useNetworkMachineStatus(),
+          networkHealthStatus,
+          networkMachineStatus,
           ...defaultGlobalStatusBarItems({ location, filePath }),
         ]}
         localItems={[

@@ -80,6 +80,7 @@ const Home = () => {
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = useToken()
+  const networkMachineStatus = useNetworkMachineStatus()
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -402,7 +403,7 @@ const Home = () => {
       </div>
       <StatusBar
         globalItems={[
-          useNetworkMachineStatus(),
+          networkMachineStatus,
           ...defaultGlobalStatusBarItems({ location, filePath: undefined }),
         ]}
         localItems={defaultLocalStatusBarItems}
