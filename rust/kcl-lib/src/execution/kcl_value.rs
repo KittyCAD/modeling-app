@@ -668,9 +668,8 @@ impl From<GeometryWithImportedGeometry> for KclValue {
 
 #[cfg(test)]
 mod tests {
-    use crate::exec::UnitType;
-
     use super::*;
+    use crate::exec::UnitType;
 
     #[test]
     fn test_human_friendly_type() {
