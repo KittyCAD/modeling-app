@@ -176,6 +176,9 @@ export const ProjectExplorer = ({
               },
             })
           },
+          rowOpenInNewWindow: () => {
+            window.electron.openInNewWindow(row.path)
+          },
           rowRenameStart: () => {
             setIsRenaming(true)
             isRenamingRef.current = true

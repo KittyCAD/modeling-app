@@ -518,7 +518,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedPath: string
         }
       }) => {
-        await window.electron.rm(input.requestedPath, {recursive:true})
+        await window.electron.rm(input.requestedPath, { recursive: true })
         return {
           message: 'File deleted successfully',
           requestedPath: input.requestedPath,

@@ -112,13 +112,6 @@ function FileExplorerRowContextMenu({
           Delete
         </ContextMenuItem>,
         <ContextMenuItem
-          data-testid="context-menu-clone"
-          onClick={onClone}
-          hotkey=""
-        >
-          Clone
-        </ContextMenuItem>,
-        <ContextMenuItem
           data-testid="context-menu-open-in-new-window"
           onClick={onOpenInNewWindow}
         >
@@ -278,7 +271,7 @@ export const FileExplorerRowElement = ({
           row.rowDelete()
         }}
         onClone={() => {}}
-        onOpenInNewWindow={() => {}}
+    onOpenInNewWindow={() => {row.rowOpenInNewWindow()}}
         callback={row.rowContextMenu}
       />
     </div>
