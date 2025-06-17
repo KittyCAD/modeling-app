@@ -54,7 +54,7 @@ export const defaultGlobalStatusBarItems = ({
   },
   {
     id: 'credits',
-    'data-testid': 'settings-link',
+    'data-testid': 'billing-remaining-bar',
     component: BillingStatusBarItem,
   },
 ]
