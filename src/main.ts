@@ -39,7 +39,11 @@ import {
   enableMenu,
 } from '@src/menu'
 import fs from 'fs'
-import { installExtension, REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
+import {
+  installExtension,
+  REDUX_DEVTOOLS,
+  REACT_DEVELOPER_TOOLS,
+} from 'electron-devtools-installer'
 
 // If we're on Windows, pull the local system TLS CAs in
 require('win-ca')
@@ -83,9 +87,11 @@ console.log('Parsed CLI args', args)
 
 app.whenReady().then(() => {
   installExtension([REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS])
-    .then(([redux, react]) => console.log(`Added Extensions:  ${redux.name}, ${react.name}`))
-    .catch((err) => console.log('An error occurred: ', err));
-});
+    .then(([redux, react]) =>
+      console.log(`Added Extensions:  ${redux.name}, ${react.name}`)
+    )
+    .catch((err) => console.log('An error occurred: ', err))
+})
 
 /// Register our application to handle all "zoo-studio:" protocols.
 const singleInstanceLock = app.requestSingleInstanceLock()

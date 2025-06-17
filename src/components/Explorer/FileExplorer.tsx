@@ -70,7 +70,7 @@ export const FileExplorer = ({
       {rowsToRender.map((row, index, original) => {
         const key = constructPath({
           parentPath: row.parentPath,
-          name: row.name
+          name: row.name,
         })
         const renderRow: FileExplorerRender = {
           ...row,
@@ -127,18 +127,18 @@ export const FileExplorerRowElement = ({
         row.rowClicked(row.domIndex)
       }}
       draggable="true"
-      onDragOver={(event)=>{
+      onDragOver={(event) => {
         if (!row.isOpen && row.isFolder) {
           // on drag over, open!
           row.rowOpen()
         }
         event.preventDefault()
       }}
-      onDragStart={((event)=>{
-        console.log(event.target.innerText,'onDragStart')
-      })}
-      onDrop={(event)=>{
-        console.log(event.target.innerText,'onDrop')
+      onDragStart={(event) => {
+        console.log(event.target.innerText, 'onDragStart')
+      }}
+      onDrop={(event) => {
+        console.log(event.target.innerText, 'onDrop')
       }}
     >
       <div style={{ width: '0.25rem' }}></div>
@@ -158,6 +158,7 @@ export const FileExplorerRowElement = ({
         onDelete={() => {}}
         onClone={() => {}}
         onOpenInNewWindow={() => {}}
+        callback={row.rowContextMenu}
       />
     </div>
   )
@@ -169,12 +170,14 @@ function FileExplorerRowContextMenu({
   onDelete,
   onClone,
   onOpenInNewWindow,
+  callback
 }: FileExplorerRowContextMenuProps) {
   const platform = usePlatform()
   const metaKey = platform === 'macos' ? '⌘' : 'Ctrl'
   return (
     <ContextMenu
       menuTargetElement={itemRef}
+      callback={callback}
       items={[
         <ContextMenuItem
           data-testid="context-menu-rename"

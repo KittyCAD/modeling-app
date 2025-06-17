@@ -9,8 +9,10 @@ import {
   CONTAINER_IS_SELECTED,
   STARTING_INDEX_TO_SELECT,
 } from '@src/components/Explorer/utils'
-import type { FileExplorerEntry ,
-  FileExplorerRow} from '@src/components/Explorer/utils'
+import type {
+  FileExplorerEntry,
+  FileExplorerRow,
+} from '@src/components/Explorer/utils'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { useState, useRef, useEffect } from 'react'
 import { systemIOActor } from '@src/lib/singletons'
@@ -159,6 +161,9 @@ export const ProjectExplorer = ({
             newOpenedRows[key] = true
             setOpenedRows(newOpenedRows)
           },
+          rowContextMenu: () => {
+            // NO OP
+          },
           isFake: false,
           activeIndex: activeIndex,
         }
@@ -170,8 +175,18 @@ export const ProjectExplorer = ({
       return row.render
     })
 
+    // update the callback for rowContextMenu to be the index based on rendering
+    // Gotcha: you will see if you spam the context menu you will not be able to select a new one
+    // until closing
+    requestedRowsToRender.forEach((r, index)=>{
+      r.rowContextMenu = () => {
+        setActiveIndex(index)
+      }
+    })
+
     setRowsToRender(requestedRowsToRender)
     rowsToRenderRef.current = requestedRowsToRender
+    console.log(activeIndex)
   }, [project, openedRows, fakeRow, activeIndex])
 
   // Handle clicks and keyboard presses within the global DOM level
