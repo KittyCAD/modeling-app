@@ -125,7 +125,7 @@ function RenameForm({
   onSubmit,
 }: {
   row: FileExplorerRender
-  onSubmit: () => void
+  onSubmit: (e: React.KeyboardEvent<HTMLElement> | null) => void
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -144,7 +144,7 @@ function RenameForm({
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Escape') {
       e.stopPropagation()
-      onSubmit()
+      onSubmit(null)
     } else if (e.key === 'Enter') {
       // This is needed to prevent events to bubble up and the form to be submitted.
       // (Alternatively the form could be changed into a div.)
@@ -254,8 +254,8 @@ export const FileExplorerRowElement = ({
       ) : (
         <RenameForm
           row={row}
-          onSubmit={(event) => {
-            row.rowRenameEnd(event)
+          onSubmit={(event: React.KeyboardEvent<HTMLElement> | null) => {
+            row.onRenameEnd(event)
           }}
         ></RenameForm>
       )}
@@ -264,7 +264,7 @@ export const FileExplorerRowElement = ({
       <FileExplorerRowContextMenu
         itemRef={rowElementRef}
         onRename={() => {
-          row.rowRenameStart()
+          row.onRenameStart()
         }}
         onDelete={() => {
           row.onDelete()

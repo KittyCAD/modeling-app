@@ -183,14 +183,19 @@ export const ProjectExplorer = ({
           onOpenInNewWindow: () => {
             window.electron.openInNewWindow(row.path)
           },
-          rowRenameStart: () => {
+          onRenameStart: () => {
             setIsRenaming(true)
             isRenamingRef.current = true
           },
-          rowRenameEnd: (event) => {
+          onRenameEnd: (event : React.KeyboardEvent<HTMLElement> | null) => {
             // TODO: Implement renameFolder and renameFile to navigate
             setIsRenaming(false)
             isRenamingRef.current = false
+
+            if (!event) {
+              return
+            }
+
             const requestedName = String(event?.target?.value || '')
             if (!requestedName) {
               // user pressed esc

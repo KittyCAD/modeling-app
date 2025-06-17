@@ -32,7 +32,7 @@ export interface FileExplorerRow extends FileExplorerEntry {
   onOpenInNewWindow: () => void
   onDelete: () => void
   onRenameStart: () => void
-  onRenameEnd: () => void
+  onRenameEnd: (e: React.KeyboardEvent<HTMLElement> | null) => void
 }
 
 export interface FileExplorerRender extends FileExplorerRow {
