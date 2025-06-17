@@ -73,8 +73,8 @@ const flattenProjectHelper = (
     index,
     key: constructPath({
       parentPath,
-      name: f.name
-    })
+      name: f.name,
+    }),
   }
   // keep track of the file once within the recursive list that will be built up
   list.push(content)

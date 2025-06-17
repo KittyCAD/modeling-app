@@ -7,7 +7,7 @@ import {
   type FileExplorerRowContextMenuProps,
 } from '@src/components/Explorer/utils'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import usePlatform from '@src/hooks/usePlatform'
 
 export const StatusDot = () => {
@@ -58,11 +58,13 @@ const Spacer = (level: number) => {
 export const FileExplorer = ({
   rowsToRender,
   selectedRow,
-  renamingRow,
+  contextMenuRow,
+  isRenaming
 }: {
   rowsToRender: FileExplorerRow[]
   selectedRow: FileExplorerEntry | null
-  renamingRow: FileExplorerRow | null
+  contextMenuRow: FileExplorerRow | null
+  isRenaming: boolean
 }) => {
   // Local state for selection and what is opened
   // diff this against new Project value that comes in
@@ -80,7 +82,8 @@ export const FileExplorer = ({
             key={key}
             row={renderRow}
             selectedRow={selectedRow}
-            renamingRow={renamingRow}
+            contextMenuRow={contextMenuRow}
+            isRenaming={isRenaming}
           ></FileExplorerRowElement>
         )
       })}
@@ -126,12 +129,12 @@ function FileExplorerRowContextMenu({
         </ContextMenuItem>,
         <ContextMenuItem
           data-testid="context-menu-open-in-new-window"
-        onClick={onOpenInNewWindow}
-          >
+          onClick={onOpenInNewWindow}
+        >
           Open in new window
         </ContextMenuItem>,
       ]}
-      />
+    />
   )
 }
 
@@ -153,13 +156,13 @@ function RenameForm({
     // newName: inputRef.current?.value || fileOrDir.name || '',
 
     // To get out of the renaming state, without this the current file is still in renaming mode
-    onSubmit()
+    onSubmit(e)
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Escape') {
       e.stopPropagation()
-      onSubmit()
+      onSubmit(e)
     } else if (e.key === 'Enter') {
       // This is needed to prevent events to bubble up and the form to be submitted.
       // (Alternatively the form could be changed into a div.)
@@ -191,8 +194,8 @@ function RenameForm({
         />
       </label>
       <button className="sr-only" type="submit">
-        Submit
-      </button>
+      Submit
+    </button>
     </form>
   )
 }
@@ -204,12 +207,13 @@ function RenameForm({
 export const FileExplorerRowElement = ({
   row,
   selectedRow,
-  renamingRow
+  contextMenuRow,
+  isRenaming
 }: {
   row: FileExplorerRender
   selectedRow: FileExplorerEntry | null
-  renamingRow: FileExplorerRow | null
-  domLength: number
+  contextMenuRow: FileExplorerRow | null
+  isRenaming: boolean
 }) => {
   const isSelected =
     row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
@@ -219,6 +223,9 @@ export const FileExplorerRowElement = ({
     : 'outline-0 outline-none'
 
   const rowElementRef = useRef(null)
+  const isContextMenuRow = contextMenuRow?.key === row.key
+  const isMyRowRenaming = isContextMenuRow && isRenaming
+
   return (
     <div
       ref={rowElementRef}
@@ -257,14 +264,17 @@ export const FileExplorerRowElement = ({
         name={row.icon}
         className="inline-block w-4 text-current mr-1"
       />
-      <span className="overflow-hidden whitespace-nowrap text-ellipsis">
+      {!isMyRowRenaming ? <span className="overflow-hidden whitespace-nowrap text-ellipsis">
         {row.name}
-      </span>
+       </span> : <RenameForm
+       row={row}
+       onSubmit={(event)=>{console.log(event.target.value)}}
+        ></RenameForm>}
       <div className="ml-auto">{row.status}</div>
       <div style={{ width: '0.25rem' }}></div>
       <FileExplorerRowContextMenu
         itemRef={rowElementRef}
-        onRename={() => {}}
+      onRename={() => {row.rowRename()}}
         onDelete={() => {}}
         onClone={() => {}}
         onOpenInNewWindow={() => {}}
