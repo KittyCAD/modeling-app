@@ -156,7 +156,7 @@ export const systemIOMachine = setup({
             fileNameWithExtension: string
             absolutePathToParentDirectory: string
           }
-      }
+        }
       | {
           type: SystemIOMachineEvents.deleteFileOrFolder
           data: {
@@ -880,10 +880,10 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedFileNameWithExtension:
-            event.data.requestedFileNameWithExtension,
+              event.data.requestedFileNameWithExtension,
             fileNameWithExtension: event.data.fileNameWithExtension,
             absolutePathToParentDirectory:
-            event.data.absolutePathToParentDirectory,
+              event.data.absolutePathToParentDirectory,
             rootContext: self.system.get('root').getSnapshot().context,
           }
         },

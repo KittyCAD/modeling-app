@@ -169,9 +169,12 @@ export const ProjectExplorer = ({
           isFake: false,
           activeIndex: activeIndex,
           rowDelete: () => {
-            systemIOActor.send({type: SystemIOMachineEvents.deleteFileOrFolder, data: {
-              requestedPath: child.path
-            }})
+            systemIOActor.send({
+              type: SystemIOMachineEvents.deleteFileOrFolder,
+              data: {
+                requestedPath: child.path,
+              },
+            })
           },
           rowRenameStart: () => {
             setIsRenaming(true)

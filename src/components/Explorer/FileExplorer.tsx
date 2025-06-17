@@ -105,16 +105,10 @@ function FileExplorerRowContextMenu({
       menuTargetElement={itemRef}
       callback={callback}
       items={[
-        <ContextMenuItem
-          data-testid="context-menu-rename"
-          onClick={onRename}
-        >
+        <ContextMenuItem data-testid="context-menu-rename" onClick={onRename}>
           Rename
         </ContextMenuItem>,
-        <ContextMenuItem
-          data-testid="context-menu-delete"
-          onClick={onDelete}
-        >
+        <ContextMenuItem data-testid="context-menu-delete" onClick={onDelete}>
           Delete
         </ContextMenuItem>,
         <ContextMenuItem
