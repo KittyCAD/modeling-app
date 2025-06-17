@@ -61,7 +61,7 @@ export const ProjectExplorer = ({
   )
   const [isRenaming, setIsRenaming] = useState<boolean>(false)
 
-  const fileExplorerContainer = useRef(null)
+  const fileExplorerContainer = useRef<HTMLDivElement | null>(null)
   const openedRowsRef = useRef(openedRows)
   const rowsToRenderRef = useRef(rowsToRender)
   const activeIndexRef = useRef(activeIndex)
@@ -273,15 +273,18 @@ export const ProjectExplorer = ({
 
   // Handle clicks and keyboard presses within the global DOM level
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: MouseEvent) => {
       const path = event.composedPath ? event.composedPath() : []
 
-      if (!path.includes(fileExplorerContainer.current)) {
+      if (
+        fileExplorerContainer.current &&
+        !path.includes(fileExplorerContainer.current)
+      ) {
         setActiveIndex(NOTHING_IS_SELECTED)
       }
     }
 
-    const keyDownHandler = (event) => {
+    const keyDownHandler = (event: KeyboardEvent) => {
       if (
         activeIndexRef.current === NOTHING_IS_SELECTED ||
         isRenamingRef.current
@@ -330,14 +333,16 @@ export const ProjectExplorer = ({
           })
           break
         case 'ArrowDown':
-          setActiveIndex((previous) => {
-            if (previous === NOTHING_IS_SELECTED) {
-              return STARTING_INDEX_TO_SELECT
-            }
+          if (fileExplorerContainer.current) {
             const numberOfDOMRows =
               fileExplorerContainer.current.children[0].children.length - 1
-            return Math.min(numberOfDOMRows, previous + 1)
-          })
+            setActiveIndex((previous) => {
+              if (previous === NOTHING_IS_SELECTED) {
+                return STARTING_INDEX_TO_SELECT
+              }
+              return Math.min(numberOfDOMRows, previous + 1)
+            })
+          }
           break
         case 'Enter':
           if (activeIndexRef.current >= STARTING_INDEX_TO_SELECT) {
