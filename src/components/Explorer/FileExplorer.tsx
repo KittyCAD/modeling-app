@@ -235,10 +235,10 @@ export const FileExplorerRowElement = ({
         event.preventDefault()
       }}
       onDragStart={(event) => {
-        console.log(event.target.innerText, 'onDragStart')
+        // console.log(event.target.innerText, 'onDragStart')
       }}
       onDrop={(event) => {
-        console.log(event.target.innerText, 'onDrop')
+        // console.log(event.target.innerText, 'onDrop')
       }}
     >
       <div style={{ width: '0.25rem' }}></div>

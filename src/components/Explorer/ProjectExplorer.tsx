@@ -187,7 +187,7 @@ export const ProjectExplorer = ({
             setIsRenaming(true)
             isRenamingRef.current = true
           },
-          onRenameEnd: (event : React.KeyboardEvent<HTMLElement> | null) => {
+          onRenameEnd: (event: React.KeyboardEvent<HTMLElement> | null) => {
             // TODO: Implement renameFolder and renameFile to navigate
             setIsRenaming(false)
             isRenamingRef.current = false
