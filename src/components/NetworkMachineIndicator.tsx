@@ -26,12 +26,12 @@ export const NetworkMachineIndicator = ({
         data-testid="network-machine-toggle"
       >
         <NetworkMachinesIcon machineCount={machineCount} />
-        <Tooltip position="top-right" wrapperClassName="ui-open:hidden">
+        <Tooltip position="top-left" wrapperClassName="ui-open:hidden">
           Network machines ({machineCount}) {reason && `: ${reason}`}
         </Tooltip>
       </Popover.Button>
       <Popover.Panel
-        className="absolute right-0 left-auto bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm"
+        className="absolute left-0 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm"
         data-testid="network-popover"
       >
         <NetworkMachinesPopoverContent machines={machines} />
