@@ -148,7 +148,7 @@ export const systemIOMachine = setup({
             folderName: string
             absolutePathToParentDirectory: string
           }
-      }
+        }
       | {
           type: SystemIOMachineEvents.renameFile
           data: {
@@ -413,7 +413,11 @@ export const systemIOMachine = setup({
           absolutePathToParentDirectory: string
         }
       }) => {
-        return { message: '', fileNameWithExtension: '', requestedFileNameWithExtension: '' }
+        return {
+          message: '',
+          fileNameWithExtension: '',
+          requestedFileNameWithExtension: '',
+        }
       }
     ),
   },
@@ -828,7 +832,7 @@ export const systemIOMachine = setup({
             requestedFolderName: event.data.requestedFolderName,
             folderName: event.data.folderName,
             absolutePathToParentDirectory:
-            event.data.absolutePathToParentDirectory,
+              event.data.absolutePathToParentDirectory,
             rootContext: self.system.get('root').getSnapshot().context,
           }
         },
@@ -850,10 +854,11 @@ export const systemIOMachine = setup({
           assertEvent(event, SystemIOMachineEvents.renameFile)
           return {
             context,
-            requestedFileNameWithExtension: event.data.requestedFileNameWithExtension,
+            requestedFileNameWithExtension:
+              event.data.requestedFileNameWithExtension,
             fileNameWithExtension: event.data.fileNameWithExtension,
             absolutePathToParentDirectory:
-            event.data.absolutePathToParentDirectory,
+              event.data.absolutePathToParentDirectory,
             rootContext: self.system.get('root').getSnapshot().context,
           }
         },

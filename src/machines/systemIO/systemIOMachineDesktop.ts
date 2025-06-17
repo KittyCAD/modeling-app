@@ -505,7 +505,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         return {
           message: `Successfully renamed "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
           fileNameWithExtension,
-          requestedFileNameWithExtension
+          requestedFileNameWithExtension,
         }
       }
     ),

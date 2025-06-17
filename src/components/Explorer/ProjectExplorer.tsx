@@ -18,7 +18,7 @@ import { useState, useRef, useEffect } from 'react'
 import { systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
-import { joinOSPaths } from '@src/lib/paths'
+import { alwaysEndFileWithEXT, getEXTWithPeriod, joinOSPaths } from '@src/lib/paths'
 import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
 
 const isFileExplorerEntryOpened = (
@@ -206,10 +206,17 @@ export const ProjectExplorer = ({
               }
             } else {
               // rename a file
+              const originalExt = getEXTWithPeriod(name)
+              console.log(originalExt)
+              const fileNameForcedWithOriginalExt = alwaysEndFileWithEXT(requestedName, originalExt)
+              if (!fileNameForcedWithOriginalExt) {
+                // TODO: OH NO!
+                return
+              }
               systemIOActor.send({
                 type: SystemIOMachineEvents.renameFile,
                 data: {
-                  requestedFileNameWithExtension: requestedName,
+                  requestedFileNameWithExtension: fileNameForcedWithOriginalExt,
                   fileNameWithExtension: name,
                   absolutePathToParentDirectory: joinOSPaths(
                     projectDirectoryPath,

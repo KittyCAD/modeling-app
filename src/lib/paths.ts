@@ -219,3 +219,27 @@ export function desktopSafePathSplit(path: string): string[] {
 export function desktopSafePathJoin(paths: string[]): string {
   return isDesktop() ? paths.join(window?.electron?.sep) : webSafeJoin(paths)
 }
+
+/**
+ * Don't pass a folder path, only files with extensions for best results.
+ */
+export const alwaysEndFileWithEXT = (filePath: string, ext: string) : string | null => {
+  return filePath
+            ? filePath.endsWith(ext)
+              ? filePath
+              : filePath + ext
+            : null
+}
+
+export const getEXTNoPeriod = (filePath: string) => {
+  const extension = filePath.split('.').pop() || null
+  return extension
+}
+
+export const getEXTWithPeriod = (filePath: string) => {
+  let extension = getEXTNoPeriod(filePath)
+  if (extension) {
+    extension = '.' + extension
+  }
+  return extension
+}
