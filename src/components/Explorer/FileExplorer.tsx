@@ -59,7 +59,7 @@ export const FileExplorer = ({
   rowsToRender,
   selectedRow,
   contextMenuRow,
-  isRenaming
+  isRenaming,
 }: {
   rowsToRender: FileExplorerRow[]
   selectedRow: FileExplorerEntry | null
@@ -194,8 +194,8 @@ function RenameForm({
         />
       </label>
       <button className="sr-only" type="submit">
-      Submit
-    </button>
+        Submit
+      </button>
     </form>
   )
 }
@@ -208,7 +208,7 @@ export const FileExplorerRowElement = ({
   row,
   selectedRow,
   contextMenuRow,
-  isRenaming
+  isRenaming,
 }: {
   row: FileExplorerRender
   selectedRow: FileExplorerEntry | null
@@ -264,17 +264,25 @@ export const FileExplorerRowElement = ({
         name={row.icon}
         className="inline-block w-4 text-current mr-1"
       />
-      {!isMyRowRenaming ? <span className="overflow-hidden whitespace-nowrap text-ellipsis">
-        {row.name}
-       </span> : <RenameForm
-       row={row}
-       onSubmit={(event)=>{console.log(event.target.value)}}
-        ></RenameForm>}
+      {!isMyRowRenaming ? (
+        <span className="overflow-hidden whitespace-nowrap text-ellipsis">
+          {row.name}
+        </span>
+      ) : (
+        <RenameForm
+          row={row}
+          onSubmit={(event) => {
+            console.log(event.target.value)
+          }}
+        ></RenameForm>
+      )}
       <div className="ml-auto">{row.status}</div>
       <div style={{ width: '0.25rem' }}></div>
       <FileExplorerRowContextMenu
         itemRef={rowElementRef}
-      onRename={() => {row.rowRename()}}
+        onRename={() => {
+          row.rowRename()
+        }}
         onDelete={() => {}}
         onClone={() => {}}
         onOpenInNewWindow={() => {}}

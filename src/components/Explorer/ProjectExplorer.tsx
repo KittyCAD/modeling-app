@@ -48,7 +48,9 @@ export const ProjectExplorer = ({
   // -1 is the parent container, -2 is nothing is selected
   const [activeIndex, setActiveIndex] = useState<number>(NOTHING_IS_SELECTED)
   const [rowsToRender, setRowsToRender] = useState<FileExplorerRow[]>([])
-  const [contextMenuRow, setContextMenuRow] = useState<FileExplorerRow | null>(null)
+  const [contextMenuRow, setContextMenuRow] = useState<FileExplorerRow | null>(
+    null
+  )
   const [isRenaming, setIsRenaming] = useState<boolean>(false)
 
   const fileExplorerContainer = useRef(null)
@@ -159,7 +161,7 @@ export const ProjectExplorer = ({
           activeIndex: activeIndex,
           rowRename: () => {
             setIsRenaming(true)
-          }
+          },
         }
 
         return row
@@ -313,7 +315,7 @@ export const ProjectExplorer = ({
             rowsToRender={rowsToRender}
             selectedRow={selectedRow}
             contextMenuRow={contextMenuRow}
-          isRenaming={isRenaming}
+            isRenaming={isRenaming}
           ></FileExplorer>
         )}
       </div>
