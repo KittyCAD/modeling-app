@@ -353,7 +353,7 @@ description: Artifact commands pattern_into_union.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.5,
+            "x": 1.5000000000000002,
             "y": 1.25,
             "z": 0.0
           },
@@ -485,7 +485,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 0.159,
+                "y": 0.1593700787401575,
                 "z": 0.0
               },
               "scale": {
@@ -514,7 +514,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 0.319,
+                "y": 0.318740157480315,
                 "z": 0.0
               },
               "scale": {
@@ -543,7 +543,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 0.478,
+                "y": 0.47811023622047244,
                 "z": 0.0
               },
               "scale": {
@@ -572,7 +572,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 0.637,
+                "y": 0.63748031496063,
                 "z": 0.0
               },
               "scale": {
@@ -601,7 +601,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 0.797,
+                "y": 0.7968503937007875,
                 "z": 0.0
               },
               "scale": {
@@ -630,7 +630,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 0.956,
+                "y": 0.9562204724409449,
                 "z": 0.0
               },
               "scale": {
@@ -659,7 +659,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 1.116,
+                "y": 1.1155905511811024,
                 "z": 0.0
               },
               "scale": {
@@ -688,7 +688,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 1.275,
+                "y": 1.27496062992126,
                 "z": 0.0
               },
               "scale": {
@@ -717,7 +717,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 1.434,
+                "y": 1.4343307086614174,
                 "z": 0.0
               },
               "scale": {
@@ -746,7 +746,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 1.594,
+                "y": 1.593700787401575,
                 "z": 0.0
               },
               "scale": {
@@ -775,7 +775,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 1.753,
+                "y": 1.7530708661417325,
                 "z": 0.0
               },
               "scale": {
@@ -804,7 +804,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 1.912,
+                "y": 1.9124409448818898,
                 "z": 0.0
               },
               "scale": {
@@ -833,7 +833,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 2.072,
+                "y": 2.0718110236220473,
                 "z": 0.0
               },
               "scale": {
@@ -862,7 +862,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 2.231,
+                "y": 2.231181102362205,
                 "z": 0.0
               },
               "scale": {
@@ -891,7 +891,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 2.391,
+                "y": 2.3905511811023623,
                 "z": 0.0
               },
               "scale": {
@@ -920,7 +920,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 2.55,
+                "y": 2.54992125984252,
                 "z": 0.0
               },
               "scale": {
@@ -949,7 +949,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 2.709,
+                "y": 2.7092913385826773,
                 "z": 0.0
               },
               "scale": {
@@ -978,7 +978,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 2.869,
+                "y": 2.868661417322835,
                 "z": 0.0
               },
               "scale": {
@@ -1007,7 +1007,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 3.028,
+                "y": 3.0280314960629924,
                 "z": 0.0
               },
               "scale": {
@@ -1036,7 +1036,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 3.187,
+                "y": 3.18740157480315,
                 "z": 0.0
               },
               "scale": {
@@ -1290,7 +1290,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 0.159,
+                "y": 0.1593700787401575,
                 "z": 0.0
               },
               "scale": {
@@ -1319,7 +1319,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 0.319,
+                "y": 0.318740157480315,
                 "z": 0.0
               },
               "scale": {
@@ -1348,7 +1348,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 0.478,
+                "y": 0.47811023622047244,
                 "z": 0.0
               },
               "scale": {
@@ -1377,7 +1377,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 0.637,
+                "y": 0.63748031496063,
                 "z": 0.0
               },
               "scale": {
@@ -1406,7 +1406,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 0.797,
+                "y": 0.7968503937007875,
                 "z": 0.0
               },
               "scale": {
@@ -1435,7 +1435,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 0.956,
+                "y": 0.9562204724409449,
                 "z": 0.0
               },
               "scale": {
@@ -1464,7 +1464,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 1.116,
+                "y": 1.1155905511811024,
                 "z": 0.0
               },
               "scale": {
@@ -1493,7 +1493,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 1.275,
+                "y": 1.27496062992126,
                 "z": 0.0
               },
               "scale": {
@@ -1522,7 +1522,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 1.434,
+                "y": 1.4343307086614174,
                 "z": 0.0
               },
               "scale": {
@@ -1551,7 +1551,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 1.594,
+                "y": 1.593700787401575,
                 "z": 0.0
               },
               "scale": {
@@ -1580,7 +1580,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 1.753,
+                "y": 1.7530708661417325,
                 "z": 0.0
               },
               "scale": {
@@ -1609,7 +1609,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 1.912,
+                "y": 1.9124409448818898,
                 "z": 0.0
               },
               "scale": {
@@ -1638,7 +1638,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 2.072,
+                "y": 2.0718110236220473,
                 "z": 0.0
               },
               "scale": {
@@ -1667,7 +1667,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 2.231,
+                "y": 2.231181102362205,
                 "z": 0.0
               },
               "scale": {
@@ -1696,7 +1696,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 2.391,
+                "y": 2.3905511811023623,
                 "z": 0.0
               },
               "scale": {
@@ -1725,7 +1725,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 2.55,
+                "y": 2.54992125984252,
                 "z": 0.0
               },
               "scale": {
@@ -1754,7 +1754,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 2.709,
+                "y": 2.7092913385826773,
                 "z": 0.0
               },
               "scale": {
@@ -1783,7 +1783,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 2.869,
+                "y": 2.868661417322835,
                 "z": 0.0
               },
               "scale": {
@@ -1812,7 +1812,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 3.028,
+                "y": 3.0280314960629924,
                 "z": 0.0
               },
               "scale": {
@@ -1841,7 +1841,7 @@ description: Artifact commands pattern_into_union.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 3.187,
+                "y": 3.18740157480315,
                 "z": 0.0
               },
               "scale": {

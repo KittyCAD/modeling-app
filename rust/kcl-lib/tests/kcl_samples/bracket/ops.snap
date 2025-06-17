@@ -339,7 +339,7 @@ description: Operations executed bracket.kcl
       "name": "thickness",
       "value": {
         "type": "Number",
-        "value": 0.385,
+        "value": 0.3848561883538911,
         "ty": {
           "type": "Default",
           "len": {
@@ -405,7 +405,7 @@ description: Operations executed bracket.kcl
       "name": "extBendRadius",
       "value": {
         "type": "Number",
-        "value": 0.635,
+        "value": 0.6348561883538911,
         "ty": {
           "type": "Default",
           "len": {
@@ -504,7 +504,7 @@ description: Operations executed bracket.kcl
       "name": "wallMountingHolePlacementOffset",
       "value": {
         "type": "Number",
-        "value": 0.938,
+        "value": 0.9375,
         "ty": {
           "type": "Default",
           "len": {
@@ -694,7 +694,7 @@ description: Operations executed bracket.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.395,
+            "value": -0.39485618835389114,
             "ty": {
               "type": "Default",
               "len": {
@@ -797,7 +797,7 @@ description: Operations executed bracket.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.485,
+            "value": -0.4848561883538911,
             "ty": {
               "type": "Default",
               "len": {
@@ -847,7 +847,7 @@ description: Operations executed bracket.kcl
         "radius": {
           "value": {
             "type": "Number",
-            "value": 0.635,
+            "value": 0.6348561883538911,
             "ty": {
               "type": "Default",
               "len": {
@@ -1019,7 +1019,7 @@ description: Operations executed bracket.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -1035,7 +1035,7 @@ description: Operations executed bracket.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -1052,7 +1052,7 @@ description: Operations executed bracket.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

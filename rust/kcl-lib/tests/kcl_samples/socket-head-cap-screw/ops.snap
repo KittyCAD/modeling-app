@@ -141,7 +141,7 @@ description: Operations executed socket-head-cap-screw.kcl
       "name": "boltHexDrive",
       "value": {
         "type": "Number",
-        "value": 0.156,
+        "value": 0.15625,
         "ty": {
           "type": "Default",
           "len": {
@@ -174,7 +174,7 @@ description: Operations executed socket-head-cap-screw.kcl
       "name": "boltHexFlatLength",
       "value": {
         "type": "Number",
-        "value": 0.09,
+        "value": 0.09021097956087902,
         "ty": {
           "type": "Default",
           "len": {
@@ -407,7 +407,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -0.143,
+            "value": -0.14250000000000002,
             "ty": {
               "type": "Default",
               "len": {
@@ -603,7 +603,7 @@ description: Operations executed socket-head-cap-screw.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -619,7 +619,7 @@ description: Operations executed socket-head-cap-screw.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -636,7 +636,7 @@ description: Operations executed socket-head-cap-screw.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

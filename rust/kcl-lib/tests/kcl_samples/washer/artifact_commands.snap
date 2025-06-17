@@ -59,7 +59,7 @@ description: Artifact commands washer.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 5.563,
+          "x": 5.5626,
           "y": 0.0,
           "z": 0.0
         }
@@ -135,7 +135,7 @@ description: Artifact commands washer.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.578,
+          "x": 2.5781,
           "y": 0.0,
           "z": 0.0
         }

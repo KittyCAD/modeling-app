@@ -36,6 +36,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
 use uuid::Uuid;
+use web_time::Instant;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -241,7 +242,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 .unwrap_or_default()
         };
 
-        let current_time = instant::Instant::now();
+        let current_time = Instant::now();
         while current_time.elapsed().as_secs() < 60 {
             let responses = self.responses().read().await.clone();
             let Some(resp) = responses.get(&id) else {
@@ -249,7 +250,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 // No seriously WE DO NOT WANT TO PAUSE THE WHOLE APP ON THE JS SIDE.
                 #[cfg(target_arch = "wasm32")]
                 {
-                    let duration = instant::Duration::from_millis(1);
+                    let duration = web_time::Duration::from_millis(1);
                     wasm_timer::Delay::new(duration).await.map_err(|err| {
                         KclError::new_internal(KclErrorDetails::new(
                             format!("Failed to sleep: {:?}", err),

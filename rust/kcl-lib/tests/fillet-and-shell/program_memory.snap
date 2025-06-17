@@ -503,7 +503,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
           },
           "from": [
             0.0,
-            10.8
+            10.799999999999999
           ],
           "tag": null,
           "to": [
@@ -546,7 +546,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "tag": null,
           "to": [
             1.0,
-            10.8
+            10.799999999999999
           ],
           "type": "ToPoint",
           "units": {
@@ -560,12 +560,12 @@ description: Variables in memory after executing fillet-and-shell.kcl
           },
           "from": [
             1.0,
-            10.8
+            10.799999999999999
           ],
           "tag": null,
           "to": [
             0.0,
-            10.8
+            10.799999999999999
           ],
           "type": "ToPoint",
           "units": {
@@ -606,11 +606,11 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "start": {
         "from": [
           0.0,
-          10.8
+          10.799999999999999
         ],
         "to": [
           0.0,
-          10.8
+          10.799999999999999
         ],
         "units": {
           "type": "Mm"

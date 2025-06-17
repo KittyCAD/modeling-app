@@ -229,7 +229,7 @@ description: Variables in memory after executing walkie-talkie.kcl
   },
   "screenDepth": {
     "type": "Number",
-    "value": -0.063,
+    "value": -0.0625,
     "ty": {
       "type": "Default",
       "len": {
@@ -307,7 +307,7 @@ description: Variables in memory after executing walkie-talkie.kcl
   },
   "squareHoleSideLength": {
     "type": "Number",
-    "value": 0.063,
+    "value": 0.0625,
     "ty": {
       "type": "Default",
       "len": {

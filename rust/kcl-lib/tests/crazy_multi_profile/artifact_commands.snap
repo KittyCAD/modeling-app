@@ -329,7 +329,7 @@ description: Artifact commands crazy_multi_profile.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 0.00000000000000017206287528020313,
             "y": -2.81,
             "z": 0.0
           },
@@ -346,7 +346,7 @@ description: Artifact commands crazy_multi_profile.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.64,
+            "x": -6.640000000000001,
             "y": -0.0,
             "z": 0.0
           },
@@ -503,7 +503,7 @@ description: Artifact commands crazy_multi_profile.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 6.81,
+          "x": 6.8100000000000005,
           "y": 4.34,
           "z": 0.0
         }
@@ -1205,7 +1205,7 @@ description: Artifact commands crazy_multi_profile.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 0.00000000000000025533885762222313,
             "y": -4.17,
             "z": 0.0
           },
@@ -1222,7 +1222,7 @@ description: Artifact commands crazy_multi_profile.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.54,
+            "x": -4.539999999999999,
             "y": -0.0,
             "z": 0.0
           },

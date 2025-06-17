@@ -3,8 +3,8 @@ use std::fmt::Write;
 use crate::{
     parsing::{
         ast::types::{
-            Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
-            BinaryPart, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions,
+            Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, Associativity, BinaryExpression,
+            BinaryOperator, BinaryPart, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions,
             FunctionExpression, IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal,
             LiteralIdentifier, LiteralValue, MemberExpression, Node, NonCodeNode, NonCodeValue, ObjectExpression,
             Parameter, PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration,
@@ -710,17 +710,28 @@ impl BinaryExpression {
             }
         };
 
-        let should_wrap_right = match &self.right {
+        // It would be better to always preserve the user's parentheses but since we've dropped that
+        // info from the AST, we bracket expressions as necessary.
+        let should_wrap_left = match &self.left {
             BinaryPart::BinaryExpression(bin_exp) => {
                 self.precedence() > bin_exp.precedence()
-                    || self.operator == BinaryOperator::Sub
-                    || self.operator == BinaryOperator::Div
+                    || ((self.precedence() == bin_exp.precedence())
+                        && (!(self.operator.associative() && self.operator == bin_exp.operator)
+                            && self.operator.associativity() == Associativity::Right))
             }
             _ => false,
         };
 
-        let should_wrap_left = match &self.left {
-            BinaryPart::BinaryExpression(bin_exp) => self.precedence() > bin_exp.precedence(),
+        let should_wrap_right = match &self.right {
+            BinaryPart::BinaryExpression(bin_exp) => {
+                self.precedence() > bin_exp.precedence()
+                    // These two lines preserve previous reformatting behaviour.
+                    || self.operator == BinaryOperator::Sub
+                    || self.operator == BinaryOperator::Div
+                    || ((self.precedence() == bin_exp.precedence())
+                        && (!(self.operator.associative() && self.operator == bin_exp.operator)
+                            && self.operator.associativity() == Associativity::Left))
+            }
             _ => false,
         };
 
@@ -2819,5 +2830,37 @@ yo = 'bing'
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast(&FormatOptions::new(), 0);
         assert_eq!(recasted, code);
+    }
+
+    #[test]
+    fn paren_precedence() {
+        let code = r#"x = 1 - 2 - 3
+x = (1 - 2) - 3
+x = 1 - (2 - 3)
+x = 1 + 2 + 3
+x = (1 + 2) + 3
+x = 1 + (2 + 3)
+x = 2 * (y % 2)
+x = (2 * y) % 2
+x = 2 % (y * 2)
+x = (2 % y) * 2
+x = 2 * y % 2
+"#;
+
+        let expected = r#"x = 1 - 2 - 3
+x = 1 - 2 - 3
+x = 1 - (2 - 3)
+x = 1 + 2 + 3
+x = 1 + 2 + 3
+x = 1 + 2 + 3
+x = 2 * (y % 2)
+x = 2 * y % 2
+x = 2 % (y * 2)
+x = 2 % y * 2
+x = 2 * y % 2
+"#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(recasted, expected);
     }
 }

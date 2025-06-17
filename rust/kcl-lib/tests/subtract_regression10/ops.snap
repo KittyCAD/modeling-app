@@ -1535,7 +1535,7 @@ description: Operations executed subtract_regression10.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 0.698,
+              "value": 0.6981317007977318,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1591,7 +1591,7 @@ description: Operations executed subtract_regression10.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 42.132,
+        "value": 42.13244437154379,
         "ty": {
           "type": "Default",
           "len": {
@@ -1613,7 +1613,7 @@ description: Operations executed subtract_regression10.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 35.353,
+        "value": 35.35331853275966,
         "ty": {
           "type": "Default",
           "len": {
@@ -2024,7 +2024,7 @@ description: Operations executed subtract_regression10.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -2040,7 +2040,7 @@ description: Operations executed subtract_regression10.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -2057,7 +2057,7 @@ description: Operations executed subtract_regression10.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"
