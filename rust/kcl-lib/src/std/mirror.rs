@@ -81,7 +81,7 @@ async fn inner_mirror_2d(
                 &mirror_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
             } else {
                 return Err(KclError::new_engine(KclErrorDetails::new(
-                    format!("EntityLinearPattern response was not as expected: {:?}", resp),
+                    format!("EntityMirror response was not as expected: {:?}", resp),
                     vec![args.source_range],
                 )));
             };
