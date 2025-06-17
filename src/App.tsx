@@ -256,7 +256,7 @@ export function App() {
         globalItems={[
           useNetworkHealthStatus(),
           useNetworkMachineStatus(),
-          ...defaultGlobalStatusBarItems({ location }),
+          ...defaultGlobalStatusBarItems({ location, filePath }),
         ]}
         localItems={[
           ...(getSettings().app.showDebugPanel.current

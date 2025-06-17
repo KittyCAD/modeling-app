@@ -403,7 +403,7 @@ const Home = () => {
       <StatusBar
         globalItems={[
           useNetworkMachineStatus(),
-          ...defaultGlobalStatusBarItems({ location }),
+          ...defaultGlobalStatusBarItems({ location, filePath: undefined }),
         ]}
         localItems={defaultLocalStatusBarItems}
       />
