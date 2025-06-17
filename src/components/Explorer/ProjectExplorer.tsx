@@ -370,7 +370,7 @@ export const ProjectExplorer = ({
   }, [])
 
   return (
-    <div>
+    <div className="w-full">
       <div className="flex flex-row justify-between">
         <div>{project?.name || 'No Project Selected'}</div>
         <div className="h-6 flex flex-row gap-1">
@@ -395,7 +395,7 @@ export const ProjectExplorer = ({
         </div>
       </div>
       <div
-        className={`h-96 overflow-y-auto overflow-x-hidden border border-transparent ${activeIndex === -1 ? 'border-sky-500' : ''}`}
+        className={`h-96 w-full overflow-y-auto overflow-x-hidden border border-transparent ${activeIndex === -1 ? 'border-sky-500' : ''}`}
         tabIndex={0}
         role="tree"
         aria-label="Files Explorer"

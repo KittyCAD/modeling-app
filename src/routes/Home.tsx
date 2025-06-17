@@ -223,6 +223,19 @@ const Home = () => {
     children: [],
     readWriteAccess: true,
   }
+
+  const kclSamples1 = projects.find((p) => {
+    return p.name === 'level1-copied'
+  }) || {
+    metadata: null,
+    kcl_file_count: 0,
+    directory_count: 0,
+    default_file: '',
+    path: '',
+    name: '',
+    children: [],
+    readWriteAccess: true,
+  }
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
       <AppHeader
@@ -401,8 +414,11 @@ const Home = () => {
           </ul>
         </aside>
 
-        <section data-testid="file-explorer-section" className="w-96">
+        <section data-testid="file-explorer-section" className="flex flex-row justify-between" style={{width:'850px'}}>
           <ProjectExplorer project={kclSamples}></ProjectExplorer>
+          <ProjectExplorer project={kclSamples}></ProjectExplorer>
+          <ProjectExplorer project={kclSamples1}></ProjectExplorer>
+          <ProjectExplorer project={kclSamples1}></ProjectExplorer>
         </section>
         <ProjectGrid
           searchResults={searchResults}
