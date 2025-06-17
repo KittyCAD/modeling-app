@@ -2,10 +2,11 @@
 // NOT updating the code state when we don't need to.
 // This prevents re-renders of the codemirror editor, when typing.
 import { history } from '@codemirror/commands'
-import { Annotation, Compartment, Transaction } from '@codemirror/state'
+import { Annotation, Transaction } from '@codemirror/state'
 import type { EditorView, KeyBinding } from '@codemirror/view'
 import toast from 'react-hot-toast'
 
+import { historyCompartment } from '@src/editor/compartments'
 import type { Program } from '@src/lang/wasm'
 import { parse, recast } from '@src/lang/wasm'
 import { bracket } from '@src/lib/exampleKcl'
@@ -17,7 +18,6 @@ const PERSIST_CODE_KEY = 'persistCode'
 
 const codeManagerUpdateAnnotation = Annotation.define<boolean>()
 export const codeManagerUpdateEvent = codeManagerUpdateAnnotation.of(true)
-export const codeManagerHistoryCompartment = new Compartment()
 
 export default class CodeManager {
   private _code: string = bracket
@@ -216,13 +216,13 @@ function safeLSSetItem(key: string, value: string) {
 function clearCodeMirrorHistory(view: EditorView) {
   // Clear history
   view.dispatch({
-    effects: [codeManagerHistoryCompartment.reconfigure([])],
+    effects: [historyCompartment.reconfigure([])],
     annotations: [codeManagerUpdateEvent],
   })
 
   // Add history back
   view.dispatch({
-    effects: [codeManagerHistoryCompartment.reconfigure([history()])],
+    effects: [historyCompartment.reconfigure([history()])],
     annotations: [codeManagerUpdateEvent],
   })
 }

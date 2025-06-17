@@ -42,7 +42,7 @@ import { useLspContext } from '@src/components/LspProvider'
 import CodeEditor from '@src/components/ModelingSidebar/ModelingPanes/CodeEditor'
 import { lineHighlightField } from '@src/editor/highlightextension'
 import { modelingMachineEvent } from '@src/editor/manager'
-import { codeManagerHistoryCompartment } from '@src/lang/codeManager'
+import { historyCompartment } from '@src/editor/compartments'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { onMouseDragMakeANewNumber, onMouseDragRegex } from '@src/lib/utils'
@@ -114,7 +114,7 @@ export const KclEditorPane = () => {
         cursorBlinkRate: cursorBlinking.current ? 1200 : 0,
       }),
       lineHighlightField,
-      codeManagerHistoryCompartment.of(history()),
+      historyCompartment.of(history()),
       closeBrackets(),
       codeFolding(),
       keymap.of([

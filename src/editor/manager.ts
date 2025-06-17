@@ -34,8 +34,8 @@ import type {
   ModelingMachineEvent,
   modelingMachine,
 } from '@src/machines/modelingMachine'
+import { historyCompartment } from '@src/editor/compartments'
 import type CodeManager from '@src/lang/codeManager'
-import { codeManagerHistoryCompartment } from '@src/lang/codeManager'
 
 declare global {
   interface Window {
@@ -90,7 +90,7 @@ export default class EditorManager {
     this._editorState = EditorState.create({
       doc: '',
       extensions: [
-        codeManagerHistoryCompartment.of(history()),
+        historyCompartment.of(history()),
         keymap.of([...defaultKeymap, ...historyKeymap]),
       ],
     })
