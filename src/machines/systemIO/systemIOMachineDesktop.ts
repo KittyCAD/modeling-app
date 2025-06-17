@@ -515,6 +515,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: {
           context: SystemIOContext
+          rootContext: AppMachineContext
           requestedPath: string
         }
       }) => {

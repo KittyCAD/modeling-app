@@ -7,8 +7,7 @@ import {
   type FileExplorerRowContextMenuProps,
 } from '@src/components/Explorer/utils'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
-import { useRef, useState } from 'react'
-import usePlatform from '@src/hooks/usePlatform'
+import { useRef } from 'react'
 
 export const StatusDot = () => {
   return <span>•</span>
@@ -99,7 +98,6 @@ function FileExplorerRowContextMenu({
   onOpenInNewWindow,
   callback,
 }: FileExplorerRowContextMenuProps) {
-  const platform = usePlatform()
   return (
     <ContextMenu
       menuTargetElement={itemRef}
@@ -210,6 +208,7 @@ export const FileExplorerRowElement = ({
   const isContextMenuRow = contextMenuRow?.key === row.key
   const isMyRowRenaming = isContextMenuRow && isRenaming
 
+  /* eslint-disable */
   return (
     <div
       ref={rowElementRef}
@@ -271,7 +270,9 @@ export const FileExplorerRowElement = ({
           row.rowDelete()
         }}
         onClone={() => {}}
-    onOpenInNewWindow={() => {row.rowOpenInNewWindow()}}
+        onOpenInNewWindow={() => {
+          row.rowOpenInNewWindow()
+        }}
         callback={row.rowContextMenu}
       />
     </div>

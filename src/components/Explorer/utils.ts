@@ -2,7 +2,6 @@ import type { ReactNode } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import type { FileEntry } from '@src/lib/project'
-import { DEFAULT_FILE_NAME } from '@src/lib/constants'
 
 export interface FileExplorerEntry extends FileEntry {
   parentPath: string

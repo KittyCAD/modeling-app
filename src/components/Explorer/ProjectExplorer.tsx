@@ -124,8 +124,12 @@ export const ProjectExplorer = ({
          * If any parent is closed, keep the history of open children
          */
         let isAnyParentClosed = false
+        // Not a real path
+        /* eslint-disable */
         const pathIterator = child.parentPath.split('/')
         while (pathIterator.length > 0) {
+          // Not a real path
+          /* eslint-disable */
           const key = pathIterator.join('/')
           const isOpened = openedRows[key] || project.name === key
           isAnyParentClosed = isAnyParentClosed || !isOpened

@@ -213,7 +213,16 @@ const Home = () => {
 
   const kclSamples = projects.find((p) => {
     return p.name === 'level1'
-  })
+  }) || {
+    metadata: null,
+    kcl_file_count: 0,
+    directory_count: 0,
+    default_file: '',
+    path: '',
+    name: '',
+    children: [],
+    readWriteAccess: true,
+  }
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
       <AppHeader
