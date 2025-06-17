@@ -315,7 +315,7 @@ function ReviewingButton({ bgClassName, iconClassName }: ButtonProps) {
         iconClassName: `${iconClassName}`,
       }}
     >
-      <span className={`pl-2 ${iconClassName}`}>Confirm</span>
+      <span className={`pl-2 ${iconClassName}`}>Submit</span>
     </ActionButton>
   )
 }
@@ -335,7 +335,7 @@ function GatheringArgsButton({ bgClassName, iconClassName }: ButtonProps) {
         iconClassName: `${iconClassName}`,
       }}
     >
-      <span className={`pl-2 ${iconClassName}`}>Next</span>
+      <span className={`pl-2 ${iconClassName}`}>Continue</span>
     </ActionButton>
   )
 }
