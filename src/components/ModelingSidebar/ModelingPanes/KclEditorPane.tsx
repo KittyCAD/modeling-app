@@ -195,10 +195,9 @@ export const KclEditorPane = () => {
           extensions={editorExtensions}
           theme={theme}
           onCreateEditor={(_editorView) => {
-            if (_editorView === null) return
-
             editorManager.setEditorView(_editorView)
-            kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
+
+            if (!_editorView) return
 
             // Update diagnostics as they are cleared when the editor is unmounted.
             // Without this, errors would not be shown when closing and reopening the editor.

@@ -138,7 +138,7 @@ export function useCodeMirror(props: UseCodeMirror) {
           parent: container,
         })
         setView(viewCurrent)
-        onCreateEditor && onCreateEditor(viewCurrent)
+        onCreateEditor?.(viewCurrent)
       }
     }
     return () => {
@@ -156,6 +156,7 @@ export function useCodeMirror(props: UseCodeMirror) {
       if (view) {
         view.destroy()
         setView(undefined)
+        onCreateEditor?.(null)
       }
     },
     [view]

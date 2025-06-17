@@ -111,14 +111,12 @@ export default class EditorManager {
     return this._copilotEnabled
   }
 
-  setEditorView(editorView: EditorView) {
-    if (this._editorView !== editorView) {
-      if (this._editorView) {
-        // this._editorView.destroy()
-      }
-    }
+  setEditorView(editorView: EditorView | null) {
     this._editorView = editorView
-    kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
+    kclEditorActor.send({
+      type: 'setKclEditorMounted',
+      data: Boolean(editorView),
+    })
     this.overrideTreeHighlighterUpdateForPerformanceTracking()
   }
 
@@ -321,36 +319,36 @@ export default class EditorManager {
   }
 
   undo() {
-    const state = this.editorState
-    if (state) {
-      console.log('before', state.doc.length, state.doc.toString())
-      const undoPerformed = undo(this)
+    if (this._editorView) {
+      undo(this._editorView)
+    } else if (this._editorState) {
+      const undoPerformed = undo(this) // invokes dispatch which updates this._editorState
       if (undoPerformed) {
-        this.codeManager!.code = state.doc.toString()
+        const newState = this._editorState
+        // Update the code, this is similar to kcl/index.ts / update, updateDoc,
+        // needed to update the code, so sketch segments can update themselves.
+        // In the editorView case this happens within the kcl plugin's update method being called during updates.
+        this.codeManager!.code = newState.doc.toString()
         void this.kclManager!.executeCode()
       }
-      console.log(state.doc.length, state.doc.toString())
     }
   }
 
   redo() {
     if (this._editorView) {
       redo(this._editorView)
-    } else {
-      const state = this.editorState
-      if (state) {
-        console.log('before', state.doc.length, state.doc.toString())
-        const redoPerformed = redo(this)
-        if (redoPerformed) {
-          this.codeManager!.code = state.doc.toString()
-          void this.kclManager!.executeCode()
-        }
-        console.log(state.doc.length, state.doc.toString())
+    } else if (this._editorState) {
+      const redoPerformed = redo(this)
+      if (redoPerformed) {
+        const newState = this._editorState
+        this.codeManager!.code = newState.doc.toString()
+        void this.kclManager!.executeCode()
       }
     }
   }
 
-  // Invoked by codeMirror with incorrect "this" so it needs to be an arrow function
+  // Invoked by codeMirror during undo/redo.
+  // Call with incorrect "this" so it needs to be an arrow function.
   dispatch = (spec: TransactionSpec) => {
     if (this._editorView) {
       this._editorView.dispatch(spec)
