@@ -76,6 +76,20 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
     [argumentsToSubmit, selectedCommand]
   )
 
+  const availableOptionalArgs = Object.entries(nonHiddenArgs || {}).filter(
+    ([argName, arg]) => {
+      const argValue =
+        (typeof argumentsToSubmit[argName] === 'function'
+          ? argumentsToSubmit[argName](commandBarState.context)
+          : argumentsToSubmit[argName]) || ''
+      const isRequired =
+        typeof arg.required === 'function'
+          ? arg.required(commandBarState.context)
+          : arg.required
+
+      return !(isRequired || argValue)
+    }
+  )
   return (
     selectedCommand &&
     argumentsToSubmit && (
@@ -247,47 +261,32 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
           )}
         </div>
         <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
-        {isReviewing && (
+        {isReviewing && availableOptionalArgs.length > 0 && (
           <div className="px-4">
-            <p className="mb-2">Optional arguments</p>
+            <p className="mb-2 text-sm">Optional arguments</p>
             <div className="text-sm flex gap-4 items-start">
               <div className="flex flex-1 flex-wrap gap-2">
-                {Object.entries(nonHiddenArgs || {}).flatMap(
-                  ([argName, arg], i) => {
-                    const argValue =
-                      (typeof argumentsToSubmit[argName] === 'function'
-                        ? argumentsToSubmit[argName](commandBarState.context)
-                        : argumentsToSubmit[argName]) || ''
-                    const isRequired =
-                      typeof arg.required === 'function'
-                        ? arg.required(commandBarState.context)
-                        : arg.required
-
-                    if (isRequired || argValue) {
-                      return []
-                    }
-
-                    return (
-                      <button
-                        data-testid="cmd-bar-add-optional-arg"
-                        type="button"
-                        onClick={() => {
-                          commandBarActor.send({
-                            type: 'Edit argument',
-                            data: { arg: { ...arg, name: argName } },
-                          })
-                        }}
-                        key={argName}
-                        className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
-                      >
-                        <span className="capitalize">
-                          {arg.displayName || argName}
-                        </span>
-                        <CustomIcon name="plus" className="w-5 h-5" />
-                      </button>
-                    )
-                  }
-                )}
+                {availableOptionalArgs.map(([argName, arg]) => {
+                  return (
+                    <button
+                      data-testid="cmd-bar-add-optional-arg"
+                      type="button"
+                      onClick={() => {
+                        commandBarActor.send({
+                          type: 'Edit argument',
+                          data: { arg: { ...arg, name: argName } },
+                        })
+                      }}
+                      key={argName}
+                      className="w-fit px-2 py-1 m-0 rounded-sm flex gap-2 items-center border"
+                    >
+                      <span className="capitalize">
+                        {arg.displayName || argName}
+                      </span>
+                      <CustomIcon name="plus" className="w-4 h-4" />
+                    </button>
+                  )
+                })}
               </div>
             </div>
           </div>
