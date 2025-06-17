@@ -4,7 +4,6 @@ import {
   createArrayExpression,
   createIdentifier,
   createLiteral,
-  createLiteralMaybeSuffix,
   createObjectExpression,
   createPipeExpression,
   createPipeSubstitution,
@@ -24,13 +23,12 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
-import type { Identifier, Literal, LiteralValue } from '@src/lang/wasm'
+import type { Identifier, Literal } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
-import { assertNotErr } from '@src/unitTestUtils'
 
 beforeAll(async () => {
   await initPromise
@@ -45,9 +43,7 @@ describe('Testing createLiteral', () => {
     expect((result as Literal).raw).toBe('5')
   })
   it('should create a literal number with units', () => {
-    const lit: LiteralValue = { value: 5, suffix: 'Mm' }
-    const result = createLiteralMaybeSuffix(lit)
-    assertNotErr(result)
+    const result = createLiteral(5, 'Mm')
     expect(result.type).toBe('Literal')
     expect((result as any).value.value).toBe(5)
     expect((result as any).value.suffix).toBe('Mm')
@@ -305,24 +301,24 @@ describe('Testing moveValueIntoNewVariable', () => {
 `
   const code = `${fn('def')}${fn('jkl')}${fn('hmm')}
 fn ghi(@x) {
-    return 2
+    return 2deg
 }
-abc = 3
+abc = 3deg
 identifierGuy = 5
-yo = 5 + 6
+yo = 5deg + 6deg
 part001 = startSketchOn(XY)
 |> startProfile(at = [-1.2, 4.83])
 |> line(end = [2.8, 0])
-|> angledLine(angle = 100 + 100, length = 3.09)
+|> angledLine(angle = 100deg + 100deg, length = 3.09)
 |> angledLine(angle = abc, length = 3.09)
 |> angledLine(angle = def(yo), length = 3.09)
 |> angledLine(angle = ghi(%), length = 3.09)
-|> angledLine(angle = jkl(yo) + 2, length = 3.09)
+|> angledLine(angle = jkl(yo) + 2deg, length = 3.09)
 yo2 = hmm([identifierGuy + 5])`
   it('should move a binary expression into a new variable', async () => {
     const ast = assertParse(code)
     const execState = await enginelessExecutor(ast)
-    const startIndex = code.indexOf('100 + 100') + 1
+    const startIndex = code.indexOf('100deg + 100deg') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
       execState.variables,
@@ -330,7 +326,7 @@ yo2 = hmm([identifierGuy + 5])`
       'newVar'
     )
     const newCode = recast(modifiedAst)
-    expect(newCode).toContain(`newVar = 100 + 100`)
+    expect(newCode).toContain(`newVar = 100deg + 100deg`)
     expect(newCode).toContain(`angledLine(angle = newVar, length = 3.09)`)
   })
   it('should move a value into a new variable', async () => {
@@ -372,7 +368,7 @@ yo2 = hmm([identifierGuy + 5])`
       'newVar'
     )
     const newCode = recast(modifiedAst)
-    expect(newCode).toContain(`newVar = jkl(yo) + 2`)
+    expect(newCode).toContain(`newVar = jkl(yo) + 2deg`)
     expect(newCode).toContain(`angledLine(angle = newVar, length = 3.09)`)
   })
   it('should move a identifier into a new variable', async () => {
@@ -587,7 +583,7 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
     ) => `part001 = startSketchOn(-XZ)
   |> startProfile(at = [54.78, -95.91])
   |> line(end = [306.21, 198.82], tag = $b)
-${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
+${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65deg, length = ${
       !replace1 ? 'segLen(a)' : replace1
     })
   |> line(end = [306.21, 198.87])
@@ -595,45 +591,49 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
   |> line(end = [-963.39, -154.67])
 `
     test.each([
-      ['line', 'line(end = [306.21, 198.85], tag = $a)', ['365.11', '33']],
+      ['line', 'line(end = [306.21, 198.85], tag = $a)', ['365.11', '33deg']],
       [
         'lineTo',
         'line(endAbsolute = [306.21, 198.85], tag = $a)',
-        ['110.48', '120'],
+        ['110.48', '120deg'],
       ],
-      ['yLine', 'yLine(length = 198.85, tag = $a)', ['198.85', '90']],
-      ['xLine', 'xLine(length = 198.85, tag = $a)', ['198.85', '0']],
-      ['yLineTo', 'yLine(endAbsolute = 198.85, tag = $a)', ['95.94', '90']],
-      ['xLineTo', 'xLine(endAbsolute = 198.85, tag = $a)', ['162.14', '180']],
+      ['yLine', 'yLine(length = 198.85, tag = $a)', ['198.85', '90deg']],
+      ['xLine', 'xLine(length = 198.85, tag = $a)', ['198.85', '0deg']],
+      ['yLineTo', 'yLine(endAbsolute = 198.85, tag = $a)', ['95.94', '90deg']],
       [
-        'angledLine',
-        'angledLine(angle = 45.5, length = 198.85, tag = $a)',
-        ['198.85', '46'],
-      ],
-      [
-        'angledLine',
-        'angledLine(angle = 45.5, lengthX = 198.85, tag = $a)',
-        ['283.7', '46'],
+        'xLineTo',
+        'xLine(endAbsolute = 198.85, tag = $a)',
+        ['162.14', '180deg'],
       ],
       [
         'angledLine',
-        'angledLine(angle = 45.5, lengthY = 198.85, tag = $a)',
-        ['278.79', '46'],
+        'angledLine(angle = 45.5deg, length = 198.85, tag = $a)',
+        ['198.85', '46deg'],
       ],
       [
         'angledLine',
-        'angledLine(angle = 45.5, endAbsoluteX = 198.85, tag = $a)',
-        ['231.33', '-134'],
+        'angledLine(angle = 45.5deg, lengthX = 198.85, tag = $a)',
+        ['283.7', '46deg'],
       ],
       [
         'angledLine',
-        'angledLine(angle = 45.5, endAbsoluteY = 198.85, tag = $a)',
-        ['134.51', '46'],
+        'angledLine(angle = 45.5deg, lengthY = 198.85, tag = $a)',
+        ['278.79', '46deg'],
+      ],
+      [
+        'angledLine',
+        'angledLine(angle = 45.5deg, endAbsoluteX = 198.85, tag = $a)',
+        ['231.33', '-134deg'],
+      ],
+      [
+        'angledLine',
+        'angledLine(angle = 45.5deg, endAbsoluteY = 198.85, tag = $a)',
+        ['134.51', '46deg'],
       ],
       [
         'angledLineThatIntersects',
-        `angledLineThatIntersects(angle = 45.5, intersectTag = b, offset = 198.85, tag = $a)`,
-        ['918.4', '46'],
+        `angledLineThatIntersects(angle = 45.5deg, intersectTag = b, offset = 198.85, tag = $a)`,
+        ['918.4', '46deg'],
       ],
     ])(`%s`, async (_, line, [replace1, replace2]) => {
       const code = makeCode(line)
@@ -724,7 +724,7 @@ sketch003 = startSketchOn(XZ)
     //   |> startProfile(at = [-12.55, 2.89])
     //   |> line(end = [3.02, 1.9])
     //   |> line(end = [1.82, -1.49], tag = $seg02)
-    //   |> angledLine(angle = -86, length = segLen(seg02))
+    //   |> angledLine(angle = -86deg, length = segLen(seg02))
     //   |> line(end = [-3.97, -0.53])
     //   |> line(end = [0.3, 0.84])
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -749,7 +749,7 @@ sketch003 = startSketchOn(XZ)
     //   |> startProfile(at = [-12.55, 2.89])
     //   |> line(end = [3.02, 1.9])
     //   |> line(end = [1.82, -1.49], tag = $seg02)
-    //   |> angledLine(angle = -86, length = segLen(seg02))
+    //   |> angledLine(angle = -86deg, length = segLen(seg02))
     //   |> line(end = [-3.97, -0.53])
     //   |> line(end = [0.3, 0.84])
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -778,7 +778,7 @@ sketch003 = startSketchOn(XZ)
     //   |> startProfile(at = [-12.55, 2.89])
     //   |> line(end = [3.02, 1.9])
     //   |> line(end = [1.82, -1.49], tag = $seg02)
-    //   |> angledLine(angle = -86, length = segLen(seg02))
+    //   |> angledLine(angle = -86deg, length = segLen(seg02))
     //   |> line(end = [-3.97, -0.53])
     //   |> line(end = [0.3, 0.84])
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -803,7 +803,7 @@ sketch003 = startSketchOn(XZ)
     //   |> startProfile(at = [-12.55, 2.89])
     //   |> line(end = [3.02, 1.9])
     //   |> line(end = [1.82, -1.49], tag = $seg02)
-    //   |> angledLine(angle = -86, length = segLen(seg02))
+    //   |> angledLine(angle = -86deg, length = segLen(seg02))
     //   |> line(end = [-3.97, -0.53])
     //   |> line(end = [0.3, 0.84])
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
