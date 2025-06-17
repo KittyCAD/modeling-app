@@ -45,7 +45,7 @@ test.describe('Sketch tests', () => {
 
     screwHole = startSketchOn(XY)
   ${startProfileAt1}
-  |> arc(angleStart = 0, angleEnd = 360, radius = screwRadius)
+  |> arc(angleStart = 0, angleEnd = 360deg, radius = screwRadius)
 
     part001 = startSketchOn(XY)
   ${startProfileAt2}
@@ -62,7 +62,7 @@ test.describe('Sketch tests', () => {
   |> tangentialArc(endAbsolute = [width / 2, 0])
   |> xLine(length = -width / 4 + wireRadius)
   |> yLine(length = wireOffset)
-  |> arc(angleStart = 0, angleEnd = 180, radius = wireRadius)
+  |> arc(angleStart = 0, angleEnd = 180deg, radius = wireRadius)
   |> yLine(length = -wireOffset)
   |> xLine(length = -width / 4)
   |> close()
@@ -268,7 +268,7 @@ sketch001 = startProfile(sketch002, at = [12.34, -12.34])
       |> line(end = [12.73, -0.09])
       |> tangentialArc(endAbsolute = [24.95, -5.38])
       |> arc(interiorAbsolute = [20.18, -1.7], endAbsolute = [11.82, -1.16])
-      |> arc(angleStart = -89.36, angleEnd = 135.81, radius = 5.92)
+      |> arc(angleStart = -89.36deg, angleEnd = 135.81deg, radius = 5.92)
       |> close()`
         )
       })
@@ -450,7 +450,7 @@ sketch001 = startProfile(sketch002, at = [12.34, -12.34])
   |> line(end = [14.72, 1.97])
   |> tangentialArc(endAbsolute = [26.92, -3.32])
   |> arc(interiorAbsolute = [18.11, -3.73], endAbsolute = [9.77, -3.19])
-  |> arc(angleStart = -58.29, angleEnd = 161.17, radius = 3.75)
+  |> arc(angleStart = -58.29deg, angleEnd = 161.17deg, radius = 3.75)
   |> close()
 `)
     }
@@ -1272,7 +1272,7 @@ profile001 = startProfile(sketch001, at = [299.72, 230.82])
       fn lug(origin, length, diameter, plane) {
         lugSketch = startSketchOn(plane)
           |> startProfile(at = [origin[0] + lugDiameter / 2, origin[1]])
-          |> angledLine(angle = 60, lengthY = lugHeadLength)
+          |> angledLine(angle = 60deg, lengthY = lugHeadLength)
           |> xLine(endAbsolute = 0 + .001)
           |> yLine(endAbsolute = 0)
           |> close()
@@ -1321,7 +1321,7 @@ extrude001 = extrude(profile001, length = 200)
 sketch002 = startSketchOn(XY)
 profile002 = startProfile(sketch002, at = [72.2, -52.05])
   |> angledLine(angle = 0, length = 181.26, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 21.54)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 21.54)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $mySeg)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
   |> close()
@@ -2221,7 +2221,7 @@ profile001 = startProfile(sketch001, at = [6.24, 4.54])
   |> line(end = [10.99, -5.22])
 profile002 = startProfile(sketch001, at = [11.19, 5.02])
   |> angledLine(angle = 0, length = 10.78, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 4.14)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 4.14)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -2293,7 +2293,7 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
       await page.mouse.up()
       await page.waitForTimeout(200)
       await editor.expectEditor.toContain(
-        `angledLine(angle = -7, length = 10.27, tag = $rectangleSegmentA001)`
+        `angledLine(angle = -7deg, length = 10.27, tag = $rectangleSegmentA001)`
       )
     })
 
@@ -2335,8 +2335,8 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
       await page.waitForTimeout(100)
       await rectEnd()
       await editor.expectEditor.toContain(
-        `|> angledLine(angle = 180, length = 1.97, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = 3.89)
+        `|> angledLine(angle = 180deg, length = 1.97, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) + 90deg, length = 3.89)
   |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`.replaceAll('\n', '')
@@ -2362,7 +2362,7 @@ profile001 = startProfile(sketch001, at = [6.24, 4.54])
   |> line(end = [10.99, -5.22])
 profile002 = startProfile(sketch001, at = [11.19, 5.02])
   |> angledLine(angle = 0, length = 10.78, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 4.14)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 4.14)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -2474,7 +2474,7 @@ profile001 = startProfile(sketch001, at = [-63.43, 193.08])
   |> close()
 profile003 = startProfile(sketch001, at = [16.79, 38.24])
   |> angledLine(angle = 0, length = 182.82, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 105.71)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 105.71)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -2694,7 +2694,7 @@ profile002 = startProfile(sketch002, at = [0.75, 13.46])
   |> line(end = [5.98, -2.81])
 profile003 = startProfile(sketch002, at = [3.19, 13.3])
   |> angledLine(angle = 0, length = 6.64, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2.81)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 2.81)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -2711,7 +2711,7 @@ profile006 = startProfile(sketch002, at = [9.65, 3.82])
   |> close()
 revolve001 = revolve(
   profile004,
-  angle = 45,
+  angle = 45deg,
   axis = getNextAdjacentEdge(seg01)
 )
 extrude002 = extrude(profile006, length = 4)
@@ -2736,13 +2736,13 @@ profile010 = circle(
 )
 profile011 = startProfile(sketch003, at = [5.07, -6.39])
   |> angledLine(angle = 0, length = 4.54, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 4.17)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90deg, length = 4.17)
   |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude003 = extrude(profile011, length = 2.5)
 // TODO this breaks the test,
-// revolve002 = revolve(profile008, angle = 45, axis = seg02)
+// revolve002 = revolve(profile008, angle = 45deg, axis = seg02)
 `
       )
     })
@@ -3102,9 +3102,9 @@ test.describe('manual edits during sketch mode', () => {
     sketch002 = startSketchOn(extrude001, face = seg01)
     profile002 = startProfile(sketch002, at = [83.39, 329.15])
       |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
-      |> angledLine(length = 156.54, angle = -28)
+      |> angledLine(length = 156.54, angle = -28deg)
       |> angledLine(
-          angle = -151,
+          angle = -151deg,
           length = 116.27,
         )
       |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -3140,7 +3140,9 @@ test.describe('manual edits during sketch mode', () => {
       await expect
         .poll(
           async () => {
-            await editor.expectEditor.toContain('length = 156.54, angle = -28')
+            await editor.expectEditor.toContain(
+              'length = 156.54, angle = -28deg'
+            )
             await page.mouse.move(handle1Location.x, handle1Location.y)
             await page.mouse.down()
             await page.mouse.move(
@@ -3151,7 +3153,9 @@ test.describe('manual edits during sketch mode', () => {
               }
             )
             await page.mouse.up()
-            await editor.expectEditor.toContain('length = 231.59, angle = -34')
+            await editor.expectEditor.toContain(
+              'length = 231.59, angle = -34deg'
+            )
             return true
           },
           { timeout: 10_000 }
@@ -3169,7 +3173,7 @@ test.describe('manual edits during sketch mode', () => {
 
     const handle2Location = { x: 872, y: 273 }
     await test.step('Edit sketch again', async () => {
-      await editor.expectEditor.toContain('length = 231.59, angle = -34')
+      await editor.expectEditor.toContain('length = 231.59, angle = -34deg')
       await page.waitForTimeout(500)
       await expect
         .poll(
@@ -3180,7 +3184,9 @@ test.describe('manual edits during sketch mode', () => {
               steps: 5,
             })
             await page.mouse.up()
-            await editor.expectEditor.toContain('length = 167.36, angle = -14')
+            await editor.expectEditor.toContain(
+              'length = 167.36, angle = -14deg'
+            )
             return true
           },
           { timeout: 10_000 }
@@ -3205,14 +3211,18 @@ test.describe('manual edits during sketch mode', () => {
       await expect
         .poll(
           async () => {
-            await editor.expectEditor.toContain('length = 167.36, angle = -14')
+            await editor.expectEditor.toContain(
+              'length = 167.36, angle = -14deg'
+            )
             await page.mouse.move(handle3Location.x, handle3Location.y)
             await page.mouse.down()
             await page.mouse.move(handle3Location.x, handle3Location.y + 110, {
               steps: 5,
             })
             await page.mouse.up()
-            await editor.expectEditor.toContain('length = 219.2, angle = -56')
+            await editor.expectEditor.toContain(
+              'length = 219.2, angle = -56deg'
+            )
             return true
           },
           { timeout: 10_000 }
@@ -3238,8 +3248,8 @@ extrude001 = extrude(profile001, length = 500)
 sketch002 = startSketchOn(extrude001, face = seg01)
 profile002 = startProfile(sketch002, at = [83.39, 329.15])
   |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
-  |> angledLine(length = 219.2, angle = -56)
-  |> angledLine(angle = -151, length = 116.27)
+  |> angledLine(length = 219.2, angle = -56deg)
+  |> angledLine(angle = -151deg, length = 116.27)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile003 = startProfile(sketch002, at = [-201.08, 254.17])
@@ -3277,9 +3287,9 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
     sketch002 = startSketchOn(extrude001, face = seg01)
     profile002 = startProfile(sketch002, at = [83.39, 329.15])
       |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
-      |> angledLine(length = 156.54, angle = -28)
+      |> angledLine(length = 156.54, angle = -28deg)
       |> angledLine(
-           angle = -151,
+           angle = -151deg,
            length = 116.27,
          )
       |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -3341,9 +3351,9 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
     sketch002 = startSketchOn(extrude001, face = seg01)
     profile002 = startProfile(sketch002, at = [83.39, 329.15])
       |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
-      |> angledLine(length = 156.54, angle = -28)
+      |> angledLine(length = 156.54, angle = -28deg)
       |> angledLine(
-           angle = -151,
+           angle = -151deg,
            length = 116.27,
          )
       |> line(endAbsolute = [profileStartX(%), profileStartY(%)])

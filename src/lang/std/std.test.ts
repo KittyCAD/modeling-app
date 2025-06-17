@@ -13,7 +13,7 @@ describe('testing angledLineThatIntersects', () => {
   |> line(endAbsolute = [2, 2], tag = $yo)
   |> line(endAbsolute = [3, 1])
   |> angledLineThatIntersects(
-       angle = 180,
+       angle = 180deg,
        intersectTag = yo,
        offset = ${offset},
        tag = $yo2,
