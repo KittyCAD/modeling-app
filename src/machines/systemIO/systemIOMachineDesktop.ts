@@ -453,5 +453,61 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
       }
     ),
+    [SystemIOMachineActors.renameFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedFileNameWithExtension: string
+          fileNameWithExtension: string
+          absolutePathToParentDirectory: string
+        }
+      }) => {
+        const {
+          fileNameWithExtension,
+          requestedFileNameWithExtension,
+          absolutePathToParentDirectory,
+        } = input
+
+        const oldPath = window.electron.path.join(
+          absolutePathToParentDirectory,
+          fileNameWithExtension
+        )
+        const newPath = window.electron.path.join(
+          absolutePathToParentDirectory,
+          requestedFileNameWithExtension
+        )
+
+        // no-op
+        if (oldPath === newPath) {
+          return {
+            message: `Old is the same as new.`,
+            fileNameWithExtension,
+            requestedFileNameWithExtension,
+          }
+        }
+
+        // if there are any siblings with the same name, report error.
+        const entries = await window.electron.readdir(
+          window.electron.path.dirname(newPath)
+        )
+
+        for (let entry of entries) {
+          if (entry === requestedFileNameWithExtension) {
+            return Promise.reject(new Error('Filename already exists.'))
+          }
+        }
+
+        window.electron.rename(oldPath, newPath)
+
+        return {
+          message: `Successfully renamed "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
+          fileNameWithExtension,
+          requestedFileNameWithExtension
+        }
+      }
+    ),
   },
 })

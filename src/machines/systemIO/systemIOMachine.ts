@@ -148,6 +148,14 @@ export const systemIOMachine = setup({
             folderName: string
             absolutePathToParentDirectory: string
           }
+      }
+      | {
+          type: SystemIOMachineEvents.renameFile
+          data: {
+            requestedFileNameWithExtension: string
+            fileNameWithExtension: string
+            absolutePathToParentDirectory: string
+          }
         },
   },
   actions: {
@@ -393,6 +401,21 @@ export const systemIOMachine = setup({
         return { message: '', folderName: '', requestedFolderName: '' }
       }
     ),
+    [SystemIOMachineActors.renameFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedFileNameWithExtension: string
+          fileNameWithExtension: string
+          absolutePathToParentDirectory: string
+        }
+      }) => {
+        return { message: '', fileNameWithExtension: '', requestedFileNameWithExtension: '' }
+      }
+    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -473,6 +496,9 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.renameFolder]: {
           target: SystemIOMachineStates.renamingFolder,
+        },
+        [SystemIOMachineEvents.renameFile]: {
+          target: SystemIOMachineStates.renamingFile,
         },
       },
     },
@@ -802,12 +828,38 @@ export const systemIOMachine = setup({
             requestedFolderName: event.data.requestedFolderName,
             folderName: event.data.folderName,
             absolutePathToParentDirectory:
-              event.data.absolutePathToParentDirectory,
+            event.data.absolutePathToParentDirectory,
             rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.renamingFile]: {
+      invoke: {
+        id: SystemIOMachineActors.renameFile,
+        src: SystemIOMachineActors.renameFile,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.renameFile)
+          return {
+            context,
+            requestedFileNameWithExtension: event.data.requestedFileNameWithExtension,
+            fileNameWithExtension: event.data.fileNameWithExtension,
+            absolutePathToParentDirectory:
+            event.data.absolutePathToParentDirectory,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
         },
         onError: {
           target: SystemIOMachineStates.idle,

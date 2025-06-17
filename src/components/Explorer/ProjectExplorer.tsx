@@ -169,37 +169,54 @@ export const ProjectExplorer = ({
             isRenamingRef.current = true
           },
           rowRenameEnd: (event) => {
+            // TODO: Implement renameFolder and renameFile to navigate
             setIsRenaming(false)
             isRenamingRef.current = false
-            const requestedFolderName = String(event?.target?.value || '')
-            if (!requestedFolderName) {
+            const requestedName = String(event?.target?.value || '')
+            if (!requestedName) {
               // user pressed esc
               return
             }
-            const folderName = row.name
-            if (requestedFolderName !== folderName) {
+            const name = row.name
+            // Rename a folder
+            if (row.isFolder) {
+              if (requestedName !== name) {
+                systemIOActor.send({
+                  type: SystemIOMachineEvents.renameFolder,
+                  data: {
+                    requestedFolderName: requestedName,
+                    folderName: name,
+                    absolutePathToParentDirectory: joinOSPaths(
+                      projectDirectoryPath,
+                      child.parentPath
+                    ),
+                  },
+                })
+                // TODO: Gotcha... Set new string open even if it fails?
+                if (openedRowsRef.current[child.key]) {
+                  // If the file tree had the folder opened make the new one open.
+                  const newOpenedRows = { ...openedRowsRef.current }
+                  const key = constructPath({
+                    parentPath: child.parentPath,
+                    name: requestedName,
+                  })
+                  newOpenedRows[key] = true
+                  setOpenedRows(newOpenedRows)
+                }
+              }
+            } else {
+              // rename a file
               systemIOActor.send({
-                type: SystemIOMachineEvents.renameFolder,
+                type: SystemIOMachineEvents.renameFile,
                 data: {
-                  requestedFolderName,
-                  folderName,
+                  requestedFileNameWithExtension: requestedName,
+                  fileNameWithExtension: name,
                   absolutePathToParentDirectory: joinOSPaths(
                     projectDirectoryPath,
                     child.parentPath
                   ),
                 },
               })
-              // TODO: Gotcha... Set new string open even if it fails?
-              if (openedRowsRef.current[child.key]) {
-                // If the file tree had the folder opened make the new one open.
-                const newOpenedRows = { ...openedRowsRef.current }
-                const key = constructPath({
-                  parentPath: child.parentPath,
-                  name: requestedFolderName,
-                })
-                newOpenedRows[key] = true
-                setOpenedRows(newOpenedRows)
-              }
             }
           },
         }
@@ -237,8 +254,10 @@ export const ProjectExplorer = ({
     }
 
     const keyDownHandler = (event) => {
-
-      if (activeIndexRef.current === NOTHING_IS_SELECTED || isRenamingRef.current) {
+      if (
+        activeIndexRef.current === NOTHING_IS_SELECTED ||
+        isRenamingRef.current
+      ) {
         // NO OP you are not focused in this DOM element
         return
       }
