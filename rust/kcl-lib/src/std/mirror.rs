@@ -69,7 +69,7 @@ async fn inner_mirror_2d(
                 .await?;
 
             let mut edge_ids = Vec::new();
-            let entity_ids : &Vec<Uuid> = if let OkWebSocketResponseData::Modeling {
+            let entity_ids: &Vec<Uuid> = if let OkWebSocketResponseData::Modeling {
                 modeling_response: OkModelingCmdResponse::EntityMirror(mirror_info),
             } = &resp
             {
@@ -102,7 +102,7 @@ async fn inner_mirror_2d(
                 .await?;
 
             let mut edge_ids = Vec::new();
-            let entity_ids : Vec<Uuid> = if let OkWebSocketResponseData::Modeling {
+            let entity_ids: Vec<Uuid> = if let OkWebSocketResponseData::Modeling {
                 modeling_response: OkModelingCmdResponse::EntityMirrorAcrossEdge(mirror_info),
             } = &resp
             {
@@ -123,18 +123,17 @@ async fn inner_mirror_2d(
         }
     };
 
-    // After the mirror, get the first child uuid for the path.
+    // After the mirror, get the first edge uuid for the path.
     // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
-    // But if you mirror2d a sketch these IDs might change so we need to get the children versus
-    // using the IDs we already have.
-    // We only do this with mirrors because otherwise it is a waste of a websocket call.
+    // But if you mirror2d a sketch these IDs might change so we need to use
+    // one of the response ids from the mirror call
     for i in 0..starting_sketches.len() {
         if starting_sketches[i].id != mirrored_ids[i] {
             // Mirroring created a new path. The mirrored Sketch is a clone of
             // the original with a new ID.
-            starting_sketches[i].mirror = Some(mirrored_edge_ids[i]);
             starting_sketches[i].id = mirrored_ids[i];
         }
+        starting_sketches[i].mirror = Some(mirrored_edge_ids[i]);
     }
 
     Ok(starting_sketches)
