@@ -574,8 +574,7 @@ profile001 = startProfile(sketch002, at = [-12.34, 12.34])
 
   await cmdBar.progressCmdBar()
   await cmdBar.progressCmdBar()
-  await expect(page.getByText('Confirm Extrude')).toBeVisible()
-  await cmdBar.progressCmdBar()
+  await cmdBar.submit()
 
   const result2 = result.genNext`
 const sketch002 = extrude(sketch002, length = ${[5, 5]} + 7)`

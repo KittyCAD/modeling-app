@@ -782,8 +782,6 @@ export const doExport = async (
       .click()
     await page.locator('#arg-form').waitFor({ state: 'detached' })
   }
-  await expect(page.getByText('Confirm Export')).toBeVisible()
-
   await cmdBar.submit()
 
   await expect(page.getByText('Exported successfully')).toBeVisible()

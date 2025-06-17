@@ -275,6 +275,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ['gltf', 'stl', 'ply'].includes(
             commandContext.argumentsToSubmit.type as string
           ),
+        hidden: (commandContext) =>
+          !['gltf', 'stl', 'ply'].includes(
+            commandContext.argumentsToSubmit.type as string
+          ),
         options: (commandContext) => {
           const type = commandContext.argumentsToSubmit.type as
             | OutputTypeKey
