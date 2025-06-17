@@ -37,7 +37,7 @@ export const headerMasks = (page: Page) => [
 ]
 
 export const lowerRightMasks = (page: Page) => [
-  page.getByTestId('network-toggle'),
+  page.getByTestId(/network-toggle/),
   page.getByTestId('billing-remaining-bar'),
 ]
 
