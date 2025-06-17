@@ -22,6 +22,7 @@ export const token = process.env.token || ''
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
@@ -737,6 +738,7 @@ export const doExport = async (
   output: Models['OutputFormat3d_type'],
   rootDir: string,
   page: Page,
+  cmdBar: CmdBarFixture,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
   if (exportFrom === 'dropdown') {
@@ -782,7 +784,7 @@ export const doExport = async (
   }
   await expect(page.getByText('Confirm Export')).toBeVisible()
 
-  await page.getByRole('button', { name: 'Submit command' }).click()
+  await cmdBar.submit()
 
   await expect(page.getByText('Exported successfully')).toBeVisible()
 
