@@ -398,5 +398,57 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
       }
     ),
+    [SystemIOMachineActors.renameFolder]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedFolderName: string
+          folderName: string
+          absolutePathToParentDirectory: string
+        }
+      }) => {
+
+        const { folderName, requestedFolderName, absolutePathToParentDirectory} = input
+        const oldPath = window.electron.path.join(
+          absolutePathToParentDirectory,
+          folderName
+        )
+        const newPath = window.electron.path.join(
+          absolutePathToParentDirectory,
+          requestedFolderName
+        )
+
+        // no-op
+        if (oldPath === newPath) {
+          return {
+            message: `Old is the same as new.`,
+            folderName,
+            requestedFolderName,
+          }
+        }
+
+        // if there are any siblings with the same name, report error.
+        const entries = await window.electron.readdir(
+          window.electron.path.dirname(newPath)
+        )
+
+        for (let entry of entries) {
+          if (entry === requestedFolderName) {
+            return Promise.reject(new Error('Filename already exists.'))
+          }
+        }
+
+        window.electron.rename(oldPath, newPath)
+
+        return {
+          message:`Successfully renamed "${folderName}" to "${requestedFolderName}"`,
+          folderName,
+          requestedFolderName
+        }
+      }
+    ),
   },
 })

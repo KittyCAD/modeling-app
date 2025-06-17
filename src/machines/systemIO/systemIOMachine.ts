@@ -140,7 +140,15 @@ export const systemIOMachine = setup({
             requestedProjectName: string
             requestedFileName: string
           }
-        },
+        }
+      | {
+          type: SystemIOMachineEvents.renameFolder
+          data: {
+            requestedFolderName: string
+            folderName: string
+            absolutePathToParentDirectory: string
+          }
+        }
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -370,6 +378,21 @@ export const systemIOMachine = setup({
         return { message: '', fileName: '', projectName: '', subRoute: '' }
       }
     ),
+    [SystemIOMachineActors.renameFolder]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedFolderName: string
+          folderName: string
+          absolutePathToParentDirectory: string
+        }
+      }) => {
+        return { message: '', folderName: '', requestedFolderName: '' }
+      }
+    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -448,6 +471,9 @@ export const systemIOMachine = setup({
         [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile]: {
           target: SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
         },
+        [SystemIOMachineEvents.renameFolder]: {
+          target: SystemIOMachineStates.renamingFolder,
+        }
       },
     },
     [SystemIOMachineStates.readingFolders]: {
@@ -758,6 +784,29 @@ export const systemIOMachine = setup({
             }),
             SystemIOMachineActions.toastSuccess,
           ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.renamingFolder]: {
+      invoke: {
+        id: SystemIOMachineActors.renameFolder,
+        src: SystemIOMachineActors.renameFolder,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.renameFolder)
+          return {
+            context,
+            requestedFolderName: event.data.requestedFolderName,
+            folderName: event.data.folderName,
+            absolutePathToParentDirectory: event.data.absolutePathToParentDirectory,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
         },
         onError: {
           target: SystemIOMachineStates.idle,

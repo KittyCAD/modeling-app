@@ -162,7 +162,7 @@ function RenameForm({
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Escape') {
       e.stopPropagation()
-      onSubmit(e)
+      onSubmit()
     } else if (e.key === 'Enter') {
       // This is needed to prevent events to bubble up and the form to be submitted.
       // (Alternatively the form could be changed into a div.)
@@ -274,7 +274,7 @@ export const FileExplorerRowElement = ({
           onSubmit={(event) => {
             row.rowRenameEnd(event)
           }}
-          ></RenameForm>
+        ></RenameForm>
       )}
       <div className="ml-auto">{row.status}</div>
       <div style={{ width: '0.25rem' }}></div>

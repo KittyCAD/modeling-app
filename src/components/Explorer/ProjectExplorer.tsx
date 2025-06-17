@@ -18,6 +18,10 @@ import { useState, useRef, useEffect } from 'react'
 import { systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
+import { joinOSPaths } from '@src/lib/paths'
+import {
+  useProjectDirectoryPath,
+} from '@src/machines/systemIO/hooks'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
@@ -41,6 +45,8 @@ export const ProjectExplorer = ({
 }: {
   project: Project
 }) => {
+  const projectDirectoryPath = useProjectDirectoryPath()
+
   // cache the state of opened rows to allow nested rows to be opened if a parent one is closed
   // when the parent opens the children will already be opened
   const [openedRows, setOpenedRows] = useState<{ [key: string]: boolean }>({})
@@ -164,12 +170,31 @@ export const ProjectExplorer = ({
           },
           rowRenameEnd: (event) => {
             setIsRenaming(false)
-            const requestedRename = String(event.target.value)
-            const name = row.name
-
-            // if (requestedProjectName !== projectName) {
-            // }
-          }
+            const requestedFolderName = String(event?.target?.value || '')
+            if (!requestedFolderName) {
+              // user pressed esc
+              return
+            }
+            const folderName = row.name
+            if (requestedFolderName !== folderName) {
+              systemIOActor.send({type:SystemIOMachineEvents.renameFolder, data: {
+                requestedFolderName,
+                folderName,
+                absolutePathToParentDirectory: joinOSPaths(projectDirectoryPath, child.parentPath)
+              }})
+              // TODO: Gotcha... Set new string open even if it fails?
+              if (openedRowsRef.current[child.key]) {
+                // If the file tree had the folder opened make the new one open.
+                const newOpenedRows = { ...openedRowsRef.current }
+                const key = constructPath({
+                  parentPath: child.parentPath,
+                  name: requestedFolderName
+                })
+                newOpenedRows[key] = true
+                setOpenedRows(newOpenedRows)
+              }
+            }
+          },
         }
 
         return row
