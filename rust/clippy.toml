@@ -1,0 +1,17 @@
+disallowed-methods = [
+  "f64::sin",
+  "f64::cos",
+  "f64::tan",
+  "f64::asin",
+  "f64::acos",
+  "f64::atan",
+  "f64::atan2",
+  "f32::sin",
+  "f32::cos",
+  "f32::tan",
+  "f32::asin",
+  "f32::acos",
+  "f32::atan",
+  "f32::atan2",
+  # "std::vec::Vec::new",
+]

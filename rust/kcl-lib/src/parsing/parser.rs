@@ -45,6 +45,7 @@ thread_local! {
 
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
+    let _q = f64::sin(0.12);
     ParseContext::init();
 
     let result = match program.parse(i) {
