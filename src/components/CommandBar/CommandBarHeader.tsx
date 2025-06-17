@@ -102,22 +102,19 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                 <span className="pr-2" />
               )}
             </p>
-            {Object.entries(nonHiddenArgs || {}).flatMap(
-              ([argName, arg], i) => {
+            {Object.entries(nonHiddenArgs || {})
+              .filter(
+                ([_, argConfig]) =>
+                  argConfig.skip === false ||
+                  (typeof argConfig.required === 'function'
+                    ? argConfig.required(commandBarState.context)
+                    : argConfig.required)
+              )
+              .map(([argName, arg], i) => {
                 const argValue =
                   (typeof argumentsToSubmit[argName] === 'function'
                     ? argumentsToSubmit[argName](commandBarState.context)
                     : argumentsToSubmit[argName]) || ''
-                const isCurrentArg = argName === currentArgument?.name
-                const isSkipFalse = arg.skip === false
-                const isRequired =
-                  typeof arg.required === 'function'
-                    ? arg.required(commandBarState.context)
-                    : arg.required
-
-                if (!(argValue || isCurrentArg || isSkipFalse || isRequired)) {
-                  return []
-                }
 
                 return (
                   <button
@@ -208,15 +205,9 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                           </Tooltip>
                         </>
                       )}
-                    {arg.inputType === 'options' &&
-                      typeof argValue === 'boolean' &&
-                      argValue && (
-                        <CustomIcon name="checkmark" className="w-4 h-4" />
-                      )}
                   </button>
                 )
-              }
-            )}
+              })}
           </div>
           {isReviewing ? (
             <ReviewingButton
@@ -247,51 +238,6 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
           )}
         </div>
         <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
-        {isReviewing && (
-          <>
-            <div className="group px-2 mb-2 text-sm flex gap-4 items-start">
-              <div className="flex flex-1 flex-wrap gap-2">
-                {Object.entries(nonHiddenArgs || {}).flatMap(
-                  ([argName, arg], i) => {
-                    const argValue =
-                      (typeof argumentsToSubmit[argName] === 'function'
-                        ? argumentsToSubmit[argName](commandBarState.context)
-                        : argumentsToSubmit[argName]) || ''
-                    const isRequired =
-                      typeof arg.required === 'function'
-                        ? arg.required(commandBarState.context)
-                        : arg.required
-
-                    if (isRequired || argValue) {
-                      return []
-                    }
-
-                    return (
-                      <button
-                        data-testid="cmd-bar-add-optional-arg"
-                        type="button"
-                        onClick={() => {
-                          commandBarActor.send({
-                            type: 'Edit argument',
-                            data: { arg: { ...arg, name: argName } },
-                          })
-                        }}
-                        key={argName}
-                        className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
-                      >
-                        <CustomIcon name="plus" className="w-5 h-5" />
-                        <span className="capitalize">
-                          {arg.displayName || argName}
-                        </span>
-                      </button>
-                    )
-                  }
-                )}
-              </div>
-            </div>
-            <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
-          </>
-        )}
         {children}
       </>
     )
