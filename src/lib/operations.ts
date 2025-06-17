@@ -20,13 +20,12 @@ import {
   type Program,
   pathToNodeFromRustNodePath,
   type VariableDeclaration,
-  type ParseResult,
 } from '@src/lang/wasm'
 import type {
   HelixModes,
   ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
+import type { KclExpression } from '@src/lib/commandTypes'
 import {
   stringToKclExpression,
   retrieveArgFromPipedCallExpression,
@@ -96,62 +95,12 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     return { reason: "Couldn't retrieve length argument" }
   }
 
-  // bidirectionalLength argument from a string to a KCL expression
-  let bidirectionalLength: KclCommandValue | Error | ParseResult | undefined
-  if (
-    'bidirectionalLength' in operation.labeledArgs &&
-    operation.labeledArgs.bidirectionalLength
-  ) {
-    bidirectionalLength = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.bidirectionalLength.sourceRange[0],
-        operation.labeledArgs.bidirectionalLength.sourceRange[1]
-      )
-    )
-  }
-  if (
-    err(bidirectionalLength) ||
-    (bidirectionalLength && 'errors' in bidirectionalLength)
-  ) {
-    return { reason: "Couldn't retrieve bidirectionalLength argument" }
-  }
-
-  // twistAngle argument from a string to a KCL expression
-  let twistAngle: KclCommandValue | Error | ParseResult | undefined
-  if (
-    'twistAngle' in operation.labeledArgs &&
-    operation.labeledArgs.twistAngle
-  ) {
-    twistAngle = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.twistAngle.sourceRange[0],
-        operation.labeledArgs.twistAngle.sourceRange[1]
-      )
-    )
-  }
-  if (err(twistAngle) || (twistAngle && 'errors' in twistAngle)) {
-    return { reason: "Couldn't retrieve twistAngle argument" }
-  }
-
-  // symmetric argument from a string to boolean
-  let symmetric: boolean | undefined
-  if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
-    symmetric =
-      codeManager.code.slice(
-        operation.labeledArgs.symmetric.sourceRange[0],
-        operation.labeledArgs.symmetric.sourceRange[1]
-      ) === 'true'
-  }
-
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Extrude'] = {
     sketches,
     length,
-    bidirectionalLength,
-    twistAngle,
-    symmetric,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
