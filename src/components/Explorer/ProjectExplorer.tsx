@@ -158,10 +158,10 @@ export const ProjectExplorer = ({
           status: StatusDot(),
           isOpen,
           render: render,
-          rowClicked: (domIndex: number) => {
+          onClick: (domIndex: number) => {
             onRowClickCallback(child, domIndex)
           },
-          rowOpen: () => {
+          onOpen: () => {
             const newOpenedRows = { ...openedRowsRef.current }
             const key = child.key
             newOpenedRows[key] = true

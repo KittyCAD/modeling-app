@@ -17,7 +17,6 @@ export interface FileExplorerRow extends FileExplorerEntry {
   status?: ReactNode
   isOpen: boolean
   render: boolean
-  rowClicked: (domIndex: number) => void
   /**
    * Fake file or folder rows are the placeholders for users to input a value
    * and write that to disk to be read as a real one.
@@ -25,7 +24,10 @@ export interface FileExplorerRow extends FileExplorerEntry {
    */
   isFake: boolean
   activeIndex: number
-  rowOpen: () => void
+
+  /* handlers */
+  onClick: (domIndex: number) => void
+  onOpen: () => void
 }
 
 export interface FileExplorerRender extends FileExplorerRow {

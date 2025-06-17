@@ -224,13 +224,13 @@ export const FileExplorerRowElement = ({
       aria-level={row.level + 1}
       aria-expanded={row.isFolder && row.isOpen}
       onClick={() => {
-        row.rowClicked(row.domIndex)
+        row.onClick(row.domIndex)
       }}
       draggable="true"
       onDragOver={(event) => {
         if (!row.isOpen && row.isFolder) {
           // on drag over, open!
-          row.rowOpen()
+          row.onOpen()
         }
         event.preventDefault()
       }}
