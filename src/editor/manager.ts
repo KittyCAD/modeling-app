@@ -34,8 +34,8 @@ import type {
   ModelingMachineEvent,
   modelingMachine,
 } from '@src/machines/modelingMachine'
+import type CodeManager from '@src/lang/codeManager'
 import { codeManagerHistoryCompartment } from '@src/lang/codeManager'
-import { codeManager, kclManager } from '@src/lib/singletons'
 
 declare global {
   interface Window {
@@ -82,6 +82,7 @@ export default class EditorManager {
   private _editorState: EditorState
   private _editorView: EditorView | null = null
   public kclManager?: KclManager
+  public codeManager?: CodeManager
 
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
@@ -325,8 +326,8 @@ export default class EditorManager {
       console.log('before', state.doc.length, state.doc.toString())
       const undoPerformed = undo(this)
       if (undoPerformed) {
-        codeManager.code = state.doc.toString()
-        void kclManager.executeCode()
+        this.codeManager!.code = state.doc.toString()
+        void this.kclManager!.executeCode()
       }
       console.log(state.doc.length, state.doc.toString())
     }
@@ -341,8 +342,8 @@ export default class EditorManager {
         console.log('before', state.doc.length, state.doc.toString())
         const redoPerformed = redo(this)
         if (redoPerformed) {
-          codeManager.code = state.doc.toString()
-          void kclManager.executeCode()
+          this.codeManager!.code = state.doc.toString()
+          void this.kclManager!.executeCode()
         }
         console.log(state.doc.length, state.doc.toString())
       }

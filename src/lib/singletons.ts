@@ -69,6 +69,7 @@ export const kclManager = new KclManager(engineCommandManager, {
 // method requires it for the current ast.
 // CYCLIC REF
 editorManager.kclManager = kclManager
+editorManager.codeManager = codeManager
 
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
