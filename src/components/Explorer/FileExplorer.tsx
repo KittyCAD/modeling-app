@@ -100,7 +100,6 @@ function FileExplorerRowContextMenu({
   callback,
 }: FileExplorerRowContextMenuProps) {
   const platform = usePlatform()
-  const metaKey = platform === 'macos' ? '⌘' : 'Ctrl'
   return (
     <ContextMenu
       menuTargetElement={itemRef}
@@ -109,14 +108,12 @@ function FileExplorerRowContextMenu({
         <ContextMenuItem
           data-testid="context-menu-rename"
           onClick={onRename}
-          hotkey="Enter"
         >
           Rename
         </ContextMenuItem>,
         <ContextMenuItem
           data-testid="context-menu-delete"
           onClick={onDelete}
-          hotkey={metaKey + ' + Del'}
         >
           Delete
         </ContextMenuItem>,
@@ -283,7 +280,9 @@ export const FileExplorerRowElement = ({
         onRename={() => {
           row.rowRenameStart()
         }}
-        onDelete={() => {}}
+        onDelete={() => {
+          row.rowDelete()
+        }}
         onClone={() => {}}
         onOpenInNewWindow={() => {}}
         callback={row.rowContextMenu}

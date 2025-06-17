@@ -509,5 +509,21 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
       }
     ),
+    [SystemIOMachineActors.deleteFileOrFolder]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          requestedPath: string
+        }
+      }) => {
+        await window.electron.rm(input.requestedPath)
+        return {
+          message: 'File deleted successfully',
+          requestedPath: input.requestedPath
+        }
+      }
+    ),
   },
 })

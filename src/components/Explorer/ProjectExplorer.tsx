@@ -18,7 +18,11 @@ import { useState, useRef, useEffect } from 'react'
 import { systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
-import { alwaysEndFileWithEXT, getEXTWithPeriod, joinOSPaths } from '@src/lib/paths'
+import {
+  alwaysEndFileWithEXT,
+  getEXTWithPeriod,
+  joinOSPaths,
+} from '@src/lib/paths'
 import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
 
 const isFileExplorerEntryOpened = (
@@ -164,6 +168,11 @@ export const ProjectExplorer = ({
           },
           isFake: false,
           activeIndex: activeIndex,
+          rowDelete: () => {
+            systemIOActor.send({type: SystemIOMachineEvents.deleteFileOrFolder, data: {
+              requestedPath: child.path
+            }})
+          },
           rowRenameStart: () => {
             setIsRenaming(true)
             isRenamingRef.current = true
@@ -207,8 +216,10 @@ export const ProjectExplorer = ({
             } else {
               // rename a file
               const originalExt = getEXTWithPeriod(name)
-              console.log(originalExt)
-              const fileNameForcedWithOriginalExt = alwaysEndFileWithEXT(requestedName, originalExt)
+              const fileNameForcedWithOriginalExt = alwaysEndFileWithEXT(
+                requestedName,
+                originalExt
+              )
               if (!fileNameForcedWithOriginalExt) {
                 // TODO: OH NO!
                 return

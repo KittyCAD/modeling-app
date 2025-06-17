@@ -18,6 +18,7 @@ export enum SystemIOMachineActors {
   bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
   renameFolder = 'renameFolder',
   renameFile = 'renameFile',
+  deleteFileOrFolder = 'deleteFileOrFolder'
 }
 
 export enum SystemIOMachineStates {
@@ -37,6 +38,7 @@ export enum SystemIOMachineStates {
   bulkCreatingKCLFilesAndNavigateToFile = 'bulkCreatingKCLFilesAndNavigateToFile',
   renamingFolder = 'renamingFolder',
   renamingFile = 'renamingFile',
+  deletingFileOrFolder = 'deletingFileOrFolder'
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -67,6 +69,7 @@ export enum SystemIOMachineEvents {
     'bulk create kcl files and navigate to file',
   renameFolder = 'rename folder',
   renameFile = 'rename file',
+  deleteFileOrFolder = 'delete file or folder'
 }
 
 export enum SystemIOMachineActions {

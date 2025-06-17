@@ -156,6 +156,12 @@ export const systemIOMachine = setup({
             fileNameWithExtension: string
             absolutePathToParentDirectory: string
           }
+      }
+      | {
+          type: SystemIOMachineEvents.deleteFileOrFolder
+          data: {
+            requestedPath: string
+          }
         },
   },
   actions: {
@@ -420,6 +426,22 @@ export const systemIOMachine = setup({
         }
       }
     ),
+    [SystemIOMachineActors.deleteFileOrFolder]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedPath: string
+        }
+      }) => {
+        return {
+          message: '',
+          requestedPath: '',
+        }
+      }
+    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -503,6 +525,9 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.renameFile]: {
           target: SystemIOMachineStates.renamingFile,
+        },
+        [SystemIOMachineEvents.deleteFileOrFolder]: {
+          target: SystemIOMachineStates.deletingFileOrFolder,
         },
       },
     },
@@ -855,10 +880,32 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedFileNameWithExtension:
-              event.data.requestedFileNameWithExtension,
+            event.data.requestedFileNameWithExtension,
             fileNameWithExtension: event.data.fileNameWithExtension,
             absolutePathToParentDirectory:
-              event.data.absolutePathToParentDirectory,
+            event.data.absolutePathToParentDirectory,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.deletingFileOrFolder]: {
+      invoke: {
+        id: SystemIOMachineActors.deleteFileOrFolder,
+        src: SystemIOMachineActors.deleteFileOrFolder,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.deleteFileOrFolder)
+          return {
+            context,
+            requestedPath: event.data.requestedPath,
             rootContext: self.system.get('root').getSnapshot().context,
           }
         },
