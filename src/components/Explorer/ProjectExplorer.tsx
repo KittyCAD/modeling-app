@@ -159,9 +159,17 @@ export const ProjectExplorer = ({
           },
           isFake: false,
           activeIndex: activeIndex,
-          rowRename: () => {
+          rowRenameStart: () => {
             setIsRenaming(true)
           },
+          rowRenameEnd: (event) => {
+            setIsRenaming(false)
+            const requestedRename = String(event.target.value)
+            const name = row.name
+
+            // if (requestedProjectName !== projectName) {
+            // }
+          }
         }
 
         return row

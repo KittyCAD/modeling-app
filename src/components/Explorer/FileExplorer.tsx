@@ -272,16 +272,16 @@ export const FileExplorerRowElement = ({
         <RenameForm
           row={row}
           onSubmit={(event) => {
-            console.log(event.target.value)
+            row.rowRenameEnd(event)
           }}
-        ></RenameForm>
+          ></RenameForm>
       )}
       <div className="ml-auto">{row.status}</div>
       <div style={{ width: '0.25rem' }}></div>
       <FileExplorerRowContextMenu
         itemRef={rowElementRef}
         onRename={() => {
-          row.rowRename()
+          row.rowRenameStart()
         }}
         onDelete={() => {}}
         onClone={() => {}}
