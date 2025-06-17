@@ -75,7 +75,7 @@ description: Operations executed ball-joint-rod-end.kcl
       "name": "sketchStartAngle",
       "value": {
         "type": "Number",
-        "value": 0.848,
+        "value": 0.848062078981481,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -467,7 +467,7 @@ description: Operations executed ball-joint-rod-end.kcl
       "name": "retainingLoopSketchAngle1",
       "value": {
         "type": "Number",
-        "value": 0.421,
+        "value": 0.42145756846730115,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -496,7 +496,7 @@ description: Operations executed ball-joint-rod-end.kcl
       "name": "retainingLoopSketchAngle2",
       "value": {
         "type": "Number",
-        "value": 0.597,
+        "value": 0.5974064166453502,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -531,7 +531,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 2.168,
+              "value": 2.1682027434402467,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -579,7 +579,7 @@ description: Operations executed ball-joint-rod-end.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -4.556,
+        "value": -4.556249999999999,
         "ty": {
           "type": "Default",
           "len": {
@@ -601,7 +601,7 @@ description: Operations executed ball-joint-rod-end.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 6.697,
+        "value": 6.697058006132245,
         "ty": {
           "type": "Default",
           "len": {
@@ -626,7 +626,7 @@ description: Operations executed ball-joint-rod-end.kcl
       "name": "polarY",
       "value": {
         "type": "Number",
-        "value": 6.697,
+        "value": 6.697058006132245,
         "ty": {
           "type": "Default",
           "len": {
@@ -659,7 +659,7 @@ description: Operations executed ball-joint-rod-end.kcl
       "name": "intersectPoint",
       "value": {
         "type": "Number",
-        "value": 7.55,
+        "value": 7.54983443527075,
         "ty": {
           "type": "Default",
           "len": {
@@ -725,7 +725,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 2.419,
+              "value": 2.4188584057763776,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -803,7 +803,7 @@ description: Operations executed ball-joint-rod-end.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 5.292,
+        "value": 5.291502622129181,
         "ty": {
           "type": "Default",
           "len": {
@@ -981,7 +981,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.992,
+              "value": 1.9922538952621978,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1059,7 +1059,7 @@ description: Operations executed ball-joint-rod-end.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 10.037,
+        "value": 10.037429949942366,
         "ty": {
           "type": "Default",
           "len": {
@@ -1206,7 +1206,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": -0.087,
+              "value": -0.08726646259971647,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1254,7 +1254,7 @@ description: Operations executed ball-joint-rod-end.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 10.878,
+        "value": 10.878446103161862,
         "ty": {
           "type": "Default",
           "len": {
@@ -1276,7 +1276,7 @@ description: Operations executed ball-joint-rod-end.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -0.952,
+        "value": -0.9517407108044271,
         "ty": {
           "type": "Default",
           "len": {
@@ -2185,7 +2185,7 @@ description: Operations executed ball-joint-rod-end.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -2201,7 +2201,7 @@ description: Operations executed ball-joint-rod-end.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -2218,7 +2218,7 @@ description: Operations executed ball-joint-rod-end.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

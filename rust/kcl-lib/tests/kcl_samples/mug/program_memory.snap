@@ -81,7 +81,7 @@ description: Variables in memory after executing mug.kcl
             },
             "ccw": false,
             "center": [
-              8.292,
+              8.291896144767898,
               23.75
             ],
             "from": [
@@ -106,7 +106,7 @@ description: Variables in memory after executing mug.kcl
             "ccw": false,
             "center": [
               0.0,
-              53.025
+              53.02500000000005
             ],
             "from": [
               9.0,
@@ -129,7 +129,7 @@ description: Variables in memory after executing mug.kcl
             },
             "ccw": false,
             "center": [
-              -8.292,
+              -8.2918961447679,
               23.75
             ],
             "from": [
@@ -170,7 +170,7 @@ description: Variables in memory after executing mug.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "origin": {
-            "x": 26.667,
+            "x": 26.666666666666668,
             "y": 0.0,
             "z": 0.0,
             "units": {
@@ -241,13 +241,13 @@ description: Variables in memory after executing mug.kcl
             "sourceRange": []
           },
           "from": [
-            26.667,
+            26.666666666666668,
             23.75
           ],
           "tag": null,
           "to": [
-            53.232,
-            21.426
+            53.231858615779885,
+            21.42584686006245
           ],
           "type": "ToPoint",
           "units": {
@@ -261,17 +261,17 @@ description: Variables in memory after executing mug.kcl
           },
           "ccw": true,
           "center": [
-            54.474,
-            35.622
+            54.47382794993401,
+            35.62162130786982
           ],
           "from": [
-            53.232,
-            21.426
+            53.231858615779885,
+            21.42584686006245
           ],
           "tag": null,
           "to": [
-            68.67,
-            34.38
+            68.66960239774139,
+            34.379651973715696
           ],
           "type": "TangentialArc",
           "units": {
@@ -285,17 +285,17 @@ description: Variables in memory after executing mug.kcl
           },
           "ccw": true,
           "center": [
-            -162.075,
-            54.567
+            -162.0745784642514,
+            54.567151973715696
           ],
           "from": [
-            68.67,
-            34.38
+            68.66960239774139,
+            34.379651973715696
           ],
           "tag": null,
           "to": [
-            68.67,
-            74.755
+            68.66960239774139,
+            74.7546519737157
           ],
           "type": "TangentialArcTo",
           "units": {
@@ -309,12 +309,12 @@ description: Variables in memory after executing mug.kcl
           },
           "ccw": true,
           "center": [
-            54.474,
-            73.513
+            54.47382794993401,
+            73.51268263956156
           ],
           "from": [
-            68.67,
-            74.755
+            68.66960239774139,
+            74.7546519737157
           ],
           "tag": {
             "commentStart": 1438,
@@ -324,8 +324,8 @@ description: Variables in memory after executing mug.kcl
             "value": "seg02"
           },
           "to": [
-            53.232,
-            87.708
+            53.23185861577987,
+            87.70845708736893
           ],
           "type": "TangentialArc",
           "units": {
@@ -338,13 +338,13 @@ description: Variables in memory after executing mug.kcl
             "sourceRange": []
           },
           "from": [
-            53.232,
-            87.708
+            53.23185861577987,
+            87.70845708736893
           ],
           "tag": null,
           "to": [
-            26.667,
-            85.384
+            26.666666666666668,
+            85.38430394743135
           ],
           "type": "ToPoint",
           "units": {
@@ -384,11 +384,11 @@ description: Variables in memory after executing mug.kcl
       },
       "start": {
         "from": [
-          26.667,
+          26.666666666666668,
           23.75
         ],
         "to": [
-          26.667,
+          26.666666666666668,
           23.75
         ],
         "units": {
@@ -562,7 +562,7 @@ description: Variables in memory after executing mug.kcl
             "ccw": false,
             "center": [
               8.0,
-              -51.333
+              -51.33333333333333
             ],
             "from": [
               8.0,
@@ -586,7 +586,7 @@ description: Variables in memory after executing mug.kcl
             "ccw": true,
             "center": [
               24.8,
-              0.8
+              0.8000000000000002
             ],
             "from": [
               24.0,
@@ -596,7 +596,7 @@ description: Variables in memory after executing mug.kcl
             "tag": null,
             "to": [
               24.8,
-              0.0
+              0.00000000000000011102230246251565
             ],
             "type": "Arc",
             "units": {
@@ -610,12 +610,12 @@ description: Variables in memory after executing mug.kcl
             },
             "from": [
               24.8,
-              0.0
+              0.00000000000000011102230246251565
             ],
             "tag": null,
             "to": [
               26.8,
-              0.0
+              0.00000000000000011102230246251565
             ],
             "type": "ToPoint",
             "units": {
@@ -630,17 +630,17 @@ description: Variables in memory after executing mug.kcl
             "ccw": true,
             "center": [
               26.8,
-              0.8
+              0.8000000000000002
             ],
             "from": [
               26.8,
-              0.0
+              0.00000000000000011102230246251565
             ],
             "radius": 0.8,
             "tag": null,
             "to": [
               27.6,
-              0.8
+              0.8000000000000002
             ],
             "type": "Arc",
             "units": {
@@ -654,12 +654,12 @@ description: Variables in memory after executing mug.kcl
             },
             "from": [
               27.6,
-              0.8
+              0.8000000000000002
             ],
             "tag": null,
             "to": [
               28.0,
-              0.8
+              0.8000000000000002
             ],
             "type": "ToPoint",
             "units": {
@@ -678,7 +678,7 @@ description: Variables in memory after executing mug.kcl
             ],
             "from": [
               28.0,
-              0.8
+              0.8000000000000002
             ],
             "tag": null,
             "to": [
@@ -769,7 +769,7 @@ description: Variables in memory after executing mug.kcl
             "tag": null,
             "to": [
               27.2,
-              5.2
+              5.199999999999999
             ],
             "type": "TangentialArc",
             "units": {
@@ -783,12 +783,12 @@ description: Variables in memory after executing mug.kcl
             },
             "from": [
               27.2,
-              5.2
+              5.199999999999999
             ],
             "tag": null,
             "to": [
               0.0,
-              5.2
+              5.199999999999999
             ],
             "type": "ToPoint",
             "units": {
@@ -802,7 +802,7 @@ description: Variables in memory after executing mug.kcl
             },
             "from": [
               0.0,
-              5.2
+              5.199999999999999
             ],
             "tag": null,
             "to": [
@@ -1037,7 +1037,7 @@ description: Variables in memory after executing mug.kcl
             "ccw": false,
             "center": [
               8.0,
-              -51.333
+              -51.33333333333333
             ],
             "from": [
               8.0,
@@ -1061,7 +1061,7 @@ description: Variables in memory after executing mug.kcl
             "ccw": true,
             "center": [
               24.8,
-              0.8
+              0.8000000000000002
             ],
             "from": [
               24.0,
@@ -1071,7 +1071,7 @@ description: Variables in memory after executing mug.kcl
             "tag": null,
             "to": [
               24.8,
-              0.0
+              0.00000000000000011102230246251565
             ],
             "type": "Arc",
             "units": {
@@ -1085,12 +1085,12 @@ description: Variables in memory after executing mug.kcl
             },
             "from": [
               24.8,
-              0.0
+              0.00000000000000011102230246251565
             ],
             "tag": null,
             "to": [
               26.8,
-              0.0
+              0.00000000000000011102230246251565
             ],
             "type": "ToPoint",
             "units": {
@@ -1105,17 +1105,17 @@ description: Variables in memory after executing mug.kcl
             "ccw": true,
             "center": [
               26.8,
-              0.8
+              0.8000000000000002
             ],
             "from": [
               26.8,
-              0.0
+              0.00000000000000011102230246251565
             ],
             "radius": 0.8,
             "tag": null,
             "to": [
               27.6,
-              0.8
+              0.8000000000000002
             ],
             "type": "Arc",
             "units": {
@@ -1129,12 +1129,12 @@ description: Variables in memory after executing mug.kcl
             },
             "from": [
               27.6,
-              0.8
+              0.8000000000000002
             ],
             "tag": null,
             "to": [
               28.0,
-              0.8
+              0.8000000000000002
             ],
             "type": "ToPoint",
             "units": {
@@ -1153,7 +1153,7 @@ description: Variables in memory after executing mug.kcl
             ],
             "from": [
               28.0,
-              0.8
+              0.8000000000000002
             ],
             "tag": null,
             "to": [

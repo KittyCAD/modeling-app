@@ -141,7 +141,7 @@ description: Operations executed countersunk-plate.kcl
       "name": "r1",
       "value": {
         "type": "Number",
-        "value": 1.663,
+        "value": 1.6625,
         "ty": {
           "type": "Default",
           "len": {
@@ -240,7 +240,7 @@ description: Operations executed countersunk-plate.kcl
       "name": "tangentAngle",
       "value": {
         "type": "Number",
-        "value": 0.374,
+        "value": 0.3736328030752811,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -269,7 +269,7 @@ description: Operations executed countersunk-plate.kcl
       "name": "tangentLength",
       "value": {
         "type": "Number",
-        "value": 2.328,
+        "value": 2.3275187969165794,
         "ty": {
           "type": "Default",
           "len": {
@@ -339,7 +339,7 @@ description: Operations executed countersunk-plate.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.197,
+              "value": 1.1971635237196154,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -351,7 +351,7 @@ description: Operations executed countersunk-plate.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 1.663,
+              "value": 1.6625,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -395,7 +395,7 @@ description: Operations executed countersunk-plate.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 0.607,
+        "value": 0.6068125000000003,
         "ty": {
           "type": "Default",
           "len": {
@@ -417,7 +417,7 @@ description: Operations executed countersunk-plate.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 1.548,
+        "value": 1.547799999949525,
         "ty": {
           "type": "Default",
           "len": {
@@ -987,7 +987,7 @@ description: Operations executed countersunk-plate.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -1003,7 +1003,7 @@ description: Operations executed countersunk-plate.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -1020,7 +1020,7 @@ description: Operations executed countersunk-plate.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

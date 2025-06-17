@@ -273,7 +273,7 @@ description: Operations executed shepherds-hook-bolt.kcl
       "name": "threadDepth",
       "value": {
         "type": "Number",
-        "value": 0.46,
+        "value": 0.46004999999999996,
         "ty": {
           "type": "Default",
           "len": {
@@ -306,7 +306,7 @@ description: Operations executed shepherds-hook-bolt.kcl
       "name": "innerRadius",
       "value": {
         "type": "Number",
-        "value": 2.04,
+        "value": 2.03995,
         "ty": {
           "type": "Default",
           "len": {
@@ -372,7 +372,7 @@ description: Operations executed shepherds-hook-bolt.kcl
       "name": "hypotenuse",
       "value": {
         "type": "Number",
-        "value": 12.77,
+        "value": 12.770133269710945,
         "ty": {
           "type": "Default",
           "len": {
@@ -405,7 +405,7 @@ description: Operations executed shepherds-hook-bolt.kcl
       "name": "side",
       "value": {
         "type": "Number",
-        "value": 4.368,
+        "value": 4.3676428111944245,
         "ty": {
           "type": "Default",
           "len": {
@@ -438,7 +438,7 @@ description: Operations executed shepherds-hook-bolt.kcl
       "name": "shankOffset",
       "value": {
         "type": "Number",
-        "value": 17.138,
+        "value": 17.13777608090537,
         "ty": {
           "type": "Default",
           "len": {
@@ -564,7 +564,7 @@ description: Operations executed shepherds-hook-bolt.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 4.104,
+        "value": 4.104241719908028,
         "ty": {
           "type": "Default",
           "len": {
@@ -610,7 +610,7 @@ description: Operations executed shepherds-hook-bolt.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -11.276,
+        "value": -11.2763114494309,
         "ty": {
           "type": "Default",
           "len": {
@@ -725,7 +725,7 @@ description: Operations executed shepherds-hook-bolt.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -10.392,
+        "value": -10.392304845413264,
         "ty": {
           "type": "Default",
           "len": {
@@ -771,7 +771,7 @@ description: Operations executed shepherds-hook-bolt.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 6.0,
+        "value": 5.999999999999999,
         "ty": {
           "type": "Default",
           "len": {
@@ -829,7 +829,7 @@ description: Operations executed shepherds-hook-bolt.kcl
         "offset": {
           "value": {
             "type": "Number",
-            "value": -22.138,
+            "value": -22.13777608090537,
             "ty": {
               "type": "Default",
               "len": {
@@ -1220,7 +1220,7 @@ description: Operations executed shepherds-hook-bolt.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -1236,7 +1236,7 @@ description: Operations executed shepherds-hook-bolt.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -1253,7 +1253,7 @@ description: Operations executed shepherds-hook-bolt.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

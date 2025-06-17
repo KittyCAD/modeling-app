@@ -59,7 +59,7 @@ description: Artifact commands poopy-shoe.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 38.1,
+          "x": 38.099999999999994,
           "y": 0.0,
           "z": 0.0
         }
@@ -81,7 +81,7 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.588,
+            "x": 1.5875,
             "y": 0.0,
             "z": 0.0
           },
@@ -98,8 +98,8 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 76.2,
-            "y": 63.242,
+            "x": 76.19999999999999,
+            "y": 63.24150511135861,
             "z": 0.0
           },
           "relative": false
@@ -115,8 +115,8 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 76.2,
-            "y": 130.175,
+            "x": 76.19999999999999,
+            "y": 130.17499999999998,
             "z": 0.0
           },
           "relative": false
@@ -149,8 +149,8 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 73.025,
-            "y": 63.242,
+            "x": 73.02499999999999,
+            "y": 63.24150511135861,
             "z": 0.0
           },
           "relative": false
@@ -166,8 +166,8 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 39.688,
-            "y": 5.499,
+            "x": 39.6875,
+            "y": 5.499261314031189,
             "z": 0.0
           },
           "relative": false
@@ -201,7 +201,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 3.175,
-            "y": 63.242,
+            "y": 63.24150511135867,
             "z": 0.0
           },
           "relative": false
@@ -218,7 +218,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 3.175,
-            "y": 130.175,
+            "y": 130.17499999999998,
             "z": 0.0
           },
           "relative": false
@@ -235,7 +235,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 130.175,
+            "y": 130.17499999999998,
             "z": 0.0
           },
           "relative": false
@@ -252,7 +252,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 63.242,
+            "y": 63.24150511135861,
             "z": 0.0
           },
           "relative": false
@@ -268,7 +268,7 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 36.512,
+            "x": 36.51249999999997,
             "y": 0.0,
             "z": 0.0
           },
@@ -292,7 +292,7 @@ description: Artifact commands poopy-shoe.kcl
         "target": "[uuid]",
         "origin": {
           "x": 0.0,
-          "y": 130.178,
+          "y": 130.17754,
           "z": 0.0
         },
         "axis": {
@@ -390,7 +390,7 @@ description: Artifact commands poopy-shoe.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 38.1,
+          "x": 38.099999999999994,
           "y": 0.0,
           "z": 0.0
         }
@@ -412,7 +412,7 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.588,
+            "x": 1.5875,
             "y": 0.0,
             "z": 0.0
           },
@@ -429,8 +429,8 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 76.2,
-            "y": 63.242,
+            "x": 76.19999999999999,
+            "y": 63.24150511135861,
             "z": 0.0
           },
           "relative": false
@@ -446,8 +446,8 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 76.2,
-            "y": 130.175,
+            "x": 76.19999999999999,
+            "y": 130.17499999999998,
             "z": 0.0
           },
           "relative": false
@@ -480,8 +480,8 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 73.025,
-            "y": 63.242,
+            "x": 73.02499999999999,
+            "y": 63.24150511135861,
             "z": 0.0
           },
           "relative": false
@@ -497,8 +497,8 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 39.688,
-            "y": 5.499,
+            "x": 39.6875,
+            "y": 5.499261314031189,
             "z": 0.0
           },
           "relative": false
@@ -532,7 +532,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 3.175,
-            "y": 63.242,
+            "y": 63.24150511135867,
             "z": 0.0
           },
           "relative": false
@@ -549,7 +549,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 3.175,
-            "y": 130.175,
+            "y": 130.17499999999998,
             "z": 0.0
           },
           "relative": false
@@ -566,7 +566,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 130.175,
+            "y": 130.17499999999998,
             "z": 0.0
           },
           "relative": false
@@ -583,7 +583,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 63.242,
+            "y": 63.24150511135861,
             "z": 0.0
           },
           "relative": false
@@ -599,7 +599,7 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 36.512,
+            "x": 36.51249999999997,
             "y": 0.0,
             "z": 0.0
           },
@@ -682,7 +682,7 @@ description: Artifact commands poopy-shoe.kcl
         "type": "make_plane",
         "origin": {
           "x": 0.0,
-          "y": -36.512,
+          "y": -36.512499999999996,
           "z": 0.0
         },
         "x_axis": {
@@ -777,7 +777,7 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 75.157,
+            "x": 75.15657129175953,
             "y": 0.0,
             "z": 0.0
           },
@@ -902,7 +902,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 130.175,
+            "y": 130.17499999999998,
             "z": 0.0
           },
           "relative": false
@@ -919,7 +919,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 3.175,
-            "y": 130.175,
+            "y": 130.17499999999998,
             "z": 0.0
           },
           "relative": false
@@ -936,7 +936,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 3.175,
-            "y": 63.242,
+            "y": 63.24150511135861,
             "z": 0.0
           },
           "relative": false
@@ -952,8 +952,8 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 36.512,
-            "y": 5.499,
+            "x": 36.512499999999996,
+            "y": 5.499261314031132,
             "z": 0.0
           },
           "relative": false
@@ -986,8 +986,8 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 73.025,
-            "y": 63.242,
+            "x": 73.02500000000002,
+            "y": 63.24150511135861,
             "z": 0.0
           },
           "relative": false
@@ -1003,8 +1003,8 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 73.025,
-            "y": 130.175,
+            "x": 73.02500000000002,
+            "y": 130.17499999999998,
             "z": 0.0
           },
           "relative": false
@@ -1037,8 +1037,8 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 50.8,
-            "y": -52.387,
+            "x": 50.799999999999976,
+            "y": -52.387499999999996,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1055,7 +1055,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": 50.8,
-            "y": -52.387,
+            "y": -52.387499999999996,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1071,7 +1071,7 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 177.8,
+            "x": 177.79999999999998,
             "y": 0.0,
             "z": 0.0
           },
@@ -1230,7 +1230,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 130.175,
+            "y": 130.17499999999998,
             "z": 0.0
           },
           "relative": false
@@ -1246,8 +1246,8 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -76.2,
-            "y": 130.175,
+            "x": -76.19999999999999,
+            "y": 130.17499999999998,
             "z": 0.0
           },
           "relative": false
@@ -1264,7 +1264,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": -50.8,
-            "y": -52.387,
+            "y": -52.387499999999996,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1281,7 +1281,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": -50.8,
-            "y": -52.387,
+            "y": -52.387499999999996,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1297,7 +1297,7 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -177.8,
+            "x": -177.79999999999998,
             "y": 0.0,
             "z": 0.0
           },
@@ -1400,7 +1400,7 @@ description: Artifact commands poopy-shoe.kcl
         "path": "[uuid]",
         "to": {
           "x": 0.0,
-          "y": -22.225,
+          "y": -22.224999999999998,
           "z": 0.0
         }
       }
@@ -1422,7 +1422,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": -25.4,
-            "y": -22.225,
+            "y": -22.224999999999998,
             "z": 0.0
           },
           "relative": false
@@ -1439,7 +1439,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -76.2,
+            "y": -76.19999999999999,
             "z": 0.0
           },
           "relative": true
@@ -1593,7 +1593,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 3.175,
-            "y": 130.175,
+            "y": 130.17499999999998,
             "z": 0.0
           },
           "relative": false
@@ -1610,7 +1610,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 130.175,
+            "y": 130.17499999999998,
             "z": 0.0
           },
           "relative": false
@@ -1767,7 +1767,7 @@ description: Artifact commands poopy-shoe.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 177.8,
+            "x": 177.79999999999998,
             "y": 3.175,
             "z": 0.0
           },
@@ -1802,7 +1802,7 @@ description: Artifact commands poopy-shoe.kcl
           "type": "line",
           "end": {
             "x": 3.175,
-            "y": 73.025,
+            "y": 73.02499999999999,
             "z": 0.0
           },
           "relative": false

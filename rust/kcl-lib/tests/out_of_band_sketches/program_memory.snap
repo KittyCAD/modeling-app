@@ -20,7 +20,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           ],
           "tag": null,
           "to": [
-            442.28,
+            442.28000000000003,
             239.34
           ],
           "type": "ToPoint",
@@ -34,12 +34,12 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             "sourceRange": []
           },
           "from": [
-            442.28,
+            442.28000000000003,
             239.34
           ],
           "tag": null,
           "to": [
-            476.26,
+            476.26000000000005,
             -150.02
           ],
           "type": "ToPoint",
@@ -120,7 +120,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           ],
           "tag": null,
           "to": [
-            442.28,
+            442.28000000000003,
             239.34
           ],
           "type": "ToPoint",
@@ -134,12 +134,12 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             "sourceRange": []
           },
           "from": [
-            442.28,
+            442.28000000000003,
             239.34
           ],
           "tag": null,
           "to": [
-            476.26,
+            476.26000000000005,
             -150.02
           ],
           "type": "ToPoint",
@@ -153,12 +153,12 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             "sourceRange": []
           },
           "from": [
-            476.26,
+            476.26000000000005,
             -150.02
           ],
           "tag": null,
           "to": [
-            20.88,
+            20.880000000000052,
             -150.02
           ],
           "type": "ToPoint",
@@ -172,7 +172,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             "sourceRange": []
           },
           "from": [
-            20.88,
+            20.880000000000052,
             -150.02
           ],
           "tag": null,
@@ -277,7 +277,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           ],
           "tag": null,
           "to": [
-            336.64,
+            336.64000000000004,
             -241.57
           ],
           "type": "ToPoint",
@@ -377,7 +377,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           ],
           "tag": null,
           "to": [
-            336.64,
+            336.64000000000004,
             -241.57
           ],
           "type": "ToPoint",
@@ -391,12 +391,12 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             "sourceRange": []
           },
           "from": [
-            336.64,
+            336.64000000000004,
             -241.57
           ],
           "tag": null,
           "to": [
-            37.25,
+            37.25000000000006,
             -220.29
           ],
           "type": "ToPoint",
@@ -410,7 +410,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             "sourceRange": []
           },
           "from": [
-            37.25,
+            37.25000000000006,
             -220.29
           ],
           "tag": null,

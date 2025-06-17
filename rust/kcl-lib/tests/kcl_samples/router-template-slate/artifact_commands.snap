@@ -60,7 +60,7 @@ description: Artifact commands router-template-slate.kcl
         "path": "[uuid]",
         "to": {
           "x": 0.0,
-          "y": 28.119,
+          "y": 28.118750000000002,
           "z": 0.0
         }
       }
@@ -123,8 +123,8 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 18.869,
-            "y": -12.494,
+            "x": 18.86875,
+            "y": -12.49375,
             "z": 0.0
           },
           "relative": false
@@ -141,7 +141,7 @@ description: Artifact commands router-template-slate.kcl
           "type": "line",
           "end": {
             "x": 30.75,
-            "y": -12.494,
+            "y": -12.49375,
             "z": 0.0
           },
           "relative": false
@@ -175,7 +175,7 @@ description: Artifact commands router-template-slate.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -122.494,
+            "y": -122.49375,
             "z": 0.0
           },
           "relative": false
@@ -225,7 +225,7 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 11.881,
+            "x": 11.881250000000001,
             "y": 0.0,
             "z": 0.0
           },
@@ -243,7 +243,7 @@ description: Artifact commands router-template-slate.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 32.494,
+            "y": 32.49375,
             "z": 0.0
           },
           "relative": true
@@ -259,8 +259,8 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -10.75,
-            "y": 20.0
+            "x": -10.749999999999998,
+            "y": 19.999999999999993
           },
           "radius": 8.11875,
           "start": {
@@ -285,7 +285,7 @@ description: Artifact commands router-template-slate.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 28.119,
+            "y": 28.118750000000002,
             "z": 0.0
           },
           "relative": false
@@ -387,7 +387,7 @@ description: Artifact commands router-template-slate.kcl
         "path": "[uuid]",
         "to": {
           "x": -20.75,
-          "y": -12.494,
+          "y": -12.49375,
           "z": 0.0
         }
       }
@@ -425,7 +425,7 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0,
+            "x": -0.000000000000014695761589768237,
             "y": -80.0,
             "z": 0.0
           },
@@ -443,7 +443,7 @@ description: Artifact commands router-template-slate.kcl
           "type": "line",
           "end": {
             "x": 7.0,
-            "y": -0.0,
+            "y": -0.0000000000000008572527594031472,
             "z": 0.0
           },
           "relative": true
@@ -460,7 +460,7 @@ description: Artifact commands router-template-slate.kcl
           "type": "line",
           "end": {
             "x": -20.75,
-            "y": -12.494,
+            "y": -12.49375,
             "z": 0.0
           },
           "relative": false
@@ -558,7 +558,7 @@ description: Artifact commands router-template-slate.kcl
         "path": "[uuid]",
         "to": {
           "x": 20.75,
-          "y": -12.494,
+          "y": -12.49375,
           "z": 0.0
         }
       }
@@ -596,7 +596,7 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 0.000000000000004898587196589413,
             "y": -80.0,
             "z": 0.0
           },
@@ -631,7 +631,7 @@ description: Artifact commands router-template-slate.kcl
           "type": "line",
           "end": {
             "x": 20.75,
-            "y": -12.494,
+            "y": -12.49375,
             "z": 0.0
           },
           "relative": false

@@ -118,7 +118,7 @@ description: Variables in memory after executing teapot.kcl
             "ccw": true,
             "center": [
               32.0,
-              44.777
+              44.77690563404849
             ],
             "from": [
               32.0,
@@ -126,7 +126,7 @@ description: Variables in memory after executing teapot.kcl
             ],
             "tag": null,
             "to": [
-              76.19,
+              76.19047619047619,
               52.0
             ],
             "type": "TangentialArcTo",
@@ -141,17 +141,17 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": true,
             "center": [
-              -127.41,
-              18.721
+              -127.40970463982237,
+              18.720808512604577
             ],
             "from": [
-              76.19,
+              76.19047619047619,
               52.0
             ],
             "tag": null,
             "to": [
-              53.333,
-              118.182
+              53.333333333333336,
+              118.18181818181817
             ],
             "type": "TangentialArcTo",
             "units": {
@@ -165,12 +165,12 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": true,
             "center": [
-              30.094,
-              105.393
+              30.09385072857833,
+              105.39337316075819
             ],
             "from": [
-              53.333,
-              118.182
+              53.333333333333336,
+              118.18181818181817
             ],
             "tag": null,
             "to": [
@@ -189,8 +189,8 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": true,
             "center": [
-              38.88,
-              127.217
+              38.87963975520932,
+              127.2170531945629
             ],
             "from": [
               40.0,
@@ -198,8 +198,8 @@ description: Variables in memory after executing teapot.kcl
             ],
             "tag": null,
             "to": [
-              38.26,
-              124.282
+              38.259553941280956,
+              124.28183708950951
             ],
             "type": "TangentialArc",
             "units": {
@@ -213,17 +213,17 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": false,
             "center": [
-              35.241,
-              109.993
+              35.24093404404397,
+              109.99300554654471
             ],
             "from": [
-              38.26,
-              124.282
+              38.259553941280956,
+              124.28183708950951
             ],
             "tag": null,
             "to": [
-              47.333,
-              118.182
+              47.333333333333336,
+              118.18181818181817
             ],
             "type": "TangentialArcTo",
             "units": {
@@ -237,16 +237,16 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": false,
             "center": [
-              -64.288,
-              42.593
+              -64.28809914518214,
+              42.5932625295918
             ],
             "from": [
-              47.333,
-              118.182
+              47.333333333333336,
+              118.18181818181817
             ],
             "tag": null,
             "to": [
-              70.19,
+              70.19047619047619,
               52.0
             ],
             "type": "TangentialArcTo",
@@ -261,11 +261,11 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": false,
             "center": [
-              27.029,
-              48.981
+              27.028546006715562,
+              48.98083546065743
             ],
             "from": [
-              70.19,
+              70.19047619047619,
               52.0
             ],
             "tag": null,
@@ -477,7 +477,7 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": false,
             "center": [
-              8.926,
+              8.925831202046036,
               26.0
             ],
             "from": [
@@ -502,7 +502,7 @@ description: Variables in memory after executing teapot.kcl
             "ccw": false,
             "center": [
               0.0,
-              55.083
+              55.08333333333339
             ],
             "from": [
               10.0,
@@ -525,7 +525,7 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": false,
             "center": [
-              -8.926,
+              -8.925831202046036,
               26.0
             ],
             "from": [
@@ -658,7 +658,7 @@ description: Variables in memory after executing teapot.kcl
           "ccw": true,
           "center": [
             76.0,
-            42.007
+            42.00677710843377
           ],
           "from": [
             76.0,
@@ -681,8 +681,8 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": true,
           "center": [
-            -50.619,
-            133.379
+            -50.6194081592322,
+            133.37933287340525
           ],
           "from": [
             88.98,
@@ -705,8 +705,8 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": true,
           "center": [
-            105.426,
-            98.425
+            105.42635839420534,
+            98.42535477760062
           ],
           "from": [
             117.37,
@@ -714,7 +714,7 @@ description: Variables in memory after executing teapot.kcl
           ],
           "tag": null,
           "to": [
-            107.1,
+            107.10000000000001,
             110.55
           ],
           "type": "TangentialArcTo",
@@ -729,11 +729,11 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": true,
           "center": [
-            74.028,
-            -129.037
+            74.02835446164117,
+            -129.0365206058604
           ],
           "from": [
-            107.1,
+            107.10000000000001,
             110.55
           ],
           "tag": {
@@ -744,7 +744,7 @@ description: Variables in memory after executing teapot.kcl
             "value": "seg02"
           },
           "to": [
-            59.09,
+            59.09000000000001,
             112.36
           ],
           "type": "TangentialArcTo",
@@ -758,13 +758,13 @@ description: Variables in memory after executing teapot.kcl
             "sourceRange": []
           },
           "from": [
-            59.09,
+            59.09000000000001,
             112.36
           ],
           "tag": null,
           "to": [
             0.0,
-            108.703
+            108.70333020657074
           ],
           "type": "ToPoint",
           "units": {
@@ -1132,8 +1132,8 @@ description: Variables in memory after executing teapot.kcl
             "value": "seg01"
           },
           "to": [
-            -107.241,
-            66.261
+            -107.24077862357724,
+            66.26060429977007
           ],
           "type": "TangentialArc",
           "units": {
@@ -1146,13 +1146,13 @@ description: Variables in memory after executing teapot.kcl
             "sourceRange": []
           },
           "from": [
-            -107.241,
-            66.261
+            -107.24077862357724,
+            66.26060429977007
           ],
           "tag": null,
           "to": [
-            -101.481,
-            82.085
+            -101.48115940997299,
+            82.08502803380476
           ],
           "type": "ToPoint",
           "units": {
@@ -1166,17 +1166,17 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": true,
           "center": [
-            -129.672,
-            92.346
+            -129.67193803355025,
+            92.34563233357481
           ],
           "from": [
-            -101.481,
-            82.085
+            -101.48115940997299,
+            82.08502803380476
           ],
           "tag": null,
           "to": [
-            -124.462,
-            121.89
+            -124.46249270354235,
+            121.88986492394105
           ],
           "type": "TangentialArc",
           "units": {
@@ -1332,7 +1332,7 @@ description: Variables in memory after executing teapot.kcl
             "ccw": true,
             "center": [
               32.0,
-              44.777
+              44.77690563404849
             ],
             "from": [
               32.0,
@@ -1340,7 +1340,7 @@ description: Variables in memory after executing teapot.kcl
             ],
             "tag": null,
             "to": [
-              76.19,
+              76.19047619047619,
               52.0
             ],
             "type": "TangentialArcTo",
@@ -1355,17 +1355,17 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": true,
             "center": [
-              -127.41,
-              18.721
+              -127.40970463982237,
+              18.720808512604577
             ],
             "from": [
-              76.19,
+              76.19047619047619,
               52.0
             ],
             "tag": null,
             "to": [
-              53.333,
-              118.182
+              53.333333333333336,
+              118.18181818181817
             ],
             "type": "TangentialArcTo",
             "units": {
@@ -1379,12 +1379,12 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": true,
             "center": [
-              30.094,
-              105.393
+              30.09385072857833,
+              105.39337316075819
             ],
             "from": [
-              53.333,
-              118.182
+              53.333333333333336,
+              118.18181818181817
             ],
             "tag": null,
             "to": [

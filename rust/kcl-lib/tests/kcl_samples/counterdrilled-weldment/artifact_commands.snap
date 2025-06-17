@@ -98,7 +98,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 0.000000000000006998856457127123,
             "y": 114.3,
             "z": 0.0
           },
@@ -436,8 +436,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -57.944,
-          "y": -38.1,
+          "x": -57.943749999999994,
+          "y": -38.099999999999994,
           "z": 0.0
         }
       }
@@ -459,7 +459,7 @@ description: Artifact commands counterdrilled-weldment.kcl
           "type": "arc",
           "center": {
             "x": -63.5,
-            "y": -38.1
+            "y": -38.099999999999994
           },
           "radius": 5.5562499999999995,
           "start": {
@@ -564,8 +564,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -60.325,
-          "y": -38.1,
+          "x": -60.324999999999996,
+          "y": -38.099999999999994,
           "z": 0.0
         }
       }
@@ -587,7 +587,7 @@ description: Artifact commands counterdrilled-weldment.kcl
           "type": "arc",
           "center": {
             "x": -63.5,
-            "y": -38.1
+            "y": -38.099999999999994
           },
           "radius": 3.175,
           "start": {
@@ -709,8 +709,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -57.944,
-          "y": 38.1,
+          "x": -57.943749999999994,
+          "y": 38.099999999999994,
           "z": 0.0
         }
       }
@@ -732,7 +732,7 @@ description: Artifact commands counterdrilled-weldment.kcl
           "type": "arc",
           "center": {
             "x": -63.5,
-            "y": 38.1
+            "y": 38.099999999999994
           },
           "radius": 5.5562499999999995,
           "start": {
@@ -837,8 +837,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -60.325,
-          "y": 38.1,
+          "x": -60.324999999999996,
+          "y": 38.099999999999994,
           "z": 0.0
         }
       }
@@ -860,7 +860,7 @@ description: Artifact commands counterdrilled-weldment.kcl
           "type": "arc",
           "center": {
             "x": -63.5,
-            "y": 38.1
+            "y": 38.099999999999994
           },
           "radius": 3.175,
           "start": {
@@ -982,8 +982,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 69.056,
-          "y": -38.1,
+          "x": 69.05624999999999,
+          "y": -38.099999999999994,
           "z": 0.0
         }
       }
@@ -1005,7 +1005,7 @@ description: Artifact commands counterdrilled-weldment.kcl
           "type": "arc",
           "center": {
             "x": 63.5,
-            "y": -38.1
+            "y": -38.099999999999994
           },
           "radius": 5.5562499999999995,
           "start": {
@@ -1111,7 +1111,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "path": "[uuid]",
         "to": {
           "x": 66.675,
-          "y": -38.1,
+          "y": -38.099999999999994,
           "z": 0.0
         }
       }
@@ -1133,7 +1133,7 @@ description: Artifact commands counterdrilled-weldment.kcl
           "type": "arc",
           "center": {
             "x": 63.5,
-            "y": -38.1
+            "y": -38.099999999999994
           },
           "radius": 3.175,
           "start": {
@@ -1255,8 +1255,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 69.056,
-          "y": 38.1,
+          "x": 69.05624999999999,
+          "y": 38.099999999999994,
           "z": 0.0
         }
       }
@@ -1278,7 +1278,7 @@ description: Artifact commands counterdrilled-weldment.kcl
           "type": "arc",
           "center": {
             "x": 63.5,
-            "y": 38.1
+            "y": 38.099999999999994
           },
           "radius": 5.5562499999999995,
           "start": {
@@ -1384,7 +1384,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "path": "[uuid]",
         "to": {
           "x": 66.675,
-          "y": 38.1,
+          "y": 38.099999999999994,
           "z": 0.0
         }
       }
@@ -1406,7 +1406,7 @@ description: Artifact commands counterdrilled-weldment.kcl
           "type": "arc",
           "center": {
             "x": 63.5,
-            "y": 38.1
+            "y": 38.099999999999994
           },
           "radius": 3.175,
           "start": {
@@ -1975,8 +1975,8 @@ description: Artifact commands counterdrilled-weldment.kcl
           "z": 0.0
         },
         "x_axis": {
-          "x": 0.857,
-          "y": 0.514,
+          "x": 0.8574929257125441,
+          "y": 0.5144957554275265,
           "z": 0.0
         },
         "y_axis": {
@@ -2008,8 +2008,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.514,
-          "y": -0.857,
+          "x": 0.5144957554275265,
+          "y": -0.8574929257125441,
           "z": 0.0
         }
       }
@@ -2050,7 +2050,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 62.941,
+            "x": 62.94058906453532,
             "y": 12.7,
             "z": 0.0
           },
@@ -2068,7 +2068,7 @@ description: Artifact commands counterdrilled-weldment.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 3.81,
+            "y": 3.8099999999999996,
             "z": 0.0
           },
           "relative": true
@@ -2084,8 +2084,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 22.606,
-            "y": 53.34,
+            "x": 22.605999999999998,
+            "y": 53.339999999999996,
             "z": 0.0
           },
           "relative": false
@@ -2101,7 +2101,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.81,
+            "x": -3.8099999999999996,
             "y": 0.0,
             "z": 0.0
           },
@@ -2144,8 +2144,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.514,
-          "y": -0.857,
+          "x": 0.5144957554275265,
+          "y": -0.8574929257125441,
           "z": 0.0
         }
       }
@@ -2226,8 +2226,8 @@ description: Artifact commands counterdrilled-weldment.kcl
           "z": 0.0
         },
         "x_axis": {
-          "x": -0.857,
-          "y": 0.514,
+          "x": -0.8574929257125441,
+          "y": 0.5144957554275265,
           "z": 0.0
         },
         "y_axis": {
@@ -2259,8 +2259,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.514,
-          "y": 0.857,
+          "x": 0.5144957554275265,
+          "y": 0.8574929257125441,
           "z": -0.0
         }
       }
@@ -2301,7 +2301,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 62.941,
+            "x": 62.94058906453532,
             "y": 12.7,
             "z": 0.0
           },
@@ -2319,7 +2319,7 @@ description: Artifact commands counterdrilled-weldment.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 3.81,
+            "y": 3.8099999999999996,
             "z": 0.0
           },
           "relative": true
@@ -2335,8 +2335,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 22.606,
-            "y": 53.34,
+            "x": 22.605999999999998,
+            "y": 53.339999999999996,
             "z": 0.0
           },
           "relative": false
@@ -2352,7 +2352,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.81,
+            "x": -3.8099999999999996,
             "y": 0.0,
             "z": 0.0
           },
@@ -2395,8 +2395,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.514,
-          "y": 0.857,
+          "x": 0.5144957554275265,
+          "y": 0.8574929257125441,
           "z": -0.0
         }
       }

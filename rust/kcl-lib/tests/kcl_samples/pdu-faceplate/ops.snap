@@ -617,7 +617,7 @@ description: Operations executed pdu-faceplate.kcl
       "name": "leftSpacerWidth",
       "value": {
         "type": "Number",
-        "value": 60.675,
+        "value": 60.675000000000004,
         "ty": {
           "type": "Default",
           "len": {
@@ -650,7 +650,7 @@ description: Operations executed pdu-faceplate.kcl
       "name": "leftSpacerPosition",
       "value": {
         "type": "Number",
-        "value": -208.963,
+        "value": -208.9625,
         "ty": {
           "type": "Default",
           "len": {
@@ -689,7 +689,7 @@ description: Operations executed pdu-faceplate.kcl
           "width": {
             "value": {
               "type": "Number",
-              "value": 60.675,
+              "value": 60.675000000000004,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -846,7 +846,7 @@ description: Operations executed pdu-faceplate.kcl
         "x": {
           "value": {
             "type": "Number",
-            "value": -208.963,
+            "value": -208.9625,
             "ty": {
               "type": "Default",
               "len": {
@@ -1716,7 +1716,7 @@ description: Operations executed pdu-faceplate.kcl
       "name": "secondSpacerPosition",
       "value": {
         "type": "Number",
-        "value": -128.063,
+        "value": -128.0625,
         "ty": {
           "type": "Default",
           "len": {
@@ -1912,7 +1912,7 @@ description: Operations executed pdu-faceplate.kcl
         "x": {
           "value": {
             "type": "Number",
-            "value": -128.063,
+            "value": -128.0625,
             "ty": {
               "type": "Default",
               "len": {
@@ -2115,7 +2115,7 @@ description: Operations executed pdu-faceplate.kcl
       "name": "lastPowerPlugPosition",
       "value": {
         "type": "Number",
-        "value": 185.425,
+        "value": 185.42500000000004,
         "ty": {
           "type": "Default",
           "len": {
@@ -2887,7 +2887,7 @@ description: Operations executed pdu-faceplate.kcl
       "name": "rightSpacerWidth",
       "value": {
         "type": "Number",
-        "value": 33.65,
+        "value": 33.64999999999997,
         "ty": {
           "type": "Default",
           "len": {
@@ -2920,7 +2920,7 @@ description: Operations executed pdu-faceplate.kcl
       "name": "rightSpacerPosition",
       "value": {
         "type": "Number",
-        "value": 222.475,
+        "value": 222.47500000000002,
         "ty": {
           "type": "Default",
           "len": {
@@ -2959,7 +2959,7 @@ description: Operations executed pdu-faceplate.kcl
           "width": {
             "value": {
               "type": "Number",
-              "value": 33.65,
+              "value": 33.64999999999997,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -3116,7 +3116,7 @@ description: Operations executed pdu-faceplate.kcl
         "x": {
           "value": {
             "type": "Number",
-            "value": 222.475,
+            "value": 222.47500000000002,
             "ty": {
               "type": "Default",
               "len": {
@@ -3486,7 +3486,7 @@ description: Operations executed pdu-faceplate.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -3502,7 +3502,7 @@ description: Operations executed pdu-faceplate.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -3519,7 +3519,7 @@ description: Operations executed pdu-faceplate.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

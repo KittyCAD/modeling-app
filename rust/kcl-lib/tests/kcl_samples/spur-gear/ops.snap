@@ -234,7 +234,7 @@ description: Operations executed spur-gear.kcl
       "name": "baseDiameter",
       "value": {
         "type": "Number",
-        "value": 30.564,
+        "value": 30.564315377693887,
         "ty": {
           "type": "Default",
           "len": {
@@ -510,7 +510,7 @@ description: Operations executed spur-gear.kcl
       "name": "startAngle",
       "value": {
         "type": "Number",
-        "value": 0.412,
+        "value": 0.41151684606748806,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -658,7 +658,7 @@ description: Operations executed spur-gear.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 15.282,
+              "value": 15.282157688846944,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -715,7 +715,7 @@ description: Operations executed spur-gear.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 15.282,
+        "value": 15.282157688846944,
         "ty": {
           "type": "Default",
           "len": {
@@ -768,7 +768,7 @@ description: Operations executed spur-gear.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 0.133,
+              "value": 0.13297746681861558,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -837,7 +837,7 @@ description: Operations executed spur-gear.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 17.098,
+        "value": 17.09770867996297,
         "ty": {
           "type": "Default",
           "len": {
@@ -859,7 +859,7 @@ description: Operations executed spur-gear.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 2.287,
+        "value": 2.287106883186467,
         "ty": {
           "type": "Default",
           "len": {
@@ -890,7 +890,7 @@ description: Operations executed spur-gear.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 0.299,
+              "value": 0.299199300341885,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -902,7 +902,7 @@ description: Operations executed spur-gear.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 15.282,
+              "value": 15.282157688846944,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -959,7 +959,7 @@ description: Operations executed spur-gear.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 14.603,
+        "value": 14.603214301197719,
         "ty": {
           "type": "Default",
           "len": {
@@ -981,7 +981,7 @@ description: Operations executed spur-gear.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 4.504,
+        "value": 4.504495054951021,
         "ty": {
           "type": "Default",
           "len": {
@@ -1132,7 +1132,7 @@ description: Operations executed spur-gear.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -1148,7 +1148,7 @@ description: Operations executed spur-gear.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -1165,7 +1165,7 @@ description: Operations executed spur-gear.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

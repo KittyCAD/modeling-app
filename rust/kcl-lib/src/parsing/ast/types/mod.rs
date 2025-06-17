@@ -3005,6 +3005,8 @@ impl BinaryOperator {
         }
     }
 
+    /// The operator associativity of the operator (as in the parsing sense, not the mathematical sense of associativity).
+    ///
     /// Follow JS definitions of each operator.
     /// Taken from <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table>
     pub fn associativity(&self) -> Associativity {
@@ -3014,6 +3016,12 @@ impl BinaryOperator {
             Self::Gt | Self::Gte | Self::Lt | Self::Lte | Self::Eq | Self::Neq => Associativity::Left, // I don't know if this is correct
             Self::And | Self::Or => Associativity::Left,
         }
+    }
+
+    /// Whether an operator is mathematically associative. If it is, then the operator associativity (given by the
+    /// `associativity` method) is mostly irrelevant.
+    pub fn associative(&self) -> bool {
+        matches!(self, Self::Add | Self::Mul | Self::And | Self::Or)
     }
 }
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

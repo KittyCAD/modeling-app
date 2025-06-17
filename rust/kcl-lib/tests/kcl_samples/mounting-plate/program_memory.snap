@@ -181,7 +181,7 @@ description: Variables in memory after executing mounting-plate.kcl
               "value": "basePlateEdge2"
             },
             "to": [
-              3.0,
+              3.0000000000000004,
               -5.0
             ],
             "type": "ToPoint",
@@ -195,7 +195,7 @@ description: Variables in memory after executing mounting-plate.kcl
               "sourceRange": []
             },
             "from": [
-              3.0,
+              3.0000000000000004,
               -5.0
             ],
             "tag": {
@@ -206,7 +206,7 @@ description: Variables in memory after executing mounting-plate.kcl
               "value": "basePlateEdge3"
             },
             "to": [
-              -3.0,
+              -2.9999999999999996,
               -5.0
             ],
             "type": "ToPoint",
@@ -220,7 +220,7 @@ description: Variables in memory after executing mounting-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -3.0,
+              -2.9999999999999996,
               -5.0
             ],
             "tag": {
@@ -501,7 +501,7 @@ description: Variables in memory after executing mounting-plate.kcl
             "value": "basePlateEdge2"
           },
           "to": [
-            3.0,
+            3.0000000000000004,
             -5.0
           ],
           "type": "ToPoint",
@@ -515,7 +515,7 @@ description: Variables in memory after executing mounting-plate.kcl
             "sourceRange": []
           },
           "from": [
-            3.0,
+            3.0000000000000004,
             -5.0
           ],
           "tag": {
@@ -526,7 +526,7 @@ description: Variables in memory after executing mounting-plate.kcl
             "value": "basePlateEdge3"
           },
           "to": [
-            -3.0,
+            -2.9999999999999996,
             -5.0
           ],
           "type": "ToPoint",
@@ -540,7 +540,7 @@ description: Variables in memory after executing mounting-plate.kcl
             "sourceRange": []
           },
           "from": [
-            -3.0,
+            -2.9999999999999996,
             -5.0
           ],
           "tag": {
