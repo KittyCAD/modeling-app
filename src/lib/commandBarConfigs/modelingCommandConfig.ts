@@ -527,6 +527,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
         inputType: 'text',
         required: false,
+        hidden: true,
       },
       selection: {
         inputType: 'selection',
