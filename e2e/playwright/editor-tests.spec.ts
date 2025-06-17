@@ -912,7 +912,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     |> close()
     |> revolve(
     axis = revolveAxis,
-    angle = 90
+    angle = 90deg
     )
     `
       )

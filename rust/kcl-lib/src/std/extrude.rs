@@ -105,7 +105,12 @@ async fn inner_extrude(
             (Some(angle), angle_step, center) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
                 let total_rotation_angle = Angle::from_degrees(angle.to_degrees(exec_state, args.source_range));
-                let angle_step_size = Angle::from_degrees(angle_step.clone().map(|a| a.to_degrees(exec_state, args.source_range)).unwrap_or(15.0));
+                let angle_step_size = Angle::from_degrees(
+                    angle_step
+                        .clone()
+                        .map(|a| a.to_degrees(exec_state, args.source_range))
+                        .unwrap_or(15.0),
+                );
                 ModelingCmd::from(mcmd::TwistExtrude {
                     target: sketch.id.into(),
                     distance: LengthUnit(length.to_mm()),

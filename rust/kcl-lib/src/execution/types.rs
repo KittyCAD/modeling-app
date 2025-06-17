@@ -760,7 +760,7 @@ impl NumericType {
         }
     }
 
-    fn coerce(&self, val: &KclValue) -> Result<KclValue, CoercionError> {
+    fn coerce(&self, val: &KclValue, exec_state: &mut ExecState) -> Result<KclValue, CoercionError> {
         let KclValue::Number { value, ty, meta } = val else {
             return Err(val.into());
         };
@@ -832,6 +832,14 @@ impl NumericType {
             }
 
             (Default { angle: a1, .. }, Known(UnitType::Angle(a2))) => {
+                let mut source_ranges = Into::<Vec<SourceRange>>::into(val);
+                // A single source range means it's not via a function or something.
+                if source_ranges.len() == 1 {
+                    exec_state.warn(
+                        CompilationError::err(source_ranges.pop().unwrap(), "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
                 let (value, ty) = a1.adjust_to(*value, *a2);
                 Ok(KclValue::Number {
                     value,
@@ -1156,7 +1164,7 @@ impl KclValue {
             PrimitiveType::Any => Ok(self.clone()),
             PrimitiveType::Number(ty) => {
                 if convert_units {
-                    return ty.coerce(self);
+                    return ty.coerce(self, exec_state);
                 }
 
                 // Instead of converting units, reinterpret the number as having
@@ -1172,10 +1180,10 @@ impl KclValue {
                             value: *n,
                             meta: meta.clone(),
                         };
-                        return ty.coerce(&value);
+                        return ty.coerce(&value, exec_state);
                     }
                 }
-                ty.coerce(self)
+                ty.coerce(self, exec_state)
             }
             PrimitiveType::String => match self {
                 KclValue::String { .. } => Ok(self.clone()),

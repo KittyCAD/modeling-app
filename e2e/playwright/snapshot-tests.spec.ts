@@ -845,14 +845,14 @@ test.describe('code color goober', { tag: '@snapshot' }, () => {
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 sweepSketch = startSketchOn(XY)
   |> startProfile(at = [2, 0])
-  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
+  |> arc(angleStart = 0, angleEnd = 360deg, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",
@@ -889,14 +889,14 @@ sweepSketch = startSketchOn(XY)
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 sweepSketch = startSketchOn(XY)
   |> startProfile(at = [2, 0])
-  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
+  |> arc(angleStart = 0deg, angleEnd = 360deg, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = '#bb00ff',
@@ -934,14 +934,14 @@ sweepSketch = startSketchOn(XY)
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 sweepSketch = startSketchOn(XY)
   |> startProfile(at = [2, 0])
-  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
+  |> arc(angleStart = 0deg, angleEnd = 360deg, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",

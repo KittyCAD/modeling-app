@@ -604,8 +604,9 @@ impl ExecutorContext {
                     settings: &self.settings,
                 };
 
+                let cache_result = cache::get_changed_program(old, new).await;
                 // Get the program that actually changed from the old and new information.
-                let (clear_scene, program, import_check_info) = match cache::get_changed_program(old, new).await {
+                let (clear_scene, program, import_check_info) = match cache_result {
                     CacheResult::ReExecute {
                         clear_scene,
                         reapply_settings,

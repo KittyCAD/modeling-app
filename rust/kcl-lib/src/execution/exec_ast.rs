@@ -1780,6 +1780,7 @@ impl Node<PipeExpression> {
 #[cfg(test)]
 mod test {
     use std::sync::Arc;
+
     use tokio::io::AsyncWriteExt;
 
     use super::*;

@@ -12,7 +12,7 @@ use crate::{
 };
 
 /// Annotations which should cause re-execution if they change.
-pub(super) const SIGNIFICANT_ATTRS: [&str; 2] = [SETTINGS, NO_PRELUDE];
+pub(super) const SIGNIFICANT_ATTRS: [&str; 3] = [SETTINGS, NO_PRELUDE, WARNINGS];
 
 pub(crate) const SETTINGS: &str = "settings";
 pub(crate) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
@@ -162,7 +162,7 @@ pub(super) fn many_of(
                         vec![source_range],
                     ))
                 })
-                .map(|v| *v)
+                .copied()
         })
         .collect::<Result<Vec<&str>, KclError>>()
 }

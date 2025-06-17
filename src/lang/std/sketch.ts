@@ -31,7 +31,6 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
-  createLiteralMaybeSuffix,
   createLocalName,
   createPipeExpression,
   createTagDeclarator,
@@ -4227,13 +4226,8 @@ const tangentialArcHelpers = {
             callExpression,
             createLiteral(roundOff(radius, 2))
           )
-          const angleValue = createLiteralMaybeSuffix({
-            value: roundOff(angle, 2),
-            suffix: 'Deg',
-          })
-          if (!err(angleValue)) {
-            mutateKwArg(ARG_ANGLE, callExpression, angleValue)
-          }
+          const angleValue = createLiteral(roundOff(angle, 2), 'Deg')
+          mutateKwArg(ARG_ANGLE, callExpression, angleValue)
         } else {
           console.debug('Invalid center calculated for tangential arc')
         }
