@@ -148,7 +148,7 @@ export const systemIOMachine = setup({
             folderName: string
             absolutePathToParentDirectory: string
           }
-        }
+        },
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -473,7 +473,7 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.renameFolder]: {
           target: SystemIOMachineStates.renamingFolder,
-        }
+        },
       },
     },
     [SystemIOMachineStates.readingFolders]: {
@@ -801,7 +801,8 @@ export const systemIOMachine = setup({
             context,
             requestedFolderName: event.data.requestedFolderName,
             folderName: event.data.folderName,
-            absolutePathToParentDirectory: event.data.absolutePathToParentDirectory,
+            absolutePathToParentDirectory:
+              event.data.absolutePathToParentDirectory,
             rootContext: self.system.get('root').getSnapshot().context,
           }
         },

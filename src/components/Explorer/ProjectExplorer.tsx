@@ -19,9 +19,7 @@ import { systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import { joinOSPaths } from '@src/lib/paths'
-import {
-  useProjectDirectoryPath,
-} from '@src/machines/systemIO/hooks'
+import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
@@ -64,6 +62,7 @@ export const ProjectExplorer = ({
   const rowsToRenderRef = useRef(rowsToRender)
   const activeIndexRef = useRef(activeIndex)
   const selectedRowRef = useRef(selectedRow)
+  const isRenamingRef = useRef(isRenaming)
 
   // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
   const [fakeRow, setFakeRow] = useState<{
@@ -167,9 +166,11 @@ export const ProjectExplorer = ({
           activeIndex: activeIndex,
           rowRenameStart: () => {
             setIsRenaming(true)
+            isRenamingRef.current = true
           },
           rowRenameEnd: (event) => {
             setIsRenaming(false)
+            isRenamingRef.current = false
             const requestedFolderName = String(event?.target?.value || '')
             if (!requestedFolderName) {
               // user pressed esc
@@ -177,18 +178,24 @@ export const ProjectExplorer = ({
             }
             const folderName = row.name
             if (requestedFolderName !== folderName) {
-              systemIOActor.send({type:SystemIOMachineEvents.renameFolder, data: {
-                requestedFolderName,
-                folderName,
-                absolutePathToParentDirectory: joinOSPaths(projectDirectoryPath, child.parentPath)
-              }})
+              systemIOActor.send({
+                type: SystemIOMachineEvents.renameFolder,
+                data: {
+                  requestedFolderName,
+                  folderName,
+                  absolutePathToParentDirectory: joinOSPaths(
+                    projectDirectoryPath,
+                    child.parentPath
+                  ),
+                },
+              })
               // TODO: Gotcha... Set new string open even if it fails?
               if (openedRowsRef.current[child.key]) {
                 // If the file tree had the folder opened make the new one open.
                 const newOpenedRows = { ...openedRowsRef.current }
                 const key = constructPath({
                   parentPath: child.parentPath,
-                  name: requestedFolderName
+                  name: requestedFolderName,
                 })
                 newOpenedRows[key] = true
                 setOpenedRows(newOpenedRows)
@@ -230,7 +237,8 @@ export const ProjectExplorer = ({
     }
 
     const keyDownHandler = (event) => {
-      if (activeIndexRef.current === NOTHING_IS_SELECTED) {
+
+      if (activeIndexRef.current === NOTHING_IS_SELECTED || isRenamingRef.current) {
         // NO OP you are not focused in this DOM element
         return
       }

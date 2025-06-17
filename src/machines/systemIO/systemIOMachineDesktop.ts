@@ -410,8 +410,11 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           absolutePathToParentDirectory: string
         }
       }) => {
-
-        const { folderName, requestedFolderName, absolutePathToParentDirectory} = input
+        const {
+          folderName,
+          requestedFolderName,
+          absolutePathToParentDirectory,
+        } = input
         const oldPath = window.electron.path.join(
           absolutePathToParentDirectory,
           folderName
@@ -444,9 +447,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         window.electron.rename(oldPath, newPath)
 
         return {
-          message:`Successfully renamed "${folderName}" to "${requestedFolderName}"`,
+          message: `Successfully renamed "${folderName}" to "${requestedFolderName}"`,
           folderName,
-          requestedFolderName
+          requestedFolderName,
         }
       }
     ),
