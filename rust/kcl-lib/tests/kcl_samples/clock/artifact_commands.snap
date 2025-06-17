@@ -536,8 +536,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 89.75,
-          "y": 182.38,
+          "x": 89.75000000000001,
+          "y": 182.37976320958225,
           "z": 0.0
         }
       }
@@ -763,8 +763,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 148.38,
-          "y": 113.75,
+          "x": 148.37976320958225,
+          "y": 113.74999999999999,
           "z": 0.0
         }
       }
@@ -990,8 +990,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 163.38,
-          "y": 113.75,
+          "x": 163.37976320958225,
+          "y": 113.74999999999999,
           "z": 0.0
         }
       }
@@ -1898,8 +1898,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 148.38,
-          "y": -73.75,
+          "x": 148.37976320958225,
+          "y": -73.74999999999999,
           "z": 0.0
         }
       }
@@ -2125,8 +2125,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 162.88,
-          "y": -73.75,
+          "x": 162.87976320958225,
+          "y": -73.74999999999999,
           "z": 0.0
         }
       }
@@ -2147,7 +2147,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.333,
+            "x": 8.333333333333334,
             "y": 0.0,
             "z": 0.0
           },
@@ -2164,7 +2164,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.167,
+            "x": 4.166666666666667,
             "y": -20.0,
             "z": 0.0
           },
@@ -2181,7 +2181,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.167,
+            "x": 4.166666666666667,
             "y": 20.0,
             "z": 0.0
           },
@@ -2198,7 +2198,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.333,
+            "x": 8.333333333333334,
             "y": 0.0,
             "z": 0.0
           },
@@ -2386,8 +2386,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 81.25,
-          "y": -142.38,
+          "x": 81.25000000000001,
+          "y": -142.37976320958225,
           "z": 0.0
         }
       }
@@ -2408,7 +2408,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.333,
+            "x": 8.333333333333334,
             "y": 0.0,
             "z": 0.0
           },
@@ -2425,7 +2425,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.167,
+            "x": 4.166666666666667,
             "y": -20.0,
             "z": 0.0
           },
@@ -2442,7 +2442,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.167,
+            "x": 4.166666666666667,
             "y": 20.0,
             "z": 0.0
           },
@@ -2459,7 +2459,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.333,
+            "x": 8.333333333333334,
             "y": 0.0,
             "z": 0.0
           },
@@ -2647,7 +2647,7 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -22.5,
+          "x": -22.49999999999999,
           "y": -167.5,
           "z": 0.0
         }
@@ -2669,7 +2669,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.333,
+            "x": 8.333333333333334,
             "y": 0.0,
             "z": 0.0
           },
@@ -2686,7 +2686,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.167,
+            "x": 4.166666666666667,
             "y": -20.0,
             "z": 0.0
           },
@@ -2703,7 +2703,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.167,
+            "x": 4.166666666666667,
             "y": 20.0,
             "z": 0.0
           },
@@ -2720,7 +2720,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.333,
+            "x": 8.333333333333334,
             "y": 0.0,
             "z": 0.0
           },
@@ -2908,7 +2908,7 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 8.0,
+          "x": 8.00000000000001,
           "y": -167.5,
           "z": 0.0
         }
@@ -3135,8 +3135,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -121.25,
-          "y": -142.38,
+          "x": -121.24999999999996,
+          "y": -142.37976320958225,
           "z": 0.0
         }
       }
@@ -3157,7 +3157,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.333,
+            "x": 8.333333333333334,
             "y": 0.0,
             "z": 0.0
           },
@@ -3174,7 +3174,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.167,
+            "x": 4.166666666666667,
             "y": -20.0,
             "z": 0.0
           },
@@ -3191,7 +3191,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.167,
+            "x": 4.166666666666667,
             "y": 20.0,
             "z": 0.0
           },
@@ -3208,7 +3208,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.333,
+            "x": 8.333333333333334,
             "y": 0.0,
             "z": 0.0
           },
@@ -3396,8 +3396,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -92.75,
-          "y": -142.38,
+          "x": -92.74999999999996,
+          "y": -142.37976320958225,
           "z": 0.0
         }
       }
@@ -3623,8 +3623,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -77.75,
-          "y": -142.38,
+          "x": -77.74999999999996,
+          "y": -142.37976320958225,
           "z": 0.0
         }
       }
@@ -3850,8 +3850,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -184.88,
-          "y": -73.75,
+          "x": -184.87976320958225,
+          "y": -73.74999999999999,
           "z": 0.0
         }
       }
@@ -3872,7 +3872,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.333,
+            "x": 8.333333333333334,
             "y": 0.0,
             "z": 0.0
           },
@@ -3889,7 +3889,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.167,
+            "x": 4.166666666666667,
             "y": -20.0,
             "z": 0.0
           },
@@ -3906,7 +3906,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.167,
+            "x": 4.166666666666667,
             "y": 20.0,
             "z": 0.0
           },
@@ -3923,7 +3923,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.333,
+            "x": 8.333333333333334,
             "y": 0.0,
             "z": 0.0
           },
@@ -4111,8 +4111,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -156.38,
-          "y": -73.75,
+          "x": -156.37976320958225,
+          "y": -73.74999999999999,
           "z": 0.0
         }
       }
@@ -4338,8 +4338,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -141.38,
-          "y": -73.75,
+          "x": -141.37976320958225,
+          "y": -73.74999999999999,
           "z": 0.0
         }
       }
@@ -4565,8 +4565,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -126.38,
-          "y": -73.75,
+          "x": -126.37976320958225,
+          "y": -73.74999999999999,
           "z": 0.0
         }
       }
@@ -4793,7 +4793,7 @@ description: Artifact commands clock.kcl
         "path": "[uuid]",
         "to": {
           "x": -206.5,
-          "y": 20.0,
+          "y": 20.00000000000002,
           "z": 0.0
         }
       }
@@ -5020,7 +5020,7 @@ description: Artifact commands clock.kcl
         "path": "[uuid]",
         "to": {
           "x": -192.5,
-          "y": 20.0,
+          "y": 20.00000000000002,
           "z": 0.0
         }
       }
@@ -5041,7 +5041,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.667,
+            "x": 6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -5058,8 +5058,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.853,
-            "y": -13.333,
+            "x": 4.852936456882703,
+            "y": -13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -5075,8 +5075,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.853,
-            "y": 13.333,
+            "x": 4.852936456882699,
+            "y": 13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -5092,7 +5092,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.667,
+            "x": 6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -5109,7 +5109,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -7.279,
+            "x": -7.2794046853240415,
             "y": -20.0,
             "z": 0.0
           },
@@ -5126,7 +5126,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.279,
+            "x": 7.279404685324054,
             "y": -20.0,
             "z": 0.0
           },
@@ -5143,7 +5143,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.667,
+            "x": -6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -5160,8 +5160,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.853,
-            "y": 13.333,
+            "x": -4.852936456882698,
+            "y": 13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -5177,8 +5177,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.853,
-            "y": -13.333,
+            "x": -4.852936456882695,
+            "y": -13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -5194,7 +5194,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.667,
+            "x": -6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -5211,7 +5211,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.279,
+            "x": 7.279404685324049,
             "y": 20.0,
             "z": 0.0
           },
@@ -5382,8 +5382,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -177.38,
-          "y": 113.75,
+          "x": -177.37976320958225,
+          "y": 113.74999999999999,
           "z": 0.0
         }
       }
@@ -5404,7 +5404,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.667,
+            "x": 6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -5421,8 +5421,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.853,
-            "y": -13.333,
+            "x": 4.852936456882703,
+            "y": -13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -5438,8 +5438,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.853,
-            "y": 13.333,
+            "x": 4.852936456882699,
+            "y": 13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -5455,7 +5455,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.667,
+            "x": 6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -5472,7 +5472,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -7.279,
+            "x": -7.2794046853240415,
             "y": -20.0,
             "z": 0.0
           },
@@ -5489,7 +5489,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.279,
+            "x": 7.279404685324054,
             "y": -20.0,
             "z": 0.0
           },
@@ -5506,7 +5506,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.667,
+            "x": -6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -5523,8 +5523,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.853,
-            "y": 13.333,
+            "x": -4.852936456882698,
+            "y": 13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -5540,8 +5540,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.853,
-            "y": -13.333,
+            "x": -4.852936456882695,
+            "y": -13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -5557,7 +5557,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.667,
+            "x": -6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -5574,7 +5574,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.279,
+            "x": 7.279404685324049,
             "y": 20.0,
             "z": 0.0
           },
@@ -5745,8 +5745,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -113.75,
-          "y": 182.38,
+          "x": -113.74999999999996,
+          "y": 182.37976320958225,
           "z": 0.0
         }
       }
@@ -5767,7 +5767,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.667,
+            "x": 6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -5784,8 +5784,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.853,
-            "y": -13.333,
+            "x": 4.852936456882703,
+            "y": -13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -5801,8 +5801,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.853,
-            "y": 13.333,
+            "x": 4.852936456882699,
+            "y": 13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -5818,7 +5818,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.667,
+            "x": 6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -5835,7 +5835,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -7.279,
+            "x": -7.2794046853240415,
             "y": -20.0,
             "z": 0.0
           },
@@ -5852,7 +5852,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.279,
+            "x": 7.279404685324054,
             "y": -20.0,
             "z": 0.0
           },
@@ -5869,7 +5869,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.667,
+            "x": -6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -5886,8 +5886,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.853,
-            "y": 13.333,
+            "x": -4.852936456882698,
+            "y": 13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -5903,8 +5903,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.853,
-            "y": -13.333,
+            "x": -4.852936456882695,
+            "y": -13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -5920,7 +5920,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.667,
+            "x": -6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -5937,7 +5937,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.279,
+            "x": 7.279404685324049,
             "y": 20.0,
             "z": 0.0
           },
@@ -6108,8 +6108,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -87.75,
-          "y": 182.38,
+          "x": -87.74999999999996,
+          "y": 182.37976320958225,
           "z": 0.0
         }
       }
@@ -6335,7 +6335,7 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -30.0,
+          "x": -29.99999999999999,
           "y": 207.5,
           "z": 0.0
         }
@@ -6357,7 +6357,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.667,
+            "x": 6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -6374,8 +6374,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.853,
-            "y": -13.333,
+            "x": 4.852936456882703,
+            "y": -13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -6391,8 +6391,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.853,
-            "y": 13.333,
+            "x": 4.852936456882699,
+            "y": 13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -6408,7 +6408,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.667,
+            "x": 6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -6425,7 +6425,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -7.279,
+            "x": -7.2794046853240415,
             "y": -20.0,
             "z": 0.0
           },
@@ -6442,7 +6442,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.279,
+            "x": 7.279404685324054,
             "y": -20.0,
             "z": 0.0
           },
@@ -6459,7 +6459,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.667,
+            "x": -6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -6476,8 +6476,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.853,
-            "y": 13.333,
+            "x": -4.852936456882698,
+            "y": 13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -6493,8 +6493,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.853,
-            "y": -13.333,
+            "x": -4.852936456882695,
+            "y": -13.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -6510,7 +6510,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.667,
+            "x": -6.666666666666667,
             "y": 0.0,
             "z": 0.0
           },
@@ -6527,7 +6527,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.279,
+            "x": 7.279404685324049,
             "y": 20.0,
             "z": 0.0
           },
@@ -6698,7 +6698,7 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1.0,
+          "x": 1.0000000000000115,
           "y": 207.5,
           "z": 0.0
         }
@@ -6925,7 +6925,7 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 16.0,
+          "x": 16.00000000000001,
           "y": 207.5,
           "z": 0.0
         }
@@ -7280,8 +7280,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -19.381,
-          "y": -7.054,
+          "x": -19.381160303709358,
+          "y": -7.054165456091921,
           "z": 0.0
         }
       }
@@ -7307,8 +7307,8 @@ description: Artifact commands clock.kcl
             "z": 0.0
           },
           "end": {
-            "x": -19.381,
-            "y": 7.054,
+            "x": -19.381160303709358,
+            "y": 7.054165456091921,
             "z": 0.0
           },
           "relative": false
@@ -7325,7 +7325,7 @@ description: Artifact commands clock.kcl
           "type": "line",
           "end": {
             "x": -62.5,
-            "y": -0.0,
+            "y": -0.000000000000007654042494670958,
             "z": 0.0
           },
           "relative": true
@@ -7341,7 +7341,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0,
+            "x": -0.000000000000002296212748401287,
             "y": 12.5,
             "z": 0.0
           },
@@ -7359,7 +7359,7 @@ description: Artifact commands clock.kcl
           "type": "line",
           "end": {
             "x": -115.0,
-            "y": -0.0,
+            "y": -0.000000000000014083438190194563,
             "z": 0.0
           },
           "relative": false
@@ -7375,8 +7375,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.494,
-            "y": -18.905,
+            "x": 33.493823882925064,
+            "y": -18.904673792806236,
             "z": 0.0
           },
           "relative": true
@@ -7392,7 +7392,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0,
+            "x": -0.000000000000002296212748401287,
             "y": 12.5,
             "z": 0.0
           },
@@ -7409,8 +7409,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -19.381,
-            "y": -7.054,
+            "x": -19.381160303709358,
+            "y": -7.054165456091921,
             "z": 0.0
           },
           "relative": false
@@ -7683,8 +7683,8 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 9.041,
-          "y": -18.538,
+          "x": 9.041404902524723,
+          "y": -18.53762720492032,
           "z": 0.0
         }
       }
@@ -7705,64 +7705,13 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "arc_to",
           "interior": {
-            "x": -2.156,
-            "y": 20.512,
+            "x": -2.15589955489535,
+            "y": 20.512014091970638,
             "z": 0.0
           },
           "end": {
-            "x": -4.99,
-            "y": -20.012,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 10.453,
-            "y": -99.452,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -12.432,
-            "y": -1.307,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 16.202,
-            "y": -154.151,
+            "x": -4.989639096743148,
+            "y": -20.012349354442428,
             "z": 0.0
           },
           "relative": false
@@ -7778,8 +7727,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 17.323,
-            "y": 36.756,
+            "x": 10.452846326765346,
+            "y": -99.45218953682733,
             "z": 0.0
           },
           "relative": true
@@ -7795,8 +7744,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.432,
-            "y": -1.307,
+            "x": -12.431523692103417,
+            "y": -1.3066057908456716,
             "z": 0.0
           },
           "relative": true
@@ -7812,8 +7761,59 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 9.041,
-            "y": -18.538,
+            "x": 16.201911806486287,
+            "y": -154.15089378208236,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 17.322596558238345,
+            "y": 36.75588084204726,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -12.431523692103417,
+            "y": -1.3066057908456716,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 9.041404902524723,
+            "y": -18.53762720492032,
             "z": 0.0
           },
           "relative": false
@@ -8034,7 +8034,7 @@ description: Artifact commands clock.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.508,
+          "x": -2.5075,
           "y": 200.0,
           "z": 0.0
         }
@@ -8073,8 +8073,8 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.125,
-            "y": 155.44
+            "x": 0.12499999999999867,
+            "y": 155.44037624907492
           },
           "radius": 5.265,
           "start": {
@@ -8115,7 +8115,7 @@ description: Artifact commands clock.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -5.265,
+            "x": -5.264999999999997,
             "y": 0.0,
             "z": 0.0
           },

@@ -120,7 +120,7 @@ description: Variables in memory after executing parametric.kcl
             "tag": null,
             "to": [
               8.0,
-              4.815
+              4.81483598004549
             ],
             "type": "ToPoint",
             "units": {
@@ -134,12 +134,12 @@ description: Variables in memory after executing parametric.kcl
             },
             "from": [
               8.0,
-              4.815
+              4.81483598004549
             ],
             "tag": null,
             "to": [
-              0.185,
-              4.815
+              0.18516401995451037,
+              4.81483598004549
             ],
             "type": "ToPoint",
             "units": {
@@ -152,12 +152,12 @@ description: Variables in memory after executing parametric.kcl
               "sourceRange": []
             },
             "from": [
-              0.185,
-              4.815
+              0.18516401995451037,
+              4.81483598004549
             ],
             "tag": null,
             "to": [
-              0.185,
+              0.18516401995451037,
               0.0
             ],
             "type": "ToPoint",
@@ -171,7 +171,7 @@ description: Variables in memory after executing parametric.kcl
               "sourceRange": []
             },
             "from": [
-              0.185,
+              0.18516401995451037,
               0.0
             ],
             "tag": null,
@@ -315,7 +315,7 @@ description: Variables in memory after executing parametric.kcl
   },
   "thickness": {
     "type": "Number",
-    "value": 0.185,
+    "value": 0.1851640199545103,
     "ty": {
       "type": "Default",
       "len": {

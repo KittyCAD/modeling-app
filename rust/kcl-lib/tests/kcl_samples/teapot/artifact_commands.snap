@@ -114,8 +114,8 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 5.76,
-            "y": 15.824,
+            "x": 5.759619213604249,
+            "y": 15.824423734034701,
             "z": 0.0
           },
           "relative": true
@@ -301,7 +301,7 @@ description: Artifact commands teapot.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 4.8,
+          "x": 4.800000000000001,
           "y": 26.0,
           "z": 0.0
         }
@@ -506,7 +506,7 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 44.19,
+            "x": 44.19047619047619,
             "y": 52.0,
             "z": 0.0
           },
@@ -523,8 +523,8 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -22.857,
-            "y": 66.182,
+            "x": -22.857142857142854,
+            "y": 66.18181818181817,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -540,8 +540,8 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -13.333,
-            "y": 11.818,
+            "x": -13.333333333333336,
+            "y": 11.818181818181827,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -804,7 +804,7 @@ description: Artifact commands teapot.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 108.703,
+            "y": 108.70333020657074,
             "z": 0.0
           },
           "relative": false
@@ -1276,7 +1276,7 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 44.19,
+            "x": 44.19047619047619,
             "y": 52.0,
             "z": 0.0
           },
@@ -1293,8 +1293,8 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -22.857,
-            "y": 66.182,
+            "x": -22.857142857142854,
+            "y": 66.18181818181817,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1310,8 +1310,8 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -13.333,
-            "y": 11.818,
+            "x": -13.333333333333336,
+            "y": 11.818181818181827,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1343,8 +1343,8 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 9.074,
-            "y": -6.1,
+            "x": 9.07377939205238,
+            "y": -6.100018907691336,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1360,8 +1360,8 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 22.857,
-            "y": -66.182,
+            "x": 22.857142857142854,
+            "y": -66.18181818181817,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1377,7 +1377,7 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -38.19,
+            "x": -38.19047619047619,
             "y": -46.0,
             "z": 0.0
           },

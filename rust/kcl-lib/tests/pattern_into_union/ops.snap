@@ -42,7 +42,7 @@ description: Operations executed pattern_into_union.kcl
       "name": "buildPlateThickness",
       "value": {
         "type": "Number",
-        "value": 0.039,
+        "value": 0.03937007874015748,
         "ty": {
           "type": "Default",
           "len": {
@@ -339,7 +339,7 @@ description: Operations executed pattern_into_union.kcl
       "name": "depth",
       "value": {
         "type": "Number",
-        "value": 3.287,
+        "value": 3.28740157480315,
         "ty": {
           "type": "Default",
           "len": {
@@ -447,7 +447,7 @@ description: Operations executed pattern_into_union.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -3.287,
+            "value": -3.28740157480315,
             "ty": {
               "type": "Default",
               "len": {
@@ -687,7 +687,7 @@ description: Operations executed pattern_into_union.kcl
         "distance": {
           "value": {
             "type": "Number",
-            "value": 0.159,
+            "value": 0.1593700787401575,
             "ty": {
               "type": "Default",
               "len": {
@@ -938,7 +938,7 @@ description: Operations executed pattern_into_union.kcl
         "distance": {
           "value": {
             "type": "Number",
-            "value": 0.159,
+            "value": 0.1593700787401575,
             "ty": {
               "type": "Default",
               "len": {
@@ -1150,7 +1150,7 @@ description: Operations executed pattern_into_union.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -1166,7 +1166,7 @@ description: Operations executed pattern_into_union.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -1183,7 +1183,7 @@ description: Operations executed pattern_into_union.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

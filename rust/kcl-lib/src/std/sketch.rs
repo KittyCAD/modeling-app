@@ -115,8 +115,8 @@ pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result
 
 fn involute_curve(radius: f64, angle: f64) -> (f64, f64) {
     (
-        radius * (angle.cos() + angle * angle.sin()),
-        radius * (angle.sin() - angle * angle.cos()),
+        radius * (libm::cos(angle) + angle * libm::sin(angle)),
+        radius * (libm::sin(angle) - angle * libm::cos(angle)),
     )
 }
 
@@ -157,11 +157,11 @@ async fn inner_involute_circular(
     let theta = f64::sqrt(end_radius * end_radius - start_radius * start_radius) / start_radius;
     let (x, y) = involute_curve(start_radius, theta);
 
-    end.x = x * angle.to_radians().cos() - y * angle.to_radians().sin();
-    end.y = x * angle.to_radians().sin() + y * angle.to_radians().cos();
+    end.x = x * libm::cos(angle.to_radians()) - y * libm::sin(angle.to_radians());
+    end.y = x * libm::sin(angle.to_radians()) + y * libm::cos(angle.to_radians());
 
-    end.x -= start_radius * angle.to_radians().cos();
-    end.y -= start_radius * angle.to_radians().sin();
+    end.x -= start_radius * libm::cos(angle.to_radians());
+    end.y -= start_radius * libm::sin(angle.to_radians());
 
     if reverse.unwrap_or_default() {
         end.x = -end.x;
@@ -500,8 +500,8 @@ async fn inner_angled_line_length(
 
     //double check me on this one - mike
     let delta: [f64; 2] = [
-        length * f64::cos(angle_degrees.to_radians()),
-        length * f64::sin(angle_degrees.to_radians()),
+        length * libm::cos(angle_degrees.to_radians()),
+        length * libm::sin(angle_degrees.to_radians()),
     ];
     let relative = true;
 
@@ -601,7 +601,7 @@ async fn inner_angled_line_to_x(
     }
 
     let x_component = x_to.to_length_units(from.units) - from.x;
-    let y_component = x_component * f64::tan(angle_degrees.to_radians());
+    let y_component = x_component * libm::tan(angle_degrees.to_radians());
     let y_to = from.y + y_component;
 
     let new_sketch = straight_line(
@@ -668,7 +668,7 @@ async fn inner_angled_line_to_y(
     }
 
     let y_component = y_to.to_length_units(from.units) - from.y;
-    let x_component = y_component / f64::tan(angle_degrees.to_radians());
+    let x_component = y_component / libm::tan(angle_degrees.to_radians());
     let x_to = from.x + x_component;
 
     let new_sketch = straight_line(
@@ -1413,7 +1413,7 @@ async fn inner_tangential_arc_radius_angle(
 
             // Calculate the end point from the angle and radius.
             // atan2 outputs radians.
-            let previous_end_tangent = Angle::from_radians(f64::atan2(
+            let previous_end_tangent = Angle::from_radians(libm::atan2(
                 from.y - tan_previous_point[1],
                 from.x - tan_previous_point[0],
             ));

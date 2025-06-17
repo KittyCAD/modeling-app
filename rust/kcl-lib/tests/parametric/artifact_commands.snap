@@ -116,7 +116,7 @@ description: Artifact commands parametric.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -0.185,
+            "y": -0.1851640199545103,
             "z": 0.0
           },
           "relative": true
@@ -132,7 +132,7 @@ description: Artifact commands parametric.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -7.815,
+            "x": -7.81483598004549,
             "y": 0.0,
             "z": 0.0
           },
@@ -150,7 +150,7 @@ description: Artifact commands parametric.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -4.815,
+            "y": -4.81483598004549,
             "z": 0.0
           },
           "relative": true

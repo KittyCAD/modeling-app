@@ -59,8 +59,8 @@ description: Artifact commands execute_engine_error_return.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 5.523,
-          "y": 5.252,
+          "x": 5.5229,
+          "y": 5.25217,
           "z": 0.0
         }
       }
@@ -81,8 +81,8 @@ description: Artifact commands execute_engine_error_return.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 10.504,
-            "y": -1.191,
+            "x": 10.50433,
+            "y": -1.19122,
             "z": 0.0
           },
           "relative": true
@@ -98,8 +98,8 @@ description: Artifact commands execute_engine_error_return.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.014,
-            "y": -5.487,
+            "x": 8.01362,
+            "y": -5.48731,
             "z": 0.0
           },
           "relative": true
@@ -115,8 +115,8 @@ description: Artifact commands execute_engine_error_return.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.029,
-            "y": -6.768,
+            "x": -1.02877,
+            "y": -6.76825,
             "z": 0.0
           },
           "relative": true
@@ -132,8 +132,8 @@ description: Artifact commands execute_engine_error_return.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -11.533,
-            "y": 2.816,
+            "x": -11.53311,
+            "y": 2.81559,
             "z": 0.0
           },
           "relative": true
