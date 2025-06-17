@@ -816,7 +816,16 @@ impl ArgData {
         }
         match self.ty.as_deref() {
             Some("Sketch") if self.kind == ArgKind::Special => None,
-            Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{}:10}}"#, index))),
+            Some(s) if s.starts_with("number") => {
+                let value = match &*self.name {
+                    "angleStart" => "0",
+                    "angleEnd" => "180deg",
+                    "angle" => "180deg",
+                    "arcDegrees" => "360deg",
+                    _ => "10",
+                };
+                Some((index, format!(r#"{label}${{{}:{value}}}"#, index)))
+            }
             Some("Point2d") => Some((index + 1, format!(r#"{label}[${{{}:0}}, ${{{}:0}}]"#, index, index + 1))),
             Some("Point3d") => Some((
                 index + 2,

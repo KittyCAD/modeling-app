@@ -228,10 +228,7 @@ impl Program {
     }
 
     /// Change the meta settings for the kcl file.
-    pub fn change_default_units(
-        &self,
-        length_units: Option<execution::types::UnitLen>,
-    ) -> Result<Self, KclError> {
+    pub fn change_default_units(&self, length_units: Option<execution::types::UnitLen>) -> Result<Self, KclError> {
         Ok(Self {
             ast: self.ast.change_default_units(length_units)?,
             original_file_contents: self.original_file_contents.clone(),

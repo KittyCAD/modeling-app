@@ -357,10 +357,7 @@ impl Node<Program> {
         Ok(None)
     }
 
-    pub fn change_default_units(
-        &self,
-        length_units: Option<UnitLen>,
-    ) -> Result<Self, KclError> {
+    pub fn change_default_units(&self, length_units: Option<UnitLen>) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         let mut found = false;
         for node in &mut new_program.inner_attrs {
