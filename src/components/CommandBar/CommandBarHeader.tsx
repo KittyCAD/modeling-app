@@ -102,19 +102,22 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                 <span className="pr-2" />
               )}
             </p>
-            {Object.entries(nonHiddenArgs || {})
-              .filter(
-                ([_, argConfig]) =>
-                  argConfig.skip === false ||
-                  (typeof argConfig.required === 'function'
-                    ? argConfig.required(commandBarState.context)
-                    : argConfig.required)
-              )
-              .map(([argName, arg], i) => {
+            {Object.entries(nonHiddenArgs || {}).flatMap(
+              ([argName, arg], i) => {
                 const argValue =
                   (typeof argumentsToSubmit[argName] === 'function'
                     ? argumentsToSubmit[argName](commandBarState.context)
                     : argumentsToSubmit[argName]) || ''
+                const isCurrentArg = argName === currentArgument?.name
+                const isSkipFalse = arg.skip === false
+                const isRequired =
+                  typeof arg.required === 'function'
+                    ? arg.required(commandBarState.context)
+                    : arg.required
+
+                if (!(argValue || isCurrentArg || isSkipFalse || isRequired)) {
+                  return []
+                }
 
                 return (
                   <button
@@ -205,9 +208,15 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                           </Tooltip>
                         </>
                       )}
+                    {arg.inputType === 'options' &&
+                      typeof argValue === 'boolean' &&
+                      argValue && (
+                        <CustomIcon name="checkmark" className="w-4 h-4" />
+                      )}
                   </button>
                 )
-              })}
+              }
+            )}
           </div>
           {isReviewing ? (
             <ReviewingButton
