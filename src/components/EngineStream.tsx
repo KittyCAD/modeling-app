@@ -399,7 +399,11 @@ export const EngineStream = (props: {
           engineStreamState.value === EngineStreamState.Playing
         ) {
           timeoutStart.current = null
-          console.log('PAUSING')
+          console.log('Pausing')
+          console.log(
+            engineStreamActor.getSnapshot().value,
+            engineStreamState.value
+          )
           engineStreamActor.send({ type: EngineStreamTransition.Pause })
         }
       }

@@ -59,7 +59,7 @@ description: Artifact commands mounting-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -76.2,
+          "x": -76.19999999999999,
           "y": 127.0,
           "z": 0.0
         }
@@ -81,7 +81,7 @@ description: Artifact commands mounting-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 152.4,
+            "x": 152.39999999999998,
             "y": 0.0,
             "z": 0.0
           },
@@ -98,7 +98,7 @@ description: Artifact commands mounting-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 0.000000000000015553014349171386,
             "y": -254.0,
             "z": 0.0
           },
@@ -115,7 +115,7 @@ description: Artifact commands mounting-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -152.4,
+            "x": -152.39999999999998,
             "y": -0.0,
             "z": 0.0
           },
@@ -132,7 +132,7 @@ description: Artifact commands mounting-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -76.2,
+            "x": -76.19999999999999,
             "y": 127.0,
             "z": 0.0
           },
@@ -179,7 +179,7 @@ description: Artifact commands mounting-plate.kcl
         "path": "[uuid]",
         "to": {
           "x": -50.8,
-          "y": 107.95,
+          "y": 107.94999999999999,
           "z": 0.0
         }
       }
@@ -201,7 +201,7 @@ description: Artifact commands mounting-plate.kcl
           "type": "arc",
           "center": {
             "x": -57.15,
-            "y": 107.95
+            "y": 107.94999999999999
           },
           "radius": 6.35,
           "start": {
@@ -273,7 +273,7 @@ description: Artifact commands mounting-plate.kcl
         "path": "[uuid]",
         "to": {
           "x": 63.5,
-          "y": 107.95,
+          "y": 107.94999999999999,
           "z": 0.0
         }
       }
@@ -295,7 +295,7 @@ description: Artifact commands mounting-plate.kcl
           "type": "arc",
           "center": {
             "x": 57.15,
-            "y": 107.95
+            "y": 107.94999999999999
           },
           "radius": 6.35,
           "start": {
@@ -367,7 +367,7 @@ description: Artifact commands mounting-plate.kcl
         "path": "[uuid]",
         "to": {
           "x": -50.8,
-          "y": -107.95,
+          "y": -107.94999999999999,
           "z": 0.0
         }
       }
@@ -389,7 +389,7 @@ description: Artifact commands mounting-plate.kcl
           "type": "arc",
           "center": {
             "x": -57.15,
-            "y": -107.95
+            "y": -107.94999999999999
           },
           "radius": 6.35,
           "start": {
@@ -461,7 +461,7 @@ description: Artifact commands mounting-plate.kcl
         "path": "[uuid]",
         "to": {
           "x": 63.5,
-          "y": -107.95,
+          "y": -107.94999999999999,
           "z": 0.0
         }
       }
@@ -483,7 +483,7 @@ description: Artifact commands mounting-plate.kcl
           "type": "arc",
           "center": {
             "x": 57.15,
-            "y": -107.95
+            "y": -107.94999999999999
           },
           "radius": 6.35,
           "start": {

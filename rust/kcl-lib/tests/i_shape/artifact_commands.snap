@@ -81,7 +81,7 @@ description: Artifact commands i_shape.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 63.4,
+            "x": 63.400000000000006,
             "y": 0.0,
             "z": 0.0
           },
@@ -421,7 +421,7 @@ description: Artifact commands i_shape.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -16.6,
+            "x": -16.599999999999994,
             "y": 0.0,
             "z": 0.0
           },

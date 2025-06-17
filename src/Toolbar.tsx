@@ -25,7 +25,7 @@ import type {
   ToolbarModeName,
 } from '@src/lib/toolbar'
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
-import { commandBarActor } from '@src/lib/singletons'
+import { codeManager, commandBarActor } from '@src/lib/singletons'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 
 export function Toolbar({
@@ -39,6 +39,12 @@ export function Toolbar({
   const buttonBgClassName =
     'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10'
   const buttonBorderClassName = '!border-transparent'
+
+  const isInTemporaryWorkspace = codeManager.isBufferMode
+
+  const onClickSave = () => {
+    codeManager.exitFromTemporaryWorkspaceMode()
+  }
 
   const sketchPathId = useMemo(() => {
     if (
@@ -385,11 +391,27 @@ export function Toolbar({
           )
         })}
       </ul>
-      {state.matches('Sketch no face') && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
-          <p className="text-xs">Select a plane or face to start sketching</p>
-        </div>
-      )}
+      <div className="flex flex-col items-center absolute top-full left-1/2 -translate-x-1/2">
+        {isInTemporaryWorkspace && (
+          <div className="flex flex-row gap-2 justify-center">
+            <div className="mt-2 py-1 animate-pulse w-fit uppercase text-xs rounded-full ml-2 px-2 py-1 border border-chalkboard-40 dark:text-chalkboard-40 bg-chalkboard-10 dark:bg-chalkboard-90 shadow-lg">
+              Temporary workspace
+            </div>
+            <button
+              data-testid="tws-save"
+              onClick={onClickSave}
+              className="mt-2 py-1 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-90 px-2"
+            >
+              Save
+            </button>
+          </div>
+        )}
+        {state.matches('Sketch no face') && (
+          <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
+            <p className="text-xs">Select a plane or face to start sketching</p>
+          </div>
+        )}
+      </div>
     </menu>
   )
 }

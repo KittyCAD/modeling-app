@@ -7046,7 +7046,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
   },
   "lastPowerPlugPosition": {
     "type": "Number",
-    "value": 185.425,
+    "value": 185.42500000000004,
     "ty": {
       "type": "Default",
       "len": {
@@ -7059,7 +7059,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
   },
   "leftSpacerPosition": {
     "type": "Number",
-    "value": -208.963,
+    "value": -208.9625,
     "ty": {
       "type": "Default",
       "len": {
@@ -7116,69 +7116,12 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "sourceRange": []
             },
             "from": [
-              -30.338,
+              -30.337500000000002,
               20.225
             ],
             "tag": null,
             "to": [
-              30.338,
-              20.225
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              30.338,
-              20.225
-            ],
-            "tag": null,
-            "to": [
-              30.338,
-              -20.225
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              30.338,
-              -20.225
-            ],
-            "tag": null,
-            "to": [
-              -30.338,
-              -20.225
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -30.338,
-              -20.225
-            ],
-            "tag": null,
-            "to": [
-              -30.338,
+              30.337500000000002,
               20.225
             ],
             "type": "ToPoint",
@@ -7192,12 +7135,69 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "sourceRange": []
             },
             "from": [
-              -30.338,
+              30.337500000000002,
               20.225
             ],
             "tag": null,
             "to": [
-              -30.338,
+              30.337500000000002,
+              -20.225
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              30.337500000000002,
+              -20.225
+            ],
+            "tag": null,
+            "to": [
+              -30.337500000000002,
+              -20.225
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -30.337500000000002,
+              -20.225
+            ],
+            "tag": null,
+            "to": [
+              -30.337500000000002,
+              20.225
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -30.337500000000002,
+              20.225
+            ],
+            "tag": null,
+            "to": [
+              -30.337500000000002,
               20.225
             ],
             "type": "ToPoint",
@@ -7238,11 +7238,11 @@ description: Variables in memory after executing pdu-faceplate.kcl
         },
         "start": {
           "from": [
-            -30.338,
+            -30.337500000000002,
             20.225
           ],
           "to": [
-            -30.338,
+            -30.337500000000002,
             20.225
           ],
           "units": {
@@ -7271,7 +7271,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
   },
   "leftSpacerWidth": {
     "type": "Number",
-    "value": 60.675,
+    "value": 60.675000000000004,
     "ty": {
       "type": "Default",
       "len": {
@@ -16379,69 +16379,12 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "sourceRange": []
             },
             "from": [
-              -16.825,
+              -16.824999999999985,
               20.225
             ],
             "tag": null,
             "to": [
-              16.825,
-              20.225
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              16.825,
-              20.225
-            ],
-            "tag": null,
-            "to": [
-              16.825,
-              -20.225
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              16.825,
-              -20.225
-            ],
-            "tag": null,
-            "to": [
-              -16.825,
-              -20.225
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -16.825,
-              -20.225
-            ],
-            "tag": null,
-            "to": [
-              -16.825,
+              16.824999999999985,
               20.225
             ],
             "type": "ToPoint",
@@ -16455,12 +16398,69 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "sourceRange": []
             },
             "from": [
-              -16.825,
+              16.824999999999985,
               20.225
             ],
             "tag": null,
             "to": [
-              -16.825,
+              16.824999999999985,
+              -20.225
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              16.824999999999985,
+              -20.225
+            ],
+            "tag": null,
+            "to": [
+              -16.824999999999985,
+              -20.225
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -16.824999999999985,
+              -20.225
+            ],
+            "tag": null,
+            "to": [
+              -16.824999999999985,
+              20.225
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -16.824999999999985,
+              20.225
+            ],
+            "tag": null,
+            "to": [
+              -16.824999999999985,
               20.225
             ],
             "type": "ToPoint",
@@ -16501,11 +16501,11 @@ description: Variables in memory after executing pdu-faceplate.kcl
         },
         "start": {
           "from": [
-            -16.825,
+            -16.824999999999985,
             20.225
           ],
           "to": [
-            -16.825,
+            -16.824999999999985,
             20.225
           ],
           "units": {
@@ -16534,7 +16534,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
   },
   "rightSpacerPosition": {
     "type": "Number",
-    "value": 222.475,
+    "value": 222.47500000000002,
     "ty": {
       "type": "Default",
       "len": {
@@ -16547,7 +16547,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
   },
   "rightSpacerWidth": {
     "type": "Number",
-    "value": 33.65,
+    "value": 33.64999999999997,
     "ty": {
       "type": "Default",
       "len": {
@@ -16604,69 +16604,12 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "sourceRange": []
             },
             "from": [
-              -10.113,
+              -10.1125,
               20.225
             ],
             "tag": null,
             "to": [
-              10.113,
-              20.225
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              10.113,
-              20.225
-            ],
-            "tag": null,
-            "to": [
-              10.113,
-              -20.225
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              10.113,
-              -20.225
-            ],
-            "tag": null,
-            "to": [
-              -10.113,
-              -20.225
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -10.113,
-              -20.225
-            ],
-            "tag": null,
-            "to": [
-              -10.113,
+              10.1125,
               20.225
             ],
             "type": "ToPoint",
@@ -16680,12 +16623,69 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "sourceRange": []
             },
             "from": [
-              -10.113,
+              10.1125,
               20.225
             ],
             "tag": null,
             "to": [
-              -10.113,
+              10.1125,
+              -20.225
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              10.1125,
+              -20.225
+            ],
+            "tag": null,
+            "to": [
+              -10.1125,
+              -20.225
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -10.1125,
+              -20.225
+            ],
+            "tag": null,
+            "to": [
+              -10.1125,
+              20.225
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -10.1125,
+              20.225
+            ],
+            "tag": null,
+            "to": [
+              -10.1125,
               20.225
             ],
             "type": "ToPoint",
@@ -16726,11 +16726,11 @@ description: Variables in memory after executing pdu-faceplate.kcl
         },
         "start": {
           "from": [
-            -10.113,
+            -10.1125,
             20.225
           ],
           "to": [
-            -10.113,
+            -10.1125,
             20.225
           ],
           "units": {
@@ -16759,7 +16759,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
   },
   "secondSpacerPosition": {
     "type": "Number",
-    "value": -128.063,
+    "value": -128.0625,
     "ty": {
       "type": "Default",
       "len": {

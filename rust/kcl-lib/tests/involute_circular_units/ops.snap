@@ -203,7 +203,7 @@ description: Operations executed involute_circular_units.kcl
       "name": "baseDiameter",
       "value": {
         "type": "Number",
-        "value": 9.867,
+        "value": 9.866772518252038,
         "ty": {
           "type": "Default",
           "len": {
@@ -372,7 +372,7 @@ description: Operations executed involute_circular_units.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 0.299,
+              "value": 0.299199300341885,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -384,7 +384,7 @@ description: Operations executed involute_circular_units.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 4.933,
+              "value": 4.933386259126019,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -428,7 +428,7 @@ description: Operations executed involute_circular_units.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 4.714,
+        "value": 4.714209749659843,
         "ty": {
           "type": "Default",
           "len": {
@@ -450,7 +450,7 @@ description: Operations executed involute_circular_units.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 1.454,
+        "value": 1.4541411272450477,
         "ty": {
           "type": "Default",
           "len": {
@@ -572,7 +572,7 @@ description: Operations executed involute_circular_units.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -588,7 +588,7 @@ description: Operations executed involute_circular_units.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -605,7 +605,7 @@ description: Operations executed involute_circular_units.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

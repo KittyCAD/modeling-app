@@ -305,7 +305,7 @@ async fn inner_polygon(
         radius.n
     } else {
         // circumscribed
-        radius.n / half_angle.cos()
+        radius.n / libm::cos(half_angle)
     };
 
     let angle_step = std::f64::consts::TAU / num_sides as f64;
@@ -316,8 +316,8 @@ async fn inner_polygon(
         .map(|i| {
             let angle = angle_step * i as f64;
             [
-                center_u[0] + radius_to_vertices * angle.cos(),
-                center_u[1] + radius_to_vertices * angle.sin(),
+                center_u[0] + radius_to_vertices * libm::cos(angle),
+                center_u[1] + radius_to_vertices * libm::sin(angle),
             ]
         })
         .collect();

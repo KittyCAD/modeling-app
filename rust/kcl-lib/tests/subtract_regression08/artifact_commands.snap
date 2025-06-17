@@ -81,7 +81,7 @@ description: Artifact commands subtract_regression08.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 23.8,
+            "x": 23.7998,
             "y": 0.0,
             "z": 0.0
           },
@@ -98,8 +98,8 @@ description: Artifact commands subtract_regression08.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 23.8,
-            "y": 58.75
+            "x": 23.799800000000012,
+            "y": 58.7502
           },
           "radius": 58.7502,
           "start": {
@@ -124,7 +124,7 @@ description: Artifact commands subtract_regression08.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 23.8,
+            "y": 23.7998,
             "z": 0.0
           },
           "relative": true
@@ -186,7 +186,7 @@ description: Artifact commands subtract_regression08.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 30.162,
+          "x": 30.162499999999998,
           "y": 0.0,
           "z": 0.0
         }
@@ -347,7 +347,7 @@ description: Artifact commands subtract_regression08.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 23.8,
+            "x": 23.7998,
             "y": 0.0,
             "z": 0.0
           },
@@ -364,8 +364,8 @@ description: Artifact commands subtract_regression08.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 23.8,
-            "y": 58.75
+            "x": 23.799800000000012,
+            "y": 58.7502
           },
           "radius": 58.7502,
           "start": {
@@ -390,7 +390,7 @@ description: Artifact commands subtract_regression08.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 23.8,
+            "y": 23.7998,
             "z": 0.0
           },
           "relative": true
@@ -452,7 +452,7 @@ description: Artifact commands subtract_regression08.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 23.813,
+          "x": 23.8125,
           "y": 0.0,
           "z": 0.0
         }

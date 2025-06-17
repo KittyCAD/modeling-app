@@ -138,7 +138,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.15,
+            "x": 2.149999999999999,
             "y": -2.15,
             "z": 0.0
           },
@@ -172,7 +172,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.8,
+            "x": 0.7999999999999997,
             "y": -0.8,
             "z": 0.0
           },
@@ -403,7 +403,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.15,
+            "x": 2.149999999999999,
             "y": -2.15,
             "z": 0.0
           },
@@ -437,7 +437,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.8,
+            "x": 0.7999999999999997,
             "y": -0.8,
             "z": 0.0
           },
@@ -637,7 +637,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
           "type": "line",
           "end": {
             "x": 3.2,
-            "y": 38.8,
+            "y": 38.800000000000004,
             "z": 0.0
           },
           "relative": false
@@ -3069,7 +3069,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 5.793,
+            "y": 5.792893,
             "z": 0.0
           },
           "relative": true
@@ -3086,7 +3086,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
           "type": "arc",
           "center": {
             "x": 0.5,
-            "y": 5.793
+            "y": 5.792893
           },
           "radius": 0.5,
           "start": {
@@ -3110,8 +3110,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.046,
-            "y": -1.046,
+            "x": 1.046447,
+            "y": -1.046447,
             "z": 0.0
           },
           "relative": true
@@ -3144,7 +3144,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.7,
+            "x": 0.6999999999999996,
             "y": -0.7,
             "z": 0.0
           },
@@ -3178,7 +3178,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.4,
+            "x": -1.4000000000000004,
             "y": -1.4,
             "z": 0.0
           },
@@ -3341,7 +3341,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 5.793,
+            "y": 5.792893,
             "z": 0.0
           },
           "relative": true
@@ -3358,7 +3358,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
           "type": "arc",
           "center": {
             "x": 0.5,
-            "y": 5.793
+            "y": 5.792893
           },
           "radius": 0.5,
           "start": {
@@ -3382,8 +3382,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.046,
-            "y": -1.046,
+            "x": 1.046447,
+            "y": -1.046447,
             "z": 0.0
           },
           "relative": true
@@ -3416,7 +3416,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.7,
+            "x": 0.6999999999999996,
             "y": -0.7,
             "z": 0.0
           },
@@ -3450,7 +3450,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.4,
+            "x": -1.4000000000000004,
             "y": -1.4,
             "z": 0.0
           },
@@ -3655,7 +3655,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 5.793,
+            "y": 5.792893,
             "z": 0.0
           },
           "relative": true
@@ -3672,7 +3672,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
           "type": "arc",
           "center": {
             "x": 0.5,
-            "y": 5.793
+            "y": 5.792893
           },
           "radius": 0.5,
           "start": {
@@ -3696,8 +3696,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.046,
-            "y": -1.046,
+            "x": 1.046447,
+            "y": -1.046447,
             "z": 0.0
           },
           "relative": true
@@ -3730,7 +3730,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.7,
+            "x": 0.6999999999999996,
             "y": -0.7,
             "z": 0.0
           },
@@ -3764,7 +3764,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.4,
+            "x": -1.4000000000000004,
             "y": -1.4,
             "z": 0.0
           },
@@ -3918,7 +3918,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 5.793,
+            "y": 5.792893,
             "z": 0.0
           },
           "relative": true
@@ -3935,7 +3935,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
           "type": "arc",
           "center": {
             "x": 0.5,
-            "y": 5.793
+            "y": 5.792893
           },
           "radius": 0.5,
           "start": {
@@ -3959,8 +3959,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.046,
-            "y": -1.046,
+            "x": 1.046447,
+            "y": -1.046447,
             "z": 0.0
           },
           "relative": true
@@ -3993,7 +3993,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.7,
+            "x": 0.6999999999999996,
             "y": -0.7,
             "z": 0.0
           },
@@ -4027,7 +4027,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.4,
+            "x": -1.4000000000000004,
             "y": -1.4,
             "z": 0.0
           },

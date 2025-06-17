@@ -182,7 +182,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -196,12 +196,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -215,12 +215,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -234,7 +234,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -407,7 +407,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -421,12 +421,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -440,12 +440,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -459,7 +459,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -632,7 +632,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -646,12 +646,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -665,12 +665,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -684,7 +684,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -857,7 +857,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -871,12 +871,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -890,12 +890,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -909,7 +909,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -1082,7 +1082,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -1096,12 +1096,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -1115,12 +1115,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -1134,7 +1134,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -1307,7 +1307,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -1321,12 +1321,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -1340,12 +1340,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -1359,7 +1359,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -1532,7 +1532,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -1546,12 +1546,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -1565,12 +1565,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -1584,7 +1584,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -1757,7 +1757,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -1771,12 +1771,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -1790,12 +1790,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -1809,7 +1809,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -1982,7 +1982,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -1996,12 +1996,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -2015,12 +2015,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -2034,7 +2034,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -2207,7 +2207,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -2221,12 +2221,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -2240,12 +2240,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -2259,7 +2259,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -2432,7 +2432,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -2446,12 +2446,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -2465,12 +2465,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -2484,7 +2484,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -2657,7 +2657,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -2671,12 +2671,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -2690,12 +2690,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -2709,7 +2709,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -2882,7 +2882,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -2896,12 +2896,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -2915,12 +2915,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -2934,7 +2934,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -3107,7 +3107,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -3121,12 +3121,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -3140,12 +3140,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -3159,7 +3159,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -3332,7 +3332,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -3346,12 +3346,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -3365,12 +3365,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -3384,7 +3384,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -3557,7 +3557,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -3571,12 +3571,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -3590,12 +3590,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -3609,7 +3609,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -3782,7 +3782,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -3796,12 +3796,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -3815,12 +3815,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -3834,7 +3834,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -4007,7 +4007,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -4021,12 +4021,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -4040,12 +4040,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -4059,7 +4059,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -4232,7 +4232,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -4246,12 +4246,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -4265,12 +4265,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -4284,7 +4284,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -4457,7 +4457,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -4471,12 +4471,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -4490,12 +4490,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -4509,7 +4509,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -4682,7 +4682,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -4696,12 +4696,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -4715,12 +4715,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -4734,7 +4734,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -4907,7 +4907,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -4921,12 +4921,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -4940,12 +4940,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -4959,7 +4959,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -5132,7 +5132,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -5146,12 +5146,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -5165,12 +5165,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -5184,7 +5184,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -5357,7 +5357,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -5371,12 +5371,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -5390,12 +5390,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -5409,7 +5409,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -5572,7 +5572,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "value": "line000"
                 },
                 "to": [
-                  38.8,
+                  38.800000000000004,
                   3.2
                 ],
                 "type": "ToPoint",
@@ -5586,7 +5586,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  38.8,
+                  38.800000000000004,
                   3.2
                 ],
                 "tag": {
@@ -5597,8 +5597,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "value": "line001"
                 },
                 "to": [
-                  38.8,
-                  38.8
+                  38.800000000000004,
+                  38.800000000000004
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -5611,8 +5611,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  38.8,
-                  38.8
+                  38.800000000000004,
+                  38.800000000000004
                 ],
                 "tag": {
                   "commentStart": 2534,
@@ -5623,7 +5623,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "to": [
                   3.2,
-                  38.8
+                  38.800000000000004
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -5637,7 +5637,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "from": [
                   3.2,
-                  38.8
+                  38.800000000000004
                 ],
                 "tag": {
                   "commentStart": 2561,
@@ -5892,7 +5892,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "value": "line000"
                 },
                 "to": [
-                  38.8,
+                  38.800000000000004,
                   3.2
                 ],
                 "type": "ToPoint",
@@ -5906,7 +5906,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  38.8,
+                  38.800000000000004,
                   3.2
                 ],
                 "tag": {
@@ -5917,8 +5917,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "value": "line001"
                 },
                 "to": [
-                  38.8,
-                  38.8
+                  38.800000000000004,
+                  38.800000000000004
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -5931,8 +5931,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  38.8,
-                  38.8
+                  38.800000000000004,
+                  38.800000000000004
                 ],
                 "tag": {
                   "commentStart": 2534,
@@ -5943,7 +5943,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "to": [
                   3.2,
-                  38.8
+                  38.800000000000004
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -5957,7 +5957,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "from": [
                   3.2,
-                  38.8
+                  38.800000000000004
                 ],
                 "tag": {
                   "commentStart": 2561,
@@ -6212,7 +6212,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "value": "line000"
                 },
                 "to": [
-                  38.8,
+                  38.800000000000004,
                   3.2
                 ],
                 "type": "ToPoint",
@@ -6226,7 +6226,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  38.8,
+                  38.800000000000004,
                   3.2
                 ],
                 "tag": {
@@ -6237,8 +6237,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "value": "line001"
                 },
                 "to": [
-                  38.8,
-                  38.8
+                  38.800000000000004,
+                  38.800000000000004
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -6251,8 +6251,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  38.8,
-                  38.8
+                  38.800000000000004,
+                  38.800000000000004
                 ],
                 "tag": {
                   "commentStart": 2534,
@@ -6263,7 +6263,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "to": [
                   3.2,
-                  38.8
+                  38.800000000000004
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -6277,7 +6277,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "from": [
                   3.2,
-                  38.8
+                  38.800000000000004
                 ],
                 "tag": {
                   "commentStart": 2561,
@@ -6532,7 +6532,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "value": "line000"
                 },
                 "to": [
-                  38.8,
+                  38.800000000000004,
                   3.2
                 ],
                 "type": "ToPoint",
@@ -6546,7 +6546,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  38.8,
+                  38.800000000000004,
                   3.2
                 ],
                 "tag": {
@@ -6557,8 +6557,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "value": "line001"
                 },
                 "to": [
-                  38.8,
-                  38.8
+                  38.800000000000004,
+                  38.800000000000004
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -6571,8 +6571,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  38.8,
-                  38.8
+                  38.800000000000004,
+                  38.800000000000004
                 ],
                 "tag": {
                   "commentStart": 2534,
@@ -6583,7 +6583,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "to": [
                   3.2,
-                  38.8
+                  38.800000000000004
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -6597,7 +6597,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "from": [
                   3.2,
-                  38.8
+                  38.800000000000004
                 ],
                 "tag": {
                   "commentStart": 2561,
@@ -6852,7 +6852,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "value": "line000"
                 },
                 "to": [
-                  38.8,
+                  38.800000000000004,
                   3.2
                 ],
                 "type": "ToPoint",
@@ -6866,7 +6866,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  38.8,
+                  38.800000000000004,
                   3.2
                 ],
                 "tag": {
@@ -6877,8 +6877,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "value": "line001"
                 },
                 "to": [
-                  38.8,
-                  38.8
+                  38.800000000000004,
+                  38.800000000000004
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -6891,8 +6891,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  38.8,
-                  38.8
+                  38.800000000000004,
+                  38.800000000000004
                 ],
                 "tag": {
                   "commentStart": 2534,
@@ -6903,7 +6903,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "to": [
                   3.2,
-                  38.8
+                  38.800000000000004
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -6917,7 +6917,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "from": [
                   3.2,
-                  38.8
+                  38.800000000000004
                 ],
                 "tag": {
                   "commentStart": 2561,
@@ -7172,7 +7172,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "value": "line000"
                 },
                 "to": [
-                  38.8,
+                  38.800000000000004,
                   3.2
                 ],
                 "type": "ToPoint",
@@ -7186,7 +7186,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  38.8,
+                  38.800000000000004,
                   3.2
                 ],
                 "tag": {
@@ -7197,8 +7197,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "value": "line001"
                 },
                 "to": [
-                  38.8,
-                  38.8
+                  38.800000000000004,
+                  38.800000000000004
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -7211,8 +7211,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  38.8,
-                  38.8
+                  38.800000000000004,
+                  38.800000000000004
                 ],
                 "tag": {
                   "commentStart": 2534,
@@ -7223,7 +7223,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "to": [
                   3.2,
-                  38.8
+                  38.800000000000004
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -7237,7 +7237,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "from": [
                   3.2,
-                  38.8
+                  38.800000000000004
                 ],
                 "tag": {
                   "commentStart": 2561,
@@ -7538,7 +7538,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -7552,12 +7552,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -7571,12 +7571,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -7590,7 +7590,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -7763,7 +7763,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -7777,12 +7777,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -7796,12 +7796,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -7815,7 +7815,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -7988,7 +7988,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -8002,12 +8002,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -8021,12 +8021,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -8040,7 +8040,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -8213,7 +8213,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -8227,12 +8227,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -8246,12 +8246,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -8265,7 +8265,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -8438,7 +8438,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -8452,12 +8452,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -8471,12 +8471,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -8490,7 +8490,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -8663,7 +8663,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -8677,12 +8677,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -8696,12 +8696,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -8715,7 +8715,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -8888,7 +8888,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -8902,12 +8902,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -8921,12 +8921,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -8940,7 +8940,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -9113,7 +9113,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -9127,12 +9127,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -9146,12 +9146,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -9165,7 +9165,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -9338,7 +9338,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -9352,12 +9352,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -9371,12 +9371,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -9390,7 +9390,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -9563,7 +9563,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -9577,12 +9577,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -9596,12 +9596,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -9615,7 +9615,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -9788,7 +9788,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -9802,12 +9802,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -9821,12 +9821,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -9840,7 +9840,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -10013,7 +10013,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -10027,12 +10027,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -10046,12 +10046,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -10065,7 +10065,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -10238,7 +10238,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -10252,12 +10252,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -10271,12 +10271,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -10290,7 +10290,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -10463,7 +10463,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -10477,12 +10477,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -10496,12 +10496,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -10515,7 +10515,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -10688,7 +10688,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -10702,12 +10702,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -10721,12 +10721,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -10740,7 +10740,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -10913,7 +10913,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -10927,12 +10927,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -10946,12 +10946,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -10965,7 +10965,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -11138,7 +11138,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -11152,12 +11152,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -11171,12 +11171,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -11190,7 +11190,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -11363,7 +11363,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -11377,12 +11377,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -11396,12 +11396,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -11415,7 +11415,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -11588,7 +11588,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -11602,12 +11602,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -11621,12 +11621,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -11640,7 +11640,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -11813,7 +11813,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -11827,12 +11827,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -11846,12 +11846,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -11865,7 +11865,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -12038,7 +12038,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -12052,12 +12052,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -12071,12 +12071,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -12090,7 +12090,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -12263,7 +12263,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -12277,12 +12277,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -12296,12 +12296,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -12315,7 +12315,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -12488,7 +12488,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -12502,12 +12502,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -12521,12 +12521,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -12540,7 +12540,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -12713,7 +12713,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -12727,12 +12727,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -12746,12 +12746,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -12765,7 +12765,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -13302,7 +13302,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -13316,12 +13316,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -13335,12 +13335,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -13354,7 +13354,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -13527,7 +13527,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -13541,12 +13541,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -13560,12 +13560,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -13579,7 +13579,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -13752,7 +13752,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -13766,12 +13766,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -13785,12 +13785,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -13804,7 +13804,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -13977,7 +13977,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -13991,12 +13991,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -14010,12 +14010,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -14029,7 +14029,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -14365,7 +14365,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "value": "line000"
                       },
                       "to": [
-                        38.8,
+                        38.800000000000004,
                         3.2
                       ],
                       "type": "ToPoint",
@@ -14379,7 +14379,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        38.8,
+                        38.800000000000004,
                         3.2
                       ],
                       "tag": {
@@ -14390,8 +14390,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "value": "line001"
                       },
                       "to": [
-                        38.8,
-                        38.8
+                        38.800000000000004,
+                        38.800000000000004
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -14404,8 +14404,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        38.8,
-                        38.8
+                        38.800000000000004,
+                        38.800000000000004
                       ],
                       "tag": {
                         "commentStart": 2534,
@@ -14416,7 +14416,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       },
                       "to": [
                         3.2,
-                        38.8
+                        38.800000000000004
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -14430,7 +14430,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       },
                       "from": [
                         3.2,
-                        38.8
+                        38.800000000000004
                       ],
                       "tag": {
                         "commentStart": 2561,
@@ -14785,7 +14785,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "value": "line000"
                       },
                       "to": [
-                        38.8,
+                        38.800000000000004,
                         3.2
                       ],
                       "type": "ToPoint",
@@ -14799,7 +14799,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        38.8,
+                        38.800000000000004,
                         3.2
                       ],
                       "tag": {
@@ -14810,8 +14810,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "value": "line001"
                       },
                       "to": [
-                        38.8,
-                        38.8
+                        38.800000000000004,
+                        38.800000000000004
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -14824,8 +14824,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        38.8,
-                        38.8
+                        38.800000000000004,
+                        38.800000000000004
                       ],
                       "tag": {
                         "commentStart": 2534,
@@ -14836,7 +14836,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       },
                       "to": [
                         3.2,
-                        38.8
+                        38.800000000000004
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -14850,7 +14850,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       },
                       "from": [
                         3.2,
-                        38.8
+                        38.800000000000004
                       ],
                       "tag": {
                         "commentStart": 2561,
@@ -15205,7 +15205,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "value": "line000"
                       },
                       "to": [
-                        38.8,
+                        38.800000000000004,
                         3.2
                       ],
                       "type": "ToPoint",
@@ -15219,7 +15219,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        38.8,
+                        38.800000000000004,
                         3.2
                       ],
                       "tag": {
@@ -15230,8 +15230,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "value": "line001"
                       },
                       "to": [
-                        38.8,
-                        38.8
+                        38.800000000000004,
+                        38.800000000000004
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -15244,8 +15244,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        38.8,
-                        38.8
+                        38.800000000000004,
+                        38.800000000000004
                       ],
                       "tag": {
                         "commentStart": 2534,
@@ -15256,7 +15256,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       },
                       "to": [
                         3.2,
-                        38.8
+                        38.800000000000004
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -15270,7 +15270,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       },
                       "from": [
                         3.2,
-                        38.8
+                        38.800000000000004
                       ],
                       "tag": {
                         "commentStart": 2561,
@@ -15625,7 +15625,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "value": "line000"
                       },
                       "to": [
-                        38.8,
+                        38.800000000000004,
                         3.2
                       ],
                       "type": "ToPoint",
@@ -15639,7 +15639,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        38.8,
+                        38.800000000000004,
                         3.2
                       ],
                       "tag": {
@@ -15650,8 +15650,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "value": "line001"
                       },
                       "to": [
-                        38.8,
-                        38.8
+                        38.800000000000004,
+                        38.800000000000004
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -15664,8 +15664,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        38.8,
-                        38.8
+                        38.800000000000004,
+                        38.800000000000004
                       ],
                       "tag": {
                         "commentStart": 2534,
@@ -15676,7 +15676,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       },
                       "to": [
                         3.2,
-                        38.8
+                        38.800000000000004
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -15690,7 +15690,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       },
                       "from": [
                         3.2,
-                        38.8
+                        38.800000000000004
                       ],
                       "tag": {
                         "commentStart": 2561,
@@ -16053,7 +16053,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -16067,12 +16067,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -16086,12 +16086,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -16105,7 +16105,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -16278,7 +16278,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -16292,12 +16292,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -16311,12 +16311,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -16330,7 +16330,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -16503,7 +16503,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -16517,12 +16517,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -16536,12 +16536,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -16555,7 +16555,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -16728,7 +16728,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "type": "ToPoint",
@@ -16742,12 +16742,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   2.6
                 ],
                 "tag": null,
                 "to": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "type": "ToPoint",
@@ -16761,12 +16761,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.4,
+                  2.399999999999999,
                   0.8
                 ],
                 "tag": null,
                 "to": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -16780,7 +16780,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.2,
+                  3.199999999999999,
                   0.0
                 ],
                 "tag": null,
@@ -16940,7 +16940,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "value": "line000"
             },
             "to": [
-              38.8,
+              38.800000000000004,
               3.2
             ],
             "type": "ToPoint",
@@ -16954,7 +16954,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "sourceRange": []
             },
             "from": [
-              38.8,
+              38.800000000000004,
               3.2
             ],
             "tag": {
@@ -16965,8 +16965,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "value": "line001"
             },
             "to": [
-              38.8,
-              38.8
+              38.800000000000004,
+              38.800000000000004
             ],
             "type": "ToPoint",
             "units": {
@@ -16979,8 +16979,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "sourceRange": []
             },
             "from": [
-              38.8,
-              38.8
+              38.800000000000004,
+              38.800000000000004
             ],
             "tag": {
               "commentStart": 2534,
@@ -16991,7 +16991,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "to": [
               3.2,
-              38.8
+              38.800000000000004
             ],
             "type": "ToPoint",
             "units": {
@@ -17005,7 +17005,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "from": [
               3.2,
-              38.8
+              38.800000000000004
             ],
             "tag": {
               "commentStart": 2561,
@@ -17275,7 +17275,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             ],
             "tag": null,
             "to": [
-              2.4,
+              2.399999999999999,
               2.6
             ],
             "type": "ToPoint",
@@ -17289,12 +17289,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "sourceRange": []
             },
             "from": [
-              2.4,
+              2.399999999999999,
               2.6
             ],
             "tag": null,
             "to": [
-              2.4,
+              2.399999999999999,
               0.8
             ],
             "type": "ToPoint",
@@ -17308,12 +17308,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "sourceRange": []
             },
             "from": [
-              2.4,
+              2.399999999999999,
               0.8
             ],
             "tag": null,
             "to": [
-              3.2,
+              3.199999999999999,
               0.0
             ],
             "type": "ToPoint",
@@ -17327,7 +17327,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "sourceRange": []
             },
             "from": [
-              3.2,
+              3.199999999999999,
               0.0
             ],
             "tag": null,
@@ -17500,7 +17500,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             ],
             "tag": null,
             "to": [
-              2.4,
+              2.399999999999999,
               2.6
             ],
             "type": "ToPoint",
@@ -17514,12 +17514,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "sourceRange": []
             },
             "from": [
-              2.4,
+              2.399999999999999,
               2.6
             ],
             "tag": null,
             "to": [
-              2.4,
+              2.399999999999999,
               0.8
             ],
             "type": "ToPoint",
@@ -17533,12 +17533,12 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "sourceRange": []
             },
             "from": [
-              2.4,
+              2.399999999999999,
               0.8
             ],
             "tag": null,
             "to": [
-              3.2,
+              3.199999999999999,
               0.0
             ],
             "type": "ToPoint",
@@ -17552,7 +17552,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "sourceRange": []
             },
             "from": [
-              3.2,
+              3.199999999999999,
               0.0
             ],
             "tag": null,
