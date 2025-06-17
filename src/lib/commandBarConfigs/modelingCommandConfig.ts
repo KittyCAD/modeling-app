@@ -466,6 +466,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
         inputType: 'text',
         required: false,
+        hidden: true,
       },
       sketches: {
         inputType: 'selection',
@@ -486,27 +487,27 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       axis: {
-        required: (commandContext) =>
-          ['Axis'].includes(
-            commandContext.argumentsToSubmit.axisOrEdge as string
-          ),
+        required: (context) =>
+          ['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
         inputType: 'options',
         displayName: 'Sketch Axis',
         options: [
           { name: 'X Axis', isCurrent: true, value: 'X' },
           { name: 'Y Axis', isCurrent: false, value: 'Y' },
         ],
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: (context) =>
+          Boolean(context.argumentsToSubmit.nodeToEdit) ||
+          !['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
       },
       edge: {
-        required: (commandContext) =>
-          ['Edge'].includes(
-            commandContext.argumentsToSubmit.axisOrEdge as string
-          ),
+        required: (context) =>
+          ['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: (context) =>
+          Boolean(context.argumentsToSubmit.nodeToEdit) ||
+          !['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
       },
       angle: {
         inputType: 'kcl',

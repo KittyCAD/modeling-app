@@ -1829,7 +1829,6 @@ profile002 = startProfile(sketch002, at = [0, 0])
           currentArgKey: 'sketches',
           currentArgValue: '',
           headerArguments: {
-            Sectional: '',
             Profiles: '',
             Path: '',
           },
@@ -1843,7 +1842,6 @@ profile002 = startProfile(sketch002, at = [0, 0])
           currentArgKey: 'path',
           currentArgValue: '',
           headerArguments: {
-            Sectional: '',
             Profiles: '1 profile',
             Path: '',
           },
@@ -1856,7 +1854,6 @@ profile002 = startProfile(sketch002, at = [0, 0])
           currentArgKey: 'path',
           currentArgValue: '',
           headerArguments: {
-            Sectional: '',
             Profiles: '1 profile',
             Path: '',
           },
@@ -1869,7 +1866,6 @@ profile002 = startProfile(sketch002, at = [0, 0])
           headerArguments: {
             Profiles: '1 profile',
             Path: '1 segment',
-            Sectional: '',
           },
           stage: 'review',
         })
@@ -1894,6 +1890,9 @@ profile002 = startProfile(sketch002, at = [0, 0])
           0
         )
         await operationButton.dblclick({ button: 'left' })
+        await page
+          .getByRole('button', { name: 'sectional', exact: false })
+          .click()
         await cmdBar.expectState({
           commandName: 'Sweep',
           currentArgKey: 'sectional',
@@ -1971,7 +1970,6 @@ profile001 = ${circleCode}`
         currentArgKey: 'sketches',
         currentArgValue: '',
         headerArguments: {
-          Sectional: '',
           Profiles: '',
           Path: '',
         },
@@ -1986,7 +1984,6 @@ profile001 = ${circleCode}`
         currentArgKey: 'path',
         currentArgValue: '',
         headerArguments: {
-          Sectional: '',
           Profiles: '1 profile',
           Path: '',
         },
@@ -2000,7 +1997,6 @@ profile001 = ${circleCode}`
         currentArgKey: 'path',
         currentArgValue: '',
         headerArguments: {
-          Sectional: '',
           Profiles: '1 profile',
           Path: '',
         },
@@ -2013,7 +2009,6 @@ profile001 = ${circleCode}`
         headerArguments: {
           Profiles: '1 profile',
           Path: '1 helix',
-          Sectional: '',
         },
         stage: 'review',
       })
@@ -4734,7 +4729,6 @@ path001 = startProfile(sketch001, at = [0, 0])
         headerArguments: {
           Profiles: '',
           Path: '',
-          Sectional: '',
         },
         highlightedHeaderArg: 'Profiles',
         commandName: 'Sweep',
@@ -4747,7 +4741,6 @@ path001 = startProfile(sketch001, at = [0, 0])
         headerArguments: {
           Profiles: '2 profiles',
           Path: '',
-          Sectional: '',
         },
         highlightedHeaderArg: 'path',
         commandName: 'Sweep',
@@ -4760,7 +4753,6 @@ path001 = startProfile(sketch001, at = [0, 0])
         headerArguments: {
           Profiles: '2 profiles',
           Path: '1 segment',
-          Sectional: '',
         },
         commandName: 'Sweep',
       })
