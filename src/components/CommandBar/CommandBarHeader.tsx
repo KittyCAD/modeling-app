@@ -222,11 +222,6 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                           </Tooltip>
                         </>
                       )}
-                    {arg.inputType === 'options' &&
-                      typeof argValue === 'boolean' &&
-                      argValue && (
-                        <CustomIcon name="checkmark" className="w-4 h-4" />
-                      )}
                   </button>
                 )
               }
