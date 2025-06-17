@@ -35,7 +35,7 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import { codeManagerHistoryCompartment } from '@src/lang/codeManager'
-import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import { codeManager, kclManager } from '@src/lib/singletons'
 
 declare global {
   interface Window {
