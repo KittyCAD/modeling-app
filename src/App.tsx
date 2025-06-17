@@ -73,7 +73,6 @@ maybeWriteToDisk()
   .catch(() => {})
 
 export function App() {
-  // temp pls remove
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
