@@ -102,6 +102,7 @@ export const ProjectExplorer = ({
     if (project && project.children) {
       // moves all folders up and files down, files are sorted within folders
       // gotcha: this only sorts the current level, not recursive for all children!
+
       const sortedData = sortFilesAndDirectories(project.children)
       flattenedData = flattenProject(sortedData, project.name)
       // insert fake row if one is present
@@ -178,7 +179,7 @@ export const ProjectExplorer = ({
     // update the callback for rowContextMenu to be the index based on rendering
     // Gotcha: you will see if you spam the context menu you will not be able to select a new one
     // until closing
-    requestedRowsToRender.forEach((r, index)=>{
+    requestedRowsToRender.forEach((r, index) => {
       r.rowContextMenu = () => {
         setActiveIndex(index)
       }

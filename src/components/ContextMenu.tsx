@@ -15,7 +15,7 @@ export interface ContextMenuProps
   menuTargetElement?: RefObject<HTMLElement>
   guard?: (e: globalThis.MouseEvent) => boolean
   event?: 'contextmenu' | 'mouseup'
-  callback?: (event: globalThis.MouseEvent)=> void
+  callback?: (event: globalThis.MouseEvent) => void
 }
 
 const DefaultContextMenuItems = [
@@ -46,7 +46,7 @@ export function ContextMenu({
   const handleContextMenu = useCallback(
     (e: globalThis.MouseEvent) => {
       if (callback) {
-         callback(e)
+        callback(e)
       }
       if (guard && !guard(e)) return
       e.preventDefault()

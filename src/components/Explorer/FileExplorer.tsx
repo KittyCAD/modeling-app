@@ -170,7 +170,7 @@ function FileExplorerRowContextMenu({
   onDelete,
   onClone,
   onOpenInNewWindow,
-  callback
+  callback,
 }: FileExplorerRowContextMenuProps) {
   const platform = usePlatform()
   const metaKey = platform === 'macos' ? '⌘' : 'Ctrl'
