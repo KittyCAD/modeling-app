@@ -82,7 +82,7 @@ description: Artifact commands keyboard.kcl
           "type": "line",
           "end": {
             "x": -3.556,
-            "y": 17.272,
+            "y": 17.272000000000002,
             "z": 0.0
           },
           "relative": true
@@ -98,8 +98,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 148.743,
-            "y": 18.263,
+            "x": 148.74296628496853,
+            "y": 18.263339802695402,
             "z": 0.0
           },
           "relative": true
@@ -295,8 +295,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 29.21,
-          "y": 19.05,
+          "x": 29.209999999999997,
+          "y": 19.049999999999997,
           "z": 0.0
         }
       }
@@ -317,8 +317,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 19.05,
-            "y": 19.05
+            "x": 19.049999999999997,
+            "y": 19.049999999999997
           },
           "radius": 10.16,
           "start": {
@@ -367,8 +367,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 121.92,
-          "y": 19.05,
+          "x": 121.92000000000002,
+          "y": 19.049999999999997,
           "z": 0.0
         }
       }
@@ -390,7 +390,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 111.76,
-            "y": 19.05
+            "y": 19.049999999999997
           },
           "radius": 10.16,
           "start": {
@@ -439,7 +439,7 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 28.702,
+          "x": 28.701999999999995,
           "y": 326.39,
           "z": 0.0
         }
@@ -461,7 +461,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 18.542,
+            "x": 18.541999999999998,
             "y": 326.39
           },
           "radius": 10.16,
@@ -511,7 +511,7 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 121.92,
+          "x": 121.92000000000002,
           "y": 326.39,
           "z": 0.0
         }
@@ -789,7 +789,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -798,8 +798,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -826,8 +826,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -845,8 +845,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.62,
-          "y": 7.62,
+          "x": 7.619999999999999,
+          "y": 7.620000000000001,
           "z": 0.0
         }
       }
@@ -868,7 +868,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 10.16,
-            "y": 7.62
+            "y": 7.620000000000001
           },
           "radius": 2.54,
           "start": {
@@ -892,7 +892,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 22.86,
+            "x": 22.860000000000003,
             "y": 0.0,
             "z": 0.0
           },
@@ -925,8 +925,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -958,7 +958,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -22.86,
+            "x": -22.860000000000007,
             "y": -0.0,
             "z": 0.0
           },
@@ -991,8 +991,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.62,
-            "y": 7.62,
+            "x": 7.619999999999999,
+            "y": 7.620000000000001,
             "z": 0.0
           },
           "relative": false
@@ -1018,8 +1018,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -1102,7 +1102,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -1111,8 +1111,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -1139,8 +1139,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -1158,8 +1158,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 38.1,
-          "y": 7.62,
+          "x": 38.099999999999994,
+          "y": 7.620000000000001,
           "z": 0.0
         }
       }
@@ -1181,7 +1181,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 40.64,
-            "y": 7.62
+            "y": 7.620000000000001
           },
           "radius": 2.54,
           "start": {
@@ -1205,7 +1205,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.24,
+            "x": 15.240000000000002,
             "y": 0.0,
             "z": 0.0
           },
@@ -1238,8 +1238,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -1271,7 +1271,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -15.24,
+            "x": -15.240000000000002,
             "y": -0.0,
             "z": 0.0
           },
@@ -1304,8 +1304,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.1,
-            "y": 7.62,
+            "x": 38.099999999999994,
+            "y": 7.620000000000001,
             "z": 0.0
           },
           "relative": false
@@ -1331,8 +1331,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -1474,7 +1474,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -1483,8 +1483,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -1511,8 +1511,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -1530,8 +1530,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 106.68,
-          "y": 7.62,
+          "x": 106.67999999999999,
+          "y": 7.620000000000001,
           "z": 0.0
         }
       }
@@ -1552,8 +1552,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 109.22,
-            "y": 7.62
+            "x": 109.21999999999998,
+            "y": 7.620000000000001
           },
           "radius": 2.54,
           "start": {
@@ -1610,8 +1610,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -1643,7 +1643,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -127.0,
+            "x": -127.00000000000001,
             "y": -0.0,
             "z": 0.0
           },
@@ -1676,8 +1676,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 106.68,
-            "y": 7.62,
+            "x": 106.67999999999999,
+            "y": 7.620000000000001,
             "z": 0.0
           },
           "relative": false
@@ -1703,8 +1703,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -1787,7 +1787,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -1796,8 +1796,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -1824,8 +1824,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -1843,8 +1843,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 241.3,
-          "y": 7.62,
+          "x": 241.29999999999998,
+          "y": 7.620000000000001,
           "z": 0.0
         }
       }
@@ -1865,8 +1865,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 243.84,
-            "y": 7.62
+            "x": 243.83999999999997,
+            "y": 7.620000000000001
           },
           "radius": 2.54,
           "start": {
@@ -1890,7 +1890,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.24,
+            "x": 15.240000000000002,
             "y": 0.0,
             "z": 0.0
           },
@@ -1923,8 +1923,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -1956,7 +1956,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -15.24,
+            "x": -15.23999999999999,
             "y": -0.0,
             "z": 0.0
           },
@@ -1989,8 +1989,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 241.3,
-            "y": 7.62,
+            "x": 241.29999999999998,
+            "y": 7.620000000000001,
             "z": 0.0
           },
           "relative": false
@@ -2016,8 +2016,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -2100,7 +2100,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -2109,8 +2109,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -2137,8 +2137,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -2156,8 +2156,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 264.16,
-          "y": 7.62,
+          "x": 264.15999999999997,
+          "y": 7.620000000000001,
           "z": 0.0
         }
       }
@@ -2179,7 +2179,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 266.7,
-            "y": 7.62
+            "y": 7.620000000000001
           },
           "radius": 2.54,
           "start": {
@@ -2203,7 +2203,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.24,
+            "x": 15.240000000000002,
             "y": 0.0,
             "z": 0.0
           },
@@ -2236,8 +2236,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -2269,7 +2269,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -15.24,
+            "x": -15.23999999999999,
             "y": -0.0,
             "z": 0.0
           },
@@ -2302,8 +2302,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 264.16,
-            "y": 7.62,
+            "x": 264.15999999999997,
+            "y": 7.620000000000001,
             "z": 0.0
           },
           "relative": false
@@ -2329,8 +2329,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -2413,7 +2413,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -2422,8 +2422,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -2450,8 +2450,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -2470,7 +2470,7 @@ description: Artifact commands keyboard.kcl
         "path": "[uuid]",
         "to": {
           "x": 287.02,
-          "y": 7.62,
+          "y": 7.620000000000001,
           "z": 0.0
         }
       }
@@ -2492,7 +2492,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 289.56,
-            "y": 7.62
+            "y": 7.620000000000001
           },
           "radius": 2.54,
           "start": {
@@ -2516,7 +2516,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 22.86,
+            "x": 22.860000000000003,
             "y": 0.0,
             "z": 0.0
           },
@@ -2549,8 +2549,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -2582,7 +2582,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -22.86,
+            "x": -22.860000000000007,
             "y": -0.0,
             "z": 0.0
           },
@@ -2616,7 +2616,7 @@ description: Artifact commands keyboard.kcl
           "type": "line",
           "end": {
             "x": 287.02,
-            "y": 7.62,
+            "y": 7.620000000000001,
             "z": 0.0
           },
           "relative": false
@@ -2642,8 +2642,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -2726,7 +2726,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -2735,8 +2735,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -2763,8 +2763,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -2783,7 +2783,7 @@ description: Artifact commands keyboard.kcl
         "path": "[uuid]",
         "to": {
           "x": 317.5,
-          "y": 7.62,
+          "y": 7.620000000000001,
           "z": 0.0
         }
       }
@@ -2804,8 +2804,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 320.04,
-            "y": 7.62
+            "x": 320.03999999999996,
+            "y": 7.620000000000001
           },
           "radius": 2.54,
           "start": {
@@ -2829,7 +2829,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.24,
+            "x": 15.240000000000002,
             "y": 0.0,
             "z": 0.0
           },
@@ -2862,8 +2862,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -2895,7 +2895,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -15.24,
+            "x": -15.23999999999999,
             "y": -0.0,
             "z": 0.0
           },
@@ -2929,7 +2929,7 @@ description: Artifact commands keyboard.kcl
           "type": "line",
           "end": {
             "x": 317.5,
-            "y": 7.62,
+            "y": 7.620000000000001,
             "z": 0.0
           },
           "relative": false
@@ -2955,8 +2955,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -3039,7 +3039,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -3048,8 +3048,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -3076,8 +3076,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -3095,8 +3095,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.62,
-          "y": 30.48,
+          "x": 7.620000000000001,
+          "y": 30.480000000000004,
           "z": 0.0
         }
       }
@@ -3118,7 +3118,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 10.16,
-            "y": 30.48
+            "y": 30.480000000000004
           },
           "radius": 2.54,
           "start": {
@@ -3142,7 +3142,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.1,
+            "x": 38.099999999999994,
             "y": 0.0,
             "z": 0.0
           },
@@ -3175,8 +3175,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -3208,7 +3208,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -38.1,
+            "x": -38.099999999999994,
             "y": -0.0,
             "z": 0.0
           },
@@ -3241,8 +3241,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.62,
-            "y": 30.48,
+            "x": 7.620000000000001,
+            "y": 30.480000000000004,
             "z": 0.0
           },
           "relative": false
@@ -3268,8 +3268,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -3352,7 +3352,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -3361,8 +3361,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -3389,8 +3389,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -3408,8 +3408,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 53.34,
-          "y": 30.48,
+          "x": 53.339999999999996,
+          "y": 30.480000000000004,
           "z": 0.0
         }
       }
@@ -3431,7 +3431,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 55.88,
-            "y": 30.48
+            "y": 30.480000000000004
           },
           "radius": 2.54,
           "start": {
@@ -3455,7 +3455,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.24,
+            "x": 15.240000000000002,
             "y": 0.0,
             "z": 0.0
           },
@@ -3488,8 +3488,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -3521,7 +3521,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -15.24,
+            "x": -15.240000000000002,
             "y": -0.0,
             "z": 0.0
           },
@@ -3554,8 +3554,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 53.34,
-            "y": 30.48,
+            "x": 53.339999999999996,
+            "y": 30.480000000000004,
             "z": 0.0
           },
           "relative": false
@@ -3581,8 +3581,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -3832,7 +3832,7 @@ description: Artifact commands keyboard.kcl
           [
             {
               "translate": {
-                "x": 160.02,
+                "x": 160.01999999999998,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -3927,7 +3927,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -3936,8 +3936,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -3964,8 +3964,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -3984,7 +3984,7 @@ description: Artifact commands keyboard.kcl
         "path": "[uuid]",
         "to": {
           "x": 281.94,
-          "y": 30.48,
+          "y": 30.480000000000004,
           "z": 0.0
         }
       }
@@ -4005,8 +4005,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 284.48,
-            "y": 30.48
+            "x": 284.47999999999996,
+            "y": 30.480000000000004
           },
           "radius": 2.54,
           "start": {
@@ -4063,8 +4063,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -4130,7 +4130,7 @@ description: Artifact commands keyboard.kcl
           "type": "line",
           "end": {
             "x": 281.94,
-            "y": 30.48,
+            "y": 30.480000000000004,
             "z": 0.0
           },
           "relative": false
@@ -4156,8 +4156,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -4240,7 +4240,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -4249,8 +4249,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -4277,8 +4277,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -4296,8 +4296,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.62,
-          "y": 53.34,
+          "x": 7.620000000000001,
+          "y": 53.339999999999996,
           "z": 0.0
         }
       }
@@ -4319,7 +4319,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 10.16,
-            "y": 53.34
+            "y": 53.339999999999996
           },
           "radius": 2.54,
           "start": {
@@ -4343,7 +4343,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25.4,
+            "x": 25.400000000000006,
             "y": 0.0,
             "z": 0.0
           },
@@ -4376,8 +4376,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -4409,7 +4409,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -25.4,
+            "x": -25.40000000000001,
             "y": -0.0,
             "z": 0.0
           },
@@ -4442,8 +4442,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.62,
-            "y": 53.34,
+            "x": 7.620000000000001,
+            "y": 53.339999999999996,
             "z": 0.0
           },
           "relative": false
@@ -4469,8 +4469,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -4553,7 +4553,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -4562,8 +4562,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -4590,8 +4590,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -4610,7 +4610,7 @@ description: Artifact commands keyboard.kcl
         "path": "[uuid]",
         "to": {
           "x": 40.64,
-          "y": 53.34,
+          "y": 53.339999999999996,
           "z": 0.0
         }
       }
@@ -4632,7 +4632,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 43.18,
-            "y": 53.34
+            "y": 53.339999999999996
           },
           "radius": 2.54,
           "start": {
@@ -4656,7 +4656,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.24,
+            "x": 15.240000000000002,
             "y": 0.0,
             "z": 0.0
           },
@@ -4689,8 +4689,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -4722,7 +4722,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -15.24,
+            "x": -15.240000000000002,
             "y": -0.0,
             "z": 0.0
           },
@@ -4756,7 +4756,7 @@ description: Artifact commands keyboard.kcl
           "type": "line",
           "end": {
             "x": 40.64,
-            "y": 53.34,
+            "y": 53.339999999999996,
             "z": 0.0
           },
           "relative": false
@@ -4782,8 +4782,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -5033,7 +5033,7 @@ description: Artifact commands keyboard.kcl
           [
             {
               "translate": {
-                "x": 160.02,
+                "x": 160.01999999999998,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -5157,7 +5157,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -5166,8 +5166,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -5194,8 +5194,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -5213,8 +5213,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 292.1,
-          "y": 53.34,
+          "x": 292.09999999999997,
+          "y": 53.339999999999996,
           "z": 0.0
         }
       }
@@ -5236,7 +5236,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 294.64,
-            "y": 53.34
+            "y": 53.339999999999996
           },
           "radius": 2.54,
           "start": {
@@ -5260,7 +5260,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 40.64,
+            "x": 40.63999999999999,
             "y": 0.0,
             "z": 0.0
           },
@@ -5293,8 +5293,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -5326,7 +5326,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -40.64,
+            "x": -40.639999999999986,
             "y": -0.0,
             "z": 0.0
           },
@@ -5359,8 +5359,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 292.1,
-            "y": 53.34,
+            "x": 292.09999999999997,
+            "y": 53.339999999999996,
             "z": 0.0
           },
           "relative": false
@@ -5386,8 +5386,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -5470,7 +5470,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -5479,8 +5479,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -5507,8 +5507,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -5526,7 +5526,7 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.62,
+          "x": 7.620000000000001,
           "y": 76.2,
           "z": 0.0
         }
@@ -5573,7 +5573,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 17.78,
+            "x": 17.779999999999998,
             "y": 0.0,
             "z": 0.0
           },
@@ -5606,8 +5606,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -5672,7 +5672,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.62,
+            "x": 7.620000000000001,
             "y": 76.2,
             "z": 0.0
           },
@@ -5699,8 +5699,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -5783,7 +5783,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -5792,8 +5792,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -5820,8 +5820,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -5839,7 +5839,7 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 33.02,
+          "x": 33.019999999999996,
           "y": 76.2,
           "z": 0.0
         }
@@ -5886,7 +5886,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.24,
+            "x": 15.240000000000002,
             "y": 0.0,
             "z": 0.0
           },
@@ -5919,8 +5919,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -5952,7 +5952,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -15.24,
+            "x": -15.239999999999995,
             "y": -0.0,
             "z": 0.0
           },
@@ -5985,7 +5985,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.02,
+            "x": 33.019999999999996,
             "y": 76.2,
             "z": 0.0
           },
@@ -6012,8 +6012,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -6263,7 +6263,7 @@ description: Artifact commands keyboard.kcl
           [
             {
               "translate": {
-                "x": 160.02,
+                "x": 160.01999999999998,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -6379,7 +6379,7 @@ description: Artifact commands keyboard.kcl
           [
             {
               "translate": {
-                "x": 251.46,
+                "x": 251.45999999999998,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -6416,7 +6416,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -6425,8 +6425,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -6453,8 +6453,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -6472,7 +6472,7 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 307.34,
+          "x": 307.34000000000003,
           "y": 76.2,
           "z": 0.0
         }
@@ -6552,8 +6552,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -6618,7 +6618,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 307.34,
+            "x": 307.34000000000003,
             "y": 76.2,
             "z": 0.0
           },
@@ -6645,8 +6645,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -6729,7 +6729,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -6738,8 +6738,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -6766,8 +6766,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -6785,8 +6785,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.62,
-          "y": 99.06,
+          "x": 7.620000000000001,
+          "y": 99.06000000000002,
           "z": 0.0
         }
       }
@@ -6808,7 +6808,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 10.16,
-            "y": 99.06
+            "y": 99.06000000000002
           },
           "radius": 2.54,
           "start": {
@@ -6832,7 +6832,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.24,
+            "x": 15.240000000000002,
             "y": 0.0,
             "z": 0.0
           },
@@ -6865,8 +6865,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -6898,7 +6898,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -15.24,
+            "x": -15.239999999999998,
             "y": -0.0,
             "z": 0.0
           },
@@ -6931,8 +6931,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.62,
-            "y": 99.06,
+            "x": 7.620000000000001,
+            "y": 99.06000000000002,
             "z": 0.0
           },
           "relative": false
@@ -6958,8 +6958,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -7209,7 +7209,7 @@ description: Artifact commands keyboard.kcl
           [
             {
               "translate": {
-                "x": 160.02,
+                "x": 160.01999999999998,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -7325,7 +7325,7 @@ description: Artifact commands keyboard.kcl
           [
             {
               "translate": {
-                "x": 251.46,
+                "x": 251.45999999999998,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -7391,7 +7391,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -7400,8 +7400,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -7428,8 +7428,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -7447,8 +7447,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 304.8,
-          "y": 99.06,
+          "x": 304.79999999999995,
+          "y": 99.06000000000002,
           "z": 0.0
         }
       }
@@ -7470,7 +7470,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 307.34,
-            "y": 99.06
+            "y": 99.06000000000002
           },
           "radius": 2.54,
           "start": {
@@ -7527,8 +7527,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 15.24,
+            "x": 0.0000000000000009331808609502833,
+            "y": 15.240000000000002,
             "z": 0.0
           },
           "relative": true
@@ -7560,7 +7560,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -27.94,
+            "x": -27.93999999999999,
             "y": -0.0,
             "z": 0.0
           },
@@ -7593,8 +7593,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 304.8,
-            "y": 99.06,
+            "x": 304.79999999999995,
+            "y": 99.06000000000002,
             "z": 0.0
           },
           "relative": false
@@ -7620,8 +7620,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -7704,7 +7704,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -7713,8 +7713,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -7741,8 +7741,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -7760,8 +7760,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.62,
-          "y": 121.92,
+          "x": 7.620000000000001,
+          "y": 121.92000000000002,
           "z": 0.0
         }
       }
@@ -7783,7 +7783,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 10.16,
-            "y": 121.92
+            "y": 121.92000000000002
           },
           "radius": 2.54,
           "start": {
@@ -7807,7 +7807,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 22.86,
+            "x": 22.860000000000003,
             "y": 0.0,
             "z": 0.0
           },
@@ -7840,8 +7840,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 7.112,
+            "x": 0.00000000000000043548440177679877,
+            "y": 7.111999999999999,
             "z": 0.0
           },
           "relative": true
@@ -7873,7 +7873,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -22.86,
+            "x": -22.860000000000007,
             "y": -0.0,
             "z": 0.0
           },
@@ -7906,8 +7906,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.62,
-            "y": 121.92,
+            "x": 7.620000000000001,
+            "y": 121.92000000000002,
             "z": 0.0
           },
           "relative": false
@@ -7933,8 +7933,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -8017,7 +8017,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -8026,8 +8026,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -8054,8 +8054,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -8073,8 +8073,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 38.1,
-          "y": 121.92,
+          "x": 38.099999999999994,
+          "y": 121.92000000000002,
           "z": 0.0
         }
       }
@@ -8096,7 +8096,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 40.64,
-            "y": 121.92
+            "y": 121.92000000000002
           },
           "radius": 2.54,
           "start": {
@@ -8120,7 +8120,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.24,
+            "x": 15.240000000000002,
             "y": 0.0,
             "z": 0.0
           },
@@ -8153,8 +8153,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 7.112,
+            "x": 0.00000000000000043548440177679877,
+            "y": 7.111999999999999,
             "z": 0.0
           },
           "relative": true
@@ -8186,7 +8186,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -15.24,
+            "x": -15.240000000000002,
             "y": -0.0,
             "z": 0.0
           },
@@ -8219,8 +8219,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.1,
-            "y": 121.92,
+            "x": 38.099999999999994,
+            "y": 121.92000000000002,
             "z": 0.0
           },
           "relative": false
@@ -8246,8 +8246,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -8497,7 +8497,7 @@ description: Artifact commands keyboard.kcl
           [
             {
               "translate": {
-                "x": 160.02,
+                "x": 160.01999999999998,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -8613,7 +8613,7 @@ description: Artifact commands keyboard.kcl
           [
             {
               "translate": {
-                "x": 251.46,
+                "x": 251.45999999999998,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -8650,7 +8650,7 @@ description: Artifact commands keyboard.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 17.78
+          "z": 17.779999999999998
         },
         "x_axis": {
           "x": 1.0,
@@ -8659,8 +8659,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -8687,8 +8687,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -8707,7 +8707,7 @@ description: Artifact commands keyboard.kcl
         "path": "[uuid]",
         "to": {
           "x": 312.42,
-          "y": 121.92,
+          "y": 121.92000000000002,
           "z": 0.0
         }
       }
@@ -8729,7 +8729,7 @@ description: Artifact commands keyboard.kcl
           "type": "arc",
           "center": {
             "x": 314.96,
-            "y": 121.92
+            "y": 121.92000000000002
           },
           "radius": 2.54,
           "start": {
@@ -8786,8 +8786,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 7.112,
+            "x": 0.00000000000000043548440177679877,
+            "y": 7.111999999999999,
             "z": 0.0
           },
           "relative": true
@@ -8819,7 +8819,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -20.32,
+            "x": -20.320000000000018,
             "y": -0.0,
             "z": 0.0
           },
@@ -8853,7 +8853,7 @@ description: Artifact commands keyboard.kcl
           "type": "line",
           "end": {
             "x": 312.42,
-            "y": 121.92,
+            "y": 121.92000000000002,
             "z": 0.0
           },
           "relative": false
@@ -8879,8 +8879,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -8972,8 +8972,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -9000,8 +9000,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -9019,8 +9019,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 58.42,
-          "y": 34.544,
+          "x": 58.419999999999995,
+          "y": 34.544000000000004,
           "z": 0.0
         }
       }
@@ -9042,7 +9042,7 @@ description: Artifact commands keyboard.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -1.524,
+            "y": -1.5239999999999998,
             "z": 0.0
           },
           "relative": true
@@ -9058,7 +9058,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.524,
+            "x": 1.5239999999999998,
             "y": 0.0,
             "z": 0.0
           },
@@ -9075,8 +9075,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 61.468,
-            "y": 34.663,
+            "x": 61.467999999999996,
+            "y": 34.66289210158192,
             "z": 0.0
           },
           "relative": false
@@ -9092,8 +9092,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 61.468,
-            "y": 33.02,
+            "x": 61.467999999999996,
+            "y": 33.019999999999996,
             "z": 0.0
           },
           "relative": false
@@ -9109,7 +9109,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.401,
+            "x": 6.400799999999999,
             "y": 0.0,
             "z": 0.0
           },
@@ -9143,7 +9143,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.791,
+            "x": -5.791199999999999,
             "y": 0.0,
             "z": 0.0
           },
@@ -9160,8 +9160,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 67.869,
-            "y": 41.549,
+            "x": 67.8688,
+            "y": 41.548989986011286,
             "z": 0.0
           },
           "relative": false
@@ -9178,7 +9178,7 @@ description: Artifact commands keyboard.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 1.524,
+            "y": 1.5239999999999998,
             "z": 0.0
           },
           "relative": true
@@ -9194,7 +9194,7 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.524,
+            "x": -1.5239999999999998,
             "y": 0.0,
             "z": 0.0
           },
@@ -9211,8 +9211,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.524,
-            "y": -1.643,
+            "x": -1.5240000000000005,
+            "y": -1.642892101581919,
             "z": 0.0
           },
           "relative": true
@@ -9229,7 +9229,7 @@ description: Artifact commands keyboard.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 1.643,
+            "y": 1.642892101581918,
             "z": 0.0
           },
           "relative": true
@@ -9245,8 +9245,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 58.42,
-            "y": 43.073,
+            "x": 58.419999999999995,
+            "y": 43.07298998601129,
             "z": 0.0
           },
           "relative": false
@@ -9279,8 +9279,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 64.224,
-            "y": 40.787,
+            "x": 64.22423225447035,
+            "y": 40.78698998601128,
             "z": 0.0
           },
           "relative": false
@@ -9306,8 +9306,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -9389,8 +9389,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -9417,8 +9417,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -9436,8 +9436,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 229.24,
-          "y": 87.589,
+          "x": 229.24008000000003,
+          "y": 87.58936,
           "z": 0.0
         }
       }
@@ -9458,8 +9458,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 226.041,
-            "y": 83.321
+            "x": 226.04116210375727,
+            "y": 83.32104882424234
           },
           "radius": 5.3340000000000005,
           "start": {
@@ -9483,8 +9483,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.658,
-            "y": 1.788,
+            "x": 1.6583103530280896,
+            "y": 1.7876804337016872,
             "z": 0.0
           },
           "relative": true
@@ -9500,8 +9500,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 226.046,
-            "y": 83.325
+            "x": 226.04576443262377,
+            "y": 83.32488156265272
           },
           "radius": 2.92608,
           "start": {
@@ -9535,8 +9535,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -9618,8 +9618,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -9646,8 +9646,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -9665,8 +9665,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 222.86,
-          "y": 79.035,
+          "x": 222.8596,
+          "y": 79.03464000000001,
           "z": 0.0
         }
       }
@@ -9687,8 +9687,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 226.059,
-            "y": 83.303
+            "x": 226.05851789624276,
+            "y": 83.30295117575767
           },
           "radius": 5.3340000000000005,
           "start": {
@@ -9712,8 +9712,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.658,
-            "y": -1.788,
+            "x": -1.6583103530280896,
+            "y": -1.7876804337016872,
             "z": 0.0
           },
           "relative": true
@@ -9729,8 +9729,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 226.054,
-            "y": 83.299
+            "x": 226.05391556737627,
+            "y": 83.29911843734729
           },
           "radius": 2.92608,
           "start": {
@@ -9764,8 +9764,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -9847,8 +9847,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -9875,8 +9875,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -9894,8 +9894,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 252.1,
-          "y": 87.589,
+          "x": 252.10008000000005,
+          "y": 87.58936,
           "z": 0.0
         }
       }
@@ -9916,8 +9916,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 248.901,
-            "y": 83.321
+            "x": 248.9011621037573,
+            "y": 83.32104882424234
           },
           "radius": 5.3340000000000005,
           "start": {
@@ -9941,8 +9941,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.658,
-            "y": 1.788,
+            "x": 1.6583103530280896,
+            "y": 1.7876804337016872,
             "z": 0.0
           },
           "relative": true
@@ -9958,8 +9958,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 248.906,
-            "y": 83.325
+            "x": 248.90576443262378,
+            "y": 83.32488156265272
           },
           "radius": 2.92608,
           "start": {
@@ -9993,8 +9993,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -10076,8 +10076,8 @@ description: Artifact commands keyboard.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 0.993,
-          "z": 0.121
+          "y": 0.9926556406329575,
+          "z": 0.12097429115135457
         },
         "size": 60.0,
         "clobber": false,
@@ -10104,8 +10104,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },
@@ -10123,8 +10123,8 @@ description: Artifact commands keyboard.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 245.72,
-          "y": 79.035,
+          "x": 245.7196,
+          "y": 79.03464000000001,
           "z": 0.0
         }
       }
@@ -10145,8 +10145,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 248.919,
-            "y": 83.303
+            "x": 248.91851789624278,
+            "y": 83.30295117575767
           },
           "radius": 5.3340000000000005,
           "start": {
@@ -10170,8 +10170,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.658,
-            "y": -1.788,
+            "x": -1.6583103530280896,
+            "y": -1.7876804337016872,
             "z": 0.0
           },
           "relative": true
@@ -10187,8 +10187,8 @@ description: Artifact commands keyboard.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 248.914,
-            "y": 83.299
+            "x": 248.91391556737628,
+            "y": 83.29911843734729
           },
           "radius": 2.92608,
           "start": {
@@ -10222,8 +10222,8 @@ description: Artifact commands keyboard.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -0.121,
-          "z": 0.993
+          "y": -0.12097429115135457,
+          "z": 0.9926556406329575
         }
       }
     },

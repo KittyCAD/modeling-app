@@ -250,7 +250,7 @@ description: Operations executed helical-gear.kcl
       "name": "baseDiameter",
       "value": {
         "type": "Number",
-        "value": 39.467,
+        "value": 39.46709007300815,
         "ty": {
           "type": "Default",
           "len": {
@@ -526,7 +526,7 @@ description: Operations executed helical-gear.kcl
       "name": "startAngle",
       "value": {
         "type": "Number",
-        "value": 0.29,
+        "value": 0.28975170143604745,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -667,7 +667,7 @@ description: Operations executed helical-gear.kcl
       "name": "helixCalc",
       "value": {
         "type": "Number",
-        "value": 1.571,
+        "value": 1.5707963267948966,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -862,7 +862,7 @@ description: Operations executed helical-gear.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.571,
+              "value": 1.5707963267948966,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -874,7 +874,7 @@ description: Operations executed helical-gear.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 19.734,
+              "value": 19.733545036504076,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -944,7 +944,7 @@ description: Operations executed helical-gear.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 0.0,
+        "value": 0.0000000000000012083311382392428,
         "ty": {
           "type": "Default",
           "len": {
@@ -966,7 +966,7 @@ description: Operations executed helical-gear.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 19.734,
+        "value": 19.733545036504076,
         "ty": {
           "type": "Default",
           "len": {
@@ -997,7 +997,7 @@ description: Operations executed helical-gear.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.704,
+              "value": 1.7037737936135122,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1079,7 +1079,7 @@ description: Operations executed helical-gear.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -3.049,
+        "value": -3.0494758442486236,
         "ty": {
           "type": "Default",
           "len": {
@@ -1101,7 +1101,7 @@ description: Operations executed helical-gear.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 22.797,
+        "value": 22.796944906617295,
         "ty": {
           "type": "Default",
           "len": {
@@ -1132,7 +1132,7 @@ description: Operations executed helical-gear.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.87,
+              "value": 1.8699956271367815,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1144,7 +1144,7 @@ description: Operations executed helical-gear.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 19.734,
+              "value": 19.733545036504076,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -1214,7 +1214,7 @@ description: Operations executed helical-gear.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -5.817,
+        "value": -5.816564508980187,
         "ty": {
           "type": "Default",
           "len": {
@@ -1236,7 +1236,7 @@ description: Operations executed helical-gear.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 18.857,
+        "value": 18.856838998639372,
         "ty": {
           "type": "Default",
           "len": {
@@ -1388,7 +1388,7 @@ description: Operations executed helical-gear.kcl
       "name": "helixCalc",
       "value": {
         "type": "Number",
-        "value": 1.464,
+        "value": 1.4640403411278755,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -1583,7 +1583,7 @@ description: Operations executed helical-gear.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.464,
+              "value": 1.4640403411278755,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1595,7 +1595,7 @@ description: Operations executed helical-gear.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 19.734,
+              "value": 19.733545036504076,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -1665,7 +1665,7 @@ description: Operations executed helical-gear.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 2.103,
+        "value": 2.1026747593723187,
         "ty": {
           "type": "Default",
           "len": {
@@ -1687,7 +1687,7 @@ description: Operations executed helical-gear.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 19.621,
+        "value": 19.62120176146286,
         "ty": {
           "type": "Default",
           "len": {
@@ -1718,7 +1718,7 @@ description: Operations executed helical-gear.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.597,
+              "value": 1.5970178079464912,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1800,7 +1800,7 @@ description: Operations executed helical-gear.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -0.603,
+        "value": -0.603024957692658,
         "ty": {
           "type": "Default",
           "len": {
@@ -1822,7 +1822,7 @@ description: Operations executed helical-gear.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 22.992,
+        "value": 22.992093443190416,
         "ty": {
           "type": "Default",
           "len": {
@@ -1853,7 +1853,7 @@ description: Operations executed helical-gear.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.763,
+              "value": 1.7632396414697604,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1865,7 +1865,7 @@ description: Operations executed helical-gear.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 19.734,
+              "value": 19.733545036504076,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -1935,7 +1935,7 @@ description: Operations executed helical-gear.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -3.774,
+        "value": -3.7741919278824176,
         "ty": {
           "type": "Default",
           "len": {
@@ -1957,7 +1957,7 @@ description: Operations executed helical-gear.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 19.369,
+        "value": 19.369261085525228,
         "ty": {
           "type": "Default",
           "len": {
@@ -2109,7 +2109,7 @@ description: Operations executed helical-gear.kcl
       "name": "helixCalc",
       "value": {
         "type": "Number",
-        "value": 1.356,
+        "value": 1.3560427808151838,
         "ty": {
           "type": "Known",
           "type": "Angle",
@@ -2304,7 +2304,7 @@ description: Operations executed helical-gear.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.356,
+              "value": 1.3560427808151838,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -2316,7 +2316,7 @@ description: Operations executed helical-gear.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 19.734,
+              "value": 19.733545036504076,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -2386,7 +2386,7 @@ description: Operations executed helical-gear.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 4.205,
+        "value": 4.20534951874464,
         "ty": {
           "type": "Default",
           "len": {
@@ -2408,7 +2408,7 @@ description: Operations executed helical-gear.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 19.28,
+        "value": 19.280244685504613,
         "ty": {
           "type": "Default",
           "len": {
@@ -2439,7 +2439,7 @@ description: Operations executed helical-gear.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.489,
+              "value": 1.4890202476337995,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -2521,7 +2521,7 @@ description: Operations executed helical-gear.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 1.879,
+        "value": 1.8787542118590292,
         "ty": {
           "type": "Default",
           "len": {
@@ -2543,7 +2543,7 @@ description: Operations executed helical-gear.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 22.923,
+        "value": 22.923138585530168,
         "ty": {
           "type": "Default",
           "len": {
@@ -2574,7 +2574,7 @@ description: Operations executed helical-gear.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.655,
+              "value": 1.655242081157069,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -2586,7 +2586,7 @@ description: Operations executed helical-gear.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 19.734,
+              "value": 19.733545036504076,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -2656,7 +2656,7 @@ description: Operations executed helical-gear.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -1.664,
+        "value": -1.6644342460226098,
         "ty": {
           "type": "Default",
           "len": {
@@ -2678,7 +2678,7 @@ description: Operations executed helical-gear.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 19.663,
+        "value": 19.66322604122736,
         "ty": {
           "type": "Default",
           "len": {
@@ -2841,7 +2841,7 @@ description: Operations executed helical-gear.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -2857,7 +2857,7 @@ description: Operations executed helical-gear.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -2874,7 +2874,7 @@ description: Operations executed helical-gear.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

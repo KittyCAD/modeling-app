@@ -419,7 +419,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
           "type": "line",
           "end": {
             "x": 12.0,
-            "y": -8.333,
+            "y": -8.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -436,7 +436,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -16.667,
+            "y": -16.666666666666668,
             "z": 0.0
           },
           "relative": true
@@ -453,7 +453,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
           "type": "line",
           "end": {
             "x": -12.0,
-            "y": -8.333,
+            "y": -8.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -508,7 +508,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "path": "[uuid]",
         "to": {
           "x": 84.5,
-          "y": 27.333,
+          "y": 27.333333333333332,
           "z": 0.0
         }
       }
@@ -530,7 +530,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
           "type": "arc",
           "center": {
             "x": 82.0,
-            "y": 27.333
+            "y": 27.333333333333332
           },
           "radius": 2.5,
           "start": {
@@ -683,7 +683,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": -54.667,
+                "y": -54.666666666666664,
                 "z": 0.0
               },
               "scale": {
@@ -798,7 +798,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
           "type": "line",
           "end": {
             "x": -12.0,
-            "y": -8.333,
+            "y": -8.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -815,7 +815,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -16.667,
+            "y": -16.666666666666668,
             "z": 0.0
           },
           "relative": true
@@ -832,7 +832,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
           "type": "line",
           "end": {
             "x": 12.0,
-            "y": -8.333,
+            "y": -8.333333333333334,
             "z": 0.0
           },
           "relative": true
@@ -887,7 +887,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "path": "[uuid]",
         "to": {
           "x": -79.5,
-          "y": 27.333,
+          "y": 27.333333333333332,
           "z": 0.0
         }
       }
@@ -909,7 +909,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
           "type": "arc",
           "center": {
             "x": -82.0,
-            "y": 27.333
+            "y": 27.333333333333332
           },
           "radius": 2.5,
           "start": {
@@ -1062,7 +1062,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": -54.667,
+                "y": -54.666666666666664,
                 "z": 0.0
               },
               "scale": {

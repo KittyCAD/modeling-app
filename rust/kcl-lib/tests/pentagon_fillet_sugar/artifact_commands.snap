@@ -81,8 +81,8 @@ description: Artifact commands pentagon_fillet_sugar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 250.0,
-            "y": 433.013,
+            "x": 250.00000000000006,
+            "y": 433.0127018922193,
             "z": 0.0
           },
           "relative": true
@@ -99,7 +99,7 @@ description: Artifact commands pentagon_fillet_sugar.kcl
           "type": "line",
           "end": {
             "x": -500.0,
-            "y": 0.0,
+            "y": 0.00000000000006123233995736766,
             "z": 0.0
           },
           "relative": true
@@ -115,8 +115,8 @@ description: Artifact commands pentagon_fillet_sugar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 250.0,
-            "y": -433.013,
+            "x": 250.00000000000006,
+            "y": -433.0127018922193,
             "z": 0.0
           },
           "relative": true

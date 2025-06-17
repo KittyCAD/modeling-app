@@ -1,6 +1,7 @@
 import { Transition } from '@headlessui/react'
 import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { useSearchParams } from 'react-router-dom'
+import { base64ToString } from '@src/lib/base64'
 
 import { ActionButton } from '@src/components/ActionButton'
 import {
@@ -12,6 +13,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { Themes, darkModeMatcher, setThemeClass } from '@src/lib/theme'
 import toast from 'react-hot-toast'
 import { platform } from '@src/lib/utils'
+import { codeManager } from '@src/lib/singletons'
 import { Logo } from '@src/components/Logo'
 import { useEffect } from 'react'
 
@@ -37,6 +39,17 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
     darkModeMatcher?.addEventListener('change', listener)
     return () => darkModeMatcher?.removeEventListener('change', listener)
   }, [])
+
+  useEffect(() => {
+    if (!hasAskToOpenParam) {
+      return
+    }
+
+    const codeB64 = base64ToString(
+      decodeURIComponent(searchParams.get('code') ?? '')
+    )
+    codeManager.goIntoTemporaryWorkspaceModeWithCode(codeB64)
+  }, [hasAskToOpenParam])
 
   /**
    * This function removes the query param to ask to open in desktop app

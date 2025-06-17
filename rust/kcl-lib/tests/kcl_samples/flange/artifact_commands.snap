@@ -59,7 +59,7 @@ description: Artifact commands flange.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 52.387,
+          "x": 52.387499999999996,
           "y": 0.0,
           "z": 0.0
         }
@@ -81,7 +81,7 @@ description: Artifact commands flange.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 44.45,
+            "x": 44.449999999999996,
             "y": 0.0
           },
           "radius": 7.9375,
@@ -181,7 +181,7 @@ description: Artifact commands flange.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 58.738,
+          "x": 58.7375,
           "y": 0.0,
           "z": 0.0
         }
@@ -385,7 +385,7 @@ description: Artifact commands flange.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 29.375,
+          "x": 29.3751,
           "y": 0.0,
           "z": 0.0
         }

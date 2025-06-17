@@ -180,7 +180,7 @@ description: Operations executed keyboard.kcl
       "name": "row1",
       "value": {
         "type": "Number",
-        "value": 0.3,
+        "value": 0.30000000000000004,
         "ty": {
           "type": "Default",
           "len": {
@@ -213,7 +213,7 @@ description: Operations executed keyboard.kcl
       "name": "row2",
       "value": {
         "type": "Number",
-        "value": 1.2,
+        "value": 1.2000000000000002,
         "ty": {
           "type": "Default",
           "len": {
@@ -279,7 +279,7 @@ description: Operations executed keyboard.kcl
       "name": "row4",
       "value": {
         "type": "Number",
-        "value": 3.0,
+        "value": 3.0000000000000004,
         "ty": {
           "type": "Default",
           "len": {
@@ -312,7 +312,7 @@ description: Operations executed keyboard.kcl
       "name": "row5",
       "value": {
         "type": "Number",
-        "value": 3.9,
+        "value": 3.900000000000001,
         "ty": {
           "type": "Default",
           "len": {
@@ -345,7 +345,7 @@ description: Operations executed keyboard.kcl
       "name": "row6",
       "value": {
         "type": "Number",
-        "value": 4.8,
+        "value": 4.800000000000001,
         "ty": {
           "type": "Default",
           "len": {
@@ -912,7 +912,7 @@ description: Operations executed keyboard.kcl
         "distance": {
           "value": {
             "type": "Number",
-            "value": 1.2,
+            "value": 1.2000000000000002,
             "ty": {
               "type": "Default",
               "len": {
@@ -2607,7 +2607,7 @@ description: Operations executed keyboard.kcl
         "distance": {
           "value": {
             "type": "Number",
-            "value": 1.2,
+            "value": 1.2000000000000002,
             "ty": {
               "type": "Default",
               "len": {
@@ -3963,7 +3963,7 @@ description: Operations executed keyboard.kcl
         "distance": {
           "value": {
             "type": "Number",
-            "value": 2.3,
+            "value": 2.3000000000000003,
             "ty": {
               "type": "Default",
               "len": {
@@ -4058,7 +4058,7 @@ description: Operations executed keyboard.kcl
           "keyWidth": {
             "value": {
               "type": "Number",
-              "value": 1.2,
+              "value": 1.2000000000000002,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -4302,7 +4302,7 @@ description: Operations executed keyboard.kcl
         "distance": {
           "value": {
             "type": "Number",
-            "value": 1.3,
+            "value": 1.3000000000000003,
             "ty": {
               "type": "Default",
               "len": {
@@ -4736,7 +4736,7 @@ description: Operations executed keyboard.kcl
           "keyWidth": {
             "value": {
               "type": "Number",
-              "value": 1.8,
+              "value": 1.7999999999999998,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -6675,7 +6675,7 @@ description: Operations executed keyboard.kcl
         "distance": {
           "value": {
             "type": "Number",
-            "value": 1.4,
+            "value": 1.4000000000000001,
             "ty": {
               "type": "Default",
               "len": {
@@ -7014,7 +7014,7 @@ description: Operations executed keyboard.kcl
         "distance": {
           "value": {
             "type": "Number",
-            "value": 1.2,
+            "value": 1.2000000000000002,
             "ty": {
               "type": "Default",
               "len": {
@@ -8573,7 +8573,7 @@ description: Operations executed keyboard.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -8589,7 +8589,7 @@ description: Operations executed keyboard.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -8606,7 +8606,7 @@ description: Operations executed keyboard.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

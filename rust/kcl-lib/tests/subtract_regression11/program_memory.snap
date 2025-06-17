@@ -317,7 +317,7 @@ description: Variables in memory after executing subtract_regression11.kcl
             ],
             "tag": null,
             "to": [
-              -0.45,
+              -0.45000000000000007,
               18.6
             ],
             "type": "ToPoint",
@@ -331,12 +331,12 @@ description: Variables in memory after executing subtract_regression11.kcl
               "sourceRange": []
             },
             "from": [
-              -0.45,
+              -0.45000000000000007,
               18.6
             ],
             "tag": null,
             "to": [
-              -0.45,
+              -0.45000000000000007,
               20.1
             ],
             "type": "ToPoint",
@@ -350,7 +350,7 @@ description: Variables in memory after executing subtract_regression11.kcl
               "sourceRange": []
             },
             "from": [
-              -0.45,
+              -0.45000000000000007,
               20.1
             ],
             "tag": null,
@@ -985,7 +985,7 @@ description: Variables in memory after executing subtract_regression11.kcl
           ],
           "tag": null,
           "to": [
-            -0.45,
+            -0.45000000000000007,
             18.6
           ],
           "type": "ToPoint",
@@ -999,12 +999,12 @@ description: Variables in memory after executing subtract_regression11.kcl
             "sourceRange": []
           },
           "from": [
-            -0.45,
+            -0.45000000000000007,
             18.6
           ],
           "tag": null,
           "to": [
-            -0.45,
+            -0.45000000000000007,
             20.1
           ],
           "type": "ToPoint",
@@ -1018,7 +1018,7 @@ description: Variables in memory after executing subtract_regression11.kcl
             "sourceRange": []
           },
           "from": [
-            -0.45,
+            -0.45000000000000007,
             20.1
           ],
           "tag": null,
