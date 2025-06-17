@@ -172,7 +172,7 @@ export const ProjectExplorer = ({
           },
           isFake: false,
           activeIndex: activeIndex,
-          rowDelete: () => {
+          onDelete: () => {
             systemIOActor.send({
               type: SystemIOMachineEvents.deleteFileOrFolder,
               data: {
@@ -180,7 +180,7 @@ export const ProjectExplorer = ({
               },
             })
           },
-          rowOpenInNewWindow: () => {
+          onOpenInNewWindow: () => {
             window.electron.openInNewWindow(row.path)
           },
           rowRenameStart: () => {

@@ -267,11 +267,11 @@ export const FileExplorerRowElement = ({
           row.rowRenameStart()
         }}
         onDelete={() => {
-          row.rowDelete()
+          row.onDelete()
         }}
         onClone={() => {}}
         onOpenInNewWindow={() => {
-          row.rowOpenInNewWindow()
+          row.onOpenInNewWindow()
         }}
         callback={row.onContextMenuOpen}
       />

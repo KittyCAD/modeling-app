@@ -29,6 +29,10 @@ export interface FileExplorerRow extends FileExplorerEntry {
   onClick: (domIndex: number) => void
   onOpen: () => void
   onContextMenuOpen: () => void
+  onOpenInNewWindow: () => void
+  onDelete: () => void
+  onRenameStart: () => void
+  onRenameEnd: () => void
 }
 
 export interface FileExplorerRender extends FileExplorerRow {
@@ -42,6 +46,7 @@ export interface FileExplorerRowContextMenuProps {
   onDelete: () => void
   onClone: () => void
   onOpenInNewWindow: () => void
+  callback: () => void
 }
 
 export const constructPath = ({
