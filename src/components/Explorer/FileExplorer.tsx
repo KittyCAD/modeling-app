@@ -1,10 +1,11 @@
 import { CustomIcon } from '@src/components/CustomIcon'
 import { uuidv4 } from '@src/lib/utils'
-import type {
-  FileExplorerEntry,
-  FileExplorerRow,
-  FileExplorerRender,
-  FileExplorerRowContextMenuProps,
+import {
+  type FileExplorerEntry,
+  type FileExplorerRow,
+  type FileExplorerRender,
+  type FileExplorerRowContextMenuProps,
+  constructPath,
 } from '@src/components/Explorer/utils'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { useRef } from 'react'
@@ -67,6 +68,10 @@ export const FileExplorer = ({
   return (
     <div role="presentation" className="p-px">
       {rowsToRender.map((row, index, original) => {
+        const key = constructPath({
+          parentPath: row.parentPath,
+          name: row.name
+        })
         const renderRow: FileExplorerRender = {
           ...row,
           domIndex: index,
@@ -74,7 +79,7 @@ export const FileExplorer = ({
         }
         return (
           <FileExplorerRowElement
-            key={uuidv4()}
+            key={key}
             row={renderRow}
             selectedRow={selectedRow}
           ></FileExplorerRowElement>
