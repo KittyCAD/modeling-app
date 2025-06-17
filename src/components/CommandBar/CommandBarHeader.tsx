@@ -238,6 +238,51 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
           )}
         </div>
         <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
+        {isReviewing && (
+          <div className="px-4">
+            <p className="mb-2">Optional arguments</p>
+            <div className="text-sm flex gap-4 items-start">
+              <div className="flex flex-1 flex-wrap gap-2">
+                {Object.entries(nonHiddenArgs || {}).flatMap(
+                  ([argName, arg], i) => {
+                    const argValue =
+                      (typeof argumentsToSubmit[argName] === 'function'
+                        ? argumentsToSubmit[argName](commandBarState.context)
+                        : argumentsToSubmit[argName]) || ''
+                    const isRequired =
+                      typeof arg.required === 'function'
+                        ? arg.required(commandBarState.context)
+                        : arg.required
+
+                    if (isRequired || argValue) {
+                      return []
+                    }
+
+                    return (
+                      <button
+                        data-testid="cmd-bar-add-optional-arg"
+                        type="button"
+                        onClick={() => {
+                          commandBarActor.send({
+                            type: 'Edit argument',
+                            data: { arg: { ...arg, name: argName } },
+                          })
+                        }}
+                        key={argName}
+                        className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
+                      >
+                        <span className="capitalize">
+                          {arg.displayName || argName}
+                        </span>
+                        <CustomIcon name="plus" className="w-5 h-5" />
+                      </button>
+                    )
+                  }
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         {children}
       </>
     )
@@ -258,16 +303,16 @@ function ReviewingButton({ bgClassName, iconClassName }: ButtonProps) {
       ref={buttonRef}
       type="submit"
       form="review-form"
-      className="w-fit !p-0 rounded-sm hover:shadow focus:outline-current"
+      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current ${bgClassName}`}
       tabIndex={0}
       data-testid="command-bar-submit"
-      iconStart={{
+      iconEnd={{
         icon: 'checkmark',
-        bgClassName: `p-1 rounded-sm hover:brightness-110 ${bgClassName}`,
+        bgClassName: `p-1 rounded-sm ${bgClassName}`,
         iconClassName: `${iconClassName}`,
       }}
     >
-      <span className="sr-only">Submit command</span>
+      <span className={`pl-2 ${iconClassName}`}>Confirm</span>
     </ActionButton>
   )
 }
@@ -278,16 +323,16 @@ function GatheringArgsButton({ bgClassName, iconClassName }: ButtonProps) {
       Element="button"
       type="submit"
       form="arg-form"
-      className="w-fit !p-0 rounded-sm hover:shadow focus:outline-current"
+      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current ${bgClassName}`}
       tabIndex={0}
       data-testid="command-bar-continue"
-      iconStart={{
+      iconEnd={{
         icon: 'arrowRight',
-        bgClassName: `p-1 rounded-sm hover:brightness-110 ${bgClassName}`,
+        bgClassName: `p-1 rounded-sm ${bgClassName}`,
         iconClassName: `${iconClassName}`,
       }}
     >
-      <span className="sr-only">Continue</span>
+      <span className={`pl-2 ${iconClassName}`}>Next</span>
     </ActionButton>
   )
 }
