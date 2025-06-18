@@ -52,7 +52,7 @@ export const FileExplorerHeaderActions = ({
         Element="button"
         data-testid="create-folder-button"
         iconStart={{
-          icon: 'refresh',
+          icon: 'subtract',
           iconClassName: '!text-current',
           bgClassName: 'bg-transparent',
         }}
@@ -66,7 +66,7 @@ export const FileExplorerHeaderActions = ({
         Element="button"
         data-testid="create-folder-button"
         iconStart={{
-          icon: 'clone',
+          icon: 'collapse',
           iconClassName: '!text-current',
           bgClassName: 'bg-transparent',
         }}
