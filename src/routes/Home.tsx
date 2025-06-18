@@ -414,7 +414,11 @@ const Home = () => {
           </ul>
         </aside>
 
-        <section data-testid="file-explorer-section" className="flex flex-row justify-between" style={{width:'850px'}}>
+        <section
+          data-testid="file-explorer-section"
+          className="flex flex-row justify-between"
+          style={{ width: '850px' }}
+        >
           <ProjectExplorer project={kclSamples}></ProjectExplorer>
           <ProjectExplorer project={kclSamples}></ProjectExplorer>
           <ProjectExplorer project={kclSamples1}></ProjectExplorer>

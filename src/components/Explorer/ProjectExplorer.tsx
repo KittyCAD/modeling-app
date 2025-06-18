@@ -361,11 +361,24 @@ export const ProjectExplorer = ({
           break
       }
     }
+
+    const handleFocus = () => {
+      setActiveIndex(CONTAINER_IS_SELECTED)
+    }
+
+    const handleBlur = () => {
+      setActiveIndex(NOTHING_IS_SELECTED)
+    }
+
     document.addEventListener('keydown', keyDownHandler)
     document.addEventListener('click', handleClickOutside)
+    fileExplorerContainer.current?.addEventListener('focus', handleFocus)
+    fileExplorerContainer.current?.addEventListener('blur', handleBlur)
     return () => {
       document.removeEventListener('click', handleClickOutside)
       document.removeEventListener('keydown', keyDownHandler)
+      fileExplorerContainer.current?.removeEventListener('focus', handleFocus)
+      fileExplorerContainer.current?.addEventListener('blur', handleBlur)
     }
   }, [])
 
