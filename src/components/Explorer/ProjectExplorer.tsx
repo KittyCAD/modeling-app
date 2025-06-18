@@ -507,7 +507,7 @@ export const ProjectExplorer = ({
         </div>
       </div>
       <div
-        className={`h-full w-full overflow-y-auto overflow-x-hidden border border-transparent ${activeIndex === -1 ? 'border-sky-500' : ''}`}
+        className={`h-full w-full overflow-y-auto overflow-x-hidden ${activeIndex === -1 ? 'border-sky-500' : ''}`}
         tabIndex={0}
         role="tree"
         aria-label="Files Explorer"

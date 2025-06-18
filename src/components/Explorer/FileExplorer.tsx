@@ -67,7 +67,7 @@ export const FileExplorer = ({
   // Local state for selection and what is opened
   // diff this against new Project value that comes in
   return (
-    <div role="presentation" className="p-px">
+    <div role="presentation">
       {rowsToRender.map((row, index, original) => {
         const key = row.key
         const renderRow: FileExplorerRender = {
@@ -200,14 +200,14 @@ export const FileExplorerRowElement = ({
     row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
   const isIndexActive = row.domIndex === row.activeIndex
 
-
   const rowElementRef = useRef(null)
   const isContextMenuRow = contextMenuRow?.key === row.key
   const isMyRowRenaming = isContextMenuRow && isRenaming
 
-  const outlineCSS = isIndexActive && !isMyRowRenaming
-    ? 'outline outline-1 outline-primary'
-    : 'outline-0 outline-none'
+  const outlineCSS =
+    isIndexActive && !isMyRowRenaming
+      ? 'outline outline-1 outline-primary'
+      : 'outline-0 outline-none'
   // Complaining about role="treeitem" focus but it is reimplemented aria labels
   /* eslint-disable */
   return (

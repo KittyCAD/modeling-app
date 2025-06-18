@@ -138,7 +138,7 @@ export const sidebarPanes: SidebarPane[] = [
             Menu={'huh'}
             onClose={props.onClose}
           />
-          <ModelingProjectExplorer/>
+          <ModelingProjectExplorer />
         </>
       )
     },
