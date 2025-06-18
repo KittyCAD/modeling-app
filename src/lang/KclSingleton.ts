@@ -389,7 +389,7 @@ export class KclManager extends EventTarget {
 
     if (err(result)) {
       const kclError: KCLError = result as KCLError
-      this.diagnostics = kclErrorsToDiagnostics([kclError])
+      this.diagnostics = kclErrorsToDiagnostics([kclError], code)
       this._astParseFailed = true
 
       await this.checkIfSwitchedFilesShouldClear()
@@ -403,8 +403,8 @@ export class KclManager extends EventTarget {
     this._kclErrorsCallBack([])
     this._logsCallBack([])
 
-    this.addDiagnostics(compilationErrorsToDiagnostics(result.errors))
-    this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings))
+    this.addDiagnostics(compilationErrorsToDiagnostics(result.errors, code))
+    this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings, code))
     if (result.errors.length > 0) {
       this._astParseFailed = true
 
