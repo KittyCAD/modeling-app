@@ -1429,70 +1429,20 @@ description: Result of parsing helical-gear.kcl
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
                                     "unlabeled": {
-                                      "arguments": [
-                                        {
-                                          "type": "LabeledArg",
-                                          "label": {
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": "offset",
-                                            "start": 0,
-                                            "type": "Identifier"
-                                          },
-                                          "arg": {
-                                            "abs_path": false,
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": {
-                                              "commentStart": 0,
-                                              "end": 0,
-                                              "name": "offsetHeight",
-                                              "start": 0,
-                                              "type": "Identifier"
-                                            },
-                                            "path": [],
-                                            "start": 0,
-                                            "type": "Name",
-                                            "type": "Name"
-                                          }
-                                        }
-                                      ],
-                                      "callee": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": "offsetPlane",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name"
-                                      },
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "start": 0,
-                                      "type": "CallExpressionKw",
-                                      "type": "CallExpressionKw",
-                                      "unlabeled": {
-                                        "abs_path": false,
+                                      "name": {
                                         "commentStart": 0,
                                         "end": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": "XY",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
+                                        "name": "XY",
                                         "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      }
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
                                     }
                                   },
                                   {
@@ -2567,18 +2517,7 @@ description: Result of parsing helical-gear.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
-                      "params": [
-                        {
-                          "type": "Parameter",
-                          "identifier": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": "offsetHeight",
-                            "start": 0,
-                            "type": "Identifier"
-                          }
-                        }
-                      ],
+                      "params": [],
                       "start": 0,
                       "type": "FunctionExpression",
                       "type": "FunctionExpression"
@@ -2596,30 +2535,6 @@ description: Result of parsing helical-gear.kcl
                   "argument": {
                     "body": [
                       {
-                        "arguments": [
-                          {
-                            "type": "LabeledArg",
-                            "label": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "offsetHeight",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "arg": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
@@ -3119,17 +3034,6 @@ description: Result of parsing helical-gear.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "2": [
           {
             "commentStart": 0,
             "end": 0,

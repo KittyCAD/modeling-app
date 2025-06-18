@@ -35,9 +35,9 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
     |> extrude(length = gearHeight)
 
   // Define a function to create a rotated gear sketch on an offset plane
-  fn helicalGearSketch(offsetHeight) {
+  fn helicalGearSketch() {
     // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
-    helicalGearSketch = startSketchOn(offsetPlane(XY, offset = offsetHeight))
+    helicalGearSketch = startSketchOn(XY)
       |> startProfile(at = polar(angle = 0, length = baseDiameter / 2))
       |> involuteCircular(
            startRadius = baseDiameter / 2,
@@ -63,7 +63,7 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
   }
 
   // Draw a gear sketch on the base plane
-  return helicalGearSketch(offsetHeight = 0)
+  return helicalGearSketch()
     |> extrude(length = gearHeight, twistAngle = helixAngle)
     |> subtract([%], tools = [holeWithKeyway])
 }
