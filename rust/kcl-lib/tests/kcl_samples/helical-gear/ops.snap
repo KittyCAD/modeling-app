@@ -704,45 +704,6 @@ description: Operations executed helical-gear.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "helicalGearSketch",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 12
-          },
-          {
-            "type": "ReturnStatementArg"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -771,19 +732,6 @@ description: Operations executed helical-gear.kcl
           {
             "type": "FunctionExpressionBodyItem",
             "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -855,19 +803,6 @@ description: Operations executed helical-gear.kcl
           {
             "type": "FunctionExpressionBodyItem",
             "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -998,19 +933,6 @@ description: Operations executed helical-gear.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
             "type": "PipeBodyItem",
             "index": 3
           },
@@ -1133,19 +1055,6 @@ description: Operations executed helical-gear.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
             "type": "PipeBodyItem",
             "index": 5
           },
@@ -1200,9 +1109,6 @@ description: Operations executed helical-gear.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
