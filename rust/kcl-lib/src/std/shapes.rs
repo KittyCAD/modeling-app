@@ -418,7 +418,7 @@ pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
     let major_radius = args.get_kw_arg("majorRadius", &RuntimeType::length(), exec_state)?;
     let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::length(), exec_state)?;
-    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let sketch = inner_ellipse(
         sketch_or_surface,
@@ -462,8 +462,8 @@ async fn inner_ellipse(
 
     let id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
-        id,
+    exec_state.batch_modeling_cmd(
+        ModelingCmdMeta::from_args_id(&args, id),
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
             segment: PathSegment::Ellipse {
@@ -501,7 +501,7 @@ async fn inner_ellipse(
 
     new_sketch.paths.push(current_path);
 
-    args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }))
+    exec_state.batch_modeling_cmd(ModelingCmdMeta::from_args_id(&args, id), ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }))
         .await?;
 
     Ok(new_sketch)

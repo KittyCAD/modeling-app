@@ -1839,7 +1839,7 @@ pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let angle_end = args.get_kw_arg("angleEnd", &RuntimeType::degrees(), exec_state)?;
     let major_radius = args.get_kw_arg("majorRadius", &RuntimeType::length(), exec_state)?;
     let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::length(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW, &RuntimeType::tag(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let new_sketch = inner_elliptic(
         sketch,
@@ -1882,8 +1882,8 @@ pub(crate) async fn inner_elliptic(
         center_u[1] + minor_radius.to_length_units(from.units) * end_angle.to_radians().sin(),
     ];
 
-    args.batch_modeling_cmd(
-        id,
+    exec_state.batch_modeling_cmd(
+        ModelingCmdMeta::from_args_id(&args, id),
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
             segment: PathSegment::Ellipse {
@@ -1981,7 +1981,7 @@ pub async fn hyperbolic(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     let end = args.get_kw_arg_opt("end", &RuntimeType::point2d(), exec_state)?;
     let interior_absolute = args.get_kw_arg_opt("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
     let end_absolute = args.get_kw_arg_opt("endAbsolute", &RuntimeType::point2d(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW, &RuntimeType::tag(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let new_sketch = inner_hyperbolic(
         sketch,
@@ -2048,8 +2048,8 @@ pub(crate) async fn inner_hyperbolic(
     let start_tangent = hyperbolic_tangent(from, semi_major_u, semi_minor_u);
     let end_tangent = hyperbolic_tangent(end_point, semi_major_u, semi_minor_u);
 
-    args.batch_modeling_cmd(
-        id,
+    exec_state.batch_modeling_cmd(
+        ModelingCmdMeta::from_args_id(&args, id),
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
             segment: PathSegment::ConicTo {
@@ -2130,7 +2130,7 @@ pub async fn parabolic(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     let end = args.get_kw_arg_opt("end", &RuntimeType::point2d(), exec_state)?;
     let interior_absolute = args.get_kw_arg_opt("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
     let end_absolute = args.get_kw_arg_opt("endAbsolute", &RuntimeType::point2d(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW, &RuntimeType::tag(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let new_sketch = inner_parabolic(
         sketch,
@@ -2251,8 +2251,8 @@ pub(crate) async fn inner_parabolic(
     let start_tangent = parabolic_tangent(from, a, b);
     let end_tangent = parabolic_tangent(end_point, a, b);
 
-    args.batch_modeling_cmd(
-        id,
+    exec_state.batch_modeling_cmd(
+        ModelingCmdMeta::from_args_id(&args, id),
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
             segment: PathSegment::ConicTo {
@@ -2310,7 +2310,7 @@ pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let end_absolute = args.get_kw_arg_opt("endAbsolute", &RuntimeType::point2d(), exec_state)?;
     let interior_absolute = args.get_kw_arg_opt("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
     let coefficients = args.get_kw_arg_opt("coefficients", &RuntimeType::any_array(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW, &RuntimeType::tag(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let new_sketch = inner_conic(
         sketch,
@@ -2393,8 +2393,8 @@ pub(crate) async fn inner_conic(
         (start, end_tan)
     };
 
-    args.batch_modeling_cmd(
-        id,
+    exec_state.batch_modeling_cmd(
+        ModelingCmdMeta::from_args_id(&args, id),
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
             segment: PathSegment::ConicTo {
