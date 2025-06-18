@@ -34,7 +34,7 @@ const Spacer = (level: number) => {
             <div className="h-full w-full" key={uuidv4()}>
               <div
                 style={{ width: '0.45rem' }}
-                className={`h-full border-r border-sky-600`}
+                className={`h-full border-r border-gray-300`}
               ></div>
               <div style={{ width: '0.25rem' }} className={`h-full`}></div>
             </div>
@@ -200,7 +200,7 @@ export const FileExplorerRowElement = ({
     row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
   const isIndexActive = row.domIndex === row.activeIndex
   const outlineCSS = isIndexActive
-    ? 'outline outline-1 outline-sky-500 '
+    ? 'outline outline-1 outline-primary'
     : 'outline-0 outline-none'
 
   const rowElementRef = useRef(null)
@@ -212,7 +212,7 @@ export const FileExplorerRowElement = ({
     <div
       ref={rowElementRef}
       role="treeitem"
-      className={`h-5 flex flex-row items-center text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:outline-sky-500 hover:bg-sky-400 ${isSelected ? 'bg-sky-800' : ''}`}
+      className={`h-5 flex flex-row items-center text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:bg-gray-300/50 hover:bg-gray-300/50 ${isSelected ? 'bg-primary/10' : ''}`}
       data-index={row.domIndex}
       data-last-element={row.domIndex === row.domLength - 1}
       data-parity={row.domIndex % 2 === 0}
