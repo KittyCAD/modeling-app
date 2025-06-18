@@ -268,7 +268,8 @@ function CommandBarHeader({
         )}
         {children}
         <>
-          <div className="px-4 pb-2 flex justify-end items-center gap-2">
+          <div className="block w-full mb-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
+          <div className="px-4 pb-2 flex justify-between items-center gap-2">
             <ActionButton
               Element="button"
               type="button"
