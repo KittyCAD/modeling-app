@@ -30,14 +30,13 @@ const Spacer = (level: number) => {
       {Array(level)
         .fill(0)
         .map(() => {
-          const remSpacing = `${0.5}rem`
           return (
             <div className="h-full w-full" key={uuidv4()}>
               <div
-                style={{ width: remSpacing }}
+                style={{ width: '0.45rem' }}
                 className={`h-full border-r border-sky-600`}
               ></div>
-              <div style={{ width: remSpacing }} className={`h-full`}></div>
+              <div style={{ width: '0.25rem' }} className={`h-full`}></div>
             </div>
           )
         })}
@@ -213,7 +212,7 @@ export const FileExplorerRowElement = ({
     <div
       ref={rowElementRef}
       role="treeitem"
-      className={`h-6 flex flex-row items-center text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:outline-sky-500 hover:bg-sky-400 ${isSelected ? 'bg-sky-800' : ''}`}
+      className={`h-5 flex flex-row items-center text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:outline-sky-500 hover:bg-sky-400 ${isSelected ? 'bg-sky-800' : ''}`}
       data-index={row.domIndex}
       data-last-element={row.domIndex === row.domLength - 1}
       data-parity={row.domIndex % 2 === 0}
@@ -241,7 +240,7 @@ export const FileExplorerRowElement = ({
         // console.log(event.target.innerText, 'onDrop')
       }}
     >
-      <div style={{ width: '0.25rem' }}></div>
+      <div style={{ width: '0.5rem' }}></div>
       {Spacer(row.level)}
       <CustomIcon
         name={row.icon}

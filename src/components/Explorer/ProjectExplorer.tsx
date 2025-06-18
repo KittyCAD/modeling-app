@@ -453,7 +453,6 @@ export const ProjectExplorer = ({
       ) {
         setActiveIndex(NOTHING_IS_SELECTED)
       }
-
     }
 
     document.addEventListener('keydown', keyDownHandler)
@@ -475,7 +474,8 @@ export const ProjectExplorer = ({
         <div className="h-6 flex flex-row gap-1">
           <FileExplorerHeaderActions
             onCreateFile={() => {
-              const row = rowsToRenderRef.current[activeIndexRef.current] || null
+              const row =
+                rowsToRenderRef.current[activeIndexRef.current] || null
               setFakeRow({ entry: row, isFile: true })
               if (row?.key) {
                 // If the file tree had the folder opened make the new one open.
@@ -485,7 +485,8 @@ export const ProjectExplorer = ({
               }
             }}
             onCreateFolder={() => {
-              const row = rowsToRenderRef.current[activeIndexRef.current] || null
+              const row =
+                rowsToRenderRef.current[activeIndexRef.current] || null
               setFakeRow({ entry: row, isFile: false })
               if (row?.key) {
                 // If the file tree had the folder opened make the new one open.
