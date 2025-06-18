@@ -111,8 +111,19 @@ export default class EditorManager {
     return this._copilotEnabled
   }
 
+  // This is called when editorView is created and each time when it is updated (eg. user is sketching)..
   setEditorView(editorView: EditorView | null) {
+    if (!editorView && this._editorView) {
+      // When code editor is closed, use its last state. Technically not needed because we update editorState when view changes.
+      this._editorState = this._editorView.state
+    }
+
+    // Update editorState to the latest editorView state.
+    // This is needed because if kcl pane is closed, editorView will become null but we still want to use the last state.
+    this._editorState = editorView?.state || this._editorState
+
     this._editorView = editorView
+
     kclEditorActor.send({
       type: 'setKclEditorMounted',
       data: Boolean(editorView),

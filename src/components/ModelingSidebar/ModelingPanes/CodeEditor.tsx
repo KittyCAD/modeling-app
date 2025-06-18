@@ -130,7 +130,7 @@ export function useCodeMirror(props: UseCodeMirror) {
         selection,
         extensions: [...Array.of(extensions)],
       }
-      const stateCurrent = EditorState.create(config)
+      const stateCurrent = EditorState.create(config) // TODO use manager.editorState passed as a prop
       setState(stateCurrent)
       if (!view) {
         const viewCurrent = new EditorView({

@@ -106,6 +106,8 @@ export default class CodeManager {
    * This is invoked when a segment is being dragged on the canvas, among other things.
    */
   updateCodeEditor(code: string, clearHistory?: boolean): void {
+    console.log('>> updateCodeEditor', code, clearHistory)
+
     this.code = code
     if (clearHistory) {
       // TODO make this work without EditorView
