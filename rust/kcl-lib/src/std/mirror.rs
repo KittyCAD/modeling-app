@@ -68,12 +68,12 @@ async fn inner_mirror_2d(
                 )
                 .await?;
 
-            let mut edge_ids = Vec::new();
+            let mut _edge_ids = Vec::new();
             let entity_ids: &Vec<Uuid> = if let OkWebSocketResponseData::Modeling {
                 modeling_response: OkModelingCmdResponse::EntityMirror(mirror_info),
             } = &resp
             {
-                edge_ids = mirror_info
+                _edge_ids = mirror_info
                     .entity_face_edge_ids
                     .iter()
                     .map(|x| x.edges.first().copied().unwrap_or_default())
@@ -86,7 +86,7 @@ async fn inner_mirror_2d(
                 )));
             };
             mirrored_ids.extend(entity_ids.iter().cloned());
-            edge_ids
+            _edge_ids
         }
         Axis2dOrEdgeReference::Edge(edge) => {
             let edge_id = edge.get_engine_id(exec_state, &args)?;
@@ -101,12 +101,12 @@ async fn inner_mirror_2d(
                 )
                 .await?;
 
-            let mut edge_ids = Vec::new();
+            let mut _edge_ids = Vec::new();
             let entity_ids: Vec<Uuid> = if let OkWebSocketResponseData::Modeling {
                 modeling_response: OkModelingCmdResponse::EntityMirrorAcrossEdge(mirror_info),
             } = &resp
             {
-                edge_ids = mirror_info
+                _edge_ids = mirror_info
                     .entity_face_edge_ids
                     .iter()
                     .map(|x| x.edges.first().copied().unwrap_or_default())
@@ -119,7 +119,7 @@ async fn inner_mirror_2d(
                 )));
             };
             mirrored_ids.extend(entity_ids.iter().cloned());
-            edge_ids
+            _edge_ids
         }
     };
 
