@@ -170,7 +170,7 @@ function RenameForm({
           autoCapitalize="off"
           autoCorrect="off"
           placeholder={row.name}
-          className="w-full py-1 bg-transparent text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:outline-none focus:ring-0"
+          className="overflow-hidden whitespace-nowrap text-ellipsis py-1 bg-transparent text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:outline-none focus:ring-0"
           onKeyDown={handleKeyDown}
           onBlur={onSubmit}
         />
@@ -247,7 +247,7 @@ export const FileExplorerRowElement = ({
         name={row.icon}
         className="inline-block w-4 text-current mr-1"
       />
-      {!isMyRowRenaming ? (
+      {!isMyRowRenaming && !row.isFake ? (
         <span className="overflow-hidden whitespace-nowrap text-ellipsis">
           {row.name}
         </span>

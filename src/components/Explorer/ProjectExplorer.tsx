@@ -9,10 +9,12 @@ import {
   CONTAINER_IS_SELECTED,
   STARTING_INDEX_TO_SELECT,
   FILE_PLACEHOLDER_NAME,
-  FOLDER_PLACEHOLDER_NAME
+  FOLDER_PLACEHOLDER_NAME,
 } from '@src/components/Explorer/utils'
-import type {  FileExplorerEntry,
-  FileExplorerRow } from '@src/components/Explorer/utils'
+import type {
+  FileExplorerEntry,
+  FileExplorerRow,
+} from '@src/components/Explorer/utils'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { useState, useRef, useEffect } from 'react'
 import { systemIOActor } from '@src/lib/singletons'
@@ -20,7 +22,9 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import {
   alwaysEndFileWithEXT,
+  desktopSafePathSplit,
   getEXTWithPeriod,
+  getParentAbsolutePath,
   joinOSPaths,
 } from '@src/lib/paths'
 import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
@@ -191,6 +195,7 @@ export const ProjectExplorer = ({
             // TODO: Implement renameFolder and renameFile to navigate
             setIsRenaming(false)
             isRenamingRef.current = false
+            setFakeRow(null)
 
             if (!event) {
               return
@@ -205,28 +210,37 @@ export const ProjectExplorer = ({
             // Rename a folder
             if (row.isFolder) {
               if (requestedName !== name) {
-                systemIOActor.send({
-                  type: SystemIOMachineEvents.renameFolder,
-                  data: {
-                    requestedFolderName: requestedName,
-                    folderName: name,
-                    absolutePathToParentDirectory: joinOSPaths(
-                      projectDirectoryPath,
-                      child.parentPath
-                    ),
-                  },
-                })
-                // TODO: Gotcha... Set new string open even if it fails?
-                if (openedRowsRef.current[child.key]) {
-                  // If the file tree had the folder opened make the new one open.
-                  const newOpenedRows = { ...openedRowsRef.current }
-                  const key = constructPath({
-                    parentPath: child.parentPath,
-                    name: requestedName,
+                if (row.isFake) {
+                  // create
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.createBlankFolder,
+                    data: {
+                      requestedAbsolutePath: joinOSPaths(getParentAbsolutePath(row.path), requestedName)
+                    },
                   })
-                  newOpenedRows[key] = true
-                  setOpenedRows(newOpenedRows)
+                } else {
+                  // rename
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.renameFolder,
+                    data: {
+                      requestedFolderName: requestedName,
+                      folderName: name,
+                      absolutePathToParentDirectory: getParentAbsolutePath(row.path)
+                    },
+                  })
+                  // TODO: Gotcha... Set new string open even if it fails?
+                  if (openedRowsRef.current[child.key]) {
+                    // If the file tree had the folder opened make the new one open.
+                    const newOpenedRows = { ...openedRowsRef.current }
+                    const key = constructPath({
+                      parentPath: child.parentPath,
+                      name: requestedName,
+                    })
+                    newOpenedRows[key] = true
+                    setOpenedRows(newOpenedRows)
+                  }
                 }
+                
               }
             } else {
               // rename a file
@@ -239,21 +253,29 @@ export const ProjectExplorer = ({
                 // TODO: OH NO!
                 return
               }
-              systemIOActor.send({
+
+              // create a file if it is fake
+              if (row.isFake) {
+                systemIOActor.send({
+                  type: SystemIOMachineEvents.createBlankFile,
+                  data: {
+                    requestedAbsolutePath: joinOSPaths(getParentAbsolutePath(row.path),fileNameForcedWithOriginalExt)
+                  },
+                })
+              } else { 
+                // rename the file otherwise
+                systemIOActor.send({
                 type: SystemIOMachineEvents.renameFile,
                 data: {
                   requestedFileNameWithExtension: fileNameForcedWithOriginalExt,
                   fileNameWithExtension: name,
-                  absolutePathToParentDirectory: joinOSPaths(
-                    projectDirectoryPath,
-                    child.parentPath
-                  ),
+                  absolutePathToParentDirectory: getParentAbsolutePath(row.path)
                 },
               })
+              }
             }
           },
         }
-
         return row
       }) || []
 
@@ -261,16 +283,39 @@ export const ProjectExplorer = ({
       let showPlaceHolder = false
       if (fakeRow?.isFile) {
         // fake row is a file
-        const showFileAtSameLevel = fakeRow?.entry?.parentPath === row.parentPath && !row.isFolder === (fakeRow?.entry?.children === null) && row.name === FILE_PLACEHOLDER_NAME
-        const showFileWithinFolder = !row.isFolder && !!fakeRow?.entry?.children && fakeRow?.entry?.key === row.parentPath
-        showPlaceHolder = showFileAtSameLevel || showFileWithinFolder
-      } else {
+        const showFileAtSameLevel =
+          fakeRow?.entry?.parentPath === row.parentPath &&
+          !row.isFolder === (fakeRow?.entry?.children === null) &&
+          row.name === FILE_PLACEHOLDER_NAME
+        const showFileWithinFolder =
+          !row.isFolder &&
+          !!fakeRow?.entry?.children &&
+          fakeRow?.entry?.key === row.parentPath &&
+          row.name === FILE_PLACEHOLDER_NAME
+        const fakeRowIsNullShowRootFile = fakeRow.entry === null && row.parentPath === project.name &&
+          row.name === FILE_PLACEHOLDER_NAME
+        showPlaceHolder = showFileAtSameLevel || showFileWithinFolder || fakeRowIsNullShowRootFile
+      } else if (fakeRow?.isFile === false){
         // fake row is a folder
-        const showFolderAtSameLevel = fakeRow?.entry?.parentPath === row.parentPath && !row.isFolder === (!!fakeRow?.entry?.children) && row.name === FOLDER_PLACEHOLDER_NAME
-        const showFolderWithinFolder = row.isFolder && !!fakeRow?.entry?.children && fakeRow?.entry?.key === row.parentPath
-        showPlaceHolder = showFolderAtSameLevel || showFolderWithinFolder
+        const showFolderAtSameLevel =
+          fakeRow?.entry?.parentPath === row.parentPath &&
+          !row.isFolder === !!fakeRow?.entry?.children &&
+          row.name === FOLDER_PLACEHOLDER_NAME
+        const showFolderWithinFolder =
+          row.isFolder &&
+          !!fakeRow?.entry?.children &&
+          fakeRow?.entry?.key === row.parentPath &&
+          row.name === FOLDER_PLACEHOLDER_NAME
+        const fakeRowIsNullShowRootFolder = fakeRow.entry === null && row.parentPath === project.name &&
+          row.name === FOLDER_PLACEHOLDER_NAME
+        showPlaceHolder = showFolderAtSameLevel || showFolderWithinFolder || fakeRowIsNullShowRootFolder
       }
-      const skipPlaceHolder = !(row.name === FILE_PLACEHOLDER_NAME || row.name === FOLDER_PLACEHOLDER_NAME) || showPlaceHolder
+      const skipPlaceHolder =
+        !(
+          row.name === FILE_PLACEHOLDER_NAME ||
+          row.name === FOLDER_PLACEHOLDER_NAME
+        ) || showPlaceHolder
+      row.isFake = showPlaceHolder
       return row.render && skipPlaceHolder
     })
 

@@ -270,12 +270,18 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         const configuration = await readAppSettingsFile()
 
         // Create the project around the file if newProject
-        await createNewProjectDirectory(
+        try {
+        const result = await createNewProjectDirectory(
           newProjectName,
           requestedCode,
           configuration,
           newFileName
-        )
+        ) 
+        console.log(result)
+        } catch (e) {
+          console.error(e)
+        }
+
 
         return {
           message: 'File created successfully',
@@ -526,5 +532,55 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
       }
     ),
+    [SystemIOMachineActors.createBlankFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedAbsolutePath: string
+        }
+      }) => {
+        try {
+          const result = await window.electron.stat(input.requestedAbsolutePath)
+          if (result) {
+            return Promise.reject(new Error(`File ${input.requestedAbsolutePath} already exists`))
+          }
+        } catch (e) {
+          console.error(e)
+        }
+        await window.electron.writeFile(input.requestedAbsolutePath, '')
+        return {
+          message: `File ${input.requestedAbsolutePath} written successfully`,
+          requestedAbsolutePath: input.requestedAbsolutePath,
+        }
+      }
+  ),
+  [SystemIOMachineActors.createBlankFolder]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedAbsolutePath: string
+        }
+      }) => {
+        try {
+          const result = await window.electron.stat(input.requestedAbsolutePath)
+            if (result) {
+            return Promise.reject(new Error(`Folder ${input.requestedAbsolutePath} already exists`))
+          }
+        } catch (e) {
+          console.error(e)
+        }
+        await window.electron.mkdir(input.requestedAbsolutePath, {recursive: true})
+        return {
+          message: `File ${input.requestedAbsolutePath} written successfully`,
+          requestedAbsolutePath: input.requestedAbsolutePath,
+        }
+      }
+  ),
   },
 })

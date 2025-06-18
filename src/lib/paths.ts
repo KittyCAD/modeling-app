@@ -245,3 +245,10 @@ export const getEXTWithPeriod = (filePath: string) => {
   }
   return extension
 }
+
+export const getParentAbsolutePath = (absolutePath: string) => {
+  const split = desktopSafePathSplit(absolutePath)
+  split.pop()
+  const joined =  desktopSafePathJoin(split)
+  return joined
+}

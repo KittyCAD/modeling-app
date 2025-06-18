@@ -162,7 +162,19 @@ export const systemIOMachine = setup({
           data: {
             requestedPath: string
           }
-        },
+        }
+      | {
+        type: SystemIOMachineEvents.createBlankFile
+        data: {
+          requestedAbsolutePath: string
+        }
+      }
+      | {
+        type: SystemIOMachineEvents.createBlankFolder
+        data: {
+          requestedAbsolutePath: string
+        }
+      }
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -442,6 +454,38 @@ export const systemIOMachine = setup({
         }
       }
     ),
+    [SystemIOMachineActors.createBlankFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedAbsolutePath: string
+        }
+      }) => {
+        return {
+          message: '',
+          requestedAbsolutePath: '',
+        }
+      }
+    ),
+    [SystemIOMachineActors.createBlankFolder]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedAbsolutePath: string
+        }
+      }) => {
+        return {
+          message: '',
+          requestedAbsolutePath: '',
+        }
+      }
+    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -528,6 +572,12 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.deleteFileOrFolder]: {
           target: SystemIOMachineStates.deletingFileOrFolder,
+        },
+        [SystemIOMachineEvents.createBlankFile]: {
+          target: SystemIOMachineStates.creatingBlankFile,
+        },
+        [SystemIOMachineEvents.createBlankFolder]: {
+          target: SystemIOMachineStates.creatingBlankFolder,
         },
       },
     },
@@ -906,6 +956,50 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedPath: event.data.requestedPath,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.creatingBlankFile]: {
+      invoke: {
+        id: SystemIOMachineActors.createBlankFile,
+        src: SystemIOMachineActors.createBlankFile,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.createBlankFile)
+          return {
+            context,
+            requestedAbsolutePath: event.data.requestedAbsolutePath,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.creatingBlankFolder]: {
+      invoke: {
+        id: SystemIOMachineActors.createBlankFolder,
+        src: SystemIOMachineActors.createBlankFolder,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.createBlankFolder)
+          return {
+            context,
+            requestedAbsolutePath: event.data.requestedAbsolutePath,
             rootContext: self.system.get('root').getSnapshot().context,
           }
         },
