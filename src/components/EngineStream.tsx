@@ -562,7 +562,7 @@ export const EngineStream = (props: {
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       ref={videoWrapperRef}
-      className="absolute inset-0 z-0"
+      className="fixed inset-0 z-0"
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}

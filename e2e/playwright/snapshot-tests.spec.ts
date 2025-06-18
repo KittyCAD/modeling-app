@@ -798,7 +798,7 @@ test('theme persists', async ({ page, context, homePage }) => {
 
   await page.getByTestId('settings-close-button').click()
 
-  const networkToggle = page.getByTestId('network-toggle')
+  const networkToggle = page.getByTestId(/network-toggle/)
 
   // simulate network down
   await u.emulateNetworkConditions({
