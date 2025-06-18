@@ -6,7 +6,7 @@ use winnow::{
     error::{ContextError, ParseError},
     prelude::*,
     stream::{Location, Stream},
-    token::{any, none_of, one_of, take_till, take_until},
+    token::{any, none_of, take_till, take_until, take_while},
     LocatingSlice, Stateful,
 };
 
@@ -163,8 +163,8 @@ fn whitespace(i: &mut Input<'_>) -> ModalResult<Token> {
 }
 
 fn inner_word(i: &mut Input<'_>) -> ModalResult<()> {
-    one_of(('a'..='z', 'A'..='Z', '_')).parse_next(i)?;
-    repeat::<_, _, (), _, _>(0.., one_of(('a'..='z', 'A'..='Z', '0'..='9', '_'))).parse_next(i)?;
+    take_while(1.., |c: char| c.is_alphabetic() || c == '_').parse_next(i)?;
+    take_while(0.., |c: char| c.is_alphabetic() || c.is_digit(10) || c == '_').parse_next(i)?;
     Ok(())
 }
 
@@ -786,6 +786,7 @@ const things = "things"
         };
         assert_eq!(actual.tokens[0], expected);
     }
+
     #[test]
     fn test_word_starting_with_keyword() {
         let module_id = ModuleId::default();
@@ -795,6 +796,20 @@ const things = "things"
             value: "truee".to_owned(),
             start: 0,
             end: 5,
+            module_id,
+        };
+        assert_eq!(actual.tokens[0], expected);
+    }
+
+    #[test]
+    fn non_english_identifiers() {
+        let module_id = ModuleId::default();
+        let actual = lex("亞當", module_id).unwrap();
+        let expected = Token {
+            token_type: TokenType::Word,
+            value: "亞當".to_owned(),
+            start: 0,
+            end: 6,
             module_id,
         };
         assert_eq!(actual.tokens[0], expected);
