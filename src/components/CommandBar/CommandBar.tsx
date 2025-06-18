@@ -183,7 +183,7 @@ export const CommandBar = () => {
                   <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
                 </Tooltip>
               </button>
-              {!commandBarState.matches('Selecting command') && (
+              {/* {!commandBarState.matches('Selecting command') && (
                 <button onClick={stepBack} className="m-0 p-0 border-none">
                   <CustomIcon name="arrowLeft" className="w-5 h-5 rounded-sm" />
                   <Tooltip position="bottom">
@@ -196,7 +196,7 @@ export const CommandBar = () => {
                     </kbd>
                   </Tooltip>
                 </button>
-              )}
+              )} */}
             </div>
           </WrapperComponent.Panel>
         </Transition.Child>
