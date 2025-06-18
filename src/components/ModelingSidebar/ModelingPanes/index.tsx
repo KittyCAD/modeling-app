@@ -3,12 +3,6 @@ import type { MouseEventHandler, ReactNode } from 'react'
 import type { ContextFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
-import {
-  FileTreeInner,
-  FileTreeMenu,
-  FileTreeRoot,
-  useFileTreeOperations,
-} from '@src/components/FileTree'
 import { ModelingPaneHeader } from '@src/components/ModelingSidebar/ModelingPane'
 import { DebugPane } from '@src/components/ModelingSidebar/ModelingPanes/DebugPane'
 import { FeatureTreeMenu } from '@src/components/ModelingSidebar/ModelingPanes/FeatureTreeMenu'
@@ -24,6 +18,8 @@ import type { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { editorManager } from '@src/lib/singletons'
 import type { settingsMachine } from '@src/machines/settingsMachine'
+import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
+import { ModelingProjectExplorer } from '@src/components/Explorer/ModelingProjectExplorer'
 
 export type SidebarType =
   | 'code'
@@ -133,37 +129,16 @@ export const sidebarPanes: SidebarPane[] = [
     icon: 'folder',
     sidebarName: 'Project Files',
     Content: (props: { id: SidebarType; onClose: () => void }) => {
-      const {
-        createFile,
-        createFolder,
-        cloneFileOrDir,
-        openInNewWindow,
-        newTreeEntry,
-      } = useFileTreeOperations()
-
       return (
         <>
           <ModelingPaneHeader
             id={props.id}
             icon="folder"
-            title={<FileTreeRoot />}
-            Menu={
-              <FileTreeMenu
-                onCreateFile={() => createFile({ dryRun: true })}
-                onCreateFolder={() => createFolder({ dryRun: true })}
-              />
-            }
+            title={'huh'}
+            Menu={'huh'}
             onClose={props.onClose}
           />
-          <FileTreeInner
-            onCreateFile={(name: string) => createFile({ dryRun: false, name })}
-            onCreateFolder={(name: string) =>
-              createFolder({ dryRun: false, name })
-            }
-            onCloneFileOrFolder={(path: string) => cloneFileOrDir({ path })}
-            onOpenInNewWindow={(path: string) => openInNewWindow({ path })}
-            newTreeEntry={newTreeEntry}
-          />
+          <ModelingProjectExplorer/>
         </>
       )
     },

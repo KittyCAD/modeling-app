@@ -52,8 +52,6 @@ export const ProjectExplorer = ({
 }: {
   project: Project
 }) => {
-  const projectDirectoryPath = useProjectDirectoryPath()
-
   // cache the state of opened rows to allow nested rows to be opened if a parent one is closed
   // when the parent opens the children will already be opened
   const [openedRows, setOpenedRows] = useState<{ [key: string]: boolean }>({})
@@ -509,7 +507,7 @@ export const ProjectExplorer = ({
         </div>
       </div>
       <div
-        className={`h-96 w-full overflow-y-auto overflow-x-hidden border border-transparent ${activeIndex === -1 ? 'border-sky-500' : ''}`}
+        className={`h-full w-full overflow-y-auto overflow-x-hidden border border-transparent ${activeIndex === -1 ? 'border-sky-500' : ''}`}
         tabIndex={0}
         role="tree"
         aria-label="Files Explorer"

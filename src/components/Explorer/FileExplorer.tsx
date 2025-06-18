@@ -169,7 +169,7 @@ function RenameForm({
           autoCapitalize="off"
           autoCorrect="off"
           placeholder={row.name}
-          className="overflow-hidden whitespace-nowrap text-ellipsis py-1 bg-transparent text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:outline-none focus:ring-0"
+          className="p-1 overflow-hidden whitespace-nowrap text-ellipsis py-1 bg-transparent outline outline-primary -outline-offset-4 text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:ring-0"
           onKeyDown={handleKeyDown}
           onBlur={onSubmit}
         />
@@ -199,14 +199,16 @@ export const FileExplorerRowElement = ({
   const isSelected =
     row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
   const isIndexActive = row.domIndex === row.activeIndex
-  const outlineCSS = isIndexActive
-    ? 'outline outline-1 outline-primary'
-    : 'outline-0 outline-none'
+
 
   const rowElementRef = useRef(null)
   const isContextMenuRow = contextMenuRow?.key === row.key
   const isMyRowRenaming = isContextMenuRow && isRenaming
 
+  const outlineCSS = isIndexActive && !isMyRowRenaming
+    ? 'outline outline-1 outline-primary'
+    : 'outline-0 outline-none'
+  // Complaining about role="treeitem" focus but it is reimplemented aria labels
   /* eslint-disable */
   return (
     <div

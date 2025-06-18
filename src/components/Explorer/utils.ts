@@ -3,7 +3,6 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import type { FileEntry } from '@src/lib/project'
 import { joinOSPaths } from '@src/lib/paths'
-import { folder } from 'jszip'
 
 export interface FileExplorerEntry extends FileEntry {
   parentPath: string
