@@ -15,7 +15,6 @@ import {
   findAllPreviousVariables,
   findUsesOfTagInPipe,
   getNodeFromPath,
-  hasExtrudeSketch,
   hasSketchPipeBeenExtruded,
   isCursorInFunctionDefinition,
   isNodeSafeToReplace,
@@ -366,64 +365,6 @@ describe('testing getNodePathFromSourceRange', () => {
     if (err(_node)) throw _node
     expect(_node.node.type).toEqual('Identifier')
     expect(_node.node.name).toEqual('bar')
-  })
-})
-
-describe('testing hasExtrudeSketch', () => {
-  it('find sketch', async () => {
-    const exampleCode = `length001 = 2
-part001 = startSketchOn(XY)
-  |> startProfile(at = [-1.41, 3.46])
-  |> line(end = [19.49, 1.16], tag = $seg01)
-  |> angledLine(angle = -35, length = length001)
-  |> line(end = [-3.22, -7.36])
-  |> angledLine(angle = -175, length = segLen(seg01))`
-    const ast = assertParse(exampleCode)
-
-    const execState = await enginelessExecutor(ast)
-    const result = hasExtrudeSketch({
-      ast,
-      selection: {
-        codeRef: codeRefFromRange(topLevelRange(100, 101), ast),
-      },
-      memVars: execState.variables,
-    })
-    expect(result).toEqual(true)
-  })
-  it('find solid', async () => {
-    const exampleCode = `length001 = 2
-part001 = startSketchOn(XY)
-  |> startProfile(at = [-1.41, 3.46])
-  |> line(end = [19.49, 1.16], tag = $seg01)
-  |> angledLine(angle = -35, length = length001)
-  |> line(end = [-3.22, -7.36])
-  |> angledLine(angle = -175, length = segLen(seg01))
-  |> extrude(length = 1)`
-    const ast = assertParse(exampleCode)
-
-    const execState = await enginelessExecutor(ast)
-    const result = hasExtrudeSketch({
-      ast,
-      selection: {
-        codeRef: codeRefFromRange(topLevelRange(100, 101), ast),
-      },
-      memVars: execState.variables,
-    })
-    expect(result).toEqual(true)
-  })
-  it('finds nothing', async () => {
-    const exampleCode = `length001 = 2`
-    const ast = assertParse(exampleCode)
-
-    const execState = await enginelessExecutor(ast)
-    const result = hasExtrudeSketch({
-      ast,
-      selection: {
-        codeRef: codeRefFromRange(topLevelRange(10, 11), ast),
-      },
-      memVars: execState.variables,
-    })
-    expect(result).toEqual(false)
   })
 })
 

@@ -1,0 +1,142 @@
+// Truss Structure
+// A truss structure is a framework composed of triangular units made from straight members connected at joints, often called nodes. Trusses are widely used in architecture, civil engineering, and construction for their ability to support large loads with minimal material.
+
+
+
+
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+thickness = 4
+totalLength = 180
+totalWidth = 120
+totalHeight = 120
+legHeight = 48
+topTrussAngle = 25
+beamWidth = 4
+beamLength = 2
+sparAngle = 30
+nFrames = 3
+crossBeamLength = 82
+
+// Sketch the top frame
+topFrameSketch = startSketchOn(YZ)
+profile001 = startProfile(topFrameSketch, at = [totalWidth / 2, 0])
+  |> xLine(length = -totalWidth, tag = $bottomFace)
+  |> yLine(length = 12)
+  |> angledLine(angle = topTrussAngle, endAbsoluteX = 0, tag = $tag001)
+  |> angledLine(angle = -topTrussAngle, endAbsoluteX = totalWidth / 2, tag = $tag002)
+  |> close()
+
+// Create two holes in the top frame sketch to create the center beam
+profile002 = startProfile(topFrameSketch, at = [totalWidth / 2 - thickness, thickness])
+  |> xLine(endAbsolute = thickness / 2)
+  |> yLine(endAbsolute = segEndY(tag001) - thickness)
+  |> angledLine(endAbsoluteX = profileStartX(%), angle = -topTrussAngle)
+  |> close(%)
+
+profile003 = startProfile(topFrameSketch, at = [-totalWidth / 2 + thickness, thickness])
+  |> xLine(endAbsolute = -thickness / 2)
+  |> yLine(endAbsolute = segEndY(tag001) - thickness)
+  |> angledLine(endAbsoluteX = profileStartX(%), angle = 180 + topTrussAngle)
+  |> close(%)
+profile004 = subtract2d(profile001, tool = profile002)
+subtract2d(profile001, tool = profile003)
+
+// Extrude the sketch to make the top frame
+topFrame = extrude(profile001, length = beamLength)
+
+// Spar 1
+sketch002 = startSketchOn(offsetPlane(YZ, offset = .1))
+profile006 = startProfile(sketch002, at = [thickness / 2 - 1, 14])
+  |> angledLine(angle = sparAngle, length = 25)
+  |> angledLine(angle = -topTrussAngle, length = 5)
+  |> angledLine(angle = 180 + sparAngle, endAbsoluteX = profileStartX(%))
+  |> close(%)
+
+spar001 = extrude(profile006, length = 1.8)
+
+// Spar2
+profile007 = startProfile(sketch002, at = [-thickness / 2 + 1, 14])
+  |> angledLine(angle = 180 - sparAngle, length = 25)
+  |> angledLine(angle = 180 + topTrussAngle, length = 5)
+  |> angledLine(angle = -sparAngle, endAbsoluteX = profileStartX(%))
+  |> close(%)
+
+spar002 = extrude(profile007, length = 1.8)
+
+// Combine the top frame with the intermediate support beams
+newFrame = topFrame + spar001 + spar002
+
+// Create the two legs on the frame
+leg001Sketch = startSketchOn(offsetPlane(XY, offset = .1))
+legProfile001 = startProfile(leg001Sketch, at = [0, -totalWidth / 2])
+  |> xLine(%, length = beamLength - .1)
+  |> yLine(%, length = beamWidth - 1)
+  |> xLine(%, endAbsolute = profileStartX(%))
+  |> close(%)
+
+legProfile002 = startProfile(leg001Sketch, at = [0, totalWidth / 2])
+  |> xLine(%, length = beamLength - .1)
+  |> yLine(%, length = -(beamWidth - 1))
+  |> xLine(%, endAbsolute = profileStartX(%))
+  |> close(%)
+leg001 = extrude(legProfile001, length = -legHeight - .1)
+leg002 = extrude(legProfile002, length = -legHeight - .1)
+
+// Combine the top frame with the legs and pattern
+fullFrame = newFrame + leg001 + leg002
+  |> patternLinear3d(
+       %,
+       instances = nFrames,
+       distance = crossBeamLength + beamLength,
+       axis = [-1, 0, 0],
+     )
+
+// Create the center cross beam
+centerCrossBeamSketch = startSketchOn(YZ)
+profile005 = startProfile(centerCrossBeamSketch, at = [0, segEndY(tag001) - 1])
+  |> angledLine(%, angle = -topTrussAngle, length = beamWidth * 3 / 8)
+  |> yLine(length = -beamWidth * 3 / 8)
+  |> angledLine(%, angle = 180 - topTrussAngle, length = beamWidth * 3 / 8)
+  |> angledLine(%, angle = 180 + topTrussAngle, length = beamWidth * 3 / 8)
+  |> yLine(length = beamWidth * 3 / 8)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Extrude the center cross beam and pattern to every frame
+centerCrossBeam = extrude(profile005, length = -crossBeamLength)
+  |> patternLinear3d(
+       %,
+       instances = nFrames - 1,
+       distance = crossBeamLength + beamLength,
+       axis = [-1, 0, 0],
+     )
+
+// Create the two side cross beams
+sideCrossBeamSketch = startSketchOn(-YZ)
+profile008 = startProfile(
+       sideCrossBeamSketch,
+       at = [
+         -totalWidth / 2 + 0.5,
+         segEndY(tag002) - .5
+       ],
+     )
+  |> yLine(length = -beamLength)
+  |> xLine(length = 3 / 4 * beamWidth)
+  |> yLine(length = beamLength)
+  |> close()
+profile009 = startProfile(sideCrossBeamSketch, at = [totalWidth / 2, segEndY(tag002) - .5])
+  |> yLine(length = -beamLength)
+  |> xLine(%, length = -3 / 4 * beamWidth)
+  |> yLine(%, length = beamLength)
+  |> close(%)
+
+// Extrude the side cross beams and pattern to every frame.
+extrude([profile008, profile009], length = crossBeamLength)
+  |> patternLinear3d(
+       %,
+       instances = nFrames - 1,
+       distance = crossBeamLength + beamLength,
+       axis = [-1, 0, 0],
+     )

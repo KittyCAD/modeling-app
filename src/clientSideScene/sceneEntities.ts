@@ -60,7 +60,6 @@ import {
   PROFILE_START,
   SEGMENT_BODIES,
   SEGMENT_BODIES_PLUS_PROFILE_START,
-  SEGMENT_WIDTH_PX,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_DASH,
   TANGENTIAL_ARC_TO_SEGMENT,
@@ -90,6 +89,7 @@ import {
   getSceneScale,
 } from '@src/clientSideScene/sceneUtils'
 import type { SegmentUtils } from '@src/clientSideScene/segments'
+import { createLineShape } from '@src/clientSideScene/segments'
 import {
   createProfileStartHandle,
   dashedStraight,
@@ -165,7 +165,12 @@ import type { Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
-import { closestPointOnRay, deg2Rad } from '@src/lib/utils2d'
+import {
+  closestPointOnRay,
+  deg2Rad,
+  normalizeVec,
+  subVec,
+} from '@src/lib/utils2d'
 import type {
   SegmentOverlayPayload,
   SketchDetails,
@@ -798,7 +803,7 @@ export class SceneEntities {
         const callExpName = _node1.node?.callee?.name.name
 
         const initSegment =
-          segment.type === 'TangentialArcTo'
+          segment.type === 'TangentialArcTo' || segment.type === 'TangentialArc'
             ? segmentUtils.tangentialArc.init
             : segment.type === 'Circle'
               ? segmentUtils.circle.init
@@ -1107,7 +1112,11 @@ export class SceneEntities {
             (lastSegment.type === 'TangentialArc' && segmentName !== 'line') ||
             segmentName === 'tangentialArc'
           ) {
-            resolvedFunctionName = 'tangentialArc'
+            if (snappedPoint[0] === 0 || snappedPoint[1] === 0) {
+              resolvedFunctionName = 'tangentialArcTo'
+            } else {
+              resolvedFunctionName = 'tangentialArc'
+            }
           } else if (snappedToTangent) {
             // Generate tag for previous arc segment and use it for the angle of angledLine:
             //   |> tangentialArc(endAbsolute = [5, -10], tag = $arc001)
@@ -2500,8 +2509,8 @@ export class SceneEntities {
             forward,
             position,
           })
-          await this.codeManager.writeToFile()
         }
+        await this.codeManager.writeToFile()
       },
       onDrag: async ({
         selected,
@@ -3019,11 +3028,20 @@ export class SceneEntities {
         return input
       }
 
-      // straight segment is the default
+      // straight segment is the default,
+      // this includes "tangential-arc-to-segment"
+
+      const segments: SafeArray<Group> = Object.values(this.activeSegments) // Using the order in the object feels wrong
+      const currentIndex = segments.indexOf(group)
+      const previousSegment = segments[currentIndex - 1]
+
       return {
         type: 'straight-segment',
         from,
         to: dragTo,
+        previousEndTangent: previousSegment
+          ? findTangentDirection(previousSegment)
+          : undefined,
       }
     }
 
@@ -3584,7 +3602,8 @@ export class SceneEntities {
     })
 
     if (!resp) {
-      return Promise.reject('no response')
+      console.warn('No response')
+      return {} as Models['GetSketchModePlane_type']
     }
 
     if (isArray(resp)) {
@@ -3653,10 +3672,6 @@ export class SceneEntities {
           this.sceneInfra._baseUnitMultiplier
         const from = group.userData.from
 
-        const shape = new Shape()
-        shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
-        shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
-
         const straightSegmentBodyDashed = group.children.find(
           (child) => child.userData.type === STRAIGHT_SEGMENT_DASH
         ) as Mesh
@@ -3664,7 +3679,7 @@ export class SceneEntities {
           straightSegmentBodyDashed.geometry = dashedStraight(
             from,
             to,
-            shape,
+            createLineShape(scale),
             scale
           )
         }
@@ -3952,6 +3967,11 @@ function findTangentDirection(segmentGroup: Group) {
       ) +
       (Math.PI / 2) * (segmentGroup.userData.ccw ? 1 : -1)
     tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
+  } else if (segmentGroup.userData.type === STRAIGHT_SEGMENT) {
+    const to = segmentGroup.userData.to as Coords2d
+    const from = segmentGroup.userData.from as Coords2d
+    tangentDirection = subVec(to, from)
+    tangentDirection = normalizeVec(tangentDirection)
   } else {
     console.warn(
       'Unsupported segment type for tangent direction calculation: ',

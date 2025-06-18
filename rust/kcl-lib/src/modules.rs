@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     exec::KclValue,
-    execution::{typed_path::TypedPath, EnvironmentRef, PreImportedGeometry},
+    execution::{typed_path::TypedPath, EnvironmentRef, ModuleArtifactState, PreImportedGeometry},
     fs::{FileManager, FileSystem},
     parsing::ast::types::{ImportPath, Node, Program},
     source_range::SourceRange,
@@ -58,8 +58,8 @@ impl ModuleLoader {
     }
 
     pub(crate) fn import_cycle_error(&self, path: &ModulePath, source_range: SourceRange) -> KclError {
-        KclError::ImportCycle(KclErrorDetails {
-            message: format!(
+        KclError::new_import_cycle(KclErrorDetails::new(
+            format!(
                 "circular import of modules is not allowed: {} -> {}",
                 self.import_stack
                     .iter()
@@ -68,8 +68,8 @@ impl ModuleLoader {
                     .join(" -> "),
                 path,
             ),
-            source_ranges: vec![source_range],
-        })
+            vec![source_range],
+        ))
     }
 
     pub(crate) fn enter_module(&mut self, path: &ModulePath) {
@@ -96,6 +96,8 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "solid" => Some(include_str!("../std/solid.kcl")),
         "units" => Some(include_str!("../std/units.kcl")),
         "array" => Some(include_str!("../std/array.kcl")),
+        "sweep" => Some(include_str!("../std/sweep.kcl")),
+        "appearance" => Some(include_str!("../std/appearance.kcl")),
         "transform" => Some(include_str!("../std/transform.kcl")),
         _ => None,
     }
@@ -129,8 +131,11 @@ impl ModuleInfo {
 pub enum ModuleRepr {
     Root,
     // AST, memory, exported names
-    Kcl(Node<Program>, Option<(Option<KclValue>, EnvironmentRef, Vec<String>)>),
-    Foreign(PreImportedGeometry, Option<KclValue>),
+    Kcl(
+        Node<Program>,
+        Option<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState)>,
+    ),
+    Foreign(PreImportedGeometry, Option<(Option<KclValue>, ModuleArtifactState)>),
     Dummy,
 }
 
@@ -152,13 +157,6 @@ impl ModulePath {
         }
     }
 
-    pub(crate) fn std_path(&self) -> Option<String> {
-        match self {
-            ModulePath::Std { value: p } => Some(p.clone()),
-            _ => None,
-        }
-    }
-
     pub(crate) async fn source(&self, fs: &FileManager, source_range: SourceRange) -> Result<ModuleSource, KclError> {
         match self {
             ModulePath::Local { value: p } => Ok(ModuleSource {
@@ -168,10 +166,10 @@ impl ModulePath {
             ModulePath::Std { value: name } => Ok(ModuleSource {
                 source: read_std(name)
                     .ok_or_else(|| {
-                        KclError::Semantic(KclErrorDetails {
-                            message: format!("Cannot find standard library module to import: std::{name}."),
-                            source_ranges: vec![source_range],
-                        })
+                        KclError::new_semantic(KclErrorDetails::new(
+                            format!("Cannot find standard library module to import: std::{name}."),
+                            vec![source_range],
+                        ))
                     })
                     .map(str::to_owned)?,
                 path: self.clone(),
@@ -180,24 +178,52 @@ impl ModulePath {
         }
     }
 
-    pub(crate) fn from_import_path(path: &ImportPath, project_directory: &Option<TypedPath>) -> Self {
+    pub(crate) fn from_import_path(
+        path: &ImportPath,
+        project_directory: &Option<TypedPath>,
+        import_from: &ModulePath,
+    ) -> Result<Self, KclError> {
         match path {
             ImportPath::Kcl { filename: path } | ImportPath::Foreign { path } => {
-                let resolved_path = if let Some(project_dir) = project_directory {
-                    project_dir.join(path)
-                } else {
-                    TypedPath::from(path)
+                let resolved_path = match import_from {
+                    ModulePath::Main => {
+                        if let Some(project_dir) = project_directory {
+                            project_dir.join_typed(path)
+                        } else {
+                            path.clone()
+                        }
+                    }
+                    ModulePath::Local { value } => {
+                        let import_from_dir = value.parent();
+                        let base = import_from_dir.as_ref().or(project_directory.as_ref());
+                        if let Some(dir) = base {
+                            dir.join_typed(path)
+                        } else {
+                            path.clone()
+                        }
+                    }
+                    ModulePath::Std { .. } => {
+                        let message = format!("Cannot import a non-std KCL file from std: {path}.");
+                        debug_assert!(false, "{}", &message);
+                        return Err(KclError::new_internal(KclErrorDetails::new(message, vec![])));
+                    }
                 };
-                ModulePath::Local { value: resolved_path }
-            }
-            ImportPath::Std { path } => {
-                // For now we only support importing from singly-nested modules inside std.
-                assert_eq!(path.len(), 2);
-                assert_eq!(&path[0], "std");
 
-                ModulePath::Std { value: path[1].clone() }
+                Ok(ModulePath::Local { value: resolved_path })
             }
+            ImportPath::Std { path } => Self::from_std_import_path(path),
         }
+    }
+
+    pub(crate) fn from_std_import_path(path: &[String]) -> Result<Self, KclError> {
+        // For now we only support importing from singly-nested modules inside std.
+        if path.len() != 2 || path[0] != "std" {
+            let message = format!("Invalid std import path: {path:?}.");
+            debug_assert!(false, "{}", &message);
+            return Err(KclError::new_internal(KclErrorDetails::new(message, vec![])));
+        }
+
+        Ok(ModulePath::Std { value: path[1].clone() })
     }
 }
 

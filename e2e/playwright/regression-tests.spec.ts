@@ -458,12 +458,10 @@ extrude002 = extrude(profile002, length = 150)
 
       // Click the stl.
       await expect(stlOption).toBeVisible()
-
       await page.keyboard.press('Enter')
 
       // Click the checkbox
       await expect(submitButton).toBeVisible()
-
       await page.keyboard.press('Enter')
 
       // Find the toast.
@@ -471,11 +469,13 @@ extrude002 = extrude(profile002, length = 150)
       await expect(exportingToastMessage).toBeVisible()
 
       // Expect it to succeed.
-      await expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 })
+      await expect(exportingToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       const successToastMessage = page.getByText(`Exported successfully`)
-      await expect(successToastMessage).toBeVisible()
+      await page.waitForTimeout(1_000)
+      const count = await successToastMessage.count()
+      await expect(count).toBeGreaterThanOrEqual(1)
     }
   )
   // We updated this test such that you can have multiple exports going at once.
@@ -558,7 +558,7 @@ extrude002 = extrude(profile002, length = 150)
 
   test(
     `Network health indicator only appears in modeling view`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'bracket')
@@ -575,7 +575,7 @@ extrude002 = extrude(profile002, length = 150)
         name: 'Projects',
       })
       const projectLink = page.getByRole('link', { name: 'bracket' })
-      const networkHealthIndicator = page.getByTestId('network-toggle')
+      const networkHealthIndicator = page.getByTestId(/network-toggle/)
 
       await test.step('Check the home page', async () => {
         await expect(projectsHeading).toBeVisible()

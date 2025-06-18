@@ -1134,8 +1134,8 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "tag": null,
             "to": [
-              4.0469,
-              1.047
+              4.046864802988305,
+              1.047006236503076
             ],
             "type": "ToPoint",
             "units": {
@@ -1149,12 +1149,12 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "ccw": true,
             "center": [
-              4.6558,
-              1.1876
+              4.655846093479077,
+              1.1876006454679922
             ],
             "from": [
-              4.0469,
-              1.047
+              4.046864802988305,
+              1.047006236503076
             ],
             "tag": {
               "commentStart": 1189,
@@ -1164,8 +1164,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "seg01"
             },
             "to": [
-              4.6558,
-              0.5626
+              4.655846093479078,
+              0.5626006454679922
             ],
             "type": "TangentialArc",
             "units": {
@@ -1178,13 +1178,13 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              4.6558,
-              0.5626
+              4.655846093479078,
+              0.5626006454679922
             ],
             "tag": null,
             "to": [
-              5.6558,
-              0.5626
+              5.655846093479078,
+              0.5626006454679943
             ],
             "type": "ToPoint",
             "units": {
@@ -1197,12 +1197,12 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              5.6558,
-              0.5626
+              5.655846093479078,
+              0.5626006454679943
             ],
             "tag": null,
             "to": [
-              5.6558,
+              5.655846093479078,
               0.0
             ],
             "type": "ToPoint",
@@ -1216,7 +1216,7 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              5.6558,
+              5.655846093479078,
               0.0
             ],
             "tag": null,
@@ -1353,7 +1353,7 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "seg05"
           },
           "to": [
-            6.78,
+            6.780000000000001,
             -3.0
           ],
           "type": "ToPoint",
@@ -1368,11 +1368,11 @@ description: Variables in memory after executing cold-plate.kcl
           },
           "ccw": true,
           "center": [
-            6.78,
+            6.780000000000001,
             -2.0
           ],
           "from": [
-            6.78,
+            6.780000000000001,
             -3.0
           ],
           "tag": {
@@ -1383,7 +1383,7 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "seg02"
           },
           "to": [
-            6.78,
+            6.780000000000001,
             -1.0
           ],
           "type": "TangentialArc",
@@ -1397,7 +1397,7 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            6.78,
+            6.780000000000001,
             -1.0
           ],
           "tag": {
@@ -1408,8 +1408,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "seg06"
           },
           "to": [
-            -6.24,
-            -1.0
+            -6.239999999999998,
+            -0.9999999999999984
           ],
           "type": "ToPoint",
           "units": {
@@ -1423,12 +1423,12 @@ description: Variables in memory after executing cold-plate.kcl
           },
           "ccw": false,
           "center": [
-            -6.24,
-            0.0
+            -6.239999999999998,
+            0.0000000000000015543122344752192
           ],
           "from": [
-            -6.24,
-            -1.0
+            -6.239999999999998,
+            -0.9999999999999984
           ],
           "tag": {
             "commentStart": 1804,
@@ -1438,8 +1438,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "seg03"
           },
           "to": [
-            -6.24,
-            1.0
+            -6.239999999999998,
+            1.0000000000000016
           ],
           "type": "TangentialArc",
           "units": {
@@ -1452,13 +1452,13 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            -6.24,
-            1.0
+            -6.239999999999998,
+            1.0000000000000016
           ],
           "tag": null,
           "to": [
-            6.78,
-            1.0
+            6.780000000000001,
+            0.9999999999999998
           ],
           "type": "ToPoint",
           "units": {
@@ -1472,12 +1472,12 @@ description: Variables in memory after executing cold-plate.kcl
           },
           "ccw": true,
           "center": [
-            6.78,
-            2.0
+            6.780000000000001,
+            1.9999999999999998
           ],
           "from": [
-            6.78,
-            1.0
+            6.780000000000001,
+            0.9999999999999998
           ],
           "tag": {
             "commentStart": 1940,
@@ -1487,7 +1487,7 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "seg04"
           },
           "to": [
-            6.78,
+            6.780000000000001,
             3.0
           ],
           "type": "TangentialArc",
@@ -1501,13 +1501,13 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            6.78,
+            6.780000000000001,
             3.0
           ],
           "tag": null,
           "to": [
             -7.35,
-            3.0
+            3.0000000000000018
           ],
           "type": "ToPoint",
           "units": {

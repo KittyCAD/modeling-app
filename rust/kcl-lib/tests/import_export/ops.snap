@@ -2,17 +2,141 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_export.kcl
 ---
-[
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "ModuleInstance",
-      "name": "export_1.kcl",
-      "moduleId": 0
+{
+  "rust/kcl-lib/tests/import_export/export_1.kcl": [],
+  "rust/kcl-lib/tests/import_export/export_2.kcl": [
+    {
+      "type": "VariableDeclaration",
+      "name": "three",
+      "value": {
+        "type": "Number",
+        "value": 3.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "rust/kcl-lib/tests/import_export/input.kcl": [
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "ModuleInstance",
+        "name": "export_1.kcl",
+        "moduleId": 0
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
     },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  }
-]
+    {
+      "type": "GroupEnd"
+    }
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [
+    {
+      "type": "VariableDeclaration",
+      "name": "PI",
+      "value": {
+        "type": "Number",
+        "value": 3.141592653589793,
+        "ty": {
+          "type": "Unknown"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "E",
+      "value": {
+        "type": "Number",
+        "value": 2.718281828459045,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "TAU",
+      "value": {
+        "type": "Number",
+        "value": 6.283185307179586,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::prelude": [
+    {
+      "type": "VariableDeclaration",
+      "name": "START",
+      "value": {
+        "type": "String",
+        "value": "start"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "END",
+      "value": {
+        "type": "String",
+        "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
+}

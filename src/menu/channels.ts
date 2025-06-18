@@ -26,7 +26,6 @@ export type MenuLabels =
   | 'File.Create new folder'
   | 'File.Add file to project'
   | 'File.Export current part'
-  | 'File.Share part via Zoo link'
   | 'File.Preferences.Project settings'
   | 'Design.Start sketch'
   | 'Design.Create an offset plane'

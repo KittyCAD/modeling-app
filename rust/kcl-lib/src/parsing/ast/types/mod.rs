@@ -11,7 +11,7 @@ use std::{
 
 use anyhow::Result;
 use parse_display::{Display, FromStr};
-pub use path::NodePath;
+pub use path::{NodePath, Step};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
@@ -25,7 +25,6 @@ pub use crate::parsing::ast::types::{
     none::KclNone,
 };
 use crate::{
-    docs::StdLibFn,
     errors::KclError,
     execution::{
         annotations,
@@ -34,7 +33,7 @@ use crate::{
     },
     parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
     source_range::SourceRange,
-    ModuleId,
+    ModuleId, TypedPath,
 };
 
 mod condition;
@@ -454,7 +453,7 @@ impl Node<Program> {
                         alpha: c.a,
                     },
                 };
-                if colors.borrow().iter().any(|c| *c == color) {
+                if colors.borrow().contains(&color) {
                     return;
                 }
                 colors.borrow_mut().push(color);
@@ -529,7 +528,7 @@ impl Node<Program> {
         let new_color = csscolorparser::Color::new(color.red, color.green, color.blue, color.alpha);
         Ok(Some(ColorPresentation {
             // The label will be what they replace the color with.
-            label: new_color.to_hex_string(),
+            label: new_color.to_css_hex(),
             text_edit: None,
             additional_text_edits: None,
         }))
@@ -1741,8 +1740,8 @@ impl ImportSelector {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum ImportPath {
-    Kcl { filename: String },
-    Foreign { path: String },
+    Kcl { filename: TypedPath },
+    Foreign { path: TypedPath },
     Std { path: Vec<String> },
 }
 
@@ -1811,16 +1810,25 @@ impl ImportStatement {
 
         match &self.path {
             ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => {
-                let mut parts = s.split('.');
-                let path = parts.next()?;
-                let _ext = parts.next()?;
-                let rest = parts.next();
+                let name = s.to_string_lossy();
+                if name.ends_with("/main.kcl") || name.ends_with("\\main.kcl") {
+                    let name = &name[..name.len() - 9];
+                    let start = name.rfind(['/', '\\']).map(|s| s + 1).unwrap_or(0);
+                    return Some(name[start..].to_owned());
+                }
 
-                if rest.is_some() {
+                let name = s.file_name().map(|f| f.to_string())?;
+                if name.contains('\\') || name.contains('/') {
                     return None;
                 }
 
-                path.rsplit(&['/', '\\']).next().map(str::to_owned)
+                // Remove the extension if it exists.
+                let extension = s.extension();
+                Some(if let Some(extension) = extension {
+                    name.trim_end_matches(extension).trim_end_matches('.').to_string()
+                } else {
+                    name
+                })
             }
             ImportPath::Std { path } => path.last().cloned(),
         }
@@ -1941,6 +1949,10 @@ impl CallExpressionKw {
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        if let Some(unlabeled) = &mut self.unlabeled {
+            unlabeled.replace_value(source_range, new_value.clone());
+        }
+
         for arg in &mut self.arguments {
             arg.arg.replace_value(source_range, new_value.clone());
         }
@@ -1950,33 +1962,12 @@ impl CallExpressionKw {
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         self.callee.rename(old_name, new_name);
 
+        if let Some(unlabeled) = &mut self.unlabeled {
+            unlabeled.rename_identifiers(old_name, new_name);
+        }
+
         for arg in &mut self.arguments {
             arg.arg.rename_identifiers(old_name, new_name);
-        }
-    }
-}
-
-/// A function declaration.
-#[derive(Debug, Clone, Default, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type")]
-pub enum Function {
-    /// A stdlib function written in Rust (aka core lib).
-    StdLib {
-        /// The function.
-        func: Box<dyn StdLibFn>,
-    },
-    /// A function that is defined in memory.
-    #[default]
-    InMemory,
-}
-
-impl PartialEq for Function {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (Function::StdLib { func: func1 }, Function::StdLib { func: func2 }) => func1.name() == func2.name(),
-            (Function::InMemory, Function::InMemory) => true,
-            _ => false,
         }
     }
 }
@@ -2768,47 +2759,6 @@ impl ObjectProperty {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub enum MemberObject {
-    MemberExpression(BoxNode<MemberExpression>),
-    Identifier(BoxNode<Identifier>),
-}
-
-impl MemberObject {
-    pub fn start(&self) -> usize {
-        match self {
-            MemberObject::MemberExpression(member_expression) => member_expression.start,
-            MemberObject::Identifier(identifier) => identifier.start,
-        }
-    }
-
-    pub fn end(&self) -> usize {
-        match self {
-            MemberObject::MemberExpression(member_expression) => member_expression.end,
-            MemberObject::Identifier(identifier) => identifier.end,
-        }
-    }
-
-    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
-        let sr = SourceRange::from(self);
-        sr.contains_range(range)
-    }
-}
-
-impl From<MemberObject> for SourceRange {
-    fn from(obj: MemberObject) -> Self {
-        Self::new(obj.start(), obj.end(), obj.module_id())
-    }
-}
-
-impl From<&MemberObject> for SourceRange {
-    fn from(obj: &MemberObject) -> Self {
-        Self::new(obj.start(), obj.end(), obj.module_id())
-    }
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type")]
 pub enum LiteralIdentifier {
     Identifier(BoxNode<Identifier>),
     Literal(BoxNode<Literal>),
@@ -2851,7 +2801,7 @@ impl From<&LiteralIdentifier> for SourceRange {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct MemberExpression {
-    pub object: MemberObject,
+    pub object: Expr,
     pub property: LiteralIdentifier,
     pub computed: bool,
 
@@ -2873,12 +2823,7 @@ impl Node<MemberExpression> {
 impl MemberExpression {
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        match &mut self.object {
-            MemberObject::MemberExpression(ref mut member_expression) => {
-                member_expression.rename_identifiers(old_name, new_name)
-            }
-            MemberObject::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
-        }
+        self.object.rename_identifiers(old_name, new_name);
 
         match &mut self.property {
             LiteralIdentifier::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
@@ -3060,6 +3005,8 @@ impl BinaryOperator {
         }
     }
 
+    /// The operator associativity of the operator (as in the parsing sense, not the mathematical sense of associativity).
+    ///
     /// Follow JS definitions of each operator.
     /// Taken from <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table>
     pub fn associativity(&self) -> Associativity {
@@ -3069,6 +3016,12 @@ impl BinaryOperator {
             Self::Gt | Self::Gte | Self::Lt | Self::Lte | Self::Eq | Self::Neq => Associativity::Left, // I don't know if this is correct
             Self::And | Self::Or => Associativity::Left,
         }
+    }
+
+    /// Whether an operator is mathematically associative. If it is, then the operator associativity (given by the
+    /// `associativity` method) is mostly irrelevant.
+    pub fn associative(&self) -> bool {
+        matches!(self, Self::Add | Self::Mul | Self::And | Self::Or)
     }
 }
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -3206,14 +3159,14 @@ pub enum PrimitiveType {
     /// A boolean type.
     #[serde(rename = "bool")]
     Boolean,
-    /// A tag.
-    Tag,
+    /// A tag declaration.
+    TagDecl,
     /// Imported from other CAD system.
     ImportedGeometry,
     /// `fn`, type of functions.
     Function(FunctionType),
     /// An identifier used as a type (not really a primitive type, but whatever).
-    Named(Node<Identifier>),
+    Named { id: Node<Identifier> },
 }
 
 impl PrimitiveType {
@@ -3222,11 +3175,24 @@ impl PrimitiveType {
             ("any", None) => Some(PrimitiveType::Any),
             ("string", None) => Some(PrimitiveType::String),
             ("bool", None) => Some(PrimitiveType::Boolean),
-            ("tag", None) => Some(PrimitiveType::Tag),
+            ("TagDecl", None) => Some(PrimitiveType::TagDecl),
             ("number", None) => Some(PrimitiveType::Number(NumericSuffix::None)),
             ("number", Some(s)) => Some(PrimitiveType::Number(s)),
             ("ImportedGeometry", None) => Some(PrimitiveType::ImportedGeometry),
             _ => None,
+        }
+    }
+
+    fn display_multiple(&self) -> String {
+        match self {
+            PrimitiveType::Any => "values".to_owned(),
+            PrimitiveType::Number(_) => "numbers".to_owned(),
+            PrimitiveType::String => "strings".to_owned(),
+            PrimitiveType::Boolean => "bools".to_owned(),
+            PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
+            PrimitiveType::Function(_) => "functions".to_owned(),
+            PrimitiveType::Named { id } => format!("`{}`s", id.name),
+            PrimitiveType::TagDecl => "tag declarations".to_owned(),
         }
     }
 }
@@ -3244,7 +3210,7 @@ impl fmt::Display for PrimitiveType {
             }
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
-            PrimitiveType::Tag => write!(f, "tag"),
+            PrimitiveType::TagDecl => write!(f, "TagDecl"),
             PrimitiveType::ImportedGeometry => write!(f, "ImportedGeometry"),
             PrimitiveType::Function(t) => {
                 write!(f, "fn")?;
@@ -3269,7 +3235,7 @@ impl fmt::Display for PrimitiveType {
                 }
                 Ok(())
             }
-            PrimitiveType::Named(n) => write!(f, "{}", n.name),
+            PrimitiveType::Named { id: n } => write!(f, "{}", n.name),
         }
     }
 }
@@ -3311,12 +3277,59 @@ pub enum Type {
     },
     // Union/enum types
     Union {
-        tys: NodeList<PrimitiveType>,
+        tys: NodeList<Type>,
     },
     // An object type.
     Object {
-        properties: Vec<Parameter>,
+        properties: Vec<(Node<Identifier>, Node<Type>)>,
     },
+}
+
+impl Type {
+    pub fn human_friendly_type(&self) -> String {
+        match self {
+            Type::Primitive(ty) => format!("a value with type `{ty}`"),
+            Type::Array {
+                ty,
+                len: ArrayLen::None | ArrayLen::Minimum(0),
+            } => {
+                format!("an array of {}", ty.display_multiple())
+            }
+            Type::Array {
+                ty,
+                len: ArrayLen::Minimum(1),
+            } => format!("one or more {}", ty.display_multiple()),
+            Type::Array {
+                ty,
+                len: ArrayLen::Minimum(n),
+            } => {
+                format!("an array of {n} or more {}", ty.display_multiple())
+            }
+            Type::Array {
+                ty,
+                len: ArrayLen::Known(n),
+            } => format!("an array of {n} {}", ty.display_multiple()),
+            Type::Union { tys } => tys
+                .iter()
+                .map(|t| t.human_friendly_type())
+                .collect::<Vec<_>>()
+                .join(" or "),
+            Type::Object { .. } => format!("an object with fields `{}`", self),
+        }
+    }
+
+    fn display_multiple(&self) -> String {
+        match self {
+            Type::Primitive(ty) => ty.display_multiple(),
+            Type::Array { .. } => "arrays".to_owned(),
+            Type::Union { tys } => tys
+                .iter()
+                .map(|t| t.display_multiple())
+                .collect::<Vec<_>>()
+                .join(" or "),
+            Type::Object { .. } => format!("objects with fields `{self}`"),
+        }
+    }
 }
 
 impl fmt::Display for Type {
@@ -3327,7 +3340,7 @@ impl fmt::Display for Type {
                 write!(f, "[{ty}")?;
                 match len {
                     ArrayLen::None => {}
-                    ArrayLen::NonEmpty => write!(f, "; 1+")?,
+                    ArrayLen::Minimum(n) => write!(f, "; {n}+")?,
                     ArrayLen::Known(n) => write!(f, "; {n}")?,
                 }
                 write!(f, "]")
@@ -3348,10 +3361,8 @@ impl fmt::Display for Type {
                     } else {
                         write!(f, ",")?;
                     }
-                    write!(f, " {}:", p.identifier.name)?;
-                    if let Some(ty) = &p.type_ {
-                        write!(f, " {}", ty.inner)?;
-                    }
+                    write!(f, " {}:", p.0.name)?;
+                    write!(f, " {}", p.1)?;
                 }
                 write!(f, " }}")
             }
@@ -3373,6 +3384,13 @@ impl DefaultParamVal {
     /// KCL none.
     pub(crate) fn none() -> Self {
         Self::KclNone(KclNone::default())
+    }
+
+    pub(crate) fn source_range(&self) -> SourceRange {
+        match self {
+            DefaultParamVal::Literal(l) => l.as_source_range(),
+            DefaultParamVal::KclNone(_) => SourceRange::default(),
+        }
     }
 }
 
@@ -3981,7 +3999,7 @@ cylinder = startSketchOn(-XZ)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_type_args_object_on_functions() {
-        let some_program_string = r#"fn thing(arg0: [number], arg1: {thing: number, things: [string], more?: string}, tag?: string) {
+        let some_program_string = r#"fn thing(arg0: [number], arg1: {thing: number, things: [string], more: string}, tag?: string) {
     return arg0
 }"#;
         let module_id = ModuleId::default();
@@ -4008,8 +4026,8 @@ cylinder = startSketchOn(-XZ)
             params[1].type_.as_ref().unwrap().inner,
             Type::Object {
                 properties: vec![
-                    Parameter {
-                        identifier: Node::new(
+                    (
+                        Node::new(
                             Identifier {
                                 name: "thing".to_owned(),
                                 digest: None,
@@ -4018,18 +4036,15 @@ cylinder = startSketchOn(-XZ)
                             37,
                             module_id,
                         ),
-                        type_: Some(Node::new(
+                        Node::new(
                             Type::Primitive(PrimitiveType::Number(NumericSuffix::None)),
                             39,
                             45,
                             module_id
-                        )),
-                        default_value: None,
-                        labeled: true,
-                        digest: None,
-                    },
-                    Parameter {
-                        identifier: Node::new(
+                        ),
+                    ),
+                    (
+                        Node::new(
                             Identifier {
                                 name: "things".to_owned(),
                                 digest: None,
@@ -4038,7 +4053,7 @@ cylinder = startSketchOn(-XZ)
                             53,
                             module_id,
                         ),
-                        type_: Some(Node::new(
+                        Node::new(
                             Type::Array {
                                 ty: Box::new(Type::Primitive(PrimitiveType::String)),
                                 len: ArrayLen::None
@@ -4046,13 +4061,10 @@ cylinder = startSketchOn(-XZ)
                             56,
                             62,
                             module_id
-                        )),
-                        default_value: None,
-                        labeled: true,
-                        digest: None
-                    },
-                    Parameter {
-                        identifier: Node::new(
+                        )
+                    ),
+                    (
+                        Node::new(
                             Identifier {
                                 name: "more".to_owned(),
                                 digest: None
@@ -4061,11 +4073,8 @@ cylinder = startSketchOn(-XZ)
                             69,
                             module_id,
                         ),
-                        type_: Some(Node::new(Type::Primitive(PrimitiveType::String), 72, 78, module_id)),
-                        labeled: true,
-                        default_value: Some(DefaultParamVal::none()),
-                        digest: None
-                    }
+                        Node::new(Type::Primitive(PrimitiveType::String), 71, 77, module_id),
+                    )
                 ]
             }
         );
@@ -4333,6 +4342,54 @@ startSketchOn(XY)
 
 // Above Code
 5
+"#
+        );
+    }
+
+    #[test]
+    fn test_module_name() {
+        #[track_caller]
+        fn assert_mod_name(stmt: &str, name: &str) {
+            let tokens = crate::parsing::token::lex(stmt, ModuleId::default()).unwrap();
+            let stmt = crate::parsing::parser::import_stmt(&mut tokens.as_slice()).unwrap();
+            assert_eq!(stmt.module_name().unwrap(), name);
+        }
+
+        assert_mod_name("import 'foo.kcl'", "foo");
+        assert_mod_name("import 'foo.kcl' as bar", "bar");
+        assert_mod_name("import 'main.kcl'", "main");
+        assert_mod_name("import 'foo/main.kcl'", "foo");
+        assert_mod_name("import 'foo\\bar\\main.kcl'", "bar");
+    }
+
+    #[test]
+    fn test_rename_in_math_in_std_function() {
+        let code = r#"rise = 4.5
+run = 8
+angle = atan(rise / run)"#;
+        let mut program = crate::parsing::top_level_parse(code).unwrap();
+
+        // We want to rename `run` to `run2`.
+        let run = program.body.get(1).unwrap().clone();
+        let BodyItem::VariableDeclaration(var_decl) = &run else {
+            panic!("expected a variable declaration")
+        };
+        let Expr::Literal(lit) = &var_decl.declaration.init else {
+            panic!("expected a literal");
+        };
+        assert_eq!(lit.raw, "8");
+
+        // Rename it.
+        program.rename_symbol("yoyo", var_decl.as_source_range().start() + 1);
+
+        // Recast the program to a string.
+        let formatted = program.recast(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"rise = 4.5
+yoyo = 8
+angle = atan(rise / yoyo)
 "#
         );
     }

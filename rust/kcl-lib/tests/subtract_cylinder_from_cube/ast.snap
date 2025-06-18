@@ -83,12 +83,20 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "center",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -131,12 +139,20 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "center",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -223,12 +239,20 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "center",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -271,12 +295,20 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "center",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -363,12 +395,20 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "center",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -411,12 +451,20 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "center",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -503,12 +551,20 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "center",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
@@ -551,12 +607,20 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "center",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,

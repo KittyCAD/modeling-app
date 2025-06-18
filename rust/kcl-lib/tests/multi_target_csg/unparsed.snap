@@ -1,0 +1,71 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing multi_target_csg.kcl
+---
+@settings(defaultLengthUnit = in)
+
+sketch002 = startSketchOn(-XZ)
+
+sketch002Profile000 = startProfile(sketch002, at = [-0.1625, 0.1875])
+  |> xLine(length = 0.325)
+  |> arc(angleStart = 90, angleEnd = 0, radius = 0.025)
+  |> yLine(length = -0.325)
+  |> arc(angleStart = 360, angleEnd = 270, radius = 0.025)
+  |> xLine(length = -0.325)
+  |> arc(angleStart = 270, angleEnd = 180, radius = 0.025)
+  |> yLine(length = 0.325)
+  |> arc(angleStart = 180, angleEnd = 90, radius = 0.025)
+  |> close()
+  |> subtract2d(tool = circle(center = [-0, -0], radius = 0.039062, tag = $hole001))
+
+extrude000 = extrude(sketch002Profile000, length = 0.0625)
+
+sketch003 = startSketchOn(XY)
+
+sketch003Profile000 = startProfile(sketch003, at = [-0.05582, -0.21875])
+  |> line(end = [0.048496, 0.21875])
+  |> xLine(length = -0.087793)
+  |> line(end = [-0.026673, -0.120313])
+  |> line(end = [0.058646, -0.098438])
+  |> xLine(length = 0.007324)
+  |> close()
+
+sketch003Profile001 = startProfile(sketch003, at = [0.007324, 0])
+  |> xLine(length = 0.087793)
+  |> line(end = [0.026673, -0.120313])
+  |> line(end = [-0.058646, -0.098438])
+  |> xLine(length = -0.007324)
+  |> line(end = [-0.048496, 0.21875])
+  |> close()
+
+extrude001 = extrude(
+  [
+    sketch003Profile000,
+    sketch003Profile001
+  ],
+  length = 0.1,
+  bidirectionalLength = 0.1,
+)
+
+sketch004 = startSketchOn(offsetPlane(-XZ, offset = 0.1))
+
+sketch004Profile000 = circle(sketch004, center = [-0, -0], radius = 0.039062)
+
+cut000Extrude = extrude([sketch004Profile000], length = -1)
+
+cut000 = subtract(extrude001, tools = cut000Extrude)
+
+sketch005 = startSketchOn(offsetPlane(-XZ, offset = 0.07))
+
+sketch005Profile000 = circle(sketch005, center = [0, 0], radius = 0.052734)
+
+sketch006 = startSketchOn(offsetPlane(-XZ, offset = 0.0325))
+
+sketch006Profile000 = circle(sketch006, center = [0, 0], radius = 0.03)
+
+draftCut000Extrude = loft([
+  sketch005Profile000,
+  sketch006Profile000
+])
+
+draftCut000 = subtract(extrude000, tools = draftCut000Extrude)

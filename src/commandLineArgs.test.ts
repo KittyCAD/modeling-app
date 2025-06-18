@@ -53,7 +53,7 @@ describe('getPathOrUrlFromArgs', () => {
     ['linux', linuxDeepLinkArgv],
     ['windows', winDeepLinkArgv],
     // macos doesn't uses the open-url scheme so is different
-  ].map(([os, argv]) => {
+  ].forEach(([os, argv]) => {
     it(`should parse second-instance deep link argv on ${os}`, () => {
       const args = parseCLIArgs(argv as string[])
       expect(getPathOrUrlFromArgs(args)).toContain('zoo-studio://')
@@ -63,7 +63,7 @@ describe('getPathOrUrlFromArgs', () => {
     ['linux', linuxPathArgv],
     ['windows', winPathArgv],
     ['mac', macPathArgv],
-  ].map(([os, argv]) => {
+  ].forEach(([os, argv]) => {
     it(`should parse path argv on ${os}`, () => {
       const args = parseCLIArgs(argv as string[])
       expect(getPathOrUrlFromArgs(args)).toContain('main.kcl')
@@ -73,7 +73,7 @@ describe('getPathOrUrlFromArgs', () => {
     ['linux', linuxNoPathArgv],
     ['windows', winNoPathArgv],
     ['mac', macNoPathArgv],
-  ].map(([os, argv]) => {
+  ].forEach(([os, argv]) => {
     it(`should return undefined without path argv on ${os}`, () => {
       const args = parseCLIArgs(argv as string[])
       expect(getPathOrUrlFromArgs(args)).toBeUndefined()

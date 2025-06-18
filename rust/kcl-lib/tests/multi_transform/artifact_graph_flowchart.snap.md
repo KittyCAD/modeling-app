@@ -24,18 +24,24 @@ flowchart LR
   10["Sweep Extrusion<br>[276, 295, 0]"]
     %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 3 }]
   11[Wall]
+    %% face_code_ref=Missing NodePath
   12[Wall]
+    %% face_code_ref=Missing NodePath
   13[Wall]
+    %% face_code_ref=Missing NodePath
   14[Wall]
+    %% face_code_ref=Missing NodePath
   15["Cap Start"]
+    %% face_code_ref=Missing NodePath
   16["Cap End"]
+    %% face_code_ref=Missing NodePath
   17["SweepEdge Opposite"]
-  18["SweepEdge Opposite"]
+  18["SweepEdge Adjacent"]
   19["SweepEdge Opposite"]
-  20["SweepEdge Opposite"]
-  21["SweepEdge Adjacent"]
+  20["SweepEdge Adjacent"]
+  21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
-  23["SweepEdge Adjacent"]
+  23["SweepEdge Opposite"]
   24["SweepEdge Adjacent"]
   1 --- 2
   1 --- 3
@@ -48,20 +54,20 @@ flowchart LR
   3 ---- 10
   4 --- 11
   4 x--> 15
+  4 --- 17
   4 --- 18
-  4 --- 22
   5 --- 12
   5 x--> 15
-  5 --- 17
-  5 --- 21
+  5 --- 19
+  5 --- 20
   6 --- 13
   6 x--> 15
-  6 --- 19
-  6 --- 23
-  8 --- 14
-  8 x--> 15
-  8 --- 20
-  8 --- 24
+  6 --- 21
+  6 --- 22
+  7 --- 14
+  7 x--> 15
+  7 --- 23
+  7 --- 24
   10 --- 11
   10 --- 12
   10 --- 13
@@ -76,20 +82,20 @@ flowchart LR
   10 --- 22
   10 --- 23
   10 --- 24
+  11 --- 17
   11 --- 18
-  21 <--x 11
-  11 --- 22
-  12 --- 17
-  12 --- 21
-  24 <--x 12
-  13 --- 19
-  22 <--x 13
-  13 --- 23
-  14 --- 20
-  23 <--x 14
+  24 <--x 11
+  18 <--x 12
+  12 --- 19
+  12 --- 20
+  20 <--x 13
+  13 --- 21
+  13 --- 22
+  22 <--x 14
+  14 --- 23
   14 --- 24
   17 <--x 16
-  18 <--x 16
   19 <--x 16
-  20 <--x 16
+  21 <--x 16
+  23 <--x 16
 ```

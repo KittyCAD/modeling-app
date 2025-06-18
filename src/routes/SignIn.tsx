@@ -10,12 +10,11 @@ import { VITE_KC_API_BASE_URL, VITE_KC_SITE_BASE_URL } from '@src/env'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS } from '@src/lib/paths'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
-import { APP_VERSION, IS_NIGHTLY } from '@src/routes/utils'
+import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -36,11 +35,7 @@ const SignIn = () => {
   const {
     app: { theme },
   } = useSettings()
-  const signInUrl = `${VITE_KC_SITE_BASE_URL}${
-    PATHS.SIGN_IN
-  }?callbackUrl=${encodeURIComponent(
-    typeof window !== 'undefined' && window.location.href.replace('signin', '')
-  )}`
+  const signInUrl = generateSignInUrl()
   const kclSampleUrl = `${VITE_KC_SITE_BASE_URL}/docs/kcl-samples/car-wheel-assembly`
 
   const getThemeText = useCallback(
@@ -59,7 +54,7 @@ const SignIn = () => {
   const signInDesktop = async () => {
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await window.electron
-      .startDeviceFlow(VITE_KC_API_BASE_URL)
+      .startDeviceFlow(VITE_KC_API_BASE_URL + location.search)
       .catch(reportError)
     if (!userCodeToDisplay) {
       console.error('No user code received while trying to log in')
@@ -98,16 +93,20 @@ const SignIn = () => {
         style={
           isDesktop() ? ({ WebkitAppRegion: 'no-drag' } as CSSProperties) : {}
         }
-        className="body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto"
+        className="body-bg py-16 md:py-5 px-4 md:px-12 rounded-lg grid place-items-center overflow-y-auto"
       >
-        <div className="max-w-7xl grid gap-5 grid-cols-3 xl:grid-cols-4 xl:grid-rows-5">
-          <div className="col-span-2 xl:col-span-3 xl:row-span-3 max-w-3xl mr-8 mb-8">
-            <div className="flex items-baseline mb-8">
-              <Logo className="text-primary h-10 lg:h-12 xl:h-16 relative translate-y-1 mr-4 lg:mr-6 xl:mr-8" />
-              <h1 className="text-3xl lg:text-4xl xl:text-5xl">{APP_NAME}</h1>
-              <span className="px-3 py-1 text-base rounded-full bg-primary/10 text-primary self-start">
-                {IS_NIGHTLY ? 'nightly' : ''} v{APP_VERSION}
-              </span>
+        <div className="max-w-7xl flex flex-col md:grid gap-5 grid-cols-3 xl:grid-cols-4 xl:grid-rows-5">
+          <div className="md:col-span-2 xl:col-span-3 xl:row-span-3 max-w-3xl mr-8 mb-8">
+            <div className="flex flex-row items-baseline mb-8">
+              <Logo className="text-primary h-8 md:h-10 lg:h-12 xl:h-16 relative translate-y-1 mr-4 lg:mr-6 xl:mr-8" />
+              <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl">
+                {APP_NAME}
+              </h1>
+              {isDesktop() && (
+                <span className="px-2 md:px-3 py-1 text-xs md:text-base rounded-full bg-primary/10 text-primary self-start">
+                  v{APP_VERSION}
+                </span>
+              )}
             </div>
             <p className="my-4 text-lg xl:text-xl">
               Thank you for using our CAD application. It is built on a novel
@@ -166,22 +165,31 @@ const SignIn = () => {
                 )}
               </div>
             ) : (
-              <Link
-                onClick={openExternalBrowserIfDesktop(signInUrl)}
-                to={signInUrl}
-                className={
-                  'w-fit m-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
-                  '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
-                }
-                data-testid="sign-in-button"
-              >
-                Sign in to get started
-                <CustomIcon name="arrowRight" className="w-6 h-6" />
-              </Link>
+              <>
+                <div className="flex md:hidden flex-col gap-2">
+                  <p className="text-base text-primary">
+                    This app is really best used on a desktop. We're working on
+                    simple touch controls for mobile, but in the meantime please
+                    visit using a larger device.
+                  </p>
+                </div>
+                <Link
+                  onClick={openExternalBrowserIfDesktop(signInUrl)}
+                  to={signInUrl}
+                  className={
+                    'w-fit m-0 mt-8 hidden md:flex gap-4 items-center px-3 py-1 ' +
+                    '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                  }
+                  data-testid="sign-in-button"
+                >
+                  Sign in to get started
+                  <CustomIcon name="arrowRight" className="w-6 h-6" />
+                </Link>
+              </>
             )}
           </div>
           <Link
-            className={`group relative xl:h-full xl:row-span-full col-start--1 xl:col-start-4 rounded-lg overflow-hidden grid place-items-center ${subtleBorder}`}
+            className={`group relative xl:h-full xl:row-span-full md:col-start--1 xl:col-start-4 rounded-lg overflow-hidden grid place-items-center ${subtleBorder}`}
             to={kclSampleUrl}
             onClick={openExternalBrowserIfDesktop(kclSampleUrl)}
             target="_blank"
@@ -214,7 +222,7 @@ const SignIn = () => {
               <CustomIcon name="arrowRight" className="w-6 h-6" />
             </div>
           </Link>
-          <div className="self-end h-min col-span-3 xl:row-span-2 grid grid-cols-2 gap-5">
+          <div className="self-end h-min md:col-span-3 xl:row-span-2 flex flex-col md:grid grid-cols-2 gap-5">
             <div className={cardArea}>
               <h2 className="text-xl xl:text-2xl">Built in the open</h2>
               <p className="text-xs my-4">
@@ -252,7 +260,7 @@ const SignIn = () => {
               <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/docs/kcl-samples/parametric-bearing-pillow-block"
+                  to="https://zoo.dev/docs/kcl-samples/pillow-block-bearing"
                   iconStart={{
                     icon: 'settings',
                     bgClassName: '!bg-transparent',
@@ -265,7 +273,7 @@ const SignIn = () => {
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/docs/tutorials/text-to-cad"
+                  to="https://zoo.dev/docs/zoo-design-studio/text-to-cad"
                   iconStart={{
                     icon: 'sparkles',
                     bgClassName: '!bg-transparent',

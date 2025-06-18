@@ -1,16 +1,21 @@
 import { Transition } from '@headlessui/react'
 import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { useSearchParams } from 'react-router-dom'
+import { base64ToString } from '@src/lib/base64'
 
 import { ActionButton } from '@src/components/ActionButton'
 import {
+  APP_DOWNLOAD_PATH,
   ASK_TO_OPEN_QUERY_PARAM,
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { Themes, getSystemTheme } from '@src/lib/theme'
+import { Themes, darkModeMatcher, setThemeClass } from '@src/lib/theme'
 import toast from 'react-hot-toast'
 import { platform } from '@src/lib/utils'
+import { codeManager } from '@src/lib/singletons'
+import { Logo } from '@src/components/Logo'
+import { useEffect } from 'react'
 
 /**
  * This component is a handler that checks if a certain query parameter
@@ -18,16 +23,33 @@ import { platform } from '@src/lib/utils'
  * want to open the current page in the desktop app.
  */
 export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
-  const theme = getSystemTheme()
   const buttonClasses =
     'bg-transparent flex-0 hover:bg-primary/10 dark:hover:bg-primary/10'
-  const pathLogomarkSvg = `${isDesktop() ? '.' : ''}/zma-logomark${
-    theme === Themes.Light ? '-dark' : ''
-  }.svg`
   const [searchParams, setSearchParams] = useSearchParams()
   // We also ignore this param on desktop, as it is redundant
   const hasAskToOpenParam =
     !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
+
+  // Watch the system theme for changes
+  useEffect(() => {
+    const listener = (e: MediaQueryListEvent) => {
+      setThemeClass(e.matches ? Themes.Dark : Themes.Light)
+    }
+
+    darkModeMatcher?.addEventListener('change', listener)
+    return () => darkModeMatcher?.removeEventListener('change', listener)
+  }, [])
+
+  useEffect(() => {
+    if (!hasAskToOpenParam) {
+      return
+    }
+
+    const codeB64 = base64ToString(
+      decodeURIComponent(searchParams.get('code') ?? '')
+    )
+    codeManager.goIntoTemporaryWorkspaceModeWithCode(codeB64)
+  }, [hasAskToOpenParam])
 
   /**
    * This function removes the query param to ask to open in desktop app
@@ -72,17 +94,12 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
       appear
       show={true}
       as="div"
-      className={
-        theme +
-        ` fixed inset-0 grid p-4 place-content-center ${
-          theme === Themes.Dark ? '!bg-chalkboard-110 text-chalkboard-20' : ''
-        }`
-      }
+      className="fixed inset-0 grid p-4 place-content-center bg-chalkboard-10 dark:bg-chalkboard-110"
     >
       <Transition.Child
         as="div"
-        className={`max-w-3xl py-6 px-10 flex flex-col items-center gap-8 
-          mx-auto border rounded-lg shadow-lg dark:bg-chalkboard-100`}
+        className={`max-w-3xl py-6 px-10 flex flex-col items-center gap-12 
+          mx-auto border rounded-lg shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100`}
         enter="ease-out duration-300"
         enterFrom="opacity-0 scale-95"
         enterTo="opacity-100 scale-100"
@@ -91,50 +108,47 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
         leaveTo="opacity-0 scale-95"
         style={{ zIndex: 10 }}
       >
-        <div>
-          <h1 className="text-2xl">
-            Launching{' '}
-            <img
-              src={pathLogomarkSvg}
-              className="w-48"
-              alt="Zoo Design Studio"
-            />
-          </h1>
-        </div>
-        <p className="text-primary flex items-center gap-2">
-          Choose where to open this link...
-        </p>
-        <div className="flex flex-col md:flex-row items-start justify-between gap-4 xl:gap-8">
-          <div className="flex flex-col gap-2">
+        <h1 className="text-2xl text-center ">
+          <div className="mb-4">Launching </div>
+          <div className="flex items-center gap-4 flex-wrap text-4xl">
+            <Logo className="w-40" aria-label="Zoo" />
+            <span>Design Studio</span>
+          </div>
+        </h1>
+        <div className="flex flex-col gap-4 items-center">
+          <p className="text-primary">Choose where to open this link...</p>
+          <div className="flex flex-col md:flex-row items-start justify-between gap-4 xl:gap-8">
+            <div className="flex flex-col gap-2">
+              <ActionButton
+                Element="button"
+                className={buttonClasses + ' !text-base'}
+                onClick={onOpenInDesktopApp}
+                iconEnd={{ icon: 'arrowRight' }}
+              >
+                Open in desktop app
+              </ActionButton>
+              <ActionButton
+                Element="externalLink"
+                className={
+                  buttonClasses +
+                  ' text-sm border-transparent justify-center dark:bg-transparent'
+                }
+                to={`${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`}
+                iconEnd={{ icon: 'link', bgClassName: '!bg-transparent' }}
+              >
+                Download desktop app
+              </ActionButton>
+            </div>
             <ActionButton
               Element="button"
-              className={buttonClasses + ' !text-base'}
-              onClick={onOpenInDesktopApp}
-              iconEnd={{ icon: 'arrowRight' }}
+              className={buttonClasses + ' -order-1 !text-base'}
+              onClick={continueToWebApp}
+              iconStart={{ icon: 'arrowLeft' }}
+              data-testid="continue-to-web-app-button"
             >
-              Open in desktop app
-            </ActionButton>
-            <ActionButton
-              Element="externalLink"
-              className={
-                buttonClasses +
-                ' text-sm border-transparent justify-center dark:bg-transparent'
-              }
-              to={`${VITE_KC_SITE_BASE_URL}/modeling-app/download`}
-              iconEnd={{ icon: 'link', bgClassName: '!bg-transparent' }}
-            >
-              Download desktop app
+              Continue to web app
             </ActionButton>
           </div>
-          <ActionButton
-            Element="button"
-            className={buttonClasses + ' -order-1 !text-base'}
-            onClick={continueToWebApp}
-            iconStart={{ icon: 'arrowLeft' }}
-            data-testid="continue-to-web-app-button"
-          >
-            Continue to web app
-          </ActionButton>
         </div>
       </Transition.Child>
     </Transition>

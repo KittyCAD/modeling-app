@@ -553,7 +553,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "value": "rectangleSegmentB001"
             },
             "to": [
-              3.25,
+              3.2500000000000004,
               2.25
             ],
             "type": "ToPoint",
@@ -567,7 +567,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "sourceRange": []
             },
             "from": [
-              3.25,
+              3.2500000000000004,
               2.25
             ],
             "tag": {
@@ -578,7 +578,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "value": "rectangleSegmentC001"
             },
             "to": [
-              -3.25,
+              -3.2499999999999996,
               2.25
             ],
             "type": "ToPoint",
@@ -592,7 +592,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "sourceRange": []
             },
             "from": [
-              -3.25,
+              -3.2499999999999996,
               2.25
             ],
             "tag": {
@@ -834,7 +834,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "rectangleSegmentB001"
           },
           "to": [
-            3.25,
+            3.2500000000000004,
             2.25
           ],
           "type": "ToPoint",
@@ -848,7 +848,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "sourceRange": []
           },
           "from": [
-            3.25,
+            3.2500000000000004,
             2.25
           ],
           "tag": {
@@ -859,7 +859,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "rectangleSegmentC001"
           },
           "to": [
-            -3.25,
+            -3.2499999999999996,
             2.25
           ],
           "type": "ToPoint",
@@ -873,7 +873,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "sourceRange": []
           },
           "from": [
-            -3.25,
+            -3.2499999999999996,
             2.25
           ],
           "tag": {

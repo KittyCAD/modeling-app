@@ -1,0 +1,67 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing nested_windows_main_kcl.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "nested/foo/bar/main.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": null
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "abs_path": false,
+          "commentStart": 0,
+          "end": 0,
+          "name": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "bar",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
+          "start": 0,
+          "type": "Name",
+          "type": "Name"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

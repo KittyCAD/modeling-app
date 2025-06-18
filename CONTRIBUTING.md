@@ -1,6 +1,6 @@
 # Contributor Guide
 
-## Running a development build
+## Installing dependencies
 
 Install a node version manager such as [fnm](https://github.com/Schniz/fnm?tab=readme-ov-#installation).
 
@@ -31,7 +31,9 @@ npm run install:rust:windows
 npm run install:wasm-pack:cargo
 ```
 
-Then to build the WASM layer, run:
+## Building the app
+
+To build the WASM layer, run:
 
 ```
 # macOS/Linux
@@ -74,7 +76,7 @@ enable third-party cookies. You can enable third-party cookies by clicking on
 the eye with a slash through it in the URL bar, and clicking on "Enable
 Third-Party Cookies".
 
-## Desktop
+### Developing with Electron
 
 To spin up the desktop app, `npm install` and `npm run build:wasm` need to have been done before hand then:
 
@@ -88,113 +90,7 @@ Devtools can be opened with the usual Command-Option-I (macOS) or Ctrl-Shift-I (
 
 To package the app for your platform with electron-builder, run `npm run tronb:package:dev` (or `npm run tronb:package:prod` to point to the .env.production variables).
 
-## Checking out commits / Bisecting
-
-Which commands from setup are one off vs. need to be run every time?
-
-The following will need to be run when checking out a new commit and guarantees the build is not stale:
-
-```bash
-npm install
-npm run build:wasm
-npm start
-```
-
-## Before submitting a PR
-
-Before you submit a contribution PR to this repo, please ensure that:
-
-- There is a corresponding issue for the changes you want to make, so that discussion of approach can be had before work begins.
-- You have separated out refactoring commits from feature commits as much as possible
-- You have run all of the following commands locally:
-  - `npm run fmt`
-  - `npm run tsc`
-  - `npm run test`
-  - Here they are all together: `npm run fmt && npm run tsc && npm run test`
-
-## Release a new version
-
-#### 1. Create a 'Cut release $VERSION' issue
-
-It will be used to document changelog discussions and release testing.
-
-https://github.com/KittyCAD/modeling-app/issues/new
-
-#### 2. Push a new tag
-
-Create a new tag and push it to the repo. The `semantic-release.sh` script will automatically bump the minor part, which we use the most. For instance going from `v0.27.0` to `v0.28.0`.
-
-```
-VERSION=$(./scripts/semantic-release.sh)
-git tag $VERSION
-git push origin --tags
-```
-
-This will trigger the `build-apps` workflow, set the version, build & sign the apps, and generate release files as well as updater-test artifacts.
-
-The workflow should be listed right away [in this list](https://github.com/KittyCAD/modeling-app/actions/workflows/build-apps.yml?query=event%3Apush)).
-
-#### 3. Manually test artifacts
-
-##### Release builds
-
-The release builds can be found under the `out-{arch}-{platform}` zip files, at the very bottom of the `build-apps` summary page for the workflow (triggered by the tag in 2.).
-
-Manually test against this [list](https://github.com/KittyCAD/modeling-app/issues/3588) across Windows, MacOS, Linux and posting results as comments in the issue.
-
-##### Updater-test builds
-
-The other `build-apps` output in the release `build-apps` workflow (triggered by 2.) is `updater-test-{arch}-{platform}`. It's a semi-automated process: for macOS, Windows, and Linux, download the corresponding updater-test artifact file, install the app, run it, expect an updater prompt to a dummy v0.255.255, install it and check that the app comes back at that version.
-
-The only difference with these builds is that they point to a different update location on the release bucket, with this dummy v0.255.255 always available. This helps ensuring that the version we release will be able to update to the next one available.
-
-If the prompt doesn't show up, start the app in command line to grab the electron-updater logs. This is likely an issue with the current build that needs addressing (or the updater-test location in the storage bucket).
-
-```
-# Windows (PowerShell)
-& 'C:\Program Files\Zoo Design Studio\Zoo Design Studio.exe'
-
-# macOS
-/Applications/Zoo\ Modeling\ App.app/Contents/MacOS/Zoo\ Modeling\ App
-
-# Linux
-./Zoo Design Studio-{version}-{arch}-linux.AppImage
-```
-
-#### 4. Publish the release
-
-Head over to https://github.com/KittyCAD/modeling-app/releases/new, pick the newly created tag and type it in the _Release title_ field as well.
-
-Hit _Generate release notes_ as a starting point to discuss the changelog in the issue. Once done, make sure _Set as the latest release_ is checked, and hit _Publish release_.
-
-A new `publish-apps-release` will kick in and you should be able to find it [here](https://github.com/KittyCAD/modeling-app/actions?query=event%3Arelease). On success, the files will be uploaded to the public bucket as well as to the GitHub release, and the announcement on Discord will be sent.
-
-#### 5. Close the issue
-
-If everything is well and the release is out to the public, the issue tracking the release shall be closed.
-
-## Fuzzing the parser
-
-Make sure you install cargo fuzz:
-
-```bash
-$ cargo install cargo-fuzz
-```
-
-```bash
-$ cd rust/kcl-lib
-
-# list the fuzz targets
-$ cargo fuzz list
-
-# run the parser fuzzer
-$ cargo +nightly fuzz run parser
-```
-
-For more information on fuzzing you can check out
-[this guide](https://rust-fuzz.github.io/book/cargo-fuzz.html).
-
-## Tests
+## Running tests
 
 ### Playwright tests
 
@@ -204,7 +100,7 @@ Prepare these system dependencies:
 
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
-Only Ubunu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
+Only Ubuntu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
 If you don't run Ubuntu locally or in a VM, you may use a GitHub Codespace.
 ```
 npm run playwright -- install chrome
@@ -212,13 +108,20 @@ npm run test:snapshots
 ```
 You may use `-- --update-snapshots` as needed.
 
-#### Electron flow tests (Chromium on Ubuntu, macOS, Windows)
+#### Desktop tests (Electron on all platforms)
 
 ```
 npm run playwright -- install chromium
-npm run test:playwright:electron:local
+npm run test:e2e:desktop:local
 ```
+
 You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file.spec.ts` for a test file.
+
+#### Web tests (Google Chrome on all platforms)
+
+```
+npm run test:e2e:web
+```
 
 #### Debugger
 
@@ -305,8 +208,86 @@ then run tests that target the KCL language:
 npm run test:rust
 ```
 
+### Fuzzing the parser
+
+Make sure you install cargo fuzz:
+
+```bash
+$ cargo install cargo-fuzz
+```
+
+```bash
+$ cd rust/kcl-lib
+
+# list the fuzz targets
+$ cargo fuzz list
+
+# run the parser fuzzer
+$ cargo +nightly fuzz run parser
+```
+
+For more information on fuzzing you can check out
+[this guide](https://rust-fuzz.github.io/book/cargo-fuzz.html).
+
 ### Logging
 
 To display logging (to the terminal or console) set `ZOO_LOG=1`. This will log some warnings and simple performance metrics. To view these in test runs, use `-- --nocapture`.
 
 To enable memory metrics, build with `--features dhat-heap`.
+
+## Proposing changes
+
+Before you submit a contribution PR to this repo, please ensure that:
+
+- There is a corresponding issue for the changes you want to make, so that discussion of approach can be had before work begins.
+- You have separated out refactoring commits from feature commits as much as possible
+- You have run all of the following commands locally:
+  - `npm run fmt`
+  - `npm run tsc`
+  - `npm run test`
+  - Here they are all together: `npm run fmt && npm run tsc && npm run test`
+
+## Shipping releases
+
+#### 1. Create a 'Cut release $VERSION' issue
+
+Use the **Release** issue template.
+This will be used to facilitate changelog discussions and release testing.
+
+https://github.com/KittyCAD/modeling-app/issues/new
+
+#### 2. Push a new tag
+
+Decide on a `v`-prefixed semver `VERSION` (e.g. `v1.2.3`) with the team and tag the repo on the latest main:
+
+```
+git tag $VERSION --message=""
+git push origin $VERSION
+```
+
+This will trigger the `build-apps` workflow to set the version, build & sign the apps, and generate release files.
+
+The workflow should be listed right away [in this list](https://github.com/KittyCAD/modeling-app/actions/workflows/build-apps.yml?query=event%3Apush).
+
+#### 3. Manually test artifacts
+
+The release builds can be found under the `out-{arch}-{platform}` zip files, at the very bottom of the `build-apps` summary page for the workflow (triggered by the tag in step 2).
+
+Assign someone to each section of the manual checklist generated by the issue template.
+
+#### 4. Bump the KCL version
+
+Follow the instructions [here](./rust/README.md) to publish new crates.
+This ensures that the KCL accepted by the app is also accepted by the CLI.
+
+#### 5. Publish the release
+
+Head over to https://github.com/KittyCAD/modeling-app/releases/new, pick the newly created tag and type it in the **Release title** field as well.
+
+Click **Generate release notes** as a starting point to discuss the changelog in the issue. Once done, make sure **Set as the latest release** is checked, and click **Publish release**.
+
+A new `publish-apps-release` workflow will start and you should be able to find it [here](https://github.com/KittyCAD/modeling-app/actions?query=event%3Arelease). On success, the files will be uploaded to the public bucket as well as to the GitHub release, and the announcement on Discord will be sent.
+
+#### 6. Close the issue
+
+If everything is well and the release is out to the public, the issue tracking the release shall be closed.

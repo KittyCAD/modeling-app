@@ -11,11 +11,9 @@ import {
 import { App } from '@src/App'
 import { Auth } from '@src/Auth'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
-import DownloadAppBanner from '@src/components/DownloadAppBanner'
 import { ErrorPage } from '@src/components/ErrorPage'
 import FileMachineProvider from '@src/components/FileMachineProvider'
 import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
-import { WasmErrBanner } from '@src/components/WasmErrBanner'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
 import { coreDump } from '@src/lang/wasm'
@@ -84,12 +82,7 @@ const router = createRouter([
                 <Outlet />
                 <App />
                 <CommandBar />
-                {
-                  // @ts-ignore
-                  !isDesktop() && import.meta.env.PROD && <DownloadAppBanner />
-                }
               </ModelingMachineProvider>
-              <WasmErrBanner />
             </FileMachineProvider>
           </Auth>
         ),

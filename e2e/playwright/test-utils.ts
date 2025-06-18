@@ -37,7 +37,7 @@ export const headerMasks = (page: Page) => [
 ]
 
 export const lowerRightMasks = (page: Page) => [
-  page.getByTestId('network-toggle'),
+  page.getByTestId(/network-toggle/),
   page.getByTestId('billing-remaining-bar'),
 ]
 
@@ -77,20 +77,6 @@ export function runningOnMac() {
 
 export function runningOnWindows() {
   return process.platform === 'win32'
-}
-
-async function waitForPageLoadWithRetry(page: Page) {
-  await expect(async () => {
-    await page.goto('/')
-    const errorMessage = 'App failed to load - 🔃 Retrying ...'
-
-    await expect(
-      page.getByRole('button', { name: 'sketch Start Sketch' }),
-      errorMessage
-    ).toBeEnabled({
-      timeout: 20_000,
-    })
-  }).toPass({ timeout: 70_000, intervals: [1_000] })
 }
 
 // lee: This needs to be replaced by scene.settled() eventually.
@@ -354,13 +340,8 @@ async function waitForAuthAndLsp(page: Page) {
     },
     timeout: 45_000,
   })
-  if (process.env.CI) {
-    await waitForPageLoadWithRetry(page)
-  } else {
-    await page.goto('/')
-    await waitForPageLoad(page)
-  }
-
+  await page.goto('/')
+  await waitForPageLoad(page)
   return waitForLspPromise
 }
 
@@ -383,15 +364,9 @@ export async function getUtils(page: Page, test_?: typeof test) {
     )
   }
 
-  // Chrome devtools protocol session only works in Chromium
-  const browserType = page.context().browser()?.browserType().name()
-  const cdpSession =
-    browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
-
   const util = {
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
     waitForPageLoad: () => waitForPageLoad(page),
-    waitForPageLoadWithRetry: () => waitForPageLoadWithRetry(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     updateCamPosition: async (xyz: [number, number, number]) => {
@@ -509,15 +484,9 @@ export async function getUtils(page: Page, test_?: typeof test) {
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
     ) => {
-      if (cdpSession === null) {
-        // Use a fail safe if we can't simulate disconnect (on Safari)
-        return page.evaluate('window.engineCommandManager.tearDown()')
-      }
-
-      return cdpSession?.send(
-        'Network.emulateNetworkConditions',
-        networkOptions
-      )
+      return networkOptions.offline
+        ? page.evaluate('window.engineCommandManager.offline()')
+        : page.evaluate('window.engineCommandManager.online()')
     },
 
     toNormalizedCode(text: string) {
@@ -551,12 +520,15 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
     createNewFile: async (name: string) => {
       return test?.step(`Create a file named ${name}`, async () => {
-        // If the application is in the middle of connecting a stream
-        // then creating a new file won't work in the end.
-        await expect(
-          page.getByRole('button', { name: 'Start Sketch' })
-        ).not.toBeDisabled()
         await page.getByTestId('create-file-button').click()
+        await page.getByTestId('tree-input-field').fill(name)
+        await page.keyboard.press('Enter')
+      })
+    },
+
+    createNewFolder: async (name: string) => {
+      return test?.step(`Create a folder named ${name}`, async () => {
+        await page.getByTestId('create-folder-button').click()
         await page.getByTestId('tree-input-field').fill(name)
         await page.keyboard.press('Enter')
       })
@@ -1225,4 +1197,175 @@ export async function enableConsoleLogEverything({
   tronApp?.electron.on('console', (msg) => {
     console.log(`[Main] ${msg.type()}: ${msg.text()}`)
   })
+}
+
+/**
+ * Simulate a pan touch gesture from the center of an element.
+ *
+ * Adapted from Playwright docs: https://playwright.dev/docs/touch-events
+ */
+export async function panFromCenter(
+  locator: Locator,
+  deltaX = 0,
+  deltaY = 0,
+  steps = 5
+) {
+  const { centerX, centerY } = await locator.evaluate((target: HTMLElement) => {
+    const bounds = target.getBoundingClientRect()
+    const centerX = bounds.left + bounds.width / 2
+    const centerY = bounds.top + bounds.height / 2
+    return { centerX, centerY }
+  })
+
+  // Providing only clientX and clientY as the app only cares about those.
+  const touches = [
+    {
+      identifier: 0,
+      clientX: centerX,
+      clientY: centerY,
+    },
+  ]
+  await locator.dispatchEvent('touchstart', {
+    touches,
+    changedTouches: touches,
+    targetTouches: touches,
+  })
+
+  for (let j = 1; j <= steps; j++) {
+    const touches = [
+      {
+        identifier: 0,
+        clientX: centerX + (deltaX * j) / steps,
+        clientY: centerY + (deltaY * j) / steps,
+      },
+    ]
+    await locator.dispatchEvent('touchmove', {
+      touches,
+      changedTouches: touches,
+      targetTouches: touches,
+    })
+  }
+
+  await locator.dispatchEvent('touchend')
+}
+
+/**
+ * Simulate a 2-finger pan touch gesture from the center of an element.
+ * with {touchSpacing} pixels between.
+ *
+ * Adapted from Playwright docs: https://playwright.dev/docs/touch-events
+ */
+export async function panTwoFingerFromCenter(
+  locator: Locator,
+  deltaX = 0,
+  deltaY = 0,
+  steps = 5,
+  spacingX = 20
+) {
+  const { centerX, centerY } = await locator.evaluate((target: HTMLElement) => {
+    const bounds = target.getBoundingClientRect()
+    const centerX = bounds.left + bounds.width / 2
+    const centerY = bounds.top + bounds.height / 2
+    return { centerX, centerY }
+  })
+
+  // Providing only clientX and clientY as the app only cares about those.
+  const touches = [
+    {
+      identifier: 0,
+      clientX: centerX,
+      clientY: centerY,
+    },
+    {
+      identifier: 1,
+      clientX: centerX + spacingX,
+      clientY: centerY,
+    },
+  ]
+  await locator.dispatchEvent('touchstart', {
+    touches,
+    changedTouches: touches,
+    targetTouches: touches,
+  })
+
+  for (let j = 1; j <= steps; j++) {
+    const touches = [
+      {
+        identifier: 0,
+        clientX: centerX + (deltaX * j) / steps,
+        clientY: centerY + (deltaY * j) / steps,
+      },
+      {
+        identifier: 1,
+        clientX: centerX + spacingX + (deltaX * j) / steps,
+        clientY: centerY + (deltaY * j) / steps,
+      },
+    ]
+    await locator.dispatchEvent('touchmove', {
+      touches,
+      changedTouches: touches,
+      targetTouches: touches,
+    })
+  }
+
+  await locator.dispatchEvent('touchend')
+}
+
+/**
+ * Simulate a pinch touch gesture from the center of an element.
+ * Touch points are set horizontally from each other, separated by {startDistance} pixels.
+ */
+export async function pinchFromCenter(
+  locator: Locator,
+  startDistance = 100,
+  delta = 0,
+  steps = 5
+) {
+  const { centerX, centerY } = await locator.evaluate((target: HTMLElement) => {
+    const bounds = target.getBoundingClientRect()
+    const centerX = bounds.left + bounds.width / 2
+    const centerY = bounds.top + bounds.height / 2
+    return { centerX, centerY }
+  })
+
+  // Providing only clientX and clientY as the app only cares about those.
+  const touches = [
+    {
+      identifier: 0,
+      clientX: centerX - startDistance / 2,
+      clientY: centerY,
+    },
+    {
+      identifier: 1,
+      clientX: centerX + startDistance / 2,
+      clientY: centerY,
+    },
+  ]
+  await locator.dispatchEvent('touchstart', {
+    touches,
+    changedTouches: touches,
+    targetTouches: touches,
+  })
+
+  for (let i = 1; i <= steps; i++) {
+    const touches = [
+      {
+        identifier: 0,
+        clientX: centerX - startDistance / 2 + (delta * i) / steps,
+        clientY: centerY,
+      },
+      {
+        identifier: 1,
+        clientX: centerX + startDistance / 2 + (delta * i) / steps,
+        clientY: centerY,
+      },
+    ]
+    await locator.dispatchEvent('touchmove', {
+      touches,
+      changedTouches: touches,
+      targetTouches: touches,
+    })
+  }
+
+  await locator.dispatchEvent('touchend')
 }

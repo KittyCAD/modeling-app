@@ -19,8 +19,6 @@ use std::{
 
 pub use async_tasks::AsyncTasks;
 use indexmap::IndexMap;
-#[cfg(feature = "artifact-graph")]
-use kcmc::id::ModelingCmdId;
 use kcmc::{
     each_cmd as mcmd,
     length_unit::LengthUnit,
@@ -38,9 +36,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
 use uuid::Uuid;
+use web_time::Instant;
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::ArtifactCommand;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{types::UnitLen, DefaultPlanes, IdGenerator, PlaneInfo, Point3d},
@@ -113,10 +110,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the command responses from the engine.
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>;
 
-    /// Get the artifact commands that have accumulated so far.
-    #[cfg(feature = "artifact-graph")]
-    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
-
     /// Get the ids of the async commands we are waiting for.
     fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>>;
 
@@ -131,18 +124,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Take the batch of end commands that have accumulated so far and clear them.
     async fn take_batch_end(&self) -> IndexMap<Uuid, (WebSocketRequest, SourceRange)> {
         std::mem::take(&mut *self.batch_end().write().await)
-    }
-
-    /// Clear all artifact commands that have accumulated so far.
-    #[cfg(feature = "artifact-graph")]
-    async fn clear_artifact_commands(&self) {
-        self.artifact_commands().write().await.clear();
-    }
-
-    /// Take the artifact commands that have accumulated so far and clear them.
-    #[cfg(feature = "artifact-graph")]
-    async fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
-        std::mem::take(&mut *self.artifact_commands().write().await)
     }
 
     /// Take the ids of async commands that have accumulated so far and clear them.
@@ -237,11 +218,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Otherwise the hooks below won't work.
         self.flush_batch(false, source_range).await?;
 
-        // Ensure artifact commands are cleared so that we don't accumulate them
-        // across runs.
-        #[cfg(feature = "artifact-graph")]
-        self.clear_artifact_commands().await;
-
         // Do the after clear scene hook.
         self.clear_scene_post_hook(id_generator, source_range).await?;
 
@@ -266,7 +242,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 .unwrap_or_default()
         };
 
-        let current_time = instant::Instant::now();
+        let current_time = Instant::now();
         while current_time.elapsed().as_secs() < 60 {
             let responses = self.responses().read().await.clone();
             let Some(resp) = responses.get(&id) else {
@@ -274,12 +250,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 // No seriously WE DO NOT WANT TO PAUSE THE WHOLE APP ON THE JS SIDE.
                 #[cfg(target_arch = "wasm32")]
                 {
-                    let duration = instant::Duration::from_millis(1);
+                    let duration = web_time::Duration::from_millis(1);
                     wasm_timer::Delay::new(duration).await.map_err(|err| {
-                        KclError::Internal(KclErrorDetails {
-                            message: format!("Failed to sleep: {:?}", err),
-                            source_ranges: vec![source_range],
-                        })
+                        KclError::new_internal(KclErrorDetails::new(
+                            format!("Failed to sleep: {:?}", err),
+                            vec![source_range],
+                        ))
                     })?;
                 }
                 #[cfg(not(target_arch = "wasm32"))]
@@ -293,10 +269,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             return Ok(response);
         }
 
-        Err(KclError::Engine(KclErrorDetails {
-            message: "async command timed out".to_string(),
-            source_ranges: vec![source_range],
-        }))
+        Err(KclError::new_engine(KclErrorDetails::new(
+            "async command timed out".to_string(),
+            vec![source_range],
+        )))
     }
 
     /// Ensure ALL async commands have been completed.
@@ -338,28 +314,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         )
         .await?;
 
-        Ok(())
-    }
-
-    #[cfg(feature = "artifact-graph")]
-    async fn handle_artifact_command(
-        &self,
-        cmd: &ModelingCmd,
-        cmd_id: ModelingCmdId,
-        id_to_source_range: &HashMap<Uuid, SourceRange>,
-    ) -> Result<(), KclError> {
-        let cmd_id = *cmd_id.as_ref();
-        let range = id_to_source_range
-            .get(&cmd_id)
-            .copied()
-            .ok_or_else(|| KclError::internal(format!("Failed to get source range for command ID: {:?}", cmd_id)))?;
-
-        // Add artifact command.
-        self.artifact_commands().write().await.push(ArtifactCommand {
-            cmd_id,
-            range,
-            command: cmd.clone(),
-        });
         Ok(())
     }
 
@@ -481,11 +435,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Add the command ID to the list of async commands.
         self.ids_of_async_commands().write().await.insert(id, source_range);
 
-        // Add to artifact commands.
-        #[cfg(feature = "artifact-graph")]
-        self.handle_artifact_command(cmd, id.into(), &HashMap::from([(id, source_range)]))
-            .await?;
-
         // Fire off the command now, but don't wait for the response, we don't care about it.
         self.inner_fire_modeling_cmd(
             id,
@@ -547,29 +496,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     id_to_source_range.insert(Uuid::from(*cmd_id), *range);
                 }
                 _ => {
-                    return Err(KclError::Engine(KclErrorDetails {
-                        message: format!("The request is not a modeling command: {:?}", req),
-                        source_ranges: vec![*range],
-                    }));
+                    return Err(KclError::new_engine(KclErrorDetails::new(
+                        format!("The request is not a modeling command: {:?}", req),
+                        vec![*range],
+                    )));
                 }
-            }
-        }
-
-        // Do the artifact commands.
-        #[cfg(feature = "artifact-graph")]
-        for (req, _) in orig_requests.iter() {
-            match &req {
-                WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
-                    for request in requests {
-                        self.handle_artifact_command(&request.cmd, request.cmd_id, &id_to_source_range)
-                            .await?;
-                    }
-                }
-                WebSocketRequest::ModelingCmdReq(request) => {
-                    self.handle_artifact_command(&request.cmd, request.cmd_id, &id_to_source_range)
-                        .await?;
-                }
-                _ => {}
             }
         }
 
@@ -595,10 +526,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     self.parse_batch_responses(last_id.into(), id_to_source_range, responses)
                 } else {
                     // We should never get here.
-                    Err(KclError::Engine(KclErrorDetails {
-                        message: format!("Failed to get batch response: {:?}", response),
-                        source_ranges: vec![source_range],
-                    }))
+                    Err(KclError::new_engine(KclErrorDetails::new(
+                        format!("Failed to get batch response: {:?}", response),
+                        vec![source_range],
+                    )))
                 }
             }
             WebSocketRequest::ModelingCmdReq(ModelingCmdReq { cmd: _, cmd_id }) => {
@@ -610,20 +541,20 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 // request so we need the original request source range in case the engine returns
                 // an error.
                 let source_range = id_to_source_range.get(cmd_id.as_ref()).cloned().ok_or_else(|| {
-                    KclError::Engine(KclErrorDetails {
-                        message: format!("Failed to get source range for command ID: {:?}", cmd_id),
-                        source_ranges: vec![],
-                    })
+                    KclError::new_engine(KclErrorDetails::new(
+                        format!("Failed to get source range for command ID: {:?}", cmd_id),
+                        vec![],
+                    ))
                 })?;
                 let ws_resp = self
                     .inner_send_modeling_cmd(cmd_id.into(), source_range, final_req, id_to_source_range)
                     .await?;
                 self.parse_websocket_response(ws_resp, source_range)
             }
-            _ => Err(KclError::Engine(KclErrorDetails {
-                message: format!("The final request is not a modeling command: {:?}", final_req),
-                source_ranges: vec![source_range],
-            })),
+            _ => Err(KclError::new_engine(KclErrorDetails::new(
+                format!("The final request is not a modeling command: {:?}", final_req),
+                vec![source_range],
+            ))),
         }
     }
 
@@ -729,10 +660,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         for (name, plane_id, color) in plane_settings {
             let info = DEFAULT_PLANE_INFO.get(&name).ok_or_else(|| {
                 // We should never get here.
-                KclError::Engine(KclErrorDetails {
-                    message: format!("Failed to get default plane info for: {:?}", name),
-                    source_ranges: vec![source_range],
-                })
+                KclError::new_engine(KclErrorDetails::new(
+                    format!("Failed to get default plane info for: {:?}", name),
+                    vec![source_range],
+                ))
             })?;
             planes.insert(
                 name,
@@ -763,15 +694,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             WebSocketResponse::Success(success) => Ok(success.resp),
             WebSocketResponse::Failure(fail) => {
                 let _request_id = fail.request_id;
-                Err(KclError::Engine(KclErrorDetails {
-                    message: fail
-                        .errors
+                Err(KclError::new_engine(KclErrorDetails::new(
+                    fail.errors
                         .iter()
                         .map(|e| e.message.clone())
                         .collect::<Vec<_>>()
                         .join("\n"),
-                    source_ranges: vec![source_range],
-                }))
+                    vec![source_range],
+                )))
             }
         }
     }
@@ -806,25 +736,25 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 BatchResponse::Failure { errors } => {
                     // Get the source range for the command.
                     let source_range = id_to_source_range.get(cmd_id).cloned().ok_or_else(|| {
-                        KclError::Engine(KclErrorDetails {
-                            message: format!("Failed to get source range for command ID: {:?}", cmd_id),
-                            source_ranges: vec![],
-                        })
+                        KclError::new_engine(KclErrorDetails::new(
+                            format!("Failed to get source range for command ID: {:?}", cmd_id),
+                            vec![],
+                        ))
                     })?;
-                    return Err(KclError::Engine(KclErrorDetails {
-                        message: errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
-                        source_ranges: vec![source_range],
-                    }));
+                    return Err(KclError::new_engine(KclErrorDetails::new(
+                        errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
+                        vec![source_range],
+                    )));
                 }
             }
         }
 
         // Return an error that we did not get an error or the response we wanted.
         // This should never happen but who knows.
-        Err(KclError::Engine(KclErrorDetails {
-            message: format!("Failed to find response for command ID: {:?}", id),
-            source_ranges: vec![],
-        }))
+        Err(KclError::new_engine(KclErrorDetails::new(
+            format!("Failed to find response for command ID: {:?}", id),
+            vec![],
+        )))
     }
 
     async fn modify_grid(

@@ -68,7 +68,7 @@ description: Variables in memory after executing ssi_pattern.kcl
             "tag": null,
             "to": [
               -4.35,
-              -2.06
+              -2.0600000000000005
             ],
             "type": "ToPoint",
             "units": {
@@ -82,12 +82,12 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "from": [
               -4.35,
-              -2.06
+              -2.0600000000000005
             ],
             "tag": null,
             "to": [
-              -3.81,
-              -2.09
+              -3.8099999999999996,
+              -2.0900000000000003
             ],
             "type": "ToPoint",
             "units": {
@@ -101,12 +101,12 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "ccw": true,
             "center": [
-              -2.4784,
-              21.8782
+              -2.478430620978426,
+              21.878248822388485
             ],
             "from": [
-              -3.81,
-              -2.09
+              -3.8099999999999996,
+              -2.0900000000000003
             ],
             "tag": null,
             "to": [
@@ -130,7 +130,7 @@ description: Variables in memory after executing ssi_pattern.kcl
             "tag": null,
             "to": [
               20.4,
-              -12.15
+              -12.150000000000002
             ],
             "type": "ToPoint",
             "units": {
@@ -144,7 +144,7 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "from": [
               20.4,
-              -12.15
+              -12.150000000000002
             ],
             "tag": {
               "commentStart": 271,
@@ -274,7 +274,7 @@ description: Variables in memory after executing ssi_pattern.kcl
           "tag": null,
           "to": [
             -4.35,
-            -2.06
+            -2.0600000000000005
           ],
           "type": "ToPoint",
           "units": {
@@ -288,12 +288,12 @@ description: Variables in memory after executing ssi_pattern.kcl
           },
           "from": [
             -4.35,
-            -2.06
+            -2.0600000000000005
           ],
           "tag": null,
           "to": [
-            -3.81,
-            -2.09
+            -3.8099999999999996,
+            -2.0900000000000003
           ],
           "type": "ToPoint",
           "units": {
@@ -307,12 +307,12 @@ description: Variables in memory after executing ssi_pattern.kcl
           },
           "ccw": true,
           "center": [
-            -2.4784,
-            21.8782
+            -2.478430620978426,
+            21.878248822388485
           ],
           "from": [
-            -3.81,
-            -2.09
+            -3.8099999999999996,
+            -2.0900000000000003
           ],
           "tag": null,
           "to": [
@@ -336,7 +336,7 @@ description: Variables in memory after executing ssi_pattern.kcl
           "tag": null,
           "to": [
             20.4,
-            -12.15
+            -12.150000000000002
           ],
           "type": "ToPoint",
           "units": {
@@ -350,7 +350,7 @@ description: Variables in memory after executing ssi_pattern.kcl
           },
           "from": [
             20.4,
-            -12.15
+            -12.150000000000002
           ],
           "tag": {
             "commentStart": 271,
@@ -482,13 +482,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -581,7 +581,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -595,12 +595,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -614,12 +614,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -643,7 +643,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -657,7 +657,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -769,11 +769,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -830,13 +830,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -929,7 +929,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -943,12 +943,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -962,12 +962,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -991,7 +991,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1005,7 +1005,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -1117,11 +1117,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -1178,13 +1178,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -1277,7 +1277,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1291,12 +1291,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1310,12 +1310,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -1339,7 +1339,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1353,7 +1353,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -1465,11 +1465,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -1526,13 +1526,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -1625,7 +1625,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1639,12 +1639,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1658,12 +1658,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -1687,7 +1687,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1701,7 +1701,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -1813,11 +1813,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -1874,13 +1874,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -1973,7 +1973,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1987,12 +1987,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2006,12 +2006,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -2035,7 +2035,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2049,7 +2049,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -2161,11 +2161,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -2222,13 +2222,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -2321,7 +2321,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2335,12 +2335,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2354,12 +2354,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -2383,7 +2383,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2397,7 +2397,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -2509,11 +2509,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -2570,13 +2570,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -2669,7 +2669,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2683,12 +2683,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2702,12 +2702,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -2731,7 +2731,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2745,7 +2745,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -2857,11 +2857,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -2918,13 +2918,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -3017,7 +3017,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3031,12 +3031,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3050,12 +3050,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -3079,7 +3079,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3093,7 +3093,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -3205,11 +3205,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -3266,13 +3266,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -3365,7 +3365,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3379,12 +3379,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3398,12 +3398,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -3427,7 +3427,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3441,7 +3441,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -3553,11 +3553,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -3614,13 +3614,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -3713,7 +3713,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3727,12 +3727,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3746,12 +3746,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -3775,7 +3775,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3789,7 +3789,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -3901,11 +3901,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -3962,13 +3962,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -4061,7 +4061,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -4075,12 +4075,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -4094,12 +4094,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -4123,7 +4123,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -4137,7 +4137,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -4249,11 +4249,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -4310,13 +4310,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -4409,7 +4409,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -4423,12 +4423,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -4442,12 +4442,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -4471,7 +4471,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -4485,7 +4485,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -4597,11 +4597,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -4658,13 +4658,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -4757,7 +4757,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -4771,12 +4771,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -4790,12 +4790,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -4819,7 +4819,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -4833,7 +4833,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -4945,11 +4945,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -5006,13 +5006,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -5105,7 +5105,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -5119,12 +5119,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -5138,12 +5138,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -5167,7 +5167,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -5181,7 +5181,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -5293,11 +5293,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -5354,13 +5354,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -5453,7 +5453,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -5467,12 +5467,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -5486,12 +5486,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -5515,7 +5515,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -5529,7 +5529,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -5641,11 +5641,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -5702,13 +5702,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -5801,7 +5801,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -5815,12 +5815,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -5834,12 +5834,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -5863,7 +5863,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -5877,7 +5877,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -5989,11 +5989,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -6050,13 +6050,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -6149,7 +6149,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -6163,12 +6163,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -6182,12 +6182,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -6211,7 +6211,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -6225,7 +6225,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -6337,11 +6337,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -6398,13 +6398,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -6497,7 +6497,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -6511,12 +6511,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -6530,12 +6530,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -6559,7 +6559,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -6573,7 +6573,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -6685,11 +6685,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -6746,13 +6746,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -6845,7 +6845,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -6859,12 +6859,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -6878,12 +6878,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -6907,7 +6907,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -6921,7 +6921,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -7033,11 +7033,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -7094,13 +7094,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -7193,7 +7193,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -7207,12 +7207,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -7226,12 +7226,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -7255,7 +7255,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -7269,7 +7269,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -7381,11 +7381,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -7442,13 +7442,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -7541,7 +7541,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -7555,12 +7555,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -7574,12 +7574,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -7603,7 +7603,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -7617,7 +7617,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -7729,11 +7729,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -7790,13 +7790,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -7889,7 +7889,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -7903,12 +7903,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -7922,12 +7922,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -7951,7 +7951,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -7965,7 +7965,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -8077,11 +8077,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -8138,13 +8138,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -8237,7 +8237,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -8251,12 +8251,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -8270,12 +8270,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -8299,7 +8299,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -8313,7 +8313,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -8425,11 +8425,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -8486,13 +8486,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -8585,7 +8585,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -8599,12 +8599,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -8618,12 +8618,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -8647,7 +8647,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -8661,7 +8661,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -8773,11 +8773,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -8834,13 +8834,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -8933,7 +8933,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -8947,12 +8947,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -8966,12 +8966,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -8995,7 +8995,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -9009,7 +9009,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -9121,11 +9121,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -9182,13 +9182,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -9281,7 +9281,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -9295,12 +9295,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -9314,12 +9314,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -9343,7 +9343,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -9357,7 +9357,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -9469,11 +9469,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -9530,13 +9530,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -9629,7 +9629,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -9643,12 +9643,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -9662,12 +9662,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -9691,7 +9691,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -9705,7 +9705,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -9817,11 +9817,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -9878,13 +9878,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -9977,7 +9977,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -9991,12 +9991,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -10010,12 +10010,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -10039,7 +10039,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -10053,7 +10053,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -10165,11 +10165,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -10226,13 +10226,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -10325,7 +10325,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -10339,12 +10339,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -10358,12 +10358,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -10387,7 +10387,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -10401,7 +10401,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -10513,11 +10513,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {
@@ -10574,13 +10574,13 @@ description: Variables in memory after executing ssi_pattern.kcl
                   47.7
                 ],
                 "from": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "radius": 1.4,
                 "tag": null,
                 "to": [
-                  -0.68,
+                  -0.6800000000000002,
                   47.7
                 ],
                 "type": "Circle",
@@ -10673,7 +10673,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -10687,12 +10687,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         -4.35,
-                        -2.06
+                        -2.0600000000000005
                       ],
                       "tag": null,
                       "to": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -10706,12 +10706,12 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "ccw": true,
                       "center": [
-                        -2.4784,
-                        21.8782
+                        -2.478430620978426,
+                        21.878248822388485
                       ],
                       "from": [
-                        -3.81,
-                        -2.09
+                        -3.8099999999999996,
+                        -2.0900000000000003
                       ],
                       "tag": null,
                       "to": [
@@ -10735,7 +10735,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "tag": null,
                       "to": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -10749,7 +10749,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                       },
                       "from": [
                         20.4,
-                        -12.15
+                        -12.150000000000002
                       ],
                       "tag": {
                         "commentStart": 271,
@@ -10861,11 +10861,11 @@ description: Variables in memory after executing ssi_pattern.kcl
             },
             "start": {
               "from": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "to": [
-                -0.68,
+                -0.6800000000000002,
                 47.7
               ],
               "units": {

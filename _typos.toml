@@ -21,7 +21,7 @@ extend-exclude = [
 ]
 
 [default.extend-words]
-metalness = "metalness" # appearance API 
+metalness = "metalness" # appearance API
 Hom = "Hom" # short for homogenous
 typ = "typ" # used to declare a variable named 'type' which is a reserved keyword in Rust
 ue = "ue" # short for UnaryExpression
@@ -29,6 +29,7 @@ THRE = "THRE" # Weird bug that wrongly detects THREEjs as a typo
 nwo = "nwo" # don't know what this is about tbh
 "ot" = "ot" # some abbreviation, idk what
 "oe" = "oe" # some abbreviation, idk what
+"colinear" = "colinear" # some engine shit, kidding
 
 [default]
 extend-ignore-identifiers-re = [

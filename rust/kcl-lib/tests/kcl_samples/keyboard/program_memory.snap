@@ -171,10 +171,15 @@ description: Variables in memory after executing keyboard.kcl
           },
           {
             "type": "Number",
-            "value": 0.1219,
+            "value": 0.12186934340514748,
             "ty": {
-              "type": "Known",
-              "type": "Count"
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
             }
           }
         ]
@@ -347,10 +352,15 @@ description: Variables in memory after executing keyboard.kcl
           },
           {
             "type": "Number",
-            "value": 0.1219,
+            "value": 0.12186934340514748,
             "ty": {
-              "type": "Known",
-              "type": "Count"
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
             }
           }
         ]
@@ -558,8 +568,8 @@ description: Variables in memory after executing keyboard.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -572,8 +582,8 @@ description: Variables in memory after executing keyboard.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "tag": {
                   "commentStart": 767,
@@ -836,13 +846,13 @@ description: Variables in memory after executing keyboard.kcl
             0.75
           ],
           "from": [
-            4.8,
+            4.800000000000001,
             0.75
           ],
           "radius": 0.4,
           "tag": null,
           "to": [
-            4.8,
+            4.800000000000001,
             0.75
           ],
           "type": "Circle",
@@ -976,8 +986,8 @@ description: Variables in memory after executing keyboard.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -990,8 +1000,8 @@ description: Variables in memory after executing keyboard.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "tag": {
                   "commentStart": 767,
@@ -1214,11 +1224,11 @@ description: Variables in memory after executing keyboard.kcl
       },
       "start": {
         "from": [
-          4.8,
+          4.800000000000001,
           0.75
         ],
         "to": [
-          4.8,
+          4.800000000000001,
           0.75
         ],
         "units": {
@@ -1394,8 +1404,8 @@ description: Variables in memory after executing keyboard.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1408,8 +1418,8 @@ description: Variables in memory after executing keyboard.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "tag": {
                   "commentStart": 767,
@@ -1672,13 +1682,13 @@ description: Variables in memory after executing keyboard.kcl
             12.85
           ],
           "from": [
-            4.8,
+            4.800000000000001,
             12.85
           ],
           "radius": 0.4,
           "tag": null,
           "to": [
-            4.8,
+            4.800000000000001,
             12.85
           ],
           "type": "Circle",
@@ -1812,8 +1822,8 @@ description: Variables in memory after executing keyboard.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1826,8 +1836,8 @@ description: Variables in memory after executing keyboard.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "tag": {
                   "commentStart": 767,
@@ -2050,11 +2060,11 @@ description: Variables in memory after executing keyboard.kcl
       },
       "start": {
         "from": [
-          4.8,
+          4.800000000000001,
           12.85
         ],
         "to": [
-          4.8,
+          4.800000000000001,
           12.85
         ],
         "units": {
@@ -2075,7 +2085,7 @@ description: Variables in memory after executing keyboard.kcl
   },
   "row1": {
     "type": "Number",
-    "value": 0.3,
+    "value": 0.30000000000000004,
     "ty": {
       "type": "Default",
       "len": {
@@ -2088,7 +2098,7 @@ description: Variables in memory after executing keyboard.kcl
   },
   "row2": {
     "type": "Number",
-    "value": 1.2,
+    "value": 1.2000000000000002,
     "ty": {
       "type": "Default",
       "len": {
@@ -2114,7 +2124,7 @@ description: Variables in memory after executing keyboard.kcl
   },
   "row4": {
     "type": "Number",
-    "value": 3.0,
+    "value": 3.0000000000000004,
     "ty": {
       "type": "Default",
       "len": {
@@ -2127,7 +2137,7 @@ description: Variables in memory after executing keyboard.kcl
   },
   "row5": {
     "type": "Number",
-    "value": 3.9,
+    "value": 3.900000000000001,
     "ty": {
       "type": "Default",
       "len": {
@@ -2140,7 +2150,7 @@ description: Variables in memory after executing keyboard.kcl
   },
   "row6": {
     "type": "Number",
-    "value": 4.8,
+    "value": 4.800000000000001,
     "ty": {
       "type": "Default",
       "len": {
@@ -2277,8 +2287,8 @@ description: Variables in memory after executing keyboard.kcl
               "value": "seg02"
             },
             "to": [
-              5.716,
-              1.399
+              5.716022294683801,
+              1.3990291260903702
             ],
             "type": "ToPoint",
             "units": {
@@ -2291,8 +2301,8 @@ description: Variables in memory after executing keyboard.kcl
               "sourceRange": []
             },
             "from": [
-              5.716,
-              1.399
+              5.716022294683801,
+              1.3990291260903702
             ],
             "tag": {
               "commentStart": 767,
@@ -2636,8 +2646,8 @@ description: Variables in memory after executing keyboard.kcl
                 "value": "seg02"
               },
               "to": [
-                5.716,
-                1.399
+                5.716022294683801,
+                1.3990291260903702
               ],
               "type": "ToPoint",
               "units": {
@@ -2650,8 +2660,8 @@ description: Variables in memory after executing keyboard.kcl
                 "sourceRange": []
               },
               "from": [
-                5.716,
-                1.399
+                5.716022294683801,
+                1.3990291260903702
               ],
               "tag": {
                 "commentStart": 767,

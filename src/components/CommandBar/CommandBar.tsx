@@ -32,6 +32,7 @@ export const CommandBar = () => {
     : Dialog
 
   // Close the command bar when navigating
+  // but importantly not when the query parameters change
   useEffect(() => {
     if (commandBarState.matches('Closed')) return
     commandBarActor.send({ type: 'Close' })

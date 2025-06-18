@@ -41,8 +41,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "value": "rectangleSegmentA001"
           },
           "to": [
-            -5.72,
-            0.0
+            -5.719999999999999,
+            0.0000000000000014132424062160455
           ],
           "type": "ToPoint",
           "units": {
@@ -55,8 +55,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "sourceRange": []
           },
           "from": [
-            -5.72,
-            0.0
+            -5.719999999999999,
+            0.0000000000000014132424062160455
           ],
           "tag": {
             "commentStart": 218,
@@ -66,8 +66,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "value": "rectangleSegmentB001"
           },
           "to": [
-            -5.72,
-            8.21
+            -5.719999999999998,
+            8.210000000000003
           ],
           "type": "ToPoint",
           "units": {
@@ -80,8 +80,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "sourceRange": []
           },
           "from": [
-            -5.72,
-            8.21
+            -5.719999999999998,
+            8.210000000000003
           ],
           "tag": {
             "commentStart": 341,
@@ -91,7 +91,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "value": "rectangleSegmentC001"
           },
           "to": [
-            5.82,
+            5.820000000000001,
             8.21
           ],
           "type": "ToPoint",
@@ -105,7 +105,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "sourceRange": []
           },
           "from": [
-            5.82,
+            5.820000000000001,
             8.21
           ],
           "tag": null,
@@ -239,8 +239,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           },
           "ccw": false,
           "center": [
-            15.5403,
-            -1.1745
+            15.54030518835946,
+            -1.1745473537604454
           ],
           "from": [
             15.49,
@@ -263,8 +263,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           },
           "ccw": true,
           "center": [
-            -7.6164,
-            0.5757
+            -7.6163791614610235,
+            0.5756513711217917
           ],
           "from": [
             0.0,

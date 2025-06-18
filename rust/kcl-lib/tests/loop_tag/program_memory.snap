@@ -43,8 +43,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            19.9211,
-            1.2533
+            19.92114701314478,
+            1.2533323356430426
           ],
           "type": "ToPoint",
           "units": {
@@ -57,8 +57,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            19.9211,
-            1.2533
+            19.92114701314478,
+            1.2533323356430426
           ],
           "tag": {
             "commentStart": 970,
@@ -68,8 +68,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            29.607,
-            3.7402
+            29.60697862443109,
+            3.7402312072915906
           ],
           "type": "ToPoint",
           "units": {
@@ -82,8 +82,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            29.607,
-            3.7402
+            29.60697862443109,
+            3.7402312072915906
           ],
           "tag": {
             "commentStart": 970,
@@ -93,8 +93,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            38.9047,
-            7.4215
+            38.9047434833136,
+            7.42147673413837
           ],
           "type": "ToPoint",
           "units": {
@@ -107,8 +107,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            38.9047,
-            7.4215
+            38.9047434833136,
+            7.42147673413837
           ],
           "tag": {
             "commentStart": 970,
@@ -118,8 +118,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            47.6678,
-            12.239
+            47.66781028375224,
+            12.239013475155524
           ],
           "type": "ToPoint",
           "units": {
@@ -132,8 +132,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            47.6678,
-            12.239
+            47.66781028375224,
+            12.239013475155524
           ],
           "tag": {
             "commentStart": 970,
@@ -143,8 +143,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            55.758,
-            18.1169
+            55.75798022750171,
+            18.116865998080257
           ],
           "type": "ToPoint",
           "units": {
@@ -157,8 +157,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            55.758,
-            18.1169
+            55.75798022750171,
+            18.116865998080257
           ],
           "tag": {
             "commentStart": 970,
@@ -168,8 +168,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            63.0477,
-            24.9623
+            63.047666501715824,
+            24.962337057367144
           ],
           "type": "ToPoint",
           "units": {
@@ -182,8 +182,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            63.0477,
-            24.9623
+            63.047666501715824,
+            24.962337057367144
           ],
           "tag": {
             "commentStart": 970,
@@ -193,8 +193,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            69.4219,
-            32.6675
+            69.42190639920273,
+            32.66746948512503
           ],
           "type": "ToPoint",
           "units": {
@@ -207,8 +207,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            69.4219,
-            32.6675
+            69.42190639920273,
+            32.66746948512503
           ],
           "tag": {
             "commentStart": 970,
@@ -218,8 +218,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            74.7802,
-            41.1107
+            74.78017434899269,
+            41.11074874014518
           ],
           "type": "ToPoint",
           "units": {
@@ -232,8 +232,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            74.7802,
-            41.1107
+            74.78017434899269,
+            41.11074874014518
           ],
           "tag": {
             "commentStart": 970,
@@ -243,8 +243,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            79.038,
-            50.159
+            79.03796726464341,
+            50.15901926480538
           ],
           "type": "ToPoint",
           "units": {
@@ -257,8 +257,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            79.038,
-            50.159
+            79.03796726464341,
+            50.15901926480538
           ],
           "tag": {
             "commentStart": 970,
@@ -268,8 +268,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            82.1281,
-            59.6696
+            82.12813720839289,
+            59.66958442775692
           ],
           "type": "ToPoint",
           "units": {
@@ -282,8 +282,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            82.1281,
-            59.6696
+            82.12813720839289,
+            59.66958442775692
           ],
           "tag": {
             "commentStart": 970,
@@ -293,8 +293,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            84.002,
-            69.4925
+            84.00195035425013,
+            69.4924569350438
           ],
           "type": "ToPoint",
           "units": {
@@ -307,8 +307,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            84.002,
-            69.4925
+            84.00195035425013,
+            69.4924569350438
           ],
           "tag": {
             "commentStart": 970,
@@ -318,8 +318,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            84.6299,
-            79.4727
+            84.62985554954327,
+            79.47272421932652
           ],
           "type": "ToPoint",
           "units": {
@@ -332,8 +332,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            84.6299,
-            79.4727
+            84.62985554954327,
+            79.47272421932652
           ],
           "tag": {
             "commentStart": 970,
@@ -343,8 +343,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            84.002,
-            89.453
+            84.00195035425013,
+            89.45299150360924
           ],
           "type": "ToPoint",
           "units": {
@@ -357,8 +357,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            84.002,
-            89.453
+            84.00195035425013,
+            89.45299150360924
           ],
           "tag": {
             "commentStart": 970,
@@ -368,8 +368,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            82.1281,
-            99.2759
+            82.12813720839289,
+            99.27586401089613
           ],
           "type": "ToPoint",
           "units": {
@@ -382,8 +382,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            82.1281,
-            99.2759
+            82.12813720839289,
+            99.27586401089613
           ],
           "tag": {
             "commentStart": 970,
@@ -393,8 +393,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            79.038,
-            108.7864
+            79.03796726464341,
+            108.78642917384767
           ],
           "type": "ToPoint",
           "units": {
@@ -407,8 +407,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            79.038,
-            108.7864
+            79.03796726464341,
+            108.78642917384767
           ],
           "tag": {
             "commentStart": 970,
@@ -418,8 +418,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            74.7802,
-            117.8347
+            74.78017434899269,
+            117.83469969850786
           ],
           "type": "ToPoint",
           "units": {
@@ -432,8 +432,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            74.7802,
-            117.8347
+            74.78017434899269,
+            117.83469969850786
           ],
           "tag": {
             "commentStart": 970,
@@ -443,8 +443,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            69.4219,
-            126.278
+            69.42190639920273,
+            126.277978953528
           ],
           "type": "ToPoint",
           "units": {
@@ -457,8 +457,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            69.4219,
-            126.278
+            69.42190639920273,
+            126.277978953528
           ],
           "tag": {
             "commentStart": 970,
@@ -468,8 +468,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            63.0477,
-            133.9831
+            63.04766650171583,
+            133.9831113812859
           ],
           "type": "ToPoint",
           "units": {
@@ -482,8 +482,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            63.0477,
-            133.9831
+            63.04766650171583,
+            133.9831113812859
           ],
           "tag": {
             "commentStart": 970,
@@ -493,8 +493,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            55.758,
-            140.8286
+            55.75798022750172,
+            140.8285824405728
           ],
           "type": "ToPoint",
           "units": {
@@ -507,8 +507,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            55.758,
-            140.8286
+            55.75798022750172,
+            140.8285824405728
           ],
           "tag": {
             "commentStart": 970,
@@ -518,8 +518,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            47.6678,
-            146.7064
+            47.667810283752246,
+            146.70643496349754
           ],
           "type": "ToPoint",
           "units": {
@@ -532,8 +532,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            47.6678,
-            146.7064
+            47.667810283752246,
+            146.70643496349754
           ],
           "tag": {
             "commentStart": 970,
@@ -543,8 +543,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            38.9047,
-            151.524
+            38.90474348331361,
+            151.5239717045147
           ],
           "type": "ToPoint",
           "units": {
@@ -557,8 +557,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            38.9047,
-            151.524
+            38.90474348331361,
+            151.5239717045147
           ],
           "tag": {
             "commentStart": 970,
@@ -568,8 +568,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            29.607,
-            155.2052
+            29.606978624431097,
+            155.2052172313615
           ],
           "type": "ToPoint",
           "units": {
@@ -582,8 +582,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            29.607,
-            155.2052
+            29.606978624431097,
+            155.2052172313615
           ],
           "tag": {
             "commentStart": 970,
@@ -593,8 +593,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            19.9211,
-            157.6921
+            19.92114701314479,
+            157.69211610301005
           ],
           "type": "ToPoint",
           "units": {
@@ -607,8 +607,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            19.9211,
-            157.6921
+            19.92114701314479,
+            157.69211610301005
           ],
           "tag": {
             "commentStart": 970,
@@ -618,8 +618,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            10.0,
-            158.9454
+            10.00000000000001,
+            158.9454484386531
           ],
           "type": "ToPoint",
           "units": {
@@ -632,8 +632,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            10.0,
-            158.9454
+            10.00000000000001,
+            158.9454484386531
           ],
           "tag": {
             "commentStart": 970,
@@ -643,8 +643,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            0.0,
-            158.9454
+            0.000000000000010658141036401503,
+            158.9454484386531
           ],
           "type": "ToPoint",
           "units": {
@@ -657,8 +657,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            158.9454
+            0.000000000000010658141036401503,
+            158.9454484386531
           ],
           "tag": {
             "commentStart": 970,
@@ -668,8 +668,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -9.9211,
-            157.6921
+            -9.921147013144768,
+            157.69211610301005
           ],
           "type": "ToPoint",
           "units": {
@@ -682,8 +682,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -9.9211,
-            157.6921
+            -9.921147013144768,
+            157.69211610301005
           ],
           "tag": {
             "commentStart": 970,
@@ -693,8 +693,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -19.607,
-            155.2052
+            -19.60697862443108,
+            155.2052172313615
           ],
           "type": "ToPoint",
           "units": {
@@ -707,8 +707,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -19.607,
-            155.2052
+            -19.60697862443108,
+            155.2052172313615
           ],
           "tag": {
             "commentStart": 970,
@@ -718,8 +718,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -28.9047,
-            151.524
+            -28.904743483313595,
+            151.52397170451474
           ],
           "type": "ToPoint",
           "units": {
@@ -732,8 +732,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -28.9047,
-            151.524
+            -28.904743483313595,
+            151.52397170451474
           ],
           "tag": {
             "commentStart": 970,
@@ -743,8 +743,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -37.6678,
-            146.7064
+            -37.66781028375223,
+            146.70643496349757
           ],
           "type": "ToPoint",
           "units": {
@@ -757,8 +757,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -37.6678,
-            146.7064
+            -37.66781028375223,
+            146.70643496349757
           ],
           "tag": {
             "commentStart": 970,
@@ -768,8 +768,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -45.758,
-            140.8286
+            -45.757980227501704,
+            140.82858244057283
           ],
           "type": "ToPoint",
           "units": {
@@ -782,8 +782,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -45.758,
-            140.8286
+            -45.757980227501704,
+            140.82858244057283
           ],
           "tag": {
             "commentStart": 970,
@@ -793,8 +793,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -53.0477,
-            133.9831
+            -53.047666501715824,
+            133.98311138128594
           ],
           "type": "ToPoint",
           "units": {
@@ -807,8 +807,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -53.0477,
-            133.9831
+            -53.047666501715824,
+            133.98311138128594
           ],
           "tag": {
             "commentStart": 970,
@@ -818,8 +818,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -59.4219,
-            126.278
+            -59.42190639920272,
+            126.27797895352805
           ],
           "type": "ToPoint",
           "units": {
@@ -832,8 +832,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -59.4219,
-            126.278
+            -59.42190639920272,
+            126.27797895352805
           ],
           "tag": {
             "commentStart": 970,
@@ -843,8 +843,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -64.7802,
-            117.8347
+            -64.78017434899269,
+            117.83469969850789
           ],
           "type": "ToPoint",
           "units": {
@@ -857,8 +857,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -64.7802,
-            117.8347
+            -64.78017434899269,
+            117.83469969850789
           ],
           "tag": {
             "commentStart": 970,
@@ -868,8 +868,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -69.038,
-            108.7864
+            -69.03796726464341,
+            108.7864291738477
           ],
           "type": "ToPoint",
           "units": {
@@ -882,8 +882,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -69.038,
-            108.7864
+            -69.03796726464341,
+            108.7864291738477
           ],
           "tag": {
             "commentStart": 970,
@@ -893,8 +893,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -72.1281,
-            99.2759
+            -72.12813720839289,
+            99.27586401089616
           ],
           "type": "ToPoint",
           "units": {
@@ -907,8 +907,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -72.1281,
-            99.2759
+            -72.12813720839289,
+            99.27586401089616
           ],
           "tag": {
             "commentStart": 970,
@@ -918,8 +918,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -74.002,
-            89.453
+            -74.00195035425013,
+            89.45299150360927
           ],
           "type": "ToPoint",
           "units": {
@@ -932,8 +932,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -74.002,
-            89.453
+            -74.00195035425013,
+            89.45299150360927
           ],
           "tag": {
             "commentStart": 970,
@@ -943,8 +943,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -74.6299,
-            79.4727
+            -74.62985554954327,
+            79.47272421932655
           ],
           "type": "ToPoint",
           "units": {
@@ -957,8 +957,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -74.6299,
-            79.4727
+            -74.62985554954327,
+            79.47272421932655
           ],
           "tag": {
             "commentStart": 970,
@@ -968,8 +968,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -74.002,
-            69.4925
+            -74.00195035425014,
+            69.49245693504383
           ],
           "type": "ToPoint",
           "units": {
@@ -982,8 +982,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -74.002,
-            69.4925
+            -74.00195035425014,
+            69.49245693504383
           ],
           "tag": {
             "commentStart": 970,
@@ -993,8 +993,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -72.1281,
-            59.6696
+            -72.1281372083929,
+            59.669584427756945
           ],
           "type": "ToPoint",
           "units": {
@@ -1007,8 +1007,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -72.1281,
-            59.6696
+            -72.1281372083929,
+            59.669584427756945
           ],
           "tag": {
             "commentStart": 970,
@@ -1018,8 +1018,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -69.038,
-            50.159
+            -69.03796726464343,
+            50.15901926480541
           ],
           "type": "ToPoint",
           "units": {
@@ -1032,8 +1032,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -69.038,
-            50.159
+            -69.03796726464343,
+            50.15901926480541
           ],
           "tag": {
             "commentStart": 970,
@@ -1043,8 +1043,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -64.7802,
-            41.1107
+            -64.78017434899272,
+            41.11074874014521
           ],
           "type": "ToPoint",
           "units": {
@@ -1057,8 +1057,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -64.7802,
-            41.1107
+            -64.78017434899272,
+            41.11074874014521
           ],
           "tag": {
             "commentStart": 970,
@@ -1068,8 +1068,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -59.4219,
-            32.6675
+            -59.42190639920275,
+            32.66746948512506
           ],
           "type": "ToPoint",
           "units": {
@@ -1082,8 +1082,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -59.4219,
-            32.6675
+            -59.42190639920275,
+            32.66746948512506
           ],
           "tag": {
             "commentStart": 970,
@@ -1093,8 +1093,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -53.0477,
-            24.9623
+            -53.047666501715845,
+            24.962337057367172
           ],
           "type": "ToPoint",
           "units": {
@@ -1107,8 +1107,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -53.0477,
-            24.9623
+            -53.047666501715845,
+            24.962337057367172
           ],
           "tag": {
             "commentStart": 970,
@@ -1118,8 +1118,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -45.758,
-            18.1169
+            -45.75798022750173,
+            18.116865998080282
           ],
           "type": "ToPoint",
           "units": {
@@ -1132,8 +1132,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -45.758,
-            18.1169
+            -45.75798022750173,
+            18.116865998080282
           ],
           "tag": {
             "commentStart": 970,
@@ -1143,8 +1143,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -37.6678,
-            12.239
+            -37.66781028375226,
+            12.239013475155549
           ],
           "type": "ToPoint",
           "units": {
@@ -1157,8 +1157,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -37.6678,
-            12.239
+            -37.66781028375226,
+            12.239013475155549
           ],
           "tag": {
             "commentStart": 970,
@@ -1168,8 +1168,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -28.9047,
-            7.4215
+            -28.90474348331363,
+            7.421476734138388
           ],
           "type": "ToPoint",
           "units": {
@@ -1182,8 +1182,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -28.9047,
-            7.4215
+            -28.90474348331363,
+            7.421476734138388
           ],
           "tag": {
             "commentStart": 970,
@@ -1193,8 +1193,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -19.607,
-            3.7402
+            -19.606978624431115,
+            3.740231207291609
           ],
           "type": "ToPoint",
           "units": {
@@ -1207,8 +1207,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -19.607,
-            3.7402
+            -19.606978624431115,
+            3.740231207291609
           ],
           "tag": {
             "commentStart": 970,
@@ -1218,8 +1218,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -9.9211,
-            1.2533
+            -9.921147013144802,
+            1.253332335643064
           ],
           "type": "ToPoint",
           "units": {
@@ -1232,8 +1232,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -9.9211,
-            1.2533
+            -9.921147013144802,
+            1.253332335643064
           ],
           "tag": {
             "commentStart": 970,
@@ -1243,8 +1243,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -0.0,
-            0.0
+            -0.000000000000024868995751603507,
+            0.000000000000017319479184152442
           ],
           "type": "ToPoint",
           "units": {
@@ -1257,8 +1257,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -0.0,
-            0.0
+            -0.000000000000024868995751603507,
+            0.000000000000017319479184152442
           ],
           "tag": null,
           "to": [
@@ -2005,8 +2005,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              19.9211,
-              1.2533
+              19.92114701314478,
+              1.2533323356430426
             ],
             "type": "ToPoint",
             "units": {
@@ -2019,8 +2019,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              19.9211,
-              1.2533
+              19.92114701314478,
+              1.2533323356430426
             ],
             "tag": {
               "commentStart": 970,
@@ -2030,8 +2030,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              29.607,
-              3.7402
+              29.60697862443109,
+              3.7402312072915906
             ],
             "type": "ToPoint",
             "units": {
@@ -2044,8 +2044,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              29.607,
-              3.7402
+              29.60697862443109,
+              3.7402312072915906
             ],
             "tag": {
               "commentStart": 970,
@@ -2055,8 +2055,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              38.9047,
-              7.4215
+              38.9047434833136,
+              7.42147673413837
             ],
             "type": "ToPoint",
             "units": {
@@ -2069,8 +2069,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              38.9047,
-              7.4215
+              38.9047434833136,
+              7.42147673413837
             ],
             "tag": {
               "commentStart": 970,
@@ -2080,8 +2080,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              47.6678,
-              12.239
+              47.66781028375224,
+              12.239013475155524
             ],
             "type": "ToPoint",
             "units": {
@@ -2094,8 +2094,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              47.6678,
-              12.239
+              47.66781028375224,
+              12.239013475155524
             ],
             "tag": {
               "commentStart": 970,
@@ -2105,8 +2105,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              55.758,
-              18.1169
+              55.75798022750171,
+              18.116865998080257
             ],
             "type": "ToPoint",
             "units": {
@@ -2119,8 +2119,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              55.758,
-              18.1169
+              55.75798022750171,
+              18.116865998080257
             ],
             "tag": {
               "commentStart": 970,
@@ -2130,8 +2130,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              63.0477,
-              24.9623
+              63.047666501715824,
+              24.962337057367144
             ],
             "type": "ToPoint",
             "units": {
@@ -2144,8 +2144,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              63.0477,
-              24.9623
+              63.047666501715824,
+              24.962337057367144
             ],
             "tag": {
               "commentStart": 970,
@@ -2155,8 +2155,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              69.4219,
-              32.6675
+              69.42190639920273,
+              32.66746948512503
             ],
             "type": "ToPoint",
             "units": {
@@ -2169,8 +2169,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              69.4219,
-              32.6675
+              69.42190639920273,
+              32.66746948512503
             ],
             "tag": {
               "commentStart": 970,
@@ -2180,8 +2180,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              74.7802,
-              41.1107
+              74.78017434899269,
+              41.11074874014518
             ],
             "type": "ToPoint",
             "units": {
@@ -2194,8 +2194,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              74.7802,
-              41.1107
+              74.78017434899269,
+              41.11074874014518
             ],
             "tag": {
               "commentStart": 970,
@@ -2205,8 +2205,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              79.038,
-              50.159
+              79.03796726464341,
+              50.15901926480538
             ],
             "type": "ToPoint",
             "units": {
@@ -2219,8 +2219,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              79.038,
-              50.159
+              79.03796726464341,
+              50.15901926480538
             ],
             "tag": {
               "commentStart": 970,
@@ -2230,8 +2230,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              82.1281,
-              59.6696
+              82.12813720839289,
+              59.66958442775692
             ],
             "type": "ToPoint",
             "units": {
@@ -2244,8 +2244,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              82.1281,
-              59.6696
+              82.12813720839289,
+              59.66958442775692
             ],
             "tag": {
               "commentStart": 970,
@@ -2255,8 +2255,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              84.002,
-              69.4925
+              84.00195035425013,
+              69.4924569350438
             ],
             "type": "ToPoint",
             "units": {
@@ -2269,8 +2269,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              84.002,
-              69.4925
+              84.00195035425013,
+              69.4924569350438
             ],
             "tag": {
               "commentStart": 970,
@@ -2280,8 +2280,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              84.6299,
-              79.4727
+              84.62985554954327,
+              79.47272421932652
             ],
             "type": "ToPoint",
             "units": {
@@ -2294,8 +2294,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              84.6299,
-              79.4727
+              84.62985554954327,
+              79.47272421932652
             ],
             "tag": {
               "commentStart": 970,
@@ -2305,8 +2305,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              84.002,
-              89.453
+              84.00195035425013,
+              89.45299150360924
             ],
             "type": "ToPoint",
             "units": {
@@ -2319,8 +2319,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              84.002,
-              89.453
+              84.00195035425013,
+              89.45299150360924
             ],
             "tag": {
               "commentStart": 970,
@@ -2330,8 +2330,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              82.1281,
-              99.2759
+              82.12813720839289,
+              99.27586401089613
             ],
             "type": "ToPoint",
             "units": {
@@ -2344,8 +2344,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              82.1281,
-              99.2759
+              82.12813720839289,
+              99.27586401089613
             ],
             "tag": {
               "commentStart": 970,
@@ -2355,8 +2355,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              79.038,
-              108.7864
+              79.03796726464341,
+              108.78642917384767
             ],
             "type": "ToPoint",
             "units": {
@@ -2369,8 +2369,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              79.038,
-              108.7864
+              79.03796726464341,
+              108.78642917384767
             ],
             "tag": {
               "commentStart": 970,
@@ -2380,8 +2380,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              74.7802,
-              117.8347
+              74.78017434899269,
+              117.83469969850786
             ],
             "type": "ToPoint",
             "units": {
@@ -2394,8 +2394,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              74.7802,
-              117.8347
+              74.78017434899269,
+              117.83469969850786
             ],
             "tag": {
               "commentStart": 970,
@@ -2405,8 +2405,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              69.4219,
-              126.278
+              69.42190639920273,
+              126.277978953528
             ],
             "type": "ToPoint",
             "units": {
@@ -2419,8 +2419,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              69.4219,
-              126.278
+              69.42190639920273,
+              126.277978953528
             ],
             "tag": {
               "commentStart": 970,
@@ -2430,8 +2430,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              63.0477,
-              133.9831
+              63.04766650171583,
+              133.9831113812859
             ],
             "type": "ToPoint",
             "units": {
@@ -2444,8 +2444,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              63.0477,
-              133.9831
+              63.04766650171583,
+              133.9831113812859
             ],
             "tag": {
               "commentStart": 970,
@@ -2455,8 +2455,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              55.758,
-              140.8286
+              55.75798022750172,
+              140.8285824405728
             ],
             "type": "ToPoint",
             "units": {
@@ -2469,8 +2469,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              55.758,
-              140.8286
+              55.75798022750172,
+              140.8285824405728
             ],
             "tag": {
               "commentStart": 970,
@@ -2480,8 +2480,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              47.6678,
-              146.7064
+              47.667810283752246,
+              146.70643496349754
             ],
             "type": "ToPoint",
             "units": {
@@ -2494,8 +2494,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              47.6678,
-              146.7064
+              47.667810283752246,
+              146.70643496349754
             ],
             "tag": {
               "commentStart": 970,
@@ -2505,8 +2505,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              38.9047,
-              151.524
+              38.90474348331361,
+              151.5239717045147
             ],
             "type": "ToPoint",
             "units": {
@@ -2519,8 +2519,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              38.9047,
-              151.524
+              38.90474348331361,
+              151.5239717045147
             ],
             "tag": {
               "commentStart": 970,
@@ -2530,8 +2530,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              29.607,
-              155.2052
+              29.606978624431097,
+              155.2052172313615
             ],
             "type": "ToPoint",
             "units": {
@@ -2544,8 +2544,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              29.607,
-              155.2052
+              29.606978624431097,
+              155.2052172313615
             ],
             "tag": {
               "commentStart": 970,
@@ -2555,8 +2555,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              19.9211,
-              157.6921
+              19.92114701314479,
+              157.69211610301005
             ],
             "type": "ToPoint",
             "units": {
@@ -2569,8 +2569,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              19.9211,
-              157.6921
+              19.92114701314479,
+              157.69211610301005
             ],
             "tag": {
               "commentStart": 970,
@@ -2580,8 +2580,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              10.0,
-              158.9454
+              10.00000000000001,
+              158.9454484386531
             ],
             "type": "ToPoint",
             "units": {
@@ -2594,8 +2594,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              10.0,
-              158.9454
+              10.00000000000001,
+              158.9454484386531
             ],
             "tag": {
               "commentStart": 970,
@@ -2605,8 +2605,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              0.0,
-              158.9454
+              0.000000000000010658141036401503,
+              158.9454484386531
             ],
             "type": "ToPoint",
             "units": {
@@ -2619,8 +2619,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              158.9454
+              0.000000000000010658141036401503,
+              158.9454484386531
             ],
             "tag": {
               "commentStart": 970,
@@ -2630,8 +2630,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -9.9211,
-              157.6921
+              -9.921147013144768,
+              157.69211610301005
             ],
             "type": "ToPoint",
             "units": {
@@ -2644,8 +2644,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -9.9211,
-              157.6921
+              -9.921147013144768,
+              157.69211610301005
             ],
             "tag": {
               "commentStart": 970,
@@ -2655,8 +2655,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -19.607,
-              155.2052
+              -19.60697862443108,
+              155.2052172313615
             ],
             "type": "ToPoint",
             "units": {
@@ -2669,8 +2669,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -19.607,
-              155.2052
+              -19.60697862443108,
+              155.2052172313615
             ],
             "tag": {
               "commentStart": 970,
@@ -2680,8 +2680,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -28.9047,
-              151.524
+              -28.904743483313595,
+              151.52397170451474
             ],
             "type": "ToPoint",
             "units": {
@@ -2694,8 +2694,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -28.9047,
-              151.524
+              -28.904743483313595,
+              151.52397170451474
             ],
             "tag": {
               "commentStart": 970,
@@ -2705,8 +2705,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -37.6678,
-              146.7064
+              -37.66781028375223,
+              146.70643496349757
             ],
             "type": "ToPoint",
             "units": {
@@ -2719,8 +2719,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -37.6678,
-              146.7064
+              -37.66781028375223,
+              146.70643496349757
             ],
             "tag": {
               "commentStart": 970,
@@ -2730,8 +2730,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -45.758,
-              140.8286
+              -45.757980227501704,
+              140.82858244057283
             ],
             "type": "ToPoint",
             "units": {
@@ -2744,8 +2744,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -45.758,
-              140.8286
+              -45.757980227501704,
+              140.82858244057283
             ],
             "tag": {
               "commentStart": 970,
@@ -2755,8 +2755,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -53.0477,
-              133.9831
+              -53.047666501715824,
+              133.98311138128594
             ],
             "type": "ToPoint",
             "units": {
@@ -2769,8 +2769,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -53.0477,
-              133.9831
+              -53.047666501715824,
+              133.98311138128594
             ],
             "tag": {
               "commentStart": 970,
@@ -2780,8 +2780,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -59.4219,
-              126.278
+              -59.42190639920272,
+              126.27797895352805
             ],
             "type": "ToPoint",
             "units": {
@@ -2794,8 +2794,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -59.4219,
-              126.278
+              -59.42190639920272,
+              126.27797895352805
             ],
             "tag": {
               "commentStart": 970,
@@ -2805,8 +2805,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -64.7802,
-              117.8347
+              -64.78017434899269,
+              117.83469969850789
             ],
             "type": "ToPoint",
             "units": {
@@ -2819,8 +2819,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -64.7802,
-              117.8347
+              -64.78017434899269,
+              117.83469969850789
             ],
             "tag": {
               "commentStart": 970,
@@ -2830,8 +2830,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -69.038,
-              108.7864
+              -69.03796726464341,
+              108.7864291738477
             ],
             "type": "ToPoint",
             "units": {
@@ -2844,8 +2844,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -69.038,
-              108.7864
+              -69.03796726464341,
+              108.7864291738477
             ],
             "tag": {
               "commentStart": 970,
@@ -2855,8 +2855,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -72.1281,
-              99.2759
+              -72.12813720839289,
+              99.27586401089616
             ],
             "type": "ToPoint",
             "units": {
@@ -2869,8 +2869,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -72.1281,
-              99.2759
+              -72.12813720839289,
+              99.27586401089616
             ],
             "tag": {
               "commentStart": 970,
@@ -2880,8 +2880,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -74.002,
-              89.453
+              -74.00195035425013,
+              89.45299150360927
             ],
             "type": "ToPoint",
             "units": {
@@ -2894,8 +2894,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -74.002,
-              89.453
+              -74.00195035425013,
+              89.45299150360927
             ],
             "tag": {
               "commentStart": 970,
@@ -2905,8 +2905,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -74.6299,
-              79.4727
+              -74.62985554954327,
+              79.47272421932655
             ],
             "type": "ToPoint",
             "units": {
@@ -2919,8 +2919,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -74.6299,
-              79.4727
+              -74.62985554954327,
+              79.47272421932655
             ],
             "tag": {
               "commentStart": 970,
@@ -2930,8 +2930,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -74.002,
-              69.4925
+              -74.00195035425014,
+              69.49245693504383
             ],
             "type": "ToPoint",
             "units": {
@@ -2944,8 +2944,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -74.002,
-              69.4925
+              -74.00195035425014,
+              69.49245693504383
             ],
             "tag": {
               "commentStart": 970,
@@ -2955,8 +2955,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -72.1281,
-              59.6696
+              -72.1281372083929,
+              59.669584427756945
             ],
             "type": "ToPoint",
             "units": {
@@ -2969,8 +2969,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -72.1281,
-              59.6696
+              -72.1281372083929,
+              59.669584427756945
             ],
             "tag": {
               "commentStart": 970,
@@ -2980,8 +2980,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -69.038,
-              50.159
+              -69.03796726464343,
+              50.15901926480541
             ],
             "type": "ToPoint",
             "units": {
@@ -2994,8 +2994,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -69.038,
-              50.159
+              -69.03796726464343,
+              50.15901926480541
             ],
             "tag": {
               "commentStart": 970,
@@ -3005,8 +3005,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -64.7802,
-              41.1107
+              -64.78017434899272,
+              41.11074874014521
             ],
             "type": "ToPoint",
             "units": {
@@ -3019,8 +3019,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -64.7802,
-              41.1107
+              -64.78017434899272,
+              41.11074874014521
             ],
             "tag": {
               "commentStart": 970,
@@ -3030,8 +3030,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -59.4219,
-              32.6675
+              -59.42190639920275,
+              32.66746948512506
             ],
             "type": "ToPoint",
             "units": {
@@ -3044,8 +3044,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -59.4219,
-              32.6675
+              -59.42190639920275,
+              32.66746948512506
             ],
             "tag": {
               "commentStart": 970,
@@ -3055,8 +3055,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -53.0477,
-              24.9623
+              -53.047666501715845,
+              24.962337057367172
             ],
             "type": "ToPoint",
             "units": {
@@ -3069,8 +3069,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -53.0477,
-              24.9623
+              -53.047666501715845,
+              24.962337057367172
             ],
             "tag": {
               "commentStart": 970,
@@ -3080,8 +3080,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -45.758,
-              18.1169
+              -45.75798022750173,
+              18.116865998080282
             ],
             "type": "ToPoint",
             "units": {
@@ -3094,8 +3094,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -45.758,
-              18.1169
+              -45.75798022750173,
+              18.116865998080282
             ],
             "tag": {
               "commentStart": 970,
@@ -3105,8 +3105,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -37.6678,
-              12.239
+              -37.66781028375226,
+              12.239013475155549
             ],
             "type": "ToPoint",
             "units": {
@@ -3119,8 +3119,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -37.6678,
-              12.239
+              -37.66781028375226,
+              12.239013475155549
             ],
             "tag": {
               "commentStart": 970,
@@ -3130,8 +3130,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -28.9047,
-              7.4215
+              -28.90474348331363,
+              7.421476734138388
             ],
             "type": "ToPoint",
             "units": {
@@ -3144,8 +3144,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -28.9047,
-              7.4215
+              -28.90474348331363,
+              7.421476734138388
             ],
             "tag": {
               "commentStart": 970,
@@ -3155,8 +3155,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -19.607,
-              3.7402
+              -19.606978624431115,
+              3.740231207291609
             ],
             "type": "ToPoint",
             "units": {
@@ -3169,8 +3169,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -19.607,
-              3.7402
+              -19.606978624431115,
+              3.740231207291609
             ],
             "tag": {
               "commentStart": 970,
@@ -3180,8 +3180,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -9.9211,
-              1.2533
+              -9.921147013144802,
+              1.253332335643064
             ],
             "type": "ToPoint",
             "units": {
@@ -3194,8 +3194,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -9.9211,
-              1.2533
+              -9.921147013144802,
+              1.253332335643064
             ],
             "tag": {
               "commentStart": 970,
@@ -3205,8 +3205,8 @@ description: Variables in memory after executing loop_tag.kcl
               "value": "problematicTag"
             },
             "to": [
-              -0.0,
-              0.0
+              -0.000000000000024868995751603507,
+              0.000000000000017319479184152442
             ],
             "type": "ToPoint",
             "units": {
@@ -3219,8 +3219,8 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0,
-              0.0
+              -0.000000000000024868995751603507,
+              0.000000000000017319479184152442
             ],
             "tag": null,
             "to": [
@@ -3325,8 +3325,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            19.9211,
-            1.2533
+            19.92114701314478,
+            1.2533323356430426
           ],
           "type": "ToPoint",
           "units": {
@@ -3339,8 +3339,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            19.9211,
-            1.2533
+            19.92114701314478,
+            1.2533323356430426
           ],
           "tag": {
             "commentStart": 970,
@@ -3350,8 +3350,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            29.607,
-            3.7402
+            29.60697862443109,
+            3.7402312072915906
           ],
           "type": "ToPoint",
           "units": {
@@ -3364,8 +3364,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            29.607,
-            3.7402
+            29.60697862443109,
+            3.7402312072915906
           ],
           "tag": {
             "commentStart": 970,
@@ -3375,8 +3375,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            38.9047,
-            7.4215
+            38.9047434833136,
+            7.42147673413837
           ],
           "type": "ToPoint",
           "units": {
@@ -3389,8 +3389,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            38.9047,
-            7.4215
+            38.9047434833136,
+            7.42147673413837
           ],
           "tag": {
             "commentStart": 970,
@@ -3400,8 +3400,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            47.6678,
-            12.239
+            47.66781028375224,
+            12.239013475155524
           ],
           "type": "ToPoint",
           "units": {
@@ -3414,8 +3414,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            47.6678,
-            12.239
+            47.66781028375224,
+            12.239013475155524
           ],
           "tag": {
             "commentStart": 970,
@@ -3425,8 +3425,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            55.758,
-            18.1169
+            55.75798022750171,
+            18.116865998080257
           ],
           "type": "ToPoint",
           "units": {
@@ -3439,8 +3439,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            55.758,
-            18.1169
+            55.75798022750171,
+            18.116865998080257
           ],
           "tag": {
             "commentStart": 970,
@@ -3450,8 +3450,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            63.0477,
-            24.9623
+            63.047666501715824,
+            24.962337057367144
           ],
           "type": "ToPoint",
           "units": {
@@ -3464,8 +3464,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            63.0477,
-            24.9623
+            63.047666501715824,
+            24.962337057367144
           ],
           "tag": {
             "commentStart": 970,
@@ -3475,8 +3475,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            69.4219,
-            32.6675
+            69.42190639920273,
+            32.66746948512503
           ],
           "type": "ToPoint",
           "units": {
@@ -3489,8 +3489,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            69.4219,
-            32.6675
+            69.42190639920273,
+            32.66746948512503
           ],
           "tag": {
             "commentStart": 970,
@@ -3500,8 +3500,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            74.7802,
-            41.1107
+            74.78017434899269,
+            41.11074874014518
           ],
           "type": "ToPoint",
           "units": {
@@ -3514,8 +3514,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            74.7802,
-            41.1107
+            74.78017434899269,
+            41.11074874014518
           ],
           "tag": {
             "commentStart": 970,
@@ -3525,8 +3525,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            79.038,
-            50.159
+            79.03796726464341,
+            50.15901926480538
           ],
           "type": "ToPoint",
           "units": {
@@ -3539,8 +3539,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            79.038,
-            50.159
+            79.03796726464341,
+            50.15901926480538
           ],
           "tag": {
             "commentStart": 970,
@@ -3550,8 +3550,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            82.1281,
-            59.6696
+            82.12813720839289,
+            59.66958442775692
           ],
           "type": "ToPoint",
           "units": {
@@ -3564,8 +3564,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            82.1281,
-            59.6696
+            82.12813720839289,
+            59.66958442775692
           ],
           "tag": {
             "commentStart": 970,
@@ -3575,8 +3575,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            84.002,
-            69.4925
+            84.00195035425013,
+            69.4924569350438
           ],
           "type": "ToPoint",
           "units": {
@@ -3589,8 +3589,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            84.002,
-            69.4925
+            84.00195035425013,
+            69.4924569350438
           ],
           "tag": {
             "commentStart": 970,
@@ -3600,8 +3600,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            84.6299,
-            79.4727
+            84.62985554954327,
+            79.47272421932652
           ],
           "type": "ToPoint",
           "units": {
@@ -3614,8 +3614,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            84.6299,
-            79.4727
+            84.62985554954327,
+            79.47272421932652
           ],
           "tag": {
             "commentStart": 970,
@@ -3625,8 +3625,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            84.002,
-            89.453
+            84.00195035425013,
+            89.45299150360924
           ],
           "type": "ToPoint",
           "units": {
@@ -3639,8 +3639,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            84.002,
-            89.453
+            84.00195035425013,
+            89.45299150360924
           ],
           "tag": {
             "commentStart": 970,
@@ -3650,8 +3650,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            82.1281,
-            99.2759
+            82.12813720839289,
+            99.27586401089613
           ],
           "type": "ToPoint",
           "units": {
@@ -3664,8 +3664,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            82.1281,
-            99.2759
+            82.12813720839289,
+            99.27586401089613
           ],
           "tag": {
             "commentStart": 970,
@@ -3675,8 +3675,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            79.038,
-            108.7864
+            79.03796726464341,
+            108.78642917384767
           ],
           "type": "ToPoint",
           "units": {
@@ -3689,8 +3689,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            79.038,
-            108.7864
+            79.03796726464341,
+            108.78642917384767
           ],
           "tag": {
             "commentStart": 970,
@@ -3700,8 +3700,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            74.7802,
-            117.8347
+            74.78017434899269,
+            117.83469969850786
           ],
           "type": "ToPoint",
           "units": {
@@ -3714,8 +3714,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            74.7802,
-            117.8347
+            74.78017434899269,
+            117.83469969850786
           ],
           "tag": {
             "commentStart": 970,
@@ -3725,8 +3725,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            69.4219,
-            126.278
+            69.42190639920273,
+            126.277978953528
           ],
           "type": "ToPoint",
           "units": {
@@ -3739,8 +3739,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            69.4219,
-            126.278
+            69.42190639920273,
+            126.277978953528
           ],
           "tag": {
             "commentStart": 970,
@@ -3750,8 +3750,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            63.0477,
-            133.9831
+            63.04766650171583,
+            133.9831113812859
           ],
           "type": "ToPoint",
           "units": {
@@ -3764,8 +3764,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            63.0477,
-            133.9831
+            63.04766650171583,
+            133.9831113812859
           ],
           "tag": {
             "commentStart": 970,
@@ -3775,8 +3775,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            55.758,
-            140.8286
+            55.75798022750172,
+            140.8285824405728
           ],
           "type": "ToPoint",
           "units": {
@@ -3789,8 +3789,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            55.758,
-            140.8286
+            55.75798022750172,
+            140.8285824405728
           ],
           "tag": {
             "commentStart": 970,
@@ -3800,8 +3800,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            47.6678,
-            146.7064
+            47.667810283752246,
+            146.70643496349754
           ],
           "type": "ToPoint",
           "units": {
@@ -3814,8 +3814,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            47.6678,
-            146.7064
+            47.667810283752246,
+            146.70643496349754
           ],
           "tag": {
             "commentStart": 970,
@@ -3825,8 +3825,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            38.9047,
-            151.524
+            38.90474348331361,
+            151.5239717045147
           ],
           "type": "ToPoint",
           "units": {
@@ -3839,8 +3839,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            38.9047,
-            151.524
+            38.90474348331361,
+            151.5239717045147
           ],
           "tag": {
             "commentStart": 970,
@@ -3850,8 +3850,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            29.607,
-            155.2052
+            29.606978624431097,
+            155.2052172313615
           ],
           "type": "ToPoint",
           "units": {
@@ -3864,8 +3864,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            29.607,
-            155.2052
+            29.606978624431097,
+            155.2052172313615
           ],
           "tag": {
             "commentStart": 970,
@@ -3875,8 +3875,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            19.9211,
-            157.6921
+            19.92114701314479,
+            157.69211610301005
           ],
           "type": "ToPoint",
           "units": {
@@ -3889,8 +3889,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            19.9211,
-            157.6921
+            19.92114701314479,
+            157.69211610301005
           ],
           "tag": {
             "commentStart": 970,
@@ -3900,8 +3900,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            10.0,
-            158.9454
+            10.00000000000001,
+            158.9454484386531
           ],
           "type": "ToPoint",
           "units": {
@@ -3914,8 +3914,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            10.0,
-            158.9454
+            10.00000000000001,
+            158.9454484386531
           ],
           "tag": {
             "commentStart": 970,
@@ -3925,8 +3925,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            0.0,
-            158.9454
+            0.000000000000010658141036401503,
+            158.9454484386531
           ],
           "type": "ToPoint",
           "units": {
@@ -3939,8 +3939,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
-            158.9454
+            0.000000000000010658141036401503,
+            158.9454484386531
           ],
           "tag": {
             "commentStart": 970,
@@ -3950,8 +3950,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -9.9211,
-            157.6921
+            -9.921147013144768,
+            157.69211610301005
           ],
           "type": "ToPoint",
           "units": {
@@ -3964,8 +3964,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -9.9211,
-            157.6921
+            -9.921147013144768,
+            157.69211610301005
           ],
           "tag": {
             "commentStart": 970,
@@ -3975,8 +3975,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -19.607,
-            155.2052
+            -19.60697862443108,
+            155.2052172313615
           ],
           "type": "ToPoint",
           "units": {
@@ -3989,8 +3989,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -19.607,
-            155.2052
+            -19.60697862443108,
+            155.2052172313615
           ],
           "tag": {
             "commentStart": 970,
@@ -4000,8 +4000,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -28.9047,
-            151.524
+            -28.904743483313595,
+            151.52397170451474
           ],
           "type": "ToPoint",
           "units": {
@@ -4014,8 +4014,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -28.9047,
-            151.524
+            -28.904743483313595,
+            151.52397170451474
           ],
           "tag": {
             "commentStart": 970,
@@ -4025,8 +4025,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -37.6678,
-            146.7064
+            -37.66781028375223,
+            146.70643496349757
           ],
           "type": "ToPoint",
           "units": {
@@ -4039,8 +4039,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -37.6678,
-            146.7064
+            -37.66781028375223,
+            146.70643496349757
           ],
           "tag": {
             "commentStart": 970,
@@ -4050,8 +4050,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -45.758,
-            140.8286
+            -45.757980227501704,
+            140.82858244057283
           ],
           "type": "ToPoint",
           "units": {
@@ -4064,8 +4064,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -45.758,
-            140.8286
+            -45.757980227501704,
+            140.82858244057283
           ],
           "tag": {
             "commentStart": 970,
@@ -4075,8 +4075,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -53.0477,
-            133.9831
+            -53.047666501715824,
+            133.98311138128594
           ],
           "type": "ToPoint",
           "units": {
@@ -4089,8 +4089,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -53.0477,
-            133.9831
+            -53.047666501715824,
+            133.98311138128594
           ],
           "tag": {
             "commentStart": 970,
@@ -4100,8 +4100,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -59.4219,
-            126.278
+            -59.42190639920272,
+            126.27797895352805
           ],
           "type": "ToPoint",
           "units": {
@@ -4114,8 +4114,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -59.4219,
-            126.278
+            -59.42190639920272,
+            126.27797895352805
           ],
           "tag": {
             "commentStart": 970,
@@ -4125,8 +4125,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -64.7802,
-            117.8347
+            -64.78017434899269,
+            117.83469969850789
           ],
           "type": "ToPoint",
           "units": {
@@ -4139,8 +4139,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -64.7802,
-            117.8347
+            -64.78017434899269,
+            117.83469969850789
           ],
           "tag": {
             "commentStart": 970,
@@ -4150,8 +4150,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -69.038,
-            108.7864
+            -69.03796726464341,
+            108.7864291738477
           ],
           "type": "ToPoint",
           "units": {
@@ -4164,8 +4164,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -69.038,
-            108.7864
+            -69.03796726464341,
+            108.7864291738477
           ],
           "tag": {
             "commentStart": 970,
@@ -4175,8 +4175,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -72.1281,
-            99.2759
+            -72.12813720839289,
+            99.27586401089616
           ],
           "type": "ToPoint",
           "units": {
@@ -4189,8 +4189,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -72.1281,
-            99.2759
+            -72.12813720839289,
+            99.27586401089616
           ],
           "tag": {
             "commentStart": 970,
@@ -4200,8 +4200,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -74.002,
-            89.453
+            -74.00195035425013,
+            89.45299150360927
           ],
           "type": "ToPoint",
           "units": {
@@ -4214,8 +4214,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -74.002,
-            89.453
+            -74.00195035425013,
+            89.45299150360927
           ],
           "tag": {
             "commentStart": 970,
@@ -4225,8 +4225,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -74.6299,
-            79.4727
+            -74.62985554954327,
+            79.47272421932655
           ],
           "type": "ToPoint",
           "units": {
@@ -4239,8 +4239,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -74.6299,
-            79.4727
+            -74.62985554954327,
+            79.47272421932655
           ],
           "tag": {
             "commentStart": 970,
@@ -4250,8 +4250,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -74.002,
-            69.4925
+            -74.00195035425014,
+            69.49245693504383
           ],
           "type": "ToPoint",
           "units": {
@@ -4264,8 +4264,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -74.002,
-            69.4925
+            -74.00195035425014,
+            69.49245693504383
           ],
           "tag": {
             "commentStart": 970,
@@ -4275,8 +4275,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -72.1281,
-            59.6696
+            -72.1281372083929,
+            59.669584427756945
           ],
           "type": "ToPoint",
           "units": {
@@ -4289,8 +4289,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -72.1281,
-            59.6696
+            -72.1281372083929,
+            59.669584427756945
           ],
           "tag": {
             "commentStart": 970,
@@ -4300,8 +4300,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -69.038,
-            50.159
+            -69.03796726464343,
+            50.15901926480541
           ],
           "type": "ToPoint",
           "units": {
@@ -4314,8 +4314,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -69.038,
-            50.159
+            -69.03796726464343,
+            50.15901926480541
           ],
           "tag": {
             "commentStart": 970,
@@ -4325,8 +4325,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -64.7802,
-            41.1107
+            -64.78017434899272,
+            41.11074874014521
           ],
           "type": "ToPoint",
           "units": {
@@ -4339,8 +4339,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -64.7802,
-            41.1107
+            -64.78017434899272,
+            41.11074874014521
           ],
           "tag": {
             "commentStart": 970,
@@ -4350,8 +4350,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -59.4219,
-            32.6675
+            -59.42190639920275,
+            32.66746948512506
           ],
           "type": "ToPoint",
           "units": {
@@ -4364,8 +4364,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -59.4219,
-            32.6675
+            -59.42190639920275,
+            32.66746948512506
           ],
           "tag": {
             "commentStart": 970,
@@ -4375,8 +4375,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -53.0477,
-            24.9623
+            -53.047666501715845,
+            24.962337057367172
           ],
           "type": "ToPoint",
           "units": {
@@ -4389,8 +4389,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -53.0477,
-            24.9623
+            -53.047666501715845,
+            24.962337057367172
           ],
           "tag": {
             "commentStart": 970,
@@ -4400,8 +4400,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -45.758,
-            18.1169
+            -45.75798022750173,
+            18.116865998080282
           ],
           "type": "ToPoint",
           "units": {
@@ -4414,8 +4414,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -45.758,
-            18.1169
+            -45.75798022750173,
+            18.116865998080282
           ],
           "tag": {
             "commentStart": 970,
@@ -4425,8 +4425,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -37.6678,
-            12.239
+            -37.66781028375226,
+            12.239013475155549
           ],
           "type": "ToPoint",
           "units": {
@@ -4439,8 +4439,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -37.6678,
-            12.239
+            -37.66781028375226,
+            12.239013475155549
           ],
           "tag": {
             "commentStart": 970,
@@ -4450,8 +4450,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -28.9047,
-            7.4215
+            -28.90474348331363,
+            7.421476734138388
           ],
           "type": "ToPoint",
           "units": {
@@ -4464,8 +4464,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -28.9047,
-            7.4215
+            -28.90474348331363,
+            7.421476734138388
           ],
           "tag": {
             "commentStart": 970,
@@ -4475,8 +4475,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -19.607,
-            3.7402
+            -19.606978624431115,
+            3.740231207291609
           ],
           "type": "ToPoint",
           "units": {
@@ -4489,8 +4489,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -19.607,
-            3.7402
+            -19.606978624431115,
+            3.740231207291609
           ],
           "tag": {
             "commentStart": 970,
@@ -4500,8 +4500,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -9.9211,
-            1.2533
+            -9.921147013144802,
+            1.253332335643064
           ],
           "type": "ToPoint",
           "units": {
@@ -4514,8 +4514,8 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            -9.9211,
-            1.2533
+            -9.921147013144802,
+            1.253332335643064
           ],
           "tag": {
             "commentStart": 970,
@@ -4525,8 +4525,8 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           },
           "to": [
-            -0.0,
-            0.0
+            -0.000000000000024868995751603507,
+            0.000000000000017319479184152442
           ],
           "type": "ToPoint",
           "units": {

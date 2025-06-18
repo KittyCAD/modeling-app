@@ -2,67 +2,478 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed involute_circular_units.kcl
 ---
-[
-  {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
+{
+  "rust/kcl-lib/tests/involute_circular_units/input.kcl": [
+    {
+      "type": "VariableDeclaration",
+      "name": "nTeeth",
       "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
+        "type": "Number",
+        "value": 21.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Cm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
-    }
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "polar",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "angle": {
-          "value": {
-            "type": "Number",
-            "value": 17.1429,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": 4.9334,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        }
-      }
     },
-    "sourceRange": []
-  },
-  {
-    "labeledArgs": {
-      "tool": {
+    {
+      "type": "VariableDeclaration",
+      "name": "module",
+      "value": {
+        "type": "Number",
+        "value": 0.5,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Cm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "pitchDiameter",
+      "value": {
+        "type": "Number",
+        "value": 10.5,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Cm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "pressureAngle",
+      "value": {
+        "type": "Number",
+        "value": 20.0,
+        "ty": {
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "addendum",
+      "value": {
+        "type": "Number",
+        "value": 0.5,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Cm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "deddendum",
+      "value": {
+        "type": "Number",
+        "value": 0.625,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Cm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "baseDiameter",
+      "value": {
+        "type": "Number",
+        "value": 9.866772518252038,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Cm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "tipDiameter",
+      "value": {
+        "type": "Number",
+        "value": 11.5,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Cm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "gearHeight",
+      "value": {
+        "type": "Number",
+        "value": 0.3,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Cm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "angle001",
+      "value": {
+        "type": "Number",
+        "value": 6.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Cm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "polar",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "angle": {
+            "value": {
+              "type": "Number",
+              "value": 0.299199300341885,
+              "ty": {
+                "type": "Known",
+                "type": "Angle",
+                "type": "Radians"
+              }
+            },
+            "sourceRange": []
+          },
+          "length": {
+            "value": {
+              "type": "Number",
+              "value": 4.933386259126019,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Cm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 7
+          },
+          {
+            "type": "CallKwArg",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": 4.714209749659843,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Cm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": 1.4541411272450477,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Cm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract2d",
+      "unlabeledArg": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -70,54 +481,176 @@ description: Operations executed involute_circular_units.kcl
           }
         },
         "sourceRange": []
-      }
-    },
-    "name": "subtract2d",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
+      },
+      "labeledArgs": {
+        "tool": {
+          "value": {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          "sourceRange": []
         }
       },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 10
+          }
+        ]
+      },
       "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "length": {
+    },
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
         "value": {
-          "type": "Number",
-          "value": 0.3,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Cm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 0.3,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Cm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
         }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
       },
       "sourceRange": []
     }
-  },
-  {
-    "type": "GroupEnd"
-  }
-]
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [
+    {
+      "type": "VariableDeclaration",
+      "name": "PI",
+      "value": {
+        "type": "Number",
+        "value": 3.141592653589793,
+        "ty": {
+          "type": "Unknown"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "E",
+      "value": {
+        "type": "Number",
+        "value": 2.718281828459045,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "TAU",
+      "value": {
+        "type": "Number",
+        "value": 6.283185307179586,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::prelude": [
+    {
+      "type": "VariableDeclaration",
+      "name": "START",
+      "value": {
+        "type": "String",
+        "value": "start"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "END",
+      "value": {
+        "type": "String",
+        "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::sketch": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": []
+}

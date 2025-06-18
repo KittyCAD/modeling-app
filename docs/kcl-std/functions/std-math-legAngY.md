@@ -32,6 +32,7 @@ legAngY(
 
 ```kcl
 legAngY(hypotenuse = 5, leg = 3)
+
 ```
 
 

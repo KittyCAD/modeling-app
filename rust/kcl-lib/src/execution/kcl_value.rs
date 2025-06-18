@@ -4,7 +4,6 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::Serialize;
 
-use super::types::UnitType;
 use crate::{
     errors::KclErrorDetails,
     execution::{
@@ -278,46 +277,85 @@ impl KclValue {
         }
     }
 
+    /// Returns true if we should generate an [`crate::execution::Operation`] to
+    /// display in the Feature Tree for variable declarations initialized with
+    /// this value.
+    pub(crate) fn show_variable_in_feature_tree(&self) -> bool {
+        match self {
+            KclValue::Uuid { .. } => false,
+            KclValue::Bool { .. } | KclValue::Number { .. } | KclValue::String { .. } => true,
+            KclValue::Tuple { .. }
+            | KclValue::HomArray { .. }
+            | KclValue::Object { .. }
+            | KclValue::TagIdentifier(_)
+            | KclValue::TagDeclarator(_)
+            | KclValue::Plane { .. }
+            | KclValue::Face { .. }
+            | KclValue::Sketch { .. }
+            | KclValue::Solid { .. }
+            | KclValue::Helix { .. }
+            | KclValue::ImportedGeometry(_)
+            | KclValue::Function { .. }
+            | KclValue::Module { .. }
+            | KclValue::Type { .. }
+            | KclValue::KclNone { .. } => false,
+        }
+    }
+
     /// Human readable type name used in error messages.  Should not be relied
     /// on for program logic.
     pub(crate) fn human_friendly_type(&self) -> String {
-        if let Some(t) = self.principal_type() {
-            return t.to_string();
-        }
         match self {
-            KclValue::Uuid { .. } => "Unique ID (uuid)",
-            KclValue::TagDeclarator(_) => "TagDeclarator",
-            KclValue::TagIdentifier(_) => "TagIdentifier",
-            KclValue::Solid { .. } => "Solid",
-            KclValue::Sketch { .. } => "Sketch",
-            KclValue::Helix { .. } => "Helix",
-            KclValue::ImportedGeometry(_) => "ImportedGeometry",
-            KclValue::Function { .. } => "Function",
-            KclValue::Plane { .. } => "Plane",
-            KclValue::Face { .. } => "Face",
-            KclValue::Bool { .. } => "boolean (true/false value)",
+            KclValue::Uuid { .. } => "a unique ID (uuid)".to_owned(),
+            KclValue::TagDeclarator(_) => "a tag declarator".to_owned(),
+            KclValue::TagIdentifier(_) => "a tag identifier".to_owned(),
+            KclValue::Solid { .. } => "a solid".to_owned(),
+            KclValue::Sketch { .. } => "a sketch".to_owned(),
+            KclValue::Helix { .. } => "a helix".to_owned(),
+            KclValue::ImportedGeometry(_) => "an imported geometry".to_owned(),
+            KclValue::Function { .. } => "a function".to_owned(),
+            KclValue::Plane { .. } => "a plane".to_owned(),
+            KclValue::Face { .. } => "a face".to_owned(),
+            KclValue::Bool { .. } => "a boolean (`true` or `false`)".to_owned(),
             KclValue::Number {
                 ty: NumericType::Unknown,
                 ..
-            } => "number(unknown units)",
+            } => "a number with unknown units".to_owned(),
             KclValue::Number {
-                ty: NumericType::Known(UnitType::Length(_)),
+                ty: NumericType::Known(units),
                 ..
-            } => "number(Length)",
-            KclValue::Number {
-                ty: NumericType::Known(UnitType::Angle(_)),
-                ..
-            } => "number(Angle)",
-            KclValue::Number { .. } => "number",
-            KclValue::String { .. } => "string (text)",
-            KclValue::Tuple { .. } => "tuple (list)",
-            KclValue::HomArray { .. } => "array (list)",
-            KclValue::Object { .. } => "object",
-            KclValue::Module { .. } => "module",
-            KclValue::Type { .. } => "type",
-            KclValue::KclNone { .. } => "None",
+            } => format!("a number ({units})"),
+            KclValue::Number { .. } => "a number".to_owned(),
+            KclValue::String { .. } => "a string".to_owned(),
+            KclValue::Object { .. } => "an object".to_owned(),
+            KclValue::Module { .. } => "a module".to_owned(),
+            KclValue::Type { .. } => "a type".to_owned(),
+            KclValue::KclNone { .. } => "none".to_owned(),
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
+                if value.is_empty() {
+                    "an empty array".to_owned()
+                } else {
+                    // A max of 3 is good because it's common to use 3D points.
+                    const MAX: usize = 3;
+
+                    let len = value.len();
+                    let element_tys = value
+                        .iter()
+                        .take(MAX)
+                        .map(|elem| elem.principal_type_string())
+                        .collect::<Vec<_>>()
+                        .join(", ");
+                    let mut result = format!("an array of {element_tys}");
+                    if len > MAX {
+                        result.push_str(&format!(", ... with {len} values"));
+                    }
+                    if len == 1 {
+                        result.push_str(" with 1 value");
+                    }
+                    result
+                }
+            }
         }
-        .to_owned()
     }
 
     pub(crate) fn from_literal(literal: Node<Literal>, exec_state: &mut ExecState) -> Self {
@@ -352,8 +390,8 @@ impl KclValue {
     pub(crate) fn from_default_param(param: DefaultParamVal, exec_state: &mut ExecState) -> Self {
         match param {
             DefaultParamVal::Literal(lit) => Self::from_literal(lit, exec_state),
-            DefaultParamVal::KclNone(none) => KclValue::KclNone {
-                value: none,
+            DefaultParamVal::KclNone(value) => KclValue::KclNone {
+                value,
                 meta: Default::default(),
             },
         }
@@ -416,148 +454,128 @@ impl KclValue {
     }
 
     pub fn as_object(&self) -> Option<&KclObjectFields> {
-        if let KclValue::Object { value, meta: _ } = &self {
-            Some(value)
-        } else {
-            None
-        }
-    }
-
-    pub fn into_object(self) -> Option<KclObjectFields> {
-        if let KclValue::Object { value, meta: _ } = self {
-            Some(value)
-        } else {
-            None
-        }
-    }
-
-    pub fn as_str(&self) -> Option<&str> {
-        if let KclValue::String { value, meta: _ } = &self {
-            Some(value)
-        } else {
-            None
-        }
-    }
-
-    pub fn as_array(&self) -> Option<&[KclValue]> {
         match self {
-            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => Some(value),
+            KclValue::Object { value, .. } => Some(value),
             _ => None,
         }
     }
 
+    pub fn into_object(self) -> Option<KclObjectFields> {
+        match self {
+            KclValue::Object { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn as_str(&self) -> Option<&str> {
+        match self {
+            KclValue::String { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn into_array(self) -> Vec<KclValue> {
+        match self {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => value,
+            _ => vec![self],
+        }
+    }
+
     pub fn as_point2d(&self) -> Option<[TyF64; 2]> {
-        let arr = self.as_array()?;
-        if arr.len() != 2 {
+        let value = match self {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => value,
+            _ => return None,
+        };
+
+        if value.len() != 2 {
             return None;
         }
-        let x = arr[0].as_ty_f64()?;
-        let y = arr[1].as_ty_f64()?;
+        let x = value[0].as_ty_f64()?;
+        let y = value[1].as_ty_f64()?;
         Some([x, y])
     }
 
     pub fn as_point3d(&self) -> Option<[TyF64; 3]> {
-        let arr = self.as_array()?;
-        if arr.len() != 3 {
+        let value = match self {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => value,
+            _ => return None,
+        };
+
+        if value.len() != 3 {
             return None;
         }
-        let x = arr[0].as_ty_f64()?;
-        let y = arr[1].as_ty_f64()?;
-        let z = arr[2].as_ty_f64()?;
+        let x = value[0].as_ty_f64()?;
+        let y = value[1].as_ty_f64()?;
+        let z = value[2].as_ty_f64()?;
         Some([x, y, z])
     }
 
     pub fn as_uuid(&self) -> Option<uuid::Uuid> {
-        if let KclValue::Uuid { value, meta: _ } = &self {
-            Some(*value)
-        } else {
-            None
+        match self {
+            KclValue::Uuid { value, .. } => Some(*value),
+            _ => None,
         }
     }
 
     pub fn as_plane(&self) -> Option<&Plane> {
-        if let KclValue::Plane { value } = &self {
-            Some(value)
-        } else {
-            None
+        match self {
+            KclValue::Plane { value, .. } => Some(value),
+            _ => None,
         }
     }
 
     pub fn as_solid(&self) -> Option<&Solid> {
-        if let KclValue::Solid { value } = &self {
-            Some(value)
-        } else {
-            None
+        match self {
+            KclValue::Solid { value, .. } => Some(value),
+            _ => None,
         }
     }
 
     pub fn as_sketch(&self) -> Option<&Sketch> {
-        if let KclValue::Sketch { value } = self {
-            Some(value)
-        } else {
-            None
+        match self {
+            KclValue::Sketch { value, .. } => Some(value),
+            _ => None,
         }
     }
 
     pub fn as_mut_sketch(&mut self) -> Option<&mut Sketch> {
-        if let KclValue::Sketch { value } = self {
-            Some(value)
-        } else {
-            None
+        match self {
+            KclValue::Sketch { value } => Some(value),
+            _ => None,
         }
     }
 
     pub fn as_mut_tag(&mut self) -> Option<&mut TagIdentifier> {
-        if let KclValue::TagIdentifier(value) = self {
-            Some(value)
-        } else {
-            None
+        match self {
+            KclValue::TagIdentifier(value) => Some(value),
+            _ => None,
         }
     }
 
     #[cfg(test)]
     pub fn as_f64(&self) -> Option<f64> {
-        if let KclValue::Number { value, .. } = &self {
-            Some(*value)
-        } else {
-            None
+        match self {
+            KclValue::Number { value, .. } => Some(*value),
+            _ => None,
         }
     }
 
     pub fn as_ty_f64(&self) -> Option<TyF64> {
-        if let KclValue::Number { value, ty, .. } = &self {
-            Some(TyF64::new(*value, ty.clone()))
-        } else {
-            None
+        match self {
+            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, ty.clone())),
+            _ => None,
         }
     }
 
     pub fn as_bool(&self) -> Option<bool> {
-        if let KclValue::Bool { value, meta: _ } = &self {
-            Some(*value)
-        } else {
-            None
+        match self {
+            KclValue::Bool { value, .. } => Some(*value),
+            _ => None,
         }
     }
 
-    /// If this value fits in a u32, return it.
-    pub fn get_u32(&self, source_ranges: Vec<SourceRange>) -> Result<u32, KclError> {
-        let u = self.as_int().and_then(|n| u64::try_from(n).ok()).ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails {
-                message: "Expected an integer >= 0".to_owned(),
-                source_ranges: source_ranges.clone(),
-            })
-        })?;
-        u32::try_from(u).map_err(|_| {
-            KclError::Semantic(KclErrorDetails {
-                message: "Number was too big".to_owned(),
-                source_ranges,
-            })
-        })
-    }
-
     /// If this value is of type function, return it.
-    pub fn get_function(&self) -> Option<&FunctionSource> {
+    pub fn as_function(&self) -> Option<&FunctionSource> {
         match self {
             KclValue::Function { value, .. } => Some(value),
             _ => None,
@@ -568,10 +586,10 @@ impl KclValue {
     pub fn get_tag_identifier(&self) -> Result<TagIdentifier, KclError> {
         match self {
             KclValue::TagIdentifier(t) => Ok(*t.clone()),
-            _ => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a tag identifier: {:?}", self),
-                source_ranges: self.clone().into(),
-            })),
+            _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("Not a tag identifier: {:?}", self),
+                self.clone().into(),
+            ))),
         }
     }
 
@@ -579,28 +597,27 @@ impl KclValue {
     pub fn get_tag_declarator(&self) -> Result<TagNode, KclError> {
         match self {
             KclValue::TagDeclarator(t) => Ok((**t).clone()),
-            _ => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a tag declarator: {:?}", self),
-                source_ranges: self.clone().into(),
-            })),
+            _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("Not a tag declarator: {:?}", self),
+                self.clone().into(),
+            ))),
         }
     }
 
     /// If this KCL value is a bool, retrieve it.
     pub fn get_bool(&self) -> Result<bool, KclError> {
-        let Self::Bool { value: b, .. } = self else {
-            return Err(KclError::Type(KclErrorDetails {
-                source_ranges: self.into(),
-                message: format!("Expected bool, found {}", self.human_friendly_type()),
-            }));
-        };
-        Ok(*b)
+        self.as_bool().ok_or_else(|| {
+            KclError::new_type(KclErrorDetails::new(
+                format!("Expected bool, found {}", self.human_friendly_type()),
+                self.into(),
+            ))
+        })
     }
 
-    pub fn as_fn(&self) -> Option<&FunctionSource> {
+    pub fn is_unknown_number(&self) -> bool {
         match self {
-            KclValue::Function { value, .. } => Some(value),
-            _ => None,
+            KclValue::Number { ty, .. } => !ty.is_fully_specified(),
+            _ => false,
         }
     }
 
@@ -646,5 +663,91 @@ impl From<GeometryWithImportedGeometry> for KclValue {
             GeometryWithImportedGeometry::Solid(x) => Self::Solid { value: Box::new(x) },
             GeometryWithImportedGeometry::ImportedGeometry(x) => Self::ImportedGeometry(*x),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::exec::UnitType;
+
+    #[test]
+    fn test_human_friendly_type() {
+        let len = KclValue::Number {
+            value: 1.0,
+            ty: NumericType::Known(UnitType::Length(UnitLen::Unknown)),
+            meta: vec![],
+        };
+        assert_eq!(len.human_friendly_type(), "a number (Length)".to_string());
+
+        let unknown = KclValue::Number {
+            value: 1.0,
+            ty: NumericType::Unknown,
+            meta: vec![],
+        };
+        assert_eq!(unknown.human_friendly_type(), "a number with unknown units".to_string());
+
+        let mm = KclValue::Number {
+            value: 1.0,
+            ty: NumericType::Known(UnitType::Length(UnitLen::Mm)),
+            meta: vec![],
+        };
+        assert_eq!(mm.human_friendly_type(), "a number (mm)".to_string());
+
+        let array1_mm = KclValue::HomArray {
+            value: vec![mm.clone()],
+            ty: RuntimeType::any(),
+        };
+        assert_eq!(
+            array1_mm.human_friendly_type(),
+            "an array of `number(mm)` with 1 value".to_string()
+        );
+
+        let array2_mm = KclValue::HomArray {
+            value: vec![mm.clone(), mm.clone()],
+            ty: RuntimeType::any(),
+        };
+        assert_eq!(
+            array2_mm.human_friendly_type(),
+            "an array of `number(mm)`, `number(mm)`".to_string()
+        );
+
+        let array3_mm = KclValue::HomArray {
+            value: vec![mm.clone(), mm.clone(), mm.clone()],
+            ty: RuntimeType::any(),
+        };
+        assert_eq!(
+            array3_mm.human_friendly_type(),
+            "an array of `number(mm)`, `number(mm)`, `number(mm)`".to_string()
+        );
+
+        let inches = KclValue::Number {
+            value: 1.0,
+            ty: NumericType::Known(UnitType::Length(UnitLen::Inches)),
+            meta: vec![],
+        };
+        let array4 = KclValue::HomArray {
+            value: vec![mm.clone(), mm.clone(), inches.clone(), mm.clone()],
+            ty: RuntimeType::any(),
+        };
+        assert_eq!(
+            array4.human_friendly_type(),
+            "an array of `number(mm)`, `number(mm)`, `number(in)`, ... with 4 values".to_string()
+        );
+
+        let empty_array = KclValue::HomArray {
+            value: vec![],
+            ty: RuntimeType::any(),
+        };
+        assert_eq!(empty_array.human_friendly_type(), "an empty array".to_string());
+
+        let array_nested = KclValue::HomArray {
+            value: vec![array2_mm.clone()],
+            ty: RuntimeType::any(),
+        };
+        assert_eq!(
+            array_nested.human_friendly_type(),
+            "an array of `[any; 2]` with 1 value".to_string()
+        );
     }
 }

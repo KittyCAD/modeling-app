@@ -3,6 +3,10 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing import_whole_simple.kcl
 ---
 {
+  "__mod_foo": {
+    "type": "Module",
+    "value": 1
+  },
   "bar": {
     "type": "Solid",
     "value": {
@@ -110,9 +114,5 @@ description: Variables in memory after executing import_whole_simple.kcl
       },
       "sectional": false
     }
-  },
-  "foo": {
-    "type": "Module",
-    "value": 1
   }
 }

@@ -206,6 +206,11 @@ export const getSettings = () => {
   const { currentProject: _, ...settings } = settingsActor.getSnapshot().context
   return settings
 }
+
+// These are all late binding because of their circular dependency.
+// TODO: proper dependency injection.
+sceneInfra.camControls.getSettings = getSettings
+
 export const useSettings = () =>
   useSelector(settingsActor, (state) => {
     // We have to peel everything that isn't settings off

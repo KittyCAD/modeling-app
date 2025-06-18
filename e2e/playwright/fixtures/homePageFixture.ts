@@ -26,6 +26,7 @@ export class HomePageFixture {
   sortByNameBtn!: Locator
   appHeader!: Locator
   tutorialBtn!: Locator
+  textToCadBtn!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -47,6 +48,7 @@ export class HomePageFixture {
     this.sortByNameBtn = this.page.getByTestId('home-sort-by-name')
     this.appHeader = this.page.getByTestId('app-header')
     this.tutorialBtn = this.page.getByTestId('home-tutorial-button')
+    this.textToCadBtn = this.page.getByTestId('home-text-to-cad')
   }
 
   private _serialiseSortBy = async (): Promise<
@@ -121,11 +123,13 @@ export class HomePageFixture {
     await projectCard.click()
   }
 
-  goToModelingScene = async (name: string = 'testDefault') => {
+  /** Returns the project name in case caller has used the default and needs it */
+  goToModelingScene = async (name = 'testDefault') => {
     // On web this is a no-op. There is no project view.
-    if (process.env.PLATFORM === 'web') return
+    if (process.env.TARGET === 'web') return ''
 
     await this.createAndGoToProject(name)
+    return name
   }
 
   isNativeFileMenuCreated = async () => {

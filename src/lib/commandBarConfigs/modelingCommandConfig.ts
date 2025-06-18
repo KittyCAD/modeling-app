@@ -22,7 +22,6 @@ import {
   KCL_DEFAULT_DEGREE,
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
-  ML_EXPERIMENTAL_MESSAGE,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/lib/selections'
@@ -384,7 +383,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       sketches: {
         inputType: 'selection',
-        selectionTypes: ['solid2d', 'segment'],
+        displayName: 'Profiles',
+        selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -412,14 +412,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       sketches: {
         inputType: 'selection',
-        selectionTypes: ['solid2d', 'segment'],
+        displayName: 'Profiles',
+        selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       path: {
         inputType: 'selection',
-        selectionTypes: ['segment'],
+        selectionTypes: ['segment', 'helix'],
         required: true,
         multiple: false,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -445,6 +446,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       sketches: {
         inputType: 'selection',
+        displayName: 'Profiles',
         selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
@@ -465,7 +467,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       sketches: {
         inputType: 'selection',
-        selectionTypes: ['solid2d', 'segment'],
+        displayName: 'Profiles',
+        selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -475,7 +478,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         defaultValue: 'Axis',
         options: [
-          { name: 'Axis', isCurrent: true, value: 'Axis' },
+          { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
           { name: 'Edge', isCurrent: false, value: 'Edge' },
         ],
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -486,6 +489,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             commandContext.argumentsToSubmit.axisOrEdge as string
           ),
         inputType: 'options',
+        displayName: 'Sketch Axis',
         options: [
           { name: 'X Axis', isCurrent: true, value: 'X' },
           { name: 'Y Axis', isCurrent: false, value: 'Y' },
@@ -763,8 +767,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
-        warningMessage:
-          'Chamfers cannot touch other chamfers yet. This is under development.',
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       length: {
@@ -942,8 +944,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Prompt-to-edit': {
-    description: 'Use Zoo AI to edit your parts and code.',
-    icon: 'chat',
+    displayName: 'Text-to-CAD Edit',
+    description:
+      'Use machine learning to edit your parts and code from a text prompt.',
+    icon: 'sparkles',
     status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
     args: {
       selection: {
@@ -958,18 +962,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'edgeCutEdge',
         ],
         multiple: true,
-        required: true,
+        required: false,
         selectionSource: {
           allowSceneSelection: true,
           allowCodeSelection: true,
         },
-        skip: true,
-        warningMessage: ML_EXPERIMENTAL_MESSAGE,
+        skip: false,
       },
       prompt: {
         inputType: 'text',
         required: true,
-        warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
     },
   },
@@ -1123,7 +1125,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           )
         },
         validation: async ({ data }: { data: string }) => {
-          const variableExists = kclManager.variables[data]
+          // Be conservative and error out if there is an item or module with the same name.
+          const variableExists =
+            kclManager.variables[data] || kclManager.variables['__mod_' + data]
           if (variableExists) {
             return 'This variable name is already in use.'
           }

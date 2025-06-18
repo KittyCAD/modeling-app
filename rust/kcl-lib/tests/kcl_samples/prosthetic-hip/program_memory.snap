@@ -102,7 +102,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "ccw": true,
             "center": [
-              0.9946,
+              0.9946406570841897,
               5.2
             ],
             "from": [
@@ -165,7 +165,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "ccw": false,
             "center": [
               0.2,
-              3.8813
+              3.8812977099236665
             ],
             "from": [
               0.2,
@@ -368,7 +368,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "ccw": true,
             "center": [
-              0.1,
+              0.09999999999999964,
               3.0
             ],
             "from": [
@@ -377,7 +377,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             ],
             "tag": null,
             "to": [
-              0.1,
+              0.10000000000000013,
               11.0
             ],
             "type": "TangentialArc",
@@ -391,12 +391,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
               "sourceRange": []
             },
             "from": [
-              0.1,
+              0.10000000000000013,
               11.0
             ],
             "tag": null,
             "to": [
-              0.1,
+              0.10000000000000013,
               10.0
             ],
             "type": "ToPoint",
@@ -411,16 +411,16 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "ccw": true,
             "center": [
-              0.2,
+              0.20000000000000012,
               10.0
             ],
             "from": [
-              0.1,
+              0.10000000000000013,
               10.0
             ],
             "tag": null,
             "to": [
-              0.2,
+              0.20000000000000012,
               9.9
             ],
             "type": "TangentialArc",
@@ -435,11 +435,11 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "ccw": false,
             "center": [
-              0.2,
-              4.2207
+              0.19999999999999912,
+              4.22070707070707
             ],
             "from": [
-              0.2,
+              0.20000000000000012,
               9.9
             ],
             "tag": null,
@@ -556,9 +556,9 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -8.0
             ],
             "tag": {
-              "commentStart": 2056,
-              "end": 2062,
-              "start": 2056,
+              "commentStart": 1889,
+              "end": 1895,
+              "start": 1889,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -579,7 +579,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "ccw": false,
             "center": [
               -18.0,
-              8.0
+              7.999999999999999
             ],
             "from": [
               -23.0,
@@ -588,7 +588,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "tag": null,
             "to": [
               -15.5,
-              12.3301
+              12.330127018922191
             ],
             "type": "TangentialArc",
             "units": {
@@ -602,12 +602,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "from": [
               -15.5,
-              12.3301
+              12.330127018922191
             ],
             "tag": null,
             "to": [
-              -1.6436,
-              4.3301
+              -1.6435935394489807,
+              4.330127018922192
             ],
             "type": "ToPoint",
             "units": {
@@ -621,17 +621,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "ccw": false,
             "center": [
-              -4.1436,
-              -0.0
+              -4.143593539448981,
+              -0.0000000000000017763568394002505
             ],
             "from": [
-              -1.6436,
-              4.3301
+              -1.6435935394489807,
+              4.330127018922192
             ],
             "tag": null,
             "to": [
-              -1.6436,
-              -4.3301
+              -1.6435935394489802,
+              -4.3301270189221945
             ],
             "type": "TangentialArc",
             "units": {
@@ -644,13 +644,13 @@ description: Variables in memory after executing prosthetic-hip.kcl
               "sourceRange": []
             },
             "from": [
-              -1.6436,
-              -4.3301
+              -1.6435935394489802,
+              -4.3301270189221945
             ],
             "tag": null,
             "to": [
               -15.5,
-              -12.3301
+              -12.330127018922195
             ],
             "type": "ToPoint",
             "units": {
@@ -664,12 +664,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "ccw": false,
             "center": [
-              -18.0,
-              -8.0
+              -17.999999999999996,
+              -7.999999999999995
             ],
             "from": [
               -15.5,
-              -12.3301
+              -12.330127018922195
             ],
             "tag": null,
             "to": [
@@ -707,17 +707,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 130.0,
+            "z": 0.0,
             "units": {
               "type": "Mm"
             }
           },
           "type": "plane",
-          "value": "Custom",
+          "value": "XY",
           "xAxis": {
-            "x": 0.8038568606172174,
+            "x": 1.0,
             "y": 0.0,
-            "z": 0.5948227867513414,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -863,7 +863,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "ccw": false,
             "center": [
               -0.0,
-              0.5
+              0.4999999999999996
             ],
             "from": [
               -3.0,
@@ -871,8 +871,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
             ],
             "tag": null,
             "to": [
-              1.5,
-              3.0981
+              1.5000000000000004,
+              3.0980762113533156
             ],
             "type": "TangentialArc",
             "units": {
@@ -885,13 +885,13 @@ description: Variables in memory after executing prosthetic-hip.kcl
               "sourceRange": []
             },
             "from": [
-              1.5,
-              3.0981
+              1.5000000000000004,
+              3.0980762113533156
             ],
             "tag": null,
             "to": [
-              2.366,
-              2.5981
+              2.3660254037844393,
+              2.5980762113533156
             ],
             "type": "ToPoint",
             "units": {
@@ -905,17 +905,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "ccw": false,
             "center": [
-              0.866,
-              -0.0
+              0.8660254037844397,
+              -0.0000000000000004440892098500626
             ],
             "from": [
-              2.366,
-              2.5981
+              2.3660254037844393,
+              2.5980762113533156
             ],
             "tag": null,
             "to": [
-              2.366,
-              -2.5981
+              2.36602540378444,
+              -2.5980762113533165
             ],
             "type": "TangentialArc",
             "units": {
@@ -928,13 +928,13 @@ description: Variables in memory after executing prosthetic-hip.kcl
               "sourceRange": []
             },
             "from": [
-              2.366,
-              -2.5981
+              2.36602540378444,
+              -2.5980762113533165
             ],
             "tag": null,
             "to": [
-              1.5,
-              -3.0981
+              1.5000000000000013,
+              -3.0980762113533165
             ],
             "type": "ToPoint",
             "units": {
@@ -948,12 +948,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "ccw": false,
             "center": [
-              0.0,
-              -0.5
+              0.0000000000000009614813431917819,
+              -0.49999999999999933
             ],
             "from": [
-              1.5,
-              -3.0981
+              1.5000000000000013,
+              -3.0980762113533165
             ],
             "tag": null,
             "to": [
@@ -1236,514 +1236,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
       }
     }
   },
-  "plane003": {
-    "type": "Object",
-    "value": {
-      "origin": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 110.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      },
-      "xAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.9063,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.4226,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          }
-        ]
-      },
-      "yAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      }
-    }
-  },
-  "plane004": {
-    "type": "Object",
-    "value": {
-      "origin": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 130.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      },
-      "xAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.8039,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.5948,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          }
-        ]
-      },
-      "yAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      }
-    }
-  },
-  "plane005": {
-    "type": "Object",
-    "value": {
-      "origin": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 140.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      },
-      "xAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.8039,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.5948,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          }
-        ]
-      },
-      "yAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      }
-    }
-  },
-  "plane006": {
-    "type": "Object",
-    "value": {
-      "origin": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 145.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      },
-      "xAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.8039,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.5948,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          }
-        ]
-      },
-      "yAxis": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      }
-    }
-  },
   "polyethyleneInsert": {
     "type": "Solid",
     "value": {
@@ -1843,8 +1335,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "ccw": true,
             "center": [
-              -0.6172,
-              3.1
+              -0.6171746575342465,
+              3.1000000000000005
             ],
             "from": [
               8.86,
@@ -1872,7 +1364,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "tag": null,
             "to": [
               0.1,
-              11.7
+              11.700000000000001
             ],
             "type": "ToPoint",
             "units": {
@@ -1886,12 +1378,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "from": [
               0.1,
-              11.7
+              11.700000000000001
             ],
             "tag": null,
             "to": [
-              0.68,
-              11.7
+              0.6799999999999999,
+              11.700000000000001
             ],
             "type": "ToPoint",
             "units": {
@@ -1905,12 +1397,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "ccw": false,
             "center": [
-              0.68,
-              3.9602
+              0.6799999999999999,
+              3.9602068965517256
             ],
             "from": [
-              0.68,
-              11.7
+              0.6799999999999999,
+              11.700000000000001
             ],
             "tag": null,
             "to": [
@@ -2152,7 +1644,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "ccw": false,
           "center": [
             -0.0,
-            0.5
+            0.4999999999999996
           ],
           "from": [
             -3.0,
@@ -2160,8 +1652,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
           ],
           "tag": null,
           "to": [
-            1.5,
-            3.0981
+            1.5000000000000004,
+            3.0980762113533156
           ],
           "type": "TangentialArc",
           "units": {
@@ -2174,13 +1666,13 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "sourceRange": []
           },
           "from": [
-            1.5,
-            3.0981
+            1.5000000000000004,
+            3.0980762113533156
           ],
           "tag": null,
           "to": [
-            2.366,
-            2.5981
+            2.3660254037844393,
+            2.5980762113533156
           ],
           "type": "ToPoint",
           "units": {
@@ -2194,17 +1686,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
           },
           "ccw": false,
           "center": [
-            0.866,
-            -0.0
+            0.8660254037844397,
+            -0.0000000000000004440892098500626
           ],
           "from": [
-            2.366,
-            2.5981
+            2.3660254037844393,
+            2.5980762113533156
           ],
           "tag": null,
           "to": [
-            2.366,
-            -2.5981
+            2.36602540378444,
+            -2.5980762113533165
           ],
           "type": "TangentialArc",
           "units": {
@@ -2217,13 +1709,13 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "sourceRange": []
           },
           "from": [
-            2.366,
-            -2.5981
+            2.36602540378444,
+            -2.5980762113533165
           ],
           "tag": null,
           "to": [
-            1.5,
-            -3.0981
+            1.5000000000000013,
+            -3.0980762113533165
           ],
           "type": "ToPoint",
           "units": {
@@ -2237,12 +1729,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
           },
           "ccw": false,
           "center": [
-            0.0,
-            -0.5
+            0.0000000000000009614813431917819,
+            -0.49999999999999933
           ],
           "from": [
-            1.5,
-            -3.0981
+            1.5000000000000013,
+            -3.0980762113533165
           ],
           "tag": null,
           "to": [
@@ -2382,8 +1874,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
           ],
           "tag": null,
           "to": [
-            -3.5,
-            12.0981
+            -3.4999999999999996,
+            12.098076211353316
           ],
           "type": "TangentialArc",
           "units": {
@@ -2396,13 +1888,13 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "sourceRange": []
           },
           "from": [
-            -3.5,
-            12.0981
+            -3.4999999999999996,
+            12.098076211353316
           ],
           "tag": null,
           "to": [
-            12.9545,
-            2.5981
+            12.954482671904337,
+            2.598076211353318
           ],
           "type": "ToPoint",
           "units": {
@@ -2416,17 +1908,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
           },
           "ccw": false,
           "center": [
-            11.4545,
-            0.0
+            11.454482671904337,
+            0.0000000000000017763568394002505
           ],
           "from": [
-            12.9545,
-            2.5981
+            12.954482671904337,
+            2.598076211353318
           ],
           "tag": null,
           "to": [
-            12.9545,
-            -2.5981
+            12.954482671904337,
+            -2.5980762113533142
           ],
           "type": "TangentialArc",
           "units": {
@@ -2439,13 +1931,13 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "sourceRange": []
           },
           "from": [
-            12.9545,
-            -2.5981
+            12.954482671904337,
+            -2.5980762113533142
           ],
           "tag": null,
           "to": [
             -3.5,
-            -12.0981
+            -12.098076211353312
           ],
           "type": "ToPoint",
           "units": {
@@ -2459,12 +1951,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
           },
           "ccw": false,
           "center": [
-            -5.0,
-            -9.5
+            -4.999999999999999,
+            -9.499999999999995
           ],
           "from": [
             -3.5,
-            -12.0981
+            -12.098076211353312
           ],
           "tag": null,
           "to": [
@@ -2573,9 +2065,9 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -16.0
           ],
           "tag": {
-            "commentStart": 1467,
-            "end": 1473,
-            "start": 1467,
+            "commentStart": 1359,
+            "end": 1365,
+            "start": 1359,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2605,7 +2097,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "tag": null,
           "to": [
             -9.5,
-            19.4641
+            19.464101615137753
           ],
           "type": "TangentialArc",
           "units": {
@@ -2619,12 +2111,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
           },
           "from": [
             -9.5,
-            19.4641
+            19.464101615137753
           ],
           "tag": null,
           "to": [
-            18.2128,
-            3.4641
+            18.21281292110204,
+            3.4641016151377553
           ],
           "type": "ToPoint",
           "units": {
@@ -2638,17 +2130,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
           },
           "ccw": false,
           "center": [
-            16.2128,
-            0.0
+            16.21281292110204,
+            0.0000000000000004440892098500626
           ],
           "from": [
-            18.2128,
-            3.4641
+            18.21281292110204,
+            3.4641016151377553
           ],
           "tag": null,
           "to": [
-            18.2128,
-            -3.4641
+            18.21281292110204,
+            -3.464101615137754
           ],
           "type": "TangentialArc",
           "units": {
@@ -2661,13 +2153,13 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "sourceRange": []
           },
           "from": [
-            18.2128,
-            -3.4641
+            18.21281292110204,
+            -3.464101615137754
           ],
           "tag": null,
           "to": [
             -9.5,
-            -19.4641
+            -19.464101615137753
           ],
           "type": "ToPoint",
           "units": {
@@ -2681,12 +2173,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
           },
           "ccw": false,
           "center": [
-            -11.5,
+            -11.500000000000002,
             -16.0
           ],
           "from": [
             -9.5,
-            -19.4641
+            -19.464101615137753
           ],
           "tag": null,
           "to": [
@@ -2724,17 +2216,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 110.0,
+          "z": 0.0,
           "units": {
             "type": "Mm"
           }
         },
         "type": "plane",
-        "value": "Custom",
+        "value": "XY",
         "xAxis": {
-          "x": 0.9063077870366499,
+          "x": 1.0,
           "y": 0.0,
-          "z": 0.42261826174069944,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -2795,9 +2287,9 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -8.0
           ],
           "tag": {
-            "commentStart": 2056,
-            "end": 2062,
-            "start": 2056,
+            "commentStart": 1889,
+            "end": 1895,
+            "start": 1889,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2818,7 +2310,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "ccw": false,
           "center": [
             -18.0,
-            8.0
+            7.999999999999999
           ],
           "from": [
             -23.0,
@@ -2827,7 +2319,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "tag": null,
           "to": [
             -15.5,
-            12.3301
+            12.330127018922191
           ],
           "type": "TangentialArc",
           "units": {
@@ -2841,12 +2333,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
           },
           "from": [
             -15.5,
-            12.3301
+            12.330127018922191
           ],
           "tag": null,
           "to": [
-            -1.6436,
-            4.3301
+            -1.6435935394489807,
+            4.330127018922192
           ],
           "type": "ToPoint",
           "units": {
@@ -2860,17 +2352,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
           },
           "ccw": false,
           "center": [
-            -4.1436,
-            -0.0
+            -4.143593539448981,
+            -0.0000000000000017763568394002505
           ],
           "from": [
-            -1.6436,
-            4.3301
+            -1.6435935394489807,
+            4.330127018922192
           ],
           "tag": null,
           "to": [
-            -1.6436,
-            -4.3301
+            -1.6435935394489802,
+            -4.3301270189221945
           ],
           "type": "TangentialArc",
           "units": {
@@ -2883,13 +2375,13 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "sourceRange": []
           },
           "from": [
-            -1.6436,
-            -4.3301
+            -1.6435935394489802,
+            -4.3301270189221945
           ],
           "tag": null,
           "to": [
             -15.5,
-            -12.3301
+            -12.330127018922195
           ],
           "type": "ToPoint",
           "units": {
@@ -2903,12 +2395,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
           },
           "ccw": false,
           "center": [
-            -18.0,
-            -8.0
+            -17.999999999999996,
+            -7.999999999999995
           ],
           "from": [
             -15.5,
-            -12.3301
+            -12.330127018922195
           ],
           "tag": null,
           "to": [
@@ -2946,17 +2438,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 130.0,
+          "z": 0.0,
           "units": {
             "type": "Mm"
           }
         },
         "type": "plane",
-        "value": "Custom",
+        "value": "XY",
         "xAxis": {
-          "x": 0.8038568606172174,
+          "x": 1.0,
           "y": 0.0,
-          "z": 0.5948227867513414,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -3017,9 +2509,9 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.8
           ],
           "tag": {
-            "commentStart": 2649,
-            "end": 2655,
-            "start": 2649,
+            "commentStart": 2423,
+            "end": 2429,
+            "start": 2423,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -3040,7 +2532,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "ccw": false,
           "center": [
             -17.9,
-            0.8
+            0.7999999999999998
           ],
           "from": [
             -19.5,
@@ -3048,8 +2540,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
           ],
           "tag": null,
           "to": [
-            -17.1,
-            2.1856
+            -17.099999999999998,
+            2.1856406460551017
           ],
           "type": "TangentialArc",
           "units": {
@@ -3062,13 +2554,13 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "sourceRange": []
           },
           "from": [
-            -17.1,
-            2.1856
+            -17.099999999999998,
+            2.1856406460551017
           ],
           "tag": null,
           "to": [
-            -15.7144,
-            1.3856
+            -15.714359353944896,
+            1.3856406460551018
           ],
           "type": "ToPoint",
           "units": {
@@ -3082,17 +2574,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
           },
           "ccw": false,
           "center": [
-            -16.5144,
+            -16.514359353944897,
             -0.0
           ],
           "from": [
-            -15.7144,
-            1.3856
+            -15.714359353944896,
+            1.3856406460551018
           ],
           "tag": null,
           "to": [
-            -15.7144,
-            -1.3856
+            -15.714359353944896,
+            -1.3856406460551018
           ],
           "type": "TangentialArc",
           "units": {
@@ -3105,13 +2597,13 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "sourceRange": []
           },
           "from": [
-            -15.7144,
-            -1.3856
+            -15.714359353944896,
+            -1.3856406460551018
           ],
           "tag": null,
           "to": [
-            -17.1,
-            -2.1856
+            -17.099999999999998,
+            -2.1856406460551017
           ],
           "type": "ToPoint",
           "units": {
@@ -3126,11 +2618,11 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "ccw": false,
           "center": [
             -17.9,
-            -0.8
+            -0.8000000000000038
           ],
           "from": [
-            -17.1,
-            -2.1856
+            -17.099999999999998,
+            -2.1856406460551017
           ],
           "tag": null,
           "to": [
@@ -3168,17 +2660,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 140.0,
+          "z": 0.0,
           "units": {
             "type": "Mm"
           }
         },
         "type": "plane",
-        "value": "Custom",
+        "value": "XY",
         "xAxis": {
-          "x": 0.8038568606172174,
+          "x": 1.0,
           "y": 0.0,
-          "z": 0.5948227867513414,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -3239,9 +2731,9 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.5
           ],
           "tag": {
-            "commentStart": 3239,
-            "end": 3245,
-            "start": 3239,
+            "commentStart": 2954,
+            "end": 2960,
+            "start": 2954,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -3262,7 +2754,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "ccw": false,
           "center": [
             -20.4,
-            0.5
+            0.4999999999999996
           ],
           "from": [
             -23.4,
@@ -3271,7 +2763,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "tag": null,
           "to": [
             -18.9,
-            3.0981
+            3.0980762113533156
           ],
           "type": "TangentialArc",
           "units": {
@@ -3285,12 +2777,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
           },
           "from": [
             -18.9,
-            3.0981
+            3.0980762113533156
           ],
           "tag": null,
           "to": [
-            -18.034,
-            2.5981
+            -18.03397459621556,
+            2.5980762113533156
           ],
           "type": "ToPoint",
           "units": {
@@ -3304,17 +2796,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
           },
           "ccw": false,
           "center": [
-            -19.534,
-            0.0
+            -19.53397459621556,
+            0.0000000000000004440892098500626
           ],
           "from": [
-            -18.034,
-            2.5981
+            -18.03397459621556,
+            2.5980762113533156
           ],
           "tag": null,
           "to": [
-            -18.034,
-            -2.5981
+            -18.03397459621556,
+            -2.5980762113533165
           ],
           "type": "TangentialArc",
           "units": {
@@ -3327,13 +2819,13 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "sourceRange": []
           },
           "from": [
-            -18.034,
-            -2.5981
+            -18.03397459621556,
+            -2.5980762113533165
           ],
           "tag": null,
           "to": [
             -18.9,
-            -3.0981
+            -3.0980762113533165
           ],
           "type": "ToPoint",
           "units": {
@@ -3347,12 +2839,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
           },
           "ccw": false,
           "center": [
-            -20.4,
-            -0.5
+            -20.400000000000006,
+            -0.5000000000000144
           ],
           "from": [
             -18.9,
-            -3.0981
+            -3.0980762113533165
           ],
           "tag": null,
           "to": [
@@ -3390,17 +2882,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 145.0,
+          "z": 0.0,
           "units": {
             "type": "Mm"
           }
         },
         "type": "plane",
-        "value": "Custom",
+        "value": "XY",
         "xAxis": {
-          "x": 0.8038568606172174,
+          "x": 1.0,
           "y": 0.0,
-          "z": 0.5948227867513414,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -3457,9 +2949,9 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3239,
-            "end": 3245,
-            "start": 3239,
+            "commentStart": 2954,
+            "end": 2960,
+            "start": 2954,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -3515,9 +3007,9 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -0.5
             ],
             "tag": {
-              "commentStart": 3239,
-              "end": 3245,
-              "start": 3239,
+              "commentStart": 2954,
+              "end": 2960,
+              "start": 2954,
               "type": "TagDeclarator",
               "value": "seg06"
             },
@@ -3538,7 +3030,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "ccw": false,
             "center": [
               -20.4,
-              0.5
+              0.4999999999999996
             ],
             "from": [
               -23.4,
@@ -3547,7 +3039,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "tag": null,
             "to": [
               -18.9,
-              3.0981
+              3.0980762113533156
             ],
             "type": "TangentialArc",
             "units": {
@@ -3561,12 +3053,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "from": [
               -18.9,
-              3.0981
+              3.0980762113533156
             ],
             "tag": null,
             "to": [
-              -18.034,
-              2.5981
+              -18.03397459621556,
+              2.5980762113533156
             ],
             "type": "ToPoint",
             "units": {
@@ -3580,17 +3072,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "ccw": false,
             "center": [
-              -19.534,
-              0.0
+              -19.53397459621556,
+              0.0000000000000004440892098500626
             ],
             "from": [
-              -18.034,
-              2.5981
+              -18.03397459621556,
+              2.5980762113533156
             ],
             "tag": null,
             "to": [
-              -18.034,
-              -2.5981
+              -18.03397459621556,
+              -2.5980762113533165
             ],
             "type": "TangentialArc",
             "units": {
@@ -3603,13 +3095,13 @@ description: Variables in memory after executing prosthetic-hip.kcl
               "sourceRange": []
             },
             "from": [
-              -18.034,
-              -2.5981
+              -18.03397459621556,
+              -2.5980762113533165
             ],
             "tag": null,
             "to": [
               -18.9,
-              -3.0981
+              -3.0980762113533165
             ],
             "type": "ToPoint",
             "units": {
@@ -3623,12 +3115,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
             },
             "ccw": false,
             "center": [
-              -20.4,
-              -0.5
+              -20.400000000000006,
+              -0.5000000000000144
             ],
             "from": [
               -18.9,
-              -3.0981
+              -3.0980762113533165
             ],
             "tag": null,
             "to": [
@@ -3666,17 +3158,17 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 145.0,
+            "z": 0.0,
             "units": {
               "type": "Mm"
             }
           },
           "type": "plane",
-          "value": "Custom",
+          "value": "XY",
           "xAxis": {
-            "x": 0.8038568606172174,
+            "x": 1.0,
             "y": 0.0,
-            "z": 0.5948227867513414,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }

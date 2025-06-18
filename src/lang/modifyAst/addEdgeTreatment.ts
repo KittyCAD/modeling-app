@@ -272,11 +272,7 @@ export function getPathToExtrudeForSegmentSelection(
   const sweepArtifact = getSweepArtifactFromSelection(selection, artifactGraph)
   if (err(sweepArtifact)) return sweepArtifact
 
-  const pathToExtrudeNode = getNodePathFromSourceRange(
-    ast,
-    sweepArtifact.codeRef.range
-  )
-  if (err(pathToExtrudeNode)) return pathToExtrudeNode
+  const pathToExtrudeNode = sweepArtifact.codeRef.pathToNode
 
   return { pathToSegmentNode, pathToExtrudeNode }
 }

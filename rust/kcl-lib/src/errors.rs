@@ -91,30 +91,33 @@ pub enum ConnectionError {
 #[ts(export)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum KclError {
-    #[error("lexical: {0:?}")]
-    Lexical(KclErrorDetails),
-    #[error("syntax: {0:?}")]
-    Syntax(KclErrorDetails),
-    #[error("semantic: {0:?}")]
-    Semantic(KclErrorDetails),
-    #[error("import cycle: {0:?}")]
-    ImportCycle(KclErrorDetails),
-    #[error("type: {0:?}")]
-    Type(KclErrorDetails),
-    #[error("i/o: {0:?}")]
-    Io(KclErrorDetails),
-    #[error("unexpected: {0:?}")]
-    Unexpected(KclErrorDetails),
-    #[error("value already defined: {0:?}")]
-    ValueAlreadyDefined(KclErrorDetails),
-    #[error("undefined value: {0:?}")]
-    UndefinedValue(KclErrorDetails),
-    #[error("invalid expression: {0:?}")]
-    InvalidExpression(KclErrorDetails),
-    #[error("engine: {0:?}")]
-    Engine(KclErrorDetails),
-    #[error("internal error, please report to KittyCAD team: {0:?}")]
-    Internal(KclErrorDetails),
+    #[error("lexical: {details:?}")]
+    Lexical { details: KclErrorDetails },
+    #[error("syntax: {details:?}")]
+    Syntax { details: KclErrorDetails },
+    #[error("semantic: {details:?}")]
+    Semantic { details: KclErrorDetails },
+    #[error("import cycle: {details:?}")]
+    ImportCycle { details: KclErrorDetails },
+    #[error("type: {details:?}")]
+    Type { details: KclErrorDetails },
+    #[error("i/o: {details:?}")]
+    Io { details: KclErrorDetails },
+    #[error("unexpected: {details:?}")]
+    Unexpected { details: KclErrorDetails },
+    #[error("value already defined: {details:?}")]
+    ValueAlreadyDefined { details: KclErrorDetails },
+    #[error("undefined value: {details:?}")]
+    UndefinedValue {
+        details: KclErrorDetails,
+        name: Option<String>,
+    },
+    #[error("invalid expression: {details:?}")]
+    InvalidExpression { details: KclErrorDetails },
+    #[error("engine: {details:?}")]
+    Engine { details: KclErrorDetails },
+    #[error("internal error, please report to KittyCAD team: {details:?}")]
+    Internal { details: KclErrorDetails },
 }
 
 impl From<KclErrorWithOutputs> for KclError {
@@ -129,10 +132,13 @@ impl From<KclErrorWithOutputs> for KclError {
 #[serde(rename_all = "camelCase")]
 pub struct KclErrorWithOutputs {
     pub error: KclError,
+    pub non_fatal: Vec<CompilationError>,
     #[cfg(feature = "artifact-graph")]
     pub operations: Vec<Operation>,
+    // TODO: Remove this field.  Doing so breaks the ts-rs output for some
+    // reason.
     #[cfg(feature = "artifact-graph")]
-    pub artifact_commands: Vec<ArtifactCommand>,
+    pub _artifact_commands: Vec<ArtifactCommand>,
     #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
     pub filenames: IndexMap<ModuleId, ModulePath>,
@@ -141,8 +147,10 @@ pub struct KclErrorWithOutputs {
 }
 
 impl KclErrorWithOutputs {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         error: KclError,
+        non_fatal: Vec<CompilationError>,
         #[cfg(feature = "artifact-graph")] operations: Vec<Operation>,
         #[cfg(feature = "artifact-graph")] artifact_commands: Vec<ArtifactCommand>,
         #[cfg(feature = "artifact-graph")] artifact_graph: ArtifactGraph,
@@ -152,10 +160,11 @@ impl KclErrorWithOutputs {
     ) -> Self {
         Self {
             error,
+            non_fatal,
             #[cfg(feature = "artifact-graph")]
             operations,
             #[cfg(feature = "artifact-graph")]
-            artifact_commands,
+            _artifact_commands: artifact_commands,
             #[cfg(feature = "artifact-graph")]
             artifact_graph,
             filenames,
@@ -166,10 +175,11 @@ impl KclErrorWithOutputs {
     pub fn no_outputs(error: KclError) -> Self {
         Self {
             error,
+            non_fatal: Default::default(),
             #[cfg(feature = "artifact-graph")]
             operations: Default::default(),
             #[cfg(feature = "artifact-graph")]
-            artifact_commands: Default::default(),
+            _artifact_commands: Default::default(),
             #[cfg(feature = "artifact-graph")]
             artifact_graph: Default::default(),
             filenames: Default::default(),
@@ -291,18 +301,18 @@ pub struct ReportWithOutputs {
 impl miette::Diagnostic for ReportWithOutputs {
     fn code<'a>(&'a self) -> Option<Box<dyn std::fmt::Display + 'a>> {
         let family = match self.error.error {
-            KclError::Lexical(_) => "Lexical",
-            KclError::Syntax(_) => "Syntax",
-            KclError::Semantic(_) => "Semantic",
-            KclError::ImportCycle(_) => "ImportCycle",
-            KclError::Type(_) => "Type",
-            KclError::Io(_) => "I/O",
-            KclError::Unexpected(_) => "Unexpected",
-            KclError::ValueAlreadyDefined(_) => "ValueAlreadyDefined",
-            KclError::UndefinedValue(_) => "UndefinedValue",
-            KclError::InvalidExpression(_) => "InvalidExpression",
-            KclError::Engine(_) => "Engine",
-            KclError::Internal(_) => "Internal",
+            KclError::Lexical { .. } => "Lexical",
+            KclError::Syntax { .. } => "Syntax",
+            KclError::Semantic { .. } => "Semantic",
+            KclError::ImportCycle { .. } => "ImportCycle",
+            KclError::Type { .. } => "Type",
+            KclError::Io { .. } => "I/O",
+            KclError::Unexpected { .. } => "Unexpected",
+            KclError::ValueAlreadyDefined { .. } => "ValueAlreadyDefined",
+            KclError::UndefinedValue { .. } => "UndefinedValue",
+            KclError::InvalidExpression { .. } => "InvalidExpression",
+            KclError::Engine { .. } => "Engine",
+            KclError::Internal { .. } => "Internal",
         };
         let error_string = format!("KCL {family} error");
         Some(Box::new(error_string))
@@ -341,18 +351,18 @@ pub struct Report {
 impl miette::Diagnostic for Report {
     fn code<'a>(&'a self) -> Option<Box<dyn std::fmt::Display + 'a>> {
         let family = match self.error {
-            KclError::Lexical(_) => "Lexical",
-            KclError::Syntax(_) => "Syntax",
-            KclError::Semantic(_) => "Semantic",
-            KclError::ImportCycle(_) => "ImportCycle",
-            KclError::Type(_) => "Type",
-            KclError::Io(_) => "I/O",
-            KclError::Unexpected(_) => "Unexpected",
-            KclError::ValueAlreadyDefined(_) => "ValueAlreadyDefined",
-            KclError::UndefinedValue(_) => "UndefinedValue",
-            KclError::InvalidExpression(_) => "InvalidExpression",
-            KclError::Engine(_) => "Engine",
-            KclError::Internal(_) => "Internal",
+            KclError::Lexical { .. } => "Lexical",
+            KclError::Syntax { .. } => "Syntax",
+            KclError::Semantic { .. } => "Semantic",
+            KclError::ImportCycle { .. } => "ImportCycle",
+            KclError::Type { .. } => "Type",
+            KclError::Io { .. } => "I/O",
+            KclError::Unexpected { .. } => "Unexpected",
+            KclError::ValueAlreadyDefined { .. } => "ValueAlreadyDefined",
+            KclError::UndefinedValue { .. } => "UndefinedValue",
+            KclError::InvalidExpression { .. } => "InvalidExpression",
+            KclError::Engine { .. } => "Engine",
+            KclError::Internal { .. } => "Internal",
         };
         let error_string = format!("KCL {family} error");
         Some(Box::new(error_string))
@@ -375,22 +385,83 @@ impl miette::Diagnostic for Report {
 }
 
 #[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq, thiserror::Error, miette::Diagnostic)]
+#[serde(rename_all = "camelCase")]
 #[error("{message}")]
 #[ts(export)]
 pub struct KclErrorDetails {
-    #[serde(rename = "sourceRanges")]
     #[label(collection, "Errors")]
     pub source_ranges: Vec<SourceRange>,
+    pub backtrace: Vec<BacktraceItem>,
     #[serde(rename = "msg")]
     pub message: String,
 }
 
+impl KclErrorDetails {
+    pub fn new(message: String, source_ranges: Vec<SourceRange>) -> KclErrorDetails {
+        let backtrace = source_ranges
+            .iter()
+            .map(|s| BacktraceItem {
+                source_range: *s,
+                fn_name: None,
+            })
+            .collect();
+        KclErrorDetails {
+            source_ranges,
+            backtrace,
+            message,
+        }
+    }
+}
+
 impl KclError {
     pub fn internal(message: String) -> KclError {
-        KclError::Internal(KclErrorDetails {
-            source_ranges: Default::default(),
-            message,
-        })
+        KclError::Internal {
+            details: KclErrorDetails {
+                source_ranges: Default::default(),
+                backtrace: Default::default(),
+                message,
+            },
+        }
+    }
+
+    pub fn new_internal(details: KclErrorDetails) -> KclError {
+        KclError::Internal { details }
+    }
+
+    pub fn new_import_cycle(details: KclErrorDetails) -> KclError {
+        KclError::ImportCycle { details }
+    }
+
+    pub fn new_semantic(details: KclErrorDetails) -> KclError {
+        KclError::Semantic { details }
+    }
+
+    pub fn new_value_already_defined(details: KclErrorDetails) -> KclError {
+        KclError::ValueAlreadyDefined { details }
+    }
+
+    pub fn new_syntax(details: KclErrorDetails) -> KclError {
+        KclError::Syntax { details }
+    }
+
+    pub fn new_io(details: KclErrorDetails) -> KclError {
+        KclError::Io { details }
+    }
+
+    pub fn new_engine(details: KclErrorDetails) -> KclError {
+        KclError::Engine { details }
+    }
+
+    pub fn new_lexical(details: KclErrorDetails) -> KclError {
+        KclError::Lexical { details }
+    }
+
+    pub fn new_undefined_value(details: KclErrorDetails, name: Option<String>) -> KclError {
+        KclError::UndefinedValue { details, name }
+    }
+
+    pub fn new_type(details: KclErrorDetails) -> KclError {
+        KclError::Type { details }
     }
 
     /// Get the error message.
@@ -400,94 +471,147 @@ impl KclError {
 
     pub fn error_type(&self) -> &'static str {
         match self {
-            KclError::Lexical(_) => "lexical",
-            KclError::Syntax(_) => "syntax",
-            KclError::Semantic(_) => "semantic",
-            KclError::ImportCycle(_) => "import cycle",
-            KclError::Type(_) => "type",
-            KclError::Io(_) => "i/o",
-            KclError::Unexpected(_) => "unexpected",
-            KclError::ValueAlreadyDefined(_) => "value already defined",
-            KclError::UndefinedValue(_) => "undefined value",
-            KclError::InvalidExpression(_) => "invalid expression",
-            KclError::Engine(_) => "engine",
-            KclError::Internal(_) => "internal",
+            KclError::Lexical { .. } => "lexical",
+            KclError::Syntax { .. } => "syntax",
+            KclError::Semantic { .. } => "semantic",
+            KclError::ImportCycle { .. } => "import cycle",
+            KclError::Type { .. } => "type",
+            KclError::Io { .. } => "i/o",
+            KclError::Unexpected { .. } => "unexpected",
+            KclError::ValueAlreadyDefined { .. } => "value already defined",
+            KclError::UndefinedValue { .. } => "undefined value",
+            KclError::InvalidExpression { .. } => "invalid expression",
+            KclError::Engine { .. } => "engine",
+            KclError::Internal { .. } => "internal",
         }
     }
 
     pub fn source_ranges(&self) -> Vec<SourceRange> {
         match &self {
-            KclError::Lexical(e) => e.source_ranges.clone(),
-            KclError::Syntax(e) => e.source_ranges.clone(),
-            KclError::Semantic(e) => e.source_ranges.clone(),
-            KclError::ImportCycle(e) => e.source_ranges.clone(),
-            KclError::Type(e) => e.source_ranges.clone(),
-            KclError::Io(e) => e.source_ranges.clone(),
-            KclError::Unexpected(e) => e.source_ranges.clone(),
-            KclError::ValueAlreadyDefined(e) => e.source_ranges.clone(),
-            KclError::UndefinedValue(e) => e.source_ranges.clone(),
-            KclError::InvalidExpression(e) => e.source_ranges.clone(),
-            KclError::Engine(e) => e.source_ranges.clone(),
-            KclError::Internal(e) => e.source_ranges.clone(),
+            KclError::Lexical { details: e } => e.source_ranges.clone(),
+            KclError::Syntax { details: e } => e.source_ranges.clone(),
+            KclError::Semantic { details: e } => e.source_ranges.clone(),
+            KclError::ImportCycle { details: e } => e.source_ranges.clone(),
+            KclError::Type { details: e } => e.source_ranges.clone(),
+            KclError::Io { details: e } => e.source_ranges.clone(),
+            KclError::Unexpected { details: e } => e.source_ranges.clone(),
+            KclError::ValueAlreadyDefined { details: e } => e.source_ranges.clone(),
+            KclError::UndefinedValue { details: e, .. } => e.source_ranges.clone(),
+            KclError::InvalidExpression { details: e } => e.source_ranges.clone(),
+            KclError::Engine { details: e } => e.source_ranges.clone(),
+            KclError::Internal { details: e } => e.source_ranges.clone(),
         }
     }
 
     /// Get the inner error message.
     pub fn message(&self) -> &str {
         match &self {
-            KclError::Lexical(e) => &e.message,
-            KclError::Syntax(e) => &e.message,
-            KclError::Semantic(e) => &e.message,
-            KclError::ImportCycle(e) => &e.message,
-            KclError::Type(e) => &e.message,
-            KclError::Io(e) => &e.message,
-            KclError::Unexpected(e) => &e.message,
-            KclError::ValueAlreadyDefined(e) => &e.message,
-            KclError::UndefinedValue(e) => &e.message,
-            KclError::InvalidExpression(e) => &e.message,
-            KclError::Engine(e) => &e.message,
-            KclError::Internal(e) => &e.message,
+            KclError::Lexical { details: e } => &e.message,
+            KclError::Syntax { details: e } => &e.message,
+            KclError::Semantic { details: e } => &e.message,
+            KclError::ImportCycle { details: e } => &e.message,
+            KclError::Type { details: e } => &e.message,
+            KclError::Io { details: e } => &e.message,
+            KclError::Unexpected { details: e } => &e.message,
+            KclError::ValueAlreadyDefined { details: e } => &e.message,
+            KclError::UndefinedValue { details: e, .. } => &e.message,
+            KclError::InvalidExpression { details: e } => &e.message,
+            KclError::Engine { details: e } => &e.message,
+            KclError::Internal { details: e } => &e.message,
+        }
+    }
+
+    pub fn backtrace(&self) -> Vec<BacktraceItem> {
+        match self {
+            KclError::Lexical { details: e }
+            | KclError::Syntax { details: e }
+            | KclError::Semantic { details: e }
+            | KclError::ImportCycle { details: e }
+            | KclError::Type { details: e }
+            | KclError::Io { details: e }
+            | KclError::Unexpected { details: e }
+            | KclError::ValueAlreadyDefined { details: e }
+            | KclError::UndefinedValue { details: e, .. }
+            | KclError::InvalidExpression { details: e }
+            | KclError::Engine { details: e }
+            | KclError::Internal { details: e } => e.backtrace.clone(),
         }
     }
 
     pub(crate) fn override_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
         let mut new = self.clone();
         match &mut new {
-            KclError::Lexical(e) => e.source_ranges = source_ranges,
-            KclError::Syntax(e) => e.source_ranges = source_ranges,
-            KclError::Semantic(e) => e.source_ranges = source_ranges,
-            KclError::ImportCycle(e) => e.source_ranges = source_ranges,
-            KclError::Type(e) => e.source_ranges = source_ranges,
-            KclError::Io(e) => e.source_ranges = source_ranges,
-            KclError::Unexpected(e) => e.source_ranges = source_ranges,
-            KclError::ValueAlreadyDefined(e) => e.source_ranges = source_ranges,
-            KclError::UndefinedValue(e) => e.source_ranges = source_ranges,
-            KclError::InvalidExpression(e) => e.source_ranges = source_ranges,
-            KclError::Engine(e) => e.source_ranges = source_ranges,
-            KclError::Internal(e) => e.source_ranges = source_ranges,
+            KclError::Lexical { details: e }
+            | KclError::Syntax { details: e }
+            | KclError::Semantic { details: e }
+            | KclError::ImportCycle { details: e }
+            | KclError::Type { details: e }
+            | KclError::Io { details: e }
+            | KclError::Unexpected { details: e }
+            | KclError::ValueAlreadyDefined { details: e }
+            | KclError::UndefinedValue { details: e, .. }
+            | KclError::InvalidExpression { details: e }
+            | KclError::Engine { details: e }
+            | KclError::Internal { details: e } => {
+                e.backtrace = source_ranges
+                    .iter()
+                    .map(|s| BacktraceItem {
+                        source_range: *s,
+                        fn_name: None,
+                    })
+                    .collect();
+                e.source_ranges = source_ranges;
+            }
         }
 
         new
     }
 
-    pub(crate) fn add_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
+    pub(crate) fn add_unwind_location(&self, last_fn_name: Option<String>, source_range: SourceRange) -> Self {
         let mut new = self.clone();
         match &mut new {
-            KclError::Lexical(e) => e.source_ranges.extend(source_ranges),
-            KclError::Syntax(e) => e.source_ranges.extend(source_ranges),
-            KclError::Semantic(e) => e.source_ranges.extend(source_ranges),
-            KclError::ImportCycle(e) => e.source_ranges.extend(source_ranges),
-            KclError::Type(e) => e.source_ranges.extend(source_ranges),
-            KclError::Io(e) => e.source_ranges.extend(source_ranges),
-            KclError::Unexpected(e) => e.source_ranges.extend(source_ranges),
-            KclError::ValueAlreadyDefined(e) => e.source_ranges.extend(source_ranges),
-            KclError::UndefinedValue(e) => e.source_ranges.extend(source_ranges),
-            KclError::InvalidExpression(e) => e.source_ranges.extend(source_ranges),
-            KclError::Engine(e) => e.source_ranges.extend(source_ranges),
-            KclError::Internal(e) => e.source_ranges.extend(source_ranges),
+            KclError::Lexical { details: e }
+            | KclError::Syntax { details: e }
+            | KclError::Semantic { details: e }
+            | KclError::ImportCycle { details: e }
+            | KclError::Type { details: e }
+            | KclError::Io { details: e }
+            | KclError::Unexpected { details: e }
+            | KclError::ValueAlreadyDefined { details: e }
+            | KclError::UndefinedValue { details: e, .. }
+            | KclError::InvalidExpression { details: e }
+            | KclError::Engine { details: e }
+            | KclError::Internal { details: e } => {
+                if let Some(item) = e.backtrace.last_mut() {
+                    item.fn_name = last_fn_name;
+                }
+                e.backtrace.push(BacktraceItem {
+                    source_range,
+                    fn_name: None,
+                });
+                e.source_ranges.push(source_range);
+            }
         }
 
         new
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS, thiserror::Error, miette::Diagnostic)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct BacktraceItem {
+    pub source_range: SourceRange,
+    pub fn_name: Option<String>,
+}
+
+impl std::fmt::Display for BacktraceItem {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(fn_name) = &self.fn_name {
+            write!(f, "{fn_name}: {:?}", self.source_range)
+        } else {
+            write!(f, "(fn): {:?}", self.source_range)
+        }
     }
 }
 
@@ -544,8 +668,9 @@ impl From<String> for KclError {
 #[cfg(feature = "pyo3")]
 impl From<pyo3::PyErr> for KclError {
     fn from(error: pyo3::PyErr) -> Self {
-        KclError::Internal(KclErrorDetails {
+        KclError::new_internal(KclErrorDetails {
             source_ranges: vec![],
+            backtrace: Default::default(),
             message: error.to_string(),
         })
     }
@@ -624,8 +749,13 @@ impl CompilationError {
 
 impl From<CompilationError> for KclErrorDetails {
     fn from(err: CompilationError) -> Self {
+        let backtrace = vec![BacktraceItem {
+            source_range: err.source_range,
+            fn_name: None,
+        }];
         KclErrorDetails {
             source_ranges: vec![err.source_range],
+            backtrace,
             message: err.message,
         }
     }
@@ -653,6 +783,7 @@ impl Severity {
 pub enum Tag {
     Deprecated,
     Unnecessary,
+    UnknownNumericUnits,
     None,
 }
 

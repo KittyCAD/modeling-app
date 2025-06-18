@@ -4,23 +4,11 @@ description: Error from executing error_revolve_on_edge_get_edge.kcl
 ---
 KCL Engine error
 
-  × engine: Solid3D revolve failed:  sketch profile must lie entirely on one
-  │ side of the revolution axis
+  × engine: Entity found but it was of the wrong type
+  │ No such edge exists, cannot retrieve adjacency information.
     ╭─[15:6]
  14 │   |> close()
  15 │   |> revolve(axis = revolveAxis, angle = 90)
-    ·      ───────────────────┬───────────────────┬
-    ·                         ╰── tests/error_revolve_on_edge_get_edge/input.kcl
+    ·      ───────────────────┬───────────────────
     ·                         ╰── tests/error_revolve_on_edge_get_edge/input.kcl
     ╰────
-  ╰─▶ KCL Engine error
-      
-        × engine: Solid3D revolve failed:  sketch profile must lie entirely on
-        │ one side of the revolution axis
-          ╭─[15:6]
-       14 │   |> close()
-       15 │   |> revolve(axis = revolveAxis, angle = 90)
-          ·      ───────────────────┬───────────────────
-          ·                         ╰── tests/error_revolve_on_edge_get_edge/
-      input.kcl
-          ╰────

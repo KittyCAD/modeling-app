@@ -29,7 +29,7 @@ export function isErr<T>(value: ExcludeErr<T> | Error): value is Error {
   return value instanceof Error
 }
 
-// Used to bubble errors up
+/** Used to bubble errors up */
 export function err<T>(value: ExcludeErr<T> | Error): value is Error {
   if (!isErr(value)) {
     return false

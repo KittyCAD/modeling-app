@@ -1,7 +1,7 @@
 import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
-import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
+import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { AsyncFn } from '@src/lib/types'
 
@@ -12,6 +12,7 @@ import type {
   CameraViewState_type,
   UnitLength_type,
 } from '@kittycad/lib/dist/types/src/models'
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 
 export const uuidv4 = v4
 
@@ -52,6 +53,12 @@ export function allLabels(callExpression: CallExpressionKw): string[] {
 export function isArray(val: any): val is unknown[] {
   // eslint-disable-next-line no-restricted-syntax
   return Array.isArray(val)
+}
+
+export function areArraysEqual<T>(a: T[], b: T[]): boolean {
+  if (a.length !== b.length) return false
+  const set1 = new Set(a)
+  return b.every((element) => set1.has(element))
 }
 
 export type SafeArray<T> = Omit<Array<T>, number> & {
@@ -259,6 +266,9 @@ export function platform(): Platform {
   }
   if (navigator.platform === 'Windows' || navigator.platform === 'Win32') {
     return 'windows'
+  }
+  if (navigator.platform?.indexOf('Linux') === 0) {
+    return 'linux'
   }
 
   // Chrome only, but more accurate than userAgent.
@@ -521,6 +531,20 @@ export function getModuleId(sourceRange: SourceRange) {
   return sourceRange[2]
 }
 
+export function getModuleIdByFileName(
+  fileName: string,
+  fileNames: ExecState['filenames']
+) {
+  const module = Object.entries(fileNames).find(
+    ([, moduleInfo]) =>
+      moduleInfo?.type === 'Local' && moduleInfo.value === fileName
+  )
+  if (module) {
+    return Number(module[0]) // Return the module ID
+  }
+  return -1
+}
+
 export function getInVariableCase(name: string, prefixIfDigit = 'm') {
   // As of 2025-04-08, standard case for KCL variables is camelCase
   const startsWithANumber = !Number.isNaN(Number(name.charAt(0)))
@@ -622,9 +646,11 @@ export async function engineViewIsometricWithGeometryPresent({
 export async function engineViewIsometricWithoutGeometryPresent({
   engineCommandManager,
   unit,
+  cameraProjection,
 }: {
   engineCommandManager: EngineCommandManager
   unit?: UnitLength_type
+  cameraProjection: CameraProjectionType
 }) {
   // If you load an empty scene with any file unit it will have an eye offset of this
   const MAGIC_ENGINE_EYE_OFFSET = 1378.0057
@@ -644,7 +670,8 @@ export async function engineViewIsometricWithoutGeometryPresent({
     eye_offset: MAGIC_ENGINE_EYE_OFFSET,
     fov_y: 45,
     ortho_scale_factor: 1.4063792,
-    is_ortho: true,
+    is_ortho: cameraProjection !== 'perspective',
+    // always keep this enabled
     ortho_scale_enabled: true,
     world_coord_system: 'right_handed_up_z',
   }

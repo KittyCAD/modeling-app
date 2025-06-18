@@ -13,6 +13,7 @@ export const STRAIGHT_SEGMENT_SNAP_LINE = 'straight-segment-snap-line'
 export const CIRCLE_SEGMENT = 'circle-segment'
 export const CIRCLE_SEGMENT_BODY = 'circle-segment-body'
 export const CIRCLE_SEGMENT_DASH = 'circle-segment-body-dashed'
+export const CIRCLE_SEGMENT_RADIUS_BODY = 'circle-segment-radius-body'
 export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
 export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const TANGENTIAL_ARC_TO__SEGMENT_DASH =

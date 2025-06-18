@@ -86,7 +86,8 @@ mod wasm;
 pub use coredump::CoreDump;
 pub use engine::{AsyncTasks, EngineManager, EngineStats};
 pub use errors::{
-    CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report, ReportWithOutputs,
+    BacktraceItem, CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report,
+    ReportWithOutputs,
 };
 pub use execution::{
     bust_cache, clear_mem_cache,
@@ -99,7 +100,7 @@ pub use lsp::{
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
 pub use modules::ModuleId;
-pub use parsing::ast::types::{FormatOptions, NodePath};
+pub use parsing::ast::types::{FormatOptions, NodePath, Step as NodePathStep};
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
 pub use source_range::SourceRange;
 #[cfg(not(target_arch = "wasm32"))]
@@ -108,12 +109,12 @@ pub use unparser::{recast_dir, walk_dir};
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
-    #[cfg(feature = "artifact-graph")]
-    pub use crate::execution::ArtifactCommand;
     pub use crate::execution::{
         types::{NumericType, UnitAngle, UnitLen, UnitType},
         DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
     };
+    #[cfg(feature = "artifact-graph")]
+    pub use crate::execution::{ArtifactCommand, Operation};
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -250,8 +251,8 @@ impl Program {
         self.ast.lint(rule)
     }
 
-    pub fn node_path_from_range(&self, range: SourceRange) -> Option<NodePath> {
-        NodePath::from_range(&self.ast, range)
+    pub fn node_path_from_range(&self, cached_body_items: usize, range: SourceRange) -> Option<NodePath> {
+        NodePath::from_range(&self.ast, cached_body_items, range)
     }
 
     pub fn recast(&self) -> String {

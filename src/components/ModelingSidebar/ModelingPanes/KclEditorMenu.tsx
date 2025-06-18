@@ -67,7 +67,7 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <a
               className={styles.button}
-              href="https://zoo.dev/docs/kcl"
+              href="https://zoo.dev/docs/kcl-lang"
               target="_blank"
               rel="noopener noreferrer"
               onClick={openExternalBrowserIfDesktop()}

@@ -1,6 +1,11 @@
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { isPlaywright } from '@src/lib/isPlaywright'
-import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import {
+  engineCommandManager,
+  kclManager,
+  sceneInfra,
+  settingsActor,
+} from '@src/lib/singletons'
 import {
   engineStreamZoomToFit,
   engineViewIsometricWithoutGeometryPresent,
@@ -22,6 +27,15 @@ export async function resetCameraPosition() {
   if (isPlaywright()) {
     await engineStreamZoomToFit({ engineCommandManager, padding })
   } else {
+    // Get user camera projection
+    const cameraProjection =
+      settingsActor.getSnapshot().context.modeling.cameraProjection.current
+
+    // We need to keep the users projection setting when resetting their camera
+    if (cameraProjection === 'perspective') {
+      await sceneInfra.camControls.usePerspectiveCamera()
+    }
+
     // If the scene is empty you cannot use view_isometric, it will not move the camera
     if (kclManager.isAstBodyEmpty(kclManager.ast)) {
       await engineViewIsometricWithoutGeometryPresent({
@@ -29,6 +43,7 @@ export async function resetCameraPosition() {
         unit:
           kclManager.fileSettings.defaultLengthUnit ||
           DEFAULT_DEFAULT_LENGTH_UNIT,
+        cameraProjection,
       })
     } else {
       await engineViewIsometricWithGeometryPresent({
