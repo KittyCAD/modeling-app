@@ -20,7 +20,7 @@ export const PACKAGE_NAME = isDesktop()
   ? window.electron.packageJson.name
   : 'zoo-modeling-app'
 
-export const IS_STAGING = PACKAGE_NAME.indexOf('-staging') > -1 || true
+export const IS_STAGING = PACKAGE_NAME.indexOf('-staging') > -1
 
 export const IS_STAGING_OR_DEBUG = IS_STAGING || APP_VERSION === '0.0.0'
 
