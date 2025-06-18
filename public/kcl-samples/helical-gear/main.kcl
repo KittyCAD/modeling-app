@@ -34,36 +34,32 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
     |> close()
     |> extrude(length = gearHeight)
 
-  // Define a function to create a rotated gear sketch on an offset plane
-  fn helicalGearSketch() {
-    // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
-    helicalGearSketch = startSketchOn(XY)
-      |> startProfile(at = polar(angle = 0, length = baseDiameter / 2))
-      |> involuteCircular(
-           startRadius = baseDiameter / 2,
-           endRadius = tipDiameter / 2,
-           angle = 0,
-           tag = $seg01,
-         )
-      |> line(endAbsolute = polar(angle = 160 / nTeeth, length = tipDiameter / 2))
-      |> involuteCircular(
-           startRadius = baseDiameter / 2,
-           endRadius = tipDiameter / 2,
-           angle = -(4 * atan(segEndY(seg01) / segEndX(seg01))),
-           reverse = true,
-         )
+  // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
+  helicalGearSketch = startSketchOn(XY)
+    |> startProfile(at = polar(angle = 0, length = baseDiameter / 2))
+    |> involuteCircular(
+         startRadius = baseDiameter / 2,
+         endRadius = tipDiameter / 2,
+         angle = 0,
+         tag = $seg01,
+       )
+    |> line(endAbsolute = polar(angle = 160 / nTeeth, length = tipDiameter / 2))
+    |> involuteCircular(
+         startRadius = baseDiameter / 2,
+         endRadius = tipDiameter / 2,
+         angle = -(4 * atan(segEndY(seg01) / segEndX(seg01))),
+         reverse = true,
+       )
 
-      // Position the end line of the sketch at the start of the next tooth
-      |> line(endAbsolute = polar(angle = 360 / nTeeth, length = baseDiameter / 2))
+    // Position the end line of the sketch at the start of the next tooth
+    |> line(endAbsolute = polar(angle = 360 / nTeeth, length = baseDiameter / 2))
 
-      // Pattern the sketch about the center by the specified number of teeth, then close the sketch
-      |> patternCircular2d(%, instances = nTeeth, center = [0, 0])
-      |> close()
-    return helicalGearSketch
-  }
+    // Pattern the sketch about the center by the specified number of teeth, then close the sketch
+    |> patternCircular2d(%, instances = nTeeth, center = [0, 0])
+    |> close()
 
   // Draw a gear sketch on the base plane
-  return helicalGearSketch()
+  return helicalGearSketch
     |> extrude(length = gearHeight, twistAngle = helixAngle)
     |> subtract([%], tools = [holeWithKeyway])
 }
@@ -76,3 +72,4 @@ helicalGear(
   helixAngle = 35,
   gearHeight,
 )
+
