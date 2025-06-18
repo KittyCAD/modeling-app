@@ -237,7 +237,7 @@ function CommandBarHeader({
         {isReviewing && availableOptionalArgs.length > 0 && (
           <>
             <div className="px-4">
-              <p className="mb-2 text-sm">Optional arguments</p>
+              <p className="mb-2">Optional arguments</p>
               <div className="text-sm flex gap-4 items-start">
                 <div className="flex flex-1 flex-wrap gap-2">
                   {availableOptionalArgs.map(([argName, arg]) => {
@@ -264,6 +264,7 @@ function CommandBarHeader({
                 </div>
               </div>
             </div>
+            <div className="block w-full mt-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
           </>
         )}
         {children}
