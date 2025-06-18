@@ -164,7 +164,7 @@ fn whitespace(i: &mut Input<'_>) -> ModalResult<Token> {
 
 fn inner_word(i: &mut Input<'_>) -> ModalResult<()> {
     take_while(1.., |c: char| c.is_alphabetic() || c == '_').parse_next(i)?;
-    take_while(0.., |c: char| c.is_alphabetic() || c.is_digit(10) || c == '_').parse_next(i)?;
+    take_while(0.., |c: char| c.is_alphabetic() || c.is_ascii_digit() || c == '_').parse_next(i)?;
     Ok(())
 }
 
