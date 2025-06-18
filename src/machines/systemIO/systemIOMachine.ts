@@ -164,17 +164,17 @@ export const systemIOMachine = setup({
           }
         }
       | {
-        type: SystemIOMachineEvents.createBlankFile
-        data: {
-          requestedAbsolutePath: string
+          type: SystemIOMachineEvents.createBlankFile
+          data: {
+            requestedAbsolutePath: string
+          }
         }
-      }
       | {
-        type: SystemIOMachineEvents.createBlankFolder
-        data: {
-          requestedAbsolutePath: string
-        }
-      }
+          type: SystemIOMachineEvents.createBlankFolder
+          data: {
+            requestedAbsolutePath: string
+          }
+        },
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({

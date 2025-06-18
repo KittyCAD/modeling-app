@@ -20,7 +20,7 @@ export enum SystemIOMachineActors {
   renameFile = 'renameFile',
   deleteFileOrFolder = 'deleteFileOrFolder',
   createBlankFile = 'create blank file',
-  createBlankFolder = 'create blank folder'
+  createBlankFolder = 'create blank folder',
 }
 
 export enum SystemIOMachineStates {
@@ -42,7 +42,7 @@ export enum SystemIOMachineStates {
   renamingFile = 'renamingFile',
   deletingFileOrFolder = 'deletingFileOrFolder',
   creatingBlankFile = 'creatingBlankFile',
-  creatingBlankFolder = 'creatingBlankFolder'
+  creatingBlankFolder = 'creatingBlankFolder',
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -75,7 +75,7 @@ export enum SystemIOMachineEvents {
   renameFile = 'rename file',
   deleteFileOrFolder = 'delete file or folder',
   createBlankFile = 'create blank file',
-  createBlankFolder = 'create blank folder'
+  createBlankFolder = 'create blank folder',
 }
 
 export enum SystemIOMachineActions {

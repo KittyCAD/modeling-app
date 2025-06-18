@@ -215,7 +215,10 @@ export const ProjectExplorer = ({
                   systemIOActor.send({
                     type: SystemIOMachineEvents.createBlankFolder,
                     data: {
-                      requestedAbsolutePath: joinOSPaths(getParentAbsolutePath(row.path), requestedName)
+                      requestedAbsolutePath: joinOSPaths(
+                        getParentAbsolutePath(row.path),
+                        requestedName
+                      ),
                     },
                   })
                 } else {
@@ -225,7 +228,9 @@ export const ProjectExplorer = ({
                     data: {
                       requestedFolderName: requestedName,
                       folderName: name,
-                      absolutePathToParentDirectory: getParentAbsolutePath(row.path)
+                      absolutePathToParentDirectory: getParentAbsolutePath(
+                        row.path
+                      ),
                     },
                   })
                   // TODO: Gotcha... Set new string open even if it fails?
@@ -240,7 +245,6 @@ export const ProjectExplorer = ({
                     setOpenedRows(newOpenedRows)
                   }
                 }
-                
               }
             } else {
               // rename a file
@@ -259,19 +263,25 @@ export const ProjectExplorer = ({
                 systemIOActor.send({
                   type: SystemIOMachineEvents.createBlankFile,
                   data: {
-                    requestedAbsolutePath: joinOSPaths(getParentAbsolutePath(row.path),fileNameForcedWithOriginalExt)
+                    requestedAbsolutePath: joinOSPaths(
+                      getParentAbsolutePath(row.path),
+                      fileNameForcedWithOriginalExt
+                    ),
                   },
                 })
-              } else { 
+              } else {
                 // rename the file otherwise
                 systemIOActor.send({
-                type: SystemIOMachineEvents.renameFile,
-                data: {
-                  requestedFileNameWithExtension: fileNameForcedWithOriginalExt,
-                  fileNameWithExtension: name,
-                  absolutePathToParentDirectory: getParentAbsolutePath(row.path)
-                },
-              })
+                  type: SystemIOMachineEvents.renameFile,
+                  data: {
+                    requestedFileNameWithExtension:
+                      fileNameForcedWithOriginalExt,
+                    fileNameWithExtension: name,
+                    absolutePathToParentDirectory: getParentAbsolutePath(
+                      row.path
+                    ),
+                  },
+                })
               }
             }
           },
@@ -292,10 +302,15 @@ export const ProjectExplorer = ({
           !!fakeRow?.entry?.children &&
           fakeRow?.entry?.key === row.parentPath &&
           row.name === FILE_PLACEHOLDER_NAME
-        const fakeRowIsNullShowRootFile = fakeRow.entry === null && row.parentPath === project.name &&
+        const fakeRowIsNullShowRootFile =
+          fakeRow.entry === null &&
+          row.parentPath === project.name &&
           row.name === FILE_PLACEHOLDER_NAME
-        showPlaceHolder = showFileAtSameLevel || showFileWithinFolder || fakeRowIsNullShowRootFile
-      } else if (fakeRow?.isFile === false){
+        showPlaceHolder =
+          showFileAtSameLevel ||
+          showFileWithinFolder ||
+          fakeRowIsNullShowRootFile
+      } else if (fakeRow?.isFile === false) {
         // fake row is a folder
         const showFolderAtSameLevel =
           fakeRow?.entry?.parentPath === row.parentPath &&
@@ -306,9 +321,14 @@ export const ProjectExplorer = ({
           !!fakeRow?.entry?.children &&
           fakeRow?.entry?.key === row.parentPath &&
           row.name === FOLDER_PLACEHOLDER_NAME
-        const fakeRowIsNullShowRootFolder = fakeRow.entry === null && row.parentPath === project.name &&
+        const fakeRowIsNullShowRootFolder =
+          fakeRow.entry === null &&
+          row.parentPath === project.name &&
           row.name === FOLDER_PLACEHOLDER_NAME
-        showPlaceHolder = showFolderAtSameLevel || showFolderWithinFolder || fakeRowIsNullShowRootFolder
+        showPlaceHolder =
+          showFolderAtSameLevel ||
+          showFolderWithinFolder ||
+          fakeRowIsNullShowRootFolder
       }
       const skipPlaceHolder =
         !(

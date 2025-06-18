@@ -239,6 +239,8 @@ const Home = () => {
     children: [],
     readWriteAccess: true,
   }
+  const duplicated1 = JSON.parse(JSON.stringify(kclSamples1))
+  addPlaceHoldersForNewFileAndFolder(duplicated1.children, kclSamples1.path)
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
       <AppHeader
@@ -424,8 +426,8 @@ const Home = () => {
         >
           <ProjectExplorer project={duplicated}></ProjectExplorer>
           <ProjectExplorer project={duplicated}></ProjectExplorer>
-          <ProjectExplorer project={kclSamples1}></ProjectExplorer>
-          <ProjectExplorer project={kclSamples1}></ProjectExplorer>
+          <ProjectExplorer project={duplicated1}></ProjectExplorer>
+          <ProjectExplorer project={duplicated1}></ProjectExplorer>
         </section>
         <ProjectGrid
           searchResults={searchResults}
