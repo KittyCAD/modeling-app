@@ -1499,12 +1499,16 @@ export fn profileStartY(
 export fn involuteCircular(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
-  /// The involute is described between two circles, start_radius is the radius of the inner circle.
-  startRadius: number(Length),
-  /// The involute is described between two circles, end_radius is the radius of the outer circle.
-  endRadius: number(Length),
   /// The angle to rotate the involute by. A value of zero will produce a curve with a tangent along the x-axis at the start point of the curve.
   angle: number(Angle),
+  /// The involute is described between two circles, startRadius is the radius of the inner circle.
+  startRadius?: number(Length),
+  /// The involute is described between two circles, endRadius is the radius of the outer circle.
+  endRadius?: number(Length),
+  /// The involute is described between two circles, startDiameter describes the inner circle.
+  startDiameter?: number(Length),
+  /// The involute is described between two circles, endDiameter describes the outer circle.
+  endDiameter?: number(Length),
   /// If reverse is true, the segment will start from the end of the involute, otherwise it will start from that start.
   reverse?: bool = false,
   /// Create a new tag which refers to this line.
