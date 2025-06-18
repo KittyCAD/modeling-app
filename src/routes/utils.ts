@@ -26,6 +26,7 @@ export const IS_STAGING_OR_DEBUG = IS_STAGING || APP_VERSION === '0.0.0'
 
 export function getReleaseUrl(version: string = APP_VERSION) {
   if (IS_STAGING_OR_DEBUG || version === 'main') {
+    // TODO: we could be a little smarter here and extract the commit hash from the staging version
     return 'https://github.com/KittyCAD/modeling-app/commits/main'
   }
 
