@@ -1445,6 +1445,48 @@ solid001 = subtract([extrude001], tools = [extrude002])
     await u.closeDebugPanel()
   })
 
+  test('Can edit a tangentialArc defined by angle and radius', async ({
+    page,
+    homePage,
+    editor,
+    toolbar,
+    scene,
+    cmdBar,
+  }) => {
+    const viewportSize = { width: 1500, height: 750 }
+    await page.setBodyDimensions(viewportSize)
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `@settings(defaultLengthUnit=in)
+sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [-10, -10])
+  |> line(end = [20.0, 10.0])
+  |> tangentialArc(angle = 60deg, radius=10.0)`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await toolbar.waitForFeatureTreeToBeBuilt()
+    await scene.settled(cmdBar)
+
+    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+
+    await page.waitForTimeout(1000)
+
+    await page.mouse.move(1200, 139)
+    await page.mouse.down()
+    await page.mouse.move(870, 250)
+
+    await page.waitForTimeout(200)
+
+    await editor.expectEditor.toContain(
+      `tangentialArc(angle = 234.01deg, radius = 4.08)`,
+      { shouldNormalise: true }
+    )
+  })
+
   test('Can delete a single segment line with keyboard', async ({
     page,
     scene,
@@ -3431,6 +3473,71 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
       await expect(
         page.getByText('Unable to maintain sketch mode')
       ).toBeVisible()
+    })
+  })
+  test('Will exit out of sketch mode when all code is nuked', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `myVar1 = 5
+    myVar2 = 6
+
+    sketch001 = startSketchOn(XZ)
+    profile001 = startProfile(sketch001, at = [106.68, 89.77])
+      |> line(end = [132.34, 157.8])
+      |> line(end = [67.65, -460.55], tag = $seg01)
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> close()
+    extrude001 = extrude(profile001, length = 500)
+    sketch002 = startSketchOn(extrude001, face = seg01)
+    profile002 = startProfile(sketch002, at = [83.39, 329.15])
+      |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
+      |> angledLine(length = 156.54, angle = -28)
+      |> angledLine(
+           angle = -151,
+           length = 116.27,
+         )
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> close()
+    profile003 = startProfile(sketch002, at = [-201.08, 254.17])
+      |> line(end = [103.55, 33.32])
+      |> line(end = [48.8, -153.54])`
+
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+    const expectSketchOriginToBeDrawn = async () => {
+      await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 672, y: 193 }, 15)
+    }
+
+    await test.step('Open feature tree and edit second sketch', async () => {
+      await toolbar.openFeatureTreePane()
+      const sketchButton = await toolbar.getFeatureTreeOperation('Sketch', 1)
+      await sketchButton.dblclick()
+      await page.waitForTimeout(700) // Wait for engine animation
+      await expectSketchOriginToBeDrawn()
+    })
+
+    await test.step('clear editor content while in sketch mode', async () => {
+      await editor.replaceCode('', '')
+      await page.waitForTimeout(100)
+      await expect(
+        page.getByText('Unable to maintain sketch mode')
+      ).toBeVisible()
+      await scene.expectPixelColorNotToBe(
+        TEST_COLORS.WHITE,
+        { x: 672, y: 193 },
+        15
+      )
     })
   })
   test('empty draft sketch is cleaned up properly', async ({

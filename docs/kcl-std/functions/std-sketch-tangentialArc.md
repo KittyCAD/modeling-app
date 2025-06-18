@@ -15,7 +15,7 @@ tangentialArc(
   radius?: number(Length),
   diameter?: number(Length),
   angle?: number(Angle),
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -35,7 +35,7 @@ for 'angle' degrees along the imaginary circle.
 | `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Radius of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute` and `diameter`. | No |
 | `diameter` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Diameter of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute` and `radius`. | No |
 | `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Offset of the arc. `radius` must be given. Incompatible with `end` and `endAbsolute`. | No |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this arc. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this arc. | No |
 
 ### Returns
 
@@ -47,7 +47,7 @@ for 'angle' degrees along the imaginary circle.
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 45, length = 10)
+  |> angledLine(angle = 45deg, length = 10)
   |> tangentialArc(end = [0, -10])
   |> line(end = [-10, 0])
   |> close()
@@ -61,7 +61,7 @@ example = extrude(exampleSketch, length = 10)
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 60, length = 10)
+  |> angledLine(angle = 60deg, length = 10)
   |> tangentialArc(endAbsolute = [15, 15])
   |> line(end = [10, -15])
   |> close()
@@ -75,9 +75,9 @@ example = extrude(exampleSketch, length = 10)
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 60, length = 10)
-  |> tangentialArc(radius = 10, angle = -120)
-  |> angledLine(angle = -60, length = 10)
+  |> angledLine(angle = 60deg, length = 10)
+  |> tangentialArc(radius = 10, angle = -120deg)
+  |> angledLine(angle = -60deg, length = 10)
   |> close()
 
 example = extrude(exampleSketch, length = 10)

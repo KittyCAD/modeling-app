@@ -1,8 +1,8 @@
 //! Cache testing framework.
 
-#[cfg(feature = "artifact-graph")]
-use kcl_lib::NodePathStep;
 use kcl_lib::{bust_cache, ExecError, ExecOutcome};
+#[cfg(feature = "artifact-graph")]
+use kcl_lib::{exec::Operation, NodePathStep};
 use kcmc::{each_cmd as mcmd, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 use pretty_assertions::assert_eq;
@@ -259,7 +259,7 @@ extrude(profile001, length = 100)"#
 
 #[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_cache_add_line_preserves_artifact_commands() {
+async fn kcl_test_cache_add_line_preserves_artifact_graph() {
     let code = r#"sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [5.5, 5.25])
   |> line(end = [10.5, -1.19])
@@ -281,7 +281,7 @@ extrude001 = extrude(profile001, length = 4)
 "#;
 
     let result = cache_test(
-        "add_line_preserves_artifact_commands",
+        "add_line_preserves_artifact_graph",
         vec![
             Variation {
                 code,
@@ -301,16 +301,27 @@ extrude001 = extrude(profile001, length = 4)
     let second = &result.last().unwrap().2;
 
     assert!(
-        first.artifact_commands.len() < second.artifact_commands.len(),
-        "Second should have all the artifact commands of the first, plus more. first={:?}, second={:?}",
-        first.artifact_commands.len(),
-        second.artifact_commands.len()
+        first.artifact_graph.len() < second.artifact_graph.len(),
+        "Second should have all the artifacts of the first, plus more. first={:#?}, second={:#?}",
+        first.artifact_graph,
+        second.artifact_graph
     );
     assert!(
-        first.artifact_graph.len() < second.artifact_graph.len(),
-        "Second should have all the artifacts of the first, plus more. first={:?}, second={:?}",
-        first.artifact_graph.len(),
-        second.artifact_graph.len()
+        first.operations.len() < second.operations.len(),
+        "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
+        first.operations.len(),
+        second.operations.len()
+    );
+    let Some(Operation::StdLibCall { name, .. }) = second.operations.last() else {
+        panic!("Last operation should be stdlib call extrude");
+    };
+    assert_eq!(name, "extrude");
+    // Make sure there are no duplicates.
+    assert_eq!(
+        second.operations.len(),
+        3,
+        "There should be exactly this many operations in the second run. {:#?}",
+        &second.operations
     );
     // Make sure we have NodePaths referring to the old code.
     let graph = &second.artifact_graph;

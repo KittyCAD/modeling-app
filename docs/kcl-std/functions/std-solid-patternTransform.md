@@ -50,7 +50,7 @@ Its properties are:
 
    - `rotation.axis` (a 3D point, defaults to the Z axis)
 
-   - `rotation.angle` (number of degrees)
+   - `rotation.angle`
 
    - `rotation.origin` (either "local" i.e. rotate around its own center, "global" i.e. rotate around the scene's center, or a 3D point, defaults to "local")
 
@@ -135,7 +135,7 @@ fn transform(@i) {
       pow(0.9, exp = i)
     ],
     // Turn by 15 degrees each time.
-    rotation = { angle = 15 * i, origin = "local" }
+    rotation = { angle = 15deg * i, origin = "local" }
   }
 }
 
@@ -171,7 +171,7 @@ fn transform(@i) {
   return {
     translate = [0, 0, -i * width],
     rotation = {
-      angle = 90 * i,
+      angle = 90deg * i,
       // Rotate around the overall scene's origin.
       origin = "global"
     }
@@ -219,7 +219,7 @@ fn transform(@i) {
   // Transform functions can return multiple transforms. They'll be applied in order.
   return [
     { translate = [30 * i, 0, 0] },
-    { rotation = { angle = 45 * i } }
+    { rotation = { angle = 45deg * i } }
   ]
 }
 startSketchOn(XY)

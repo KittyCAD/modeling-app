@@ -806,6 +806,20 @@ export const modelingMachine = setup({
         toast.error(event.error.message)
       }
     },
+    toastErrorAndExitSketch: ({ event }) => {
+      if ('output' in event && event.output instanceof Error) {
+        toast.error(event.output.message)
+      } else if ('data' in event && event.data instanceof Error) {
+        toast.error(event.data.message)
+      } else if ('error' in event && event.error instanceof Error) {
+        toast.error(event.error.message)
+      }
+
+      // Clean up the THREE.js sketch scene
+      sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+      sceneEntitiesManager.removeSketchGrid()
+      sceneEntitiesManager.resetOverlays()
+    },
     'assign tool in context': assign({
       currentTool: ({ event }) =>
         event.type === 'change tool' ? event.data.tool || 'none' : 'none',
@@ -4407,7 +4421,7 @@ export const modelingMachine = setup({
             },
             onError: {
               target: '#Modeling.idle',
-              actions: 'toastError',
+              actions: 'toastErrorAndExitSketch',
               reenter: true,
             },
           },

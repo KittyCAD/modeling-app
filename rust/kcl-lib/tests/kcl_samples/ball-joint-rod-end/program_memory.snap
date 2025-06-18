@@ -34,13 +34,13 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "from": [
             -6.0,
-            5.292
+            5.291502622129181
           ],
           "radius": 8.0,
           "tag": null,
           "to": [
             6.0,
-            5.292
+            5.2915026221291805
           ],
           "type": "Arc",
           "units": {
@@ -54,7 +54,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           },
           "from": [
             6.0,
-            5.292
+            5.2915026221291805
           ],
           "tag": null,
           "to": [
@@ -97,7 +97,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           "tag": null,
           "to": [
             -6.0,
-            5.292
+            5.291502622129181
           ],
           "type": "ToPoint",
           "units": {
@@ -111,12 +111,12 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           },
           "from": [
             -6.0,
-            5.292
+            5.291502622129181
           ],
           "tag": null,
           "to": [
             -6.0,
-            5.292
+            5.291502622129181
           ],
           "type": "ToPoint",
           "units": {
@@ -157,11 +157,11 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
       "start": {
         "from": [
           -6.0,
-          5.292
+          5.291502622129181
         ],
         "to": [
           -6.0,
-          5.292
+          5.291502622129181
         ],
         "units": {
           "type": "Inches"
@@ -244,13 +244,13 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "from": [
               -6.0,
-              5.292
+              5.291502622129181
             ],
             "radius": 8.0,
             "tag": null,
             "to": [
               6.0,
-              5.292
+              5.2915026221291805
             ],
             "type": "Arc",
             "units": {
@@ -264,7 +264,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "from": [
               6.0,
-              5.292
+              5.2915026221291805
             ],
             "tag": null,
             "to": [
@@ -307,7 +307,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             "tag": null,
             "to": [
               -6.0,
-              5.292
+              5.291502622129181
             ],
             "type": "ToPoint",
             "units": {
@@ -321,12 +321,12 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "from": [
               -6.0,
-              5.292
+              5.291502622129181
             ],
             "tag": null,
             "to": [
               -6.0,
-              5.292
+              5.291502622129181
             ],
             "type": "ToPoint",
             "units": {
@@ -367,11 +367,11 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "start": {
           "from": [
             -6.0,
-            5.292
+            5.291502622129181
           ],
           "to": [
             -6.0,
-            5.292
+            5.291502622129181
           ],
           "units": {
             "type": "Inches"
@@ -630,7 +630,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
   },
   "intersectPoint": {
     "type": "Number",
-    "value": 7.55,
+    "value": 7.54983443527075,
     "ty": {
       "type": "Default",
       "len": {
@@ -646,7 +646,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "value": [
       {
         "type": "Number",
-        "value": 10.878,
+        "value": 10.878446103161862,
         "ty": {
           "type": "Default",
           "len": {
@@ -659,7 +659,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
       },
       {
         "type": "Number",
-        "value": -0.952,
+        "value": -0.9517407108044271,
         "ty": {
           "type": "Default",
           "len": {
@@ -719,7 +719,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
     "value": [
       {
         "type": "Number",
-        "value": -4.556,
+        "value": -4.556249999999999,
         "ty": {
           "type": "Default",
           "len": {
@@ -732,7 +732,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
       },
       {
         "type": "Number",
-        "value": 6.697,
+        "value": 6.697058006132245,
         "ty": {
           "type": "Default",
           "len": {
@@ -747,7 +747,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
   },
   "polarY": {
     "type": "Number",
-    "value": 6.697,
+    "value": 6.697058006132245,
     "ty": {
       "type": "Default",
       "len": {
@@ -963,13 +963,13 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           ],
           "from": [
             -4.5,
-            10.037
+            10.037429949942366
           ],
           "radius": 11.0,
           "tag": null,
           "to": [
-            4.5,
-            10.037
+            4.500000000000002,
+            10.037429949942366
           ],
           "type": "Arc",
           "units": {
@@ -982,13 +982,13 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             "sourceRange": []
           },
           "from": [
-            4.5,
-            10.037
+            4.500000000000002,
+            10.037429949942366
           ],
           "tag": null,
           "to": [
-            4.5,
-            6.697
+            4.500000000000002,
+            6.697058006132245
           ],
           "type": "ToPoint",
           "units": {
@@ -1002,18 +1002,18 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           },
           "ccw": true,
           "center": [
-            0.0,
-            0.083
+            0.0000000000000017763568394002505,
+            0.08267972847076877
           ],
           "from": [
-            4.5,
-            6.697
+            4.500000000000002,
+            6.697058006132245
           ],
           "radius": 8.0,
           "tag": null,
           "to": [
-            -4.5,
-            6.697
+            -4.499999999999997,
+            6.697058006132246
           ],
           "type": "Arc",
           "units": {
@@ -1026,13 +1026,13 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             "sourceRange": []
           },
           "from": [
-            -4.5,
-            6.697
+            -4.499999999999997,
+            6.697058006132246
           ],
           "tag": null,
           "to": [
             -4.5,
-            10.037
+            10.037429949942366
           ],
           "type": "ToPoint",
           "units": {
@@ -1046,12 +1046,12 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           },
           "from": [
             -4.5,
-            10.037
+            10.037429949942366
           ],
           "tag": null,
           "to": [
             -4.5,
-            10.037
+            10.037429949942366
           ],
           "type": "ToPoint",
           "units": {
@@ -1092,11 +1092,11 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
       "start": {
         "from": [
           -4.5,
-          10.037
+          10.037429949942366
         ],
         "to": [
           -4.5,
-          10.037
+          10.037429949942366
         ],
         "units": {
           "type": "Inches"
@@ -1166,13 +1166,13 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             ],
             "from": [
               -4.5,
-              10.037
+              10.037429949942366
             ],
             "radius": 11.0,
             "tag": null,
             "to": [
-              4.5,
-              10.037
+              4.500000000000002,
+              10.037429949942366
             ],
             "type": "Arc",
             "units": {
@@ -1185,13 +1185,13 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               "sourceRange": []
             },
             "from": [
-              4.5,
-              10.037
+              4.500000000000002,
+              10.037429949942366
             ],
             "tag": null,
             "to": [
-              4.5,
-              6.697
+              4.500000000000002,
+              6.697058006132245
             ],
             "type": "ToPoint",
             "units": {
@@ -1205,18 +1205,18 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "ccw": true,
             "center": [
-              0.0,
-              0.083
+              0.0000000000000017763568394002505,
+              0.08267972847076877
             ],
             "from": [
-              4.5,
-              6.697
+              4.500000000000002,
+              6.697058006132245
             ],
             "radius": 8.0,
             "tag": null,
             "to": [
-              -4.5,
-              6.697
+              -4.499999999999997,
+              6.697058006132246
             ],
             "type": "Arc",
             "units": {
@@ -1229,13 +1229,13 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
               "sourceRange": []
             },
             "from": [
-              -4.5,
-              6.697
+              -4.499999999999997,
+              6.697058006132246
             ],
             "tag": null,
             "to": [
               -4.5,
-              10.037
+              10.037429949942366
             ],
             "type": "ToPoint",
             "units": {
@@ -1249,12 +1249,12 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "from": [
               -4.5,
-              10.037
+              10.037429949942366
             ],
             "tag": null,
             "to": [
               -4.5,
-              10.037
+              10.037429949942366
             ],
             "type": "ToPoint",
             "units": {
@@ -1295,11 +1295,11 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
         "start": {
           "from": [
             -4.5,
-            10.037
+            10.037429949942366
           ],
           "to": [
             -4.5,
-            10.037
+            10.037429949942366
           ],
           "units": {
             "type": "Inches"
@@ -1359,7 +1359,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
   },
   "retainingLoopSketchAngle1": {
     "type": "Number",
-    "value": 0.421,
+    "value": 0.42145756846730115,
     "ty": {
       "type": "Known",
       "type": "Angle",
@@ -1368,7 +1368,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
   },
   "retainingLoopSketchAngle2": {
     "type": "Number",
-    "value": 0.597,
+    "value": 0.5974064166453502,
     "ty": {
       "type": "Known",
       "type": "Angle",
@@ -1479,7 +1479,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
   },
   "sketchStartAngle": {
     "type": "Number",
-    "value": 0.848,
+    "value": 0.848062078981481,
     "ty": {
       "type": "Known",
       "type": "Angle",
@@ -1581,7 +1581,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "to": [
               7.93,
-              -7.55
+              -7.54983443527075
             ],
             "type": "ToPoint",
             "units": {
@@ -1595,7 +1595,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "from": [
               7.93,
-              -7.55
+              -7.54983443527075
             ],
             "p1": [
               7.93,
@@ -1845,7 +1845,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "to": [
               7.93,
-              -7.55
+              -7.54983443527075
             ],
             "type": "ToPoint",
             "units": {
@@ -1859,7 +1859,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "from": [
               7.93,
-              -7.55
+              -7.54983443527075
             ],
             "p1": [
               7.93,
@@ -2109,7 +2109,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "to": [
               7.93,
-              -7.55
+              -7.54983443527075
             ],
             "type": "ToPoint",
             "units": {
@@ -2123,7 +2123,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "from": [
               7.93,
-              -7.55
+              -7.54983443527075
             ],
             "p1": [
               7.93,
@@ -2373,7 +2373,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "to": [
               7.93,
-              -7.55
+              -7.54983443527075
             ],
             "type": "ToPoint",
             "units": {
@@ -2387,7 +2387,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "from": [
               7.93,
-              -7.55
+              -7.54983443527075
             ],
             "p1": [
               7.93,
@@ -2805,7 +2805,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "to": [
               7.0,
-              -10.16
+              -10.15983443527075
             ],
             "type": "ToPoint",
             "units": {
@@ -2819,7 +2819,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "from": [
               7.0,
-              -10.16
+              -10.15983443527075
             ],
             "tag": {
               "commentStart": 3457,
@@ -2830,7 +2830,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "to": [
               4.4,
-              -7.56
+              -7.55983443527075
             ],
             "type": "ToPoint",
             "units": {
@@ -2844,7 +2844,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "from": [
               4.4,
-              -7.56
+              -7.55983443527075
             ],
             "tag": {
               "commentStart": 3568,
@@ -2899,7 +2899,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "to": [
               -4.35,
-              -7.56
+              -7.55983443527075
             ],
             "type": "ToPoint",
             "units": {
@@ -2913,7 +2913,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "from": [
               -4.35,
-              -7.56
+              -7.55983443527075
             ],
             "tag": {
               "commentStart": 3756,
@@ -2924,7 +2924,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "to": [
               -7.0,
-              -10.21
+              -10.20983443527075
             ],
             "type": "ToPoint",
             "units": {
@@ -2938,7 +2938,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "from": [
               -7.0,
-              -10.21
+              -10.20983443527075
             ],
             "tag": null,
             "to": [
@@ -3155,7 +3155,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           },
           "to": [
             7.0,
-            -10.16
+            -10.15983443527075
           ],
           "type": "ToPoint",
           "units": {
@@ -3169,7 +3169,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           },
           "from": [
             7.0,
-            -10.16
+            -10.15983443527075
           ],
           "tag": {
             "commentStart": 3457,
@@ -3180,7 +3180,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           },
           "to": [
             4.4,
-            -7.56
+            -7.55983443527075
           ],
           "type": "ToPoint",
           "units": {
@@ -3194,7 +3194,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           },
           "from": [
             4.4,
-            -7.56
+            -7.55983443527075
           ],
           "tag": {
             "commentStart": 3568,
@@ -3249,7 +3249,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           },
           "to": [
             -4.35,
-            -7.56
+            -7.55983443527075
           ],
           "type": "ToPoint",
           "units": {
@@ -3263,7 +3263,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           },
           "from": [
             -4.35,
-            -7.56
+            -7.55983443527075
           ],
           "tag": {
             "commentStart": 3756,
@@ -3274,7 +3274,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           },
           "to": [
             -7.0,
-            -10.21
+            -10.20983443527075
           ],
           "type": "ToPoint",
           "units": {
@@ -3288,7 +3288,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           },
           "from": [
             -7.0,
-            -10.21
+            -10.20983443527075
           ],
           "tag": null,
           "to": [
@@ -3511,7 +3511,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "to": [
               7.93,
-              -7.55
+              -7.54983443527075
             ],
             "type": "ToPoint",
             "units": {
@@ -3525,7 +3525,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
             },
             "from": [
               7.93,
-              -7.55
+              -7.54983443527075
             ],
             "p1": [
               7.93,
@@ -3729,7 +3729,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           },
           "to": [
             7.93,
-            -7.55
+            -7.54983443527075
           ],
           "type": "ToPoint",
           "units": {
@@ -3743,7 +3743,7 @@ description: Variables in memory after executing ball-joint-rod-end.kcl
           },
           "from": [
             7.93,
-            -7.55
+            -7.54983443527075
           ],
           "p1": [
             7.93,

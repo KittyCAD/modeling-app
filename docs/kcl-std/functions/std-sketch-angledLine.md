@@ -16,7 +16,7 @@ angledLine(
   lengthY?: number(Length),
   endAbsoluteX?: number(Length),
   endAbsoluteY?: number(Length),
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -33,7 +33,7 @@ angledLine(
 | `lengthY` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Draw the line this distance along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
 | `endAbsoluteX` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Draw the line along the given angle until it reaches this point along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
 | `endAbsoluteY` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this line. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this line. | No |
 
 ### Returns
 
@@ -46,7 +46,7 @@ angledLine(
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> yLine(endAbsolute = 15)
-  |> angledLine(angle = 30, length = 15)
+  |> angledLine(angle = 30deg, length = 15)
   |> line(end = [8, -10])
   |> yLine(endAbsolute = 0)
   |> close()

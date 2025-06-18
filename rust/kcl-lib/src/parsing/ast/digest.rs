@@ -223,7 +223,7 @@ impl PrimitiveType {
             PrimitiveType::String => hasher.update(b"string"),
             PrimitiveType::Number(suffix) => hasher.update(suffix.digestable_id()),
             PrimitiveType::Boolean => hasher.update(b"bool"),
-            PrimitiveType::Tag => hasher.update(b"tag"),
+            PrimitiveType::TagDecl => hasher.update(b"TagDecl"),
             PrimitiveType::ImportedGeometry => hasher.update(b"ImportedGeometry"),
             PrimitiveType::Function(f) => hasher.update(f.compute_digest()),
         }

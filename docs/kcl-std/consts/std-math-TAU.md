@@ -13,12 +13,16 @@ TAU: number = 6.28318530717958647692528676655900577_
 
 
 
+### Type
+
+[`number`](/docs/kcl-std/types/std-types-number) - A number.
+
 ### Examples
 
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 50, length = 10 * TAU)
+  |> angledLine(angle = 50deg, length = 10 * TAU)
   |> yLine(endAbsolute = 0)
   |> close()
 

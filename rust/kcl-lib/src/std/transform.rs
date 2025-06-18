@@ -68,34 +68,33 @@ async fn inner_scale(
     // If we have a solid, flush the fillets and chamfers.
     // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
     if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
-        args.flush_batch_for_solids(exec_state, solids).await?;
+        exec_state.flush_batch_for_solids((&args).into(), solids).await?;
     }
 
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
-        let id = exec_state.next_uuid();
-
-        args.batch_modeling_cmd(
-            id,
-            ModelingCmd::from(mcmd::SetObjectTransform {
-                object_id,
-                transforms: vec![shared::ComponentTransform {
-                    scale: Some(shared::TransformBy::<Point3d<f64>> {
-                        property: Point3d {
-                            x: x.unwrap_or(1.0),
-                            y: y.unwrap_or(1.0),
-                            z: z.unwrap_or(1.0),
-                        },
-                        set: false,
-                        is_local: !global.unwrap_or(false),
-                    }),
-                    translate: None,
-                    rotate_rpy: None,
-                    rotate_angle_axis: None,
-                }],
-            }),
-        )
-        .await?;
+        exec_state
+            .batch_modeling_cmd(
+                (&args).into(),
+                ModelingCmd::from(mcmd::SetObjectTransform {
+                    object_id,
+                    transforms: vec![shared::ComponentTransform {
+                        scale: Some(shared::TransformBy::<Point3d<f64>> {
+                            property: Point3d {
+                                x: x.unwrap_or(1.0),
+                                y: y.unwrap_or(1.0),
+                                z: z.unwrap_or(1.0),
+                            },
+                            set: false,
+                            is_local: !global.unwrap_or(false),
+                        }),
+                        translate: None,
+                        rotate_rpy: None,
+                        rotate_angle_axis: None,
+                    }],
+                }),
+            )
+            .await?;
     }
 
     Ok(objects)
@@ -141,34 +140,33 @@ async fn inner_translate(
     // If we have a solid, flush the fillets and chamfers.
     // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
     if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
-        args.flush_batch_for_solids(exec_state, solids).await?;
+        exec_state.flush_batch_for_solids((&args).into(), solids).await?;
     }
 
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
-        let id = exec_state.next_uuid();
-
-        args.batch_modeling_cmd(
-            id,
-            ModelingCmd::from(mcmd::SetObjectTransform {
-                object_id,
-                transforms: vec![shared::ComponentTransform {
-                    translate: Some(shared::TransformBy::<Point3d<LengthUnit>> {
-                        property: shared::Point3d {
-                            x: LengthUnit(x.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-                            y: LengthUnit(y.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-                            z: LengthUnit(z.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-                        },
-                        set: false,
-                        is_local: !global.unwrap_or(false),
-                    }),
-                    scale: None,
-                    rotate_rpy: None,
-                    rotate_angle_axis: None,
-                }],
-            }),
-        )
-        .await?;
+        exec_state
+            .batch_modeling_cmd(
+                (&args).into(),
+                ModelingCmd::from(mcmd::SetObjectTransform {
+                    object_id,
+                    transforms: vec![shared::ComponentTransform {
+                        translate: Some(shared::TransformBy::<Point3d<LengthUnit>> {
+                            property: shared::Point3d {
+                                x: LengthUnit(x.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+                                y: LengthUnit(y.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+                                z: LengthUnit(z.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+                            },
+                            set: false,
+                            is_local: !global.unwrap_or(false),
+                        }),
+                        scale: None,
+                        rotate_rpy: None,
+                        rotate_angle_axis: None,
+                    }],
+                }),
+            )
+            .await?;
     }
 
     Ok(objects)
@@ -313,59 +311,59 @@ async fn inner_rotate(
     // If we have a solid, flush the fillets and chamfers.
     // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
     if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
-        args.flush_batch_for_solids(exec_state, solids).await?;
+        exec_state.flush_batch_for_solids((&args).into(), solids).await?;
     }
 
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
-        let id = exec_state.next_uuid();
-
         if let (Some(axis), Some(angle)) = (&axis, angle) {
-            args.batch_modeling_cmd(
-                id,
-                ModelingCmd::from(mcmd::SetObjectTransform {
-                    object_id,
-                    transforms: vec![shared::ComponentTransform {
-                        rotate_angle_axis: Some(shared::TransformBy::<Point4d<f64>> {
-                            property: shared::Point4d {
-                                x: axis[0],
-                                y: axis[1],
-                                z: axis[2],
-                                w: angle,
-                            },
-                            set: false,
-                            is_local: !global.unwrap_or(false),
-                        }),
-                        scale: None,
-                        rotate_rpy: None,
-                        translate: None,
-                    }],
-                }),
-            )
-            .await?;
+            exec_state
+                .batch_modeling_cmd(
+                    (&args).into(),
+                    ModelingCmd::from(mcmd::SetObjectTransform {
+                        object_id,
+                        transforms: vec![shared::ComponentTransform {
+                            rotate_angle_axis: Some(shared::TransformBy::<Point4d<f64>> {
+                                property: shared::Point4d {
+                                    x: axis[0],
+                                    y: axis[1],
+                                    z: axis[2],
+                                    w: angle,
+                                },
+                                set: false,
+                                is_local: !global.unwrap_or(false),
+                            }),
+                            scale: None,
+                            rotate_rpy: None,
+                            translate: None,
+                        }],
+                    }),
+                )
+                .await?;
         } else {
             // Do roll, pitch, and yaw.
-            args.batch_modeling_cmd(
-                id,
-                ModelingCmd::from(mcmd::SetObjectTransform {
-                    object_id,
-                    transforms: vec![shared::ComponentTransform {
-                        rotate_rpy: Some(shared::TransformBy::<Point3d<f64>> {
-                            property: shared::Point3d {
-                                x: roll.unwrap_or(0.0),
-                                y: pitch.unwrap_or(0.0),
-                                z: yaw.unwrap_or(0.0),
-                            },
-                            set: false,
-                            is_local: !global.unwrap_or(false),
-                        }),
-                        scale: None,
-                        rotate_angle_axis: None,
-                        translate: None,
-                    }],
-                }),
-            )
-            .await?;
+            exec_state
+                .batch_modeling_cmd(
+                    (&args).into(),
+                    ModelingCmd::from(mcmd::SetObjectTransform {
+                        object_id,
+                        transforms: vec![shared::ComponentTransform {
+                            rotate_rpy: Some(shared::TransformBy::<Point3d<f64>> {
+                                property: shared::Point3d {
+                                    x: roll.unwrap_or(0.0),
+                                    y: pitch.unwrap_or(0.0),
+                                    z: yaw.unwrap_or(0.0),
+                                },
+                                set: false,
+                                is_local: !global.unwrap_or(false),
+                            }),
+                            scale: None,
+                            rotate_angle_axis: None,
+                            translate: None,
+                        }],
+                    }),
+                )
+                .await?;
         }
     }
 

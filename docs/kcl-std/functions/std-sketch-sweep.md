@@ -14,8 +14,8 @@ sweep(
   sectional?: bool,
   tolerance?: number(Length),
   relativeTo?: string,
-  tagStart?: tag,
-  tagEnd?: tag,
+  tagStart?: TagDecl,
+  tagEnd?: TagDecl,
 ): [Solid; 1+]
 ```
 
@@ -37,8 +37,8 @@ swept along the same path.
 | `sectional` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Tolerance for this operation. | No |
 | `relativeTo` | [`string`](/docs/kcl-std/types/std-types-string) | What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. | No |
-| `tagStart` | [`tag`](/docs/kcl-std/types/std-types-tag) | A named tag for the face at the start of the sweep, i.e. the original sketch. | No |
-| `tagEnd` | [`tag`](/docs/kcl-std/types/std-types-tag) | A named tag for the face at the end of the sweep. | No |
+| `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the sweep, i.e. the original sketch. | No |
+| `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the sweep. | No |
 
 ### Returns
 
@@ -54,9 +54,9 @@ swept along the same path.
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 // Create a hole for the pipe.
@@ -101,7 +101,7 @@ springSketch = startSketchOn(XZ)
 sketch001 = startSketchOn(XY)
 rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
   |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 50.61)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 50.61)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -111,7 +111,7 @@ circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 sketch002 = startSketchOn(YZ)
 sweepPath = startProfile(sketch002, at = [0, 0])
   |> yLine(length = 231.81)
-  |> tangentialArc(radius = 80, angle = -90)
+  |> tangentialArc(radius = 80, angle = -90deg)
   |> xLine(length = 384.93)
 
 sweep([rectangleSketch, circleSketch], path = sweepPath)
@@ -130,7 +130,7 @@ circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 sketch002 = startSketchOn(YZ)
 sweepPath = startProfile(sketch002, at = [0, 0])
   |> yLine(length = 231.81)
-  |> tangentialArc(radius = 80, angle = -90)
+  |> tangentialArc(radius = 80, angle = -90deg)
   |> xLine(length = 384.93)
 
 sweep(circleSketch, path = sweepPath, sectional = true)

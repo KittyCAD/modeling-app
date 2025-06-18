@@ -8,7 +8,7 @@ layout: manual
 Compute the cosine of a number.
 
 ```kcl
-cos(@num: number(Angle)): number(_)
+cos(@num: number(Angle)): number
 ```
 
 
@@ -21,7 +21,7 @@ cos(@num: number(Angle)): number(_)
 
 ### Returns
 
-[`number(_)`](/docs/kcl-std/types/std-types-number) - A number.
+[`number`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples
@@ -29,7 +29,7 @@ cos(@num: number(Angle)): number(_)
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 30, length = 3 / cos(30deg))
+  |> angledLine(angle = 30deg, length = 3 / cos(30deg))
   |> yLine(endAbsolute = 0)
   |> close()
 

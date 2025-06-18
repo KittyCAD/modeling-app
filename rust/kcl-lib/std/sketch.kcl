@@ -128,7 +128,7 @@
 ///   |> line(end = [-2, 0])
 ///   |> close()
 ///
-/// example = revolve(exampleSketch, axis = Y, angle = 180)
+/// example = revolve(exampleSketch, axis = Y, angle = 180deg)
 ///
 /// exampleSketch002 = startSketchOn(example, face = END)
 ///   |> startProfile(at = [4.5, -5])
@@ -154,7 +154,7 @@
 ///   |> line(end = [-2, 0])
 ///   |> close()
 ///
-/// example = revolve(exampleSketch, axis = Y, angle = 180, tagEnd = $end01)
+/// example = revolve(exampleSketch, axis = Y, angle = 180deg, tagEnd = $end01)
 ///
 /// exampleSketch002 = startSketchOn(example, face = end01)
 ///   |> startProfile(at = [4.5, -5])
@@ -186,7 +186,7 @@ export fn startSketchOn(
   /// Profile whose start is being used.
   @planeOrSolid: Solid | Plane,
   /// Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`).
-  face?: tag,
+  face?: TaggedFace,
 ): Plane | Face {}
 
 /// Start a new profile at a given point.
@@ -231,7 +231,7 @@ export fn startProfile(
   @(snippetArray = ["0", "0"])
   at: Point2d,
   /// Tag this first starting point.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Construct a 2-dimensional circle, of the specified radius, centered at
@@ -268,7 +268,7 @@ export fn circle(
   @(includeInSnippet = true)
   diameter?: number(Length),
   /// Create a new tag which refers to this circle.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Construct a 2-dimensional ellipse, of the specified major/minor radius, centered at the provided (x, y) point.
@@ -304,7 +304,7 @@ export fn ellipse(
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> arc(
-///     angleStart = 120,
+///     angleStart = 120deg,
 ///     angleEnd = 0,
 ///     radius = 5,
 ///   )
@@ -324,8 +324,8 @@ export fn ellipse(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-10, 0])
 ///   |> arc(
-///     angleStart = 120,
-///     angleEnd = -60,
+///     angleStart = 120deg,
+///     angleEnd = -60deg,
 ///     radius = 5,
 ///   )
 ///   |> line(end = [10, 0])
@@ -346,8 +346,8 @@ export fn ellipse(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-10, 0])
 ///   |> arc(
-///     angleStart = 120,
-///     angleEnd = -60,
+///     angleStart = 120deg,
+///     angleEnd = -60deg,
 ///     radius = 5,
 ///   )
 ///   |> line(end = [10, 0])
@@ -368,8 +368,8 @@ export fn ellipse(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-10, 0])
 ///   |> arc(
-///     angleStart = 120,
-///     angleEnd = -60,
+///     angleStart = 120deg,
+///     angleEnd = -60deg,
 ///     radius = 5,
 ///   )
 ///   |> line(end = [10, 0])
@@ -385,6 +385,11 @@ export fn ellipse(
 ///
 /// example = extrude(exampleSketch, length = 10, bidirectionalLength = 50)
 /// ```
+/// ```kcl
+/// example = startSketchOn(XZ)
+///   |> polygon(radius = 10, numSides = 3, center = [0, 0])
+///   |> extrude(length = 10, twistAngle = 120deg)
+/// ```
 @(impl = std_rust)
 export fn extrude(
   /// Which sketch or sketches should be extruded.
@@ -396,9 +401,19 @@ export fn extrude(
   /// If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.
   bidirectionalLength?: number(Length),
   /// A named tag for the face at the start of the extrusion, i.e. the original sketch.
-  tagStart?: tag,
+  tagStart?: TagDecl,
   /// A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch.
-  tagEnd?: tag,
+  tagEnd?: TagDecl,
+  /// If given, the sketch will be twisted around this angle while being extruded.
+  twistAngle?: number(Angle),
+  /// The size of each intermediate angle as the sketch twists around.
+  /// Must be between 4 and 90 degrees.
+  /// Only used if `twistAngle` is given, defaults to 15 degrees.
+  twistAngleStep?: number(Angle),
+  /// The center around which the sketch will be twisted. Relative to the sketch's center.
+  /// Only used if `twistAngle` is given, defaults to [0, 0] i.e. sketch's center.
+  @(snippetArray = ["0", "0"])
+  twistCenter?: Point2d,
 ): [Solid; 1+] {}
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
@@ -425,7 +440,7 @@ export fn extrude(
 ///     |> line(end = [0, -5.5])
 ///     |> line(end = [-2, 0])
 ///     |> close()
-///     |> revolve(axis = Y) // default angle is 360
+///     |> revolve(axis = Y) // default angle is 360deg
 /// ```
 ///
 /// ```kcl
@@ -433,7 +448,7 @@ export fn extrude(
 /// sketch001 = startSketchOn(XY)
 ///     |> circle( center = [15, 0], radius = 5 )
 ///     |> revolve(
-///         angle = 360,
+///         angle = 360deg,
 ///         axis = Y,
 ///     )
 /// ```
@@ -449,7 +464,7 @@ export fn extrude(
 ///     |> line(end = [0, -5.5])
 ///     |> line(end = [-2, 0])
 ///     |> close()
-///     |> revolve(axis = Y, angle = 180)
+///     |> revolve(axis = Y, angle = 180deg)
 /// ```
 ///
 /// ```kcl
@@ -463,7 +478,7 @@ export fn extrude(
 ///     |> line(end = [0, -5.5])
 ///     |> line(end = [-2, 0])
 ///     |> close()
-///     |> revolve(axis = Y, angle = 180)
+///     |> revolve(axis = Y, angle = 180deg)
 ///
 /// part002 = startSketchOn(part001, face = END)
 ///     |> startProfile(at = [4.5, -5])
@@ -486,7 +501,7 @@ export fn extrude(
 /// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
-///         angle = -90,
+///         angle = -90deg,
 ///         axis = Y
 ///     )
 /// ```
@@ -503,7 +518,7 @@ export fn extrude(
 /// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
-///         angle = 90,
+///         angle = 90deg,
 ///         axis = getOppositeEdge(revolveAxis)
 ///     )
 /// ```
@@ -520,7 +535,7 @@ export fn extrude(
 /// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
-///         angle = 90,
+///         angle = 90deg,
 ///         axis = getOppositeEdge(revolveAxis),
 ///         tolerance = 0.0001
 ///     )
@@ -579,7 +594,7 @@ export fn extrude(
 ///
 /// sketch001 = startSketchOn(XY)
 ///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis)
+///     |> revolve(angle = 90deg, axis = revolveAxis)
 /// ```
 ///
 /// ```kcl
@@ -592,7 +607,7 @@ export fn extrude(
 ///
 /// sketch001 = startSketchOn(XY)
 ///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis)
+///     |> revolve(angle = 90deg, axis = revolveAxis)
 /// ```
 ///
 /// ```kcl
@@ -605,7 +620,7 @@ export fn extrude(
 ///
 /// sketch001 = startSketchOn(XY)
 ///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis, symmetric = true)
+///     |> revolve(angle = 90deg, axis = revolveAxis, symmetric = true)
 /// ```
 ///
 /// ```kcl
@@ -618,7 +633,7 @@ export fn extrude(
 ///
 /// sketch001 = startSketchOn(XY)
 ///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis, bidirectionalAngle = 50)
+///     |> revolve(angle = 90deg, axis = revolveAxis, bidirectionalAngle = 50)
 /// ```
 @(impl = std_rust)
 export fn revolve(
@@ -635,9 +650,9 @@ export fn revolve(
   /// If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored.
   bidirectionalAngle?: number(Angle),
   /// A named tag for the face at the start of the revolve, i.e. the original sketch.
-  tagStart?: tag,
+  tagStart?: TagDecl,
   /// A named tag for the face at the end of the revolve.
-  tagEnd?: tag,
+  tagEnd?: TagDecl,
 ): [Solid; 1+] {}
 
 /// Just like `patternTransform`, but works on 2D sketches not 3D solids.
@@ -672,16 +687,16 @@ export fn patternTransform2d(
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
-///        angle = 60,
+///        angle = 60deg,
 ///        length = 10,
 ///      )
 ///   |> angledLine(
-///        angle = 120,
+///        angle = 120deg,
 ///        length = 10,
 ///      )
 ///   |> line(end = [-10, 0])
 ///   |> angledLine(
-///        angle = 240,
+///        angle = 240deg,
 ///        length = 10,
 ///        tag = $referenceEdge,
 ///      )
@@ -696,7 +711,7 @@ export fn patternTransform2d(
 @(impl = std_rust)
 export fn getOppositeEdge(
   /// The tag of the edge you want to find the opposite edge of.
-  @edge: tag,
+  @edge: TaggedEdge,
 ): Edge {}
 
 /// Get the next adjacent edge to the edge given.
@@ -706,16 +721,16 @@ export fn getOppositeEdge(
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
-///        angle = 60,
+///        angle = 60deg,
 ///        length = 10,
 ///      )
 ///   |> angledLine(
-///        angle = 120,
+///        angle = 120deg,
 ///        length = 10,
 ///      )
 ///   |> line(end = [-10, 0])
 ///   |> angledLine(
-///        angle = 240,
+///        angle = 240deg,
 ///        length = 10,
 ///        tag = $referenceEdge,
 ///      )
@@ -730,7 +745,7 @@ export fn getOppositeEdge(
 @(impl = std_rust)
 export fn getNextAdjacentEdge(
   /// The tag of the edge you want to find the next adjacent edge of.
-  @edge: tag,
+  @edge: TaggedEdge,
 ): Edge {}
 
 /// Get the previous adjacent edge to the edge given.
@@ -740,16 +755,16 @@ export fn getNextAdjacentEdge(
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
-///        angle = 60,
+///        angle = 60deg,
 ///        length = 10,
 ///      )
 ///   |> angledLine(
-///        angle = 120,
+///        angle = 120deg,
 ///        length = 10,
 ///      )
 ///   |> line(end = [-10, 0])
 ///   |> angledLine(
-///        angle = 240,
+///        angle = 240deg,
 ///        length = 10,
 ///        tag = $referenceEdge,
 ///      )
@@ -764,7 +779,7 @@ export fn getNextAdjacentEdge(
 @(impl = std_rust)
 export fn getPreviousAdjacentEdge(
   /// The tag of the edge you want to find the previous adjacent edge of.
-  @edge: tag,
+  @edge: TaggedEdge,
 ): Edge {}
 
 /// Get the shared edge between two faces.
@@ -793,7 +808,7 @@ export fn getPreviousAdjacentEdge(
 @(impl = std_rust)
 export fn getCommonEdge(
   /// The tags of the faces you want to find the common edge between.
-  faces: [tag; 2],
+  faces: [TaggedFace; 2],
 ): Edge {}
 
 /// Construct a circle derived from 3 points.
@@ -814,7 +829,7 @@ export fn circleThreePoint(
   /// 3rd point to derive the circle.
   p3: Point2d,
   /// Identifier for the circle to reference elsewhere.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Create a regular polygon with the specified number of sides that is either inscribed or circumscribed around a circle of the specified radius.
@@ -876,9 +891,9 @@ export fn polygon(
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -924,7 +939,7 @@ export fn polygon(
 /// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
 ///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
-///         angle = segAng(rectangleSegmentA001) - 90,
+///         angle = segAng(rectangleSegmentA001) - 90deg,
 ///         length = 50.61,
 ///     )
 ///     |> angledLine(
@@ -939,7 +954,7 @@ export fn polygon(
 /// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc(radius = 80, angle = -90)
+///     |> tangentialArc(radius = 80, angle = -90deg)
 ///     |> xLine(length = 384.93)
 ///
 /// sweep([rectangleSketch, circleSketch], path = sweepPath)
@@ -954,7 +969,7 @@ export fn polygon(
 /// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc(radius = 80, angle = -90)
+///     |> tangentialArc(radius = 80, angle = -90deg)
 ///     |> xLine(length = 384.93)
 ///
 /// sweep(circleSketch, path = sweepPath, sectional = true)
@@ -972,9 +987,9 @@ export fn sweep(
   /// What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'.
   relativeTo?: string = 'trajectoryCurve',
   /// A named tag for the face at the start of the sweep, i.e. the original sketch.
-  tagStart?: tag,
+  tagStart?: TagDecl,
   /// A named tag for the face at the end of the sweep.
-  tagEnd?: tag,
+  tagEnd?: TagDecl,
 ): [Solid; 1+] {}
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
@@ -1056,9 +1071,9 @@ export fn loft(
   /// Tolerance for the loft operation.
   tolerance?: number(Length),
   /// A named tag for the face at the start of the loft, i.e. the original sketch.
-  tagStart?: tag,
+  tagStart?: TagDecl,
   /// A named tag for the face at the end of the loft.
-  tagEnd?: tag,
+  tagEnd?: TagDecl,
 ): Solid {}
 
 /// Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
@@ -1172,7 +1187,7 @@ export fn patternCircular2d(
 @(impl = std_rust)
 export fn segEnd(
   /// The line segment being queried by its tag.
-  @tag: tag,
+  @tag: TaggedEdge,
 ): Point2d {}
 
 /// Compute the ending point of the provided line segment along the 'x' axis.
@@ -1191,7 +1206,7 @@ export fn segEnd(
 @(impl = std_rust)
 export fn segEndX(
   /// The line segment being queried by its tag.
-  @tag: tag,
+  @tag: TaggedEdge,
 ): number(Length) {}
 
 /// Compute the ending point of the provided line segment along the 'y' axis.
@@ -1211,7 +1226,7 @@ export fn segEndX(
 @(impl = std_rust)
 export fn segEndY(
   /// The line segment being queried by its tag.
-  @tag: tag,
+  @tag: TaggedEdge,
 ): number(Length) {}
 
 /// Compute the starting point of the provided line segment.
@@ -1242,7 +1257,7 @@ export fn segEndY(
 @(impl = std_rust)
 export fn segStart(
   /// The line segment being queried by its tag.
-  @tag: tag,
+  @tag: TaggedEdge,
 ): Point2d {}
 
 /// Compute the starting point of the provided line segment along the 'x' axis.
@@ -1261,7 +1276,7 @@ export fn segStart(
 @(impl = std_rust)
 export fn segStartX(
   /// The line segment being queried by its tag.
-  @tag: tag,
+  @tag: TaggedEdge,
 ): number(Length) {}
 
 /// Compute the starting point of the provided line segment along the 'y' axis.
@@ -1281,7 +1296,7 @@ export fn segStartX(
 @(impl = std_rust)
 export fn segStartY(
   /// The line segment being queried by its tag.
-  @tag: tag,
+  @tag: TaggedEdge,
 ): number(Length) {}
 
 /// Extract the 'x' axis value of the last line segment in the provided 2-d sketch.
@@ -1332,9 +1347,9 @@ export fn lastSegY(
 ///     length = 10,
 ///     tag = $thing,
 ///   )
-///   |> tangentialArc(angle = -120, radius = 5)
+///   |> tangentialArc(angle = -120deg, radius = 5)
 ///   |> angledLine(
-///     angle = -60,
+///     angle = -60deg,
 ///     length = segLen(thing),
 ///   )
 ///   |> close()
@@ -1344,7 +1359,7 @@ export fn lastSegY(
 @(impl = std_rust)
 export fn segLen(
   /// The line segment being queried by its tag.
-  @tag: tag,
+  @tag: TaggedEdge,
 ): number(Length) {}
 
 /// Compute the angle (in degrees) of the provided line segment.
@@ -1365,7 +1380,7 @@ export fn segLen(
 @(impl = std_rust)
 export fn segAng(
   /// The line segment being queried by its tag.
-  @tag: tag,
+  @tag: TaggedEdge,
 ): number(Angle) {}
 
 /// Returns the angle coming out of the end of the segment in degrees.
@@ -1442,7 +1457,7 @@ export fn segAng(
 @(impl = std_rust)
 export fn tangentToEnd(
   /// The line segment being queried by its tag.
-  @tag: tag,
+  @tag: TaggedEdge,
 ): number(Angle) {}
 
 /// Extract the provided 2-dimensional sketch's profile's origin value.
@@ -1451,7 +1466,7 @@ export fn tangentToEnd(
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
 ///  |> angledLine(angle = 120, length = 50 , tag = $seg01)
-///  |> angledLine(angle = segAng(seg01) + 120, length = 50 )
+///  |> angledLine(angle = segAng(seg01) + 120deg, length = 50 )
 ///  |> line(end = profileStart(%))
 ///  |> close()
 ///  |> extrude(length = 20)
@@ -1468,8 +1483,8 @@ export fn profileStart(
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
 ///  |> angledLine(angle = -26.6, length = 50)
-///  |> angledLine(angle = 90, length = 50)
-///  |> angledLine(angle = 30, endAbsoluteX = profileStartX(%))
+///  |> angledLine(angle = 90deg, length = 50)
+///  |> angledLine(angle = 30deg, endAbsoluteX = profileStartX(%))
 /// ```
 @(impl = std_rust)
 export fn profileStartX(
@@ -1482,8 +1497,8 @@ export fn profileStartX(
 /// ```kcl
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
-///  |> angledLine(angle = -60, length = 14 )
-///  |> angledLine(angle = 30, endAbsoluteY =  profileStartY(%))
+///  |> angledLine(angle = -60deg, length = 14 )
+///  |> angledLine(angle = 30deg, endAbsoluteY =  profileStartY(%))
 /// ```
 @(impl = std_rust)
 export fn profileStartY(
@@ -1498,8 +1513,8 @@ export fn profileStartY(
 /// b = 14
 /// startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
-///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60)
-///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60, reverse = true)
+///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60deg)
+///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60deg, reverse = true)
 /// ```
 @(impl = std_rust)
 export fn involuteCircular(
@@ -1514,7 +1529,7 @@ export fn involuteCircular(
   /// If reverse is true, the segment will start from the end of the involute, otherwise it will start from that start.
   reverse?: bool = false,
   /// Create a new tag which refers to this line.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Extend the current sketch with a new straight line.
@@ -1551,7 +1566,7 @@ export fn line(
   @(includeInSnippet = true)
   end?: Point2d,
   /// Create a new tag which refers to this line.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Draw a line relative to the current origin to a specified distance away
@@ -1562,13 +1577,13 @@ export fn line(
 ///   |> startProfile(at = [0, 0])
 ///   |> xLine(length = 15)
 ///   |> angledLine(
-///     angle = 80,
+///     angle = 80deg,
 ///     length = 15,
 ///   )
 ///   |> line(end = [8, -10])
 ///   |> xLine(length = 10)
 ///   |> angledLine(
-///     angle = 120,
+///     angle = 120deg,
 ///     length = 30,
 ///   )
 ///   |> xLine(length = -15)
@@ -1586,7 +1601,7 @@ export fn xLine(
   /// Which absolute X value should this line go to? Incompatible with `length`.
   endAbsolute?: number(Length),
   /// Create a new tag which refers to this line.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Draw a line relative to the current origin to a specified distance away
@@ -1597,7 +1612,7 @@ export fn xLine(
 ///   |> startProfile(at = [0, 0])
 ///   |> yLine(length = 15)
 ///   |> angledLine(
-///     angle = 30,
+///     angle = 30deg,
 ///     length = 15,
 ///   )
 ///   |> line(end = [8, -10])
@@ -1616,7 +1631,7 @@ export fn yLine(
   /// Which absolute Y value should this line go to? Incompatible with `length`.
   endAbsolute?: number(Length),
   /// Create a new tag which refers to this line.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Draw a line segment relative to the current origin using the polar
@@ -1627,7 +1642,7 @@ export fn yLine(
 ///   |> startProfile(at = [0, 0])
 ///   |> yLine(endAbsolute = 15)
 ///   |> angledLine(
-///     angle = 30,
+///     angle = 30deg,
 ///     length = 15,
 ///   )
 ///   |> line(end = [8, -10])
@@ -1653,7 +1668,7 @@ export fn angledLine(
   /// Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given.
   endAbsoluteY?: number(Length),
   /// Create a new tag which refers to this line.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Draw an angled line from the current origin, constructing a line segment
@@ -1667,7 +1682,7 @@ export fn angledLine(
 ///   |> line(endAbsolute = [-10, 10], tag = $lineToIntersect)
 ///   |> line(endAbsolute = [0, 20])
 ///   |> angledLineThatIntersects(
-///        angle = 80,
+///        angle = 80deg,
 ///        intersectTag = lineToIntersect,
 ///        offset = 10,
 ///      )
@@ -1682,11 +1697,11 @@ export fn angledLineThatIntersects(
   /// Which angle should the line be drawn at?
   angle: number(Angle),
   /// The tag of the line to intersect with.
-  intersectTag: tag,
+  intersectTag: TaggedEdge,
   /// The offset from the intersecting line.
   offset?: number(Length) = 0mm,
   /// Create a new tag which refers to this line.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Construct a line segment from the current origin back to the profile's
@@ -1720,7 +1735,7 @@ export fn close(
   /// The sketch you want to close.
   @sketch: Sketch,
   /// Create a new tag which refers to this line.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Draw a curved line segment along an imaginary circle.
@@ -1740,7 +1755,7 @@ export fn close(
 ///   |> line(end = [10, 0])
 ///   |> arc(
 ///        angleStart = 0,
-///        angleEnd = 280,
+///        angleEnd = 280deg,
 ///        radius = 16
 ///      )
 ///   |> close()
@@ -1777,7 +1792,7 @@ export fn arc(
   /// Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd`.
   endAbsolute?: Point2d,
   /// Create a new tag which refers to this arc.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Starting at the current sketch's origin, draw a curved line segment along
@@ -1794,7 +1809,7 @@ export fn arc(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 45,
+///     angle = 45deg,
 ///     length = 10,
 ///   )
 ///   |> tangentialArc(end = [0, -10])
@@ -1808,7 +1823,7 @@ export fn arc(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 60,
+///     angle = 60deg,
 ///     length = 10,
 ///   )
 ///   |> tangentialArc(endAbsolute = [15, 15])
@@ -1822,12 +1837,12 @@ export fn arc(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 60,
+///     angle = 60deg,
 ///     length = 10,
 ///   )
-///   |> tangentialArc(radius = 10, angle = -120)
+///   |> tangentialArc(radius = 10, angle = -120deg)
 ///   |> angledLine(
-///     angle = -60,
+///     angle = -60deg,
 ///     length = 10,
 ///   )
 ///   |> close()
@@ -1850,7 +1865,7 @@ export fn tangentialArc(
   /// Offset of the arc. `radius` must be given. Incompatible with `end` and `endAbsolute`.
   angle?: number(Angle),
   /// Create a new tag which refers to this arc.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Draw a smooth, continuous, curved line segment from the current origin to
@@ -1898,7 +1913,7 @@ export fn bezierCurve(
   /// Coordinate on the plane at which this line should end.
   endAbsolute?: Point2d,
   /// Create a new tag which refers to this line.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.

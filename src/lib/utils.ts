@@ -55,6 +55,12 @@ export function isArray(val: any): val is unknown[] {
   return Array.isArray(val)
 }
 
+export function areArraysEqual<T>(a: T[], b: T[]): boolean {
+  if (a.length !== b.length) return false
+  const set1 = new Set(a)
+  return b.every((element) => set1.has(element))
+}
+
 export type SafeArray<T> = Omit<Array<T>, number> & {
   [index: number]: T | undefined
 }
@@ -260,6 +266,9 @@ export function platform(): Platform {
   }
   if (navigator.platform === 'Windows' || navigator.platform === 'Win32') {
     return 'windows'
+  }
+  if (navigator.platform?.indexOf('Linux') === 0) {
+    return 'linux'
   }
 
   // Chrome only, but more accurate than userAgent.
