@@ -573,7 +573,7 @@ extrude002 = extrude(profile002, length = 150)
         name: 'Projects',
       })
       const projectLink = page.getByRole('link', { name: 'bracket' })
-      const networkHealthIndicator = page.getByTestId('network-toggle')
+      const networkHealthIndicator = page.getByTestId(/network-toggle/)
 
       await test.step('Check the home page', async () => {
         await expect(projectsHeading).toBeVisible()
