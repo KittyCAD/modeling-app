@@ -14,7 +14,10 @@ import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { roundOff } from '@src/lib/utils'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
-function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
+function CommandBarHeader({
+  children,
+  stepBack,
+}: React.PropsWithChildren<object> & { stepBack: () => void }) {
   const commandBarState = useCommandBarState()
   const {
     context: { selectedCommand, currentArgument, argumentsToSubmit },
@@ -178,7 +181,9 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                             ),
                             4
                           )
-                        ) : arg.inputType === 'text' && !arg.valueSummary ? (
+                        ) : arg.inputType === 'text' &&
+                          !arg.valueSummary &&
+                          typeof argValue === 'string' ? (
                           `${argValue.slice(0, 12)}${argValue.length > 12 ? '...' : ''}`
                         ) : typeof argValue === 'object' ? (
                           arg.valueSummary ? (
@@ -222,76 +227,94 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                           </Tooltip>
                         </>
                       )}
-                    {arg.inputType === 'options' &&
-                      typeof argValue === 'boolean' &&
-                      argValue && (
-                        <CustomIcon name="checkmark" className="w-4 h-4" />
-                      )}
                   </button>
                 )
               }
             )}
           </div>
-          {isReviewing ? (
-            <ReviewingButton
-              bgClassName={
-                selectedCommand.status === 'experimental'
-                  ? '!bg-ml-green'
-                  : '!bg-primary'
-              }
-              iconClassName={
-                selectedCommand.status === 'experimental'
-                  ? '!text-ml-black'
-                  : '!text-chalkboard-10'
-              }
-            />
-          ) : (
-            <GatheringArgsButton
-              bgClassName={
-                selectedCommand.status === 'experimental'
-                  ? '!bg-ml-green'
-                  : '!bg-primary'
-              }
-              iconClassName={
-                selectedCommand.status === 'experimental'
-                  ? '!text-ml-black'
-                  : '!text-chalkboard-10'
-              }
-            />
-          )}
         </div>
         <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
         {isReviewing && availableOptionalArgs.length > 0 && (
-          <div className="px-4">
-            <p className="mb-2 text-sm">Optional arguments</p>
-            <div className="text-sm flex gap-4 items-start">
-              <div className="flex flex-1 flex-wrap gap-2">
-                {availableOptionalArgs.map(([argName, arg]) => {
-                  return (
-                    <button
-                      data-testid="cmd-bar-add-optional-arg"
-                      type="button"
-                      onClick={() => {
-                        commandBarActor.send({
-                          type: 'Edit argument',
-                          data: { arg: { ...arg, name: argName } },
-                        })
-                      }}
-                      key={argName}
-                      className="w-fit px-2 py-1 m-0 rounded-sm flex gap-2 items-center border"
-                    >
-                      <span className="capitalize">
-                        {arg.displayName || argName}
-                      </span>
-                      <CustomIcon name="plus" className="w-4 h-4" />
-                    </button>
-                  )
-                })}
+          <>
+            <div className="px-4">
+              <p className="mb-2 text-sm">Optional arguments</p>
+              <div className="text-sm flex gap-4 items-start">
+                <div className="flex flex-1 flex-wrap gap-2">
+                  {availableOptionalArgs.map(([argName, arg]) => {
+                    return (
+                      <button
+                        data-testid="cmd-bar-add-optional-arg"
+                        type="button"
+                        onClick={() => {
+                          commandBarActor.send({
+                            type: 'Edit argument',
+                            data: { arg: { ...arg, name: argName } },
+                          })
+                        }}
+                        key={argName}
+                        className="w-fit px-2 py-1 m-0 rounded-sm flex gap-2 items-center border"
+                      >
+                        <span className="capitalize">
+                          {arg.displayName || argName}
+                        </span>
+                        <CustomIcon name="plus" className="w-4 h-4" />
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
             </div>
-          </div>
+          </>
         )}
         {children}
+        <>
+          <div className="block w-full mb-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
+          <div className="px-4 pb-2 flex justify-between items-center gap-2">
+            <ActionButton
+              Element="button"
+              type="button"
+              form="review-form"
+              className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current`}
+              tabIndex={0}
+              data-testid="command-bar-submit"
+              iconStart={{
+                icon: 'arrowLeft',
+                bgClassName: `p-1 rounded-sm`,
+                iconClassName: ``,
+              }}
+              onClick={stepBack}
+            >
+              <span className={`pr-2`}>Step back</span>
+            </ActionButton>
+            {isReviewing ? (
+              <ReviewingButton
+                bgClassName={
+                  selectedCommand.status === 'experimental'
+                    ? '!bg-ml-green'
+                    : '!bg-primary'
+                }
+                iconClassName={
+                  selectedCommand.status === 'experimental'
+                    ? '!text-ml-black'
+                    : '!text-chalkboard-10'
+                }
+              />
+            ) : (
+              <GatheringArgsButton
+                bgClassName={
+                  selectedCommand.status === 'experimental'
+                    ? '!bg-ml-green'
+                    : '!bg-primary'
+                }
+                iconClassName={
+                  selectedCommand.status === 'experimental'
+                    ? '!text-ml-black'
+                    : '!text-chalkboard-10'
+                }
+              />
+            )}
+          </div>
+        </>
       </>
     )
   )
@@ -320,7 +343,7 @@ function ReviewingButton({ bgClassName, iconClassName }: ButtonProps) {
         iconClassName: `${iconClassName}`,
       }}
     >
-      <span className={`pl-2 ${iconClassName}`}>Confirm</span>
+      <span className={`pl-2 ${iconClassName}`}>Submit</span>
     </ActionButton>
   )
 }
@@ -340,7 +363,7 @@ function GatheringArgsButton({ bgClassName, iconClassName }: ButtonProps) {
         iconClassName: `${iconClassName}`,
       }}
     >
-      <span className={`pl-2 ${iconClassName}`}>Next</span>
+      <span className={`pl-2 ${iconClassName}`}>Continue</span>
     </ActionButton>
   )
 }

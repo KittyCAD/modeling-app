@@ -28,7 +28,7 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
 
   return (
     currentArgument && (
-      <CommandBarHeader>
+      <CommandBarHeader stepBack={stepBack}>
         <ArgumentInput
           arg={currentArgument}
           stepBack={stepBack}

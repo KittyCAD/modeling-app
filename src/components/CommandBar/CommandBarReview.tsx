@@ -58,12 +58,17 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   }
 
   return (
-    <CommandBarHeader>
-      <p className="px-4 pb-2">
-        {selectedCommand?.reviewMessage &&
-          (selectedCommand.reviewMessage instanceof Function
-            ? selectedCommand.reviewMessage(commandBarState.context)
-            : selectedCommand.reviewMessage)}
+    <CommandBarHeader stepBack={stepBack}>
+      <p className="px-4 py-2">
+        {selectedCommand?.reviewMessage ? (
+          selectedCommand.reviewMessage instanceof Function ? (
+            selectedCommand.reviewMessage(commandBarState.context)
+          ) : (
+            selectedCommand.reviewMessage
+          )
+        ) : (
+          <>Confirm {selectedCommand?.displayName || selectedCommand?.name}</>
+        )}
       </p>
       <form
         id="review-form"

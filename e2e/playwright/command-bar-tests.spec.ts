@@ -307,7 +307,7 @@ test.describe('Command bar tests', () => {
     )
 
     const continueButton = page.getByRole('button', { name: 'Continue' })
-    const submitButton = page.getByRole('button', { name: 'Submit command' })
+    const submitButton = page.getByTestId('command-bar-submit')
     await continueButton.click()
 
     // Review step and argument hotkeys

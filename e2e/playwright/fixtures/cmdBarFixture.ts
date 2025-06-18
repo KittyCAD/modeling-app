@@ -118,15 +118,11 @@ export class CmdBarFixture {
       return
     }
 
-    const arrowButton = this.page.getByRole('button', {
-      name: 'arrow right Continue',
-    })
+    const arrowButton = this.page.getByTestId('command-bar-continue')
     if (await arrowButton.isVisible()) {
-      await arrowButton.click()
+      await this.continue()
     } else {
-      await this.page
-        .getByRole('button', { name: 'checkmark Submit command' })
-        .click()
+      await this.submit()
     }
   }
 
