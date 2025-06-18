@@ -3,7 +3,7 @@
 // This prevents re-renders of the codemirror editor, when typing.
 import { history } from '@codemirror/commands'
 import { Annotation, Transaction } from '@codemirror/state'
-import type { EditorView, KeyBinding } from '@codemirror/view'
+import type { KeyBinding } from '@codemirror/view'
 import toast from 'react-hot-toast'
 
 import { historyCompartment } from '@src/editor/compartments'
@@ -106,13 +106,9 @@ export default class CodeManager {
    * This is invoked when a segment is being dragged on the canvas, among other things.
    */
   updateCodeEditor(code: string, clearHistory?: boolean): void {
-    console.log('>> updateCodeEditor', code, clearHistory)
-
     this.code = code
     if (clearHistory) {
-      // TODO make this work without EditorView
-      const editorView = editorManager.getEditorView()
-      if (editorView) clearCodeMirrorHistory(editorView)
+      clearCodeMirrorHistory()
     }
     editorManager.dispatch({
       changes: {
@@ -216,15 +212,15 @@ function safeLSSetItem(key: string, value: string) {
   localStorage?.setItem(key, value)
 }
 
-function clearCodeMirrorHistory(view: EditorView) {
+function clearCodeMirrorHistory() {
   // Clear history
-  view.dispatch({
+  editorManager.dispatch({
     effects: [historyCompartment.reconfigure([])],
     annotations: [codeManagerUpdateEvent],
   })
 
   // Add history back
-  view.dispatch({
+  editorManager.dispatch({
     effects: [historyCompartment.reconfigure([history()])],
     annotations: [codeManagerUpdateEvent],
   })
