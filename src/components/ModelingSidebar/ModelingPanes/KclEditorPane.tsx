@@ -6,6 +6,7 @@ import {
 import {
   defaultKeymap,
   history,
+  historyField,
   historyKeymap,
   indentWithTab,
 } from '@codemirror/commands'
@@ -108,13 +109,21 @@ export const KclEditorPane = () => {
   // Instead, hot load hotkeys via code mirror native.
   const codeMirrorHotkeys = codeManager.getCodemirrorHotkeys()
 
+  // When opening the editor, use the existing history in editorManager.
+  // This is needed to ensure users can undo beyond when the editor has been openeed.
+  // (Another solution would be to reuse the same state instead of creating a new one in CodeEditor.)
+  const existingHistory = editorManager.editorState.field(historyField)
+  const initialHistory = existingHistory
+    ? historyField.init(() => existingHistory)
+    : history()
+
   const editorExtensions = useMemo(() => {
     const extensions = [
       drawSelection({
         cursorBlinkRate: cursorBlinking.current ? 1200 : 0,
       }),
       lineHighlightField,
-      historyCompartment.of(history()),
+      historyCompartment.of(initialHistory),
       closeBrackets(),
       codeFolding(),
       keymap.of([
