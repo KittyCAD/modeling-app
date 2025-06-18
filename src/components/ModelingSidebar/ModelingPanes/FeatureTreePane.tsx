@@ -272,7 +272,7 @@ const OperationItemWrapper = ({
       >
         <CustomIcon name={icon} className="w-5 h-5 block" />
         <div className="flex flex-1 items-baseline align-baseline">
-          <div className="flex-1 inline-flex items-baseline gap-2">
+          <div className="flex-1 inline-flex items-baseline flex-wrap gap-x-2">
             {name}
             {variableName && (
               <span className="text-chalkboard-70 dark:text-chalkboard-40 text-xs">
