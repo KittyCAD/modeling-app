@@ -19,7 +19,7 @@ Release builds URL: ???
 * [ ] Confirm the application opens (dismiss the updater)
 * [ ] Create a project with a basic Text-to-CAD prompt
 * [ ] Confirm the result is viewable in an engine stream
-* [ ] Open the application again and confirm the updater can downgrade
+* [ ] Use 'Check for updates' to bring back the updater toast and confirm the app can update to the previous release
 
 ## macOS via ???
 
@@ -27,7 +27,7 @@ Release builds URL: ???
 * [ ] Confirm the application opens (dismiss the updater)
 * [ ] Create a project with a basic Text-to-CAD prompt
 * [ ] Confirm the result is viewable in an engine stream
-* [ ] Open the application again and confirm the updater can downgrade
+* [ ] Use 'Check for updates' to bring back the updater toast and confirm the app can update to the previous release
 
 ## Linux via ???
 
@@ -35,4 +35,4 @@ Release builds URL: ???
 * [ ] Confirm the application opens (dismiss the updater)
 * [ ] Create a project with a basic Text-to-CAD prompt
 * [ ] Confirm the result is viewable in an engine stream
-* [ ] Open the application again and confirm the updater can downgrade
+* [ ] Use 'Check for updates' to bring back the updater toast and confirm the app can update to the previous release
