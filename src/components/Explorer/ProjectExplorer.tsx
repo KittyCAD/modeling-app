@@ -28,6 +28,7 @@ import {
   joinOSPaths,
 } from '@src/lib/paths'
 import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
+import { HTMLDivElement } from 'happy-dom'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
@@ -66,6 +67,7 @@ export const ProjectExplorer = ({
   const [isRenaming, setIsRenaming] = useState<boolean>(false)
 
   const fileExplorerContainer = useRef<HTMLDivElement | null>(null)
+  const projectExplorerRef = useRef<HTMLDivElement | null>(null)
   const openedRowsRef = useRef(openedRows)
   const rowsToRenderRef = useRef(rowsToRender)
   const activeIndexRef = useRef(activeIndex)
@@ -359,8 +361,8 @@ export const ProjectExplorer = ({
       const path = event.composedPath ? event.composedPath() : []
 
       if (
-        fileExplorerContainer.current &&
-        !path.includes(fileExplorerContainer.current)
+        projectExplorerRef.current &&
+        !path.includes(projectExplorerRef.current)
       ) {
         setActiveIndex(NOTHING_IS_SELECTED)
       }
@@ -443,8 +445,15 @@ export const ProjectExplorer = ({
       setActiveIndex(CONTAINER_IS_SELECTED)
     }
 
-    const handleBlur = () => {
-      setActiveIndex(NOTHING_IS_SELECTED)
+    const handleBlur = (event) => {
+      const path = event.composedPath ? event.composedPath() : []
+      if (
+        fileExplorerContainer.current &&
+        !path.includes(projectExplorerRef.current)
+      ) {
+        setActiveIndex(NOTHING_IS_SELECTED)
+      }
+
     }
 
     document.addEventListener('keydown', keyDownHandler)
@@ -460,26 +469,28 @@ export const ProjectExplorer = ({
   }, [])
 
   return (
-    <div className="w-full">
+    <div className="w-full" ref={projectExplorerRef}>
       <div className="flex flex-row justify-between">
         <div>{project?.name || 'No Project Selected'}</div>
         <div className="h-6 flex flex-row gap-1">
           <FileExplorerHeaderActions
             onCreateFile={() => {
-              setFakeRow({ entry: selectedRow, isFile: true })
-              if (selectedRow?.key) {
+              const row = rowsToRenderRef.current[activeIndexRef.current] || null
+              setFakeRow({ entry: row, isFile: true })
+              if (row?.key) {
                 // If the file tree had the folder opened make the new one open.
                 const newOpenedRows = { ...openedRowsRef.current }
-                newOpenedRows[selectedRow?.key] = true
+                newOpenedRows[row?.key] = true
                 setOpenedRows(newOpenedRows)
               }
             }}
             onCreateFolder={() => {
-              setFakeRow({ entry: selectedRow, isFile: false })
-              if (selectedRow?.key) {
+              const row = rowsToRenderRef.current[activeIndexRef.current] || null
+              setFakeRow({ entry: row, isFile: false })
+              if (row?.key) {
                 // If the file tree had the folder opened make the new one open.
                 const newOpenedRows = { ...openedRowsRef.current }
-                newOpenedRows[selectedRow?.key] = true
+                newOpenedRows[row?.key] = true
                 setOpenedRows(newOpenedRows)
               }
             }}
