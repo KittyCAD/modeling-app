@@ -62,6 +62,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
+import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -223,6 +224,8 @@ const Home = () => {
     children: [],
     readWriteAccess: true,
   }
+  const duplicated = JSON.parse(JSON.stringify(kclSamples))
+  addPlaceHoldersForNewFileAndFolder(duplicated.children, kclSamples.path)
 
   const kclSamples1 = projects.find((p) => {
     return p.name === 'level1-copied'
@@ -419,8 +422,8 @@ const Home = () => {
           className="flex flex-row justify-between"
           style={{ width: '850px' }}
         >
-          <ProjectExplorer project={kclSamples}></ProjectExplorer>
-          <ProjectExplorer project={kclSamples}></ProjectExplorer>
+          <ProjectExplorer project={duplicated}></ProjectExplorer>
+          <ProjectExplorer project={duplicated}></ProjectExplorer>
           <ProjectExplorer project={kclSamples1}></ProjectExplorer>
           <ProjectExplorer project={kclSamples1}></ProjectExplorer>
         </section>

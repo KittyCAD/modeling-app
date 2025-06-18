@@ -8,11 +8,11 @@ import {
   NOTHING_IS_SELECTED,
   CONTAINER_IS_SELECTED,
   STARTING_INDEX_TO_SELECT,
+  FILE_PLACEHOLDER_NAME,
+  FOLDER_PLACEHOLDER_NAME
 } from '@src/components/Explorer/utils'
-import type {
-  FileExplorerEntry,
-  FileExplorerRow,
-} from '@src/components/Explorer/utils'
+import type {  FileExplorerEntry,
+  FileExplorerRow } from '@src/components/Explorer/utils'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { useState, useRef, useEffect } from 'react'
 import { systemIOActor } from '@src/lib/singletons'
@@ -258,7 +258,20 @@ export const ProjectExplorer = ({
       }) || []
 
     const requestedRowsToRender = requestedRows.filter((row) => {
-      return row.render
+      let showPlaceHolder = false
+      if (fakeRow?.isFile) {
+        // fake row is a file
+        const showFileAtSameLevel = fakeRow?.entry?.parentPath === row.parentPath && !row.isFolder === (fakeRow?.entry?.children === null) && row.name === FILE_PLACEHOLDER_NAME
+        const showFileWithinFolder = !row.isFolder && !!fakeRow?.entry?.children && fakeRow?.entry?.key === row.parentPath
+        showPlaceHolder = showFileAtSameLevel || showFileWithinFolder
+      } else {
+        // fake row is a folder
+        const showFolderAtSameLevel = fakeRow?.entry?.parentPath === row.parentPath && !row.isFolder === (!!fakeRow?.entry?.children) && row.name === FOLDER_PLACEHOLDER_NAME
+        const showFolderWithinFolder = row.isFolder && !!fakeRow?.entry?.children && fakeRow?.entry?.key === row.parentPath
+        showPlaceHolder = showFolderAtSameLevel || showFolderWithinFolder
+      }
+      const skipPlaceHolder = !(row.name === FILE_PLACEHOLDER_NAME || row.name === FOLDER_PLACEHOLDER_NAME) || showPlaceHolder
+      return row.render && skipPlaceHolder
     })
 
     // update the callback for rowContextMenu to be the index based on rendering
@@ -273,7 +286,6 @@ export const ProjectExplorer = ({
 
     setRowsToRender(requestedRowsToRender)
     rowsToRenderRef.current = requestedRowsToRender
-    console.log(activeIndex)
   }, [project, openedRows, fakeRow, activeIndex])
 
   // Handle clicks and keyboard presses within the global DOM level
@@ -390,9 +402,21 @@ export const ProjectExplorer = ({
           <FileExplorerHeaderActions
             onCreateFile={() => {
               setFakeRow({ entry: selectedRow, isFile: true })
+              if (selectedRow?.key) {
+                // If the file tree had the folder opened make the new one open.
+                const newOpenedRows = { ...openedRowsRef.current }
+                newOpenedRows[selectedRow?.key] = true
+                setOpenedRows(newOpenedRows)
+              }
             }}
             onCreateFolder={() => {
-              console.log('onCreateFolder TODO')
+              setFakeRow({ entry: selectedRow, isFile: false })
+              if (selectedRow?.key) {
+                // If the file tree had the folder opened make the new one open.
+                const newOpenedRows = { ...openedRowsRef.current }
+                newOpenedRows[selectedRow?.key] = true
+                setOpenedRows(newOpenedRows)
+              }
             }}
             onRefreshExplorer={() => {
               // TODO: Refresh only this path from the Project. This will refresh your entire application project directory

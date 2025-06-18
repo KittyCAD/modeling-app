@@ -2,6 +2,8 @@ import type { ReactNode } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import type { FileEntry } from '@src/lib/project'
+import { joinOSPaths } from '@src/lib/paths'
+import { folder } from 'jszip'
 
 export interface FileExplorerEntry extends FileEntry {
   parentPath: string
@@ -128,7 +130,33 @@ export const flattenProject = (
   return flattenTreeInOrder
 }
 
+export const addPlaceHoldersForNewFileAndFolder = (children: FileEntry[] | null, parentPath: string) => {
+  if (children === null) {
+    return
+  }
+
+  for( let i = 0; i < children.length; i++) {
+    addPlaceHoldersForNewFileAndFolder(children[i].children, joinOSPaths(parentPath, children[i].name))
+  }
+  
+  const placeHolderFolderEntry : FileEntry = {
+    path: joinOSPaths(parentPath, FOLDER_PLACEHOLDER_NAME),
+    name: FOLDER_PLACEHOLDER_NAME,
+    children: []
+  }
+  children.unshift(placeHolderFolderEntry)
+
+  const placeHolderFileEntry : FileEntry = {
+    path: joinOSPaths(parentPath, FILE_PLACEHOLDER_NAME),
+    name: FILE_PLACEHOLDER_NAME,
+    children: null
+  }
+  children.push(placeHolderFileEntry)
+}
+
 // Used for focused which is different from the selection when you mouse click.
 export const NOTHING_IS_SELECTED: number = -2
 export const CONTAINER_IS_SELECTED: number = -1
 export const STARTING_INDEX_TO_SELECT: number = 0
+export const FOLDER_PLACEHOLDER_NAME = '.zoo-placeholder-folder'
+export const FILE_PLACEHOLDER_NAME = '.zoo-placeholder-file'
