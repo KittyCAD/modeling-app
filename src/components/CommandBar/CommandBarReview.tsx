@@ -2,6 +2,8 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import CommandBarHeader from '@src/components/CommandBar/CommandBarHeader'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useMemo } from 'react'
+import { CustomIcon } from '@src/components/CustomIcon'
 
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const commandBarState = useCommandBarState()
@@ -57,19 +59,75 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     })
   }
 
+  const availableOptionalArgs = useMemo(() => {
+    if (!selectedCommand?.args) return undefined
+    const s = { ...selectedCommand.args }
+    for (const [name, arg] of Object.entries(s)) {
+      const value =
+        (typeof argumentsToSubmit[name] === 'function'
+          ? argumentsToSubmit[name](commandBarState.context)
+          : argumentsToSubmit[name]) || ''
+      const isHidden =
+        typeof arg.hidden === 'function'
+          ? arg.hidden(commandBarState.context)
+          : arg.hidden
+      const isRequired =
+        typeof arg.required === 'function'
+          ? arg.required(commandBarState.context)
+          : arg.required
+      if (isHidden || isRequired || value) {
+        delete s[name]
+      }
+    }
+    return s
+  }, [selectedCommand])
   return (
     <CommandBarHeader stepBack={stepBack}>
-      <p className="px-4 py-2">
-        {selectedCommand?.reviewMessage ? (
-          selectedCommand.reviewMessage instanceof Function ? (
-            selectedCommand.reviewMessage(commandBarState.context)
-          ) : (
-            selectedCommand.reviewMessage
-          )
-        ) : (
-          <>Confirm {selectedCommand?.displayName || selectedCommand?.name}</>
-        )}
-      </p>
+      {selectedCommand?.reviewMessage && (
+        <>
+          <p className="px-4 py-2">
+            {selectedCommand.reviewMessage instanceof Function
+              ? selectedCommand.reviewMessage(commandBarState.context)
+              : selectedCommand.reviewMessage}
+          </p>
+          <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
+        </>
+      )}
+      {Object.entries(availableOptionalArgs || {}).length > 0 && (
+        <>
+          <div className="px-4">
+            <p className="mb-2">Optional arguments</p>
+            <div className="text-sm flex gap-4 items-start">
+              <div className="flex flex-1 flex-wrap gap-2">
+                {Object.entries(availableOptionalArgs || {}).map(
+                  ([argName, arg]) => {
+                    return (
+                      <button
+                        data-testid="cmd-bar-add-optional-arg"
+                        type="button"
+                        onClick={() => {
+                          commandBarActor.send({
+                            type: 'Edit argument',
+                            data: { arg: { ...arg, name: argName } },
+                          })
+                        }}
+                        key={argName}
+                        className="w-fit px-2 py-1 m-0 rounded-sm flex gap-2 items-center border"
+                      >
+                        <span className="capitalize">
+                          {arg.displayName || argName}
+                        </span>
+                        <CustomIcon name="plus" className="w-4 h-4" />
+                      </button>
+                    )
+                  }
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
+        </>
+      )}
       <form
         id="review-form"
         className="absolute opacity-0 inset-0 pointer-events-none"

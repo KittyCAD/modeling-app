@@ -79,20 +79,6 @@ function CommandBarHeader({
     [argumentsToSubmit, selectedCommand]
   )
 
-  const availableOptionalArgs = Object.entries(nonHiddenArgs || {}).filter(
-    ([argName, arg]) => {
-      const argValue =
-        (typeof argumentsToSubmit[argName] === 'function'
-          ? argumentsToSubmit[argName](commandBarState.context)
-          : argumentsToSubmit[argName]) || ''
-      const isRequired =
-        typeof arg.required === 'function'
-          ? arg.required(commandBarState.context)
-          : arg.required
-
-      return !(isRequired || argValue)
-    }
-  )
   return (
     selectedCommand &&
     argumentsToSubmit && (
@@ -234,92 +220,37 @@ function CommandBarHeader({
           </div>
         </div>
         <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
-        {isReviewing && availableOptionalArgs.length > 0 && (
-          <>
-            <div className="px-4">
-              <p className="mb-2">Optional arguments</p>
-              <div className="text-sm flex gap-4 items-start">
-                <div className="flex flex-1 flex-wrap gap-2">
-                  {availableOptionalArgs.map(([argName, arg]) => {
-                    return (
-                      <button
-                        data-testid="cmd-bar-add-optional-arg"
-                        type="button"
-                        onClick={() => {
-                          commandBarActor.send({
-                            type: 'Edit argument',
-                            data: { arg: { ...arg, name: argName } },
-                          })
-                        }}
-                        key={argName}
-                        className="w-fit px-2 py-1 m-0 rounded-sm flex gap-2 items-center border"
-                      >
-                        <span className="capitalize">
-                          {arg.displayName || argName}
-                        </span>
-                        <CustomIcon name="plus" className="w-4 h-4" />
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-            <div className="block w-full mt-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
-          </>
-        )}
         {children}
-        <>
-          <div className="block w-full mb-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
-          <div className="px-4 pb-2 flex justify-between items-center gap-2">
-            <ActionButton
-              Element="button"
-              type="button"
-              form="review-form"
-              className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current`}
-              tabIndex={0}
-              data-testid="command-bar-step-back"
-              iconStart={{
-                icon: 'arrowLeft',
-                bgClassName: `p-1 rounded-sm`,
-                iconClassName: ``,
-              }}
-              onClick={stepBack}
-            >
-              <Tooltip position="bottom">
-                Step back
-                <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">Shift</kbd>
-                <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">Bksp</kbd>
-              </Tooltip>
-            </ActionButton>
-            {isReviewing ? (
-              <ReviewingButton
-                bgClassName={
-                  selectedCommand.status === 'experimental'
-                    ? '!bg-ml-green'
-                    : '!bg-primary'
-                }
-                iconClassName={
-                  selectedCommand.status === 'experimental'
-                    ? '!text-ml-black'
-                    : '!text-chalkboard-10'
-                }
-              />
-            ) : (
-              <GatheringArgsButton
-                bgClassName={
-                  selectedCommand.status === 'experimental'
-                    ? '!bg-ml-green'
-                    : '!bg-primary'
-                }
-                iconClassName={
-                  selectedCommand.status === 'experimental'
-                    ? '!text-ml-black'
-                    : '!text-chalkboard-10'
-                }
-              />
-            )}
-          </div>
-        </>
+        <div className="px-4 pb-2 flex justify-between items-center gap-2">
+          <StepBackButton stepBack={stepBack} />
+          {isReviewing ? (
+            <ReviewingButton
+              bgClassName={
+                selectedCommand.status === 'experimental'
+                  ? '!bg-ml-green'
+                  : '!bg-primary'
+              }
+              iconClassName={
+                selectedCommand.status === 'experimental'
+                  ? '!text-ml-black'
+                  : '!text-chalkboard-10'
+              }
+            />
+          ) : (
+            <GatheringArgsButton
+              bgClassName={
+                selectedCommand.status === 'experimental'
+                  ? '!bg-ml-green'
+                  : '!bg-primary'
+              }
+              iconClassName={
+                selectedCommand.status === 'experimental'
+                  ? '!text-ml-black'
+                  : '!text-chalkboard-10'
+              }
+            />
+          )}
+        </div>
       </>
     )
   )
@@ -369,6 +300,36 @@ function GatheringArgsButton({ bgClassName, iconClassName }: ButtonProps) {
       }}
     >
       <span className={`pl-2 ${iconClassName}`}>Continue</span>
+    </ActionButton>
+  )
+}
+
+function StepBackButton({
+  bgClassName,
+  iconClassName,
+  stepBack,
+}: ButtonProps & { stepBack: () => void }) {
+  return (
+    <ActionButton
+      Element="button"
+      type="button"
+      form="arg-form"
+      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80 ${bgClassName}`}
+      tabIndex={0}
+      data-testid="command-bar-step-back"
+      iconStart={{
+        icon: 'arrowLeft',
+        bgClassName: `p-1 rounded-sm bg-chalkboard-20/50 dark:bg-chalkboard-80/50 ${bgClassName}`,
+        iconClassName: `${iconClassName}`,
+      }}
+      onClick={stepBack}
+    >
+      <span className={`pr-2 ${iconClassName}`}>Step Back</span>
+      <Tooltip position="bottom">
+        Step back
+        <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">Shift</kbd>
+        <kbd className="hotkey ml-2 dark:!bg-chalkboard-80">Bksp</kbd>
+      </Tooltip>
     </ActionButton>
   )
 }

@@ -34,6 +34,7 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
           stepBack={stepBack}
           onSubmit={onSubmit}
         />
+        <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
       </CommandBarHeader>
     )
   )
