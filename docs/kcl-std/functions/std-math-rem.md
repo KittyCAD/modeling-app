@@ -8,13 +8,16 @@ layout: manual
 Compute the remainder after dividing `num` by `div`. If `num` is negative, the result will be too.
 
 ```kcl
-rem(
-  @num: number,
-  divisor: number,
-): number
+import rem from "std::math"
+
+assert(rem(7, divisor = 4), isEqualTo = 3, error = "remainder is 3")
+assert(rem(-7, divisor = 4), isEqualTo = -3, error = "remainder is -3")
+assert(rem(7, divisor = -4), isEqualTo = 3, error = "remainder is 3")
+assert(rem(6, divisor = 2.5), isEqualTo = 1, error = "remainder is 1")
+assert(rem(6.5, divisor = 2.5), isEqualTo = 1.5, error = "remainder is 1.5")
+assert(rem(6.5, divisor = 2), isEqualTo = 0.5, error = "remainder is 0.5")
+
 ```
-
-
 
 ### Arguments
 
@@ -27,6 +30,15 @@ rem(
 
 [`number`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+rem(
+  @num: number,
+  divisor: number,
+): number
+```
 
 ### Examples
 

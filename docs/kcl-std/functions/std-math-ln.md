@@ -8,10 +8,16 @@ layout: manual
 Compute the natural logarithm of the number.
 
 ```kcl
-ln(@input: number): number
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [ln(100), 15])
+  |> line(end = [5, -6])
+  |> line(end = [-10, -10])
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +29,12 @@ ln(@input: number): number
 
 [`number`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+ln(@input: number): number
+```
 
 ### Examples
 

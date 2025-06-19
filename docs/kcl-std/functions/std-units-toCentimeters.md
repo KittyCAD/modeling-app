@@ -7,11 +7,6 @@ layout: manual
 
 Convert a number to centimeters from its current units.
 
-```kcl
-units::toCentimeters(@num: number(Length)): number(cm)
-```
-
-
 
 ### Arguments
 
@@ -23,5 +18,11 @@ units::toCentimeters(@num: number(Length)): number(cm)
 
 [`number(cm)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+units::toCentimeters(@num: number(Length)): number(cm)
+```
 
 

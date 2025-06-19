@@ -8,16 +8,16 @@ layout: manual
 Repeat a 2-dimensional sketch along some dimension, with a dynamic amount of distance between each repetition, some specified number of times.
 
 ```kcl
-patternLinear2d(
-  @sketches: [Sketch; 1+],
-  instances: number(_),
-  distance: number(Length),
-  axis: Axis2d | Point2d,
-  useOriginal?: bool,
-): [Sketch; 1+]
+// / Pattern using a named axis.
+
+
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+  |> patternLinear2d(axis = X, instances = 7, distance = 4)
+
+example = extrude(exampleSketch, length = 1)
+
 ```
-
-
 
 ### Arguments
 
@@ -33,6 +33,18 @@ patternLinear2d(
 
 [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch)
 
+
+### Function signature
+
+```kcl
+patternLinear2d(
+  @sketches: [Sketch; 1+],
+  instances: number(_),
+  distance: number(Length),
+  axis: Axis2d | Point2d,
+  useOriginal?: bool,
+): [Sketch; 1+]
+```
 
 ### Examples
 

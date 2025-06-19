@@ -8,16 +8,46 @@ layout: manual
 Rotate a solid or a sketch.
 
 ```kcl
-rotate(
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
-  roll?: number(Angle),
-  pitch?: number(Angle),
-  yaw?: number(Angle),
-  axis?: Axis3d | Point3d,
-  angle?: number(Angle),
-  global?: bool,
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry
+// Rotate a pipe with roll, pitch, and yaw.
+
+// Create a path for the sweep.
+sweepPath = startSketchOn(XZ)
+  |> startProfile(at = [0.05, 0.05])
+  |> line(end = [0, 7])
+  |> tangentialArc(angle = 90deg, radius = 5)
+  |> line(end = [-3, 0])
+  |> tangentialArc(angle = -90deg, radius = 5)
+  |> line(end = [0, 7])
+
+// Create a hole for the pipe.
+pipeHole = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1.5)
+
+sweepSketch = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2)
+  |> subtract2d(tool = pipeHole)
+  |> sweep(path = sweepPath)
+  |> rotate(roll = 10, pitch = 10, yaw = 90)
+
 ```
+
+### Arguments
+
+| Name | Type | Description | Required |
+|----------|------|-------------|----------|
+| `objects` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to rotate. | Yes |
+| `roll` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The roll angle. Must be between -360deg and 360deg. | No |
+| `pitch` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The pitch angle. Must be between -360deg and 360deg. | No |
+| `yaw` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The yaw angle. Must be between -360deg and 360deg. | No |
+| `axis` | [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | The axis to rotate around. Must be used with `angle`. | No |
+| `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The angle to rotate. Must be used with `axis`. Must be between -360deg and 360deg. | No |
+| `global` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
+
+### Returns
+
+[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
+
+### Description
 
 This is really useful for assembling parts together. You can create a part
 and then rotate it to the correct orientation.
@@ -46,22 +76,19 @@ So, in the context of a 3D model:
 When rotating a part around an axis, you specify the axis of rotation and the angle of
 rotation.
 
-### Arguments
+### Function signature
 
-| Name | Type | Description | Required |
-|----------|------|-------------|----------|
-| `objects` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to rotate. | Yes |
-| `roll` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The roll angle. Must be between -360deg and 360deg. | No |
-| `pitch` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The pitch angle. Must be between -360deg and 360deg. | No |
-| `yaw` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The yaw angle. Must be between -360deg and 360deg. | No |
-| `axis` | [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | The axis to rotate around. Must be used with `angle`. | No |
-| `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The angle to rotate. Must be used with `axis`. Must be between -360deg and 360deg. | No |
-| `global` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
-
-### Returns
-
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
-
+```kcl
+rotate(
+  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  roll?: number(Angle),
+  pitch?: number(Angle),
+  yaw?: number(Angle),
+  axis?: Axis3d | Point3d,
+  angle?: number(Angle),
+  global?: bool,
+): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry
+```
 
 ### Examples
 

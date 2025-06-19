@@ -8,16 +8,20 @@ layout: manual
 Repeat a 3-dimensional solid along a linear path, with a dynamic amount of distance between each repetition, some specified number of times.
 
 ```kcl
-patternLinear3d(
-  @solids: [Solid; 1+],
-  instances: number(_),
-  distance: number(Length),
-  axis: Axis3d | Point3d,
-  useOriginal?: bool,
-): [Solid; 1+]
+// / Pattern using a named axis.
+
+
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, 2])
+  |> line(end = [3, 1])
+  |> line(end = [0, -4])
+  |> close()
+
+example = extrude(exampleSketch, length = 1)
+  |> patternLinear3d(axis = X, instances = 7, distance = 6)
+
 ```
-
-
 
 ### Arguments
 
@@ -33,6 +37,18 @@ patternLinear3d(
 
 [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
 
+
+### Function signature
+
+```kcl
+patternLinear3d(
+  @solids: [Solid; 1+],
+  instances: number(_),
+  distance: number(Length),
+  axis: Axis3d | Point3d,
+  useOriginal?: bool,
+): [Solid; 1+]
+```
 
 ### Examples
 

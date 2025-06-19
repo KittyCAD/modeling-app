@@ -8,25 +8,27 @@ layout: manual
 Extrude a sketch along a path.
 
 ```kcl
-sweep(
-  @sketches: [Sketch; 1+],
-  path: Sketch | Helix,
-  sectional?: bool,
-  tolerance?: number(Length),
-  relativeTo?: string,
-  tagStart?: TagDecl,
-  tagEnd?: TagDecl,
-): [Solid; 1+]
+// Create a pipe using a sweep.
+
+// Create a path for the sweep.
+sweepPath = startSketchOn(XZ)
+  |> startProfile(at = [0.05, 0.05])
+  |> line(end = [0, 7])
+  |> tangentialArc(angle = 90deg, radius = 5)
+  |> line(end = [-3, 0])
+  |> tangentialArc(angle = -90deg, radius = 5)
+  |> line(end = [0, 7])
+
+// Create a hole for the pipe.
+pipeHole = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1.5)
+
+sweepSketch = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2)
+  |> subtract2d(tool = pipeHole)
+  |> sweep(path = sweepPath)
+
 ```
-
-This, like extrude, is able to create a 3-dimensional solid from a
-2-dimensional sketch. However, unlike extrude, this creates a solid
-by using the extent of the sketch as its path. This is useful for
-creating more complex shapes that can't be created with a simple
-extrusion.
-
-You can provide more than one sketch to sweep, and they will all be
-swept along the same path.
 
 ### Arguments
 
@@ -44,6 +46,30 @@ swept along the same path.
 
 [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
 
+### Description
+
+This, like extrude, is able to create a 3-dimensional solid from a
+2-dimensional sketch. However, unlike extrude, this creates a solid
+by using the extent of the sketch as its path. This is useful for
+creating more complex shapes that can't be created with a simple
+extrusion.
+
+You can provide more than one sketch to sweep, and they will all be
+swept along the same path.
+
+### Function signature
+
+```kcl
+sweep(
+  @sketches: [Sketch; 1+],
+  path: Sketch | Helix,
+  sectional?: bool,
+  tolerance?: number(Length),
+  relativeTo?: string,
+  tagStart?: TagDecl,
+  tagEnd?: TagDecl,
+): [Solid; 1+]
+```
 
 ### Examples
 

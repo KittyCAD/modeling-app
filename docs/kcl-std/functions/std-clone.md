@@ -8,17 +8,20 @@ layout: manual
 Clone a sketch or solid.
 
 ```kcl
-clone(@geometry: Sketch | Solid | ImportedGeometry): Sketch | Solid | ImportedGeometry
+// Clone a basic sketch and move it and extrude it.
+exampleSketch = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+clonedSketch = clone(exampleSketch)
+  |> scale(x = 1.0, y = 1.0, z = 2.5)
+  |> translate(x = 15.0, y = 0, z = 0)
+  |> extrude(length = 5)
+
 ```
-
-This works essentially like a copy-paste operation. It creates a perfect replica
-at that point in time that you can manipulate individually afterwards.
-
-This doesn't really have much utility unless you need the equivalent of a double
-instance pattern with zero transformations.
-
-Really only use this function if YOU ARE SURE you need it. In most cases you
-do not need clone and using a pattern with `instance = 2` is more appropriate.
 
 ### Arguments
 
@@ -30,6 +33,22 @@ do not need clone and using a pattern with `instance = 2` is more appropriate.
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
 
+### Description
+
+This works essentially like a copy-paste operation. It creates a perfect replica
+at that point in time that you can manipulate individually afterwards.
+
+This doesn't really have much utility unless you need the equivalent of a double
+instance pattern with zero transformations.
+
+Really only use this function if YOU ARE SURE you need it. In most cases you
+do not need clone and using a pattern with `instance = 2` is more appropriate.
+
+### Function signature
+
+```kcl
+clone(@geometry: Sketch | Solid | ImportedGeometry): Sketch | Solid | ImportedGeometry
+```
 
 ### Examples
 

@@ -8,19 +8,17 @@ layout: manual
 Draw a line segment relative to the current origin using the polar measure of some angle and distance.
 
 ```kcl
-angledLine(
-  @sketch: Sketch,
-  angle: number(Angle),
-  length?: number(Length),
-  lengthX?: number(Length),
-  lengthY?: number(Length),
-  endAbsoluteX?: number(Length),
-  endAbsoluteY?: number(Length),
-  tag?: TagDecl,
-): Sketch
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> yLine(endAbsolute = 15)
+  |> angledLine(angle = 30deg, length = 15)
+  |> line(end = [8, -10])
+  |> yLine(endAbsolute = 0)
+  |> close()
+
+example = extrude(exampleSketch, length = 10)
+
 ```
-
-
 
 ### Arguments
 
@@ -39,6 +37,21 @@ angledLine(
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+
+### Function signature
+
+```kcl
+angledLine(
+  @sketch: Sketch,
+  angle: number(Angle),
+  length?: number(Length),
+  lengthX?: number(Length),
+  lengthY?: number(Length),
+  endAbsoluteX?: number(Length),
+  endAbsoluteY?: number(Length),
+  tag?: TagDecl,
+): Sketch
+```
 
 ### Examples
 

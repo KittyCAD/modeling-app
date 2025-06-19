@@ -8,14 +8,21 @@ layout: manual
 Offset a plane by a distance along its normal.
 
 ```kcl
-offsetPlane(
-  @plane: Plane,
-  offset: number(Length),
-): Plane
-```
+// Loft a square and a circle on the `XY` plane using offset.
+squareSketch = startSketchOn(XY)
+  |> startProfile(at = [-100, 200])
+  |> line(end = [200, 0])
+  |> line(end = [0, -200])
+  |> line(end = [-200, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 
-For example, if you offset the `XZ` plane by 10, the new plane will be parallel to the `XZ`
-plane and 10 units away from it.
+circleSketch = startSketchOn(offsetPlane(XY, offset = 150))
+  |> circle(center = [0, 100], radius = 50)
+
+loft([squareSketch, circleSketch])
+
+```
 
 ### Arguments
 
@@ -28,6 +35,19 @@ plane and 10 units away from it.
 
 [`Plane`](/docs/kcl-std/types/std-types-Plane) - An abstract plane.
 
+### Description
+
+For example, if you offset the `XZ` plane by 10, the new plane will be parallel to the `XZ`
+plane and 10 units away from it.
+
+### Function signature
+
+```kcl
+offsetPlane(
+  @plane: Plane,
+  offset: number(Length),
+): Plane
+```
 
 ### Examples
 

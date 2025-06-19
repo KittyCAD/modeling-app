@@ -8,19 +8,22 @@ layout: manual
 Check a value meets some expected conditions at runtime. Program terminates with an error if conditions aren't met. If you provide multiple conditions, they will all be checked and all must be met.
 
 ```kcl
+n = 10
+assert(n, isEqualTo = 10)
 assert(
-  @actual: number,
-  isGreaterThan?: number,
-  isLessThan?: number,
-  isGreaterThanOrEqual?: number,
-  isLessThanOrEqual?: number,
-  isEqualTo?: number,
-  tolerance?: number,
-  error?: string,
+  n,
+  isGreaterThanOrEqual = 0,
+  isLessThan = 100,
+  error = "number should be between 0 and 100",
 )
+assert(
+  1.0000000000012,
+  isEqualTo = 1,
+  tolerance = 0.0001,
+  error = "number should be almost exactly 1",
+)
+
 ```
-
-
 
 ### Arguments
 
@@ -35,6 +38,21 @@ assert(
 | `tolerance` | [`number`](/docs/kcl-std/types/std-types-number) | If `isEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places. | No |
 | `error` | [`string`](/docs/kcl-std/types/std-types-string) | If the value was false, the program will terminate with this error message | No |
 
+
+### Function signature
+
+```kcl
+assert(
+  @actual: number,
+  isGreaterThan?: number,
+  isLessThan?: number,
+  isGreaterThanOrEqual?: number,
+  isLessThanOrEqual?: number,
+  isEqualTo?: number,
+  tolerance?: number,
+  error?: string,
+)
+```
 
 ### Examples
 

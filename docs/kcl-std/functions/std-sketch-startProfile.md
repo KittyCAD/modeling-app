@@ -8,14 +8,16 @@ layout: manual
 Start a new profile at a given point.
 
 ```kcl
-startProfile(
-  @startProfileOn: Plane | Face,
-  at: Point2d,
-  tag?: TagDecl,
-): Sketch
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -29,6 +31,16 @@ startProfile(
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+
+### Function signature
+
+```kcl
+startProfile(
+  @startProfileOn: Plane | Face,
+  at: Point2d,
+  tag?: TagDecl,
+): Sketch
+```
 
 ### Examples
 

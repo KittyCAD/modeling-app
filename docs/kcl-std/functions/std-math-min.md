@@ -8,10 +8,15 @@ layout: manual
 Compute the minimum of the given arguments.
 
 ```kcl
-min(@input: [number; 1+]): number
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 70deg, length = min([15, 31, 4, 13, 22]))
+  |> line(end = [20, 0])
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +28,12 @@ min(@input: [number; 1+]): number
 
 [`number`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+min(@input: [number; 1+]): number
+```
 
 ### Examples
 

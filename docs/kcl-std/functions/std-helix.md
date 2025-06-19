@@ -8,18 +8,22 @@ layout: manual
 Create a helix.
 
 ```kcl
-helix(
-  revolutions: number(_),
-  angleStart: number(Angle),
-  ccw?: bool,
-  radius?: number(Length),
-  axis?: Axis3d | Edge,
-  length?: number(Length),
-  cylinder?: Solid,
-): Helix
+// Create a helix around the Z axis.
+helixPath = helix(
+  angleStart = 0,
+  ccw = true,
+  revolutions = 5,
+  length = 10,
+  radius = 5,
+  axis = Z,
+)
+
+// Create a spring by sweeping around the helix path.
+springSketch = startSketchOn(XZ)
+  |> circle(center = [5, 0], radius = 0.5)
+  |> sweep(path = helixPath)
+
 ```
-
-
 
 ### Arguments
 
@@ -37,6 +41,20 @@ helix(
 
 [`Helix`](/docs/kcl-std/types/std-types-Helix) - A helix; created by the `helix` function.
 
+
+### Function signature
+
+```kcl
+helix(
+  revolutions: number(_),
+  angleStart: number(Angle),
+  ccw?: bool,
+  radius?: number(Length),
+  axis?: Axis3d | Edge,
+  length?: number(Length),
+  cylinder?: Solid,
+): Helix
+```
 
 ### Examples
 

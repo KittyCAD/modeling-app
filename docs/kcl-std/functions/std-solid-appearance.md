@@ -8,15 +8,19 @@ layout: manual
 Set the appearance of a solid. This only works on solids, not sketches or individual paths.
 
 ```kcl
-appearance(
-  @solids: [Solid; 1+] | ImportedGeometry,
-  color: string,
-  metalness?: number(_),
-  roughness?: number(_),
-): [Solid; 1+] | ImportedGeometry
-```
+// Add color to an extruded solid.
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [-10, 0])
+  |> close()
 
-This will work on any solid, including extruded solids, revolved solids, and shelled solids.
+example = extrude(exampleSketch, length = 5)
+  // There are other options besides 'color', but they're optional.
+  |> appearance(color = '#ff0000')
+
+```
 
 ### Arguments
 
@@ -31,6 +35,20 @@ This will work on any solid, including extruded solids, revolved solids, and she
 
 [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
 
+### Description
+
+This will work on any solid, including extruded solids, revolved solids, and shelled solids.
+
+### Function signature
+
+```kcl
+appearance(
+  @solids: [Solid; 1+] | ImportedGeometry,
+  color: string,
+  metalness?: number(_),
+  roughness?: number(_),
+): [Solid; 1+] | ImportedGeometry
+```
 
 ### Examples
 

@@ -8,10 +8,12 @@ layout: manual
 Build a color from its red, green and blue components. These must be between 0 and 255.
 
 ```kcl
-appearance::hexString(@rgb: [number(_); 3]): string
+startSketchOn(-XZ)
+  |> circle(center = [0, 0], radius = 10)
+  |> extrude(length = 4)
+  |> appearance(color = appearance::hexString([50, 160, 160]))
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +25,12 @@ appearance::hexString(@rgb: [number(_); 3]): string
 
 [`string`](/docs/kcl-std/types/std-types-string) - A sequence of characters
 
+
+### Function signature
+
+```kcl
+appearance::hexString(@rgb: [number(_); 3]): string
+```
 
 ### Examples
 

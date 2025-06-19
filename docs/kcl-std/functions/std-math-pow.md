@@ -8,13 +8,15 @@ layout: manual
 Compute the number to a power.
 
 ```kcl
-pow(
-  @input: number,
-  exp: number(_),
-): number
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 50deg, length = pow(5, exp = 2))
+  |> yLine(endAbsolute = 0)
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -27,6 +29,15 @@ pow(
 
 [`number`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+pow(
+  @input: number,
+  exp: number(_),
+): number
+```
 
 ### Examples
 

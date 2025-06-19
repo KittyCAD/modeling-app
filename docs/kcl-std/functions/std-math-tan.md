@@ -8,10 +8,15 @@ layout: manual
 Compute the tangent of a number.
 
 ```kcl
-tan(@num: number(Angle)): number
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 50deg, length = 50 * tan((1 / 2): number(rad)))
+  |> yLine(endAbsolute = 0)
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +28,12 @@ tan(@num: number(Angle)): number
 
 [`number`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+tan(@num: number(Angle)): number
+```
 
 ### Examples
 

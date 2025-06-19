@@ -7,11 +7,6 @@ layout: manual
 
 Convert a number to millimeters from its current units.
 
-```kcl
-units::toMillimeters(@num: number(Length)): number(mm)
-```
-
-
 
 ### Arguments
 
@@ -23,5 +18,11 @@ units::toMillimeters(@num: number(Length)): number(mm)
 
 [`number(mm)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+units::toMillimeters(@num: number(Length)): number(mm)
+```
 
 

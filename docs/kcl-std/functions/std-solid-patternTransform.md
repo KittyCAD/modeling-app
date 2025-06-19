@@ -8,13 +8,33 @@ layout: manual
 Repeat a 3-dimensional solid, changing it each time.
 
 ```kcl
-patternTransform(
-  @solids: [Solid; 1+],
-  instances: number(_),
-  transform: fn(number(_)): { },
-  useOriginal?: bool,
-): [Solid; 1+]
+// Each instance will be shifted along the X axis.
+fn transform(@id) {
+  return { translate = [4 * id, 0, 0] }
+}
+
+// Sketch 4 cylinders.
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 2)
+  |> extrude(length = 5)
+  |> patternTransform(instances = 4, transform = transform)
+
 ```
+
+### Arguments
+
+| Name | Type | Description | Required |
+|----------|------|-------------|----------|
+| `solids` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) | The solid(s) to duplicate. | Yes |
+| `instances` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
+| `transform` | [`fn(number(_)): { }`](/docs/kcl-std/types/std-types-fn) | How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples. | Yes |
+| `useOriginal` | [`bool`](/docs/kcl-std/types/std-types-bool) | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. | No |
+
+### Returns
+
+[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
+
+### Description
 
 Replicates the 3D solid, applying a transformation function to each replica.
 Transformation function could alter rotation, scale, visibility, position, etc.
@@ -54,19 +74,16 @@ Its properties are:
 
    - `rotation.origin` (either "local" i.e. rotate around its own center, "global" i.e. rotate around the scene's center, or a 3D point, defaults to "local")
 
-### Arguments
+### Function signature
 
-| Name | Type | Description | Required |
-|----------|------|-------------|----------|
-| `solids` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) | The solid(s) to duplicate. | Yes |
-| `instances` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
-| `transform` | [`fn(number(_)): { }`](/docs/kcl-std/types/std-types-fn) | How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples. | Yes |
-| `useOriginal` | [`bool`](/docs/kcl-std/types/std-types-bool) | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. | No |
-
-### Returns
-
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
-
+```kcl
+patternTransform(
+  @solids: [Solid; 1+],
+  instances: number(_),
+  transform: fn(number(_)): { },
+  useOriginal?: bool,
+): [Solid; 1+]
+```
 
 ### Examples
 

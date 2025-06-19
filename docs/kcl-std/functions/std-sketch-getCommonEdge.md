@@ -8,10 +8,28 @@ layout: manual
 Get the shared edge between two faces.
 
 ```kcl
-getCommonEdge(faces: [TaggedFace; 2]): Edge
+// Get an edge shared between two faces, created after a chamfer.
+
+
+scale = 20
+part001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, scale])
+  |> line(end = [scale, 0])
+  |> line(end = [0, -scale])
+  |> close(tag = $line0)
+  |> extrude(length = 20, tagEnd = $end0)
+  // We tag the chamfer to reference it later.
+  |> chamfer(length = 10, tags = [getOppositeEdge(line0)], tag = $chamfer0)
+
+// Get the shared edge between the chamfer and the extrusion.
+commonEdge = getCommonEdge(faces = [chamfer0, end0])
+
+// Chamfer the shared edge.
+// TODO: uncomment this when ssi for fillets lands
+// chamfer(part001, length = 5, tags = [commonEdge])
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +41,12 @@ getCommonEdge(faces: [TaggedFace; 2]): Edge
 
 [`Edge`](/docs/kcl-std/types/std-types-Edge) - An edge of a solid.
 
+
+### Function signature
+
+```kcl
+getCommonEdge(faces: [TaggedFace; 2]): Edge
+```
 
 ### Examples
 

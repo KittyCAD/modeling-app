@@ -8,10 +8,17 @@ layout: manual
 Compute the starting point of the provided line segment along the 'x' axis.
 
 ```kcl
-segStartX(@tag: TaggedEdge): number(Length)
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [20, 0], tag = $thing)
+  |> line(end = [0, 5])
+  |> line(end = [20 - segStartX(thing), 0])
+  |> line(end = [-20, 10])
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +30,12 @@ segStartX(@tag: TaggedEdge): number(Length)
 
 [`number(Length)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+segStartX(@tag: TaggedEdge): number(Length)
+```
 
 ### Examples
 

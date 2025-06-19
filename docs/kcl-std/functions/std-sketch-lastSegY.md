@@ -8,10 +8,17 @@ layout: manual
 Extract the 'y' axis value of the last line segment in the provided 2-d sketch.
 
 ```kcl
-lastSegY(@sketch: Sketch): number(Length)
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [5, 0])
+  |> line(end = [20, 5])
+  |> line(end = [0, lastSegY(%)])
+  |> line(end = [-15, 0])
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +30,12 @@ lastSegY(@sketch: Sketch): number(Length)
 
 [`number(Length)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+lastSegY(@sketch: Sketch): number(Length)
+```
 
 ### Examples
 

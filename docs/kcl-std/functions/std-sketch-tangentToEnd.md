@@ -8,10 +8,18 @@ layout: manual
 Returns the angle coming out of the end of the segment in degrees.
 
 ```kcl
-tangentToEnd(@tag: TaggedEdge): number(Angle)
+// Horizontal pill.
+pillSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [20, 0])
+  |> tangentialArc(end = [0, 10], tag = $arc1)
+  |> angledLine(angle = tangentToEnd(arc1), length = 20)
+  |> tangentialArc(end = [0, -10])
+  |> close()
+
+pillExtrude = extrude(pillSketch, length = 10)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +31,12 @@ tangentToEnd(@tag: TaggedEdge): number(Angle)
 
 [`number(Angle)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+tangentToEnd(@tag: TaggedEdge): number(Angle)
+```
 
 ### Examples
 

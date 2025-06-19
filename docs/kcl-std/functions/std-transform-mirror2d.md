@@ -8,13 +8,22 @@ layout: manual
 Mirror a sketch.
 
 ```kcl
-mirror2d(
-  @sketches: [Sketch; 1+],
-  axis: Axis2d | Edge,
-): Sketch
-```
+// Mirror an un-closed sketch across the Y axis.
+sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 10])
+  |> line(end = [15, 0])
+  |> line(end = [-7, -3])
+  |> line(end = [9, -1])
+  |> line(end = [-8, -5])
+  |> line(end = [9, -3])
+  |> line(end = [-8, -3])
+  |> line(end = [9, -1])
+  |> line(end = [-19, -0])
+  |> mirror2d(axis = Y)
 
-Mirror occurs around a local sketch axis rather than a global axis.
+example = extrude(sketch001, length = 10)
+
+```
 
 ### Arguments
 
@@ -27,6 +36,18 @@ Mirror occurs around a local sketch axis rather than a global axis.
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+### Description
+
+Mirror occurs around a local sketch axis rather than a global axis.
+
+### Function signature
+
+```kcl
+mirror2d(
+  @sketches: [Sketch; 1+],
+  axis: Axis2d | Edge,
+): Sketch
+```
 
 ### Examples
 

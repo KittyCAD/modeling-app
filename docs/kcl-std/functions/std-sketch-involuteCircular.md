@@ -8,17 +8,19 @@ layout: manual
 Extend the current sketch with a new involute circular curve.
 
 ```kcl
-involuteCircular(
-  @sketch: Sketch,
-  startRadius: number(Length),
-  endRadius: number(Length),
-  angle: number(Angle),
-  reverse?: bool,
-  tag?: TagDecl,
-): Sketch
+a = 10
+b = 14
+startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> involuteCircular(startRadius = a, endRadius = b, angle = 60deg)
+  |> involuteCircular(
+       startRadius = a,
+       endRadius = b,
+       angle = 60deg,
+       reverse = true,
+     )
+
 ```
-
-
 
 ### Arguments
 
@@ -35,6 +37,19 @@ involuteCircular(
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+
+### Function signature
+
+```kcl
+involuteCircular(
+  @sketch: Sketch,
+  startRadius: number(Length),
+  endRadius: number(Length),
+  angle: number(Angle),
+  reverse?: bool,
+  tag?: TagDecl,
+): Sketch
+```
 
 ### Examples
 

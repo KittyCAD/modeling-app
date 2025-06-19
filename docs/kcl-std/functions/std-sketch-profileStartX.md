@@ -8,10 +8,13 @@ layout: manual
 Extract the provided 2-dimensional sketch's profile's origin's 'x' value.
 
 ```kcl
-profileStartX(@profile: Sketch): number(Length)
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [5, 2])
+  |> angledLine(angle = -26.6, length = 50)
+  |> angledLine(angle = 90deg, length = 50)
+  |> angledLine(angle = 30deg, endAbsoluteX = profileStartX(%))
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +26,12 @@ profileStartX(@profile: Sketch): number(Length)
 
 [`number(Length)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+profileStartX(@profile: Sketch): number(Length)
+```
 
 ### Examples
 

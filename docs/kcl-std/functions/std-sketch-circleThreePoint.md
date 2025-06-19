@@ -8,16 +8,11 @@ layout: manual
 Construct a circle derived from 3 points.
 
 ```kcl
-circleThreePoint(
-  @sketchOrSurface: Sketch | Plane | Face,
-  p1: Point2d,
-  p2: Point2d,
-  p3: Point2d,
-  tag?: TagDecl,
-): Sketch
+exampleSketch = startSketchOn(XY)
+  |> circleThreePoint(p1 = [10, 10], p2 = [20, 8], p3 = [15, 5])
+  |> extrude(length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -33,6 +28,18 @@ circleThreePoint(
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+
+### Function signature
+
+```kcl
+circleThreePoint(
+  @sketchOrSurface: Sketch | Plane | Face,
+  p1: Point2d,
+  p2: Point2d,
+  p3: Point2d,
+  tag?: TagDecl,
+): Sketch
+```
 
 ### Examples
 

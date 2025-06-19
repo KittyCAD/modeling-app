@@ -7,11 +7,6 @@ layout: manual
 
 Convert a number to inches from its current units.
 
-```kcl
-units::toInches(@num: number(Length)): number(in)
-```
-
-
 
 ### Arguments
 
@@ -23,5 +18,11 @@ units::toInches(@num: number(Length)): number(in)
 
 [`number(in)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+units::toInches(@num: number(Length)): number(in)
+```
 
 

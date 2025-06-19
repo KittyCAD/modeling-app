@@ -8,14 +8,17 @@ layout: manual
 Make the inside of a 3D object hollow.
 
 ```kcl
-hollow(
-  @solid: Solid,
-  thickness: number(Length),
-): Solid
-```
+// Hollow a basic sketch.
+firstSketch = startSketchOn(XY)
+  |> startProfile(at = [-12, 12])
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
+  |> hollow(thickness = 0.25)
 
-Remove volume from a 3-dimensional shape such that a wall of the
-provided thickness remains around the exterior of the shape.
+```
 
 ### Arguments
 
@@ -28,6 +31,19 @@ provided thickness remains around the exterior of the shape.
 
 [`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extruded surfaces.
 
+### Description
+
+Remove volume from a 3-dimensional shape such that a wall of the
+provided thickness remains around the exterior of the shape.
+
+### Function signature
+
+```kcl
+hollow(
+  @solid: Solid,
+  thickness: number(Length),
+): Solid
+```
 
 ### Examples
 

@@ -8,27 +8,28 @@ layout: manual
 Scale a solid or a sketch.
 
 ```kcl
-scale(
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
-  x?: number(_),
-  y?: number(_),
-  z?: number(_),
-  global?: bool,
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry
+// Scale a pipe.
+
+// Create a path for the sweep.
+sweepPath = startSketchOn(XZ)
+  |> startProfile(at = [0.05, 0.05])
+  |> line(end = [0, 7])
+  |> tangentialArc(angle = 90deg, radius = 5)
+  |> line(end = [-3, 0])
+  |> tangentialArc(angle = -90deg, radius = 5)
+  |> line(end = [0, 7])
+
+// Create a hole for the pipe.
+pipeHole = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1.5)
+
+sweepSketch = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2)
+  |> subtract2d(tool = pipeHole)
+  |> sweep(path = sweepPath)
+  |> scale(z = 2.5)
+
 ```
-
-This is really useful for resizing parts. You can create a part and then scale it to the
-correct size.
-
-For sketches, you can use this to scale a sketch and then loft it with another sketch.
-
-By default the transform is applied in local sketch axis, therefore the origin will not move.
-
-If you want to apply the transform in global space, set `global` to `true`. The origin of the
-model will move. If the model is not centered on origin and you scale globally it will
-look like the model moves and gets bigger at the same time. Say you have a square
-`(1,1) - (1,2) - (2,2) - (2,1)` and you scale by 2 globally it will become
-`(2,2) - (2,4)`...etc so the origin has moved from `(1.5, 1.5)` to `(2,2)`.
 
 ### Arguments
 
@@ -44,6 +45,32 @@ look like the model moves and gets bigger at the same time. Say you have a squar
 
 [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
 
+### Description
+
+This is really useful for resizing parts. You can create a part and then scale it to the
+correct size.
+
+For sketches, you can use this to scale a sketch and then loft it with another sketch.
+
+By default the transform is applied in local sketch axis, therefore the origin will not move.
+
+If you want to apply the transform in global space, set `global` to `true`. The origin of the
+model will move. If the model is not centered on origin and you scale globally it will
+look like the model moves and gets bigger at the same time. Say you have a square
+`(1,1) - (1,2) - (2,2) - (2,1)` and you scale by 2 globally it will become
+`(2,2) - (2,4)`...etc so the origin has moved from `(1.5, 1.5)` to `(2,2)`.
+
+### Function signature
+
+```kcl
+scale(
+  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  x?: number(_),
+  y?: number(_),
+  z?: number(_),
+  global?: bool,
+): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry
+```
 
 ### Examples
 

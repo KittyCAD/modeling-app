@@ -8,18 +8,22 @@ layout: manual
 Repeat a 3-dimensional solid some number of times along a partial or complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orientation of the solid with respect to the center of the circle is maintained.
 
 ```kcl
-patternCircular3d(
-  @solids: [Solid; 1+],
-  instances: number(_),
-  axis: Axis3d | Point3d,
-  center: Point3d,
-  arcDegrees?: number(deg),
-  rotateDuplicates?: bool,
-  useOriginal?: bool,
-): [Solid; 1+]
+// / Pattern using a named axis.
+
+
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+example = extrude(exampleSketch, length = -5)
+  |> patternCircular3d(
+       axis = X,
+       center = [10, -20, 0],
+       instances = 11,
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
+
 ```
-
-
 
 ### Arguments
 
@@ -37,6 +41,20 @@ patternCircular3d(
 
 [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
 
+
+### Function signature
+
+```kcl
+patternCircular3d(
+  @solids: [Solid; 1+],
+  instances: number(_),
+  axis: Axis3d | Point3d,
+  center: Point3d,
+  arcDegrees?: number(deg),
+  rotateDuplicates?: bool,
+  useOriginal?: bool,
+): [Solid; 1+]
+```
 
 ### Examples
 

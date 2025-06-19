@@ -8,10 +8,15 @@ layout: manual
 Extract the provided 2-dimensional sketch's profile's origin value.
 
 ```kcl
-profileStart(@profile: Sketch): Point2d
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [5, 2])
+  |> angledLine(angle = 120, length = 50, tag = $seg01)
+  |> angledLine(angle = segAng(seg01) + 120deg, length = 50)
+  |> line(end = profileStart(%))
+  |> close()
+  |> extrude(length = 20)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +28,12 @@ profileStart(@profile: Sketch): Point2d
 
 [`Point2d`](/docs/kcl-std/types/std-types-Point2d) - A point in two dimensional space.
 
+
+### Function signature
+
+```kcl
+profileStart(@profile: Sketch): Point2d
+```
 
 ### Examples
 

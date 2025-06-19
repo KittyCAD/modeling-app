@@ -8,13 +8,9 @@ layout: manual
 Compute the length of the given leg.
 
 ```kcl
-legLen(
-  hypotenuse: number(Length),
-  leg: number(Length),
-): number(Length)
+legLen(hypotenuse = 5, leg = 3)
+
 ```
-
-
 
 ### Arguments
 
@@ -27,6 +23,15 @@ legLen(
 
 [`number(Length)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+legLen(
+  hypotenuse: number(Length),
+  leg: number(Length),
+): number(Length)
+```
 
 ### Examples
 

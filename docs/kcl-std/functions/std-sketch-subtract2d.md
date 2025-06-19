@@ -8,13 +8,18 @@ layout: manual
 Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 
 ```kcl
-subtract2d(
-  @sketch: Sketch,
-  tool: [Sketch; 1+],
-): Sketch
+exampleSketch = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, 5])
+  |> line(end = [5, 0])
+  |> line(end = [0, -5])
+  |> close()
+  |> subtract2d(tool = circle(center = [1, 1], radius = .25))
+  |> subtract2d(tool = circle(center = [1, 4], radius = .25))
+
+example = extrude(exampleSketch, length = 1)
+
 ```
-
-
 
 ### Arguments
 
@@ -27,6 +32,15 @@ subtract2d(
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+
+### Function signature
+
+```kcl
+subtract2d(
+  @sketch: Sketch,
+  tool: [Sketch; 1+],
+): Sketch
+```
 
 ### Examples
 

@@ -8,22 +8,16 @@ layout: manual
 Starting at the current sketch's origin, draw a curved line segment along some part of an imaginary circle until it reaches the desired (x, y) coordinates.
 
 ```kcl
-tangentialArc(
-  @sketch: Sketch,
-  endAbsolute?: Point2d,
-  end?: Point2d,
-  radius?: number(Length),
-  diameter?: number(Length),
-  angle?: number(Angle),
-  tag?: TagDecl,
-): Sketch
-```
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 45deg, length = 10)
+  |> tangentialArc(end = [0, -10])
+  |> line(end = [-10, 0])
+  |> close()
 
-When using radius and angle, draw a curved line segment along part of an
-imaginary circle. The arc is constructed such that the last line segment is
-placed tangent to the imaginary circle of the specified radius. The
-resulting arc is the segment of the imaginary circle from that tangent point
-for 'angle' degrees along the imaginary circle.
+example = extrude(exampleSketch, length = 10)
+
+```
 
 ### Arguments
 
@@ -41,6 +35,27 @@ for 'angle' degrees along the imaginary circle.
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+### Description
+
+When using radius and angle, draw a curved line segment along part of an
+imaginary circle. The arc is constructed such that the last line segment is
+placed tangent to the imaginary circle of the specified radius. The
+resulting arc is the segment of the imaginary circle from that tangent point
+for 'angle' degrees along the imaginary circle.
+
+### Function signature
+
+```kcl
+tangentialArc(
+  @sketch: Sketch,
+  endAbsolute?: Point2d,
+  end?: Point2d,
+  radius?: number(Length),
+  diameter?: number(Length),
+  angle?: number(Angle),
+  tag?: TagDecl,
+): Sketch
+```
 
 ### Examples
 

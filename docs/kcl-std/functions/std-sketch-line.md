@@ -8,15 +8,28 @@ layout: manual
 Extend the current sketch with a new straight line.
 
 ```kcl
-line(
-  @sketch: Sketch,
-  endAbsolute?: Point2d,
-  end?: Point2d,
-  tag?: TagDecl,
-): Sketch
+triangle = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  // The END argument means it ends at exactly [10, 0].
+  // This is an absolute measurement, it is NOT relative to
+  // the start of the sketch.
+  |> line(endAbsolute = [10, 0])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [-10, 0], tag = $thirdLineOfTriangle)
+  |> close()
+  |> extrude(length = 5)
+
+box = startSketchOn(XZ)
+  |> startProfile(at = [10, 10])
+  // The 'to' argument means move the pen this much.
+  // So, [10, 0] is a relative distance away from the current point.
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0], tag = $thirdLineOfBox)
+  |> close()
+  |> extrude(length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -31,6 +44,17 @@ line(
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+
+### Function signature
+
+```kcl
+line(
+  @sketch: Sketch,
+  endAbsolute?: Point2d,
+  end?: Point2d,
+  tag?: TagDecl,
+): Sketch
+```
 
 ### Examples
 

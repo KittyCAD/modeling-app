@@ -8,15 +8,19 @@ layout: manual
 Draw a line relative to the current origin to a specified distance away from the current position along the 'x' axis.
 
 ```kcl
-xLine(
-  @sketch: Sketch,
-  length?: number(Length),
-  endAbsolute?: number(Length),
-  tag?: TagDecl,
-): Sketch
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = 15)
+  |> angledLine(angle = 80deg, length = 15)
+  |> line(end = [8, -10])
+  |> xLine(length = 10)
+  |> angledLine(angle = 120deg, length = 30)
+  |> xLine(length = -15)
+  |> close()
+
+example = extrude(exampleSketch, length = 10)
+
 ```
-
-
 
 ### Arguments
 
@@ -31,6 +35,17 @@ xLine(
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+
+### Function signature
+
+```kcl
+xLine(
+  @sketch: Sketch,
+  length?: number(Length),
+  endAbsolute?: number(Length),
+  tag?: TagDecl,
+): Sketch
+```
 
 ### Examples
 

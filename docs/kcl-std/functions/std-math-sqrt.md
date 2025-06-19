@@ -8,10 +8,15 @@ layout: manual
 Compute the square root of a number.
 
 ```kcl
-sqrt(@input: number): number
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 50deg, length = sqrt(2500))
+  |> yLine(endAbsolute = 0)
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +28,12 @@ sqrt(@input: number): number
 
 [`number`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+sqrt(@input: number): number
+```
 
 ### Examples
 

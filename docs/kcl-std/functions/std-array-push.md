@@ -8,13 +8,16 @@ layout: manual
 Append an element to the end of an array.
 
 ```kcl
-push(
-  @array: [any],
-  item: any,
-): [any; 1+]
-```
+arr = [1, 2, 3]
+new_arr = push(arr, item = 4)
+assert(
+  new_arr[3],
+  isEqualTo = 4,
+  tolerance = 0.1,
+  error = "4 was added to the end of the array",
+)
 
-Returns a new array with the element appended.
+```
 
 ### Arguments
 
@@ -27,6 +30,18 @@ Returns a new array with the element appended.
 
 [`[any; 1+]`](/docs/kcl-std/types/std-types-any)
 
+### Description
+
+Returns a new array with the element appended.
+
+### Function signature
+
+```kcl
+push(
+  @array: [any],
+  item: any,
+): [any; 1+]
+```
 
 ### Examples
 
