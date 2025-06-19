@@ -13,10 +13,14 @@ import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
+import { PromptCard } from '@src/components/PromptCard'
 import {
-  ProjectSearchBar,
-  useProjectSearch,
-} from '@src/components/ProjectSearchBar'
+  HomeSearchBar,
+  useHomeSearch,
+  HomeItems,
+  areHomeItemsProjects,
+  areHomeItemsPrompts,
+} from '@src/components/HomeSearchBar'
 import { BillingDialog } from '@src/components/BillingDialog'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useMenuListener } from '@src/hooks/useMenu'
@@ -24,6 +28,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
+import type { Prompt } from '@src/lib/prompt'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -215,9 +220,31 @@ const Home = () => {
     }
   )
   const projects = useFolders()
+  const prompts = [{ prompt: 'lol'} , { prompt: 'never gonna give you up' }, {prompt: 'takethisli' }]
+  const [tabSelected, setTabSelected] = useState<HomeTabKeys>(HomeTabKeys.Projects)
+  const [items, setItems] = useState<Project[] | Prompt[]>(projects)
   const [searchParams, setSearchParams] = useSearchParams()
-  const { searchResults, query, setQuery } = useProjectSearch(projects)
-  const sort = searchParams.get('sort_by') ?? 'modified:desc'
+  const { searchResults, query, searchAgainst } = useHomeSearch(projects)
+  const sortBy = searchParams.get('sort_by') ?? 'modified:desc'
+
+  const onChangeTab = (key: HomeTabKeys) => {
+    setTabSelected(key)
+    switch (key) {
+      case HomeTabKeys.Projects:
+        setItems(projects)
+        break
+      case HomeTabKeys.Prompts:
+        setItems(prompts)
+        break
+      default:
+        const _ex: never = key
+    }
+  }
+
+  useEffect(() => {
+    searchAgainst(items)('')
+  }, [items])
+
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
 
@@ -226,8 +253,10 @@ const Home = () => {
       <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
-          setQuery={setQuery}
-          sort={sort}
+          tabSelected={tabSelected}
+          onChangeHomeSearchBar={searchAgainst(items)}
+          onChangeTab={onChangeTab}
+          sortBy={sortBy}
           setSearchParams={setSearchParams}
           settings={settings}
           readWriteProjectDir={readWriteProjectDir}
@@ -397,13 +426,7 @@ const Home = () => {
             </li>
           </ul>
         </aside>
-        <ProjectGrid
-          searchResults={searchResults}
-          projects={projects}
-          query={query}
-          sort={sort}
-          className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
-        />
+        <HomeItemsArea tabSelected={tabSelected} searchResults={searchResults} sortBy={sortBy} query={query} />
       </div>
       <StatusBar
         globalItems={[
@@ -416,47 +439,92 @@ const Home = () => {
   )
 }
 
+enum HomeTabKeys {
+  Projects,
+  Prompts,
+}
+
+interface HomeTabProps {
+  onChange: (key: HomeTabKeys) => void
+  selected: HomeTabKeys,
+}
+
+function HomeTab(props: HomeTabProps) {
+  const [selected, setSelected] = useState(props.selected)
+
+  const tabs = [
+    { name: 'Projects', key: HomeTabKeys.Projects },
+    { name: 'Prompts', key: HomeTabKeys.Prompts },
+  ]
+
+  const cssTab = 'cursor-pointer p-4'
+  const cssActive = `${cssTab} border rounded bg-green`
+  const cssInactive = `${cssTab}`
+
+  const onClickTab = (key: HomeTabKeys) => () => {
+    setSelected(key)
+    props.onChange(key)
+  }
+
+  return <div className="flex flex-row">
+    { tabs.map(
+      (el) => <div
+        className={el.key === selected ? cssActive : cssInactive}
+        onClick={onClickTab(el.key)}>
+        { el.name }
+      </div>
+    )}
+  </div>
+}
+
 interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
-  setQuery: (query: string) => void
-  sort: string
+  tabSelected: HomeTabKeys,
+  onChangeHomeSearchBar: (query: string) => void
+  onChangeTab: (key: HomeTabKeys) => void
+  sortBy: string
   setSearchParams: (params: Record<string, string>) => void
   settings: ReturnType<typeof useSettings>
   readWriteProjectDir: ReadWriteProjectState
 }
 
 function HomeHeader({
-  setQuery,
-  sort,
+  tabSelected,
+  onChangeHomeSearchBar,
+  onChangeTab,
+  sortBy,
   setSearchParams,
   settings,
   readWriteProjectDir,
   ...rest
 }: HomeHeaderProps) {
-  const isSortByModified = sort?.includes('modified') || !sort || sort === null
+  const isSortByModified =
+    sortBy?.includes('modified') || !sortBy || sortBy === null
 
   return (
     <section {...rest}>
       <div className="flex flex-col md:flex-row gap-4 justify-between md:items-center select-none">
         <div className="flex gap-8 items-center">
-          <h1 className="text-3xl font-bold">Projects</h1>
+          <HomeTab onChange={onChangeTab} selected={tabSelected} />
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-          <ProjectSearchBar setQuery={setQuery} />
+          <HomeSearchBar onChange={onChangeHomeSearchBar} />
           <div className="flex gap-2 items-center">
             <small>Sort by</small>
             <ActionButton
               Element="button"
               data-testid="home-sort-by-name"
               className={`text-xs border-primary/10 ${
-                !sort.includes('name')
+                !sortBy.includes('name')
                   ? 'text-chalkboard-80 dark:text-chalkboard-40'
                   : ''
               }`}
-              onClick={() => setSearchParams(getNextSearchParams(sort, 'name'))}
+              onClick={() =>
+                setSearchParams(getNextSearchParams(sortBy, 'name'))
+              }
               iconStart={{
-                icon: getSortIcon(sort, 'name'),
+                icon: getSortIcon(sortBy, 'name'),
                 bgClassName: 'bg-transparent',
-                iconClassName: !sort.includes('name')
+                iconClassName: !sortBy.includes('name')
                   ? '!text-chalkboard-90 dark:!text-chalkboard-30'
                   : '',
               }}
@@ -472,10 +540,10 @@ function HomeHeader({
                   : ''
               }`}
               onClick={() =>
-                setSearchParams(getNextSearchParams(sort, 'modified'))
+                setSearchParams(getNextSearchParams(sortBy, 'modified'))
               }
               iconStart={{
-                icon: sort ? getSortIcon(sort, 'modified') : 'arrowDown',
+                icon: sortBy ? getSortIcon(sortBy, 'modified') : 'arrowDown',
                 bgClassName: 'bg-transparent',
                 iconClassName: !isSortByModified
                   ? '!text-chalkboard-90 dark:!text-chalkboard-30'
@@ -518,43 +586,96 @@ function HomeHeader({
   )
 }
 
-interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
-  searchResults: Project[]
-  projects: Project[]
-  query: string
-  sort: string
+function NoResults() {
+  return <div className="col-start-2 -col-end-1 w-full flex flex-col justify-center items-center">No results.</div>
 }
 
-function ProjectGrid({
-  searchResults,
-  projects,
-  query,
-  sort,
-  ...rest
-}: ProjectGridProps) {
+interface HomeItemsAreaProps {
+  tabSelected: HomeTabKeys,
+  searchResults: HomeItems
+  sortBy: string
+  query: string
+}
+
+function HomeItemsArea(props: HomeItemsAreaProps) {
+  let grid = null
+
+  switch (props.tabSelected) {
+    case HomeTabKeys.Projects:
+     grid = areHomeItemsProjects(props.searchResults)
+        ? <ResultGridProjects
+            searchResults={props.searchResults}
+            query={props.query}
+            sortBy={props.sortBy}
+        />
+        : <NoResults />
+      break
+    case HomeTabKeys.Prompts:
+      grid = areHomeItemsPrompts(props.searchResults)
+        ? <ResultGridPrompts
+            searchResults={props.searchResults}
+            query={props.query}
+            sortBy={props.sortBy}
+          />
+        : <NoResults />
+      break
+    default:
+      const _ex: never = props.tabSelected
+  }
+
+  return  <div className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24">
+    { grid }
+  </div>
+}
+
+interface ResultGridProjectsProps {
+  searchResults: Prompt[],
+  query: string
+  sortBy: string
+}
+
+function ResultGridPrompts(props) {
+  return <div>
+    {props.searchResults.map(
+      (el) => <div key={el.prompt}>
+        { el.prompt }
+      </div>
+    )}
+  </div>
+}
+
+interface ResultGridProjectsProps extends HTMLProps<HTMLDivElement> {
+  searchResults: Project[],
+  query: string
+  sortBy: string
+}
+
+function ResultGridProjects(props: ResultGridProjectsProps) {
   const state = useSystemIOState()
 
   return (
-    <section data-testid="home-section" {...rest}>
+    <section data-testid="home-section" className={props.className}>
       {state.matches(SystemIOMachineStates.readingFolders) ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
-          {searchResults.length > 0 ? (
+          {props.searchResults.length > 0 ? (
             <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {searchResults.sort(getSortFunction(sort)).map((project) => (
-                <ProjectCard
-                  key={project.name}
-                  project={project}
-                  handleRenameProject={handleRenameProject}
-                  handleDeleteProject={handleDeleteProject}
-                />
-              ))}
+              { (props.searchResults ?? [])
+                .sort(getSortFunction(props.sortBy))
+                .map((item) =>
+                    <ProjectCard
+                      key={item.name}
+                      project={item}
+                      handleRenameProject={handleRenameProject}
+                      handleDeleteProject={handleDeleteProject}
+                    />
+                )}
             </ul>
           ) : (
             <p className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
-              No projects found
-              {projects.length === 0
+              No results found
+              {items.length === 0
                 ? ', ready to make your first one?'
                 : ` with the search term "${query}"`}
             </p>
