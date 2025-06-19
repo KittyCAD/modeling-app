@@ -149,6 +149,7 @@ function moreNodePathFromSourceRange(
         return moreNodePathFromSourceRange(init, sourceRange, path)
       }
     }
+    return path
   }
   if (_node.type === 'UnaryExpression' && isInRange) {
     const { argument } = _node
