@@ -277,7 +277,7 @@ function CommandBarHeader({
               form="review-form"
               className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current`}
               tabIndex={0}
-              data-testid="command-bar-submit"
+              data-testid="command-bar-step-back"
               iconStart={{
                 icon: 'arrowLeft',
                 bgClassName: `p-1 rounded-sm`,
@@ -285,7 +285,11 @@ function CommandBarHeader({
               }}
               onClick={stepBack}
             >
-              <span className={`pr-2`}>Step back</span>
+              <Tooltip position="bottom">
+                Step back
+                <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">Shift</kbd>
+                <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">Bksp</kbd>
+              </Tooltip>
             </ActionButton>
             {isReviewing ? (
               <ReviewingButton
