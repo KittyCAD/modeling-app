@@ -667,7 +667,7 @@ function ResultGridPrompts(props) {
   return (
     <div className="grid w-full sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
       {props.searchResults.map((prompt) => (
-        <PromptCard key={prompt.id} { ...prompt } />
+        <PromptCard key={prompt.id} {...prompt} />
       ))}
     </div>
   )
