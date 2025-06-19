@@ -1408,8 +1408,8 @@ export function doesProfileHaveAnyConstrainedDimension(
                 }
               }
 
-              // Check if the argument value is non-literal
-              if (!isLiteralValue(arg.arg)) {
+              // Check if the argument value is non-static
+              if (!isStaticValue(arg.arg)) {
                 hasConstrainedDimension = true
                 break
               }
@@ -1427,20 +1427,20 @@ export function doesProfileHaveAnyConstrainedDimension(
   return hasConstrainedDimension
 }
 
-// Helper function to check if a node represents a literal value
-function isLiteralValue(node: any): boolean {
+// Helper function to check if a node represents a static/constant value (literal, array of literals, or negative literal)
+function isStaticValue(node: any): boolean {
   if (node.type === 'Literal') {
     return true
   }
 
   if (node.type === 'ArrayExpression') {
     // Array is literal if all elements are literals
-    return node.elements.every((element: any) => isLiteralValue(element))
+    return node.elements.every((element: any) => isStaticValue(element))
   }
 
   if (node.type === 'UnaryExpression' && node.operator === '-') {
     // Negative literal numbers
-    return isLiteralValue(node.argument)
+    return isStaticValue(node.argument)
   }
 
   // All other node types (Name, CallExpression, BinaryExpression, etc.) are non-literal
