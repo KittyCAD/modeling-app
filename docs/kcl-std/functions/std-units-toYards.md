@@ -7,11 +7,6 @@ layout: manual
 
 Converts a number to yards from its current units.
 
-```kcl
-units::toYards(@num: number(Length)): number(yd)
-```
-
-
 
 ### Arguments
 
@@ -23,5 +18,11 @@ units::toYards(@num: number(Length)): number(yd)
 
 [`number(yd)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+units::toYards(@num: number(Length)): number(yd)
+```
 
 

@@ -8,14 +8,18 @@ layout: manual
 Apply a function to every element of a list.
 
 ```kcl
-map(
-  @array: [any],
-  f: fn(any): any,
-): [any]
-```
+r = 10 // radius
+fn drawCircle(@id) {
+  return startSketchOn(XY)
+    |> circle(center = [id * 2 * r, 0], radius = r)
+}
 
-Given a list like `[a, b, c]`, and a function like `f`, returns
-`[f(a), f(b), f(c)]`
+// Call `drawCircle`, passing in each element of the array.
+// The outputs from each `drawCircle` form a new array,
+// which is the return value from `map`.
+circles = map([1..3], f = drawCircle)
+
+```
 
 ### Arguments
 
@@ -28,6 +32,19 @@ Given a list like `[a, b, c]`, and a function like `f`, returns
 
 [`[any]`](/docs/kcl-std/types/std-types-any)
 
+### Description
+
+Given a list like `[a, b, c]`, and a function like `f`, returns
+`[f(a), f(b), f(c)]`
+
+### Function signature
+
+```kcl
+map(
+  @array: [any],
+  f: fn(any): any,
+): [any]
+```
 
 ### Examples
 

@@ -8,10 +8,15 @@ layout: manual
 Compute the arctangent of a number.
 
 ```kcl
-atan(@num: number(_)): number(rad)
-```
+sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = atan(1.25), length = 20)
+  |> yLine(endAbsolute = 0)
+  |> close()
 
-Consider using `atan2()` instead for the true inverse of tangent.
+extrude001 = extrude(sketch001, length = 5)
+
+```
 
 ### Arguments
 
@@ -23,6 +28,15 @@ Consider using `atan2()` instead for the true inverse of tangent.
 
 [`number(rad)`](/docs/kcl-std/types/std-types-number) - A number.
 
+### Description
+
+Consider using `atan2()` instead for the true inverse of tangent.
+
+### Function signature
+
+```kcl
+atan(@num: number(_)): number(rad)
+```
 
 ### Examples
 

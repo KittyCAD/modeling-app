@@ -8,16 +8,26 @@ layout: manual
 Intersect returns the shared volume between multiple solids, preserving only overlapping regions.
 
 ```kcl
-intersect(
-  @solids: [Solid; 2+],
-  tolerance?: number(Length),
-): [Solid; 1+]
-```
+// Intersect two cubes using the stdlib functions.
 
-Intersect computes the geometric intersection of multiple solid bodies,
-returning a new solid representing the volume that is common to all input
-solids. This operation is useful for determining shared material regions,
-verifying fit, and analyzing overlapping geometries in assemblies.
+
+fn cube(center, size) {
+  return startSketchOn(XY)
+    |> startProfile(at = [center[0] - size, center[1] - size])
+    |> line(endAbsolute = [center[0] + size, center[1] - size])
+    |> line(endAbsolute = [center[0] + size, center[1] + size])
+    |> line(endAbsolute = [center[0] - size, center[1] + size])
+    |> close()
+    |> extrude(length = 10)
+}
+
+part001 = cube(center = [0, 0], size = 10)
+part002 = cube(center = [7, 3], size = 5)
+  |> translate(z = 1)
+
+intersectedPart = intersect([part001, part002])
+
+```
 
 ### Arguments
 
@@ -30,6 +40,21 @@ verifying fit, and analyzing overlapping geometries in assemblies.
 
 [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
 
+### Description
+
+Intersect computes the geometric intersection of multiple solid bodies,
+returning a new solid representing the volume that is common to all input
+solids. This operation is useful for determining shared material regions,
+verifying fit, and analyzing overlapping geometries in assemblies.
+
+### Function signature
+
+```kcl
+intersect(
+  @solids: [Solid; 2+],
+  tolerance?: number(Length),
+): [Solid; 1+]
+```
 
 ### Examples
 

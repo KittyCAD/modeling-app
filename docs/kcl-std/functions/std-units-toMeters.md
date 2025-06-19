@@ -7,11 +7,6 @@ layout: manual
 
 Convert a number to meters from its current units.
 
-```kcl
-units::toMeters(@num: number(Length)): number(m)
-```
-
-
 
 ### Arguments
 
@@ -23,5 +18,11 @@ units::toMeters(@num: number(Length)): number(m)
 
 [`number(m)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+units::toMeters(@num: number(Length)): number(m)
+```
 
 

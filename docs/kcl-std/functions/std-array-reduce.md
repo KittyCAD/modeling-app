@@ -8,14 +8,35 @@ layout: manual
 Take a starting value. Then, for each element of an array, calculate the next value, using the previous value and the element.
 
 ```kcl
-reduce(
-  @array: [any],
-  initial: any,
-  f: fn(any, accum: any): any,
-): any
+// This function adds two numbers.
+fn add(@a, accum) {
+  return a + accum
+}
+
+// This function adds an array of numbers.
+// It uses the `reduce` function, to call the `add` function on every
+// element of the `arr` parameter. The starting value is 0.
+fn sum(@arr) {
+  return reduce(arr, initial = 0, f = add)
+}
+
+/* The above is basically like this pseudo-code:
+fn sum(arr):
+    sumSoFar = 0
+    for i in arr:
+        sumSoFar = add(i, sumSoFar)
+    return sumSoFar */
+
+// We use `assert` to check that our `sum` function gives the
+// expected result. It's good to check your work!
+assert(
+  sum([1, 2, 3]),
+  isEqualTo = 6,
+  tolerance = 0.1,
+  error = "1 + 2 + 3 summed is 6",
+)
+
 ```
-
-
 
 ### Arguments
 
@@ -29,6 +50,16 @@ reduce(
 
 [`any`](/docs/kcl-std/types/std-types-any) - The [`any`](/docs/kcl-std/types/std-types-any) type is the type of all possible values in KCL. I.e., if a function accepts an argument with type [`any`](/docs/kcl-std/types/std-types-any), then it can accept any value.
 
+
+### Function signature
+
+```kcl
+reduce(
+  @array: [any],
+  initial: any,
+  f: fn(any, accum: any): any,
+): any
+```
 
 ### Examples
 

@@ -8,16 +8,14 @@ layout: manual
 Construct a line segment from the current origin back to the profile's origin, ensuring the resulting 2-dimensional sketch is not open-ended.
 
 ```kcl
-close(
-  @sketch: Sketch,
-  tag?: TagDecl,
-): Sketch
-```
+startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 10])
+  |> line(end = [10, 0])
+  |> close()
+  |> extrude(length = 10)
 
-If you want to perform some 3-dimensional operation on a sketch, like
-extrude or sweep, you must `close` it first. `close` must be called even
-if the end point of the last segment is coincident with the sketch
-starting point.
+```
 
 ### Arguments
 
@@ -30,6 +28,21 @@ starting point.
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+### Description
+
+If you want to perform some 3-dimensional operation on a sketch, like
+extrude or sweep, you must `close` it first. `close` must be called even
+if the end point of the last segment is coincident with the sketch
+starting point.
+
+### Function signature
+
+```kcl
+close(
+  @sketch: Sketch,
+  tag?: TagDecl,
+): Sketch
+```
 
 ### Examples
 

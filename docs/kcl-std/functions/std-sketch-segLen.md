@@ -8,10 +8,16 @@ layout: manual
 Compute the length of the provided line segment.
 
 ```kcl
-segLen(@tag: TaggedEdge): number(Length)
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 60, length = 10, tag = $thing)
+  |> tangentialArc(angle = -120deg, radius = 5)
+  |> angledLine(angle = -60deg, length = segLen(thing))
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +29,12 @@ segLen(@tag: TaggedEdge): number(Length)
 
 [`number(Length)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+segLen(@tag: TaggedEdge): number(Length)
+```
 
 ### Examples
 

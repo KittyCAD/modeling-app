@@ -8,21 +8,18 @@ layout: manual
 Extend a 2-dimensional sketch through a third dimension in order to create new 3-dimensional volume, or if extruded into an existing volume, cut into an existing solid.
 
 ```kcl
-extrude(
-  @sketches: [Sketch; 1+],
-  length: number(Length),
-  symmetric?: bool,
-  bidirectionalLength?: number(Length),
-  tagStart?: TagDecl,
-  tagEnd?: TagDecl,
-  twistAngle?: number(Angle),
-  twistAngleStep?: number(Angle),
-  twistCenter?: Point2d,
-): [Solid; 1+]
-```
+example = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> arc(angleStart = 120deg, angleEnd = 0, radius = 5)
+  |> line(end = [5, 0])
+  |> line(end = [0, 10])
+  |> bezierCurve(control1 = [-10, 0], control2 = [2, 10], end = [-5, 10])
+  |> line(end = [-5, -2])
+  |> close()
+  |> extrude(length = 10)
 
-You can provide more than one sketch to extrude, and they will all be
-extruded in the same direction.
+```
 
 ### Arguments
 
@@ -42,6 +39,26 @@ extruded in the same direction.
 
 [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
 
+### Description
+
+You can provide more than one sketch to extrude, and they will all be
+extruded in the same direction.
+
+### Function signature
+
+```kcl
+extrude(
+  @sketches: [Sketch; 1+],
+  length: number(Length),
+  symmetric?: bool,
+  bidirectionalLength?: number(Length),
+  tagStart?: TagDecl,
+  tagEnd?: TagDecl,
+  twistAngle?: number(Angle),
+  twistAngleStep?: number(Angle),
+  twistCenter?: Point2d,
+): [Solid; 1+]
+```
 
 ### Examples
 

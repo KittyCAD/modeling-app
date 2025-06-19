@@ -8,17 +8,22 @@ layout: manual
 Repeat a 2-dimensional sketch some number of times along a partial or complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orientation of the solid with respect to the center of the circle is maintained.
 
 ```kcl
-patternCircular2d(
-  @sketches: [Sketch; 1+],
-  instances: number(_),
-  center: Point2d,
-  arcDegrees?: number(Angle),
-  rotateDuplicates?: bool,
-  useOriginal?: bool,
-): [Sketch; 1+]
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [.5, 25])
+  |> line(end = [0, 5])
+  |> line(end = [-1, 0])
+  |> line(end = [0, -5])
+  |> close()
+  |> patternCircular2d(
+       center = [0, 0],
+       instances = 13,
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
+
+example = extrude(exampleSketch, length = 1)
+
 ```
-
-
 
 ### Arguments
 
@@ -35,6 +40,19 @@ patternCircular2d(
 
 [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch)
 
+
+### Function signature
+
+```kcl
+patternCircular2d(
+  @sketches: [Sketch; 1+],
+  instances: number(_),
+  center: Point2d,
+  arcDegrees?: number(Angle),
+  rotateDuplicates?: bool,
+  useOriginal?: bool,
+): [Sketch; 1+]
+```
 
 ### Examples
 

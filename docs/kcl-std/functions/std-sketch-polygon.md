@@ -8,16 +8,18 @@ layout: manual
 Create a regular polygon with the specified number of sides that is either inscribed or circumscribed around a circle of the specified radius.
 
 ```kcl
-polygon(
-  @sketchOrSurface: Sketch | Plane | Face,
-  radius: number(Length),
-  numSides: number(_),
-  center: Point2d,
-  inscribed?: bool,
-): Sketch
+// Create a regular hexagon inscribed in a circle of radius 10
+hex = startSketchOn(XY)
+  |> polygon(
+       radius = 10,
+       numSides = 6,
+       center = [0, 0],
+       inscribed = true,
+     )
+
+example = extrude(hex, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -33,6 +35,18 @@ polygon(
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+
+### Function signature
+
+```kcl
+polygon(
+  @sketchOrSurface: Sketch | Plane | Face,
+  radius: number(Length),
+  numSides: number(_),
+  center: Point2d,
+  inscribed?: bool,
+): Sketch
+```
 
 ### Examples
 

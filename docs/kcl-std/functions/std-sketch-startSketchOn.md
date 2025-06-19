@@ -8,11 +8,47 @@ layout: manual
 Start a new 2-dimensional sketch on a specific plane or face.
 
 ```kcl
-startSketchOn(
-  @planeOrSolid: Solid | Plane,
-  face?: TaggedFace,
-): Plane | Face
+exampleSketch = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
+exampleSketch002 = startSketchOn(example, face = END)
+  |> startProfile(at = [1, 1])
+  |> line(end = [8, 0])
+  |> line(end = [0, 8])
+  |> line(end = [-8, 0])
+  |> close()
+
+example002 = extrude(exampleSketch002, length = 5)
+
+exampleSketch003 = startSketchOn(example002, face = END)
+  |> startProfile(at = [2, 2])
+  |> line(end = [6, 0])
+  |> line(end = [0, 6])
+  |> line(end = [-6, 0])
+  |> close()
+
+example003 = extrude(exampleSketch003, length = 5)
+
 ```
+
+### Arguments
+
+| Name | Type | Description | Required |
+|----------|------|-------------|----------|
+| `planeOrSolid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`Plane`](/docs/kcl-std/types/std-types-Plane) | Profile whose start is being used. | Yes |
+| `face` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) | Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`). | No |
+
+### Returns
+
+[`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Face`](/docs/kcl-std/types/std-types-Face)
+
+### Description
 
 ### Sketch on Face Behavior
 
@@ -31,17 +67,14 @@ The point is if you want to export the result of a sketch on a face, you
 only need to export the final Solid that was created from the sketch on the
 face, since it will include all the parent faces and Solids.
 
-### Arguments
+### Function signature
 
-| Name | Type | Description | Required |
-|----------|------|-------------|----------|
-| `planeOrSolid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`Plane`](/docs/kcl-std/types/std-types-Plane) | Profile whose start is being used. | Yes |
-| `face` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) | Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`). | No |
-
-### Returns
-
-[`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Face`](/docs/kcl-std/types/std-types-Face)
-
+```kcl
+startSketchOn(
+  @planeOrSolid: Solid | Plane,
+  face?: TaggedFace,
+): Plane | Face
+```
 
 ### Examples
 

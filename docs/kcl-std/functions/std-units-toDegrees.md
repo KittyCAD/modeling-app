@@ -8,10 +8,15 @@ layout: manual
 Converts a number to degrees from its current units.
 
 ```kcl
-units::toDegrees(@num: number(Angle)): number(deg)
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 50deg, length = 70 * cos(units::toDegrees((PI / 4): number(rad))))
+  |> yLine(endAbsolute = 0)
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +28,12 @@ units::toDegrees(@num: number(Angle)): number(deg)
 
 [`number(deg)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+units::toDegrees(@num: number(Angle)): number(deg)
+```
 
 ### Examples
 

@@ -8,26 +8,14 @@ layout: manual
 Draw a curved line segment along an imaginary circle.
 
 ```kcl
-arc(
-  @sketch: Sketch,
-  angleStart?: number(Angle),
-  angleEnd?: number(Angle),
-  radius?: number(Length),
-  diameter?: number(Length),
-  interiorAbsolute?: Point2d,
-  endAbsolute?: Point2d,
-  tag?: TagDecl,
-): Sketch
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> arc(angleStart = 0, angleEnd = 280deg, radius = 16)
+  |> close()
+example = extrude(exampleSketch, length = 10)
+
 ```
-
-The arc is constructed such that the current position of the sketch is
-placed along an imaginary circle of the specified radius, at angleStart
-degrees. The resulting arc is the segment of the imaginary circle from
-that origin point to angleEnd, radius away from the center of the imaginary
-circle.
-
-Unless this makes a lot of sense and feels like what you're looking
-for to construct your shape, you're likely looking for tangentialArc.
 
 ### Arguments
 
@@ -46,6 +34,31 @@ for to construct your shape, you're likely looking for tangentialArc.
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+### Description
+
+The arc is constructed such that the current position of the sketch is
+placed along an imaginary circle of the specified radius, at angleStart
+degrees. The resulting arc is the segment of the imaginary circle from
+that origin point to angleEnd, radius away from the center of the imaginary
+circle.
+
+Unless this makes a lot of sense and feels like what you're looking
+for to construct your shape, you're likely looking for tangentialArc.
+
+### Function signature
+
+```kcl
+arc(
+  @sketch: Sketch,
+  angleStart?: number(Angle),
+  angleEnd?: number(Angle),
+  radius?: number(Length),
+  diameter?: number(Length),
+  interiorAbsolute?: Point2d,
+  endAbsolute?: Point2d,
+  tag?: TagDecl,
+): Sketch
+```
 
 ### Examples
 

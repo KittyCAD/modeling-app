@@ -8,18 +8,26 @@ layout: manual
 Subtract removes tool solids from base solids, leaving the remaining material.
 
 ```kcl
-subtract(
-  @solids: [Solid; 1+],
-  tools: [Solid],
-  tolerance?: number(Length),
-): [Solid; 1+]
-```
+// Subtract a cylinder from a cube using the stdlib functions.
 
-Performs a bool subtraction operation, removing the volume of one or more
-tool solids from one or more base solids. The result is a new solid
-representing the material that remains after all tool solids have been cut
-away. This function is essential for machining simulations, cavity creation,
-and complex multi-body part modeling.
+
+fn cube(center, size) {
+  return startSketchOn(XY)
+    |> startProfile(at = [center[0] - size, center[1] - size])
+    |> line(endAbsolute = [center[0] + size, center[1] - size])
+    |> line(endAbsolute = [center[0] + size, center[1] + size])
+    |> line(endAbsolute = [center[0] - size, center[1] + size])
+    |> close()
+    |> extrude(length = 10)
+}
+
+part001 = cube(center = [0, 0], size = 10)
+part002 = cube(center = [7, 3], size = 5)
+  |> translate(z = 1)
+
+subtractedPart = subtract([part001], tools = [part002])
+
+```
 
 ### Arguments
 
@@ -33,6 +41,23 @@ and complex multi-body part modeling.
 
 [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
 
+### Description
+
+Performs a bool subtraction operation, removing the volume of one or more
+tool solids from one or more base solids. The result is a new solid
+representing the material that remains after all tool solids have been cut
+away. This function is essential for machining simulations, cavity creation,
+and complex multi-body part modeling.
+
+### Function signature
+
+```kcl
+subtract(
+  @solids: [Solid; 1+],
+  tools: [Solid],
+  tolerance?: number(Length),
+): [Solid; 1+]
+```
 
 ### Examples
 

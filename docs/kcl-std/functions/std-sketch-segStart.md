@@ -8,10 +8,29 @@ layout: manual
 Compute the starting point of the provided line segment.
 
 ```kcl
-segStart(@tag: TaggedEdge): Point2d
+w = 15
+cube = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [w, 0], tag = $line1)
+  |> line(end = [0, w], tag = $line2)
+  |> line(end = [-w, 0], tag = $line3)
+  |> line(end = [0, -w], tag = $line4)
+  |> close()
+  |> extrude(length = 5)
+
+fn cylinder(radius, tag) {
+  return startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> circle(radius = radius, center = segStart(tag))
+    |> extrude(length = radius)
+}
+
+cylinder(radius = 1, tag = line1)
+cylinder(radius = 2, tag = line2)
+cylinder(radius = 3, tag = line3)
+cylinder(radius = 4, tag = line4)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +42,12 @@ segStart(@tag: TaggedEdge): Point2d
 
 [`Point2d`](/docs/kcl-std/types/std-types-Point2d) - A point in two dimensional space.
 
+
+### Function signature
+
+```kcl
+segStart(@tag: TaggedEdge): Point2d
+```
 
 ### Examples
 

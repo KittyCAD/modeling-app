@@ -8,20 +8,28 @@ layout: manual
 Move a solid or a sketch.
 
 ```kcl
-translate(
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
-  x?: number(Length),
-  y?: number(Length),
-  z?: number(Length),
-  global?: bool,
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry
+// Move a pipe.
+
+// Create a path for the sweep.
+sweepPath = startSketchOn(XZ)
+  |> startProfile(at = [0.05, 0.05])
+  |> line(end = [0, 7])
+  |> tangentialArc(angle = 90deg, radius = 5)
+  |> line(end = [-3, 0])
+  |> tangentialArc(angle = -90deg, radius = 5)
+  |> line(end = [0, 7])
+
+// Create a hole for the pipe.
+pipeHole = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1.5)
+
+sweepSketch = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2)
+  |> subtract2d(tool = pipeHole)
+  |> sweep(path = sweepPath)
+  |> translate(x = 1.0, y = 1.0, z = 2.5)
+
 ```
-
-This is really useful for assembling parts together. You can create a part
-and then move it to the correct location.
-
-Translate is really useful for sketches if you want to move a sketch
-and then rotate it using the `rotate` function to create a loft.
 
 ### Arguments
 
@@ -37,6 +45,25 @@ and then rotate it using the `rotate` function to create a loft.
 
 [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
 
+### Description
+
+This is really useful for assembling parts together. You can create a part
+and then move it to the correct location.
+
+Translate is really useful for sketches if you want to move a sketch
+and then rotate it using the `rotate` function to create a loft.
+
+### Function signature
+
+```kcl
+translate(
+  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  x?: number(Length),
+  y?: number(Length),
+  z?: number(Length),
+  global?: bool,
+): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry
+```
 
 ### Examples
 

@@ -8,10 +8,15 @@ layout: manual
 Converts a number to radians from its current units.
 
 ```kcl
-units::toRadians(@num: number(Angle)): number(rad)
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 50deg, length = 70 * cos(units::toRadians(45deg)))
+  |> yLine(endAbsolute = 0)
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +28,12 @@ units::toRadians(@num: number(Angle)): number(rad)
 
 [`number(rad)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+units::toRadians(@num: number(Angle)): number(rad)
+```
 
 ### Examples
 

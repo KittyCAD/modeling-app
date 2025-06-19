@@ -8,10 +8,16 @@ layout: manual
 Compute the largest integer less than or equal to a number.
 
 ```kcl
-floor(@input: number): number
+sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [12, 10])
+  |> line(end = [floor(7.02986), 0])
+  |> yLine(endAbsolute = 0)
+  |> close()
+
+extrude001 = extrude(sketch001, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +29,12 @@ floor(@input: number): number
 
 [`number`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+floor(@input: number): number
+```
 
 ### Examples
 

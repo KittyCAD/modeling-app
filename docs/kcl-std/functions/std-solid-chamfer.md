@@ -8,17 +8,31 @@ layout: manual
 Cut a straight transitional edge along a tagged path.
 
 ```kcl
-chamfer(
-  @solid: Solid,
-  length: number(Length),
-  tags: [Edge; 1+],
-  tag?: TagDecl,
-): Solid
-```
+// Chamfer a mounting plate.
+width = 20
+length = 10
+thickness = 1
+chamferLength = 2
 
-Chamfer is similar in function and use to a fillet, except
-a fillet will blend the transition along an edge, rather than cut
-a sharp, straight transitional edge.
+mountingPlateSketch = startSketchOn(XY)
+  |> startProfile(at = [-width / 2, -length / 2])
+  |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
+  |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
+  |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
+  |> close(tag = $edge4)
+
+mountingPlate = extrude(mountingPlateSketch, length = thickness)
+  |> chamfer(
+       length = chamferLength,
+       tags = [
+         getNextAdjacentEdge(edge1),
+         getNextAdjacentEdge(edge2),
+         getNextAdjacentEdge(edge3),
+         getNextAdjacentEdge(edge4)
+       ],
+     )
+
+```
 
 ### Arguments
 
@@ -33,6 +47,22 @@ a sharp, straight transitional edge.
 
 [`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extruded surfaces.
 
+### Description
+
+Chamfer is similar in function and use to a fillet, except
+a fillet will blend the transition along an edge, rather than cut
+a sharp, straight transitional edge.
+
+### Function signature
+
+```kcl
+chamfer(
+  @solid: Solid,
+  length: number(Length),
+  tags: [Edge; 1+],
+  tag?: TagDecl,
+): Solid
+```
 
 ### Examples
 

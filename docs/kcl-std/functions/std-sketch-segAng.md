@@ -8,10 +8,19 @@ layout: manual
 Compute the angle (in degrees) of the provided line segment.
 
 ```kcl
-segAng(@tag: TaggedEdge): number(Angle)
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [5, 10], tag = $seg01)
+  |> line(end = [-10, 0])
+  |> angledLine(angle = segAng(seg01), length = 10)
+  |> line(end = [-10, 0])
+  |> angledLine(angle = segAng(seg01), length = -15)
+  |> close()
+
+example = extrude(exampleSketch, length = 4)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +32,12 @@ segAng(@tag: TaggedEdge): number(Angle)
 
 [`number(Angle)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+segAng(@tag: TaggedEdge): number(Angle)
+```
 
 ### Examples
 

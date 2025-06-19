@@ -7,11 +7,6 @@ layout: manual
 
 Convert a number to feet from its current units.
 
-```kcl
-units::toFeet(@num: number(Length)): number(ft)
-```
-
-
 
 ### Arguments
 
@@ -23,5 +18,11 @@ units::toFeet(@num: number(Length)): number(ft)
 
 [`number(ft)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+units::toFeet(@num: number(Length)): number(ft)
+```
 
 

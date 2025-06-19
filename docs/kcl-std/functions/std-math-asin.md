@@ -8,10 +8,15 @@ layout: manual
 Compute the arcsine of a number.
 
 ```kcl
-asin(@num: number(_)): number(rad)
+sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = asin(0.5), length = 20)
+  |> yLine(endAbsolute = 0)
+  |> close()
+
+extrude001 = extrude(sketch001, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +28,12 @@ asin(@num: number(_)): number(rad)
 
 [`number(rad)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+asin(@num: number(_)): number(rad)
+```
 
 ### Examples
 

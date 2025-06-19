@@ -8,19 +8,17 @@ layout: manual
 Draw a smooth, continuous, curved line segment from the current origin to the desired (x, y), using a number of control points to shape the curve's shape.
 
 ```kcl
-bezierCurve(
-  @sketch: Sketch,
-  control1?: Point2d,
-  control2?: Point2d,
-  end?: Point2d,
-  control1Absolute?: Point2d,
-  control2Absolute?: Point2d,
-  endAbsolute?: Point2d,
-  tag?: TagDecl,
-): Sketch
+// Example using relative control points.
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, 10])
+  |> bezierCurve(control1 = [5, 0], control2 = [5, 10], end = [10, 10])
+  |> line(endAbsolute = [10, 0])
+  |> close()
+
+example = extrude(exampleSketch, length = 10)
+
 ```
-
-
 
 ### Arguments
 
@@ -39,6 +37,21 @@ bezierCurve(
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+
+### Function signature
+
+```kcl
+bezierCurve(
+  @sketch: Sketch,
+  control1?: Point2d,
+  control2?: Point2d,
+  end?: Point2d,
+  control1Absolute?: Point2d,
+  control2Absolute?: Point2d,
+  endAbsolute?: Point2d,
+  tag?: TagDecl,
+): Sketch
+```
 
 ### Examples
 

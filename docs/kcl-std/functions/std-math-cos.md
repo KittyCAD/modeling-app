@@ -8,10 +8,15 @@ layout: manual
 Compute the cosine of a number.
 
 ```kcl
-cos(@num: number(Angle)): number
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 30deg, length = 3 / cos(30deg))
+  |> yLine(endAbsolute = 0)
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +28,12 @@ cos(@num: number(Angle)): number
 
 [`number`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+cos(@num: number(Angle)): number
+```
 
 ### Examples
 

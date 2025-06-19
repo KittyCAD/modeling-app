@@ -8,10 +8,15 @@ layout: manual
 Compute the sine of a number.
 
 ```kcl
-sin(@num: number(Angle)): number
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 50deg, length = 15 / sin(135deg))
+  |> yLine(endAbsolute = 0)
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +28,12 @@ sin(@num: number(Angle)): number
 
 [`number`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+sin(@num: number(Angle)): number
+```
 
 ### Examples
 

@@ -8,16 +8,12 @@ layout: manual
 Construct a 2-dimensional circle, of the specified radius, centered at the provided (x, y) origin point.
 
 ```kcl
-circle(
-  @sketchOrSurface: Sketch | Plane | Face,
-  center: Point2d,
-  radius?: number(Length),
-  diameter?: number(Length),
-  tag?: TagDecl,
-): Sketch
+exampleSketch = startSketchOn(-XZ)
+  |> circle(center = [0, 0], radius = 10)
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -33,6 +29,18 @@ circle(
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+
+### Function signature
+
+```kcl
+circle(
+  @sketchOrSurface: Sketch | Plane | Face,
+  center: Point2d,
+  radius?: number(Length),
+  diameter?: number(Length),
+  tag?: TagDecl,
+): Sketch
+```
 
 ### Examples
 

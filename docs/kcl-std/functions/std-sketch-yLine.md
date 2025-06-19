@@ -8,15 +8,17 @@ layout: manual
 Draw a line relative to the current origin to a specified distance away from the current position along the 'y' axis.
 
 ```kcl
-yLine(
-  @sketch: Sketch,
-  length?: number(Length),
-  endAbsolute?: number(Length),
-  tag?: TagDecl,
-): Sketch
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> yLine(length = 15)
+  |> angledLine(angle = 30deg, length = 15)
+  |> line(end = [8, -10])
+  |> yLine(length = -5)
+  |> close()
+
+example = extrude(exampleSketch, length = 10)
+
 ```
-
-
 
 ### Arguments
 
@@ -31,6 +33,17 @@ yLine(
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+
+### Function signature
+
+```kcl
+yLine(
+  @sketch: Sketch,
+  length?: number(Length),
+  endAbsolute?: number(Length),
+  tag?: TagDecl,
+): Sketch
+```
 
 ### Examples
 

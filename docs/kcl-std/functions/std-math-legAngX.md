@@ -8,13 +8,9 @@ layout: manual
 Compute the angle of the given leg for x.
 
 ```kcl
-legAngX(
-  hypotenuse: number(Length),
-  leg: number(Length),
-): number(deg)
+legAngX(hypotenuse = 5, leg = 3)
+
 ```
-
-
 
 ### Arguments
 
@@ -27,6 +23,15 @@ legAngX(
 
 [`number(deg)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+legAngX(
+  hypotenuse: number(Length),
+  leg: number(Length),
+): number(deg)
+```
 
 ### Examples
 

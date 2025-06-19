@@ -8,13 +8,26 @@ layout: manual
 Union two or more solids into a single solid.
 
 ```kcl
-union(
-  @solids: [Solid; 2+],
-  tolerance?: number(Length),
-): [Solid; 1+]
+// Union two cubes using the stdlib functions.
+
+
+fn cube(center, size) {
+  return startSketchOn(XY)
+    |> startProfile(at = [center[0] - size, center[1] - size])
+    |> line(endAbsolute = [center[0] + size, center[1] - size])
+    |> line(endAbsolute = [center[0] + size, center[1] + size])
+    |> line(endAbsolute = [center[0] - size, center[1] + size])
+    |> close()
+    |> extrude(length = 10)
+}
+
+part001 = cube(center = [0, 0], size = 10)
+part002 = cube(center = [7, 3], size = 5)
+  |> translate(z = 1)
+
+unionedPart = union([part001, part002])
+
 ```
-
-
 
 ### Arguments
 
@@ -27,6 +40,15 @@ union(
 
 [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
 
+
+### Function signature
+
+```kcl
+union(
+  @solids: [Solid; 2+],
+  tolerance?: number(Length),
+): [Solid; 1+]
+```
 
 ### Examples
 

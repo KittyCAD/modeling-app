@@ -8,10 +8,16 @@ layout: manual
 Compute the arccosine of a number.
 
 ```kcl
-acos(@num: number(_)): number(rad)
+sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = acos(0.5), length = 10)
+  |> line(end = [5, 0])
+  |> line(endAbsolute = [12, 0])
+  |> close()
+
+extrude001 = extrude(sketch001, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +29,12 @@ acos(@num: number(_)): number(rad)
 
 [`number(rad)`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+acos(@num: number(_)): number(rad)
+```
 
 ### Examples
 

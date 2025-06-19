@@ -8,14 +8,19 @@ layout: manual
 Remove volume from a 3-dimensional shape such that a wall of the provided thickness remains, taking volume starting at the provided face, leaving it open in that direction.
 
 ```kcl
-shell(
-  @solids: [Solid; 1+],
-  thickness: number(Length),
-  faces: [TaggedFace; 1+],
-): [Solid]
+// Remove the end face for the extrusion.
+firstSketch = startSketchOn(XY)
+  |> startProfile(at = [-12, 12])
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
+
+// Remove the end face for the extrusion.
+shell(firstSketch, faces = [END], thickness = 0.25)
+
 ```
-
-
 
 ### Arguments
 
@@ -29,6 +34,16 @@ shell(
 
 [`[Solid]`](/docs/kcl-std/types/std-types-Solid)
 
+
+### Function signature
+
+```kcl
+shell(
+  @solids: [Solid; 1+],
+  thickness: number(Length),
+  faces: [TaggedFace; 1+],
+): [Solid]
+```
 
 ### Examples
 

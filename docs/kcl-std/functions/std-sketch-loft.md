@@ -8,18 +8,25 @@ layout: manual
 Create a 3D surface or solid by interpolating between two or more sketches.
 
 ```kcl
-loft(
-  @sketches: [Sketch; 2+],
-  vDegree?: number(_),
-  bezApproximateRational?: bool,
-  baseCurveIndex?: number(_),
-  tolerance?: number(Length),
-  tagStart?: TagDecl,
-  tagEnd?: TagDecl,
-): Solid
-```
+// Loft a square and a triangle.
+squareSketch = startSketchOn(XY)
+  |> startProfile(at = [-100, 200])
+  |> line(end = [200, 0])
+  |> line(end = [0, -200])
+  |> line(end = [-200, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 
-The sketches need to be closed and on different planes that are parallel.
+triangleSketch = startSketchOn(offsetPlane(XY, offset = 75))
+  |> startProfile(at = [0, 125])
+  |> line(end = [-15, -30])
+  |> line(end = [30, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+loft([triangleSketch, squareSketch])
+
+```
 
 ### Arguments
 
@@ -37,6 +44,23 @@ The sketches need to be closed and on different planes that are parallel.
 
 [`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extruded surfaces.
 
+### Description
+
+The sketches need to be closed and on different planes that are parallel.
+
+### Function signature
+
+```kcl
+loft(
+  @sketches: [Sketch; 2+],
+  vDegree?: number(_),
+  bezApproximateRational?: bool,
+  baseCurveIndex?: number(_),
+  tolerance?: number(Length),
+  tagStart?: TagDecl,
+  tagEnd?: TagDecl,
+): Solid
+```
 
 ### Examples
 

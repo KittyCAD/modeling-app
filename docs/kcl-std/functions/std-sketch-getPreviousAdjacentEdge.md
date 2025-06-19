@@ -8,10 +8,19 @@ layout: manual
 Get the previous adjacent edge to the edge given.
 
 ```kcl
-getPreviousAdjacentEdge(@edge: TaggedEdge): Edge
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> angledLine(angle = 60deg, length = 10)
+  |> angledLine(angle = 120deg, length = 10)
+  |> line(end = [-10, 0])
+  |> angledLine(angle = 240deg, length = 10, tag = $referenceEdge)
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+  |> fillet(radius = 3, tags = [getPreviousAdjacentEdge(referenceEdge)])
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +32,12 @@ getPreviousAdjacentEdge(@edge: TaggedEdge): Edge
 
 [`Edge`](/docs/kcl-std/types/std-types-Edge) - An edge of a solid.
 
+
+### Function signature
+
+```kcl
+getPreviousAdjacentEdge(@edge: TaggedEdge): Edge
+```
 
 ### Examples
 

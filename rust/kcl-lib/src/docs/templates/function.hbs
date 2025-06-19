@@ -11,11 +11,13 @@ layout: manual
 {{/if}}
 {{{summary}}}
 
+{{#if examples}}
+{{#if examples.0.content}}
 ```kcl
-{{{fn_signature}}}
+{{{examples.0.content}}}
 ```
-
-{{{description}}}
+{{/if}}
+{{/if}}
 
 {{#if args}}
 ### Arguments
@@ -33,6 +35,17 @@ layout: manual
 `{{return_value.type_}}`{{#if return_value.description}} - {{{firstLine return_value.description}}}{{/if}}
 
 {{/if}}
+{{#if description}}
+### Description
+
+{{{description}}}
+{{/if}}
+
+### Function signature
+
+```kcl
+{{{fn_signature}}}
+```
 
 {{#if examples}}
 ### Examples

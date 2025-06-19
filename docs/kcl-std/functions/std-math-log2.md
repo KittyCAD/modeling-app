@@ -8,10 +8,16 @@ layout: manual
 Compute the base 2 logarithm of the number.
 
 ```kcl
-log2(@input: number): number
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [log2(100), 0])
+  |> line(end = [5, 8])
+  |> line(end = [-10, 0])
+  |> close()
+
+example = extrude(exampleSketch, length = 5)
+
 ```
-
-
 
 ### Arguments
 
@@ -23,6 +29,12 @@ log2(@input: number): number
 
 [`number`](/docs/kcl-std/types/std-types-number) - A number.
 
+
+### Function signature
+
+```kcl
+log2(@input: number): number
+```
 
 ### Examples
 

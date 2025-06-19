@@ -8,18 +8,30 @@ layout: manual
 Blend a transitional edge along a tagged path, smoothing the sharp edge.
 
 ```kcl
-fillet(
-  @solid: Solid,
-  radius: number(Length),
-  tags: [Edge; 1+],
-  tolerance?: number(Length),
-  tag?: TagDecl,
-): Solid
-```
+width = 20
+length = 10
+thickness = 1
+filletRadius = 2
 
-Fillet is similar in function and use to a chamfer, except
-a chamfer will cut a sharp transition along an edge while fillet
-will smoothly blend the transition.
+mountingPlateSketch = startSketchOn(XY)
+  |> startProfile(at = [-width / 2, -length / 2])
+  |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
+  |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
+  |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
+  |> close(tag = $edge4)
+
+mountingPlate = extrude(mountingPlateSketch, length = thickness)
+  |> fillet(
+       radius = filletRadius,
+       tags = [
+         getNextAdjacentEdge(edge1),
+         getNextAdjacentEdge(edge2),
+         getNextAdjacentEdge(edge3),
+         getNextAdjacentEdge(edge4)
+       ],
+     )
+
+```
 
 ### Arguments
 
@@ -35,6 +47,23 @@ will smoothly blend the transition.
 
 [`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extruded surfaces.
 
+### Description
+
+Fillet is similar in function and use to a chamfer, except
+a chamfer will cut a sharp transition along an edge while fillet
+will smoothly blend the transition.
+
+### Function signature
+
+```kcl
+fillet(
+  @solid: Solid,
+  radius: number(Length),
+  tags: [Edge; 1+],
+  tolerance?: number(Length),
+  tag?: TagDecl,
+): Solid
+```
 
 ### Examples
 

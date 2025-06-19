@@ -8,16 +8,17 @@ layout: manual
 Draw an angled line from the current origin, constructing a line segment such that the newly created line intersects the desired target line segment.
 
 ```kcl
-angledLineThatIntersects(
-  @sketch: Sketch,
-  angle: number(Angle),
-  intersectTag: TaggedEdge,
-  offset?: number(Length),
-  tag?: TagDecl,
-): Sketch
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [5, 10])
+  |> line(endAbsolute = [-10, 10], tag = $lineToIntersect)
+  |> line(endAbsolute = [0, 20])
+  |> angledLineThatIntersects(angle = 80deg, intersectTag = lineToIntersect, offset = 10)
+  |> close()
+
+example = extrude(exampleSketch, length = 10)
+
 ```
-
-
 
 ### Arguments
 
@@ -33,6 +34,18 @@ angledLineThatIntersects(
 
 [`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
+
+### Function signature
+
+```kcl
+angledLineThatIntersects(
+  @sketch: Sketch,
+  angle: number(Angle),
+  intersectTag: TaggedEdge,
+  offset?: number(Length),
+  tag?: TagDecl,
+): Sketch
+```
 
 ### Examples
 

@@ -8,15 +8,17 @@ layout: manual
 Just like `patternTransform`, but works on 2D sketches not 3D solids.
 
 ```kcl
-patternTransform2d(
-  @sketches: [Sketch; 1+],
-  instances: number(_),
-  transform: fn(number(_)): { },
-  useOriginal?: boolean,
-): [Sketch; 1+]
+// Each instance will be shifted along the X axis.
+fn transform(@id) {
+  return { translate = [4 * id, 0] }
+}
+
+// Sketch 4 circles.
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 2)
+  |> patternTransform2d(instances = 4, transform = transform)
+
 ```
-
-
 
 ### Arguments
 
@@ -31,6 +33,17 @@ patternTransform2d(
 
 [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch)
 
+
+### Function signature
+
+```kcl
+patternTransform2d(
+  @sketches: [Sketch; 1+],
+  instances: number(_),
+  transform: fn(number(_)): { },
+  useOriginal?: boolean,
+): [Sketch; 1+]
+```
 
 ### Examples
 
