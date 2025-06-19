@@ -13,14 +13,14 @@ import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
-import { PromptCard } from '@src/components/PromptCard'
+import { ConvoCard } from '@src/components/PromptCard'
 import {
   HomeSearchBar,
   useHomeSearch,
-  HomeItems,
   areHomeItemsProjects,
-  areHomeItemsPrompts,
+  areHomeItemsConversations,
 } from '@src/components/HomeSearchBar'
+import type { HomeItems } from '@src/components/HomeSearchBar'
 import { BillingDialog } from '@src/components/BillingDialog'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useMenuListener } from '@src/hooks/useMenu'
@@ -28,10 +28,10 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
-import type { Prompt } from '@src/lib/prompt'
 import {
   getNextSearchParams,
-  getSortFunction,
+  getProjectSortFunction,
+  getConvoSortFunction,
   getSortIcon,
 } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
@@ -42,6 +42,7 @@ import {
   kclManager,
   authActor,
   billingActor,
+  mlEphantManagerActor,
   systemIOActor,
   useSettings,
 } from '@src/lib/singletons'
@@ -73,6 +74,7 @@ import {
 } from '@src/components/StatusBar/defaultStatusBarItems'
 import { useSelector } from '@xstate/react'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { MlEphantManagerStates } from '@src/machines/mlEphantManagerMachine'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -220,32 +222,42 @@ const Home = () => {
     }
   )
   const projects = useFolders()
-  const prompts = [
-    { prompt: 'lol' },
-    { prompt: 'never gonna give you up' },
-    { prompt: 'takethisli' },
-  ]
+  const conversations = useSelector(mlEphantManagerActor, (actor) => {
+    return actor.context.conversations
+  })
+
+  // Trigger a rerender for the Prompts tab when prompts change state.
+  const promptsInProgressToCompleted = useSelector(
+    mlEphantManagerActor,
+    (actor) => {
+      return actor.context.promptsInProgressToCompleted
+    }
+  )
+
   const [tabSelected, setTabSelected] = useState<HomeTabKeys>(
     HomeTabKeys.Projects
   )
-  const [items, setItems] = useState<Project[] | Prompt[]>(projects)
+  const [items, setItems] = useState<HomeItems>(projects)
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, searchAgainst } = useHomeSearch(projects)
   const sortBy = searchParams.get('sort_by') ?? 'modified:desc'
 
   const onChangeTab = (key: HomeTabKeys) => {
     setTabSelected(key)
-    switch (key) {
+  }
+
+  useEffect(() => {
+    switch (tabSelected) {
       case HomeTabKeys.Projects:
         setItems(projects)
         break
       case HomeTabKeys.Prompts:
-        setItems(prompts)
+        setItems(conversations.items)
         break
       default:
-        const _ex: never = key
+        const _ex: never = tabSelected
     }
-  }
+  }, [tabSelected, promptsInProgressToCompleted, projects])
 
   useEffect(() => {
     searchAgainst(items)('')
@@ -437,8 +449,8 @@ const Home = () => {
           searchResults={searchResults}
           sortBy={sortBy}
           query={query}
+          settings={settings}
         />
-        <LowerRightControls navigate={navigate} />
       </div>
       <StatusBar
         globalItems={[
@@ -482,8 +494,11 @@ function HomeTab(props: HomeTabProps) {
     <div className="flex flex-row">
       {tabs.map((el) => (
         <div
+          key={el.key}
           className={el.key === selected ? cssActive : cssInactive}
           onClick={onClickTab(el.key)}
+          role="tab"
+          tabIndex={0}
         >
           {el.name}
         </div>
@@ -565,7 +580,7 @@ function HomeHeader({
                   : '',
               }}
             >
-              Last Modified
+              Age
             </ActionButton>
           </div>
         </div>
@@ -614,10 +629,13 @@ interface HomeItemsAreaProps {
   searchResults: HomeItems
   sortBy: string
   query: string
+  settings: ReturnType<typeof useSettings>
 }
 
 function HomeItemsArea(props: HomeItemsAreaProps) {
   let grid = null
+
+  console.log('home items area', props.tabSelected, props.searchResults)
 
   switch (props.tabSelected) {
     case HomeTabKeys.Projects:
@@ -632,11 +650,12 @@ function HomeItemsArea(props: HomeItemsAreaProps) {
       )
       break
     case HomeTabKeys.Prompts:
-      grid = areHomeItemsPrompts(props.searchResults) ? (
-        <ResultGridPrompts
+      grid = areHomeItemsConversations(props.searchResults) ? (
+        <ResultGridConversations
           searchResults={props.searchResults}
           query={props.query}
           sortBy={props.sortBy}
+          settings={props.settings}
         />
       ) : (
         <NoResults />
@@ -653,18 +672,47 @@ function HomeItemsArea(props: HomeItemsAreaProps) {
   )
 }
 
-interface ResultGridProjectsProps {
-  searchResults: Prompt[]
+interface ResultGridConversationsProps {
+  searchResults: IResponseMlConversation[]
   query: string
   sortBy: string
+  settings: ReturnType<typeof useSettings>
 }
 
-function ResultGridPrompts(props) {
+function ResultGridConversations(props: ResultGridConversationsProps) {
+  // Maybe consider lifting this higher but I see no reason at the moment
+  const onAction = (prompt: string) => {
+    commandBarActor.send({
+      type: 'Find and select command',
+      data: {
+        groupId: 'application',
+        name: 'Text-to-CAD',
+        argDefaultValues: {
+          method: 'newProject',
+          prompt,
+          newProjectName: props.settings.projects.defaultProjectName.current,
+        },
+      },
+    })
+  }
+
+  const mlEphantManagerSnapshot = mlEphantManagerActor.getSnapshot()
+
+  if (mlEphantManagerSnapshot.matches(MlEphantManagerStates.Setup)) {
+    return (
+      <div className="col-start-2 -col-end-1 w-full flex flex-col justify-center items-center">
+        <Loading isDummy={true}>Loading your prompts...</Loading>
+      </div>
+    )
+  }
+
   return (
-    <div>
-      {props.searchResults.map((el) => (
-        <div key={el.prompt}>{el.prompt}</div>
-      ))}
+    <div className="grid w-full sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
+      {props.searchResults
+        .sort(getConvoSortFunction(props.sortBy))
+        .map((convo: IResponseMlConversation) => (
+          <ConvoCard key={convo.id} {...convo} onAction={onAction} />
+        ))}
     </div>
   )
 }
@@ -686,8 +734,8 @@ function ResultGridProjects(props: ResultGridProjectsProps) {
         <>
           {props.searchResults.length > 0 ? (
             <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {(props.searchResults ?? [])
-                .sort(getSortFunction(props.sortBy))
+              {props.searchResults
+                .sort(getProjectSortFunction(props.sortBy))
                 .map((item) => (
                   <ProjectCard
                     key={item.name}
@@ -700,9 +748,9 @@ function ResultGridProjects(props: ResultGridProjectsProps) {
           ) : (
             <p className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
               No results found
-              {items.length === 0
+              {props.searchResults.length === 0
                 ? ', ready to make your first one?'
-                : ` with the search term "${query}"`}
+                : ` with the search term "${props.query}"`}
             </p>
           )}
         </>

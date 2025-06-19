@@ -1,3 +1,4 @@
+import { NIL as uuidNIL } from 'uuid'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import {
   PATHS,
@@ -13,9 +14,15 @@ import {
   useSettings,
   useToken,
   kclManager,
+  mlEphantManagerActor,
   engineCommandManager,
 } from '@src/lib/singletons'
 import { BillingTransition } from '@src/machines/billingMachine'
+import { PromptType } from '@src/lib/prompt'
+import {
+  MlEphantManagerStates,
+  MlEphantManagerTransitions,
+} from '@src/machines/mlEphantManagerMachine'
 import {
   useHasListedProjects,
   useProjectDirectoryPath,
@@ -27,16 +34,19 @@ import {
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineEvents,
+  SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
-import { submitAndAwaitTextToKclSystemIO } from '@src/lib/textToCad'
 import { reportRejection } from '@src/lib/trap'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { useLspContext } from '@src/components/LspProvider'
 import { useLocation } from 'react-router-dom'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import {
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  PROJECT_ENTRYPOINT,
+} from '@src/lib/constants'
 
 export function SystemIOMachineLogicListenerDesktop() {
   const requestedProjectName = useRequestedProjectName()
@@ -233,36 +243,125 @@ export function SystemIOMachineLogicListenerDesktop() {
         ? [settings.app.projectDirectory.current]
         : []
     )
-
-    // TODO: Move this generateTextToCAD to another machine in the future and make a whole machine out of it.
-    useEffect(() => {
-      const requestedPromptTrimmed =
-        requestedTextToCadGeneration.requestedPrompt.trim()
-      const requestedProjectName =
-        requestedTextToCadGeneration.requestedProjectName
-      const isProjectNew = requestedTextToCadGeneration.isProjectNew
-      if (!requestedPromptTrimmed || !requestedProjectName) return
-      const uniqueNameIfNeeded = isProjectNew
-        ? getUniqueProjectName(requestedProjectName, folders)
-        : requestedProjectName
-      submitAndAwaitTextToKclSystemIO({
-        trimmedPrompt: requestedPromptTrimmed,
-        projectName: uniqueNameIfNeeded,
-        navigate,
-        token,
-        isProjectNew,
-        settings: { highlightEdges: settings.modeling.highlightEdges.current },
-      })
-        .then(() => {
-          billingActor.send({
-            type: BillingTransition.Update,
-            apiToken: token,
-          })
-        })
-        .catch(reportRejection)
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [requestedTextToCadGeneration])
   }
+
+  // Watch MlEphant for any responses that require files to be created.
+  useEffect(() => {
+    const subscription = mlEphantManagerActor.subscribe((next) => {
+      if (
+        !next.matches(
+          MlEphantManagerStates.Ready +
+            '.' +
+            MlEphantManagerStates.Background +
+            '.' +
+            MlEphantManagerTransitions.GetPromptsPendingStatuses
+        )
+      ) {
+        return
+      }
+
+      let hadUpdate =
+        next.context.promptsInProgressToCompleted.promptsBelongingToConversation
+          .length > 0
+
+      next.context.promptsInProgressToCompleted.promptsBelongingToConversation.forEach(
+        (promptId: Prompt['id']) => {
+          const prompt = next.context.promptsPool.get(promptId)
+          if (prompt === undefined) return
+          const promptMeta = next.context.promptsMeta.get(prompt.id)
+          if (promptMeta === undefined) {
+            console.warn('No metadata for this prompt - ignoring.')
+            return
+          }
+
+          if (promptMeta.type === PromptType.Create) {
+            systemIOActor.send({
+              type: SystemIOMachineEvents.importFileFromURL,
+              data: {
+                requestedCode: prompt.code,
+                requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
+              },
+            })
+          } else {
+            const requestedFiles: RequestedKCLFile[] = Object.entries(
+              prompt.outputs
+            ).map(([relativePath, fileContents]) => {
+              const lastSep = relativePath.lastIndexOf(window.electron.sep)
+              let pathPart = relativePath.slice(0, lastSep)
+              let filePart = relativePath.slice(lastSep)
+              if (lastSep < 0) {
+                pathPart = ''
+                filePart = relativePath
+              }
+              return {
+                requestedCode: fileContents,
+                requestedFileName: filePart,
+                requestedProjectName:
+                  promptMeta.project.name + window.electron.sep + pathPart,
+              }
+            })
+            systemIOActor.send({
+              type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+              data: {
+                files: requestedFiles,
+                // The navigation to the currently selected file doesn't work?
+                // TODO: ping kevin again.
+                override: true,
+              },
+            })
+          }
+        }
+      )
+
+      if (hadUpdate) {
+        billingActor.send({
+          type: BillingTransition.Update,
+          apiToken: token,
+        })
+      }
+    })
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  // Save the conversation id for the project id if necessary.
+  useEffect(() => {
+    const subscription = mlEphantManagerActor.subscribe((next) => {
+      if (settings.meta.id.current === undefined) {
+        return
+      }
+      if (settings.meta.id.current === uuidNIL) {
+        return
+      }
+      if (next.context.conversationId === undefined) {
+        return
+      }
+      const systemIOActorSnapshot = systemIOActor.getSnapshot()
+      if (
+        systemIOActorSnapshot.context.mlEphantConversations.has(
+          settings.meta.id.current
+        )
+      ) {
+        return
+      }
+      if (
+        systemIOActorSnapshot.value ===
+        SystemIOMachineStates.savingMlEphantConversations
+      ) {
+        return
+      }
+      systemIOActor.send({
+        type: SystemIOMachineEvents.saveMlEphantConversations,
+        projectId: settings.meta.id.current,
+        conversationId: next.context.conversationId,
+      })
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [settings])
 
   useGlobalProjectNavigation()
   useGlobalFileNavigation()
