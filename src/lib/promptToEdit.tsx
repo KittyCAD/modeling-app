@@ -509,7 +509,7 @@ export async function promptToEditFlow({
     const ranges: SelectionRange[] = diff.insertRanges.map((range) =>
       EditorSelection.range(range[0], range[1])
     )
-    editorManager?.editorView?.dispatch({
+    editorManager?.getEditorView()?.dispatch({
       selection: EditorSelection.create(
         ranges,
         selections.graphSelections.length - 1

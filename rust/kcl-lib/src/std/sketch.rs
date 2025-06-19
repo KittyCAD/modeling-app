@@ -11,7 +11,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::shapes::get_radius;
+use super::shapes::{get_radius, get_radius_labelled};
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use crate::{
@@ -101,13 +101,26 @@ pub const NEW_TAG_KW: &str = "tag";
 pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::sketch(), exec_state)?;
 
-    let start_radius: TyF64 = args.get_kw_arg("startRadius", &RuntimeType::length(), exec_state)?;
-    let end_radius: TyF64 = args.get_kw_arg("endRadius", &RuntimeType::length(), exec_state)?;
+    let start_radius: Option<TyF64> = args.get_kw_arg_opt("startRadius", &RuntimeType::length(), exec_state)?;
+    let end_radius: Option<TyF64> = args.get_kw_arg_opt("endRadius", &RuntimeType::length(), exec_state)?;
+    let start_diameter: Option<TyF64> = args.get_kw_arg_opt("startDiameter", &RuntimeType::length(), exec_state)?;
+    let end_diameter: Option<TyF64> = args.get_kw_arg_opt("endDiameter", &RuntimeType::length(), exec_state)?;
     let angle: TyF64 = args.get_kw_arg("angle", &RuntimeType::angle(), exec_state)?;
     let reverse = args.get_kw_arg_opt("reverse", &RuntimeType::bool(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
-    let new_sketch =
-        inner_involute_circular(sketch, start_radius, end_radius, angle, reverse, tag, exec_state, args).await?;
+    let new_sketch = inner_involute_circular(
+        sketch,
+        start_radius,
+        end_radius,
+        start_diameter,
+        end_diameter,
+        angle,
+        reverse,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -123,8 +136,10 @@ fn involute_curve(radius: f64, angle: f64) -> (f64, f64) {
 #[allow(clippy::too_many_arguments)]
 async fn inner_involute_circular(
     sketch: Sketch,
-    start_radius: TyF64,
-    end_radius: TyF64,
+    start_radius: Option<TyF64>,
+    end_radius: Option<TyF64>,
+    start_diameter: Option<TyF64>,
+    end_diameter: Option<TyF64>,
     angle: TyF64,
     reverse: Option<bool>,
     tag: Option<TagNode>,
@@ -132,6 +147,22 @@ async fn inner_involute_circular(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let id = exec_state.next_uuid();
+
+    let longer_args_dot_source_range = args.source_range;
+    let start_radius = get_radius_labelled(
+        start_radius,
+        start_diameter,
+        args.source_range,
+        "startRadius",
+        "startDiameter",
+    )?;
+    let end_radius = get_radius_labelled(
+        end_radius,
+        end_diameter,
+        longer_args_dot_source_range,
+        "endRadius",
+        "endDiameter",
+    )?;
 
     exec_state
         .batch_modeling_cmd(
