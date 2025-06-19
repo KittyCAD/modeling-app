@@ -61,20 +61,42 @@ type TextToCadErrorResponse = {
   message: string
 }
 
-async function submitTextToCadRequest(
-  body: {
-    prompt: string
-    source_ranges: Models['SourceRangePrompt_type'][]
-    project_name?: string
-    kcl_version: string
+export async function submitTextToCadMultiFileIterationRequest(
+  request: {
+    body: {
+      prompt: string
+      source_ranges: Models['SourceRangePrompt_type'][]
+      project_name?: string
+      kcl_version: string
+    }
+    files: KittyCadLibFile[]
   },
-  files: KittyCadLibFile[],
   token: string
 ): Promise<TextToCadMultiFileIteration_type | Error> {
-  const formData = new FormData()
-  formData.append('body', JSON.stringify(body))
+  return {
+    conversation_id: 'd951cd15-44c5-424d-b943-97d1bb4a400a',
+    code: 'agLu8J7s7jsKjDbCRLJZPfY9nWuII',
+    completed_at: '2025-08-13T15:18:33.273Z',
+    created_at: '2025-08-13T15:18:33.273Z',
+    error: 'gIWGFQLTP257',
+    feedback: 'accepted',
+    id: 'e951cd15-44d5-4e4d-b943-97d1bb4a400a',
+    kcl_version: 'T2g4ZxfkqPu6O4L',
+    model: 'kcl',
+    model_version: '8TTp1htP1MA9ZOY9YU',
+    output_format: 'stl',
+    outputs: {},
+    prompt: 'Wawawawawa',
+    started_at: '2025-08-13T15:18:33.273Z',
+    status: 'completed',
+    updated_at: '2025-08-13T15:18:33.273Z',
+    user_id: 'e4bda170-4ae6-4988-bc51-248b8e52f55b',
+  }
 
-  files.forEach((file) => {
+  const formData = new FormData()
+  formData.append('body', JSON.stringify(request.body))
+
+  request.files.forEach((file) => {
     formData.append('files', file.data, file.name)
   })
 
@@ -104,7 +126,11 @@ async function submitTextToCadRequest(
   return data as TextToCadMultiFileIteration_type
 }
 
-export async function submitPromptToEditToQueue({
+// The ML service should know enough about caps, edges, faces, etc when doing
+// ML operations, but that's currently not the case.
+// This helper function should become deprecated with time.
+export function constructMultiFileIterationRequestWithPromptHelpers({
+  conversationId,
   prompt,
   selections,
   projectFiles,
@@ -112,20 +138,15 @@ export async function submitPromptToEditToQueue({
   artifactGraph,
   projectName,
 }: {
+  conversationId?: string
   prompt: string
   selections: Selections | null
   projectFiles: FileMeta[]
   projectName: string
-  token?: string
   artifactGraph: ArtifactGraph
 }) {
-  const _token =
-    token && token !== ''
-      ? token
-      : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
-
   const kclFilesMap: KclFileMetaMap = {}
-  const endPointFiles: KittyCadLibFile[] = []
+  const files: KittyCadLibFile[] = []
   projectFiles.forEach((file) => {
     let data: Blob
     if (file.type === 'other') {
@@ -135,7 +156,7 @@ export async function submitPromptToEditToQueue({
       kclFilesMap[file.execStateFileNamesIndex] = file
       data = new Blob([file.fileContents], { type: 'text/kcl' })
     }
-    endPointFiles.push({
+    files.push({
       name: file.relPath,
       data,
     })
@@ -143,8 +164,8 @@ export async function submitPromptToEditToQueue({
 
   // If no selection, use whole file
   if (selections === null) {
-    return submitTextToCadRequest(
-      {
+    return {
+      body: {
         prompt,
         source_ranges: [],
         project_name:
@@ -153,9 +174,8 @@ export async function submitPromptToEditToQueue({
             : undefined,
         kcl_version: kclManager.kclVersion,
       },
-      endPointFiles,
-      _token
-    )
+      files,
+    }
   }
 
   // Handle manual code selections and artifact selections differently
@@ -289,8 +309,8 @@ See later source ranges for more context. about the sweep`,
       }
       return prompts
     })
-  return submitTextToCadRequest(
-    {
+  let payload = {
+    body: {
       prompt,
       source_ranges: ranges,
       project_name:
@@ -299,9 +319,12 @@ See later source ranges for more context. about the sweep`,
           : undefined,
       kcl_version: kclManager.kclVersion,
     },
-    endPointFiles,
-    _token
-  )
+    files,
+  }
+
+  if (conversationId) {
+    payload.body.conversation_id = conversationId
+  }
 }
 
 export async function getPromptToEditResult(
@@ -319,244 +342,4 @@ export async function getPromptToEditResult(
     )
 
   return data
-}
-
-export async function doPromptEdit({
-  prompt,
-  selections,
-  projectFiles,
-  token,
-  artifactGraph,
-  projectName,
-}: {
-  prompt: string
-  selections: Selections
-  projectFiles: FileMeta[]
-  token?: string
-  projectName: string
-  artifactGraph: ArtifactGraph
-}): Promise<Models['TextToCadMultiFileIteration_type'] | Error> {
-  const toastId = toast.loading('Submitting to Text-to-CAD API...')
-
-  let submitResult
-
-  try {
-    submitResult = await submitPromptToEditToQueue({
-      prompt,
-      selections,
-      projectFiles,
-      token,
-      artifactGraph,
-      projectName,
-    })
-  } catch (e: any) {
-    toast.dismiss(toastId)
-    return new Error(e.message)
-  }
-  if (submitResult instanceof Error) {
-    toast.dismiss(toastId)
-    return submitResult
-  }
-
-  const textToCadComplete = new Promise<
-    Models['TextToCadMultiFileIteration_type']
-  >((resolve, reject) => {
-    ;(async () => {
-      const MAX_CHECK_TIMEOUT = 3 * 60_000
-      const CHECK_DELAY = 200
-
-      let timeElapsed = 0
-
-      while (timeElapsed < MAX_CHECK_TIMEOUT) {
-        const check = await getPromptToEditResult(submitResult.id, token)
-        if (
-          check instanceof Error ||
-          check.status === 'failed' ||
-          check.error
-        ) {
-          reject(check)
-          return
-        } else if (check.status === 'completed') {
-          resolve(check)
-          return
-        }
-
-        await new Promise((r) => setTimeout(r, CHECK_DELAY))
-        timeElapsed += CHECK_DELAY
-      }
-
-      reject(new Error('Text-to-CAD API timed out'))
-    })().catch(reportRejection)
-  })
-
-  try {
-    const result = await textToCadComplete
-    toast.dismiss(toastId)
-    return result
-  } catch (e) {
-    toast.dismiss(toastId)
-    toast.error(
-      'Failed to edit your KCL code, please try again with a different prompt or selection'
-    )
-    console.error('textToCadComplete', e)
-  }
-
-  return textToCadComplete
-}
-
-/** takes care of the whole submit prompt to endpoint flow including the accept-reject toast once the result is back */
-export async function promptToEditFlow({
-  prompt,
-  selections,
-  projectFiles,
-  token,
-  artifactGraph,
-  projectName,
-  filePath,
-}: {
-  prompt: string
-  selections: Selections
-  projectFiles: FileMeta[]
-  token?: string
-  artifactGraph: ArtifactGraph
-  projectName: string
-  filePath: string | undefined
-}) {
-  const result = await doPromptEdit({
-    prompt,
-    selections,
-    projectFiles,
-    token,
-    artifactGraph,
-    projectName,
-  })
-  if (err(result)) {
-    toast.error('Failed to modify.')
-    return Promise.reject(result)
-  }
-  const oldCodeWebAppOnly = codeManager.code
-  const downloadLink = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
-
-  if (!isDesktop() && Object.values(result.outputs).length > 1) {
-    const toastId = uuidv4()
-    toast.error(
-      (t) => (
-        <div className="flex flex-col gap-2">
-          <p>Multiple files were returned from Text-to-CAD.</p>
-          <p>You need to use the desktop app to support this.</p>
-          <div className="flex justify-between items-center mt-2">
-            <>
-              <a
-                href={downloadLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-300 underline flex align-middle"
-                onClick={openExternalBrowserIfDesktop(downloadLink)}
-              >
-                <CustomIcon
-                  name="link"
-                  className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40"
-                />
-                Download Desktop App
-              </a>
-            </>
-            <ActionButton
-              Element="button"
-              iconStart={{
-                icon: 'close',
-              }}
-              name="Dismiss"
-              onClick={() => {
-                toast.dismiss(toastId)
-              }}
-            >
-              Dismiss
-            </ActionButton>
-          </div>
-        </div>
-      ),
-      {
-        id: toastId,
-        duration: Infinity,
-        icon: null,
-      }
-    )
-    return
-  }
-  if (isDesktop()) {
-    const requestedFiles: RequestedKCLFile[] = []
-
-    for (const [relativePath, fileContents] of Object.entries(result.outputs)) {
-      requestedFiles.push({
-        requestedCode: fileContents,
-        requestedFileName: relativePath,
-        requestedProjectName: projectName,
-      })
-    }
-
-    await writeOverFilesAndExecute({
-      requestedFiles,
-      projectName,
-      filePath,
-    })
-  } else {
-    const newCode = result.outputs['main.kcl']
-    codeManager.updateCodeEditor(newCode)
-    const diff = reBuildNewCodeWithRanges(oldCodeWebAppOnly, newCode)
-    const ranges: SelectionRange[] = diff.insertRanges.map((range) =>
-      EditorSelection.range(range[0], range[1])
-    )
-    editorManager?.getEditorView()?.dispatch({
-      selection: EditorSelection.create(
-        ranges,
-        selections.graphSelections.length - 1
-      ),
-      annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
-    })
-    await kclManager.executeCode()
-  }
-  const toastId = uuidv4()
-
-  toast.success(
-    () =>
-      ToastPromptToEditCadSuccess({
-        toastId,
-        data: result,
-        token,
-        oldCodeWebAppOnly,
-        oldFiles: projectFiles,
-      }),
-    {
-      id: toastId,
-      duration: Infinity,
-      icon: null,
-    }
-  )
-}
-
-const reBuildNewCodeWithRanges = (
-  oldCode: string,
-  newCode: string
-): {
-  newCode: string
-  insertRanges: SourceRange[]
-} => {
-  let insertRanges: SourceRange[] = []
-  const changes = diffLines(oldCode, newCode)
-  let newCodeWithRanges = ''
-  for (const change of changes) {
-    if (!change.added && !change.removed) {
-      // no change add it to newCodeWithRanges
-      newCodeWithRanges += change.value
-    } else if (change.added && !change.removed) {
-      const start = newCodeWithRanges.length
-      const end = start + change.value.length
-      insertRanges.push(topLevelRange(start, end))
-      newCodeWithRanges += change.value
-    }
-  }
-  return {
-    newCode: newCodeWithRanges,
-    insertRanges,
-  }
 }

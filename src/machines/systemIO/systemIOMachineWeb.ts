@@ -1,11 +1,18 @@
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
-import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineActors,
+  jsonToMlConversations,
+  mlConversationsToJson,
+} from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 import { newKclFile } from '@src/lang/project'
 import { readLocalStorageProjectSettingsFile } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  LOCAL_STORAGE_ML_CONVERSATIONS,
+} from '@src/lib/constants'
 import type { AppMachineContext } from '@src/lib/types'
 import { engineStreamZoomToFit } from '@src/lib/utils'
 
@@ -62,6 +69,30 @@ export const systemIOMachineWeb = systemIOMachine.provide({
           fileName: input.requestedFileNameWithExtension,
           projectName: '',
           subRoute: input.requestedSubRoute || '',
+        }
+      }
+    ),
+    [SystemIOMachineActors.getMlEphantConversations]: fromPromise(
+      async (args: {}) => {
+        const json = localStorage.getItem(LOCAL_STORAGE_ML_CONVERSATIONS)
+        return jsonToMlConversations(json)
+      }
+    ),
+    [SystemIOMachineActors.saveMlEphantConversations]: fromPromise(
+      async (args: {
+        input: {
+          context: SystemIOContext
+          event: { projectId: string; conversationId: string }
+        }
+      }) => {
+        const json = mlConversationsToJson(
+          args.input.context.mlEphantConversations
+        )
+        await localStorage.setItem(LOCAL_STORAGE_ML_CONVERSATIONS, json)
+        const next = new Map(args.input.context.mlEphantConversations)
+        next.set(args.input.event.projectId, args.input.event.conversationId)
+        return {
+          mlEphantConversations: next,
         }
       }
     ),

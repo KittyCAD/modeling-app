@@ -5,19 +5,26 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { CustomIcon } from '@src/components/CustomIcon'
 
 import type { Project } from '@src/lib/project'
-import type { Prompt } from '@src/machines/mlEphantManagerMachine'
+import type {
+  IResponseMlConversation,
+  IResponseMlConversations,
+} from '@src/lib/textToCad'
 
-export type HomeItem = Project | Prompt
-export type HomeItems = Project[] | Prompt[]
+export type HomeItem = Project | IResponseMlConversation
+export type HomeItems = Project[] | IResponseMlConversations
 
 export const areHomeItemsProjects = (items: HomeItems): items is Project[] => {
+  if (items.length === 0) return true
   const item = items[0]
   return item !== undefined && 'path' in item
 }
 
-export const areHomeItemsPrompts = (items: HomeItems): items is Prompt[] => {
+export const areHomeItemsConversations = (
+  items: HomeItems
+): items is IResponseMlConversations => {
+  if (items.length === 0) return true
   const item = items[0]
-  return item !== undefined && typeof item.prompt === 'string'
+  return item !== undefined && 'first_prompt' in item
 }
 
 export function useHomeSearch(initialSearchResults: HomeItems) {
@@ -34,6 +41,8 @@ export function useHomeSearch(initialSearchResults: HomeItems) {
       ? 'name'
       : 'prompt'
 
+    // Fuse is not happy with HomeItems
+    // @ts-expect-error
     const fuse = new Fuse(items, {
       keys: [{ name: nameKeyToMatchAgainst, weight: 0.7 }],
       includeScore: true,

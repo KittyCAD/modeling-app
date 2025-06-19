@@ -21,11 +21,31 @@ import {
 import toast from 'react-hot-toast'
 import type { NavigateFunction } from 'react-router-dom'
 
-export async function submitTextToCadPrompt(
+export async function submitTextToCadCreateRequest(
   prompt: string,
   projectName: string,
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
+  return {
+    conversation_id: 'd951cd15-44c5-424d-b943-97d1bb4a400a',
+    code: 'agLu8J7s7jsKjDbCRLJZPfY9nWuII',
+    completed_at: '2025-08-13T15:18:33.273Z',
+    created_at: '2025-08-13T15:18:33.273Z',
+    error: 'gIWGFQLTP257',
+    feedback: 'accepted',
+    id: 'd951cd15-44c5-424d-b943-97d1bb4a400a',
+    kcl_version: 'T2g4ZxfkqPu6O4L',
+    model: 'kcl',
+    model_version: '8TTp1htP1MA9ZOY9YU',
+    output_format: 'stl',
+    outputs: {},
+    prompt: 'E4kPKWS4T9WMoEqlJ98ki6tOHS',
+    started_at: '2025-08-13T15:18:33.273Z',
+    status: 'completed',
+    updated_at: '2025-08-13T15:18:33.273Z',
+    user_id: 'e4bda170-4ae6-4988-bc51-248b8e52f55b',
+  }
+
   const body: Models['TextToCadCreateBody_type'] = {
     prompt,
     project_name:
@@ -59,7 +79,7 @@ export async function submitTextToCadPrompt(
   return data
 }
 
-export async function getTextToCadResult(
+export async function getTextToCadCreateResult(
   id: string,
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
@@ -86,194 +106,190 @@ interface TextToKclPropsApplicationLevel {
   }
 }
 
-export async function submitAndAwaitTextToKclSystemIO({
-  trimmedPrompt,
-  token,
-  projectName,
-  navigate,
-  isProjectNew,
-  settings,
-}: TextToKclPropsApplicationLevel) {
-  const toastId = toast.loading('Submitting to Text-to-CAD API...')
-  const showFailureToast = (message: string) => {
-    toast.error(
-      () =>
-        ToastTextToCadError({
-          toastId,
-          message,
-          prompt: trimmedPrompt,
-          method: isProjectNew ? 'newProject' : 'existingProject',
-          projectName: isProjectNew ? '' : projectName,
-          newProjectName: isProjectNew ? projectName : '',
-        }),
+export interface IResponseMlConversation {
+  created_at: string
+  first_prompt: string
+  id: string
+  updated_at: string
+  user_id: string
+}
+
+export interface IResponseMlConversations {
+  items: IResponseMlConversation[]
+  next_page?: string
+}
+
+export async function textToCadMlConversations(
+  token: string,
+  args: {
+    pageToken?: string
+    limit?: number
+    sortBy: 'created_at'
+  }
+): Promise<IResponseMlConversations | Error> {
+  return {
+    items: [
       {
-        id: toastId,
-        duration: Infinity,
-      }
-    )
+        first_prompt: 'A simple bottle with a hollow, watertight interior',
+        id: 2,
+        created_at: '2025-07-20T13:01:35Z',
+      },
+      {
+        first_prompt:
+          'A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.',
+        id: 3,
+        created_at: '2025-07-30T13:01:35Z',
+      },
+      {
+        first_prompt:
+          'A 320mm vented brake disc (rotor), with straight vanes, 30mm thick. The disc bell should accommodate 5 M12 wheel studs on a 114.3mm pitch circle diameter.',
+        id: 1,
+        created_at: '2025-07-29T13:01:35Z',
+      },
+      {
+        first_prompt:
+          'This is a bracket that holds a shelf. It is made of aluminum and is designed to hold a force of 300 lbs. The bracket is 6 inches wide and the force is applied at the end of the shelf, 12 inches from the wall. The bracket has a factor of safety of 1.2. The legs of the bracket are 5 inches and 2 inches long. The thickness of the bracket is calculated from the constraints provided.',
+        id: 4,
+        created_at: '2025-06-30T13:01:35Z',
+      },
+    ],
   }
 
-  const textToCadQueued = await submitTextToCadPrompt(
-    trimmedPrompt,
-    projectName,
+  const url = withAPIBaseURL(
+    `/ml/conversations?limit=${args.limit ?? '20'}&sort_by=${args.sortBy ?? 'created_at'}${args.pageToken ? '&page_token=' + args.pageToken : ''}`
+  )
+  const data: Models['TextToCad_type'] | Error = await crossPlatformFetch(
+    url,
+    {
+      method: 'GET',
+    },
     token
   )
-    .then((value) => {
-      if (value instanceof Error) {
-        return Promise.reject(value)
-      }
-      return value
-    })
-    .catch((error) => {
-      const message = err(error)
-        ? error.message
-        : 'Failed to submit to Text-to-CAD API'
-      showFailureToast(message)
-      return error
-    })
 
-  if (err(textToCadQueued)) {
-    showFailureToast(textToCadQueued.message)
-    return
+  return data
+}
+
+export async function textToCadMlPromptsBelongingToConversation(
+  token: string,
+  args: {
+    conversationId: string
+    pageToken?: string
+    limit?: number
+    sortBy: 'created_at'
+  }
+): Promise<IResponseMlConversations | Error> {
+  return {
+    items: [
+      {
+        conversation_id: 'd951cd15-44c5-424d-b943-97d1bb4a400a',
+        code: 'agLu8J7s7jsKjDbCRLJZPfY9nWuII',
+        completed_at: '2025-08-13T15:18:33.273Z',
+        created_at: '2025-08-13T15:18:33.273Z',
+        error: 'gIWGFQLTP257',
+        feedback: 'accepted',
+        id: 'e951cde5-44d5-4e4d-b943-97d1bb4a400a',
+        kcl_version: 'T2g4ZxfkqPu6O4L',
+        model: 'kcl',
+        model_version: '8TTp1htP1MA9ZOY9YU',
+        output_format: 'stl',
+        outputs: {},
+        prompt: 'One prompt',
+        started_at: '2025-08-13T15:18:33.273Z',
+        status: 'completed',
+        updated_at: '2025-08-13T15:18:33.273Z',
+        user_id: 'e4bda170-4ae6-4988-bc51-248b8e52f55b',
+      },
+      {
+        conversation_id: 'd951cd15-44c5-424d-b943-97d1bb4a400a',
+        code: 'agLu8J7s7jsKjDbCRLJZPfY9nWuII',
+        completed_at: '2025-08-13T15:18:33.273Z',
+        created_at: '2025-08-13T15:18:33.273Z',
+        error: 'gIWGFQLTP257',
+        feedback: 'accepted',
+        id: 'e951cde8-44d5-4e4d-b943-97d1bb4a400a',
+        kcl_version: 'T2g4ZxfkqPu6O4L',
+        model: 'kcl',
+        model_version: '8TTp1htP1MA9ZOY9YU',
+        output_format: 'stl',
+        outputs: {},
+        prompt: 'Two prompt',
+        started_at: '2025-08-13T15:18:33.273Z',
+        status: 'completed',
+        updated_at: '2025-08-13T15:18:33.273Z',
+        user_id: 'e4bda170-4ae6-4988-bc51-248b8e52f55b',
+      },
+      {
+        conversation_id: 'd951cd15-44c5-424d-b943-97d1bb4a400a',
+        code: 'agLu8J7s7jsKjDbCRLJZPfY9nWuII',
+        completed_at: '2025-08-13T15:18:33.273Z',
+        created_at: '2025-08-13T15:18:33.273Z',
+        error: 'gIWGFQLTP257',
+        feedback: 'accepted',
+        id: 'e971c515-44d5-4e4d-b943-97d1bb4a400a',
+        kcl_version: 'T2g4ZxfkqPu6O4L',
+        model: 'kcl',
+        model_version: '8TTp1htP1MA9ZOY9YU',
+        output_format: 'stl',
+        outputs: {},
+        prompt: 'THree prompt',
+        started_at: '2025-08-13T15:18:33.273Z',
+        status: 'completed',
+        updated_at: '2025-08-13T15:18:33.273Z',
+        user_id: 'e4bda170-4ae6-4988-bc51-248b8e52f55b',
+      },
+      {
+        conversation_id: 'd951cd15-44c5-424d-b943-97d1bb4a400a',
+        code: 'agLu8J7s7jsKjDbCRLJZPfY9nWuII',
+        completed_at: '2025-08-13T15:18:33.273Z',
+        created_at: '2025-08-13T15:18:33.273Z',
+        error: 'gIWGFQLTP257',
+        feedback: 'accepted',
+        id: 'f971c515-44d5-4e4d-b043-97d1bb4a400a',
+        kcl_version: 'T2g4ZxfkqPu6O4L',
+        model: 'kcl',
+        model_version: '8TTp1htP1MA9ZOY9YU',
+        output_format: 'stl',
+        outputs: {},
+        prompt: 'four prompt',
+        started_at: '2025-08-13T15:18:33.273Z',
+        status: 'completed',
+        updated_at: '2025-08-13T15:18:33.273Z',
+        user_id: 'e4bda170-4ae6-4988-bc51-248b8e52f55b',
+      },
+      {
+        conversation_id: 'd951cd15-44c5-424d-b943-97d1bb4a400a',
+        code: 'agLu8J7s7jsKjDbCRLJZPfY9nWuII',
+        completed_at: '2025-08-13T15:18:33.273Z',
+        created_at: '2025-08-13T15:18:33.273Z',
+        error: 'gIWGFQLTP257',
+        feedback: 'accepted',
+        id: 'e971c525-44d5-4e7e-b943-97d1bb4a400a',
+        kcl_version: 'T2g4ZxfkqPu6O4L',
+        model: 'kcl',
+        model_version: '8TTp1htP1MA9ZOY9YU',
+        output_format: 'stl',
+        outputs: {},
+        prompt: 'five prompt',
+        started_at: '2025-08-13T15:18:33.273Z',
+        status: 'completed',
+        updated_at: '2025-08-13T15:18:33.273Z',
+        user_id: 'e4bda170-4ae6-4988-bc51-248b8e52f55b',
+      },
+    ],
   }
 
-  toast.loading('Generating parametric model...', {
-    id: toastId,
-  })
-
-  // Check the status of the text-to-cad API job
-  // until it is completed
-  const textToCadComplete = new Promise<Models['TextToCad_type']>(
-    (resolve, reject) => {
-      ;(async () => {
-        const value = await textToCadQueued
-        if (value instanceof Error) {
-          reject(value)
-        }
-
-        const MAX_CHECK_TIMEOUT = 3 * 60_000
-        const CHECK_INTERVAL = 3000
-
-        let timeElapsed = 0
-        const interval = setInterval(
-          toSync(async () => {
-            timeElapsed += CHECK_INTERVAL
-            if (timeElapsed >= MAX_CHECK_TIMEOUT) {
-              clearInterval(interval)
-              reject(new Error('Text-to-CAD API timed out'))
-            }
-
-            const check = await getTextToCadResult(value.id, token)
-            if (check instanceof Error) {
-              clearInterval(interval)
-              reject(check)
-            }
-
-            if (check instanceof Error || check.status === 'failed') {
-              clearInterval(interval)
-              reject(check)
-            } else if (check.status === 'completed') {
-              clearInterval(interval)
-              resolve(check)
-            }
-          }, reportRejection),
-          CHECK_INTERVAL
-        )
-      })().catch(reportRejection)
-    }
+  const url = withAPIBaseURL(
+    `/user/text-to-cad?conversation_id=${args.conversationId}&no_models=true&limit=${args.limit ?? '20'}&sort_by=${args.sortBy ?? 'created_at'}${args.pageToken ? '&page_token=' + args.pageToken : ''}`
   )
-
-  let newFileName = PROJECT_ENTRYPOINT
-  let uniqueProjectName = projectName
-
-  const textToCadOutputCreated = await textToCadComplete
-    .catch((e) => {
-      showFailureToast('Failed to generate parametric model')
-      return e
-    })
-    .then(async (value) => {
-      console.log('completed')
-      console.log(value)
-      if (value.code === undefined || !value.code || value.code.length === 0) {
-        // We want to show the real error message to the user.
-        if (value.error && value.error.length > 0) {
-          const error = value.error.replace('Text-to-CAD server:', '').trim()
-          showFailureToast(error)
-          return Promise.reject(new Error(error))
-        } else {
-          showFailureToast('No KCL code returned')
-          return Promise.reject(new Error('No KCL code returned'))
-        }
-      }
-
-      const TRUNCATED_PROMPT_LENGTH = 24
-      // Only add the prompt name if it is a preexisting project
-      const subDirectoryAsPromptName = `${value.prompt
-        .slice(0, TRUNCATED_PROMPT_LENGTH)
-        .replace(/\s/gi, '-')
-        .replace(/\W/gi, '-')
-        .toLowerCase()}`
-
-      if (isDesktop()) {
-        if (!isProjectNew) {
-          // If the project is new, use a sub dir
-          const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot({
-            projectFolderName: projectName,
-          })
-          const uniqueSubDirectoryName = getUniqueProjectName(
-            subDirectoryAsPromptName,
-            firstLevelDirectories
-          )
-          uniqueProjectName = joinOSPaths(projectName, uniqueSubDirectoryName)
-        }
-        systemIOActor.send({
-          type: SystemIOMachineEvents.createKCLFile,
-          data: {
-            requestedProjectName: uniqueProjectName,
-            requestedCode: value.code,
-            requestedFileNameWithExtension: newFileName,
-          },
-        })
-      }
-
-      // wait for the createKCLFile action to be completed
-      await waitForIdleState({ systemIOActor })
-
-      return {
-        ...value,
-        fileName: newFileName,
-      }
-    })
-
-  if (textToCadOutputCreated instanceof Error) {
-    showFailureToast('Failed to generate parametric model')
-    return
-  }
-
-  // Show a custom toast with the .glb model preview
-  // and options to reject or accept the model
-  toast.success(
-    () =>
-      // EXPECTED: This will throw a error in dev mode, do not worry about it.
-      // Warning: Internal React error: Expected static flag was missing. Please notify the React team.
-      ToastTextToCadSuccess({
-        toastId,
-        data: textToCadOutputCreated,
-        token,
-        // This can be a subdir within the rootProjectName
-        projectName: uniqueProjectName,
-        fileName: newFileName,
-        navigate,
-        isProjectNew,
-        settings,
-        // This is always the root project name, no subdir
-        rootProjectName: projectName,
-      }),
+  const data:
+    | { items: Models['TextToCad_type'][]; next_page?: string }
+    | Error = await crossPlatformFetch(
+    url,
     {
-      id: toastId,
-      duration: Infinity,
-      icon: null,
-    }
+      method: 'GET',
+    },
+    token
   )
-  return textToCadOutputCreated
+
+  return data
 }
