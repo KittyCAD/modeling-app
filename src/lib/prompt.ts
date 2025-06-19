@@ -83,15 +83,15 @@ export type Prompt = Models['TextToCad_Type']
 // }
 
 const PROMPTS = [
-  "Generate a step-by-step guide to design a parametric gear with adjustable tooth count.",
-  "Explain how to model a hollow cylinder with internal threads using 3D modeling principles.",
-  "Create a script to generate a customizable box with finger joints using parametric design.",
-  "Suggest best practices for modeling an ergonomic handheld object in CAD.",
-  "Convert this verbal sketch description into structured CAD modeling steps.",
-  "Define geometric constraints for modeling a modular rail profile used in assembly systems.",
-  "How do I design a 3D-printable snap-fit enclosure with proper tolerances?",
-  "Generate geometry instructions for creating a ball-and-socket joint.",
-  "Model a heat-dissipating structure suitable for passive cooling in electronic assemblies.",
+  'Generate a step-by-step guide to design a parametric gear with adjustable tooth count.',
+  'Explain how to model a hollow cylinder with internal threads using 3D modeling principles.',
+  'Create a script to generate a customizable box with finger joints using parametric design.',
+  'Suggest best practices for modeling an ergonomic handheld object in CAD.',
+  'Convert this verbal sketch description into structured CAD modeling steps.',
+  'Define geometric constraints for modeling a modular rail profile used in assembly systems.',
+  'How do I design a 3D-printable snap-fit enclosure with proper tolerances?',
+  'Generate geometry instructions for creating a ball-and-socket joint.',
+  'Model a heat-dissipating structure suitable for passive cooling in electronic assemblies.',
 ]
 
 export const generateFakeSubmittedPrompt = () => ({
