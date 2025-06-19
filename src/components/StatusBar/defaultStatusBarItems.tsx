@@ -1,7 +1,7 @@
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import type { Location } from 'react-router-dom'
 import { PATHS } from '@src/lib/paths'
-import { APP_VERSION } from '@src/routes/utils'
+import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import {
   BillingRemaining,
   BillingRemainingMode,
@@ -28,7 +28,7 @@ export const defaultGlobalStatusBarItems = ({
         id: 'version',
         element: 'externalLink',
         label: `v${APP_VERSION}`,
-        href: `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`,
+        href: getReleaseUrl(),
         toolTip: {
           children: 'View the release notes on GitHub',
         },

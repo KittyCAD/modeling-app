@@ -57,7 +57,7 @@ pub(crate) async fn inner_union(
             ModelingCmdMeta::from_args_id(&args, solid_out_id),
             ModelingCmd::from(mcmd::BooleanUnion {
                 solid_ids: solids.iter().map(|s| s.id).collect(),
-                tolerance: LengthUnit(tolerance.map(|t| t.n).unwrap_or(DEFAULT_TOLERANCE)),
+                tolerance: LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
             }),
         )
         .await?;
@@ -122,7 +122,7 @@ pub(crate) async fn inner_intersect(
             ModelingCmdMeta::from_args_id(&args, solid_out_id),
             ModelingCmd::from(mcmd::BooleanIntersection {
                 solid_ids: solids.iter().map(|s| s.id).collect(),
-                tolerance: LengthUnit(tolerance.map(|t| t.n).unwrap_or(DEFAULT_TOLERANCE)),
+                tolerance: LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
             }),
         )
         .await?;
@@ -186,7 +186,7 @@ pub(crate) async fn inner_subtract(
             ModelingCmd::from(mcmd::BooleanSubtract {
                 target_ids: solids.iter().map(|s| s.id).collect(),
                 tool_ids: tools.iter().map(|s| s.id).collect(),
-                tolerance: LengthUnit(tolerance.map(|t| t.n).unwrap_or(DEFAULT_TOLERANCE)),
+                tolerance: LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
             }),
         )
         .await?;
