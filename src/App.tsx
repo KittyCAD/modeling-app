@@ -267,7 +267,7 @@ export function App() {
       <StatusBar
         globalItems={[
           networkHealthStatus,
-          networkMachineStatus,
+          ...(isDesktop() ? [networkMachineStatus] : []),
           ...defaultGlobalStatusBarItems({ location, filePath }),
         ]}
         localItems={[
