@@ -1814,7 +1814,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.81"
+version = "0.1.82"
 dependencies = [
  "anyhow",
  "clap",
@@ -1825,7 +1825,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.81"
+version = "0.1.82"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1834,7 +1834,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.81"
+version = "0.1.82"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -1844,7 +1844,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.81"
+version = "0.2.82"
 dependencies = [
  "anyhow",
  "clap",
@@ -1865,7 +1865,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.81"
+version = "0.1.82"
 dependencies = [
  "anyhow",
  "clap",
@@ -1885,7 +1885,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.81"
+version = "0.2.82"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1962,7 +1962,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.81"
+version = "0.3.82"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -1977,7 +1977,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.81"
+version = "0.1.82"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -1990,7 +1990,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.81"
+version = "0.1.82"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2004,7 +2004,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.81"
+version = "0.1.82"
 dependencies = [
  "anyhow",
  "bson",
