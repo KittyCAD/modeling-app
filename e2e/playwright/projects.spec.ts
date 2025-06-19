@@ -1343,7 +1343,7 @@ test(
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
-        name: 'Last Modified',
+        name: 'Age',
       })
       await expect(lastModifiedButton).toBeVisible()
       await expect(lastModifiedButton.getByLabel('arrow down')).toBeVisible()
@@ -1364,7 +1364,7 @@ test(
 
     await test.step('Reverse modified order', async () => {
       const lastModifiedButton = page.getByRole('button', {
-        name: 'Last Modified',
+        name: 'Age',
       })
       await lastModifiedButton.click()
       await expect(lastModifiedButton).toBeVisible()

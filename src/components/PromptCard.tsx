@@ -1,5 +1,5 @@
 import ms from 'ms'
-import { Prompt } from '@src/lib/prompt'
+import type { Prompt } from '@src/lib/prompt'
 
 interface PromptCardProps extends Prompt {
   onAction?: (id: Prompt['id']) => void
@@ -8,16 +8,27 @@ interface PromptCardProps extends Prompt {
 }
 
 export const PromptFeedback = (props: {
+  id: Prompt['id']
   selected: Prompt['feedback']
   onFeedback: (id: Prompt['id'], feedback: Prompt['feedback']) => void
 }) => {
-  const cssUp = 'border-green-500'
-  const cssDown = 'border-red-500'
+  const cssUp = 'border-green-300'
+  const cssDown = 'border-red-300'
 
   return (
     <div className="flex flex-row gap-2">
-      <button className={cssUp}>Good</button>
-      <button className={cssDown}>Bad</button>
+      <button
+        onClick={() => props.onFeedback(props.id, 'thumbs_up')}
+        className={cssUp}
+      >
+        Good
+      </button>
+      <button
+        onClick={() => props.onFeedback(props.id, 'thumbs_down')}
+        className={cssDown}
+      >
+        Bad
+      </button>
     </div>
   )
 }
@@ -45,8 +56,9 @@ export const PromptCard = (props: PromptCardProps) => {
         <div className="w-fit flex flex-col items-end">
           <button onClick={() => props.onDelete?.(props.id)}>Delete</button>
           <PromptFeedback
+            id={props.id}
             selected={props.feedback}
-            onFeedback={props.onFeedback}
+            onFeedback={(...args) => props.onFeedback?.(...args)}
           />
         </div>
       </div>

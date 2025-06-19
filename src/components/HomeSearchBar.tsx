@@ -5,7 +5,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { CustomIcon } from '@src/components/CustomIcon'
 
 import type { Project } from '@src/lib/project'
-import type { Prompt } from '@src/machines/mlEphantManagerMachine'
+import type { Prompt } from '@src/lib/prompt'
 
 export type HomeItem = Project | Prompt
 export type HomeItems = Project[] | Prompt[]
@@ -17,7 +17,7 @@ export const areHomeItemsProjects = (items: HomeItems): items is Project[] => {
 
 export const areHomeItemsPrompts = (items: HomeItems): items is Prompt[] => {
   const item = items[0]
-  return item !== undefined && typeof item.prompt === 'string'
+  return item !== undefined && 'prompt' in item
 }
 
 export function useHomeSearch(initialSearchResults: HomeItems) {
@@ -34,6 +34,8 @@ export function useHomeSearch(initialSearchResults: HomeItems) {
       ? 'name'
       : 'prompt'
 
+    // Fuse is not happy with HomeItems
+    // @ts-expect-error
     const fuse = new Fuse(items, {
       keys: [{ name: nameKeyToMatchAgainst, weight: 0.7 }],
       includeScore: true,
