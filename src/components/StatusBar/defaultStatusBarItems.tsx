@@ -11,6 +11,10 @@ import { BillingDialog } from '@src/components/BillingDialog'
 import { Popover } from '@headlessui/react'
 import Tooltip from '@src/components/Tooltip'
 import { HelpMenu } from '@src/components/HelpMenu'
+import { isDesktop } from '@src/lib/isDesktop'
+import { VITE_KC_SITE_BASE_URL } from '@src/env'
+import { APP_DOWNLOAD_PATH } from '@src/lib/constants'
+import { desktopAppPitchMessage } from '@src/components/DownloadAppToast'
 
 export const defaultGlobalStatusBarItems = ({
   location,
@@ -19,15 +23,26 @@ export const defaultGlobalStatusBarItems = ({
   location: Location
   filePath?: string
 }): StatusBarItemType[] => [
-  {
-    id: 'version',
-    element: 'externalLink',
-    label: `v${APP_VERSION}`,
-    href: `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`,
-    toolTip: {
-      children: 'View the release notes on GitHub',
-    },
-  },
+  isDesktop()
+    ? {
+        id: 'version',
+        element: 'externalLink',
+        label: `v${APP_VERSION}`,
+        href: `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`,
+        toolTip: {
+          children: 'View the release notes on GitHub',
+        },
+      }
+    : {
+        id: 'download-desktop-app',
+        element: 'externalLink',
+        label: 'Download the app',
+        href: `${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`,
+        icon: 'download',
+        toolTip: {
+          children: desktopAppPitchMessage,
+        },
+      },
   {
     id: 'telemetry',
     element: 'link',
