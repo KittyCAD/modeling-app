@@ -2,7 +2,7 @@
 name: Release
 about: Create a new release for the Zoo Design Studio
 title: "Cut release v1.?.?"
-labels: [release]
+labels: [meta/release]
 ---
 
 > Instructions: https://github.com/KittyCAD/modeling-app/blob/main/CONTRIBUTING.md#shipping-releases
@@ -19,7 +19,8 @@ Release builds URL: ???
 * [ ] Confirm the application opens (dismiss the updater)
 * [ ] Create a project with a basic Text-to-CAD prompt
 * [ ] Confirm the result is viewable in an engine stream
-* [ ] Open the application again and confirm the updater can downgrade
+* [ ] Use 'Check for updates' to bring back the updater toast
+* [ ] Confirm the app can update to the previous release
 
 ## macOS via ???
 
@@ -27,7 +28,8 @@ Release builds URL: ???
 * [ ] Confirm the application opens (dismiss the updater)
 * [ ] Create a project with a basic Text-to-CAD prompt
 * [ ] Confirm the result is viewable in an engine stream
-* [ ] Open the application again and confirm the updater can downgrade
+* [ ] Use 'Check for updates' to bring back the updater toast
+* [ ] Confirm the app can update to the previous release
 
 ## Linux via ???
 
@@ -35,4 +37,5 @@ Release builds URL: ???
 * [ ] Confirm the application opens (dismiss the updater)
 * [ ] Create a project with a basic Text-to-CAD prompt
 * [ ] Confirm the result is viewable in an engine stream
-* [ ] Open the application again and confirm the updater can downgrade
+* [ ] Use 'Check for updates' to bring back the updater toast
+* [ ] Confirm the app can update to the previous release
