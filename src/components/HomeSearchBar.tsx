@@ -22,14 +22,17 @@ export const areHomeItemsPrompts = (items: HomeItems): items is Prompt[] => {
 
 export function useHomeSearch(initialSearchResults: HomeItems) {
   const [query, setQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<HomeItems>(initialSearchResults)
+  const [searchResults, setSearchResults] =
+    useState<HomeItems>(initialSearchResults)
 
   useEffect(() => {
     setSearchResults(initialSearchResults)
   }, [initialSearchResults])
 
   const searchAgainst = (items: HomeItems) => (queryRequested: string) => {
-    const nameKeyToMatchAgainst = areHomeItemsProjects(items) ? 'name' : 'prompt'
+    const nameKeyToMatchAgainst = areHomeItemsProjects(items)
+      ? 'name'
+      : 'prompt'
 
     const fuse = new Fuse(items, {
       keys: [{ name: nameKeyToMatchAgainst, weight: 0.7 }],
