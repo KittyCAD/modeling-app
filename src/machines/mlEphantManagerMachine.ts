@@ -1,4 +1,6 @@
+import { setup, fromPromise } from 'xstate'
 import type { Prompt } from '@src/lib/prompt'
+import { generateFakeSubmittedPrompt } from '@src/lib/prompt'
 
 export enum MlEphantManagerTransitionStates {
   GetPromptsThatCreatedProjects = 'get-prompts-that-created-projects',
@@ -47,9 +49,9 @@ export enum MlEphantManagerStates {
 }
 
 export interface MlEphantManagerContext {
-  promptsThatCreatedProjects: Map<Prompt>
+  promptsThatCreatedProjects: Map<Prompt['id'], Prompt>
   // If no project is selected: undefined.
-  promptsBelongingToProject?: Map<Prompt>
+  promptsBelongingToProject?: Map<Prompt['id'], Prompt>
 }
 
 export const mlEphantDefaultContext = Object.freeze({
@@ -58,13 +60,25 @@ export const mlEphantDefaultContext = Object.freeze({
   hasPendingPrompts: false,
 })
 
-const machine = setup({
+export const mlEphantManagerMachine = setup({
   types: {
     context: {} as MlEphantManagerContext,
     events: {} as MlEphantManagerEvents,
   },
+  actors: {
+    [MlEphantManagerTransitionStates.GetPromptsThatCreatedProjects]:
+      fromPromise(async function (args) {
+        console.log(arguments)
+        return {
+          promptsThatCreatedProjects: new Array(13)
+            .fill(undefined)
+            .map(generateFakeSubmittedPrompt),
+        }
+      }),
+  },
 }).createMachine({
   initial: MlEphantManagerStates.Idle,
+  context: mlEphantDefaultContext,
   states: {
     [MlEphantManagerStates.Idle]: {
       on: {
@@ -77,15 +91,8 @@ const machine = setup({
       states: {
         [MlEphantManagerTransitionStates.GetPromptsThatCreatedProjects]: {
           invoke: {
-            input: (args) => args,
-            src: fromPromise(async function (args) {
-              console.log(arguments)
-              return {
-                promptsThatCreatedProjects: new Array(13)
-                  .fill(undefined)
-                  .map(generateFakeSubmittedPrompt),
-              }
-            }),
+            input: (args: any) => args,
+            src: MlEphantManagerTransitionStates.GetPromptsThatCreatedProjects,
             onDone: { target: MlEphantManagerStates.Idle },
             onError: { target: MlEphantManagerStates.Idle },
           },

@@ -17,10 +17,10 @@ import { PromptCard } from '@src/components/PromptCard'
 import {
   HomeSearchBar,
   useHomeSearch,
-  HomeItems,
   areHomeItemsProjects,
   areHomeItemsPrompts,
 } from '@src/components/HomeSearchBar'
+import type { HomeItems } from '@src/components/HomeSearchBar'
 import { BillingDialog } from '@src/components/BillingDialog'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useMenuListener } from '@src/hooks/useMenu'
@@ -32,7 +32,8 @@ import type { Prompt } from '@src/lib/prompt'
 import { generateFakeSubmittedPrompt } from '@src/lib/prompt'
 import {
   getNextSearchParams,
-  getSortFunction,
+  getProjectSortFunction,
+  getPromptSortFunction,
   getSortIcon,
 } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
@@ -220,7 +221,7 @@ const Home = () => {
     }
   )
   const projects = useFolders()
-  const prompts = [
+  const prompts: Prompt[] = [
     generateFakeSubmittedPrompt(),
     generateFakeSubmittedPrompt(),
     generateFakeSubmittedPrompt(),
@@ -232,7 +233,7 @@ const Home = () => {
   const [tabSelected, setTabSelected] = useState<HomeTabKeys>(
     HomeTabKeys.Projects
   )
-  const [items, setItems] = useState<Project[] | Prompt[]>(projects)
+  const [items, setItems] = useState<HomeItems>(projects)
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, searchAgainst } = useHomeSearch(projects)
   const sortBy = searchParams.get('sort_by') ?? 'modified:desc'
@@ -487,6 +488,8 @@ function HomeTab(props: HomeTabProps) {
         <div
           className={el.key === selected ? cssActive : cssInactive}
           onClick={onClickTab(el.key)}
+          role="tab"
+          tabIndex={0}
         >
           {el.name}
         </div>
@@ -568,7 +571,7 @@ function HomeHeader({
                   : '',
               }}
             >
-              Last Modified
+              Age
             </ActionButton>
           </div>
         </div>
@@ -656,18 +659,37 @@ function HomeItemsArea(props: HomeItemsAreaProps) {
   )
 }
 
-interface ResultGridProjectsProps {
+interface ResultGridPromptsProps {
   searchResults: Prompt[]
   query: string
   sortBy: string
 }
 
-function ResultGridPrompts(props) {
+function ResultGridPrompts(props: ResultGridPromptsProps) {
+  // Maybe consider lifting this higher but I see no reason at the moment
+  const onAction = (...args: any) => {
+    console.log(args)
+  }
+  const onDelete = (...args: any) => {
+    console.log(args)
+  }
+  const onFeedback = (...args: any) => {
+    console.log(args)
+  }
+
   return (
     <div className="grid w-full sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
-      {props.searchResults.map((prompt) => (
-        <PromptCard key={prompt.id} {...prompt} />
-      ))}
+      {props.searchResults
+        .sort(getPromptSortFunction(props.sortBy))
+        .map((prompt: Prompt) => (
+          <PromptCard
+            key={prompt.id}
+            {...prompt}
+            onAction={onAction}
+            onDelete={onDelete}
+            onFeedback={onFeedback}
+          />
+        ))}
     </div>
   )
 }
@@ -689,8 +711,8 @@ function ResultGridProjects(props: ResultGridProjectsProps) {
         <>
           {props.searchResults.length > 0 ? (
             <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {(props.searchResults ?? [])
-                .sort(getSortFunction(props.sortBy))
+              {props.searchResults
+                .sort(getProjectSortFunction(props.sortBy))
                 .map((item) => (
                   <ProjectCard
                     key={item.name}
@@ -703,9 +725,9 @@ function ResultGridProjects(props: ResultGridProjectsProps) {
           ) : (
             <p className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
               No results found
-              {items.length === 0
+              {props.searchResults.length === 0
                 ? ', ready to make your first one?'
-                : ` with the search term "${query}"`}
+                : ` with the search term "${props.query}"`}
             </p>
           )}
         </>

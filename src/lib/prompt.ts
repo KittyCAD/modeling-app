@@ -1,6 +1,6 @@
 import type { Models } from '@kittycad/lib'
 
-export type Prompt = Models['TextToCad_Type']
+export type Prompt = Models['TextToCad_type']
 
 // export interface TextToCad_type {
 //     code?: string;
@@ -100,21 +100,22 @@ export const generateFakeSubmittedPrompt = () => ({
   created_at: new Date(Math.random() * 100000000).toISOString(),
   error: Math.random().toString(),
   // declare type MlFeedback_type = 'thumbs_up' | 'thumbs_down' | 'accepted' | 'rejected';
-  feedback: 'thumbs_up',
+  feedback: 'thumbs_up' as Prompt['feedback'],
   id: Math.random().toString(),
   kcl_version: Math.random().toString(),
-  // export declare type TextToCadModel_type = 'cad' | 'kcl' | 'kcl_iteration'; model : 'kcl',
   model_version: Math.random().toString(),
+  // export declare type TextToCadModel_type = 'cad' | 'kcl' | 'kcl_iteration'; model : 'kcl',
+  model: 'kcl' as Prompt['model'],
   // export declare type FileExportFormat_type = 'fbx' | 'glb' | 'gltf' | 'obj' | 'ply' | 'step' | 'stl';
-  output_format: 'glb',
+  output_format: 'glb' as Prompt['output_format'],
   outputs: {
     [Math.random().toString()]: Math.random().toString(),
   },
   prompt: PROMPTS[parseInt((Math.random() * 10).toString()[0])],
   started_at: new Date(Math.random()).toISOString(),
   // declare type ApiCallStatus_type = 'queued' | 'uploaded' | 'in_progress' | 'completed' | 'failed';
-  status: 'completed',
-  updated_at: Math.random(),
+  status: 'completed' as Prompt['status'],
+  updated_at: Math.random().toString(),
   // declare type ApiTokenUuid_type = string;
   user_id: Math.random().toString(),
 })
