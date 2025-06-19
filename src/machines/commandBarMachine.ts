@@ -397,7 +397,7 @@ export const commandBarMachine = setup({
                     typeof o.value === 'object' &&
                     typeof argValue === 'object'
                   ) {
-                    console.log('FRANK fuck this!', { o, argValue })
+                    
                     return JSON.stringify(o.value) === JSON.stringify(argValue)
                   } else {
                     return o.value === argValue
