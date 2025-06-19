@@ -29,6 +29,7 @@ import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
 import type { Prompt } from '@src/lib/prompt'
+import { generateFakeSubmittedPrompt } from '@src/lib/prompt'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -216,9 +217,13 @@ const Home = () => {
   )
   const projects = useFolders()
   const prompts = [
-    { prompt: 'lol' },
-    { prompt: 'never gonna give you up' },
-    { prompt: 'takethisli' },
+    generateFakeSubmittedPrompt(),
+    generateFakeSubmittedPrompt(),
+    generateFakeSubmittedPrompt(),
+    generateFakeSubmittedPrompt(),
+    generateFakeSubmittedPrompt(),
+    generateFakeSubmittedPrompt(),
+    generateFakeSubmittedPrompt(),
   ]
   const [tabSelected, setTabSelected] = useState<HomeTabKeys>(
     HomeTabKeys.Projects
@@ -434,7 +439,6 @@ const Home = () => {
           sortBy={sortBy}
           query={query}
         />
-        <LowerRightControls navigate={navigate} />
       </div>
       <StatusBar
         globalItems={[
@@ -657,9 +661,9 @@ interface ResultGridProjectsProps {
 
 function ResultGridPrompts(props) {
   return (
-    <div>
-      {props.searchResults.map((el) => (
-        <div key={el.prompt}>{el.prompt}</div>
+    <div className="grid w-full sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
+      {props.searchResults.map((prompt) => (
+        <PromptCard key={prompt.id} { ...prompt } />
       ))}
     </div>
   )

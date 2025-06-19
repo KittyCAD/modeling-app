@@ -82,13 +82,25 @@ export type Prompt = Models['TextToCad_Type']
 //     next_page?: string;
 // }
 
+const PROMPTS = [
+  "Generate a step-by-step guide to design a parametric gear with adjustable tooth count.",
+  "Explain how to model a hollow cylinder with internal threads using 3D modeling principles.",
+  "Create a script to generate a customizable box with finger joints using parametric design.",
+  "Suggest best practices for modeling an ergonomic handheld object in CAD.",
+  "Convert this verbal sketch description into structured CAD modeling steps.",
+  "Define geometric constraints for modeling a modular rail profile used in assembly systems.",
+  "How do I design a 3D-printable snap-fit enclosure with proper tolerances?",
+  "Generate geometry instructions for creating a ball-and-socket joint.",
+  "Model a heat-dissipating structure suitable for passive cooling in electronic assemblies.",
+]
+
 export const generateFakeSubmittedPrompt = () => ({
   code: Math.random().toString(),
   completed_at: Math.random().toString(),
-  created_at: Math.random().toString(),
+  created_at: new Date(Math.random() * 100000000).toISOString(),
   error: Math.random().toString(),
   // declare type MlFeedback_type = 'thumbs_up' | 'thumbs_down' | 'accepted' | 'rejected';
-  feedback: undefined,
+  feedback: 'thumbs_up',
   id: Math.random().toString(),
   kcl_version: Math.random().toString(),
   // export declare type TextToCadModel_type = 'cad' | 'kcl' | 'kcl_iteration'; model : 'kcl',
@@ -98,8 +110,8 @@ export const generateFakeSubmittedPrompt = () => ({
   outputs: {
     [Math.random().toString()]: Math.random().toString(),
   },
-  prompt: Math.random().toString(),
-  started_at: Math.random().toString(),
+  prompt: PROMPTS[parseInt((Math.random() * 10).toString()[0])],
+  started_at: new Date(Math.random()).toISOString(),
   // declare type ApiCallStatus_type = 'queued' | 'uploaded' | 'in_progress' | 'completed' | 'failed';
   status: 'completed',
   updated_at: Math.random(),
