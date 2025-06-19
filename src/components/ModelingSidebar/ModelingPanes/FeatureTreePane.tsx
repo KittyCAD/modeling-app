@@ -45,7 +45,7 @@ export const FeatureTreePane = () => {
       guards: {
         codePaneIsOpen: () =>
           modelingState.context.store.openPanes.includes('code') &&
-          editorManager.editorView !== null,
+          editorManager.getEditorView() !== null,
       },
       actions: {
         openCodePane: () => {

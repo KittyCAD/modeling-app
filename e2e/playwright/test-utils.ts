@@ -158,10 +158,10 @@ async function openKclCodePanel(page: Page) {
   await page.evaluate(() => {
     // editorManager is available on the window object.
     //@ts-ignore this is in an entirely different context that tsc can't see.
-    editorManager._editorView.dispatch({
+    editorManager.getEditorView().dispatch({
       selection: {
         //@ts-ignore this is in an entirely different context that tsc can't see.
-        anchor: editorManager._editorView.docView.length,
+        anchor: editorManager.getEditorView().docView.length,
       },
       scrollIntoView: true,
     })

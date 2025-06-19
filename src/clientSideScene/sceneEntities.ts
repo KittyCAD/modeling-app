@@ -3943,7 +3943,7 @@ function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
   }
 }
 
-// Returns the 2D tangent direction vector at the end of the segmentGroup if it's an arc.
+// Returns the 2D tangent direction vector at the end of the segmentGroup
 function findTangentDirection(segmentGroup: Group) {
   let tangentDirection: Coords2d | undefined
   if (segmentGroup.userData.type === TANGENTIAL_ARC_TO_SEGMENT) {
@@ -3972,11 +3972,6 @@ function findTangentDirection(segmentGroup: Group) {
     const from = segmentGroup.userData.from as Coords2d
     tangentDirection = subVec(to, from)
     tangentDirection = normalizeVec(tangentDirection)
-  } else {
-    console.warn(
-      'Unsupported segment type for tangent direction calculation: ',
-      segmentGroup.userData.type
-    )
   }
   return tangentDirection
 }
