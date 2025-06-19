@@ -55,6 +55,23 @@ import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
+import {
+  ARG_END_ABSOLUTE,
+  ARG_END,
+  ARG_LENGTH,
+  ARG_CIRCLE_CENTER,
+  ARG_RADIUS,
+  ARG_LENGTH_X,
+  ARG_LENGTH_Y,
+  ARG_END_ABSOLUTE_X,
+  ARG_END_ABSOLUTE_Y,
+  ARG_INTERIOR_ABSOLUTE,
+  ARG_AT,
+  ARG_P1,
+  ARG_P2,
+  ARG_P3,
+  ARG_DIAMETER,
+} from '@src/lang/constants'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1289,4 +1306,143 @@ export const getPathNormalisedForTruncatedAst = (
   nodePathWithCorrectedIndexForTruncatedAst[1][0] =
     Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) - minIndex
   return nodePathWithCorrectedIndexForTruncatedAst
+}
+
+export function doesProfileHaveAnyConstrainedDimension(
+  profilePath: PathToNode,
+  ast: Node<Program>
+): boolean {
+  // Get the profile node from the path
+  const profileNodeResult = getNodeFromPath(ast, profilePath)
+  if (err(profileNodeResult)) return false
+
+  const profileNode = profileNodeResult.node
+
+  // Single value dimension parameters to check (excluding angle as per requirements)
+  const singleValueLengthParams = new Set([
+    ARG_DIAMETER,
+    ARG_RADIUS,
+    ARG_LENGTH,
+    ARG_LENGTH_X,
+    ARG_LENGTH_Y,
+    ARG_END_ABSOLUTE_X,
+    ARG_END_ABSOLUTE_Y,
+  ])
+
+  // Tuple value dimension parameters to check
+  const tupleValueParams = new Set([
+    ARG_CIRCLE_CENTER,
+    ARG_P1,
+    ARG_P2,
+    ARG_P3,
+    ARG_AT,
+    ARG_END,
+    ARG_END_ABSOLUTE,
+    ARG_INTERIOR_ABSOLUTE,
+  ])
+
+  let hasConstrainedDimension = false
+
+  // Traverse the profile node to find all call expressions and their arguments
+  traverse(profileNode as any, {
+    enter: (node: any) => {
+      if (node.type === 'CallExpressionKw' && node.arguments) {
+        for (const arg of node.arguments) {
+          if (arg.type === 'LabeledArg' && arg.label?.name) {
+            const paramName = arg.label.name
+
+            // Check if this parameter is in our whitelist
+            if (
+              singleValueLengthParams.has(paramName) ||
+              tupleValueParams.has(paramName)
+            ) {
+              // Special case: endAbsolute = [profileStartX(%), profileStartY(%)]
+              // This should NOT count as constrained
+              if (
+                paramName === ARG_END_ABSOLUTE &&
+                arg.arg.type === 'ArrayExpression' &&
+                arg.arg.elements.length === 2
+              ) {
+                const [first, second] = arg.arg.elements
+                if (
+                  first.type === 'CallExpressionKw' &&
+                  second.type === 'CallExpressionKw' &&
+                  first.callee.type === 'Name' &&
+                  second.callee.type === 'Name' &&
+                  first.callee.name.name === 'profileStartX' &&
+                  second.callee.name.name === 'profileStartY'
+                ) {
+                  // This is the special case - don't count as constrained
+                  continue
+                }
+              }
+
+              // Special case: angledLine length = -segLen(rectangleSegmentA001)
+              // This should NOT count as constrained
+              if (
+                node.callee?.type === 'Name' &&
+                node.callee.name.name === 'angledLine' &&
+                paramName === ARG_LENGTH
+              ) {
+                let callExpr = null
+
+                // Check if it's a direct call expression or unary expression with call expression
+                if (arg.arg.type === 'CallExpressionKw') {
+                  callExpr = arg.arg
+                } else if (
+                  arg.arg.type === 'UnaryExpression' &&
+                  arg.arg.argument?.type === 'CallExpressionKw'
+                ) {
+                  callExpr = arg.arg.argument
+                }
+
+                if (
+                  callExpr &&
+                  callExpr.callee?.type === 'Name' &&
+                  callExpr.callee.name.name === 'segLen' &&
+                  callExpr.unlabeled?.type === 'Name' &&
+                  callExpr.unlabeled.name.name.startsWith('rectangleSegmentA')
+                ) {
+                  // This is the special case - don't count as constrained
+                  continue
+                }
+              }
+
+              // Check if the argument value is non-literal
+              if (!isLiteralValue(arg.arg)) {
+                hasConstrainedDimension = true
+                break
+              }
+            }
+          }
+        }
+        // If we found a constrained dimension, we can break out of the outer loop too
+        if (hasConstrainedDimension) {
+          return false // This stops the traversal
+        }
+      }
+    },
+  })
+
+  return hasConstrainedDimension
+}
+
+// Helper function to check if a node represents a literal value
+function isLiteralValue(node: any): boolean {
+  if (node.type === 'Literal') {
+    return true
+  }
+
+  if (node.type === 'ArrayExpression') {
+    // Array is literal if all elements are literals
+    return node.elements.every((element: any) => isLiteralValue(element))
+  }
+
+  if (node.type === 'UnaryExpression' && node.operator === '-') {
+    // Negative literal numbers
+    return isLiteralValue(node.argument)
+  }
+
+  // All other node types (Name, CallExpression, BinaryExpression, etc.) are non-literal
+  return false
 }
