@@ -220,8 +220,14 @@ const Home = () => {
     }
   )
   const projects = useFolders()
-  const prompts = [{ prompt: 'lol'} , { prompt: 'never gonna give you up' }, {prompt: 'takethisli' }]
-  const [tabSelected, setTabSelected] = useState<HomeTabKeys>(HomeTabKeys.Projects)
+  const prompts = [
+    { prompt: 'lol' },
+    { prompt: 'never gonna give you up' },
+    { prompt: 'takethisli' },
+  ]
+  const [tabSelected, setTabSelected] = useState<HomeTabKeys>(
+    HomeTabKeys.Projects
+  )
   const [items, setItems] = useState<Project[] | Prompt[]>(projects)
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, searchAgainst } = useHomeSearch(projects)
@@ -426,7 +432,13 @@ const Home = () => {
             </li>
           </ul>
         </aside>
-        <HomeItemsArea tabSelected={tabSelected} searchResults={searchResults} sortBy={sortBy} query={query} />
+        <HomeItemsArea
+          tabSelected={tabSelected}
+          searchResults={searchResults}
+          sortBy={sortBy}
+          query={query}
+        />
+        <LowerRightControls navigate={navigate} />
       </div>
       <StatusBar
         globalItems={[
@@ -446,7 +458,7 @@ enum HomeTabKeys {
 
 interface HomeTabProps {
   onChange: (key: HomeTabKeys) => void
-  selected: HomeTabKeys,
+  selected: HomeTabKeys
 }
 
 function HomeTab(props: HomeTabProps) {
@@ -466,19 +478,22 @@ function HomeTab(props: HomeTabProps) {
     props.onChange(key)
   }
 
-  return <div className="flex flex-row">
-    { tabs.map(
-      (el) => <div
-        className={el.key === selected ? cssActive : cssInactive}
-        onClick={onClickTab(el.key)}>
-        { el.name }
-      </div>
-    )}
-  </div>
+  return (
+    <div className="flex flex-row">
+      {tabs.map((el) => (
+        <div
+          className={el.key === selected ? cssActive : cssInactive}
+          onClick={onClickTab(el.key)}
+        >
+          {el.name}
+        </div>
+      ))}
+    </div>
+  )
 }
 
 interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
-  tabSelected: HomeTabKeys,
+  tabSelected: HomeTabKeys
   onChangeHomeSearchBar: (query: string) => void
   onChangeTab: (key: HomeTabKeys) => void
   sortBy: string
@@ -587,11 +602,15 @@ function HomeHeader({
 }
 
 function NoResults() {
-  return <div className="col-start-2 -col-end-1 w-full flex flex-col justify-center items-center">No results.</div>
+  return (
+    <div className="col-start-2 -col-end-1 w-full flex flex-col justify-center items-center">
+      No results.
+    </div>
+  )
 }
 
 interface HomeItemsAreaProps {
-  tabSelected: HomeTabKeys,
+  tabSelected: HomeTabKeys
   searchResults: HomeItems
   sortBy: string
   query: string
@@ -602,50 +621,56 @@ function HomeItemsArea(props: HomeItemsAreaProps) {
 
   switch (props.tabSelected) {
     case HomeTabKeys.Projects:
-     grid = areHomeItemsProjects(props.searchResults)
-        ? <ResultGridProjects
-            searchResults={props.searchResults}
-            query={props.query}
-            sortBy={props.sortBy}
+      grid = areHomeItemsProjects(props.searchResults) ? (
+        <ResultGridProjects
+          searchResults={props.searchResults}
+          query={props.query}
+          sortBy={props.sortBy}
         />
-        : <NoResults />
+      ) : (
+        <NoResults />
+      )
       break
     case HomeTabKeys.Prompts:
-      grid = areHomeItemsPrompts(props.searchResults)
-        ? <ResultGridPrompts
-            searchResults={props.searchResults}
-            query={props.query}
-            sortBy={props.sortBy}
-          />
-        : <NoResults />
+      grid = areHomeItemsPrompts(props.searchResults) ? (
+        <ResultGridPrompts
+          searchResults={props.searchResults}
+          query={props.query}
+          sortBy={props.sortBy}
+        />
+      ) : (
+        <NoResults />
+      )
       break
     default:
       const _ex: never = props.tabSelected
   }
 
-  return  <div className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24">
-    { grid }
-  </div>
+  return (
+    <div className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24">
+      {grid}
+    </div>
+  )
 }
 
 interface ResultGridProjectsProps {
-  searchResults: Prompt[],
+  searchResults: Prompt[]
   query: string
   sortBy: string
 }
 
 function ResultGridPrompts(props) {
-  return <div>
-    {props.searchResults.map(
-      (el) => <div key={el.prompt}>
-        { el.prompt }
-      </div>
-    )}
-  </div>
+  return (
+    <div>
+      {props.searchResults.map((el) => (
+        <div key={el.prompt}>{el.prompt}</div>
+      ))}
+    </div>
+  )
 }
 
 interface ResultGridProjectsProps extends HTMLProps<HTMLDivElement> {
-  searchResults: Project[],
+  searchResults: Project[]
   query: string
   sortBy: string
 }
@@ -661,16 +686,16 @@ function ResultGridProjects(props: ResultGridProjectsProps) {
         <>
           {props.searchResults.length > 0 ? (
             <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              { (props.searchResults ?? [])
+              {(props.searchResults ?? [])
                 .sort(getSortFunction(props.sortBy))
-                .map((item) =>
-                    <ProjectCard
-                      key={item.name}
-                      project={item}
-                      handleRenameProject={handleRenameProject}
-                      handleDeleteProject={handleDeleteProject}
-                    />
-                )}
+                .map((item) => (
+                  <ProjectCard
+                    key={item.name}
+                    project={item}
+                    handleRenameProject={handleRenameProject}
+                    handleDeleteProject={handleDeleteProject}
+                  />
+                ))}
             </ul>
           ) : (
             <p className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
