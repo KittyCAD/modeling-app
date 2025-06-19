@@ -16,7 +16,7 @@ componentBoltPatternY = 3
 
 // Define bracket parameters such as sheet metal thickness, bend radius, flange length, etc.
 hatHeight = 2.5
-bendAngle = 75
+bendAngle = 75deg
 thickness = 0.125
 interiorBendRadius = 0.125
 
@@ -49,12 +49,12 @@ bracketProfile = startSketchOn(XZ)
   |> yLine(length = thickness, tag = $seg03)
   |> xLine(length = -flangeLength, tag = $seg04)
   |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
-  |> angledLine(angle = 180 - bendAngle, length = segLen(seg01))
+  |> angledLine(angle = 180deg - bendAngle, length = segLen(seg01))
   |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
   |> xLine(endAbsolute = 0, tag = $seg05)
   |> xLine(length = -segLen(seg05))
   |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
-  |> angledLine(angle = bendAngle - 180, length = segLen(seg01))
+  |> angledLine(angle = bendAngle - 180deg, length = segLen(seg01))
   |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
   |> xLine(length = -flangeLength, tag = $seg06)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg07)

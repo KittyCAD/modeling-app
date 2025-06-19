@@ -7,7 +7,7 @@ use serde::Serialize;
 use crate::{
     errors::KclErrorDetails,
     execution::{
-        annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
+        annotations::{self, SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
         EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, MetaSettings,
         Metadata, Plane, Sketch, Solid, TagIdentifier,
@@ -377,6 +377,7 @@ impl KclValue {
                                 Some(SourceRange::new(0, 0, literal.module_id)),
                                 crate::errors::Tag::Deprecated,
                             ),
+                            annotations::WARN_DEPRECATED,
                         );
                     }
                 }

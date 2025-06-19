@@ -9,6 +9,7 @@ pub use crate::execution::fn_call::Args;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
+        annotations,
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
         ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
@@ -21,7 +22,7 @@ use crate::{
         sketch::FaceTag,
         sweep::SweepPath,
     },
-    ModuleId,
+    CompilationError, ModuleId,
 };
 
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
@@ -56,9 +57,17 @@ impl TyF64 {
         len.adjust_to(self.n, units).0
     }
 
-    pub fn to_degrees(&self) -> f64 {
+    pub fn to_degrees(&self, exec_state: &mut ExecState, source_range: SourceRange) -> f64 {
         let angle = match self.ty {
-            NumericType::Default { angle, .. } => angle,
+            NumericType::Default { angle, .. } => {
+                if self.n != 0.0 {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                angle
+            }
             NumericType::Known(UnitType::Angle(angle)) => angle,
             _ => unreachable!(),
         };
@@ -68,9 +77,17 @@ impl TyF64 {
         angle.adjust_to(self.n, UnitAngle::Degrees).0
     }
 
-    pub fn to_radians(&self) -> f64 {
+    pub fn to_radians(&self, exec_state: &mut ExecState, source_range: SourceRange) -> f64 {
         let angle = match self.ty {
-            NumericType::Default { angle, .. } => angle,
+            NumericType::Default { angle, .. } => {
+                if self.n != 0.0 {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                angle
+            }
             NumericType::Known(UnitType::Angle(angle)) => angle,
             _ => unreachable!(),
         };

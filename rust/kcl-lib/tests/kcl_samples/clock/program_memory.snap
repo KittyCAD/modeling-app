@@ -25,9 +25,9 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 889,
-            "end": 895,
-            "start": 889,
+            "commentStart": 901,
+            "end": 907,
+            "start": 901,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -38,9 +38,9 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 968,
-            "end": 980,
-            "start": 968,
+            "commentStart": 980,
+            "end": 992,
+            "start": 980,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -67,9 +67,9 @@ description: Variables in memory after executing clock.kcl
             ],
             "radius": 250.0,
             "tag": {
-              "commentStart": 889,
-              "end": 895,
-              "start": 889,
+              "commentStart": 901,
+              "end": 907,
+              "start": 901,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -233,9 +233,9 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1312,
-            "end": 1318,
-            "start": 1312,
+            "commentStart": 1324,
+            "end": 1330,
+            "start": 1324,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -246,9 +246,9 @@ description: Variables in memory after executing clock.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1512,
-            "end": 1522,
-            "start": 1512,
+            "commentStart": 1524,
+            "end": 1534,
+            "start": 1524,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -275,9 +275,9 @@ description: Variables in memory after executing clock.kcl
             ],
             "radius": 250.0,
             "tag": {
-              "commentStart": 1312,
-              "end": 1318,
-              "start": 1312,
+              "commentStart": 1324,
+              "end": 1330,
+              "start": 1324,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -322,9 +322,9 @@ description: Variables in memory after executing clock.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 889,
-                  "end": 895,
-                  "start": 889,
+                  "commentStart": 901,
+                  "end": 907,
+                  "start": 901,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -335,9 +335,9 @@ description: Variables in memory after executing clock.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 968,
-                  "end": 980,
-                  "start": 968,
+                  "commentStart": 980,
+                  "end": 992,
+                  "start": 980,
                   "type": "TagDeclarator",
                   "value": "capStart001"
                 },
@@ -364,9 +364,9 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 250.0,
                   "tag": {
-                    "commentStart": 889,
-                    "end": 895,
-                    "start": 889,
+                    "commentStart": 901,
+                    "end": 907,
+                    "start": 901,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -571,9 +571,9 @@ description: Variables in memory after executing clock.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 889,
-              "end": 895,
-              "start": 889,
+              "commentStart": 901,
+              "end": 907,
+              "start": 901,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -584,9 +584,9 @@ description: Variables in memory after executing clock.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 968,
-              "end": 980,
-              "start": 968,
+              "commentStart": 980,
+              "end": 992,
+              "start": 980,
               "type": "TagDeclarator",
               "value": "capStart001"
             },
@@ -613,9 +613,9 @@ description: Variables in memory after executing clock.kcl
               ],
               "radius": 250.0,
               "tag": {
-                "commentStart": 889,
-                "end": 895,
-                "start": 889,
+                "commentStart": 901,
+                "end": 907,
+                "start": 901,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -769,13 +769,9 @@ description: Variables in memory after executing clock.kcl
     "type": "Number",
     "value": -180.0,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     }
   },
   "hourHandArmLength": {
@@ -846,13 +842,9 @@ description: Variables in memory after executing clock.kcl
     "type": "Number",
     "value": -84.0,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     }
   },
   "minuteHandArmLength": {
@@ -1839,9 +1831,9 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 250.0,
           "tag": {
-            "commentStart": 889,
-            "end": 895,
-            "start": 889,
+            "commentStart": 901,
+            "end": 907,
+            "start": 901,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1942,9 +1934,9 @@ description: Variables in memory after executing clock.kcl
           ],
           "radius": 250.0,
           "tag": {
-            "commentStart": 1312,
-            "end": 1318,
-            "start": 1312,
+            "commentStart": 1324,
+            "end": 1330,
+            "start": 1324,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1989,9 +1981,9 @@ description: Variables in memory after executing clock.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 889,
-                "end": 895,
-                "start": 889,
+                "commentStart": 901,
+                "end": 907,
+                "start": 901,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2002,9 +1994,9 @@ description: Variables in memory after executing clock.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 968,
-                "end": 980,
-                "start": 968,
+                "commentStart": 980,
+                "end": 992,
+                "start": 980,
                 "type": "TagDeclarator",
                 "value": "capStart001"
               },
@@ -2031,9 +2023,9 @@ description: Variables in memory after executing clock.kcl
                 ],
                 "radius": 250.0,
                 "tag": {
-                  "commentStart": 889,
-                  "end": 895,
-                  "start": 889,
+                  "commentStart": 901,
+                  "end": 907,
+                  "start": 901,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2241,9 +2233,9 @@ description: Variables in memory after executing clock.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 889,
-                "end": 895,
-                "start": 889,
+                "commentStart": 901,
+                "end": 907,
+                "start": 901,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2254,9 +2246,9 @@ description: Variables in memory after executing clock.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 968,
-                "end": 980,
-                "start": 968,
+                "commentStart": 980,
+                "end": 992,
+                "start": 980,
                 "type": "TagDeclarator",
                 "value": "capStart001"
               },
@@ -2283,9 +2275,9 @@ description: Variables in memory after executing clock.kcl
                 ],
                 "radius": 250.0,
                 "tag": {
-                  "commentStart": 889,
-                  "end": 895,
-                  "start": 889,
+                  "commentStart": 901,
+                  "end": 907,
+                  "start": 901,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2598,9 +2590,9 @@ description: Variables in memory after executing clock.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 889,
-                  "end": 895,
-                  "start": 889,
+                  "commentStart": 901,
+                  "end": 907,
+                  "start": 901,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2611,9 +2603,9 @@ description: Variables in memory after executing clock.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 968,
-                  "end": 980,
-                  "start": 968,
+                  "commentStart": 980,
+                  "end": 992,
+                  "start": 980,
                   "type": "TagDeclarator",
                   "value": "capStart001"
                 },
@@ -2640,9 +2632,9 @@ description: Variables in memory after executing clock.kcl
                   ],
                   "radius": 250.0,
                   "tag": {
-                    "commentStart": 889,
-                    "end": 895,
-                    "start": 889,
+                    "commentStart": 901,
+                    "end": 907,
+                    "start": 901,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -2851,9 +2843,9 @@ description: Variables in memory after executing clock.kcl
             7.054165456091913
           ],
           "tag": {
-            "commentStart": 9962,
-            "end": 9969,
-            "start": 9962,
+            "commentStart": 10163,
+            "end": 10170,
+            "start": 10163,
             "type": "TagDeclarator",
             "value": "seg004"
           },
@@ -2876,9 +2868,9 @@ description: Variables in memory after executing clock.kcl
             19.554165456091912
           ],
           "tag": {
-            "commentStart": 10158,
-            "end": 10165,
-            "start": 10158,
+            "commentStart": 10359,
+            "end": 10366,
+            "start": 10359,
             "type": "TagDeclarator",
             "value": "seg002"
           },
@@ -3186,9 +3178,9 @@ description: Variables in memory after executing clock.kcl
             -119.46453889126977
           ],
           "tag": {
-            "commentStart": 11501,
-            "end": 11508,
-            "start": 11501,
+            "commentStart": 11732,
+            "end": 11739,
+            "start": 11732,
             "type": "TagDeclarator",
             "value": "seg003"
           },
@@ -3211,9 +3203,9 @@ description: Variables in memory after executing clock.kcl
             -120.77114468211543
           ],
           "tag": {
-            "commentStart": 11705,
-            "end": 11712,
-            "start": 11705,
+            "commentStart": 11936,
+            "end": 11943,
+            "start": 11936,
             "type": "TagDeclarator",
             "value": "seg005"
           },
@@ -3569,9 +3561,9 @@ description: Variables in memory after executing clock.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 889,
-              "end": 895,
-              "start": 889,
+              "commentStart": 901,
+              "end": 907,
+              "start": 901,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -3582,9 +3574,9 @@ description: Variables in memory after executing clock.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 968,
-              "end": 980,
-              "start": 968,
+              "commentStart": 980,
+              "end": 992,
+              "start": 980,
               "type": "TagDeclarator",
               "value": "capStart001"
             },
@@ -3611,9 +3603,9 @@ description: Variables in memory after executing clock.kcl
               ],
               "radius": 250.0,
               "tag": {
-                "commentStart": 889,
-                "end": 895,
-                "start": 889,
+                "commentStart": 901,
+                "end": 907,
+                "start": 901,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },

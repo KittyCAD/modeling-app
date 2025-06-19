@@ -120,7 +120,7 @@ export async function applyConstraintAngleBetween({
   } as any)
   if (
     segName === tagInfo?.tag &&
-    Number(value) === valueUsedInTransform &&
+    value === valueUsedInTransform &&
     !variableName
   ) {
     return {

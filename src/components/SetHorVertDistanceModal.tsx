@@ -25,7 +25,7 @@ type ModalReject = boolean
 type GetInfoModalProps = InstanceProps<ModalResolve, ModalReject> & {
   segName: string
   isSegNameEditable: boolean
-  value?: number
+  value?: string
   initialVariableName: string
 }
 
@@ -44,10 +44,12 @@ export const GetInfoModal = ({
   value: initialValue,
   initialVariableName,
 }: GetInfoModalProps) => {
-  const [sign, setSign] = useState(Math.sign(Number(initialValue)))
+  const [sign, setSign] = useState(initialValue?.startsWith('-') ? -1 : 1)
   const [segName, setSegName] = useState(initialSegName)
   const [value, setValue] = useState(
-    initialValue === undefined ? '' : String(Math.abs(initialValue))
+    initialValue?.startsWith('-')
+      ? initialValue.substring(1)
+      : initialValue || ''
   )
   const [shouldCreateVariable, setShouldCreateVariable] = useState(false)
 

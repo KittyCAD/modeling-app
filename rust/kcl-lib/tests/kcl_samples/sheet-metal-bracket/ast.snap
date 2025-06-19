@@ -304,13 +304,13 @@ description: Result of parsing sheet-metal-bracket.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
-            "raw": "75",
+            "raw": "75deg",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
               "value": 75.0,
-              "suffix": "None"
+              "suffix": "Deg"
             }
           },
           "start": 0,
@@ -2000,13 +2000,13 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "left": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "180",
+                        "raw": "180deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 180.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "operator": "-",
@@ -2436,13 +2436,13 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "right": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "180",
+                        "raw": "180deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 180.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,

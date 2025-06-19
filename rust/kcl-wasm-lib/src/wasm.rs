@@ -289,14 +289,13 @@ pub fn kcl_settings(program_json: &str) -> Result<JsValue, String> {
 
 /// Takes a kcl string and Meta settings and changes the meta settings in the kcl string.
 #[wasm_bindgen]
-pub fn change_default_units(code: &str, len_str: &str, angle_str: &str) -> Result<String, String> {
+pub fn change_default_units(code: &str, len_str: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
     let len: Option<kcl_lib::UnitLen> = serde_json::from_str(len_str).map_err(|e| e.to_string())?;
-    let angle: Option<kcl_lib::UnitAngle> = serde_json::from_str(angle_str).map_err(|e| e.to_string())?;
     let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
 
-    let new_program = program.change_default_units(len, angle).map_err(|e| e.to_string())?;
+    let new_program = program.change_default_units(len).map_err(|e| e.to_string())?;
 
     let formatted = new_program.recast();
 

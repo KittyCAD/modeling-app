@@ -132,6 +132,8 @@ async fn inner_involute_circular(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let id = exec_state.next_uuid();
+    let angle_deg = angle.to_degrees(exec_state, args.source_range);
+    let angle_rad = angle.to_radians(exec_state, args.source_range);
 
     exec_state
         .batch_modeling_cmd(
@@ -141,7 +143,7 @@ async fn inner_involute_circular(
                 segment: PathSegment::CircularInvolute {
                     start_radius: LengthUnit(start_radius.to_mm()),
                     end_radius: LengthUnit(end_radius.to_mm()),
-                    angle: Angle::from_degrees(angle.to_degrees()),
+                    angle: Angle::from_degrees(angle_deg),
                     reverse: reverse.unwrap_or_default(),
                 },
             }),
@@ -157,11 +159,11 @@ async fn inner_involute_circular(
     let theta = f64::sqrt(end_radius * end_radius - start_radius * start_radius) / start_radius;
     let (x, y) = involute_curve(start_radius, theta);
 
-    end.x = x * libm::cos(angle.to_radians()) - y * libm::sin(angle.to_radians());
-    end.y = x * libm::sin(angle.to_radians()) + y * libm::cos(angle.to_radians());
+    end.x = x * libm::cos(angle_rad) - y * libm::sin(angle_rad);
+    end.y = x * libm::sin(angle_rad) + y * libm::cos(angle_rad);
 
-    end.x -= start_radius * libm::cos(angle.to_radians());
-    end.y -= start_radius * libm::sin(angle.to_radians());
+    end.x -= start_radius * libm::cos(angle_rad);
+    end.y -= start_radius * libm::sin(angle_rad);
 
     if reverse.unwrap_or_default() {
         end.x = -end.x;
@@ -718,7 +720,7 @@ pub async fn inner_angled_line_that_intersects(
             point_to_len_unit(path.get_to(), from.units),
         ],
         offset.map(|t| t.to_length_units(from.units)).unwrap_or_default(),
-        angle.to_degrees(),
+        angle.to_degrees(exec_state, args.source_range),
         from.ignore_units(),
     );
     let to = [
@@ -1256,8 +1258,8 @@ pub async fn relative_arc(
     radius: TyF64,
     tag: Option<TagNode>,
 ) -> Result<Sketch, KclError> {
-    let a_start = Angle::from_degrees(angle_start.to_degrees());
-    let a_end = Angle::from_degrees(angle_end.to_degrees());
+    let a_start = Angle::from_degrees(angle_start.to_degrees(exec_state, args.source_range));
+    let a_end = Angle::from_degrees(angle_end.to_degrees(exec_state, args.source_range));
     let radius = radius.to_length_units(from.units);
     let (center, end) = arc_center_and_end(from.ignore_units(), a_start, a_end, radius);
     if a_start == a_end {
@@ -1409,7 +1411,7 @@ async fn inner_tangential_arc_radius_angle(
     let (center, to, ccw) = match data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
             // KCL stdlib types use degrees.
-            let offset = Angle::from_degrees(offset.to_degrees());
+            let offset = Angle::from_degrees(offset.to_degrees(exec_state, args.source_range));
 
             // Calculate the end point from the angle and radius.
             // atan2 outputs radians.

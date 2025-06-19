@@ -407,13 +407,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 90.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -440,13 +436,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 30.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -506,13 +498,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 5.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -1002,13 +990,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 90.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -1048,13 +1032,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 60.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -1140,13 +1120,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 84.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -1435,13 +1411,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 90.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -1481,13 +1453,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 60.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -1573,13 +1541,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 75.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -1868,13 +1832,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 90.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -1914,13 +1874,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 60.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -2006,13 +1962,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 66.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -3200,13 +3152,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 90.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -3246,13 +3194,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 60.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -3338,13 +3282,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 84.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -3633,13 +3573,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 90.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -3679,13 +3615,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 60.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -3771,13 +3703,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 75.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -4066,13 +3994,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 90.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -4112,13 +4036,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 60.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",
@@ -4204,13 +4124,9 @@ description: Operations executed brake-rotor.kcl
         "type": "Number",
         "value": 66.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       "visibility": "default",

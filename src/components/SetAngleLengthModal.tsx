@@ -22,7 +22,7 @@ type ModalResolve = {
 type ModalReject = boolean
 
 type SetAngleLengthModalProps = InstanceProps<ModalResolve, ModalReject> & {
-  value: number
+  value: string
   valueName: string
   shouldCreateVariable?: boolean
 }
@@ -41,8 +41,10 @@ export const SetAngleLengthModal = ({
   valueName,
   shouldCreateVariable: initialShouldCreateVariable = false,
 }: SetAngleLengthModalProps) => {
-  const [sign, setSign] = useState(Math.sign(Number(initialValue)))
-  const [value, setValue] = useState(String(initialValue * sign))
+  const [sign, setSign] = useState(initialValue.startsWith('-') ? -1 : 1)
+  const [value, setValue] = useState(
+    initialValue.startsWith('-') ? initialValue.substring(1) : initialValue
+  )
   const [shouldCreateVariable, setShouldCreateVariable] = useState(
     initialShouldCreateVariable
   )

@@ -108,6 +108,9 @@ pub(super) struct ModuleState {
     pub(super) path: ModulePath,
     /// Artifacts for only this module.
     pub artifacts: ModuleArtifactState,
+
+    pub(super) allowed_warnings: Vec<&'static str>,
+    pub(super) denied_warnings: Vec<&'static str>,
 }
 
 impl ExecState {
@@ -133,8 +136,19 @@ impl ExecState {
     }
 
     /// Log a warning.
-    pub fn warn(&mut self, mut e: CompilationError) {
-        e.severity = Severity::Warning;
+    pub fn warn(&mut self, mut e: CompilationError, name: &'static str) {
+        debug_assert!(annotations::WARN_VALUES.contains(&name));
+
+        if self.mod_local.allowed_warnings.contains(&name) {
+            return;
+        }
+
+        if self.mod_local.denied_warnings.contains(&name) {
+            e.severity = Severity::Error;
+        } else {
+            e.severity = Severity::Warning;
+        }
+
         self.global.errors.push(e);
     }
 
@@ -502,6 +516,8 @@ impl ModuleState {
                 kcl_version: "0.1".to_owned(),
             },
             artifacts: Default::default(),
+            allowed_warnings: Vec::new(),
+            denied_warnings: Vec::new(),
         }
     }
 
@@ -526,10 +542,11 @@ impl MetaSettings {
     pub(crate) fn update_from_annotation(
         &mut self,
         annotation: &crate::parsing::ast::types::Node<Annotation>,
-    ) -> Result<bool, KclError> {
+    ) -> Result<(bool, bool), KclError> {
         let properties = annotations::expect_properties(annotations::SETTINGS, annotation)?;
 
         let mut updated_len = false;
+        let mut updated_angle = false;
         for p in properties {
             match &*p.inner.key.name {
                 annotations::SETTINGS_UNIT_LENGTH => {
@@ -542,6 +559,7 @@ impl MetaSettings {
                     let value = annotations::expect_ident(&p.inner.value)?;
                     let value = types::UnitAngle::from_str(value, annotation.as_source_range())?;
                     self.default_angle_units = value;
+                    updated_angle = true;
                 }
                 annotations::SETTINGS_VERSION => {
                     let value = annotations::expect_number(&p.inner.value)?;
@@ -560,6 +578,6 @@ impl MetaSettings {
             }
         }
 
-        Ok(updated_len)
+        Ok((updated_len, updated_angle))
     }
 }

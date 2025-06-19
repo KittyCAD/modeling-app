@@ -10,8 +10,8 @@ hookRadius = 12
 shankLength = 5
 threadedEndLength = 30
 nutDistance = 20
-hookStartAngle = 290
-hookEndAngle = 150
+hookStartAngle = 290deg
+hookEndAngle = 150deg
 
 approximatePitch = boltDiameter * 0.15
 threadDepth = 0.6134 * approximatePitch
@@ -19,7 +19,7 @@ innerRadius = boltDiameter / 2 - threadDepth
 boltNumberOfRevolutions = threadedEndLength / approximatePitch
 
 // Helper values for computing geometry transitions between straight shaft and hook arc
-hypotenuse = hookRadius / cos(hookStartAngle - 270)
+hypotenuse = hookRadius / cos(hookStartAngle - 270deg)
 side = sqrt(pow(hypotenuse, exp = 2) - pow(hookRadius, exp = 2))
 shankOffset = hypotenuse + side
 
@@ -86,4 +86,4 @@ boltThreadSectionShapeForRevolve = startProfile(
   |> close()
 
 // Create a revolved solid representing the thread geometry by repeating and revolving the profile around the shaft
-boltThreadRevolve = revolve(boltThreadSectionShapeForRevolve, angle = 360, axis = Y)
+boltThreadRevolve = revolve(boltThreadSectionShapeForRevolve, angle = 360deg, axis = Y)

@@ -3,11 +3,7 @@ import toast from 'react-hot-toast'
 
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { addModuleImport } from '@src/lang/modifyAst'
-import {
-  changeDefaultUnits,
-  unitAngleToUnitAng,
-  unitLengthToUnitLen,
-} from '@src/lang/wasm'
+import { changeDefaultUnits, unitLengthToUnitLen } from '@src/lang/wasm'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -69,8 +65,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         if (typeof data === 'object' && 'unit' in data) {
           const newCode = changeDefaultUnits(
             codeManager.code,
-            unitLengthToUnitLen(data.unit),
-            unitAngleToUnitAng(undefined)
+            unitLengthToUnitLen(data.unit)
           )
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
