@@ -12,7 +12,7 @@ export const useNetworkMachineStatus = (): StatusBarItemType => {
   const reason = noMachinesReason()
   return {
     id: 'network-machines',
-    'data-testid': `network-machines`,
+    'data-testid': `network-machine-toggle`,
     label: `${machineCount}`,
     hideLabel: machineCount === 0,
     toolTip: {
