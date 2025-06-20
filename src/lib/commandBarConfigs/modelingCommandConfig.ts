@@ -893,6 +893,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'text',
         required: false,
         skip: true,
+        hidden: true,
       },
       namedValue: {
         inputType: 'kcl',

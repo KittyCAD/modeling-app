@@ -291,6 +291,38 @@ export class KCLUndefinedValueError extends KCLError {
 }
 
 /**
+Convert this UTF-16 source range offset to UTF-8 as SourceRange is always a UTF-8
+*/
+export function toUtf8(
+  utf16SourceRange: SourceRange,
+  sourceCode: string
+): SourceRange {
+  const moduleId = utf16SourceRange[2]
+  const textEncoder = new TextEncoder()
+  const prefixUtf16 = sourceCode.slice(0, utf16SourceRange[0])
+  const prefixUtf8 = textEncoder.encode(prefixUtf16)
+  const prefixLen = prefixUtf8.length
+  const toHighlightUtf16 = sourceCode.slice(
+    utf16SourceRange[0],
+    utf16SourceRange[1]
+  )
+  const toHighlightUtf8 = textEncoder.encode(toHighlightUtf16)
+  const toHighlightLen = toHighlightUtf8.length
+  return [prefixLen, prefixLen + toHighlightLen, moduleId]
+}
+
+/**
+Convert this UTF-8 source range offset to UTF-16 for display in CodeMirror,
+as it relies on JS-style string encoding which is UTF-16.
+*/
+export function toUtf16(utf8Offset: number, sourceCode: string): number {
+  const sourceUtf8 = new TextEncoder().encode(sourceCode)
+  const prefix = sourceUtf8.slice(0, utf8Offset)
+  const backTo16 = new TextDecoder().decode(prefix)
+  return backTo16.length
+}
+
+/**
  * Maps the lsp diagnostic to an array of KclErrors.
  * Currently the diagnostics are all errors, but in the future they could include lints.
  * */
@@ -299,20 +331,23 @@ export function lspDiagnosticsToKclErrors(
   diagnostics: LspDiagnostic[]
 ): KCLError[] {
   return diagnostics
-    .flatMap(
-      ({ range, message }) =>
-        new KCLError(
-          'unexpected',
-          message,
-          [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, 0],
-          [],
-          [],
-          [],
-          defaultArtifactGraph(),
-          {},
-          null
-        )
-    )
+    .flatMap(({ range, message }) => {
+      const sourceRange = toUtf8(
+        [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, 0],
+        doc.toString()
+      )
+      return new KCLError(
+        'unexpected',
+        message,
+        sourceRange,
+        [],
+        [],
+        [],
+        defaultArtifactGraph(),
+        {},
+        null
+      )
+    })
     .sort((a, b) => {
       const c = a.sourceRange[0]
       const d = b.sourceRange[0]
@@ -331,7 +366,8 @@ export function lspDiagnosticsToKclErrors(
  * Currently the diagnostics are all errors, but in the future they could include lints.
  * */
 export function kclErrorsToDiagnostics(
-  errors: KCLError[]
+  errors: KCLError[],
+  sourceCode: string
 ): CodeMirrorDiagnostic[] {
   let nonFatal: CodeMirrorDiagnostic[] = []
   const errs = errors
@@ -350,8 +386,8 @@ export function kclErrorsToDiagnostics(
             item.sourceRange[1] !== err.sourceRange[1]
           ) {
             diagnostics.push({
-              from: item.sourceRange[0],
-              to: item.sourceRange[1],
+              from: toUtf16(item.sourceRange[0], sourceCode),
+              to: toUtf16(item.sourceRange[1], sourceCode),
               message: 'Part of the error backtrace',
               severity: 'hint',
             })
@@ -365,11 +401,13 @@ export function kclErrorsToDiagnostics(
         }
       }
       if (err.nonFatal.length > 0) {
-        nonFatal = nonFatal.concat(compilationErrorsToDiagnostics(err.nonFatal))
+        nonFatal = nonFatal.concat(
+          compilationErrorsToDiagnostics(err.nonFatal, sourceCode)
+        )
       }
       diagnostics.push({
-        from: err.sourceRange[0],
-        to: err.sourceRange[1],
+        from: toUtf16(err.sourceRange[0], sourceCode),
+        to: toUtf16(err.sourceRange[1], sourceCode),
         message,
         severity: 'error',
       })
@@ -379,7 +417,8 @@ export function kclErrorsToDiagnostics(
 }
 
 export function compilationErrorsToDiagnostics(
-  errors: CompilationError[]
+  errors: CompilationError[],
+  sourceCode: string
 ): CodeMirrorDiagnostic[] {
   return errors
     ?.filter((err) => isTopLevelModule(err.sourceRange))
@@ -397,8 +436,8 @@ export function compilationErrorsToDiagnostics(
             apply: (view: EditorView, from: number, to: number) => {
               view.dispatch({
                 changes: {
-                  from: suggestion.source_range[0],
-                  to: suggestion.source_range[1],
+                  from: toUtf16(suggestion.source_range[0], sourceCode),
+                  to: toUtf16(suggestion.source_range[1], sourceCode),
                   insert: suggestion.insert,
                 },
                 annotations: [lspCodeActionEvent],
@@ -408,8 +447,8 @@ export function compilationErrorsToDiagnostics(
         ]
       }
       return {
-        from: err.sourceRange[0],
-        to: err.sourceRange[1],
+        from: toUtf16(err.sourceRange[0], sourceCode),
+        to: toUtf16(err.sourceRange[1], sourceCode),
         message: err.message,
         severity,
         actions,
