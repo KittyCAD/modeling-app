@@ -315,29 +315,27 @@ impl Default for ExecutorSettings {
 
 impl From<crate::settings::types::Configuration> for ExecutorSettings {
     fn from(config: crate::settings::types::Configuration) -> Self {
+        Self::from(config.settings)
+    }
+}
+
+impl From<crate::settings::types::Settings> for ExecutorSettings {
+    fn from(settings: crate::settings::types::Settings) -> Self {
         Self {
-            highlight_edges: config.settings.modeling.highlight_edges.into(),
-            enable_ssao: config.settings.modeling.enable_ssao.into(),
-            show_grid: config.settings.modeling.show_scale_grid,
+            highlight_edges: settings.modeling.highlight_edges.into(),
+            enable_ssao: settings.modeling.enable_ssao.into(),
+            show_grid: settings.modeling.show_scale_grid,
             replay: None,
             project_directory: None,
             current_file: None,
-            fixed_size_grid: config.settings.app.fixed_size_grid,
+            fixed_size_grid: settings.app.fixed_size_grid,
         }
     }
 }
 
 impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSettings {
     fn from(config: crate::settings::types::project::ProjectConfiguration) -> Self {
-        Self {
-            highlight_edges: config.settings.modeling.highlight_edges.into(),
-            enable_ssao: config.settings.modeling.enable_ssao.into(),
-            show_grid: Default::default(),
-            replay: None,
-            project_directory: None,
-            current_file: None,
-            fixed_size_grid: true,
-        }
+        Self::from(config.settings.modeling)
     }
 }
 
@@ -504,6 +502,7 @@ impl ExecutorContext {
                 replay: None,
                 project_directory: None,
                 current_file: None,
+                fixed_size_grid: false,
             },
             None,
             engine_addr,
@@ -599,9 +598,7 @@ impl ExecutorContext {
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
-        let grid_scale = if self.settings.auto_scale_grid {
-            GridScaleBehavior::ScaleWithZoom
-        } else {
+        let grid_scale = if self.settings.fixed_size_grid {
             GridScaleBehavior::Fixed(
                 program
                     .meta_settings()
@@ -610,6 +607,8 @@ impl ExecutorContext {
                     .map(|s| s.default_length_units)
                     .map(kcmc::units::UnitLength::from),
             )
+        } else {
+            GridScaleBehavior::ScaleWithZoom
         };
 
         let (program, exec_state, result) = match cache::read_old_ast().await {
@@ -1099,12 +1098,18 @@ impl ExecutorContext {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Re-apply the settings, in case the cache was busted.
-        let grid_scale = program
-            .meta_settings()
-            .ok()
-            .flatten()
-            .map(|s| s.default_length_units)
-            .map(kcmc::units::UnitLength::from);
+        let grid_scale = if self.settings.fixed_size_grid {
+            GridScaleBehavior::Fixed(
+                program
+                    .meta_settings()
+                    .ok()
+                    .flatten()
+                    .map(|s| s.default_length_units)
+                    .map(kcmc::units::UnitLength::from),
+            )
+        } else {
+            GridScaleBehavior::ScaleWithZoom
+        };
         self.engine
             .reapply_settings(
                 &self.settings,
