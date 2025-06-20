@@ -67,7 +67,7 @@ export const FileExplorer = ({
   // Local state for selection and what is opened
   // diff this against new Project value that comes in
   return (
-    <div role="presentation">
+    <div role="presentation" className="relative">
       {rowsToRender.map((row, index, original) => {
         const key = row.key
         const renderRow: FileExplorerRender = {
@@ -274,7 +274,7 @@ export const FileExplorerRowElement = ({
         onOpenInNewWindow={() => {
           row.onOpenInNewWindow()
         }}
-        callback={()=>{
+        callback={() => {
           row.onContextMenuOpen(row.domIndex)
         }}
       />

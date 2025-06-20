@@ -56,9 +56,8 @@ export const ProjectExplorer = ({
   // -1 is the parent container, -2 is nothing is selected
   const [activeIndex, setActiveIndex] = useState<number>(NOTHING_IS_SELECTED)
   const [rowsToRender, setRowsToRender] = useState<FileExplorerRow[]>([])
-  const [contextMenuRow, setContextMenuRow] = useState<FileExplorerEntry | null>(
-    null
-  )
+  const [contextMenuRow, setContextMenuRow] =
+    useState<FileExplorerEntry | null>(null)
   const [isRenaming, setIsRenaming] = useState<boolean>(false)
 
   const fileExplorerContainer = useRef<HTMLDivElement | null>(null)
@@ -454,48 +453,9 @@ export const ProjectExplorer = ({
   }, [])
 
   return (
-    <div className="w-full" ref={projectExplorerRef}>
-      <div className="flex flex-row justify-between">
-        <div>{project?.name || 'No Project Selected'}</div>
-        <div className="h-6 flex flex-row gap-1">
-          <FileExplorerHeaderActions
-            onCreateFile={() => {
-              const row =
-                rowsToRenderRef.current[activeIndexRef.current] || null
-              setFakeRow({ entry: row, isFile: true })
-              if (row?.key) {
-                // If the file tree had the folder opened make the new one open.
-                const newOpenedRows = { ...openedRowsRef.current }
-                newOpenedRows[row?.key] = true
-                setOpenedRows(newOpenedRows)
-              }
-            }}
-            onCreateFolder={() => {
-              const row =
-                rowsToRenderRef.current[activeIndexRef.current] || null
-              setFakeRow({ entry: row, isFile: false })
-              if (row?.key) {
-                // If the file tree had the folder opened make the new one open.
-                const newOpenedRows = { ...openedRowsRef.current }
-                newOpenedRows[row?.key] = true
-                setOpenedRows(newOpenedRows)
-              }
-            }}
-            onRefreshExplorer={() => {
-              // TODO: Refresh only this path from the Project. This will refresh your entire application project directory
-              // It is correct but can be slow if there are many projects
-              systemIOActor.send({
-                type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-              })
-            }}
-            onCollapseExplorer={() => {
-              setOpenedRows({})
-            }}
-          ></FileExplorerHeaderActions>
-        </div>
-      </div>
+    <div className="h-full relative overflow-y-auto overflow-x-hidden" ref={projectExplorerRef}>
       <div
-        className={`h-full w-full overflow-y-auto overflow-x-hidden ${activeIndex === -1 ? 'border-sky-500' : ''}`}
+        className={`absolute w-full ${activeIndex === -1 ? 'border-sky-500' : ''}`}
         tabIndex={0}
         role="tree"
         aria-label="Files Explorer"
