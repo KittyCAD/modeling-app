@@ -88,7 +88,6 @@ async fn inner_mirror_2d(
                                 )))
                             }
                         }
-                        sketch.mirror = info.edges.first().copied();
                         Ok(())
                     })
                     .for_each(drop);
@@ -134,7 +133,6 @@ async fn inner_mirror_2d(
                                 )))
                             }
                         }
-                        sketch.mirror = info.edges.first().copied();
                         Ok(())
                     })
                     .for_each(drop);
