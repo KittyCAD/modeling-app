@@ -13,11 +13,7 @@ import type { Models } from '@kittycad/lib/dist/types/src'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { fileSystemManager } from '@src/lang/std/fileSystemManager'
 import type { ExecState } from '@src/lang/wasm'
-import {
-  errFromErrWithOutputs,
-  execStateFromRust,
-  mockExecStateFromRust,
-} from '@src/lang/wasm'
+import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
@@ -120,7 +116,7 @@ export default class RustContext {
         JSON.stringify(settings),
         usePrevMemory
       )
-      return mockExecStateFromRust(result)
+      return execStateFromRust(result)
     } catch (e: any) {
       return Promise.reject(errFromErrWithOutputs(e))
     }

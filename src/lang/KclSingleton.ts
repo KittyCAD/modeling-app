@@ -572,6 +572,7 @@ export class KclManager extends EventTarget {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
     }
+    await this.updateArtifactGraph(execState.artifactGraph)
     return null
   }
   cancelAllExecutions() {

@@ -185,7 +185,9 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   110["SweepEdge Opposite"]
   111["SweepEdge Adjacent"]
-  112["StartSketchOnPlane<br>[1430, 1475, 0]"]
+  112["CompositeSolid Subtract<br>[1634, 1677, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  113["StartSketchOnPlane<br>[1430, 1475, 0]"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 --- 13
@@ -302,6 +304,7 @@ flowchart LR
   44 --- 50
   44 --- 51
   44 ---- 60
+  44 --- 112
   45 --- 61
   45 x--> 67
   45 --- 69
@@ -334,6 +337,7 @@ flowchart LR
   52 --- 58
   52 --- 59
   52 ---- 81
+  52 --- 112
   53 --- 87
   53 x--> 88
   53 --- 100
@@ -447,10 +451,11 @@ flowchart LR
   98 <--x 89
   100 <--x 89
   102 --- 103
-  102 <--x 112
+  102 <--x 113
   103 --- 104
   103 --- 105
   103 ---- 106
+  103 --- 112
   104 --- 107
   104 x--> 109
   104 --- 110

@@ -139,6 +139,8 @@ flowchart LR
   83["SweepEdge Adjacent"]
   84["EdgeCut Fillet<br>[1691, 1773, 0]"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
+  85["CompositeSolid Union<br>[1939, 1960, 0]"]
+    %% [ProgramBodyItem { index: 15 }, ExpressionStatementExpr]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -150,6 +152,7 @@ flowchart LR
   2 --- 10
   2 --- 11
   2 ---- 12
+  2 --- 85
   3 --- 13
   3 x--> 22
   3 --- 23
@@ -247,6 +250,7 @@ flowchart LR
   40 --- 44
   40 --- 45
   40 ---- 46
+  40 --- 85
   41 --- 47
   41 x--> 52
   41 --- 53

@@ -68,6 +68,8 @@ flowchart LR
   38["SweepEdge Adjacent"]
   39["SweepEdge Opposite"]
   40["SweepEdge Adjacent"]
+  41["CompositeSolid Union<br>[1346, 1377, 0]"]
+    %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -75,6 +77,7 @@ flowchart LR
   2 --- 6
   2 --- 7
   2 ---- 8
+  2 --- 41
   3 --- 9
   3 x--> 13
   3 --- 15
@@ -127,6 +130,7 @@ flowchart LR
   24 --- 27
   24 --- 28
   24 ---- 29
+  24 --- 41
   25 --- 30
   25 x--> 33
   25 --- 35
