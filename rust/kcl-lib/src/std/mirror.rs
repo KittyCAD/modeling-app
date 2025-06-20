@@ -46,8 +46,7 @@ async fn inner_mirror_2d(
         return Ok(starting_sketches);
     }
 
-    let mut mirrored_ids = Vec::new();
-    let mirrored_edge_ids = match axis {
+    match axis {
         Axis2dOrEdgeReference::Axis { direction, origin } => {
             let resp = exec_state
                 .send_modeling_cmd(
@@ -68,25 +67,36 @@ async fn inner_mirror_2d(
                 )
                 .await?;
 
-            let mut _edge_ids = Vec::new();
-            let entity_ids: &Vec<Uuid> = if let OkWebSocketResponseData::Modeling {
+            if let OkWebSocketResponseData::Modeling {
                 modeling_response: OkModelingCmdResponse::EntityMirror(mirror_info),
             } = &resp
             {
-                _edge_ids = mirror_info
-                    .entity_face_edge_ids
-                    .iter()
-                    .map(|x| x.edges.first().copied().unwrap_or_default())
-                    .collect();
-                &mirror_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
-            } else {
+                let face_edge_info = &mirror_info.entity_face_edge_ids;
+
+                #[cfg(target_arch = "wasm32")]
+                web_sys::console::log_1(&format!("faceedgeinfo {:?}", face_edge_info).into());
+
+                #[cfg(target_arch = "wasm32")]
+                web_sys::console::log_1(&format!("startig sketches before{:?}", starting_sketches).into());
+
+                starting_sketches
+                    .iter_mut()
+                    .zip(face_edge_info.iter())
+                    .map(|(sketch, info)| {
+                        sketch.id = info.object_id;
+                        sketch.mirror = info.edges.first().copied();
+                        #[cfg(target_arch = "wasm32")]
+                        web_sys::console::log_1(&format!("mirror sketch {:?}", sketch.mirror).into());
+                    }).for_each(drop);
+
+                #[cfg(target_arch = "wasm32")]
+                web_sys::console::log_1(&format!("startig sketches after{:?}", starting_sketches).into());
+                            } else {
                 return Err(KclError::new_engine(KclErrorDetails::new(
                     format!("EntityMirror response was not as expected: {:?}", resp),
                     vec![args.source_range],
                 )));
             };
-            mirrored_ids.extend(entity_ids.iter().cloned());
-            _edge_ids
         }
         Axis2dOrEdgeReference::Edge(edge) => {
             let edge_id = edge.get_engine_id(exec_state, &args)?;
@@ -101,40 +111,40 @@ async fn inner_mirror_2d(
                 )
                 .await?;
 
-            let mut _edge_ids = Vec::new();
-            let entity_ids: Vec<Uuid> = if let OkWebSocketResponseData::Modeling {
+            let mut _edge_ids: Result<Vec<Uuid>> = Ok(Vec::new());
+            if let OkWebSocketResponseData::Modeling {
                 modeling_response: OkModelingCmdResponse::EntityMirrorAcrossEdge(mirror_info),
             } = &resp
             {
-                _edge_ids = mirror_info
-                    .entity_face_edge_ids
-                    .iter()
-                    .map(|x| x.edges.first().copied().unwrap_or_default())
-                    .collect();
-                mirror_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
+                let face_edge_info = &mirror_info.entity_face_edge_ids;
+
+                #[cfg(target_arch = "wasm32")]
+                        web_sys::console::log_1(&format!("faceedgeinfo {:?}", face_edge_info).into());
+
+                #[cfg(target_arch = "wasm32")]
+                web_sys::console::log_1(&format!("startig sketches before{:?}", starting_sketches).into());
+
+                let _ = starting_sketches
+                    .iter_mut()
+                    .zip(face_edge_info.iter())
+                    .map(|(sketch, info)| {
+                        sketch.id = info.object_id;
+                        sketch.mirror = info.edges.first().copied();
+                        #[cfg(target_arch = "wasm32")]
+                        web_sys::console::log_1(&format!("mirror sketch {:?}", sketch.mirror).into());
+                    }).for_each(drop);
+
+                #[cfg(target_arch = "wasm32")]
+                web_sys::console::log_1(&format!("startig sketches after{:?}", starting_sketches).into());
+
             } else {
                 return Err(KclError::new_engine(KclErrorDetails::new(
-                    format!("EntityLinearPattern response was not as expected: {:?}", resp),
+                    format!("EntityMirrorAcrossEdge response was not as expected: {:?}", resp),
                     vec![args.source_range],
                 )));
             };
-            mirrored_ids.extend(entity_ids.iter().cloned());
-            _edge_ids
         }
     };
-
-    // After the mirror, get the first edge uuid for the path.
-    // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
-    // But if you mirror2d a sketch these IDs might change so we need to use
-    // one of the response ids from the mirror call
-    for i in 0..starting_sketches.len() {
-        if starting_sketches[i].id != mirrored_ids[i] {
-            // Mirroring created a new path. The mirrored Sketch is a clone of
-            // the original with a new ID.
-            starting_sketches[i].id = mirrored_ids[i];
-        }
-        starting_sketches[i].mirror = Some(mirrored_edge_ids[i]);
-    }
 
     Ok(starting_sketches)
 }
