@@ -294,7 +294,7 @@ export class KCLUndefinedValueError extends KCLError {
 Convert this UTF-16 source range offset to UTF-8 as SourceRange is always a UTF-8
 */
 export function toUtf8(
-  utf16SourceRange: [number, number, number],
+  utf16SourceRange: SourceRange,
   sourceCode: string
 ): SourceRange {
   const moduleId = utf16SourceRange[2]
@@ -318,8 +318,8 @@ as it relies on JS-style string encoding which is UTF-16.
 export function toUtf16(utf8Offset: number, sourceCode: string): number {
   const sourceUtf8 = new TextEncoder().encode(sourceCode)
   const prefix = sourceUtf8.slice(0, utf8Offset)
-  const backto16 = new TextDecoder().decode(prefix)
-  return backto16.length
+  const backTo16 = new TextDecoder().decode(prefix)
+  return backTo16.length
 }
 
 /**
