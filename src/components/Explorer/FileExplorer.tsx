@@ -6,6 +6,7 @@ import {
   type FileExplorerRender,
   type FileExplorerRowContextMenuProps,
   FILE_PLACEHOLDER_NAME,
+  FOLDER_PLACEHOLDER_NAME,
 } from '@src/components/Explorer/utils'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { useRef } from 'react'
@@ -158,6 +159,8 @@ function RenameForm({
     }
   }
 
+  const hidePlaceHolderIfFakeRow = row.name === FOLDER_PLACEHOLDER_NAME || row.name === FILE_PLACEHOLDER_NAME ? '' : row.name
+
   return (
     <form onKeyUp={handleRenameSubmit}>
       <label>
@@ -169,7 +172,7 @@ function RenameForm({
           autoFocus
           autoCapitalize="off"
           autoCorrect="off"
-          placeholder={''}
+          placeholder={hidePlaceHolderIfFakeRow}
           className="p-1 overflow-hidden whitespace-nowrap text-ellipsis py-1 bg-transparent outline outline-primary -outline-offset-4 text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:ring-0"
           onKeyDown={handleKeyDown}
           onBlur={onSubmit}
