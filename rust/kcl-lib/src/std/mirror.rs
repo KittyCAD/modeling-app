@@ -111,7 +111,6 @@ async fn inner_mirror_2d(
                 )
                 .await?;
 
-            let mut _edge_ids: Result<Vec<Uuid>> = Ok(Vec::new());
             if let OkWebSocketResponseData::Modeling {
                 modeling_response: OkModelingCmdResponse::EntityMirrorAcrossEdge(mirror_info),
             } = &resp
