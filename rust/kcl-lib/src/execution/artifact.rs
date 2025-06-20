@@ -85,10 +85,8 @@ pub struct CompositeSolid {
     pub id: ArtifactId,
     pub sub_type: CompositeSolidSubType,
     /// Constituent solids of the composite solid.
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub solid_ids: Vec<ArtifactId>,
     /// Tool solids used for asymmetric operations like subtract.
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tool_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
     /// This is the ID of the composite solid that this is part of, if any, as a
@@ -141,12 +139,10 @@ pub struct Segment {
     pub path_id: ArtifactId,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edge_cut_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub common_surface_ids: Vec<ArtifactId>,
 }
 
@@ -158,9 +154,7 @@ pub struct Sweep {
     pub id: ArtifactId,
     pub sub_type: SweepSubType,
     pub path_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub surface_ids: Vec<ArtifactId>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
 }
@@ -209,10 +203,8 @@ pub struct StartSketchOnPlane {
 pub struct Wall {
     pub id: ArtifactId,
     pub seg_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cut_edge_ids: Vec<ArtifactId>,
     pub sweep_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub path_ids: Vec<ArtifactId>,
     /// This is for the sketch-on-face plane, not for the wall itself.  Traverse
     /// to the extrude and/or segment to get the wall's code_ref.
@@ -227,10 +219,8 @@ pub struct Wall {
 pub struct Cap {
     pub id: ArtifactId,
     pub sub_type: CapSubType,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cut_edge_ids: Vec<ArtifactId>,
     pub sweep_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub path_ids: Vec<ArtifactId>,
     /// This is for the sketch-on-face plane, not for the cap itself.  Traverse
     /// to the extrude and/or segment to get the cap's code_ref.
@@ -259,7 +249,6 @@ pub struct SweepEdge {
     #[serde(skip)]
     pub index: usize,
     pub sweep_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub common_surface_ids: Vec<ArtifactId>,
 }
 
@@ -278,7 +267,6 @@ pub struct EdgeCut {
     pub id: ArtifactId,
     pub sub_type: EdgeCutSubType,
     pub consumed_edge_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
