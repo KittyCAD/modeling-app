@@ -81,7 +81,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
       }
     }
     return s
-  }, [selectedCommand])
+  }, [selectedCommand, argumentsToSubmit, commandBarState.context])
   return (
     <CommandBarHeaderFooter stepBack={stepBack}>
       {selectedCommand?.reviewMessage && (
