@@ -1,4 +1,5 @@
 import type { FormEvent, HTMLProps } from 'react'
+import { useSelector } from '@xstate/react'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -29,7 +30,6 @@ import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
 import type { Prompt } from '@src/lib/prompt'
-import { generateFakeSubmittedPrompt } from '@src/lib/prompt'
 import {
   getNextSearchParams,
   getProjectSortFunction,
@@ -44,6 +44,7 @@ import {
   kclManager,
   authActor,
   billingActor,
+  mlEphantManagerActor,
   systemIOActor,
   useSettings,
 } from '@src/lib/singletons'
@@ -75,6 +76,7 @@ import {
 } from '@src/components/StatusBar/defaultStatusBarItems'
 import { useSelector } from '@xstate/react'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { MlEphantManagerStates } from '@src/machines/mlEphantManagerMachine'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -222,15 +224,10 @@ const Home = () => {
     }
   )
   const projects = useFolders()
-  const prompts: Prompt[] = [
-    generateFakeSubmittedPrompt(),
-    generateFakeSubmittedPrompt(),
-    generateFakeSubmittedPrompt(),
-    generateFakeSubmittedPrompt(),
-    generateFakeSubmittedPrompt(),
-    generateFakeSubmittedPrompt(),
-    generateFakeSubmittedPrompt(),
-  ]
+  const prompts = useSelector(mlEphantManagerActor, (actor) => {
+    return actor.context.promptsThatCreatedProjects
+  })
+
   const [tabSelected, setTabSelected] = useState<HomeTabKeys>(
     HomeTabKeys.Projects
   )
@@ -241,17 +238,23 @@ const Home = () => {
 
   const onChangeTab = (key: HomeTabKeys) => {
     setTabSelected(key)
-    switch (key) {
+  }
+
+  useEffect(() => {
+    switch (tabSelected) {
       case HomeTabKeys.Projects:
         setItems(projects)
         break
       case HomeTabKeys.Prompts:
-        setItems(prompts)
+        // Lessons hard learned: VERY important to do this here, and not within
+        // the useSelector. React will think it's a new value every time, and
+        // cause this useEffect to fire indefinitely.
+        setItems(Array.from(prompts.values()))
         break
       default:
-        const _ex: never = key
+        const _ex: never = tabSelected
     }
-  }
+  }, [tabSelected, prompts, projects])
 
   useEffect(() => {
     searchAgainst(items)('')
@@ -443,6 +446,7 @@ const Home = () => {
           searchResults={searchResults}
           sortBy={sortBy}
           query={query}
+          settings={settings}
         />
       </div>
       <StatusBar
@@ -487,6 +491,7 @@ function HomeTab(props: HomeTabProps) {
     <div className="flex flex-row">
       {tabs.map((el) => (
         <div
+          key={el.key}
           className={el.key === selected ? cssActive : cssInactive}
           onClick={onClickTab(el.key)}
           role="tab"
@@ -621,10 +626,13 @@ interface HomeItemsAreaProps {
   searchResults: HomeItems
   sortBy: string
   query: string
+  settings: ReturnType<typeof useSettings>
 }
 
 function HomeItemsArea(props: HomeItemsAreaProps) {
   let grid = null
+
+  console.log('home items area', props.tabSelected, props.searchResults)
 
   switch (props.tabSelected) {
     case HomeTabKeys.Projects:
@@ -644,6 +652,7 @@ function HomeItemsArea(props: HomeItemsAreaProps) {
           searchResults={props.searchResults}
           query={props.query}
           sortBy={props.sortBy}
+          settings={props.settings}
         />
       ) : (
         <NoResults />
@@ -664,18 +673,41 @@ interface ResultGridPromptsProps {
   searchResults: Prompt[]
   query: string
   sortBy: string
+  settings: ReturnType<typeof useSettings>
 }
 
 function ResultGridPrompts(props: ResultGridPromptsProps) {
   // Maybe consider lifting this higher but I see no reason at the moment
-  const onAction = (...args: any) => {
-    console.log(args)
+  const onAction = (_id: Prompt['id'], prompt: Prompt['prompt']) => {
+    commandBarActor.send({
+      type: 'Find and select command',
+      data: {
+        groupId: 'application',
+        name: 'Text-to-CAD',
+        argDefaultValues: {
+          method: 'newProject',
+          prompt,
+          newProjectName: props.settings.projects.defaultProjectName.current,
+        },
+      },
+    })
   }
+  // no-op for now
   const onDelete = (...args: any) => {
     console.log(args)
   }
   const onFeedback = (...args: any) => {
     console.log(args)
+  }
+
+  const mlEphantManagerSnapshot = mlEphantManagerActor.getSnapshot()
+
+  if (mlEphantManagerSnapshot.matches(MlEphantManagerStates.Setup)) {
+    return (
+      <div className="col-start-2 -col-end-1 w-full flex flex-col justify-center items-center">
+        <Loading isDummy={true}>Loading your prompts...</Loading>
+      </div>
+    )
   }
 
   return (
@@ -686,6 +718,10 @@ function ResultGridPrompts(props: ResultGridPromptsProps) {
           <PromptCard
             key={prompt.id}
             {...prompt}
+            disabled={
+              mlEphantManagerSnapshot.matches(MlEphantManagerStates.Pending) ||
+              prompt.status !== 'completed'
+            }
             onAction={onAction}
             onDelete={onDelete}
             onFeedback={onFeedback}
