@@ -59,7 +59,7 @@ export const ProjectExplorer = ({
   onRowClicked,
 }: {
   project: Project
-  file: FileEntry,
+  file: FileEntry | undefined
   createFilePressed: number
   createFolderPressed: number
   refreshExplorerPressed: number
@@ -68,14 +68,17 @@ export const ProjectExplorer = ({
 }) => {
   const { errors } = useKclContext()
   const settings = useSettings()
-  const applicationProjectDirectory =
-          settings.app.projectDirectory.current
+  const applicationProjectDirectory = settings.app.projectDirectory.current
 
   /**
    * Read the file you are loading into and open all of the parent paths to that file
+   * If there is no file passed in take the default_file from the project type
    */
-  const defaultFileKey = parentPathRelativeToApplicationDirectory(file.path, applicationProjectDirectory)
-  const defaultOpenedRows : { [key: string]: boolean } = {}
+  const defaultFileKey = parentPathRelativeToApplicationDirectory(
+    file?.path || project.default_file,
+    applicationProjectDirectory
+  )
+  const defaultOpenedRows: { [key: string]: boolean } = {}
   const pathIterator = desktopSafePathSplit(defaultFileKey)
   while (pathIterator.length > 0) {
     const key = desktopSafePathJoin(pathIterator)
@@ -85,7 +88,9 @@ export const ProjectExplorer = ({
 
   // cache the state of opened rows to allow nested rows to be opened if a parent one is closed
   // when the parent opens the children will already be opened
-  const [openedRows, setOpenedRows] = useState<{ [key: string]: boolean }>(defaultOpenedRows)
+  const [openedRows, setOpenedRows] = useState<{ [key: string]: boolean }>(
+    defaultOpenedRows
+  )
   const [selectedRow, setSelectedRow] = useState<FileExplorerEntry | null>(null)
   // -1 is the parent container, -2 is nothing is selected
   const [activeIndex, setActiveIndex] = useState<number>(NOTHING_IS_SELECTED)
@@ -102,7 +107,6 @@ export const ProjectExplorer = ({
   const selectedRowRef = useRef(selectedRow)
   const isRenamingRef = useRef(isRenaming)
   const previousProject = useRef(project)
-
 
   // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
   const [fakeRow, setFakeRow] = useState<{

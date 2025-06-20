@@ -146,7 +146,7 @@ export const sidebarPanes: SidebarPane[] = [
       const projects = useFolders()
       const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
       const [theProject, setTheProject] = useState<Project | null>(null)
-      const { project, file} = loaderData
+      const { project, file } = loaderData
       const settings = useSettings()
       useEffect(() => {
         // Have no idea why the project loader data doesn't have the children from the ls on disk
