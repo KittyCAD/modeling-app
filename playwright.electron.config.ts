@@ -43,19 +43,20 @@ export default defineConfig({
   /* Use all available CPU cores */
   workers: workers,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [
-    ['dot'],
-    ['json', { outputFile: './test-results/report.json' }],
-    ['html'],
-    ['./e2e/playwright/lib/api-reporter.ts'],
-  ],
+  reporter: process.env.CI
+    ? [
+        ['dot'],
+        ['json', { outputFile: './test-results/report.json' }],
+        ['./e2e/playwright/lib/api-reporter.ts'],
+      ]
+    : [['list'], ['html'], ['./e2e/playwright/lib/api-reporter.ts']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://localhost:3000',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'retain-on-failure',
+    trace: 'off',
     actionTimeout: 15_000,
     screenshot: 'only-on-failure',
   },
