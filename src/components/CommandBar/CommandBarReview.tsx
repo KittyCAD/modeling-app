@@ -1,6 +1,6 @@
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import CommandBarHeader from '@src/components/CommandBar/CommandBarHeader'
+import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { useMemo } from 'react'
@@ -83,7 +83,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     return s
   }, [selectedCommand, argumentsToSubmit, commandBarState.context])
   return (
-    <CommandBarHeader stepBack={stepBack}>
+    <CommandBarHeaderFooter stepBack={stepBack}>
       {selectedCommand?.reviewMessage && (
         <>
           <p className="px-4 py-2">
@@ -152,7 +152,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
           )
         })}
       </form>
-    </CommandBarHeader>
+    </CommandBarHeaderFooter>
   )
 }
 
