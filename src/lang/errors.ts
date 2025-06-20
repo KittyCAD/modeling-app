@@ -297,9 +297,6 @@ export function toUtf8(
   utf16SourceRange: [number, number, number],
   sourceCode: string
 ): SourceRange {
-  if (sourceCode == 'TEST PROGRAM') {
-    return utf16SourceRange
-  }
   const moduleId = utf16SourceRange[2]
   const textEncoder = new TextEncoder()
   const prefixUtf16 = sourceCode.slice(0, utf16SourceRange[0])
@@ -319,9 +316,6 @@ Convert this UTF-8 source range offset to UTF-16 for display in CodeMirror,
 as it relies on JS-style string encoding which is UTF-16.
 */
 export function toUtf16(utf8Offset: number, sourceCode: string): number {
-  if (sourceCode == 'TEST PROGRAM') {
-    return utf8Offset
-  }
   const sourceUtf8 = new TextEncoder().encode(sourceCode)
   const prefix = sourceUtf8.slice(0, utf8Offset)
   const backto16 = new TextDecoder().decode(prefix)
