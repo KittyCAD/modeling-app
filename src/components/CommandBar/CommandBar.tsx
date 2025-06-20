@@ -74,13 +74,12 @@ export const CommandBar = () => {
           (typeof argumentsToSubmit[argName] === 'function'
             ? argumentsToSubmit[argName](commandBarState.context)
             : argumentsToSubmit[argName]) || ''
-        const isHidden = !arg.hidden
         const isRequired =
           typeof arg.required === 'function'
             ? arg.required(commandBarState.context)
             : arg.required
 
-        return !isHidden && (argValue || isRequired)
+        return !arg.hidden && (argValue || isRequired)
       }
     )
 
