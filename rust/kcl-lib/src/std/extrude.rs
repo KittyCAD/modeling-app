@@ -18,7 +18,7 @@ use kittycad_modeling_cmds::{
 };
 use uuid::Uuid;
 
-use super::{args::TyF64, utils::point_to_mm, DEFAULT_TOLERANCE};
+use super::{args::TyF64, utils::point_to_mm, DEFAULT_TOLERANCE_MM};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -79,7 +79,7 @@ async fn inner_extrude(
 ) -> Result<Vec<Solid>, KclError> {
     // Extrude the element(s).
     let mut solids = Vec::new();
-    let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE));
+    let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
 
     if symmetric.unwrap_or(false) && bidirectional_length.is_some() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
