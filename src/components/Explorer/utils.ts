@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import type { FileEntry } from '@src/lib/project'
-import { joinOSPaths } from '@src/lib/paths'
+import { desktopSafePathJoin, joinOSPaths } from '@src/lib/paths'
 
 export interface FileExplorerEntry extends FileEntry {
   parentPath: string
@@ -57,10 +57,7 @@ export const constructPath = ({
   parentPath: string
   name: string
 }) => {
-  // do not worry about the forward slash, this is not a real disk path
-  // the slash could be any delimiter this will be used as a key to parse
-  // and use in a hash table
-  return parentPath + '/' + name
+  return desktopSafePathJoin([parentPath, name])
 }
 
 /**

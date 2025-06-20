@@ -146,12 +146,12 @@ export const sidebarPanes: SidebarPane[] = [
       const projects = useFolders()
       const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
       const [theProject, setTheProject] = useState<Project | null>(null)
-      const { project } = loaderData
+      const { project, file} = loaderData
       const settings = useSettings()
       useEffect(() => {
         // Have no idea why the project loader data doesn't have the children from the ls on disk
         // That means it is a different object or cached incorrectly?
-        if (!project) {
+        if (!project || !file) {
           return
         }
 
@@ -223,9 +223,10 @@ export const sidebarPanes: SidebarPane[] = [
             }
             onClose={props.onClose}
           />
-          {theProject ? (
+          {theProject && file ? (
             <ProjectExplorer
               project={theProject}
+              file={file}
               createFilePressed={createFilePressed}
               createFolderPressed={createFolderPressed}
               refreshExplorerPressed={refreshExplorerPressed}

@@ -206,6 +206,19 @@ export function parentPathRelativeToProject(
   return ''
 }
 
+export function parentPathRelativeToApplicationDirectory(
+  absoluteFilePath: string,
+  applicationProjectDirectory: string
+): string {
+  const replacedPath = absoluteFilePath.replace(applicationProjectDirectory, '')
+  const [iAmABlankString, ...rest] =
+    desktopSafePathSplit(replacedPath)
+  if (iAmABlankString === '') {
+    return desktopSafePathJoin(rest)
+  }
+  return ''
+}
+
 /**
  * Use this for only web related paths not paths in OS or on disk
  * e.g. document.location.pathname

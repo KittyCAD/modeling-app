@@ -1,4 +1,4 @@
-import type { Project } from '@src/lib/project'
+import type { FileEntry, Project } from '@src/lib/project'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { FILE_EXT } from '@src/lib/constants'
 import { FileExplorer, StatusDot } from '@src/components/Explorer/FileExplorer'
@@ -17,14 +17,17 @@ import type {
 } from '@src/components/Explorer/utils'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { useState, useRef, useEffect } from 'react'
-import { systemIOActor } from '@src/lib/singletons'
+import { systemIOActor, useSettings } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import {
   alwaysEndFileWithEXT,
+  desktopSafePathJoin,
+  desktopSafePathSplit,
   getEXTWithPeriod,
   getParentAbsolutePath,
   joinOSPaths,
+  parentPathRelativeToApplicationDirectory,
 } from '@src/lib/paths'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { useKclContext } from '@src/lang/KclProvider'
@@ -48,6 +51,7 @@ const isFileExplorerEntryOpened = (
  */
 export const ProjectExplorer = ({
   project,
+  file,
   createFilePressed,
   createFolderPressed,
   refreshExplorerPressed,
@@ -55,6 +59,7 @@ export const ProjectExplorer = ({
   onRowClicked,
 }: {
   project: Project
+  file: FileEntry,
   createFilePressed: number
   createFolderPressed: number
   refreshExplorerPressed: number
@@ -62,10 +67,25 @@ export const ProjectExplorer = ({
   onRowClicked: (row: FileExplorerEntry, domIndex: number) => void
 }) => {
   const { errors } = useKclContext()
+  const settings = useSettings()
+  const applicationProjectDirectory =
+          settings.app.projectDirectory.current
+
+  /**
+   * Read the file you are loading into and open all of the parent paths to that file
+   */
+  const defaultFileKey = parentPathRelativeToApplicationDirectory(file.path, applicationProjectDirectory)
+  const defaultOpenedRows : { [key: string]: boolean } = {}
+  const pathIterator = desktopSafePathSplit(defaultFileKey)
+  while (pathIterator.length > 0) {
+    const key = desktopSafePathJoin(pathIterator)
+    defaultOpenedRows[key] = true
+    pathIterator.pop()
+  }
 
   // cache the state of opened rows to allow nested rows to be opened if a parent one is closed
   // when the parent opens the children will already be opened
-  const [openedRows, setOpenedRows] = useState<{ [key: string]: boolean }>({})
+  const [openedRows, setOpenedRows] = useState<{ [key: string]: boolean }>(defaultOpenedRows)
   const [selectedRow, setSelectedRow] = useState<FileExplorerEntry | null>(null)
   // -1 is the parent container, -2 is nothing is selected
   const [activeIndex, setActiveIndex] = useState<number>(NOTHING_IS_SELECTED)
@@ -82,6 +102,7 @@ export const ProjectExplorer = ({
   const selectedRowRef = useRef(selectedRow)
   const isRenamingRef = useRef(isRenaming)
   const previousProject = useRef(project)
+
 
   // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
   const [fakeRow, setFakeRow] = useState<{
@@ -199,13 +220,9 @@ export const ProjectExplorer = ({
          * If any parent is closed, keep the history of open children
          */
         let isAnyParentClosed = false
-        // Not a real path
-        /* eslint-disable */
-        const pathIterator = child.parentPath.split('/')
+        const pathIterator = desktopSafePathSplit(child.parentPath)
         while (pathIterator.length > 0) {
-          // Not a real path
-          /* eslint-disable */
-          const key = pathIterator.join('/')
+          const key = desktopSafePathJoin(pathIterator)
           const isOpened = openedRows[key] || project.name === key
           isAnyParentClosed = isAnyParentClosed || !isOpened
           pathIterator.pop()
