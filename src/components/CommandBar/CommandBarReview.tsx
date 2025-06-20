@@ -96,35 +96,31 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
       )}
       {Object.entries(availableOptionalArgs || {}).length > 0 && (
         <>
-          <div className="px-4">
-            <p className="mb-2">Optional arguments</p>
-            <div className="text-sm flex gap-4 items-start">
-              <div className="flex flex-1 flex-wrap gap-2">
-                {Object.entries(availableOptionalArgs || {}).map(
-                  ([argName, arg]) => {
-                    return (
-                      <button
-                        data-testid="cmd-bar-add-optional-arg"
-                        type="button"
-                        onClick={() => {
-                          commandBarActor.send({
-                            type: 'Edit argument',
-                            data: { arg: { ...arg, name: argName } },
-                          })
-                        }}
-                        key={argName}
-                        className="w-fit px-2 py-1 m-0 rounded-sm flex gap-2 items-center border"
-                      >
-                        <span className="capitalize">
-                          {arg.displayName || argName}
-                        </span>
-                        <CustomIcon name="plus" className="w-4 h-4" />
-                      </button>
-                    )
-                  }
-                )}
-              </div>
-            </div>
+          <div className="px-4 flex flex-wrap gap-2 items-baseline">
+            <span className="text-sm mr-4">Optional</span>
+            {Object.entries(availableOptionalArgs || {}).map(
+              ([argName, arg]) => {
+                return (
+                  <button
+                    data-testid="cmd-bar-add-optional-arg"
+                    type="button"
+                    onClick={() => {
+                      commandBarActor.send({
+                        type: 'Edit argument',
+                        data: { arg: { ...arg, name: argName } },
+                      })
+                    }}
+                    key={argName}
+                    className="w-fit px-2 py-1 m-0 rounded-sm flex gap-2 items-center border"
+                  >
+                    <span className="capitalize">
+                      {arg.displayName || argName}
+                    </span>
+                    <CustomIcon name="plus" className="w-4 h-4" />
+                  </button>
+                )
+              }
+            )}
           </div>
           <CommandBarDivider />
         </>
