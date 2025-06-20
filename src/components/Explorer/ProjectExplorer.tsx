@@ -50,12 +50,14 @@ export const ProjectExplorer = ({
   createFolderPressed,
   refreshExplorerPressed,
   collapsePressed,
+  onRowClicked
 }: {
   project: Project
   createFilePressed: number
   createFolderPressed: number
   refreshExplorerPressed: number
-  collapsePressed: number
+  collapsePressed: number,
+  onRowClicked: (row: FileExplorerEntry, domIndex: number) => void
 }) => {
   // cache the state of opened rows to allow nested rows to be opened if a parent one is closed
   // when the parent opens the children will already be opened
@@ -153,7 +155,7 @@ export const ProjectExplorer = ({
     setActiveIndex(domIndex)
   }
 
-  useEffect(() => {    
+  useEffect(() => {
     /**
      * You are loading a new project, clear the internal state!
      */
@@ -227,6 +229,7 @@ export const ProjectExplorer = ({
           render: render,
           onClick: (domIndex: number) => {
             onRowClickCallback(child, domIndex)
+            onRowClicked(child, domIndex)
           },
           onOpen: () => {
             const newOpenedRows = { ...openedRowsRef.current }

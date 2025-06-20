@@ -16,19 +16,21 @@ import {
 } from '@src/components/ModelingSidebar/ModelingPanes/MemoryPane'
 import type { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
-import { editorManager } from '@src/lib/singletons'
+import { editorManager, systemIOActor, useSettings } from '@src/lib/singletons'
 import type { settingsMachine } from '@src/machines/settingsMachine'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 
-import { PATHS } from '@src/lib/paths'
+import { parentPathRelativeToProject, PATHS } from '@src/lib/paths'
 import type { IndexLoaderData } from '@src/lib/types'
 import { useRouteLoaderData } from 'react-router-dom'
-import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
+import { addPlaceHoldersForNewFileAndFolder, FileExplorerEntry } from '@src/components/Explorer/utils'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import { useFolders } from '@src/machines/systemIO/hooks'
 import { useState, useEffect } from 'react'
 import type { Project } from '@src/lib/project'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { ONBOARDING_PROJECT_NAME } from '@src/lib/constants'
 
 export type SidebarType =
   | 'code'
@@ -138,11 +140,11 @@ export const sidebarPanes: SidebarPane[] = [
     icon: 'folder',
     sidebarName: 'Project Files',
     Content: (props: { id: SidebarType; onClose: () => void }) => {
-
       const projects = useFolders()
       const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
       const [theProject, setTheProject] = useState<Project | null>(null)
       const { project } = loaderData
+      const settings = useSettings()
       useEffect(() => {
         // Have no idea why the project loader data doesn't have the children from the ls on disk
         // That means it is a different object or cached incorrectly?
@@ -167,8 +169,24 @@ export const sidebarPanes: SidebarPane[] = [
 
       const [createFilePressed, setCreateFilePressed] = useState<number>(0)
       const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
-      const [refreshExplorerPressed, setRefresFolderPressed] = useState<number>(0)
+      const [refreshExplorerPressed, setRefresFolderPressed] =
+        useState<number>(0)
       const [collapsePressed, setCollapsedPressed] = useState<number>(0)
+      const onRowClicked = (entry: FileExplorerEntry, domIndex: number) => {
+        const applicationProjectDirectory = settings.app.projectDirectory.current
+        const requestedFileName = parentPathRelativeToProject(entry.path, applicationProjectDirectory)
+        if (loaderData?.project?.name && entry.children == null) {
+        systemIOActor.send({
+            type: SystemIOMachineEvents.navigateToFile,
+            data: {
+              requestedProjectName:
+                loaderData?.project?.name,
+              requestedFileName:  requestedFileName,
+            },
+          })
+        }
+
+      }
 
       return (
         <>
@@ -201,6 +219,7 @@ export const sidebarPanes: SidebarPane[] = [
               createFolderPressed={createFolderPressed}
               refreshExplorerPressed={refreshExplorerPressed}
               collapsePressed={collapsePressed}
+              onRowClicked={onRowClicked}
             ></ProjectExplorer>
           ) : (
             <div></div>

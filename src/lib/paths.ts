@@ -193,6 +193,15 @@ export function getProjectDirectoryFromKCLFilePath(
   return ''
 }
 
+export function parentPathRelativeToProject (absoluteFilePath: string,   applicationProjectDirectory: string) : string {
+  const replacedPath = absoluteFilePath.replace(applicationProjectDirectory, '')
+  const [iAmABlankString, projectDirectory, ...rest] = desktopSafePathSplit(replacedPath)
+  if (iAmABlankString === '') {
+    return desktopSafePathJoin(rest)
+  }
+  return ''
+}
+
 /**
  * Use this for only web related paths not paths in OS or on disk
  * e.g. document.location.pathname
