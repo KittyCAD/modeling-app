@@ -622,7 +622,7 @@ export fn revolve(
   axis: Axis2d | Edge,
   /// Angle to revolve (in degrees). Default is 360.
   angle?: number(Angle),
-  /// Tolerance for the revolve operation.
+  /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
   symmetric?: bool,
@@ -961,7 +961,7 @@ export fn sweep(
   path: Sketch | Helix,
   /// If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components.
   sectional?: bool,
-  /// Tolerance for this operation.
+  /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'.
   relativeTo?: string = 'trajectoryCurve',
@@ -1047,7 +1047,7 @@ export fn loft(
   bezApproximateRational?: bool = false,
   /// This can be set to override the automatically determined topological base curve, which is usually the first section encountered.
   baseCurveIndex?: number(Count),
-  /// Tolerance for the loft operation.
+  /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// A named tag for the face at the start of the loft, i.e. the original sketch.
   tagStart?: TagDecl,
