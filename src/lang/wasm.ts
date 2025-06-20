@@ -314,14 +314,7 @@ export function emptyExecState(): ExecState {
 }
 
 export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
-  const artifactGraph = rustArtifactGraphToMap(execOutcome.artifactGraph)
-  // Translate NodePath to PathToNode.
-  for (const [_id, artifact] of artifactGraph) {
-    if (!artifact) continue
-    if (!('codeRef' in artifact)) continue
-    const pathToNode = pathToNodeFromRustNodePath(artifact.codeRef.nodePath)
-    artifact.codeRef.pathToNode = pathToNode
-  }
+  const artifactGraph = artifactGraphFromRust(execOutcome.artifactGraph)
 
   return {
     variables: execOutcome.variables,
@@ -333,29 +326,26 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   }
 }
 
-export function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
-  return {
-    variables: execOutcome.variables,
-    operations: execOutcome.operations,
-    artifactGraph: new Map<ArtifactId, Artifact>(),
-    errors: execOutcome.errors,
-    filenames: execOutcome.filenames,
-    defaultPlanes: execOutcome.defaultPlanes,
-  }
-}
-
 export type ArtifactGraph = Map<ArtifactId, Artifact>
 
-function rustArtifactGraphToMap(
+function artifactGraphFromRust(
   rustArtifactGraph: RustArtifactGraph
 ): ArtifactGraph {
-  const map = new Map<ArtifactId, Artifact>()
+  const artifactGraph = new Map<ArtifactId, Artifact>()
+  // Convert to a Map.
   for (const [id, artifact] of Object.entries(rustArtifactGraph.map)) {
     if (!artifact) continue
-    map.set(id, artifact)
+    artifactGraph.set(id, artifact)
   }
 
-  return map
+  // Translate NodePath to PathToNode.
+  for (const [_id, artifact] of artifactGraph) {
+    if (!artifact) continue
+    if (!('codeRef' in artifact)) continue
+    const pathToNode = pathToNodeFromRustNodePath(artifact.codeRef.nodePath)
+    artifact.codeRef.pathToNode = pathToNode
+  }
+  return artifactGraph
 }
 
 export function sketchFromKclValueOptional(
@@ -407,7 +397,7 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
     parsed.error.details.backtrace,
     parsed.nonFatal,
     parsed.operations,
-    rustArtifactGraphToMap(parsed.artifactGraph),
+    artifactGraphFromRust(parsed.artifactGraph),
     parsed.filenames,
     parsed.defaultPlanes
   )
