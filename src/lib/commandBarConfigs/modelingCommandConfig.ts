@@ -403,7 +403,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       symmetric: {
         inputType: 'options',
-        skip: true,
         required: false,
         options: [
           { name: 'False', value: false },
@@ -412,12 +411,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       bidirectionalLength: {
         inputType: 'kcl',
-        skip: true,
         required: false,
       },
       twistAngle: {
         inputType: 'kcl',
-        skip: true,
         required: false,
       },
     },
