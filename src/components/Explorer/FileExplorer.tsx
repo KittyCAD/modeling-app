@@ -159,7 +159,10 @@ function RenameForm({
     }
   }
 
-  const hidePlaceHolderIfFakeRow = row.name === FOLDER_PLACEHOLDER_NAME || row.name === FILE_PLACEHOLDER_NAME ? '' : row.name
+  const hidePlaceHolderIfFakeRow =
+    row.name === FOLDER_PLACEHOLDER_NAME || row.name === FILE_PLACEHOLDER_NAME
+      ? ''
+      : row.name
 
   return (
     <form onKeyUp={handleRenameSubmit}>
