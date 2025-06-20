@@ -1,6 +1,6 @@
 import CommandArgOptionInput from '@src/components/CommandBar/CommandArgOptionInput'
 import CommandBarBasicInput from '@src/components/CommandBar/CommandBarBasicInput'
-import CommandBarHeader from '@src/components/CommandBar/CommandBarHeader'
+import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import CommandBarKclInput from '@src/components/CommandBar/CommandBarKclInput'
 import CommandBarPathInput from '@src/components/CommandBar/CommandBarPathInput'
 import CommandBarSelectionInput from '@src/components/CommandBar/CommandBarSelectionInput'
@@ -29,14 +29,14 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
 
   return (
     currentArgument && (
-      <CommandBarHeader stepBack={stepBack}>
+      <CommandBarHeaderFooter stepBack={stepBack}>
         <ArgumentInput
           arg={currentArgument}
           stepBack={stepBack}
           onSubmit={onSubmit}
         />
         <CommandBarDivider />
-      </CommandBarHeader>
+      </CommandBarHeaderFooter>
     )
   )
 }
