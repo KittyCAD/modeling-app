@@ -1044,4 +1044,97 @@ profile004 = circleThreePoint(
 profile005 = circle(sketch001, center = [-67, -67.5], diameter = 68)
 `)
   })
+  it("make sure it doesn't stomp constraints", async () => {
+    let code = `sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [100 + 0, 101])
+  |> line(end = [102, 103 + 0])
+  |> line(endAbsolute = [104 + 0, 105])
+  |> angledLine(angle = 206, length = 106 + 0)
+  |> angledLine(angle = -208 + 0, lengthX = 107)
+  |> angledLine(angle = 210, lengthY = 108 + 0)
+  |> angledLine(angle = 212 + 0, endAbsoluteX = 109)
+  |> angledLine(angle = 214, endAbsoluteY = 110 + 0)
+  |> arc(interiorAbsolute = [111 + 0, 112], endAbsolute = [113, 114 + 0])
+  |> tangentialArc(end = [115, -116 + 0])
+  |> tangentialArc(endAbsolute = [117 + 0, 118])
+  |> tangentialArc(angle = 224, radius = 119 + 0)
+  |> tangentialArc(angle = 226 + 0, diameter = 120)
+
+profile002 = startProfile(sketch001, at = [-121 + 0, 122])
+  |> angledLine(angle = 130, length = 123 + 0, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 232, length = 124)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+profile003 = circle(sketch001, center = [-125 + 0, -126], radius = 127 + 0)
+profile004 = circleThreePoint(
+  sketch001,
+  p1 = [128, 129 + 0],
+  p2 = [130 + 0, 131],
+  p3 = [133, 132],
+)
+profile005 = circle(sketch001, center = [-134, -135 + 0], diameter = 136)
+`
+    let ast = assertParse(code)
+    const result = await enginelessExecutor(ast)
+    const searchSnippets = [
+      'startProfile(sketch001, at = [100 + 0, 101])',
+      'startProfile(sketch001, at = [-121 + 0, 122])',
+      'circle(sketch001, center = [-125 + 0, -126], radius = 127 + 0)',
+      'circleThreePoint(',
+      'circle(sketch001, center = [-134, -135 + 0], diameter = 136)',
+    ]
+    const ranges = searchSnippets.map((searchSnippet) => {
+      const startIndex = code.indexOf(searchSnippet)
+      return topLevelRange(startIndex, startIndex + searchSnippet.length)
+    })
+    const pathsToProfiles = ranges.map((range) =>
+      getNodePathFromSourceRange(ast, range)
+    )
+
+    if (err(result)) throw result
+    const scaledProfile = scaleProfiles({
+      ast,
+      factor: 0.5,
+      variables: result.variables,
+      pathsToProfile: pathsToProfiles,
+    })
+    if (err(scaledProfile)) throw scaledProfile
+    const pResult = parse(recast(scaledProfile.modifiedAst))
+    if (err(pResult) || !resultIsOk(pResult)) return
+    ast = pResult.program
+    const newCode = recast(ast)
+    if (err(newCode)) throw newCode
+
+    expect(newCode).toBe(`sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [100 + 0, 50.5])
+  |> line(end = [51, 103 + 0])
+  |> line(endAbsolute = [104 + 0, 52.5])
+  |> angledLine(angle = -154, length = 106 + 0)
+  |> angledLine(angle = -208 + 0, lengthX = 53.5)
+  |> angledLine(angle = -150, lengthY = 108 + 0)
+  |> angledLine(angle = 212 + 0, endAbsoluteX = 54.5)
+  |> angledLine(angle = -146, endAbsoluteY = 110 + 0)
+  |> arc(interiorAbsolute = [111 + 0, 56], endAbsolute = [56.5, 114 + 0])
+  |> tangentialArc(end = [57.5, -116 + 0])
+  |> tangentialArc(endAbsolute = [117 + 0, 59])
+  |> tangentialArc(angle = 224deg, radius = 119 + 0)
+  |> tangentialArc(angle = 226 + 0, diameter = 60)
+
+profile002 = startProfile(sketch001, at = [-121 + 0, 61])
+  |> angledLine(angle = 130, length = 123 + 0, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 232, length = 62)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+profile003 = circle(sketch001, center = [-125 + 0, -63], radius = 127 + 0)
+profile004 = circleThreePoint(
+  sketch001,
+  p1 = [64, 129 + 0],
+  p2 = [130 + 0, 65.5],
+  p3 = [66.5, 66],
+)
+profile005 = circle(sketch001, center = [-67, -135 + 0], diameter = 68)
+`)
+  })
 })
