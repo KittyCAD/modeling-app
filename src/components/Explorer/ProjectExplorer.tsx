@@ -159,7 +159,6 @@ export const ProjectExplorer = ({
     setActiveIndex(domIndex)
   }
 
-
   useEffect(() => {
     /**
      * You are loading a new project, clear the internal state!
@@ -226,12 +225,17 @@ export const ProjectExplorer = ({
           icon = 'folderOpen'
         }
 
-
-        const errorsAsKeyValue = Array.from(runtimeErrors, ([key, value]) => ({ key, value }));
-        const anyParentFolderHasError = errorsAsKeyValue.some(({key,value})=>{
-          return key.indexOf(child.path) >= 0
-        })
-        const hasRuntimeError = runtimeErrors.has(child.path) || anyParentFolderHasError
+        const errorsAsKeyValue = Array.from(runtimeErrors, ([key, value]) => ({
+          key,
+          value,
+        }))
+        const anyParentFolderHasError = errorsAsKeyValue.some(
+          ({ key, value }) => {
+            return key.indexOf(child.path) >= 0
+          }
+        )
+        const hasRuntimeError =
+          runtimeErrors.has(child.path) || anyParentFolderHasError
 
         const row: FileExplorerRow = {
           // copy over all the other data that was built up to the DOM render row
