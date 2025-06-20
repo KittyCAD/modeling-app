@@ -6,7 +6,6 @@ use kittycad_modeling_cmds::{
     self as kcmc, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Point3d,
     websocket::OkWebSocketResponseData,
 };
-use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
