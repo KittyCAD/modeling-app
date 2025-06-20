@@ -193,7 +193,7 @@ export const FileExplorerRowElement = ({
 }: {
   row: FileExplorerRender
   selectedRow: FileExplorerEntry | null
-  contextMenuRow: FileExplorerRow | null
+  contextMenuRow: FileExplorerEntry | null
   isRenaming: boolean
 }) => {
   const isSelected =
@@ -274,7 +274,9 @@ export const FileExplorerRowElement = ({
         onOpenInNewWindow={() => {
           row.onOpenInNewWindow()
         }}
-        callback={row.onContextMenuOpen}
+        callback={()=>{
+          row.onContextMenuOpen(row.domIndex)
+        }}
       />
     </div>
   )

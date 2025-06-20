@@ -22,13 +22,10 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import {
   alwaysEndFileWithEXT,
-  desktopSafePathSplit,
   getEXTWithPeriod,
   getParentAbsolutePath,
   joinOSPaths,
 } from '@src/lib/paths'
-import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
-import { HTMLDivElement } from 'happy-dom'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
@@ -59,7 +56,7 @@ export const ProjectExplorer = ({
   // -1 is the parent container, -2 is nothing is selected
   const [activeIndex, setActiveIndex] = useState<number>(NOTHING_IS_SELECTED)
   const [rowsToRender, setRowsToRender] = useState<FileExplorerRow[]>([])
-  const [contextMenuRow, setContextMenuRow] = useState<FileExplorerRow | null>(
+  const [contextMenuRow, setContextMenuRow] = useState<FileExplorerEntry | null>(
     null
   )
   const [isRenaming, setIsRenaming] = useState<boolean>(false)
@@ -171,8 +168,9 @@ export const ProjectExplorer = ({
             newOpenedRows[key] = true
             setOpenedRows(newOpenedRows)
           },
-          onContextMenuOpen: () => {
-            // NO OP
+          onContextMenuOpen: (domIndex: number) => {
+            setActiveIndex(domIndex)
+            setContextMenuRow(child)
           },
           isFake: false,
           activeIndex: activeIndex,
@@ -337,16 +335,6 @@ export const ProjectExplorer = ({
         ) || showPlaceHolder
       row.isFake = showPlaceHolder
       return row.render && skipPlaceHolder
-    })
-
-    // update the callback for rowContextMenu to be the index based on rendering
-    // Gotcha: you will see if you spam the context menu you will not be able to select a new one
-    // until closing
-    requestedRowsToRender.forEach((r, index) => {
-      r.onContextMenuOpen = () => {
-        setActiveIndex(index)
-        setContextMenuRow(r)
-      }
     })
 
     setRowsToRender(requestedRowsToRender)

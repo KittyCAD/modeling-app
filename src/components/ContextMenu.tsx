@@ -57,7 +57,7 @@ export function ContextMenu({
       setPosition({ x: e.clientX, y: e.clientY })
       setOpen(true)
     },
-    [guard, setPosition, setOpen]
+    [guard, setPosition, setOpen, callback]
   )
 
   const dialogPositionStyle = useMemo(() => {
@@ -109,7 +109,7 @@ export function ContextMenu({
     return () => {
       menuTargetElement?.current?.removeEventListener(event, handleContextMenu)
     }
-  }, [menuTargetElement?.current])
+  }, [menuTargetElement?.current, callback])
 
   return (
     <Dialog open={open} onClose={() => setOpen(false)}>

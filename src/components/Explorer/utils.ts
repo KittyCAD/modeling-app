@@ -29,7 +29,7 @@ export interface FileExplorerRow extends FileExplorerEntry {
   /* handlers */
   onClick: (domIndex: number) => void
   onOpen: () => void
-  onContextMenuOpen: () => void
+  onContextMenuOpen: (domIndex: number) => void
   onOpenInNewWindow: () => void
   onDelete: () => void
   onRenameStart: () => void
