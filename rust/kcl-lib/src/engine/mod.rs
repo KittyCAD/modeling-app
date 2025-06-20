@@ -322,7 +322,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         settings: &crate::ExecutorSettings,
         source_range: SourceRange,
         id_generator: &mut IdGenerator,
-        grid_scale_unit: Option<kcmc::units::UnitLength>,
+        grid_scale_unit: GridScaleBehavior,
     ) -> Result<(), crate::errors::KclError> {
         // Set the edge visibility.
         self.set_edge_visibility(settings.highlight_edges, source_range, id_generator)
@@ -761,7 +761,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn modify_grid(
         &self,
         hidden: bool,
-        base_unit: Option<kcmc::units::UnitLength>,
+        grid_scale_behavior: GridScaleBehavior,
         source_range: SourceRange,
         id_generator: &mut IdGenerator,
     ) -> Result<(), KclError> {
@@ -776,16 +776,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         )
         .await?;
 
-        let grid_scale = if let Some(units) = base_unit {
-            // The grid is 10x10, so setting the value to 10 means that
-            // users whose unit is cm will see each cell as 1cm by 1cm,
-            // which is useful for sketching.
-            ModelingCmd::from(mcmd::SetGridScale { value: 10.0, units })
-        } else {
-            ModelingCmd::from(mcmd::SetGridAutoScale {})
-        };
-        self.batch_modeling_cmd(id_generator.next_uuid(), source_range, &grid_scale)
-            .await?;
+        self.batch_modeling_cmd(
+            id_generator.next_uuid(),
+            source_range,
+            &grid_scale_behavior.into_modeling_cmd(),
+        )
+        .await?;
 
         // Hide/show the grid scale text.
         self.batch_modeling_cmd(
@@ -898,4 +894,23 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
     }
 
     Ok(client)
+}
+
+#[derive(Copy, Clone, Debug)]
+pub enum GridScaleBehavior {
+    ScaleWithZoom,
+    Fixed(Option<kcmc::units::UnitLength>),
+}
+
+impl GridScaleBehavior {
+    fn into_modeling_cmd(self) -> ModelingCmd {
+        const NUMBER_OF_GRID_COLUMNS: f32 = 10.0;
+        match self {
+            GridScaleBehavior::ScaleWithZoom => ModelingCmd::from(mcmd::SetGridAutoScale {}),
+            GridScaleBehavior::Fixed(unit_length) => ModelingCmd::from(mcmd::SetGridScale {
+                value: NUMBER_OF_GRID_COLUMNS,
+                units: unit_length.unwrap_or(kcmc::units::UnitLength::Millimeters),
+            }),
+        }
+    }
 }

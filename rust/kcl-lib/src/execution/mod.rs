@@ -31,7 +31,7 @@ pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
 use crate::{
-    engine::EngineManager,
+    engine::{EngineManager, GridScaleBehavior},
     errors::{KclError, KclErrorDetails},
     execution::{
         cache::{CacheInformation, CacheResult},
@@ -295,6 +295,8 @@ pub struct ExecutorSettings {
     /// This is the path to the current file being executed.
     /// We use this for preventing cyclic imports.
     pub current_file: Option<TypedPath>,
+    /// Whether or not to automatically scale the grid when user zooms.
+    pub fixed_size_grid: bool,
 }
 
 impl Default for ExecutorSettings {
@@ -306,6 +308,7 @@ impl Default for ExecutorSettings {
             replay: None,
             project_directory: None,
             current_file: None,
+            fixed_size_grid: true,
         }
     }
 }
@@ -319,6 +322,7 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
             replay: None,
             project_directory: None,
             current_file: None,
+            fixed_size_grid: config.settings.app.fixed_size_grid,
         }
     }
 }
@@ -332,6 +336,7 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
             replay: None,
             project_directory: None,
             current_file: None,
+            fixed_size_grid: true,
         }
     }
 }
@@ -345,6 +350,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             replay: None,
             project_directory: None,
             current_file: None,
+            fixed_size_grid: true,
         }
     }
 }
@@ -358,6 +364,7 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             replay: None,
             project_directory: None,
             current_file: None,
+            fixed_size_grid: true,
         }
     }
 }
@@ -592,12 +599,18 @@ impl ExecutorContext {
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
-        let grid_scale = program
-            .meta_settings()
-            .ok()
-            .flatten()
-            .map(|s| s.default_length_units)
-            .map(kcmc::units::UnitLength::from);
+        let grid_scale = if self.settings.auto_scale_grid {
+            GridScaleBehavior::ScaleWithZoom
+        } else {
+            GridScaleBehavior::Fixed(
+                program
+                    .meta_settings()
+                    .ok()
+                    .flatten()
+                    .map(|s| s.default_length_units)
+                    .map(kcmc::units::UnitLength::from),
+            )
+        };
 
         let (program, exec_state, result) = match cache::read_old_ast().await {
             Some(mut cached_state) => {
