@@ -3804,12 +3804,12 @@ export const modelingMachine = setup({
         },
 
         'event.parameter.create': {
-          target: '#Modeling.parameter.creating',
+          target: '#Modeling.state:parameter:creating',
           guard: 'no kcl errors',
         },
 
         'event.parameter.edit': {
-          target: '#Modeling.parameter.editing',
+          target: '#Modeling.state:parameter:editing',
           guard: 'no kcl errors',
         },
 
@@ -5216,39 +5216,33 @@ export const modelingMachine = setup({
       },
     },
 
-    parameter: {
-      type: 'parallel',
-
-      states: {
-        creating: {
-          invoke: {
-            src: 'actor.parameter.create',
-            id: 'actor.parameter.create',
-            input: ({ event }) => {
-              if (event.type !== 'event.parameter.create') return undefined
-              return event.data
-            },
-            onDone: ['#Modeling.idle'],
-            onError: {
-              target: '#Modeling.idle',
-              actions: 'toastError',
-            },
-          },
+    'state:parameter:creating': {
+      invoke: {
+        src: 'actor.parameter.create',
+        id: 'actor.parameter.create',
+        input: ({ event }) => {
+          if (event.type !== 'event.parameter.create') return undefined
+          return event.data
         },
-        editing: {
-          invoke: {
-            src: 'actor.parameter.edit',
-            id: 'actor.parameter.edit',
-            input: ({ event }) => {
-              if (event.type !== 'event.parameter.edit') return undefined
-              return event.data
-            },
-            onDone: ['#Modeling.idle'],
-            onError: {
-              target: '#Modeling.idle',
-              actions: 'toastError',
-            },
-          },
+        onDone: ['#Modeling.idle'],
+        onError: {
+          target: '#Modeling.idle',
+          actions: 'toastError',
+        },
+      },
+    },
+    'state:parameter:editing': {
+      invoke: {
+        src: 'actor.parameter.edit',
+        id: 'actor.parameter.edit',
+        input: ({ event }) => {
+          if (event.type !== 'event.parameter.edit') return undefined
+          return event.data
+        },
+        onDone: ['#Modeling.idle'],
+        onError: {
+          target: '#Modeling.idle',
+          actions: 'toastError',
         },
       },
     },

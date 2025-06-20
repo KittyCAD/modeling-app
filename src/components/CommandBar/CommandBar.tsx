@@ -21,7 +21,7 @@ export const CommandBar = () => {
   const commandBarState = useCommandBarState()
   const { immediateState } = useNetworkContext()
   const {
-    context: { selectedCommand, currentArgument, commands },
+    context: { selectedCommand, currentArgument, commands, argumentsToSubmit },
   } = commandBarState
   const isArgumentThatShouldBeHardToDismiss =
     currentArgument?.inputType === 'selection' ||
@@ -68,16 +68,24 @@ export const CommandBar = () => {
   })
 
   function stepBack() {
+    const entries = Object.entries(selectedCommand?.args || {}).filter(
+      ([argName, arg]) => {
+        const argValue =
+          (typeof argumentsToSubmit[argName] === 'function'
+            ? argumentsToSubmit[argName](commandBarState.context)
+            : argumentsToSubmit[argName]) || ''
+        const isHidden = !arg.hidden
+        const isRequired =
+          typeof arg.required === 'function'
+            ? arg.required(commandBarState.context)
+            : arg.required
+
+        return !isHidden && (argValue || isRequired)
+      }
+    )
+
     if (!currentArgument) {
       if (commandBarState.matches('Review')) {
-        const entries = Object.entries(selectedCommand?.args || {}).filter(
-          ([_, argConfig]) =>
-            !argConfig.hidden &&
-            (typeof argConfig.required === 'function'
-              ? argConfig.required(commandBarState.context)
-              : argConfig.required)
-        )
-
         const currentArgName = entries[entries.length - 1][0]
         const currentArg = {
           name: currentArgName,
@@ -94,9 +102,6 @@ export const CommandBar = () => {
         commandBarActor.send({ type: 'Deselect command' })
       }
     } else {
-      const entries = Object.entries(selectedCommand?.args || {}).filter(
-        (a) => !a[1].hidden
-      )
       const index = entries.findIndex(
         ([key, _]) => key === currentArgument.name
       )
@@ -183,20 +188,6 @@ export const CommandBar = () => {
                   <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
                 </Tooltip>
               </button>
-              {/* {!commandBarState.matches('Selecting command') && (
-                <button onClick={stepBack} className="m-0 p-0 border-none">
-                  <CustomIcon name="arrowLeft" className="w-5 h-5 rounded-sm" />
-                  <Tooltip position="bottom">
-                    Step back{' '}
-                    <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">
-                      Shift
-                    </kbd>
-                    <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">
-                      Bksp
-                    </kbd>
-                  </Tooltip>
-                </button>
-              )} */}
             </div>
           </WrapperComponent.Panel>
         </Transition.Child>
