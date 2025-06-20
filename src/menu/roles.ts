@@ -33,6 +33,8 @@ type EditRoleLabel =
   | 'Rename project'
   | 'Delete project'
   | 'Change project directory'
+  | 'Undo'
+  | 'Redo'
   | 'Speech'
   | 'Edit parameter'
   | 'Modify with Zoo Text-To-CAD'

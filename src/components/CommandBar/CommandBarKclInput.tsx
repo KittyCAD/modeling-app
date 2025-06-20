@@ -286,65 +286,67 @@ function CommandBarKclInput({
           )}
         </span>
       </label>
-      <div className="flex items-baseline gap-4 mx-4">
-        <input
-          type="checkbox"
-          id="variable-checkbox"
-          data-testid="cmd-bar-variable-checkbox"
-          checked={createNewVariable}
-          onChange={(e) => {
-            setCreateNewVariable(e.target.checked)
-          }}
-          className="bg-chalkboard-10 dark:bg-chalkboard-80"
-        />
-        <label
-          htmlFor="variable-checkbox"
-          className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
-        >
-          Create new variable
-        </label>
-        {createNewVariable && (
-          <>
-            <input
-              type="text"
-              id="variable-name"
-              name="variable-name"
-              className="flex-1  border-solid border-0 border-b border-chalkboard-50 bg-transparent focus:outline-none"
-              placeholder="Variable name"
-              value={newVariableName}
-              autoCapitalize="off"
-              autoCorrect="off"
-              autoComplete="off"
-              spellCheck="false"
-              autoFocus
-              onChange={(e) => setNewVariableName(e.target.value)}
-              onKeyDown={(e) => {
-                if (
-                  e.currentTarget.value === '' &&
-                  e.key === 'Backspace' &&
-                  arg.createVariable !== 'force'
-                ) {
-                  setCreateNewVariable(false)
+      {arg.createVariable !== 'disallow' && (
+        <div className="flex items-baseline gap-4 mx-4">
+          <input
+            type="checkbox"
+            id="variable-checkbox"
+            data-testid="cmd-bar-variable-checkbox"
+            checked={createNewVariable}
+            onChange={(e) => {
+              setCreateNewVariable(e.target.checked)
+            }}
+            className="bg-chalkboard-10 dark:bg-chalkboard-80"
+          />
+          <label
+            htmlFor="variable-checkbox"
+            className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
+          >
+            Create new variable
+          </label>
+          {createNewVariable && (
+            <>
+              <input
+                type="text"
+                id="variable-name"
+                name="variable-name"
+                className="flex-1  border-solid border-0 border-b border-chalkboard-50 bg-transparent focus:outline-none"
+                placeholder="Variable name"
+                value={newVariableName}
+                autoCapitalize="off"
+                autoCorrect="off"
+                autoComplete="off"
+                spellCheck="false"
+                autoFocus
+                onChange={(e) => setNewVariableName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (
+                    e.currentTarget.value === '' &&
+                    e.key === 'Backspace' &&
+                    arg.createVariable !== 'force'
+                  ) {
+                    setCreateNewVariable(false)
+                  }
+                }}
+                onKeyUp={(e) => {
+                  if (e.key === 'Enter' && canSubmit) {
+                    handleSubmit()
+                  }
+                }}
+              />
+              <span
+                className={
+                  isNewVariableNameUnique
+                    ? 'text-succeed-60 dark:text-succeed-40'
+                    : 'text-destroy-60 dark:text-destroy-40'
                 }
-              }}
-              onKeyUp={(e) => {
-                if (e.key === 'Enter' && canSubmit) {
-                  handleSubmit()
-                }
-              }}
-            />
-            <span
-              className={
-                isNewVariableNameUnique
-                  ? 'text-succeed-60 dark:text-succeed-40'
-                  : 'text-destroy-60 dark:text-destroy-40'
-              }
-            >
-              {isNewVariableNameUnique ? 'Available' : 'Unavailable'}
-            </span>
-          </>
-        )}
-      </div>
+              >
+                {isNewVariableNameUnique ? 'Available' : 'Unavailable'}
+              </span>
+            </>
+          )}
+        </div>
+      )}
     </form>
   )
 }
