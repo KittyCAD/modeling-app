@@ -293,28 +293,40 @@ export class KCLUndefinedValueError extends KCLError {
 /**
 Convert this UTF-16 source range offset to UTF-8 as SourceRange is always a UTF-8
 */
-function toUtf8(
+export function toUtf8(
   utf16SourceRange: [number, number, number],
-  sourceCode: string | 'TEST PROGRAM'
+  sourceCode: string
 ): SourceRange {
   if (sourceCode == 'TEST PROGRAM') {
     return utf16SourceRange
   }
-  throw new Error('TODO')
+  const moduleId = utf16SourceRange[2]
+  const textEncoder = new TextEncoder()
+  const prefixUtf16 = sourceCode.slice(0, utf16SourceRange[0])
+  const prefixUtf8 = textEncoder.encode(prefixUtf16)
+  const prefixLen = prefixUtf8.length
+  const toHighlightUtf16 = sourceCode.slice(
+    utf16SourceRange[0],
+    utf16SourceRange[1]
+  )
+  const toHighlightUtf8 = textEncoder.encode(toHighlightUtf16)
+  const toHighlightLen = toHighlightUtf8.length
+  return [prefixLen, prefixLen + toHighlightLen, moduleId]
 }
 
 /**
 Convert this UTF-8 source range offset to UTF-16 for display in CodeMirror,
 as it relies on JS-style string encoding which is UTF-16.
 */
-function toUtf16(
-  utf16Offset: number,
-  sourceCode: string | 'TEST PROGRAM'
-): number {
+export function toUtf16(utf8Offset: number, sourceCode: string): number {
   if (sourceCode == 'TEST PROGRAM') {
-    return utf16Offset
+    return utf8Offset
   }
-  throw new Error('Function not implemented.')
+  const sourceUtf8 = new TextEncoder().encode(sourceCode)
+  const prefix = sourceUtf8.slice(0, utf8Offset)
+  console.warn(`ADAM: Prefix at ${utf8Offset} is`, prefix)
+  const backto16 = new TextDecoder().decode(prefix)
+  return backto16.length
 }
 
 /**
@@ -362,7 +374,7 @@ export function lspDiagnosticsToKclErrors(
  * */
 export function kclErrorsToDiagnostics(
   errors: KCLError[],
-  sourceCode: string | 'TEST PROGRAM'
+  sourceCode: string
 ): CodeMirrorDiagnostic[] {
   let nonFatal: CodeMirrorDiagnostic[] = []
   const errs = errors
@@ -413,7 +425,7 @@ export function kclErrorsToDiagnostics(
 
 export function compilationErrorsToDiagnostics(
   errors: CompilationError[],
-  sourceCode: string | 'TEST PROGRAM'
+  sourceCode: string
 ): CodeMirrorDiagnostic[] {
   return errors
     ?.filter((err) => isTopLevelModule(err.sourceRange))
