@@ -193,9 +193,13 @@ export function getProjectDirectoryFromKCLFilePath(
   return ''
 }
 
-export function parentPathRelativeToProject (absoluteFilePath: string,   applicationProjectDirectory: string) : string {
+export function parentPathRelativeToProject(
+  absoluteFilePath: string,
+  applicationProjectDirectory: string
+): string {
   const replacedPath = absoluteFilePath.replace(applicationProjectDirectory, '')
-  const [iAmABlankString, projectDirectory, ...rest] = desktopSafePathSplit(replacedPath)
+  const [iAmABlankString, projectDirectory, ...rest] =
+    desktopSafePathSplit(replacedPath)
   if (iAmABlankString === '') {
     return desktopSafePathJoin(rest)
   }

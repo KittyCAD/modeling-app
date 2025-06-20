@@ -24,13 +24,16 @@ import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorer
 import { parentPathRelativeToProject, PATHS } from '@src/lib/paths'
 import type { IndexLoaderData } from '@src/lib/types'
 import { useRouteLoaderData } from 'react-router-dom'
-import { addPlaceHoldersForNewFileAndFolder, FileExplorerEntry } from '@src/components/Explorer/utils'
+import {
+  addPlaceHoldersForNewFileAndFolder,
+  FileExplorerEntry,
+} from '@src/components/Explorer/utils'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import { useFolders } from '@src/machines/systemIO/hooks'
 import { useState, useEffect } from 'react'
 import type { Project } from '@src/lib/project'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { ONBOARDING_PROJECT_NAME } from '@src/lib/constants'
+import { FILE_EXT, ONBOARDING_PROJECT_NAME } from '@src/lib/constants'
 
 export type SidebarType =
   | 'code'
@@ -173,19 +176,23 @@ export const sidebarPanes: SidebarPane[] = [
         useState<number>(0)
       const [collapsePressed, setCollapsedPressed] = useState<number>(0)
       const onRowClicked = (entry: FileExplorerEntry, domIndex: number) => {
-        const applicationProjectDirectory = settings.app.projectDirectory.current
-        const requestedFileName = parentPathRelativeToProject(entry.path, applicationProjectDirectory)
-        if (loaderData?.project?.name && entry.children == null) {
-        systemIOActor.send({
+        const applicationProjectDirectory =
+          settings.app.projectDirectory.current
+        const requestedFileName = parentPathRelativeToProject(
+          entry.path,
+          applicationProjectDirectory
+        )
+
+        // Only open the file if it is a kcl file.
+        if (loaderData?.project?.name && entry.children == null && entry.path.endsWith(FILE_EXT)) {
+          systemIOActor.send({
             type: SystemIOMachineEvents.navigateToFile,
             data: {
-              requestedProjectName:
-                loaderData?.project?.name,
-              requestedFileName:  requestedFileName,
+              requestedProjectName: loaderData?.project?.name,
+              requestedFileName: requestedFileName,
             },
           })
         }
-
       }
 
       return (

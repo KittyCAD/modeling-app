@@ -50,13 +50,13 @@ export const ProjectExplorer = ({
   createFolderPressed,
   refreshExplorerPressed,
   collapsePressed,
-  onRowClicked
+  onRowClicked,
 }: {
   project: Project
   createFilePressed: number
   createFolderPressed: number
   refreshExplorerPressed: number
-  collapsePressed: number,
+  collapsePressed: number
   onRowClicked: (row: FileExplorerEntry, domIndex: number) => void
 }) => {
   // cache the state of opened rows to allow nested rows to be opened if a parent one is closed
