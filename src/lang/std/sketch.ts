@@ -1425,13 +1425,27 @@ export const circle: SketchLineHelperKw = {
 
     const { node: callExpression } = nodeMeta
 
+    // All function arguments, except the tag
+    const functionArguments = callExpression.arguments
+      .map((arg) => arg.label?.name)
+      .filter((n) => n && n !== ARG_TAG)
+
     const newCenter = createArrayExpression([
       createLiteral(roundOff(center[0])),
       createLiteral(roundOff(center[1])),
     ])
     mutateKwArg(ARG_CIRCLE_CENTER, callExpression, newCenter)
-    const newRadius = createLiteral(roundOff(radius))
-    mutateKwArg(ARG_RADIUS, callExpression, newRadius)
+
+    // Check if the circle uses diameter or radius
+    const isDiameter = functionArguments.includes(ARG_DIAMETER)
+    if (isDiameter) {
+      const newDiameter = createLiteral(roundOff(radius * 2))
+      mutateKwArg(ARG_DIAMETER, callExpression, newDiameter)
+    } else {
+      const newRadius = createLiteral(roundOff(radius))
+      mutateKwArg(ARG_RADIUS, callExpression, newRadius)
+    }
+
     return {
       modifiedAst: _node,
       pathToNode,

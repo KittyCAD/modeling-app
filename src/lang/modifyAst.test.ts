@@ -25,13 +25,13 @@ import type { Artifact } from '@src/lang/std/artifactGraph'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, Literal, LiteralValue } from '@src/lang/wasm'
-import { assertParse, recast } from '@src/lang/wasm'
+import { assertParse, recast, parse, resultIsOk } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { assertNotErr } from '@src/unitTestUtils'
-import { scaleProfile } from '@src/clientSideScene/sceneEntities'
+import { scaleProfiles } from '@src/clientSideScene/sceneEntities'
 
 beforeAll(async () => {
   await initPromise
@@ -933,14 +933,12 @@ describe('testing sketch scaling', () => {
     const range = topLevelRange(startIndex, startIndex + searchSnippet.length)
     const pathToProfile = getNodePathFromSourceRange(ast, range)
 
-    // scaleProfile
     if (err(result)) throw result
-    // console.log('result!!'', result, result.variables.profile006?.value.paths)
-    const scaledProfile = scaleProfile({
+    const scaledProfile = scaleProfiles({
       ast,
       factor: 0.5,
       variables: result.variables,
-      pathToProfile: pathToProfile,
+      pathsToProfile: [pathToProfile],
     })
     if (err(scaledProfile)) throw scaledProfile
     const modifiedAst = scaledProfile.modifiedAst
@@ -955,7 +953,7 @@ profile006 = startProfile(sketch002, at = [57.32, 62.09])
 `)
   })
   it('can scale sketch more complex', async () => {
-    const basicSketch = `sketch001 = startSketchOn(YZ)
+    let code = `sketch001 = startSketchOn(YZ)
 profile001 = startProfile(sketch001, at = [100, 101])
   |> line(end = [102, 103])
   |> line(endAbsolute = [104, 105])
@@ -984,36 +982,34 @@ profile004 = circleThreePoint(
   p3 = [132, 133],
 )
 profile005 = circle(sketch001, center = [-134, -135], diameter = 136)`
-    let ast = assertParse(basicSketch)
+    let ast = assertParse(code)
     const result = await enginelessExecutor(ast)
-    // const searchSnippet = 'startProfile(sketch001, at = [100, 101])'
     const searchSnippets = [
       'startProfile(sketch001, at = [100, 101])',
       'startProfile(sketch001, at = [-121, 122])',
-      // 'circle(sketch001, center = [-125, -126], radius = 127)',
-      // 'circleThreePoint(sketch001, p1 = [128, 129], p2 = [130, 131], p3 = [132, 133])',
-      // 'circle(sketch001, center = [-134, -135], diameter = 136)',
+      'circle(sketch001, center = [-125, -126], radius = 127)',
+      'circleThreePoint(',
+      'circle(sketch001, center = [-134, -135], diameter = 136)',
     ]
     const ranges = searchSnippets.map((searchSnippet) => {
-      const startIndex = basicSketch.indexOf(searchSnippet)
+      const startIndex = code.indexOf(searchSnippet)
       return topLevelRange(startIndex, startIndex + searchSnippet.length)
     })
     const pathsToProfiles = ranges.map((range) =>
       getNodePathFromSourceRange(ast, range)
     )
 
-    // scaleProfile
     if (err(result)) throw result
-    pathsToProfiles.forEach((pathToProfile) => {
-      const scaledProfile = scaleProfile({
-        ast,
-        factor: 0.5,
-        variables: result.variables,
-        pathToProfile: pathToProfile,
-      })
-      if (err(scaledProfile)) throw scaledProfile
-      ast = scaledProfile.modifiedAst
+    const scaledProfile = scaleProfiles({
+      ast,
+      factor: 0.5,
+      variables: result.variables,
+      pathsToProfile: pathsToProfiles,
     })
+    if (err(scaledProfile)) throw scaledProfile
+    const pResult = parse(recast(scaledProfile.modifiedAst))
+    if (err(pResult) || !resultIsOk(pResult)) return
+    ast = pResult.program
     const newCode = recast(ast)
     if (err(newCode)) throw newCode
 
@@ -1038,14 +1034,14 @@ profile002 = startProfile(sketch001, at = [-60.5, 61])
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-profile003 = circle(sketch001, center = [-125, -126], radius = 127)
+profile003 = circle(sketch001, center = [-62.5, -63], radius = 63.5)
 profile004 = circleThreePoint(
   sketch001,
-  p1 = [128, 129],
-  p2 = [130, 131],
-  p3 = [132, 133],
+  p1 = [64, 64.5],
+  p2 = [65, 65.5],
+  p3 = [66, 66.5],
 )
-profile005 = circle(sketch001, center = [-134, -135], diameter = 136)
+profile005 = circle(sketch001, center = [-67, -67.5], diameter = 68)
 `)
   })
 })

@@ -3809,96 +3809,129 @@ function sketchFromPathToNode({
   return sg
 }
 
-export function scaleProfile({
+export function scaleProfiles({
   ast,
-  pathToProfile,
+  pathsToProfile,
   factor,
   variables,
 }: {
   ast: Node<Program>
-  pathToProfile: PathToNode
+  pathsToProfile: PathToNode[]
   factor: number
   variables: VariableMap
 }) {
-  const profile = sketchFromPathToNode({
-    pathToNode: pathToProfile,
-    variables: variables,
-    ast,
-  })
-  if (err(profile)) return profile
-  if (!profile) return Error('Profile not found')
-  // console.log('sketch', profile)
   let clonedAst = structuredClone(ast)
-
-  // Scale the startProfile 'at' parameter
-  const scaledStartAt: [number, number] = [
-    profile.start.from[0] * factor,
-    profile.start.from[1] * factor,
-  ]
-  const startProfileResult = changeSketchArguments(
-    clonedAst,
-    variables,
-    {
-      type: 'path',
+  for (const pathToProfile of pathsToProfile) {
+    const profile = sketchFromPathToNode({
       pathToNode: pathToProfile,
-    },
-    {
-      type: 'straight-segment',
-      from: [0, 0], // not used for startProfile
-      to: scaledStartAt,
-    }
-  )
-  if (trap(startProfileResult)) return startProfileResult
-  clonedAst = startProfileResult.modifiedAst
+      variables: variables,
+      ast,
+    })
+    if (err(profile)) return profile
+    if (!profile) return Error('Profile not found')
 
-  // Scale the path segments
-  // for (const path of profile.paths) {
-  for (let pathIndex = 0; pathIndex < profile.paths.length; pathIndex++) {
-    const path = profile.paths[pathIndex]
-    let input: Parameters<typeof changeSketchArguments>[3] | undefined =
-      undefined
-    const pathToSegment = getNodePathFromSourceRange(
-      clonedAst,
-      sourceRangeFromRust(path.__geoMeta.sourceRange)
-    )
-    const scaleTuple = (tuple: [number, number]): [number, number] => [
-      tuple[0] * factor,
-      tuple[1] * factor,
+    // Scale the startProfile 'at' parameter
+    const scaledStartAt: [number, number] = [
+      profile.start.from[0] * factor,
+      profile.start.from[1] * factor,
     ]
-    const previous = profile.paths[pathIndex - 1]
     if (
-      path.type === 'ToPoint' ||
-      path.type === 'TangentialArcTo' ||
-      path.type === 'TangentialArc'
+      profile.paths?.[0]?.type !== 'Circle' &&
+      profile.paths?.[0]?.type !== 'CircleThreePoint'
     ) {
-      input = {
-        type: 'straight-segment',
-        from: scaleTuple(path.from),
-        to: scaleTuple(path.to),
-        previousEndTangent: previous
-          ? findTangentDirectionPath(previous)
-          : undefined,
-      }
-    } else if (path.type === 'ArcThreePoint') {
-      input = {
-        type: 'circle-three-point-segment',
-        p1: scaleTuple(path.p1),
-        p2: scaleTuple(path.p2),
-        p3: scaleTuple(path.p3),
-      }
-    }
-    if (input) {
-      const changeSketchResult = changeSketchArguments(
+      const startProfileResult = changeSketchArguments(
         clonedAst,
         variables,
         {
           type: 'path',
-          pathToNode: pathToSegment,
+          pathToNode: pathToProfile,
         },
-        input
+        {
+          type: 'straight-segment',
+          from: [0, 0], // not used for startProfile
+          to: scaledStartAt,
+        }
       )
-      if (!err(changeSketchResult)) {
-        clonedAst = changeSketchResult.modifiedAst
+      if (trap(startProfileResult)) return startProfileResult
+      clonedAst = startProfileResult.modifiedAst
+    }
+
+    // Scale the path segments
+    for (let pathIndex = 0; pathIndex < profile.paths.length; pathIndex++) {
+      const path = profile.paths[pathIndex]
+      let input: Parameters<typeof changeSketchArguments>[3] | undefined =
+        undefined
+      const pathToSegment = getNodePathFromSourceRange(
+        clonedAst,
+        sourceRangeFromRust(path.__geoMeta.sourceRange)
+      )
+      if (!pathToSegment) {
+        console.log(
+          'Could not find path for segment:',
+          path.type,
+          'sourceRange:',
+          path.__geoMeta.sourceRange
+        )
+      }
+      const scaleTuple = (tuple: [number, number]): [number, number] => [
+        tuple[0] * factor,
+        tuple[1] * factor,
+      ]
+      const previous = profile.paths[pathIndex - 1]
+      if (
+        path.type === 'ToPoint' ||
+        path.type === 'TangentialArcTo' ||
+        path.type === 'TangentialArc'
+      ) {
+        input = {
+          type: 'straight-segment',
+          from: scaleTuple(path.from),
+          to: scaleTuple(path.to),
+          previousEndTangent: previous
+            ? findTangentDirectionPath(previous)
+            : undefined,
+        }
+      } else if (
+        path.type === 'ArcThreePoint' ||
+        path.type === 'CircleThreePoint'
+      ) {
+        input = {
+          type: 'circle-three-point-segment',
+          p1: scaleTuple(path.p1),
+          p2: scaleTuple(path.p2),
+          p3: scaleTuple(path.p3),
+        }
+      } else if (path.type === 'Circle') {
+        input = {
+          type: 'arc-segment',
+          from: scaleTuple(path.from),
+          to: scaleTuple(path.to),
+          center: scaleTuple(path.center),
+          radius: path.radius * factor,
+          ccw: path.ccw,
+        }
+      } else {
+        // Skip close calls - they don't have dimensions to scale
+        console.log('Unhandled path type:', path.type)
+        continue
+      }
+      if (input && pathToSegment) {
+        try {
+          const changeSketchResult = changeSketchArguments(
+            clonedAst,
+            variables,
+            {
+              type: 'path',
+              pathToNode: pathToSegment,
+            },
+            input
+          )
+          if (!err(changeSketchResult)) {
+            clonedAst = changeSketchResult.modifiedAst
+          }
+        } catch (error) {
+          console.log('Error scaling segment:', path.type, 'error:', error)
+        }
       }
     }
   }
