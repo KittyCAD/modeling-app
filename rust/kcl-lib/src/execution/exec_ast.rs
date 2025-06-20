@@ -17,11 +17,14 @@ use crate::{
     },
     fmt,
     modules::{ModuleId, ModulePath, ModuleRepr},
-    parsing::ast::types::{
-        Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
-        BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, LiteralIdentifier,
-        LiteralValue, MemberExpression, Name, Node, NodeRef, ObjectExpression, PipeExpression, Program, TagDeclarator,
-        Type, UnaryExpression, UnaryOperator,
+    parsing::{
+        ast::types::{
+            Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
+            BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, LiteralIdentifier,
+            LiteralValue, MemberExpression, Name, Node, NodeRef, ObjectExpression, PipeExpression, Program,
+            TagDeclarator, Type, UnaryExpression, UnaryOperator,
+        },
+        token::NumericSuffix,
     },
     source_range::SourceRange,
     std::args::TyF64,
@@ -1666,12 +1669,18 @@ impl Property {
             LiteralIdentifier::Literal(literal) => {
                 let value = literal.value.clone();
                 match value {
-                    LiteralValue::Number { value, .. } => {
+                    n @ LiteralValue::Number { value, suffix } => {
+                        if !matches!(suffix, NumericSuffix::None | NumericSuffix::Count) {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                format!("{n} is not a valid index, indices must be non-dimensional numbers"),
+                                property_sr,
+                            )));
+                        }
                         if let Some(x) = crate::try_f64_to_usize(value) {
                             Ok(Property::UInt(x))
                         } else {
                             Err(KclError::new_semantic(KclErrorDetails::new(
-                                format!("{value} is not a valid index, indices must be whole numbers >= 0"),
+                                format!("{n} is not a valid index, indices must be whole numbers >= 0"),
                                 property_sr,
                             )))
                         }
@@ -1690,10 +1699,13 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
     let make_err =
         |message: String| Err::<Property, _>(KclError::new_semantic(KclErrorDetails::new(message, property_sr)));
     match value {
-        KclValue::Number{value: num, .. } => {
+        n @ KclValue::Number{value: num, ty, .. } => {
+            if !matches!(ty, NumericType::Known(crate::exec::UnitType::Count) | NumericType::Default { .. } | NumericType::Any ) {
+                return make_err(format!("arrays can only be indexed by non-dimensioned numbers, found {}", n.human_friendly_type()));
+            }
             let num = *num;
             if num < 0.0 {
-                return make_err(format!("'{num}' is negative, so you can't index an array with it"))
+                return make_err(format!("'{num}' is negative, so you can't index an array with it"));
             }
             let nearest_int = crate::try_f64_to_usize(num);
             if let Some(nearest_int) = nearest_int {
@@ -2140,5 +2152,24 @@ c = ((PI * 2) / 3): number(deg)
 
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(result.exec_state.errors().len(), 2);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn non_count_indexing() {
+        let ast = r#"x = [0, 0]
+y = x[1mm]
+"#;
+        parse_execute(ast).await.unwrap_err();
+
+        let ast = r#"x = [0, 0]
+y = 1deg
+z = x[y]
+"#;
+        parse_execute(ast).await.unwrap_err();
+
+        let ast = r#"x = [0, 0]
+y = x[0mm + 1]
+"#;
+        parse_execute(ast).await.unwrap_err();
     }
 }
