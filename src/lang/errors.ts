@@ -324,7 +324,6 @@ export function toUtf16(utf8Offset: number, sourceCode: string): number {
   }
   const sourceUtf8 = new TextEncoder().encode(sourceCode)
   const prefix = sourceUtf8.slice(0, utf8Offset)
-  console.warn(`ADAM: Prefix at ${utf8Offset} is`, prefix)
   const backto16 = new TextDecoder().decode(prefix)
   return backto16.length
 }
