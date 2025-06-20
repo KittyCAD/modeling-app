@@ -160,7 +160,7 @@ export const commandBarMachine = setup({
           }
 
           const mustNotSkipArg =
-            argIsRequired &&
+            (argIsRequired || argConfig.skip === false) &&
             (!context.argumentsToSubmit.hasOwnProperty(argName) ||
               context.argumentsToSubmit[argName] === undefined ||
               (rejectedArg &&
