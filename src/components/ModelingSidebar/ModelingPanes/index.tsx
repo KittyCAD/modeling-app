@@ -18,9 +18,17 @@ import type { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { editorManager } from '@src/lib/singletons'
 import type { settingsMachine } from '@src/machines/settingsMachine'
-import { ProjectExplorer} from '@src/components/Explorer/ProjectExplorer'
-import { ModelingProjectExplorer } from '@src/components/Explorer/ModelingProjectExplorer'
+import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
+
+import { PATHS } from '@src/lib/paths'
+import type { IndexLoaderData } from '@src/lib/types'
+import { useRouteLoaderData } from 'react-router-dom'
+import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
+import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
+import { useFolders } from '@src/machines/systemIO/hooks'
+import { useState, useEffect } from 'react'
+import type { Project } from '@src/lib/project'
 
 export type SidebarType =
   | 'code'
@@ -130,9 +138,36 @@ export const sidebarPanes: SidebarPane[] = [
     icon: 'folder',
     sidebarName: 'Project Files',
     Content: (props: { id: SidebarType; onClose: () => void }) => {
+
+      const projects = useFolders()
+      const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+      const [theProject, setTheProject] = useState<Project | null>(null)
+      const { project } = loaderData
+      useEffect(() => {
+        // Have no idea why the project loader data doesn't have the children from the ls on disk
+        // That means it is a different object or cached incorrectly?
+        if (!project) {
+          return
+        }
+
+        // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
+        const theProject = projects.find((p) => {
+          return p.name === project.name
+        })
+
+        if (!theProject) {
+          return
+        }
+
+        // Duplicate the state to not edit the raw data
+        const duplicated = JSON.parse(JSON.stringify(theProject))
+        addPlaceHoldersForNewFileAndFolder(duplicated.children, theProject.path)
+        setTheProject(duplicated)
+      }, [projects, loaderData])
+
       const [createFilePressed, setCreateFilePressed] = useState<number>(0)
       const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
-      const [refreshFolderPressed, setRefresFolderPressed] = useState<number>(0)
+      const [refreshExplorerPressed, setRefresFolderPressed] = useState<number>(0)
       const [collapsePressed, setCollapsedPressed] = useState<number>(0)
 
       return (
@@ -140,7 +175,7 @@ export const sidebarPanes: SidebarPane[] = [
           <ModelingPaneHeader
             id={props.id}
             icon="folder"
-            title={'huh'}
+            title={`${theProject?.name || ''}`}
             Menu={
               <FileExplorerHeaderActions
                 onCreateFile={() => {
@@ -152,19 +187,24 @@ export const sidebarPanes: SidebarPane[] = [
                 onRefreshExplorer={() => {
                   setRefresFolderPressed(performance.now())
                 }}
-                onCollapseExplorer={() => { 
+                onCollapseExplorer={() => {
                   setCollapsedPressed(performance.now())
                 }}
               ></FileExplorerHeaderActions>
             }
             onClose={props.onClose}
           />
-          <ModelingProjectExplorer 
-            createFilePressed={createFilePressed}
-            createFolderPressed={createFolderPressed}
-            refreshExplorerPressed={refreshFolderPressed}
-            collapsePressed={collapsePressed}
-          />
+          {theProject ? (
+            <ProjectExplorer
+              project={theProject}
+              createFilePressed={createFilePressed}
+              createFolderPressed={createFolderPressed}
+              refreshExplorerPressed={refreshExplorerPressed}
+              collapsePressed={collapsePressed}
+            ></ProjectExplorer>
+          ) : (
+            <div></div>
+          )}
         </>
       )
     },

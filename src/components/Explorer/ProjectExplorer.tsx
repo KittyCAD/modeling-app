@@ -49,7 +49,7 @@ export const ProjectExplorer = ({
   createFilePressed,
   createFolderPressed,
   refreshExplorerPressed,
-  collapsePressed
+  collapsePressed,
 }: {
   project: Project
   createFilePressed: number
@@ -75,7 +75,7 @@ export const ProjectExplorer = ({
   const activeIndexRef = useRef(activeIndex)
   const selectedRowRef = useRef(selectedRow)
   const isRenamingRef = useRef(isRenaming)
-
+  const previousProject = useRef(project)
 
   // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
   const [fakeRow, setFakeRow] = useState<{
@@ -87,13 +87,12 @@ export const ProjectExplorer = ({
    * External state handlers since the callback logic lives here.
    * If code wants to externall trigger creating a file pass in a new timestamp.
    */
-  useEffect(()=>{
+  useEffect(() => {
     if (createFilePressed <= 0) {
       return
     }
 
-    const row =
-      rowsToRenderRef.current[activeIndexRef.current] || null
+    const row = rowsToRenderRef.current[activeIndexRef.current] || null
     setFakeRow({ entry: row, isFile: true })
     if (row?.key) {
       // If the file tree had the folder opened make the new one open.
@@ -101,24 +100,23 @@ export const ProjectExplorer = ({
       newOpenedRows[row?.key] = true
       setOpenedRows(newOpenedRows)
     }
-  },[createFilePressed])
+  }, [createFilePressed])
 
-  useEffect(()=>{
+  useEffect(() => {
     if (createFolderPressed <= 0) {
       return
     }
-      const row =
-    rowsToRenderRef.current[activeIndexRef.current] || null
-  setFakeRow({ entry: row, isFile: false })
-  if (row?.key) {
-    // If the file tree had the folder opened make the new one open.
-    const newOpenedRows = { ...openedRowsRef.current }
-    newOpenedRows[row?.key] = true
-    setOpenedRows(newOpenedRows)
-  }
+    const row = rowsToRenderRef.current[activeIndexRef.current] || null
+    setFakeRow({ entry: row, isFile: false })
+    if (row?.key) {
+      // If the file tree had the folder opened make the new one open.
+      const newOpenedRows = { ...openedRowsRef.current }
+      newOpenedRows[row?.key] = true
+      setOpenedRows(newOpenedRows)
+    }
   }, [createFolderPressed])
 
-  useEffect(()=>{
+  useEffect(() => {
     if (refreshExplorerPressed <= 0) {
       return
     }
@@ -127,18 +125,14 @@ export const ProjectExplorer = ({
     systemIOActor.send({
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
     })
-  },[
-    refreshExplorerPressed
-  ])
+  }, [refreshExplorerPressed])
 
-  useEffect(()=>{
-        if (collapsePressed <= 0) {
+  useEffect(() => {
+    if (collapsePressed <= 0) {
       return
     }
-                  setOpenedRows({})
-  },[
-    collapsePressed
-  ])
+    setOpenedRows({})
+  }, [collapsePressed])
 
   const setSelectedRowWrapper = (row: FileExplorerEntry | null) => {
     setSelectedRow(row)
@@ -159,11 +153,18 @@ export const ProjectExplorer = ({
     setActiveIndex(domIndex)
   }
 
-  useEffect(() => {
-    // TODO What to do when a different project comes in? Clear old state.
-    // Clear openedRows
-    // Clear rowsToRender
-    // Clear selected information
+  useEffect(() => {    
+    /**
+     * You are loading a new project, clear the internal state!
+     */
+    if (previousProject.current.name !== project.name) {
+      setOpenedRows({})
+      setSelectedRow(null)
+      setActiveIndex(NOTHING_IS_SELECTED)
+      setRowsToRender([])
+      setContextMenuRow(null)
+      setIsRenaming(false)
+    }
 
     // gotcha: sync state
     openedRowsRef.current = openedRows
@@ -404,6 +405,7 @@ export const ProjectExplorer = ({
 
     setRowsToRender(requestedRowsToRender)
     rowsToRenderRef.current = requestedRowsToRender
+    previousProject.current = project
   }, [project, openedRows, fakeRow, activeIndex])
 
   // Handle clicks and keyboard presses within the global DOM level
