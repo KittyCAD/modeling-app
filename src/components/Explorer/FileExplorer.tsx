@@ -10,7 +10,7 @@ import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { useRef } from 'react'
 
 export const StatusDot = () => {
-  return <span>•</span>
+  return <span className="text-primary hue-rotate-90">•</span>
 }
 
 /**

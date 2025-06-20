@@ -184,7 +184,11 @@ export const sidebarPanes: SidebarPane[] = [
         )
 
         // Only open the file if it is a kcl file.
-        if (loaderData?.project?.name && entry.children == null && entry.path.endsWith(FILE_EXT)) {
+        if (
+          loaderData?.project?.name &&
+          entry.children == null &&
+          entry.path.endsWith(FILE_EXT)
+        ) {
           systemIOActor.send({
             type: SystemIOMachineEvents.navigateToFile,
             data: {

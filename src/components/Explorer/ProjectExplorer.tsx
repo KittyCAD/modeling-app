@@ -26,6 +26,8 @@ import {
   getParentAbsolutePath,
   joinOSPaths,
 } from '@src/lib/paths'
+import { kclErrorsByFilename } from '@src/lang/errors'
+import { useKclContext } from '@src/lang/KclProvider'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
@@ -59,6 +61,8 @@ export const ProjectExplorer = ({
   collapsePressed: number
   onRowClicked: (row: FileExplorerEntry, domIndex: number) => void
 }) => {
+  const { errors } = useKclContext()
+
   // cache the state of opened rows to allow nested rows to be opened if a parent one is closed
   // when the parent opens the children will already be opened
   const [openedRows, setOpenedRows] = useState<{ [key: string]: boolean }>({})
@@ -155,6 +159,7 @@ export const ProjectExplorer = ({
     setActiveIndex(domIndex)
   }
 
+
   useEffect(() => {
     /**
      * You are loading a new project, clear the internal state!
@@ -171,6 +176,8 @@ export const ProjectExplorer = ({
     // gotcha: sync state
     openedRowsRef.current = openedRows
     activeIndexRef.current = activeIndex
+
+    const runtimeErrors = kclErrorsByFilename(errors)
 
     // Wrap the FileEntry in a FileExplorerEntry to keep track for more metadata
     let flattenedData: FileExplorerEntry[] = []
@@ -219,12 +226,19 @@ export const ProjectExplorer = ({
           icon = 'folderOpen'
         }
 
+
+        const errorsAsKeyValue = Array.from(runtimeErrors, ([key, value]) => ({ key, value }));
+        const anyParentFolderHasError = errorsAsKeyValue.some(({key,value})=>{
+          return key.indexOf(child.path) >= 0
+        })
+        const hasRuntimeError = runtimeErrors.has(child.path) || anyParentFolderHasError
+
         const row: FileExplorerRow = {
           // copy over all the other data that was built up to the DOM render row
           ...child,
           icon: icon,
           isFolder: !isFile,
-          status: StatusDot(),
+          status: hasRuntimeError ? StatusDot() : <></>,
           isOpen,
           render: render,
           onClick: (domIndex: number) => {
@@ -409,7 +423,7 @@ export const ProjectExplorer = ({
     setRowsToRender(requestedRowsToRender)
     rowsToRenderRef.current = requestedRowsToRender
     previousProject.current = project
-  }, [project, openedRows, fakeRow, activeIndex])
+  }, [project, openedRows, fakeRow, activeIndex, errors])
 
   // Handle clicks and keyboard presses within the global DOM level
   useEffect(() => {
