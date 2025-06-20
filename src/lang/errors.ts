@@ -293,7 +293,13 @@ export class KCLUndefinedValueError extends KCLError {
 /**
 Convert this UTF-16 source range offset to UTF-8 as SourceRange is always a UTF-8
 */
-function toUtf8(utf16SourceRange: [number, number, number]): SourceRange {
+function toUtf8(
+  utf16SourceRange: [number, number, number],
+  sourceCode: string | 'TEST PROGRAM'
+): SourceRange {
+  if (sourceCode == 'TEST PROGRAM') {
+    return utf16SourceRange
+  }
   throw new Error('TODO')
 }
 
@@ -301,7 +307,13 @@ function toUtf8(utf16SourceRange: [number, number, number]): SourceRange {
 Convert this UTF-8 source range offset to UTF-16 for display in CodeMirror,
 as it relies on JS-style string encoding which is UTF-16.
 */
-function toUtf16(utf16Offset: number, sourceCode: string): number {
+function toUtf16(
+  utf16Offset: number,
+  sourceCode: string | 'TEST PROGRAM'
+): number {
+  if (sourceCode == 'TEST PROGRAM') {
+    return utf16Offset
+  }
   throw new Error('Function not implemented.')
 }
 
@@ -315,11 +327,10 @@ export function lspDiagnosticsToKclErrors(
 ): KCLError[] {
   return diagnostics
     .flatMap(({ range, message }) => {
-      const sourceRange = toUtf8([
-        posToOffset(doc, range.start)!,
-        posToOffset(doc, range.end)!,
-        0,
-      ])
+      const sourceRange = toUtf8(
+        [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, 0],
+        doc.toString()
+      )
       return new KCLError(
         'unexpected',
         message,
@@ -351,7 +362,7 @@ export function lspDiagnosticsToKclErrors(
  * */
 export function kclErrorsToDiagnostics(
   errors: KCLError[],
-  sourceCode: string
+  sourceCode: string | 'TEST PROGRAM'
 ): CodeMirrorDiagnostic[] {
   let nonFatal: CodeMirrorDiagnostic[] = []
   const errs = errors
@@ -385,7 +396,9 @@ export function kclErrorsToDiagnostics(
         }
       }
       if (err.nonFatal.length > 0) {
-        nonFatal = nonFatal.concat(compilationErrorsToDiagnostics(err.nonFatal))
+        nonFatal = nonFatal.concat(
+          compilationErrorsToDiagnostics(err.nonFatal, sourceCode)
+        )
       }
       diagnostics.push({
         from: toUtf16(err.sourceRange[0], sourceCode),
@@ -400,7 +413,7 @@ export function kclErrorsToDiagnostics(
 
 export function compilationErrorsToDiagnostics(
   errors: CompilationError[],
-  sourceCode: string
+  sourceCode: string | 'TEST PROGRAM'
 ): CodeMirrorDiagnostic[] {
   return errors
     ?.filter((err) => isTopLevelModule(err.sourceRange))

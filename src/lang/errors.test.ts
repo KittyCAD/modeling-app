@@ -33,7 +33,7 @@ describe('test kclErrToDiagnostic', () => {
         defaultPlanes: null,
       },
     ]
-    const diagnostics = kclErrorsToDiagnostics(errors)
+    const diagnostics = kclErrorsToDiagnostics(errors, 'TEST PROGRAM')
     expect(diagnostics).toEqual([
       {
         from: 0,
