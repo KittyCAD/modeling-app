@@ -580,7 +580,6 @@ export const ProjectExplorer = ({
           }
         }}
       >
-        {activeIndex}
         {project && (
           <FileExplorer
             rowsToRender={rowsToRender}
