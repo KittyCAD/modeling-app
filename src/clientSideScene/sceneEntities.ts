@@ -1027,7 +1027,7 @@ export class SceneEntities {
         const sketch = sketchFromPathToNode({
           pathToNode: sketchEntryNodePath,
           variables: this.kclManager.variables,
-          kclManager: this.kclManager,
+          ast: this.kclManager.ast,
         })
         if (err(sketch)) return Promise.reject(sketch)
         if (!sketch) return Promise.reject(new Error('No sketch found'))
@@ -2531,7 +2531,7 @@ export class SceneEntities {
           const sketch = sketchFromPathToNode({
             pathToNode,
             variables: this.kclManager.variables,
-            kclManager: this.kclManager,
+            ast: this.kclManager.ast,
           })
           if (trap(sketch)) return
           if (!sketch) {
@@ -3785,14 +3785,14 @@ function prepareTruncatedAst(
 function sketchFromPathToNode({
   pathToNode,
   variables,
-  kclManager,
+  ast,
 }: {
   pathToNode: PathToNode
   variables: VariableMap
-  kclManager: KclManager
+  ast: Node<Program>
 }): Sketch | null | Error {
   const _varDec = getNodeFromPath<VariableDeclarator>(
-    kclManager.ast,
+    ast,
     pathToNode,
     'VariableDeclarator'
   )
@@ -3807,6 +3807,108 @@ function sketchFromPathToNode({
     return null
   }
   return sg
+}
+
+export function scaleProfile({
+  ast,
+  pathToProfile,
+  factor,
+  variables,
+}: {
+  ast: Node<Program>
+  pathToProfile: PathToNode
+  factor: number
+  variables: VariableMap
+}) {
+  const profile = sketchFromPathToNode({
+    pathToNode: pathToProfile,
+    variables: variables,
+    ast,
+  })
+  if (err(profile)) return profile
+  if (!profile) return Error('Profile not found')
+  // console.log('sketch', profile)
+  let clonedAst = structuredClone(ast)
+
+  // Scale the startProfile 'at' parameter
+  const scaledStartAt: [number, number] = [
+    profile.start.from[0] * factor,
+    profile.start.from[1] * factor,
+  ]
+  const startProfileResult = changeSketchArguments(
+    clonedAst,
+    variables,
+    {
+      type: 'path',
+      pathToNode: pathToProfile,
+    },
+    {
+      type: 'straight-segment',
+      from: [0, 0], // not used for startProfile
+      to: scaledStartAt,
+    }
+  )
+  if (trap(startProfileResult)) return startProfileResult
+  clonedAst = startProfileResult.modifiedAst
+
+  // Scale the path segments
+  // for (const path of profile.paths) {
+  for (let pathIndex = 0; pathIndex < profile.paths.length; pathIndex++) {
+    const path = profile.paths[pathIndex]
+    let input: Parameters<typeof changeSketchArguments>[3] | undefined =
+      undefined
+    const pathToSegment = getNodePathFromSourceRange(
+      clonedAst,
+      sourceRangeFromRust(path.__geoMeta.sourceRange)
+    )
+    const scaleTuple = (tuple: [number, number]): [number, number] => [
+      tuple[0] * factor,
+      tuple[1] * factor,
+    ]
+    const previous = profile.paths[pathIndex - 1]
+    if (
+      path.type === 'ToPoint' ||
+      path.type === 'TangentialArcTo' ||
+      path.type === 'TangentialArc'
+    ) {
+      input = {
+        type: 'straight-segment',
+        from: scaleTuple(path.from),
+        to: scaleTuple(path.to),
+        previousEndTangent: previous
+          ? findTangentDirectionPath(previous)
+          : undefined,
+      }
+    } else if (path.type === 'ArcThreePoint') {
+      input = {
+        type: 'circle-three-point-segment',
+        p1: scaleTuple(path.p1),
+        p2: scaleTuple(path.p2),
+        p3: scaleTuple(path.p3),
+      }
+    }
+    if (input) {
+      const changeSketchResult = changeSketchArguments(
+        clonedAst,
+        variables,
+        {
+          type: 'path',
+          pathToNode: pathToSegment,
+        },
+        input
+      )
+      if (!err(changeSketchResult)) {
+        clonedAst = changeSketchResult.modifiedAst
+      }
+    }
+  }
+  const pResult = parse(recast(clonedAst))
+  if (trap(pResult) || !resultIsOk(pResult)) {
+    return Error('Unexpected compilation error')
+  }
+  return {
+    modifiedAst: pResult.program,
+  }
 }
 
 function colorSegment(object: any, color: number) {
@@ -3838,7 +3940,7 @@ export function getSketchQuaternion(
   const sketch = sketchFromPathToNode({
     pathToNode: sketchPathToNode,
     variables: kclManager.variables,
-    kclManager,
+    ast: kclManager.ast,
   })
   if (err(sketch)) return sketch
   const zAxis =
@@ -3896,7 +3998,7 @@ function getSketchesInfo({
     const sketch = sketchFromPathToNode({
       pathToNode: path,
       variables,
-      kclManager,
+      ast: kclManager.ast,
     })
     if (err(sketch)) continue
     if (!sketch) continue
@@ -3978,5 +4080,46 @@ function findTangentDirection(segmentGroup: Group) {
       segmentGroup.userData.type
     )
   }
+  return tangentDirection
+}
+
+// implements the same as, but for a Path instead of segment Group
+function findTangentDirectionPath(path: Path): Coords2d | undefined {
+  let tangentDirection: Coords2d | undefined
+
+  if (path.type === 'TangentialArcTo' || path.type === 'TangentialArc') {
+    // For tangential arcs with center, calculate tangent at the end point
+    const tangentAngle =
+      deg2Rad(getAngle(path.center, path.to)) +
+      (Math.PI / 2) * (path.ccw ? 1 : -1)
+    tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
+  } else if (path.type === 'Arc') {
+    // For regular arcs, calculate tangent at the end point
+    const tangentAngle =
+      deg2Rad(getAngle(path.center, path.to)) +
+      (Math.PI / 2) * (path.ccw ? 1 : -1)
+    tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
+  } else if (path.type === 'ArcThreePoint') {
+    // For three-point arcs, we need to calculate the center first
+    // This is more complex, so for now we'll skip tangent calculation
+    console.warn(
+      'ArcThreePoint tangent direction calculation not implemented yet'
+    )
+  } else if (path.type === 'ToPoint') {
+    // For straight lines, the tangent is the direction from start to end
+    const to = path.to as Coords2d
+    const from = path.from as Coords2d
+    tangentDirection = subVec(to, from)
+    const normalized = normalizeVec(tangentDirection)
+    if (normalized) {
+      tangentDirection = normalized
+    }
+  } else {
+    console.warn(
+      'Unsupported path type for tangent direction calculation: ',
+      path.type
+    )
+  }
+
   return tangentDirection
 }

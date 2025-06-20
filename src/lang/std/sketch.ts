@@ -24,6 +24,7 @@ import {
   ARG_TAG,
   DETERMINING_ARGS,
   ARG_INTERIOR_ABSOLUTE,
+  ARG_DIAMETER,
 } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -4168,7 +4169,14 @@ const tangentialArcHelpers = {
       .map((arg) => arg.label?.name)
       .filter((n) => n && n !== ARG_TAG)
 
-    if (areArraysEqual(functionArguments, [ARG_ANGLE, ARG_RADIUS])) {
+    const isDiameter = areArraysEqual(functionArguments, [
+      ARG_ANGLE,
+      ARG_DIAMETER,
+    ])
+    if (
+      areArraysEqual(functionArguments, [ARG_ANGLE, ARG_RADIUS]) ||
+      isDiameter
+    ) {
       // Using length and radius -> convert "from", "to" to the matching length and radius
       const previousEndTangent = input.previousEndTangent
       if (previousEndTangent) {
@@ -4219,11 +4227,19 @@ const tangentialArcHelpers = {
 
           const radius = distance2d(center, from)
 
-          mutateKwArg(
-            ARG_RADIUS,
-            callExpression,
-            createLiteral(roundOff(radius, 2))
-          )
+          if (!isDiameter) {
+            mutateKwArg(
+              ARG_RADIUS,
+              callExpression,
+              createLiteral(roundOff(radius, 2))
+            )
+          } else {
+            mutateKwArg(
+              ARG_DIAMETER,
+              callExpression,
+              createLiteral(roundOff(radius * 2, 2))
+            )
+          }
           const angleValue = createLiteralMaybeSuffix({
             value: roundOff(angle, 2),
             suffix: 'Deg',
