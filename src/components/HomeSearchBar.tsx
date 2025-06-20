@@ -11,11 +11,13 @@ export type HomeItem = Project | Prompt
 export type HomeItems = Project[] | Prompt[]
 
 export const areHomeItemsProjects = (items: HomeItems): items is Project[] => {
+  if (items.length === 0) return true
   const item = items[0]
   return item !== undefined && 'path' in item
 }
 
 export const areHomeItemsPrompts = (items: HomeItems): items is Prompt[] => {
+  if (items.length === 0) return true
   const item = items[0]
   return item !== undefined && 'prompt' in item
 }

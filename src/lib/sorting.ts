@@ -68,8 +68,10 @@ export function getPromptSortFunction(sortBy: string) {
 
   const sortByModified = (a: Prompt, b: Prompt) => {
     if (a.created_at && b.created_at) {
-      const aDate = new Date(a.created_at)
-      const bDate = new Date(b.created_at)
+      // INTENTIONALLY REVERSED
+      // Will not show properly otherwise.
+      const aDate = new Date(b.created_at)
+      const bDate = new Date(a.created_at)
       return !sortBy || sortBy.includes('desc')
         ? bDate.getTime() - aDate.getTime()
         : aDate.getTime() - bDate.getTime()
