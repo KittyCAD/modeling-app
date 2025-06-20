@@ -1083,14 +1083,13 @@ openSketch = startSketchOn(XY)
     cmdBar,
   }) => {
     // One dumb hardcoded screen pixel value
-    const testPoint = { x: 700, y: 150 }
+    const testPoint = { x: 700, y: 200 }
+    // TODO: replace the testPoint selection with a feature tree click once that's supported #7544
     const [clickOnXzPlane] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const expectedOutput = `plane001 = offsetPlane(XZ, offset = 5)`
 
     await homePage.goToModelingScene()
-    // FIXME: Since there is no KCL code loaded. We need to wait for the scene to load before we continue.
-    // The engine may not be connected
-    await page.waitForTimeout(15000)
+    await scene.settled(cmdBar)
 
     await test.step(`Look for the blue of the XZ plane`, async () => {
       //await scene.expectPixelColor([50, 51, 96], testPoint, 15) // FIXME
