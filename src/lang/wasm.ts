@@ -415,10 +415,10 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
 
 export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
   try {
-    const discovered_findings: Array<Discovered> = await kcl_lint(
+    const discoveredFindings: Array<Discovered> = await kcl_lint(
       JSON.stringify(ast)
     )
-    return discovered_findings
+    return discoveredFindings
   } catch (e: any) {
     return Promise.reject(e)
   }
