@@ -1,5 +1,5 @@
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import type { MouseEventHandler, ReactNode } from 'react'
+import { useState, type MouseEventHandler, type ReactNode } from 'react'
 import type { ContextFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -18,8 +18,9 @@ import type { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { editorManager } from '@src/lib/singletons'
 import type { settingsMachine } from '@src/machines/settingsMachine'
-import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
+import { ProjectExplorer} from '@src/components/Explorer/ProjectExplorer'
 import { ModelingProjectExplorer } from '@src/components/Explorer/ModelingProjectExplorer'
+import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 
 export type SidebarType =
   | 'code'
@@ -129,16 +130,41 @@ export const sidebarPanes: SidebarPane[] = [
     icon: 'folder',
     sidebarName: 'Project Files',
     Content: (props: { id: SidebarType; onClose: () => void }) => {
+      const [createFilePressed, setCreateFilePressed] = useState<number>(0)
+      const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
+      const [refreshFolderPressed, setRefresFolderPressed] = useState<number>(0)
+      const [collapsePressed, setCollapsedPressed] = useState<number>(0)
+
       return (
         <>
           <ModelingPaneHeader
             id={props.id}
             icon="folder"
             title={'huh'}
-            Menu={'huh'}
+            Menu={
+              <FileExplorerHeaderActions
+                onCreateFile={() => {
+                  setCreateFilePressed(performance.now())
+                }}
+                onCreateFolder={() => {
+                  setCreateFolderPressed(performance.now())
+                }}
+                onRefreshExplorer={() => {
+                  setRefresFolderPressed(performance.now())
+                }}
+                onCollapseExplorer={() => { 
+                  setCollapsedPressed(performance.now())
+                }}
+              ></FileExplorerHeaderActions>
+            }
             onClose={props.onClose}
           />
-          <ModelingProjectExplorer />
+          <ModelingProjectExplorer 
+            createFilePressed={createFilePressed}
+            createFolderPressed={createFolderPressed}
+            refreshExplorerPressed={refreshFolderPressed}
+            collapsePressed={collapsePressed}
+          />
         </>
       )
     },

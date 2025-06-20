@@ -46,8 +46,16 @@ const isFileExplorerEntryOpened = (
  */
 export const ProjectExplorer = ({
   project,
+  createFilePressed,
+  createFolderPressed,
+  refreshExplorerPressed,
+  collapsePressed
 }: {
   project: Project
+  createFilePressed: number
+  createFolderPressed: number
+  refreshExplorerPressed: number
+  collapsePressed: number
 }) => {
   // cache the state of opened rows to allow nested rows to be opened if a parent one is closed
   // when the parent opens the children will already be opened
@@ -68,11 +76,69 @@ export const ProjectExplorer = ({
   const selectedRowRef = useRef(selectedRow)
   const isRenamingRef = useRef(isRenaming)
 
+
   // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
   const [fakeRow, setFakeRow] = useState<{
     entry: FileExplorerEntry | null
     isFile: boolean
   } | null>(null)
+
+  /**
+   * External state handlers since the callback logic lives here.
+   * If code wants to externall trigger creating a file pass in a new timestamp.
+   */
+  useEffect(()=>{
+    if (createFilePressed <= 0) {
+      return
+    }
+
+    const row =
+      rowsToRenderRef.current[activeIndexRef.current] || null
+    setFakeRow({ entry: row, isFile: true })
+    if (row?.key) {
+      // If the file tree had the folder opened make the new one open.
+      const newOpenedRows = { ...openedRowsRef.current }
+      newOpenedRows[row?.key] = true
+      setOpenedRows(newOpenedRows)
+    }
+  },[createFilePressed])
+
+  useEffect(()=>{
+    if (createFolderPressed <= 0) {
+      return
+    }
+      const row =
+    rowsToRenderRef.current[activeIndexRef.current] || null
+  setFakeRow({ entry: row, isFile: false })
+  if (row?.key) {
+    // If the file tree had the folder opened make the new one open.
+    const newOpenedRows = { ...openedRowsRef.current }
+    newOpenedRows[row?.key] = true
+    setOpenedRows(newOpenedRows)
+  }
+  }, [createFolderPressed])
+
+  useEffect(()=>{
+    if (refreshExplorerPressed <= 0) {
+      return
+    }
+    // TODO: Refresh only this path from the Project. This will refresh your entire application project directory
+    // It is correct but can be slow if there are many projects
+    systemIOActor.send({
+      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+    })
+  },[
+    refreshExplorerPressed
+  ])
+
+  useEffect(()=>{
+        if (collapsePressed <= 0) {
+      return
+    }
+                  setOpenedRows({})
+  },[
+    collapsePressed
+  ])
 
   const setSelectedRowWrapper = (row: FileExplorerEntry | null) => {
     setSelectedRow(row)
@@ -453,7 +519,10 @@ export const ProjectExplorer = ({
   }, [])
 
   return (
-    <div className="h-full relative overflow-y-auto overflow-x-hidden" ref={projectExplorerRef}>
+    <div
+      className="h-full relative overflow-y-auto overflow-x-hidden"
+      ref={projectExplorerRef}
+    >
       <div
         className={`absolute w-full ${activeIndex === -1 ? 'border-sky-500' : ''}`}
         tabIndex={0}

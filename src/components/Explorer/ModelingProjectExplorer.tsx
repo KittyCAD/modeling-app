@@ -7,7 +7,17 @@ import { useFolders } from '@src/machines/systemIO/hooks'
 import { useState, useEffect } from 'react'
 import type { Project } from '@src/lib/project'
 
-export const ModelingProjectExplorer = () => {
+export const ModelingProjectExplorer = ({
+  createFilePressed,
+  createFolderPressed,
+  refreshExplorerPressed,
+  collapsePressed
+}:{
+  createFilePressed:number
+  createFolderPressed: number
+  refreshExplorerPressed: number
+  collapsePressed: number
+}) => {
   const projects = useFolders()
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const [theProject, setTheProject] = useState<Project | null>(null)
@@ -37,7 +47,13 @@ export const ModelingProjectExplorer = () => {
   return (
     <>
       {theProject ? (
-        <ProjectExplorer project={theProject}></ProjectExplorer>
+        <ProjectExplorer 
+          project={theProject}
+          createFilePressed={createFilePressed}
+          createFolderPressed={createFolderPressed}
+          refreshExplorerPressed={refreshExplorerPressed}
+          collapsePressed={collapsePressed}
+        ></ProjectExplorer>
       ) : (
         <div></div>
       )}
