@@ -13,6 +13,7 @@ import type {
 } from '@src/lang/wasm'
 import { isPathToNode } from '@src/lang/wasm'
 import type {
+  CommandArgumentConfig,
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
@@ -27,7 +28,11 @@ import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import type { SketchTool, modelingMachine } from '@src/machines/modelingMachine'
+import type {
+  ModelingMachineContext,
+  SketchTool,
+  modelingMachine,
+} from '@src/machines/modelingMachine'
 
 type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
@@ -44,6 +49,16 @@ export const EXTRUSION_RESULTS = [
 export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
 
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
+
+// For all nodeToEdit-like arguments needed for edit flows
+const nodeToEditDescription =
+  'Path to the node in the AST to edit. Never shown to the user.'
+const nodeToEditProps = {
+  description: nodeToEditDescription,
+  inputType: 'text',
+  required: false,
+  hidden: true,
+} as CommandArgumentConfig<PathToNode | undefined, ModelingMachineContext>
 
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
@@ -378,12 +393,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       sketches: {
         inputType: 'selection',
@@ -407,12 +417,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       sketches: {
         inputType: 'selection',
@@ -461,12 +466,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       sketches: {
         inputType: 'selection',
@@ -522,12 +522,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       selection: {
         inputType: 'selection',
@@ -606,12 +601,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'plane',
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       plane: {
         inputType: 'selection',
@@ -633,12 +623,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       mode: {
         inputType: 'options',
@@ -732,11 +717,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       selection: {
         inputType: 'selection',
@@ -759,11 +740,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       selection: {
         inputType: 'selection',
@@ -912,8 +889,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'make-variable',
     args: {
       currentValue: {
-        description:
-          'Path to the node in the AST to constrain. This is never shown to the user.',
+        description: nodeToEditDescription,
         inputType: 'text',
         required: false,
         skip: true,
@@ -988,12 +964,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       color: {
         inputType: 'options',
@@ -1054,12 +1025,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       selection: {
         // selectionMixed allows for feature tree selection of module imports
@@ -1094,12 +1060,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       selection: {
         // selectionMixed allows for feature tree selection of module imports
@@ -1134,12 +1095,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       selection: {
         // selectionMixed allows for feature tree selection of module imports
