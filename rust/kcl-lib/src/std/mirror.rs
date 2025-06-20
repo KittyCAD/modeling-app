@@ -72,7 +72,7 @@ async fn inner_mirror_2d(
             {
                 let face_edge_info = &mirror_info.entity_face_edge_ids;
 
-                let _ = starting_sketches
+                starting_sketches
                     .iter_mut()
                     .zip(face_edge_info.iter())
                     .try_for_each(|(sketch, info)| {
@@ -88,7 +88,7 @@ async fn inner_mirror_2d(
                             }
                         }
                         Ok(())
-                    });
+                    })?;
             } else {
                 return Err(KclError::new_engine(KclErrorDetails::new(
                     format!("EntityMirror response was not as expected: {:?}", resp),
@@ -115,7 +115,7 @@ async fn inner_mirror_2d(
             {
                 let face_edge_info = &mirror_info.entity_face_edge_ids;
 
-                let _ = starting_sketches
+                starting_sketches
                     .iter_mut()
                     .zip(face_edge_info.iter())
                     .try_for_each(|(sketch, info)| {
@@ -131,7 +131,7 @@ async fn inner_mirror_2d(
                             }
                         }
                         Ok(())
-                    });
+                    })?;
             } else {
                 return Err(KclError::new_engine(KclErrorDetails::new(
                     format!("EntityMirrorAcrossEdge response was not as expected: {:?}", resp),
