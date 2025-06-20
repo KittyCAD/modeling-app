@@ -6,7 +6,7 @@ use anyhow::Result;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
-use super::{args::TyF64, DEFAULT_TOLERANCE};
+use super::{args::TyF64, DEFAULT_TOLERANCE_MM};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -84,7 +84,7 @@ async fn inner_loft(
                 section_ids: sketches.iter().map(|group| group.id).collect(),
                 base_curve_index,
                 bez_approximate_rational,
-                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
+                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
                 v_degree,
             }),
         )

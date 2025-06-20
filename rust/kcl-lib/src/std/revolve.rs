@@ -9,7 +9,7 @@ use kcmc::{
 };
 use kittycad_modeling_cmds::{self as kcmc, shared::Point3d};
 
-use super::{args::TyF64, DEFAULT_TOLERANCE};
+use super::{args::TyF64, DEFAULT_TOLERANCE_MM};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -133,7 +133,7 @@ async fn inner_revolve(
     let mut solids = Vec::new();
     for sketch in &sketches {
         let id = exec_state.next_uuid();
-        let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE);
+        let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM);
 
         let direction = match &axis {
             Axis2dOrEdgeReference::Axis { direction, origin } => {
