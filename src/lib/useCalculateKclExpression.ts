@@ -124,8 +124,11 @@ export function useCalculateKclExpression({
   }, [kclManager.ast, kclManager.variables, endingSourceRange])
 
   useEffect(() => {
+    let isCurrent = true
+
     const execAstAndSetResult = async () => {
       const result = await getCalculatedKclExpressionValue(value)
+      if (!isCurrent) return
       setIsExecuting(false)
       if (result instanceof Error || 'errors' in result || !result.astNode) {
         setCalcResult('NAN')
@@ -140,10 +143,15 @@ export function useCalculateKclExpression({
     if (!value) return
     setIsExecuting(true)
     execAstAndSetResult().catch(() => {
+      if (!isCurrent) return
       setCalcResult('NAN')
       setIsExecuting(false)
       setValueNode(null)
     })
+
+    return () => {
+      isCurrent = false
+    }
   }, [value, availableVarInfo, code, kclManager.variables])
 
   return {
