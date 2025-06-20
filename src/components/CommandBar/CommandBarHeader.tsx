@@ -326,7 +326,7 @@ function StepBackButton({
       }}
       onClick={stepBack}
     >
-      <span className={`pr-2 ${iconClassName}`}>Step Back</span>
+      <span className={`pr-2 ${iconClassName}`}>Step back</span>
       <Tooltip position="bottom">
         Step back
         <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">Shift</kbd>
