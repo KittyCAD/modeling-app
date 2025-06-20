@@ -119,6 +119,7 @@ function CommandBarHeader({
                     ? arg.required(commandBarState.context)
                     : arg.required
 
+                // We actually want to show non-hidden optional args that have a value set already
                 if (!(argValue || isCurrentArg || isSkipFalse || isRequired)) {
                   return []
                 }
