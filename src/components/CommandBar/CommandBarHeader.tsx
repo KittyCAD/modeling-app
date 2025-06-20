@@ -5,6 +5,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
+import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import type {
   KclCommandValue,
   KclExpressionWithVariable,
@@ -219,7 +220,7 @@ function CommandBarHeader({
             )}
           </div>
         </div>
-        <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
+        <CommandBarDivider />
         {children}
         <div className="px-4 pb-2 flex justify-between items-center gap-2">
           <StepBackButton stepBack={stepBack} />

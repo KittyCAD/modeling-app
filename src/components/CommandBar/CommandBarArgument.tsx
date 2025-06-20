@@ -6,6 +6,7 @@ import CommandBarPathInput from '@src/components/CommandBar/CommandBarPathInput'
 import CommandBarSelectionInput from '@src/components/CommandBar/CommandBarSelectionInput'
 import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
 import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextareaInput'
+import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
@@ -34,7 +35,7 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
           stepBack={stepBack}
           onSubmit={onSubmit}
         />
-        <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
+        <CommandBarDivider />
       </CommandBarHeader>
     )
   )

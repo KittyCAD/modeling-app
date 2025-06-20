@@ -1,6 +1,7 @@
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import CommandBarHeader from '@src/components/CommandBar/CommandBarHeader'
+import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { useMemo } from 'react'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -90,7 +91,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
               ? selectedCommand.reviewMessage(commandBarState.context)
               : selectedCommand.reviewMessage}
           </p>
-          <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
+          <CommandBarDivider />
         </>
       )}
       {Object.entries(availableOptionalArgs || {}).length > 0 && (
@@ -125,7 +126,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
               </div>
             </div>
           </div>
-          <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
+          <CommandBarDivider />
         </>
       )}
       <form
