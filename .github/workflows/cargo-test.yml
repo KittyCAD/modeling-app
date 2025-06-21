@@ -26,7 +26,7 @@ jobs:
       - extras=s3-cache
     steps:
       - uses: runs-on/action@v1
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -150,7 +150,7 @@ jobs:
         partitionTotal: [6]
     steps:
       - uses: runs-on/action@v1
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -208,7 +208,7 @@ jobs:
       - extras=s3-cache
     steps:
       - uses: runs-on/action@v1
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
