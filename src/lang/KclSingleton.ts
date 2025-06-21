@@ -465,7 +465,12 @@ export class KclManager extends EventTarget {
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
-      this.addDiagnostics(await lintAst({ ast: ast }))
+      this.addDiagnostics(
+        await lintAst({
+          ast,
+          sourceCode: this.singletons.codeManager.code,
+        })
+      )
       await setSelectionFilterToDefault(this.engineCommandManager)
     }
 
