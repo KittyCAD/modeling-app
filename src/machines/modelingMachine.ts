@@ -2433,18 +2433,18 @@ export const modelingMachine = setup({
           nodeToEdit,
           sketches,
           length,
+          symmetric,
           bidirectionalLength,
           twistAngle,
-          symmetric,
         } = input
         const { ast } = kclManager
         const astResult = addExtrude({
           ast,
           sketches,
           length,
+          symmetric,
           bidirectionalLength,
           twistAngle,
-          symmetric,
           nodeToEdit,
         })
         if (err(astResult)) {

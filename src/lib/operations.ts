@@ -135,6 +135,16 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     return { reason: "Couldn't retrieve length argument" }
   }
 
+  // symmetric argument from a string to boolean
+  let symmetric: boolean | undefined
+  if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
+    symmetric =
+      codeManager.code.slice(
+        operation.labeledArgs.symmetric.sourceRange[0],
+        operation.labeledArgs.symmetric.sourceRange[1]
+      ) === 'true'
+  }
+
   // bidirectionalLength argument from a string to a KCL expression
   let bidirectionalLength: KclCommandValue | Error | ParseResult | undefined
   if (
@@ -172,25 +182,15 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     return { reason: "Couldn't retrieve twistAngle argument" }
   }
 
-  // symmetric argument from a string to boolean
-  let symmetric: boolean | undefined
-  if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
-    symmetric =
-      codeManager.code.slice(
-        operation.labeledArgs.symmetric.sourceRange[0],
-        operation.labeledArgs.symmetric.sourceRange[1]
-      ) === 'true'
-  }
-
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Extrude'] = {
     sketches,
     length,
+    symmetric,
     bidirectionalLength,
     twistAngle,
-    symmetric,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {

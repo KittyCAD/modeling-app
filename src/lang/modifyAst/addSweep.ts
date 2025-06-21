@@ -37,17 +37,17 @@ export function addExtrude({
   ast,
   sketches,
   length,
+  symmetric,
   bidirectionalLength,
   twistAngle,
-  symmetric,
   nodeToEdit,
 }: {
   ast: Node<Program>
   sketches: Selections
   length: KclCommandValue
+  symmetric?: boolean
   bidirectionalLength?: KclCommandValue
   twistAngle?: KclCommandValue
-  symmetric?: boolean
   nodeToEdit?: PathToNode
 }):
   | {
@@ -70,6 +70,9 @@ export function addExtrude({
   }
 
   // Extra labeled args expressions
+  const symmetricExpr = symmetric
+    ? [createLabeledArg('symmetric', createLiteral(symmetric))]
+    : []
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
         createLabeledArg(
@@ -81,16 +84,13 @@ export function addExtrude({
   const twistAngleExpr = twistAngle
     ? [createLabeledArg('twistAngle', valueOrVariable(twistAngle))]
     : []
-  const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric))]
-    : []
 
   const sketchesExpr = createSketchExpression(sketchesExprList)
   const call = createCallExpressionStdLibKw('extrude', sketchesExpr, [
     createLabeledArg('length', valueOrVariable(length)),
+    ...symmetricExpr,
     ...bidirectionalLengthExpr,
     ...twistAngleExpr,
-    ...symmetricExpr,
   ])
 
   // Insert variables for labeled arguments if provided
@@ -107,6 +107,9 @@ export function addExtrude({
       modifiedAst,
       nodeToEdit
     )
+  }
+  if (twistAngle && 'variableName' in twistAngle && twistAngle.variableName) {
+    insertVariableAndOffsetPathToNode(twistAngle, modifiedAst, nodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
