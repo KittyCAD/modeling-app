@@ -102,7 +102,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
               ([argName, arg]) => {
                 return (
                   <button
-                    data-testid="cmd-bar-add-optional-arg"
+                    data-testid={`cmd-bar-add-optional-arg-${argName}`}
                     type="button"
                     onClick={() => {
                       commandBarActor.send({

@@ -143,6 +143,7 @@ export const commandBarMachine = setup({
               : !a[1].hidden
         )
         let argIndex = 0
+        let lastRequiredArg: CommandArgumentWithName<unknown> | undefined
 
         while (argIndex < nonHiddenArgs.length) {
           const [argName, argConfig] = nonHiddenArgs[argIndex]
@@ -150,13 +151,14 @@ export const commandBarMachine = setup({
             typeof argConfig.required === 'function'
               ? argConfig.required(context)
               : argConfig.required
-          /**
-           * TODO: we need to think harder about the relationship between
-           * `required`, `skip`, and `hidden`.
-           * This bit of logic essentially makes "skip false" arguments required.
-           * We may need a bit of state to mark an argument as "visited" for "skip false" args
-           * to truly not require any value to continue.
-           */
+
+          if (argIsRequired) {
+            lastRequiredArg = {
+              ...argConfig,
+              name: argName,
+            }
+          }
+
           const mustNotSkipArg =
             (argIsRequired || argConfig.skip === false) &&
             (!context.argumentsToSubmit.hasOwnProperty(argName) ||
@@ -166,12 +168,21 @@ export const commandBarMachine = setup({
                 'name' in rejectedArg &&
                 rejectedArg.name === argName))
 
-          if (
-            mustNotSkipArg === true ||
+          if (mustNotSkipArg) {
+            return {
+              ...selectedCommand.args[argName],
+              name: argName,
+            }
+          }
+
+          const reachedEndOfArgs =
             argIndex + 1 === Object.keys(nonHiddenArgs).length
-          ) {
-            // If we have reached the end of the arguments and none are skippable,
-            // return the last argument.
+          if (reachedEndOfArgs) {
+            if (lastRequiredArg) {
+              return lastRequiredArg
+            }
+
+            // Default to the last argument that is not hidden
             return {
               ...selectedCommand.args[argName],
               name: argName,

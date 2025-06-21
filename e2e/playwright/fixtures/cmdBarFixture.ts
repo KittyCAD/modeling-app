@@ -188,6 +188,13 @@ export class CmdBarFixture {
   }
 
   /**
+   * Select an optional argument from the command bar during review
+   */
+  clickOptionalArgument = async (argName: string) => {
+    await this.page.getByTestId(`cmd-bar-add-optional-arg-${argName}`).click()
+  }
+
+  /**
    * Clicks the Create new variable button for kcl input
    */
   createNewVariable = async () => {
