@@ -94,6 +94,14 @@ pub struct AppSettings {
     /// of the app to aid in development.
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
+    /// If true, the grid cells will be fixed-size, where the width is the user's default length unit.
+    /// If false, the grid's size will scale as the user zooms in and out.
+    #[serde(default = "make_it_so", skip_serializing_if = "is_default")]
+    pub fixed_size_grid: bool,
+}
+
+fn make_it_so() -> bool {
+    true
 }
 
 fn deserialize_stream_idle_mode<'de, D>(deserializer: D) -> Result<Option<u32>, D::Error>

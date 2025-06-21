@@ -323,13 +323,15 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         settings: &crate::ExecutorSettings,
         source_range: SourceRange,
         id_generator: &mut IdGenerator,
+        grid_scale_unit: GridScaleBehavior,
     ) -> Result<(), crate::errors::KclError> {
         // Set the edge visibility.
         self.set_edge_visibility(settings.highlight_edges, source_range, id_generator)
             .await?;
 
         // Send the command to show the grid.
-        self.modify_grid(!settings.show_grid, source_range, id_generator)
+
+        self.modify_grid(!settings.show_grid, grid_scale_unit, source_range, id_generator)
             .await?;
 
         // We do not have commands for changing ssao on the fly.
@@ -760,6 +762,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn modify_grid(
         &self,
         hidden: bool,
+        grid_scale_behavior: GridScaleBehavior,
         source_range: SourceRange,
         id_generator: &mut IdGenerator,
     ) -> Result<(), KclError> {
@@ -771,6 +774,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 hidden,
                 object_id: *GRID_OBJECT_ID,
             }),
+        )
+        .await?;
+
+        self.batch_modeling_cmd(
+            id_generator.next_uuid(),
+            source_range,
+            &grid_scale_behavior.into_modeling_cmd(),
         )
         .await?;
 
@@ -885,4 +895,23 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
     }
 
     Ok(client)
+}
+
+#[derive(Copy, Clone, Debug)]
+pub enum GridScaleBehavior {
+    ScaleWithZoom,
+    Fixed(Option<kcmc::units::UnitLength>),
+}
+
+impl GridScaleBehavior {
+    fn into_modeling_cmd(self) -> ModelingCmd {
+        const NUMBER_OF_GRID_COLUMNS: f32 = 10.0;
+        match self {
+            GridScaleBehavior::ScaleWithZoom => ModelingCmd::from(mcmd::SetGridAutoScale {}),
+            GridScaleBehavior::Fixed(unit_length) => ModelingCmd::from(mcmd::SetGridScale {
+                value: NUMBER_OF_GRID_COLUMNS,
+                units: unit_length.unwrap_or(kcmc::units::UnitLength::Millimeters),
+            }),
+        }
+    }
 }
