@@ -59,8 +59,8 @@ description: Artifact commands multi_target_csg.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -4.127,
-          "y": 4.762,
+          "x": -4.1274999999999995,
+          "y": 4.762499999999999,
           "z": 0.0
         }
       }
@@ -81,7 +81,7 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.255,
+            "x": 8.254999999999999,
             "y": 0.0,
             "z": 0.0
           },
@@ -98,8 +98,8 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 4.127,
-            "y": 4.127
+            "x": 4.1274999999999995,
+            "y": 4.1274999999999995
           },
           "radius": 0.635,
           "start": {
@@ -124,7 +124,7 @@ description: Artifact commands multi_target_csg.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -8.255,
+            "y": -8.254999999999999,
             "z": 0.0
           },
           "relative": true
@@ -140,8 +140,8 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 4.127,
-            "y": -4.127
+            "x": 4.1274999999999995,
+            "y": -4.1274999999999995
           },
           "radius": 0.635,
           "start": {
@@ -165,7 +165,7 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -8.255,
+            "x": -8.254999999999999,
             "y": 0.0,
             "z": 0.0
           },
@@ -182,8 +182,8 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -4.127,
-            "y": -4.127
+            "x": -4.1274999999999995,
+            "y": -4.1274999999999995
           },
           "radius": 0.635,
           "start": {
@@ -208,7 +208,7 @@ description: Artifact commands multi_target_csg.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 8.255,
+            "y": 8.254999999999999,
             "z": 0.0
           },
           "relative": true
@@ -224,8 +224,8 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -4.127,
-            "y": 4.127
+            "x": -4.1274999999999995,
+            "y": 4.1274999999999995
           },
           "radius": 0.635,
           "start": {
@@ -278,7 +278,7 @@ description: Artifact commands multi_target_csg.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.992,
+          "x": 0.9921747999999999,
           "y": -0.0,
           "z": 0.0
         }
@@ -457,8 +457,8 @@ description: Artifact commands multi_target_csg.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1.418,
-          "y": -5.556,
+          "x": -1.4178279999999999,
+          "y": -5.5562499999999995,
           "z": 0.0
         }
       }
@@ -479,8 +479,8 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.232,
-            "y": 5.556,
+            "x": 1.2317984,
+            "y": 5.5562499999999995,
             "z": 0.0
           },
           "relative": true
@@ -496,7 +496,7 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.23,
+            "x": -2.2299422,
             "y": 0.0,
             "z": 0.0
           },
@@ -513,8 +513,8 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.677,
-            "y": -3.056,
+            "x": -0.6774941999999999,
+            "y": -3.0559502,
             "z": 0.0
           },
           "relative": true
@@ -530,8 +530,8 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.49,
-            "y": -2.5,
+            "x": 1.4896083999999998,
+            "y": -2.5003252,
             "z": 0.0
           },
           "relative": true
@@ -547,7 +547,7 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.186,
+            "x": 0.1860296,
             "y": 0.0,
             "z": 0.0
           },
@@ -593,7 +593,7 @@ description: Artifact commands multi_target_csg.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.186,
+          "x": 0.1860296,
           "y": 0.0,
           "z": 0.0
         }
@@ -615,7 +615,7 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.23,
+            "x": 2.2299422,
             "y": 0.0,
             "z": 0.0
           },
@@ -632,8 +632,8 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.677,
-            "y": -3.056,
+            "x": 0.6774941999999999,
+            "y": -3.0559502,
             "z": 0.0
           },
           "relative": true
@@ -649,8 +649,8 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.49,
-            "y": -2.5,
+            "x": -1.4896083999999998,
+            "y": -2.5003252,
             "z": 0.0
           },
           "relative": true
@@ -666,7 +666,7 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.186,
+            "x": -0.1860296,
             "y": 0.0,
             "z": 0.0
           },
@@ -683,8 +683,8 @@ description: Artifact commands multi_target_csg.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.232,
-            "y": 5.556,
+            "x": -1.2317984,
+            "y": 5.5562499999999995,
             "z": 0.0
           },
           "relative": true
@@ -901,7 +901,7 @@ description: Artifact commands multi_target_csg.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.992,
+          "x": 0.9921747999999999,
           "y": -0.0,
           "z": 0.0
         }

@@ -2,10 +2,11 @@
 // NOT updating the code state when we don't need to.
 // This prevents re-renders of the codemirror editor, when typing.
 import { history } from '@codemirror/commands'
-import { Annotation, Compartment, Transaction } from '@codemirror/state'
-import type { EditorView, KeyBinding } from '@codemirror/view'
+import { Annotation, Transaction } from '@codemirror/state'
+import type { KeyBinding } from '@codemirror/view'
 import toast from 'react-hot-toast'
 
+import { historyCompartment } from '@src/editor/compartments'
 import type { Program } from '@src/lang/wasm'
 import { parse, recast } from '@src/lang/wasm'
 import { bracket } from '@src/lib/exampleKcl'
@@ -17,7 +18,6 @@ const PERSIST_CODE_KEY = 'persistCode'
 
 const codeManagerUpdateAnnotation = Annotation.define<boolean>()
 export const codeManagerUpdateEvent = codeManagerUpdateAnnotation.of(true)
-export const codeManagerHistoryCompartment = new Compartment()
 
 export default class CodeManager {
   private _code: string = bracket
@@ -27,6 +27,8 @@ export default class CodeManager {
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
 
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+
+  public isBufferMode = false
 
   constructor() {
     if (isDesktop()) {
@@ -101,25 +103,24 @@ export default class CodeManager {
 
   /**
    * Update the code in the editor.
+   * This is invoked when a segment is being dragged on the canvas, among other things.
    */
   updateCodeEditor(code: string, clearHistory?: boolean): void {
     this.code = code
-    if (editorManager.editorView) {
-      if (clearHistory) {
-        clearCodeMirrorHistory(editorManager.editorView)
-      }
-      editorManager.editorView.dispatch({
-        changes: {
-          from: 0,
-          to: editorManager.editorView.state.doc.length,
-          insert: code,
-        },
-        annotations: [
-          codeManagerUpdateEvent,
-          Transaction.addToHistory.of(!clearHistory),
-        ],
-      })
+    if (clearHistory) {
+      clearCodeMirrorHistory()
     }
+    editorManager.dispatch({
+      changes: {
+        from: 0,
+        to: editorManager.editorState?.doc.length || 0,
+        insert: code,
+      },
+      annotations: [
+        codeManagerUpdateEvent,
+        Transaction.addToHistory.of(!clearHistory),
+      ],
+    })
   }
 
   /**
@@ -134,6 +135,8 @@ export default class CodeManager {
   }
 
   async writeToFile() {
+    if (this.isBufferMode) return
+
     if (isDesktop()) {
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during
@@ -187,6 +190,16 @@ export default class CodeManager {
     this.updateCodeStateEditor(newCode)
     this.writeToFile().catch(reportRejection)
   }
+
+  goIntoTemporaryWorkspaceModeWithCode(code: string) {
+    this.isBufferMode = true
+    this.updateCodeStateEditor(code, true)
+  }
+
+  exitFromTemporaryWorkspaceMode() {
+    this.isBufferMode = false
+    this.writeToFile().catch(reportRejection)
+  }
 }
 
 function safeLSGetItem(key: string) {
@@ -199,16 +212,16 @@ function safeLSSetItem(key: string, value: string) {
   localStorage?.setItem(key, value)
 }
 
-function clearCodeMirrorHistory(view: EditorView) {
+function clearCodeMirrorHistory() {
   // Clear history
-  view.dispatch({
-    effects: [codeManagerHistoryCompartment.reconfigure([])],
+  editorManager.dispatch({
+    effects: [historyCompartment.reconfigure([])],
     annotations: [codeManagerUpdateEvent],
   })
 
   // Add history back
-  view.dispatch({
-    effects: [codeManagerHistoryCompartment.reconfigure([history()])],
+  editorManager.dispatch({
+    effects: [historyCompartment.reconfigure([history()])],
     annotations: [codeManagerUpdateEvent],
   })
 }

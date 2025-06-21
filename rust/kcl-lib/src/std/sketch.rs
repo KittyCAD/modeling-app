@@ -11,7 +11,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::shapes::get_radius;
+use super::shapes::{get_radius, get_radius_labelled};
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use crate::{
@@ -101,13 +101,26 @@ pub const NEW_TAG_KW: &str = "tag";
 pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::sketch(), exec_state)?;
 
-    let start_radius: TyF64 = args.get_kw_arg("startRadius", &RuntimeType::length(), exec_state)?;
-    let end_radius: TyF64 = args.get_kw_arg("endRadius", &RuntimeType::length(), exec_state)?;
+    let start_radius: Option<TyF64> = args.get_kw_arg_opt("startRadius", &RuntimeType::length(), exec_state)?;
+    let end_radius: Option<TyF64> = args.get_kw_arg_opt("endRadius", &RuntimeType::length(), exec_state)?;
+    let start_diameter: Option<TyF64> = args.get_kw_arg_opt("startDiameter", &RuntimeType::length(), exec_state)?;
+    let end_diameter: Option<TyF64> = args.get_kw_arg_opt("endDiameter", &RuntimeType::length(), exec_state)?;
     let angle: TyF64 = args.get_kw_arg("angle", &RuntimeType::angle(), exec_state)?;
     let reverse = args.get_kw_arg_opt("reverse", &RuntimeType::bool(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
-    let new_sketch =
-        inner_involute_circular(sketch, start_radius, end_radius, angle, reverse, tag, exec_state, args).await?;
+    let new_sketch = inner_involute_circular(
+        sketch,
+        start_radius,
+        end_radius,
+        start_diameter,
+        end_diameter,
+        angle,
+        reverse,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -115,16 +128,18 @@ pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result
 
 fn involute_curve(radius: f64, angle: f64) -> (f64, f64) {
     (
-        radius * (angle.cos() + angle * angle.sin()),
-        radius * (angle.sin() - angle * angle.cos()),
+        radius * (libm::cos(angle) + angle * libm::sin(angle)),
+        radius * (libm::sin(angle) - angle * libm::cos(angle)),
     )
 }
 
 #[allow(clippy::too_many_arguments)]
 async fn inner_involute_circular(
     sketch: Sketch,
-    start_radius: TyF64,
-    end_radius: TyF64,
+    start_radius: Option<TyF64>,
+    end_radius: Option<TyF64>,
+    start_diameter: Option<TyF64>,
+    end_diameter: Option<TyF64>,
     angle: TyF64,
     reverse: Option<bool>,
     tag: Option<TagNode>,
@@ -132,6 +147,22 @@ async fn inner_involute_circular(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let id = exec_state.next_uuid();
+
+    let longer_args_dot_source_range = args.source_range;
+    let start_radius = get_radius_labelled(
+        start_radius,
+        start_diameter,
+        args.source_range,
+        "startRadius",
+        "startDiameter",
+    )?;
+    let end_radius = get_radius_labelled(
+        end_radius,
+        end_diameter,
+        longer_args_dot_source_range,
+        "endRadius",
+        "endDiameter",
+    )?;
 
     exec_state
         .batch_modeling_cmd(
@@ -157,11 +188,11 @@ async fn inner_involute_circular(
     let theta = f64::sqrt(end_radius * end_radius - start_radius * start_radius) / start_radius;
     let (x, y) = involute_curve(start_radius, theta);
 
-    end.x = x * angle.to_radians().cos() - y * angle.to_radians().sin();
-    end.y = x * angle.to_radians().sin() + y * angle.to_radians().cos();
+    end.x = x * libm::cos(angle.to_radians()) - y * libm::sin(angle.to_radians());
+    end.y = x * libm::sin(angle.to_radians()) + y * libm::cos(angle.to_radians());
 
-    end.x -= start_radius * angle.to_radians().cos();
-    end.y -= start_radius * angle.to_radians().sin();
+    end.x -= start_radius * libm::cos(angle.to_radians());
+    end.y -= start_radius * libm::sin(angle.to_radians());
 
     if reverse.unwrap_or_default() {
         end.x = -end.x;
@@ -500,8 +531,8 @@ async fn inner_angled_line_length(
 
     //double check me on this one - mike
     let delta: [f64; 2] = [
-        length * f64::cos(angle_degrees.to_radians()),
-        length * f64::sin(angle_degrees.to_radians()),
+        length * libm::cos(angle_degrees.to_radians()),
+        length * libm::sin(angle_degrees.to_radians()),
     ];
     let relative = true;
 
@@ -601,7 +632,7 @@ async fn inner_angled_line_to_x(
     }
 
     let x_component = x_to.to_length_units(from.units) - from.x;
-    let y_component = x_component * f64::tan(angle_degrees.to_radians());
+    let y_component = x_component * libm::tan(angle_degrees.to_radians());
     let y_to = from.y + y_component;
 
     let new_sketch = straight_line(
@@ -668,7 +699,7 @@ async fn inner_angled_line_to_y(
     }
 
     let y_component = y_to.to_length_units(from.units) - from.y;
-    let x_component = y_component / f64::tan(angle_degrees.to_radians());
+    let x_component = y_component / libm::tan(angle_degrees.to_radians());
     let x_to = from.x + x_component;
 
     let new_sketch = straight_line(
@@ -1413,7 +1444,7 @@ async fn inner_tangential_arc_radius_angle(
 
             // Calculate the end point from the angle and radius.
             // atan2 outputs radians.
-            let previous_end_tangent = Angle::from_radians(f64::atan2(
+            let previous_end_tangent = Angle::from_radians(libm::atan2(
                 from.y - tan_previous_point[1],
                 from.x - tan_previous_point[0],
             ));

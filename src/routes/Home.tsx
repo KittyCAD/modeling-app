@@ -12,7 +12,6 @@ import {
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
-import { LowerRightControls } from '@src/components/LowerRightControls'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
 import {
   ProjectSearchBar,
@@ -61,6 +60,12 @@ import {
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
+import { StatusBar } from '@src/components/StatusBar/StatusBar'
+import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
+import {
+  defaultLocalStatusBarItems,
+  defaultGlobalStatusBarItems,
+} from '@src/components/StatusBar/defaultStatusBarItems'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -75,6 +80,7 @@ const Home = () => {
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = useToken()
+  const networkMachineStatus = useNetworkMachineStatus()
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -216,7 +222,7 @@ const Home = () => {
         nativeFileMenuCreated={nativeFileMenuCreated}
         showToolbar={false}
       />
-      <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl mb-12 px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
+      <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
           setQuery={setQuery}
           sort={sort}
@@ -225,7 +231,7 @@ const Home = () => {
           readWriteProjectDir={readWriteProjectDir}
           className="col-start-2 -col-end-1"
         />
-        <aside className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 lg:flex flex-col justify-between">
+        <aside className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 md:mb-12 lg:flex flex-col justify-between">
           <ul className="flex flex-col">
             {needsToOnboard(location, onboardingStatus) && (
               <li className="flex group">
@@ -394,8 +400,14 @@ const Home = () => {
           sort={sort}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
-        <LowerRightControls navigate={navigate} />
       </div>
+      <StatusBar
+        globalItems={[
+          ...(isDesktop() ? [networkMachineStatus] : []),
+          ...defaultGlobalStatusBarItems({ location, filePath: undefined }),
+        ]}
+        localItems={defaultLocalStatusBarItems}
+      />
     </div>
   )
 }

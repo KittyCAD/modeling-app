@@ -24,9 +24,19 @@ export const IS_STAGING = PACKAGE_NAME.indexOf('-staging') > -1
 
 export const IS_STAGING_OR_DEBUG = IS_STAGING || APP_VERSION === '0.0.0'
 
+export function getRefFromVersion(version: string) {
+  const hash = version.split('.').pop()
+  if (hash && hash.length === 7) {
+    return hash
+  }
+
+  return undefined
+}
+
 export function getReleaseUrl(version: string = APP_VERSION) {
   if (IS_STAGING_OR_DEBUG || version === 'main') {
-    return 'https://github.com/KittyCAD/modeling-app/commits/main'
+    const ref = getRefFromVersion(version) ?? 'main'
+    return `https://github.com/KittyCAD/modeling-app/commit/${ref}`
   }
 
   return `https://github.com/KittyCAD/modeling-app/releases/tag/v${version}`

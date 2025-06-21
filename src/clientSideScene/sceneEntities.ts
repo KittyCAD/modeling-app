@@ -165,7 +165,12 @@ import type { Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
-import { closestPointOnRay, deg2Rad } from '@src/lib/utils2d'
+import {
+  closestPointOnRay,
+  deg2Rad,
+  normalizeVec,
+  subVec,
+} from '@src/lib/utils2d'
 import type {
   SegmentOverlayPayload,
   SketchDetails,
@@ -798,7 +803,7 @@ export class SceneEntities {
         const callExpName = _node1.node?.callee?.name.name
 
         const initSegment =
-          segment.type === 'TangentialArcTo'
+          segment.type === 'TangentialArcTo' || segment.type === 'TangentialArc'
             ? segmentUtils.tangentialArc.init
             : segment.type === 'Circle'
               ? segmentUtils.circle.init
@@ -3023,11 +3028,20 @@ export class SceneEntities {
         return input
       }
 
-      // straight segment is the default
+      // straight segment is the default,
+      // this includes "tangential-arc-to-segment"
+
+      const segments: SafeArray<Group> = Object.values(this.activeSegments) // Using the order in the object feels wrong
+      const currentIndex = segments.indexOf(group)
+      const previousSegment = segments[currentIndex - 1]
+
       return {
         type: 'straight-segment',
         from,
         to: dragTo,
+        previousEndTangent: previousSegment
+          ? findTangentDirection(previousSegment)
+          : undefined,
       }
     }
 
@@ -3929,7 +3943,7 @@ function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
   }
 }
 
-// Returns the 2D tangent direction vector at the end of the segmentGroup if it's an arc.
+// Returns the 2D tangent direction vector at the end of the segmentGroup
 function findTangentDirection(segmentGroup: Group) {
   let tangentDirection: Coords2d | undefined
   if (segmentGroup.userData.type === TANGENTIAL_ARC_TO_SEGMENT) {
@@ -3953,11 +3967,11 @@ function findTangentDirection(segmentGroup: Group) {
       ) +
       (Math.PI / 2) * (segmentGroup.userData.ccw ? 1 : -1)
     tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
-  } else {
-    console.warn(
-      'Unsupported segment type for tangent direction calculation: ',
-      segmentGroup.userData.type
-    )
+  } else if (segmentGroup.userData.type === STRAIGHT_SEGMENT) {
+    const to = segmentGroup.userData.to as Coords2d
+    const from = segmentGroup.userData.from as Coords2d
+    tangentDirection = subVec(to, from)
+    tangentDirection = normalizeVec(tangentDirection)
   }
   return tangentDirection
 }

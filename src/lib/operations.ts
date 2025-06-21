@@ -63,6 +63,45 @@ interface StdLibCallInfo {
 }
 
 /**
+ * Gather up the a Parameter operation's data
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditParameter: PrepareToEditCallback = async ({ operation }) => {
+  if (operation.type !== 'VariableDeclaration') {
+    return { reason: 'Called on something not a variable declaration' }
+  }
+
+  const baseCommand = {
+    name: 'event.parameter.edit',
+    groupId: 'modeling',
+  }
+
+  // 1. Convert from the parameter's Operation to a KCL-type arg value
+  const value = await stringToKclExpression(
+    codeManager.code.slice(operation.sourceRange[0], operation.sourceRange[1])
+  )
+  if (err(value) || 'errors' in value) {
+    return { reason: "Couldn't retrieve length argument" }
+  }
+
+  // 2. The nodeToEdit is much simpler to transform.
+  // We need the VariableDeclarator PathToNode though, so we slice it
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath).slice(0, -1)
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['event.parameter.edit'] = {
+    value,
+    nodeToEdit,
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
  * Gather up the argument values for the Extrude command
  * to be used in the command bar edit flow.
  */
@@ -1240,6 +1279,23 @@ export async function enterEditFlow({
   operation,
   artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  // Operate on VariableDeclarations differently from StdLibCall's
+  if (operation.type === 'VariableDeclaration') {
+    const eventPayload = await prepareToEditParameter({
+      operation,
+    })
+
+    if ('reason' in eventPayload) {
+      return new Error(eventPayload.reason)
+    }
+
+    return {
+      type: 'Find and select command',
+      data: eventPayload,
+    }
+  }
+
+  // Begin StdLibCall processing
   if (operation.type !== 'StdLibCall') {
     return new Error(
       'Feature tree editing not yet supported for user-defined functions or modules. Please edit in the code editor.'

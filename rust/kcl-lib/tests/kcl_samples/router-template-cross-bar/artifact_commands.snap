@@ -60,7 +60,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "path": "[uuid]",
         "to": {
           "x": 0.0,
-          "y": 31.881,
+          "y": 31.88125,
           "z": 0.0
         }
       }
@@ -123,7 +123,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 22.631,
+            "x": 22.63125,
             "y": -10.0,
             "z": 0.0
           },
@@ -157,8 +157,8 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 32.631,
-            "y": 10.941,
+            "x": 32.63125,
+            "y": 10.940625,
             "z": 0.0
           },
           "relative": false
@@ -174,8 +174,8 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 102.631,
-            "y": 10.941,
+            "x": 102.63125,
+            "y": 10.940625,
             "z": 0.0
           },
           "relative": false
@@ -208,8 +208,8 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 32.631,
-            "y": 30.941,
+            "x": 32.63125,
+            "y": 30.940625,
             "z": 0.0
           },
           "relative": false
@@ -225,8 +225,8 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 32.631,
-            "y": 41.881,
+            "x": 32.63125,
+            "y": 41.88125,
             "z": 0.0
           },
           "relative": false
@@ -243,7 +243,7 @@ description: Artifact commands router-template-cross-bar.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 41.881,
+            "y": 41.88125,
             "z": 0.0
           },
           "relative": false
@@ -259,7 +259,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -32.631,
+            "x": -32.63125,
             "y": 0.0,
             "z": 0.0
           },
@@ -277,7 +277,7 @@ description: Artifact commands router-template-cross-bar.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -10.941,
+            "y": -10.940625,
             "z": 0.0
           },
           "relative": true
@@ -345,7 +345,7 @@ description: Artifact commands router-template-cross-bar.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -20.941,
+            "y": -20.940625,
             "z": 0.0
           },
           "relative": true
@@ -395,7 +395,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -10.75,
+            "x": -10.749999999999995,
             "y": 20.0
           },
           "radius": 11.88125,
@@ -421,7 +421,7 @@ description: Artifact commands router-template-cross-bar.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 31.881,
+            "y": 31.88125,
             "z": 0.0
           },
           "relative": false
@@ -522,7 +522,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 32.631,
+          "x": 32.63125,
           "y": 0.0,
           "z": 0.0
         }
@@ -545,7 +545,7 @@ description: Artifact commands router-template-cross-bar.kcl
           "type": "line",
           "end": {
             "x": -10.0,
-            "y": 0.0,
+            "y": 0.0000000000000012246467991473533,
             "z": 0.0
           },
           "relative": true
@@ -561,7 +561,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0,
+            "x": -0.0000000000000018369701987210296,
             "y": -10.0,
             "z": 0.0
           },
@@ -579,7 +579,7 @@ description: Artifact commands router-template-cross-bar.kcl
           "type": "line",
           "end": {
             "x": 10.0,
-            "y": -0.0,
+            "y": -0.0000000000000012246467991473533,
             "z": 0.0
           },
           "relative": true
@@ -595,7 +595,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 32.631,
+            "x": 32.63125,
             "y": 0.0,
             "z": 0.0
           },
@@ -693,7 +693,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -32.631,
+          "x": -32.63125,
           "y": 0.0,
           "z": 0.0
         }
@@ -732,7 +732,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 0.0000000000000006123233995736766,
             "y": -10.0,
             "z": 0.0
           },
@@ -766,7 +766,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -32.631,
+            "x": -32.63125,
             "y": 0.0,
             "z": 0.0
           },
@@ -864,7 +864,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -32.631,
+          "x": -32.63125,
           "y": 0.0,
           "z": 0.0
         }
@@ -886,7 +886,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 65.263,
+            "x": 65.2625,
             "y": 0.0,
             "z": 0.0
           },
@@ -903,7 +903,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 0.0000000000000006123233995736766,
             "y": -10.0,
             "z": 0.0
           },
@@ -920,7 +920,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -65.263,
+            "x": -65.2625,
             "y": -0.0,
             "z": 0.0
           },
@@ -937,7 +937,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -32.631,
+            "x": -32.63125,
             "y": 0.0,
             "z": 0.0
           },

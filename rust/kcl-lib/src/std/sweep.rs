@@ -6,7 +6,7 @@ use kittycad_modeling_cmds::{self as kcmc, shared::RelativeTo};
 use schemars::JsonSchema;
 use serde::Serialize;
 
-use super::{args::TyF64, DEFAULT_TOLERANCE};
+use super::{args::TyF64, DEFAULT_TOLERANCE_MM};
 use crate::{
     errors::KclError,
     execution::{
@@ -93,7 +93,7 @@ async fn inner_sweep(
                     target: sketch.id.into(),
                     trajectory,
                     sectional: sectional.unwrap_or(false),
-                    tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
+                    tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
                     relative_to,
                 }),
             )

@@ -99,8 +99,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 1.01,
-            "y": -6.46,
+            "x": 1.0099999999999998,
+            "y": -6.460000000000001,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -116,8 +116,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -0.66,
-            "y": -7.79,
+            "x": -0.6600000000000019,
+            "y": -7.789999999999999,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -133,8 +133,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -1.78,
-            "y": -3.11,
+            "x": -1.7799999999999976,
+            "y": -3.1099999999999994,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -202,7 +202,7 @@ description: Artifact commands bench.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": 16.97,
-            "y": 0.67,
+            "y": 0.6699999999999999,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -269,7 +269,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 0.43,
+            "x": 0.4299999999999997,
             "y": 15.31,
             "z": 0.0
           },
@@ -286,8 +286,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 2.63,
-            "y": 9.26,
+            "x": 2.629999999999999,
+            "y": 9.259999999999998,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -337,8 +337,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -5.28,
-            "y": 3.36,
+            "x": -5.280000000000001,
+            "y": 3.3599999999999994,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -388,8 +388,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -3.14,
-            "y": -2.68,
+            "x": -3.1399999999999952,
+            "y": -2.679999999999996,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -405,8 +405,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -31.95,
-            "y": 1.72,
+            "x": -31.950000000000003,
+            "y": 1.7199999999999989,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -575,8 +575,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 1.01,
-            "y": -6.46,
+            "x": 1.0099999999999998,
+            "y": -6.460000000000001,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -592,8 +592,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -0.66,
-            "y": -7.79,
+            "x": -0.6600000000000019,
+            "y": -7.789999999999999,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -609,8 +609,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -1.78,
-            "y": -3.11,
+            "x": -1.7799999999999976,
+            "y": -3.1099999999999994,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -678,7 +678,7 @@ description: Artifact commands bench.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": 16.97,
-            "y": 0.67,
+            "y": 0.6699999999999999,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -745,7 +745,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 0.43,
+            "x": 0.4299999999999997,
             "y": 15.31,
             "z": 0.0
           },
@@ -762,8 +762,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 2.63,
-            "y": 9.26,
+            "x": 2.629999999999999,
+            "y": 9.259999999999998,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -813,8 +813,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -5.28,
-            "y": 3.36,
+            "x": -5.280000000000001,
+            "y": 3.3599999999999994,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -864,8 +864,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -3.14,
-            "y": -2.68,
+            "x": -3.1399999999999952,
+            "y": -2.679999999999996,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -881,8 +881,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -31.95,
-            "y": 1.72,
+            "x": -31.950000000000003,
+            "y": 1.7199999999999989,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1100,8 +1100,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 1.01,
-            "y": -6.46,
+            "x": 1.0099999999999998,
+            "y": -6.460000000000001,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1117,8 +1117,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -0.66,
-            "y": -7.79,
+            "x": -0.6600000000000019,
+            "y": -7.789999999999999,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1134,8 +1134,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -1.78,
-            "y": -3.11,
+            "x": -1.7799999999999976,
+            "y": -3.1099999999999994,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1203,7 +1203,7 @@ description: Artifact commands bench.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": 16.97,
-            "y": 0.67,
+            "y": 0.6699999999999999,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1270,7 +1270,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 0.43,
+            "x": 0.4299999999999997,
             "y": 15.31,
             "z": 0.0
           },
@@ -1287,8 +1287,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 2.63,
-            "y": 9.26,
+            "x": 2.629999999999999,
+            "y": 9.259999999999998,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1338,8 +1338,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -5.28,
-            "y": 3.36,
+            "x": -5.280000000000001,
+            "y": 3.3599999999999994,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1389,8 +1389,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -3.14,
-            "y": -2.68,
+            "x": -3.1399999999999952,
+            "y": -2.679999999999996,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1406,8 +1406,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -31.95,
-            "y": 1.72,
+            "x": -31.950000000000003,
+            "y": 1.7199999999999989,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1560,8 +1560,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 1.01,
-            "y": -6.46,
+            "x": 1.0099999999999998,
+            "y": -6.460000000000001,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1577,8 +1577,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -0.66,
-            "y": -7.79,
+            "x": -0.6600000000000019,
+            "y": -7.789999999999999,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1594,8 +1594,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -1.78,
-            "y": -3.11,
+            "x": -1.7799999999999976,
+            "y": -3.1099999999999994,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1663,7 +1663,7 @@ description: Artifact commands bench.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": 16.97,
-            "y": 0.67,
+            "y": 0.6699999999999999,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1730,7 +1730,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 0.43,
+            "x": 0.4299999999999997,
             "y": 15.31,
             "z": 0.0
           },
@@ -1747,8 +1747,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 2.63,
-            "y": 9.26,
+            "x": 2.629999999999999,
+            "y": 9.259999999999998,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1798,8 +1798,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -5.28,
-            "y": 3.36,
+            "x": -5.280000000000001,
+            "y": 3.3599999999999994,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1849,8 +1849,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -3.14,
-            "y": -2.68,
+            "x": -3.1399999999999952,
+            "y": -2.679999999999996,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1866,8 +1866,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -31.95,
-            "y": 1.72,
+            "x": -31.950000000000003,
+            "y": 1.7199999999999989,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2085,8 +2085,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 1.01,
-            "y": -6.46,
+            "x": 1.0099999999999998,
+            "y": -6.460000000000001,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2102,8 +2102,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -0.66,
-            "y": -7.79,
+            "x": -0.6600000000000019,
+            "y": -7.789999999999999,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2119,8 +2119,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -1.78,
-            "y": -3.11,
+            "x": -1.7799999999999976,
+            "y": -3.1099999999999994,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2188,7 +2188,7 @@ description: Artifact commands bench.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": 16.97,
-            "y": 0.67,
+            "y": 0.6699999999999999,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2255,7 +2255,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 0.43,
+            "x": 0.4299999999999997,
             "y": 15.31,
             "z": 0.0
           },
@@ -2272,8 +2272,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 2.63,
-            "y": 9.26,
+            "x": 2.629999999999999,
+            "y": 9.259999999999998,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2323,8 +2323,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -5.28,
-            "y": 3.36,
+            "x": -5.280000000000001,
+            "y": 3.3599999999999994,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2374,8 +2374,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -3.14,
-            "y": -2.68,
+            "x": -3.1399999999999952,
+            "y": -2.679999999999996,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2391,8 +2391,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -31.95,
-            "y": 1.72,
+            "x": -31.950000000000003,
+            "y": 1.7199999999999989,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2545,8 +2545,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 1.01,
-            "y": -6.46,
+            "x": 1.0099999999999998,
+            "y": -6.460000000000001,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2562,8 +2562,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -0.66,
-            "y": -7.79,
+            "x": -0.6600000000000019,
+            "y": -7.789999999999999,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2579,8 +2579,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -1.78,
-            "y": -3.11,
+            "x": -1.7799999999999976,
+            "y": -3.1099999999999994,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2648,7 +2648,7 @@ description: Artifact commands bench.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": 16.97,
-            "y": 0.67,
+            "y": 0.6699999999999999,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2715,7 +2715,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 0.43,
+            "x": 0.4299999999999997,
             "y": 15.31,
             "z": 0.0
           },
@@ -2732,8 +2732,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 2.63,
-            "y": 9.26,
+            "x": 2.629999999999999,
+            "y": 9.259999999999998,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2783,8 +2783,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -5.28,
-            "y": 3.36,
+            "x": -5.280000000000001,
+            "y": 3.3599999999999994,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2834,8 +2834,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -3.14,
-            "y": -2.68,
+            "x": -3.1399999999999952,
+            "y": -2.679999999999996,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -2851,8 +2851,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -31.95,
-            "y": 1.72,
+            "x": -31.950000000000003,
+            "y": 1.7199999999999989,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -3083,7 +3083,7 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -10.614,
+          "x": -10.614359353944899,
           "y": 8.0,
           "z": 0.0
         }
@@ -3105,7 +3105,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -11.307,
+            "x": -11.30717967697245,
             "y": 9.2,
             "z": 0.0
           },
@@ -3122,7 +3122,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.693,
+            "x": -12.69282032302755,
             "y": 9.2,
             "z": 0.0
           },
@@ -3139,7 +3139,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -13.386,
+            "x": -13.385640646055101,
             "y": 8.0,
             "z": 0.0
           },
@@ -3156,7 +3156,24 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.693,
+            "x": -12.69282032302755,
+            "y": 6.800000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -11.30717967697245,
             "y": 6.8,
             "z": 0.0
           },
@@ -3173,24 +3190,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -11.307,
-            "y": 6.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -10.614,
+            "x": -10.614359353944899,
             "y": 8.0,
             "z": 0.0
           },
@@ -3357,7 +3357,7 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 17.386,
+          "x": 17.3856406460551,
           "y": 8.0,
           "z": 0.0
         }
@@ -3379,7 +3379,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 16.693,
+            "x": 16.69282032302755,
             "y": 9.2,
             "z": 0.0
           },
@@ -3396,7 +3396,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.307,
+            "x": 15.30717967697245,
             "y": 9.2,
             "z": 0.0
           },
@@ -3413,7 +3413,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14.614,
+            "x": 14.614359353944899,
             "y": 8.0,
             "z": 0.0
           },
@@ -3430,7 +3430,24 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.307,
+            "x": 15.30717967697245,
+            "y": 6.800000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 16.69282032302755,
             "y": 6.8,
             "z": 0.0
           },
@@ -3447,24 +3464,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 16.693,
-            "y": 6.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 17.386,
+            "x": 17.3856406460551,
             "y": 8.0,
             "z": 0.0
           },
@@ -3752,8 +3752,8 @@ description: Artifact commands bench.kcl
           [
             {
               "translate": {
-                "x": 10.986,
-                "y": -0.549,
+                "x": 10.986275727656292,
+                "y": -0.5493137863828146,
                 "z": 0.0
               },
               "scale": {
@@ -3781,8 +3781,8 @@ description: Artifact commands bench.kcl
           [
             {
               "translate": {
-                "x": 21.973,
-                "y": -1.099,
+                "x": 21.972551455312583,
+                "y": -1.0986275727656292,
                 "z": 0.0
               },
               "scale": {
@@ -4090,8 +4090,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.985,
-            "y": 0.244,
+            "x": -1.985092303282644,
+            "y": 0.2437386868102951,
             "z": 0.0
           },
           "relative": true
@@ -4124,8 +4124,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.919,
-            "y": 6.536,
+            "x": 0.918542466336432,
+            "y": 6.535769253694364,
             "z": 0.0
           },
           "relative": true
@@ -4158,8 +4158,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.985,
-            "y": -0.244,
+            "x": 1.985092303282644,
+            "y": -0.24373868681029495,
             "z": 0.0
           },
           "relative": true
@@ -4202,8 +4202,8 @@ description: Artifact commands bench.kcl
           [
             {
               "translate": {
-                "x": -1.493,
-                "y": -10.898,
+                "x": -1.4930535746301998,
+                "y": -10.89820127467299,
                 "z": 0.0
               },
               "scale": {
@@ -4468,7 +4468,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0,
+            "x": -0.0000000000000006123233995736766,
             "y": 23.0
           },
           "radius": 10.0,
@@ -4849,7 +4849,7 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0,
+            "x": -0.0000000000000006123233995736766,
             "y": 23.0
           },
           "radius": 10.0,

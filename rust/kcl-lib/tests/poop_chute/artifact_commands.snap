@@ -81,7 +81,7 @@ description: Artifact commands poop_chute.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.063,
+            "x": 0.0625,
             "y": 0.0,
             "z": 0.0
           },
@@ -99,7 +99,7 @@ description: Artifact commands poop_chute.kcl
           "type": "line",
           "end": {
             "x": 2.0,
-            "y": 0.937,
+            "y": 0.9374999999999999,
             "z": 0.0
           },
           "relative": false
@@ -150,7 +150,7 @@ description: Artifact commands poop_chute.kcl
           "type": "line",
           "end": {
             "x": 1.875,
-            "y": 0.937,
+            "y": 0.9374999999999999,
             "z": 0.0
           },
           "relative": false
@@ -166,7 +166,7 @@ description: Artifact commands poop_chute.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.063,
+            "x": 1.0625,
             "y": 0.125,
             "z": 0.0
           },
@@ -201,7 +201,7 @@ description: Artifact commands poop_chute.kcl
           "type": "line",
           "end": {
             "x": 0.125,
-            "y": 0.938,
+            "y": 0.9375000000000002,
             "z": 0.0
           },
           "relative": false
@@ -252,7 +252,7 @@ description: Artifact commands poop_chute.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 0.937,
+            "y": 0.9374999999999999,
             "z": 0.0
           },
           "relative": false
@@ -268,7 +268,7 @@ description: Artifact commands poop_chute.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.937,
+            "x": 0.9374999999999997,
             "y": 0.0,
             "z": 0.0
           },
@@ -292,7 +292,7 @@ description: Artifact commands poop_chute.kcl
         "target": "[uuid]",
         "origin": {
           "x": 0.0,
-          "y": 5.5,
+          "y": 5.5000001,
           "z": 0.0
         },
         "axis": {
@@ -412,7 +412,7 @@ description: Artifact commands poop_chute.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.063,
+            "x": 0.0625,
             "y": 0.0,
             "z": 0.0
           },
@@ -430,7 +430,7 @@ description: Artifact commands poop_chute.kcl
           "type": "line",
           "end": {
             "x": 2.0,
-            "y": 0.937,
+            "y": 0.9374999999999999,
             "z": 0.0
           },
           "relative": false
@@ -481,7 +481,7 @@ description: Artifact commands poop_chute.kcl
           "type": "line",
           "end": {
             "x": 1.875,
-            "y": 0.937,
+            "y": 0.9374999999999999,
             "z": 0.0
           },
           "relative": false
@@ -497,7 +497,7 @@ description: Artifact commands poop_chute.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.063,
+            "x": 1.0625,
             "y": 0.125,
             "z": 0.0
           },
@@ -532,7 +532,7 @@ description: Artifact commands poop_chute.kcl
           "type": "line",
           "end": {
             "x": 0.125,
-            "y": 0.938,
+            "y": 0.9375000000000002,
             "z": 0.0
           },
           "relative": false
@@ -583,7 +583,7 @@ description: Artifact commands poop_chute.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 0.937,
+            "y": 0.9374999999999999,
             "z": 0.0
           },
           "relative": false
@@ -599,7 +599,7 @@ description: Artifact commands poop_chute.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.937,
+            "x": 0.9374999999999997,
             "y": 0.0,
             "z": 0.0
           },
