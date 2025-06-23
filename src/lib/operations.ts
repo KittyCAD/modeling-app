@@ -146,40 +146,41 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // bidirectionalLength argument from a string to a KCL expression
-  let bidirectionalLength: KclCommandValue | Error | ParseResult | undefined
+  let bidirectionalLength: KclCommandValue | undefined
   if (
     'bidirectionalLength' in operation.labeledArgs &&
     operation.labeledArgs.bidirectionalLength
   ) {
-    bidirectionalLength = await stringToKclExpression(
+    const result = await stringToKclExpression(
       codeManager.code.slice(
         operation.labeledArgs.bidirectionalLength.sourceRange[0],
         operation.labeledArgs.bidirectionalLength.sourceRange[1]
       )
     )
-  }
-  if (
-    err(bidirectionalLength) ||
-    (bidirectionalLength && 'errors' in bidirectionalLength)
-  ) {
-    return { reason: "Couldn't retrieve bidirectionalLength argument" }
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve bidirectionalLength argument" }
+    }
+
+    bidirectionalLength = result
   }
 
   // twistAngle argument from a string to a KCL expression
-  let twistAngle: KclCommandValue | Error | ParseResult | undefined
+  let twistAngle: KclCommandValue | undefined
   if (
     'twistAngle' in operation.labeledArgs &&
     operation.labeledArgs.twistAngle
   ) {
-    twistAngle = await stringToKclExpression(
+    const result = await stringToKclExpression(
       codeManager.code.slice(
         operation.labeledArgs.twistAngle.sourceRange[0],
         operation.labeledArgs.twistAngle.sourceRange[1]
       )
     )
-  }
-  if (err(twistAngle) || (twistAngle && 'errors' in twistAngle)) {
-    return { reason: "Couldn't retrieve twistAngle argument" }
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve twistAngle argument" }
+    }
+
+    twistAngle = result
   }
 
   // 3. Assemble the default argument values for the command,
