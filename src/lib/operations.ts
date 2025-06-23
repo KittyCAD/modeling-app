@@ -25,7 +25,7 @@ import type {
   HelixModes,
   ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import type { KclExpression } from '@src/lib/commandTypes'
+import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import {
   stringToKclExpression,
   retrieveArgFromPipedCallExpression,
@@ -134,12 +134,63 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     return { reason: "Couldn't retrieve length argument" }
   }
 
+  // symmetric argument from a string to boolean
+  let symmetric: boolean | undefined
+  if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
+    symmetric =
+      codeManager.code.slice(
+        operation.labeledArgs.symmetric.sourceRange[0],
+        operation.labeledArgs.symmetric.sourceRange[1]
+      ) === 'true'
+  }
+
+  // bidirectionalLength argument from a string to a KCL expression
+  let bidirectionalLength: KclCommandValue | undefined
+  if (
+    'bidirectionalLength' in operation.labeledArgs &&
+    operation.labeledArgs.bidirectionalLength
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.bidirectionalLength.sourceRange[0],
+        operation.labeledArgs.bidirectionalLength.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve bidirectionalLength argument" }
+    }
+
+    bidirectionalLength = result
+  }
+
+  // twistAngle argument from a string to a KCL expression
+  let twistAngle: KclCommandValue | undefined
+  if (
+    'twistAngle' in operation.labeledArgs &&
+    operation.labeledArgs.twistAngle
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.twistAngle.sourceRange[0],
+        operation.labeledArgs.twistAngle.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve twistAngle argument" }
+    }
+
+    twistAngle = result
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Extrude'] = {
     sketches,
     length,
+    symmetric,
+    bidirectionalLength,
+    twistAngle,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {

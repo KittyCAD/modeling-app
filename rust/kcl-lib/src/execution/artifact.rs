@@ -85,10 +85,8 @@ pub struct CompositeSolid {
     pub id: ArtifactId,
     pub sub_type: CompositeSolidSubType,
     /// Constituent solids of the composite solid.
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub solid_ids: Vec<ArtifactId>,
     /// Tool solids used for asymmetric operations like subtract.
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tool_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
     /// This is the ID of the composite solid that this is part of, if any, as a
@@ -141,12 +139,10 @@ pub struct Segment {
     pub path_id: ArtifactId,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edge_cut_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub common_surface_ids: Vec<ArtifactId>,
 }
 
@@ -158,9 +154,7 @@ pub struct Sweep {
     pub id: ArtifactId,
     pub sub_type: SweepSubType,
     pub path_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub surface_ids: Vec<ArtifactId>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
 }
@@ -209,10 +203,8 @@ pub struct StartSketchOnPlane {
 pub struct Wall {
     pub id: ArtifactId,
     pub seg_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cut_edge_ids: Vec<ArtifactId>,
     pub sweep_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub path_ids: Vec<ArtifactId>,
     /// This is for the sketch-on-face plane, not for the wall itself.  Traverse
     /// to the extrude and/or segment to get the wall's code_ref.
@@ -227,10 +219,8 @@ pub struct Wall {
 pub struct Cap {
     pub id: ArtifactId,
     pub sub_type: CapSubType,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cut_edge_ids: Vec<ArtifactId>,
     pub sweep_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub path_ids: Vec<ArtifactId>,
     /// This is for the sketch-on-face plane, not for the cap itself.  Traverse
     /// to the extrude and/or segment to get the cap's code_ref.
@@ -259,7 +249,6 @@ pub struct SweepEdge {
     #[serde(skip)]
     pub index: usize,
     pub sweep_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub common_surface_ids: Vec<ArtifactId>,
 }
 
@@ -278,7 +267,6 @@ pub struct EdgeCut {
     pub id: ArtifactId,
     pub sub_type: EdgeCutSubType,
     pub consumed_edge_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
@@ -540,6 +528,11 @@ impl ArtifactGraph {
         self.map.is_empty()
     }
 
+    #[cfg(test)]
+    pub(crate) fn iter(&self) -> impl Iterator<Item = (&ArtifactId, &Artifact)> {
+        self.map.iter()
+    }
+
     pub fn values(&self) -> impl Iterator<Item = &Artifact> {
         self.map.values()
     }
@@ -728,10 +721,7 @@ fn artifacts_to_update(
     exec_artifacts: &IndexMap<ArtifactId, Artifact>,
 ) -> Result<Vec<Artifact>, KclError> {
     let uuid = artifact_command.cmd_id;
-    let Some(response) = responses.get(&uuid) else {
-        // Response not found or not successful.
-        return Ok(Vec::new());
-    };
+    let response = responses.get(&uuid);
 
     // TODO: Build path-to-node from artifact_command source range.  Right now,
     // we're serializing an empty array, and the TS wrapper fills it in with the
@@ -875,7 +865,7 @@ fn artifacts_to_update(
                 new_path.seg_ids = vec![id];
                 return_arr.push(Artifact::Path(new_path));
             }
-            if let OkModelingCmdResponse::ClosePath(close_path) = response {
+            if let Some(OkModelingCmdResponse::ClosePath(close_path)) = response {
                 return_arr.push(Artifact::Solid2d(Solid2d {
                     id: close_path.face_id.into(),
                     path_id,
@@ -895,8 +885,8 @@ fn artifacts_to_update(
             ids: original_path_ids, ..
         }) => {
             let face_edge_infos = match response {
-                OkModelingCmdResponse::EntityMirror(resp) => &resp.entity_face_edge_ids,
-                OkModelingCmdResponse::EntityMirrorAcrossEdge(resp) => &resp.entity_face_edge_ids,
+                Some(OkModelingCmdResponse::EntityMirror(resp)) => &resp.entity_face_edge_ids,
+                Some(OkModelingCmdResponse::EntityMirrorAcrossEdge(resp)) => &resp.entity_face_edge_ids,
                 _ => internal_error!(
                     range,
                     "Mirror response variant not handled: id={id:?}, cmd={cmd:?}, response={response:?}"
@@ -983,7 +973,7 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::Loft(loft_cmd) => {
-            let OkModelingCmdResponse::Loft(_) = response else {
+            let Some(OkModelingCmdResponse::Loft(_)) = response else {
                 return Ok(Vec::new());
             };
             let mut return_arr = Vec::new();
@@ -1013,7 +1003,7 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::Solid3dGetExtrusionFaceInfo(_) => {
-            let OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(face_info) = response else {
+            let Some(OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(face_info)) = response else {
                 return Ok(Vec::new());
             };
             let mut return_arr = Vec::new();
@@ -1134,7 +1124,7 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::Solid3dGetAdjacencyInfo(kcmc::Solid3dGetAdjacencyInfo { .. }) => {
-            let OkModelingCmdResponse::Solid3dGetAdjacencyInfo(info) = response else {
+            let Some(OkModelingCmdResponse::Solid3dGetAdjacencyInfo(info)) = response else {
                 return Ok(Vec::new());
             };
 
@@ -1315,21 +1305,21 @@ fn artifacts_to_update(
             let not_cmd_id = move |solid_id: &ArtifactId| *solid_id != id;
 
             match response {
-                OkModelingCmdResponse::BooleanIntersection(intersection) => intersection
+                Some(OkModelingCmdResponse::BooleanIntersection(intersection)) => intersection
                     .extra_solid_ids
                     .iter()
                     .copied()
                     .map(ArtifactId::new)
                     .filter(not_cmd_id)
                     .for_each(|id| new_solid_ids.push(id)),
-                OkModelingCmdResponse::BooleanSubtract(subtract) => subtract
+                Some(OkModelingCmdResponse::BooleanSubtract(subtract)) => subtract
                     .extra_solid_ids
                     .iter()
                     .copied()
                     .map(ArtifactId::new)
                     .filter(not_cmd_id)
                     .for_each(|id| new_solid_ids.push(id)),
-                OkModelingCmdResponse::BooleanUnion(union) => union
+                Some(OkModelingCmdResponse::BooleanUnion(union)) => union
                     .extra_solid_ids
                     .iter()
                     .copied()
