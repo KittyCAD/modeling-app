@@ -2516,9 +2516,8 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { sketches } = input
         const { ast } = kclManager
-        const astResult = addLoft({ ast, sketches })
+        const astResult = addLoft({ ast, ...input })
         if (err(astResult)) {
           return Promise.reject(astResult)
         }

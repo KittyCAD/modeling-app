@@ -237,9 +237,13 @@ export function addSweep({
 export function addLoft({
   ast,
   sketches,
+  vDegree,
+  nodeToEdit,
 }: {
   ast: Node<Program>
   sketches: Selections
+  vDegree?: KclCommandValue
+  nodeToEdit?: PathToNode
 }):
   | {
       modifiedAst: Node<Program>
@@ -251,21 +255,52 @@ export function addLoft({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const sketchesExprList = getSketchExprsFromSelection(sketches, modifiedAst)
+  const sketchesExprList = getSketchExprsFromSelection(
+    sketches,
+    modifiedAst,
+    nodeToEdit
+  )
   if (err(sketchesExprList)) {
     return sketchesExprList
   }
 
-  const sketchesExpr = createSketchExpression(sketchesExprList)
-  const call = createCallExpressionStdLibKw('loft', sketchesExpr, [])
+  // Extra labeled args expressions
+  const vDegreeExpr = vDegree
+    ? [createLabeledArg('vDegree', valueOrVariable(vDegree))]
+    : []
 
-  // 3. Just push the declaration to the end
-  // Note that Loft doesn't support edit flows yet since it's selection only atm
-  const name = findUniqueName(modifiedAst, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
-  const declaration = createVariableDeclaration(name, call)
-  modifiedAst.body.push(declaration)
-  const toFirstKwarg = false
-  const pathToNode = createPathToNode(modifiedAst, toFirstKwarg)
+  const sketchesExpr = createSketchExpression(sketchesExprList)
+  const call = createCallExpressionStdLibKw('loft', sketchesExpr, [
+    ...vDegreeExpr,
+  ])
+
+  // Insert variables for labeled arguments if provided
+  if (vDegree && 'variableName' in vDegree && vDegree.variableName) {
+    insertVariableAndOffsetPathToNode(vDegree, modifiedAst, nodeToEdit)
+  }
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  let pathToNode: PathToNode | undefined
+  if (nodeToEdit) {
+    const result = getNodeFromPath<CallExpressionKw>(
+      modifiedAst,
+      nodeToEdit,
+      'CallExpressionKw'
+    )
+    if (err(result)) {
+      return result
+    }
+
+    Object.assign(result.node, call)
+    pathToNode = nodeToEdit
+  } else {
+    const name = findUniqueName(modifiedAst, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
+    const declaration = createVariableDeclaration(name, call)
+    modifiedAst.body.push(declaration)
+    const toFirstKwarg = !!vDegree
+    pathToNode = createPathToNode(modifiedAst, toFirstKwarg)
+  }
 
   return {
     modifiedAst,

@@ -200,6 +200,59 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
 }
 
 /**
+ * Gather up the argument values for the Loft command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'Loft',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  // 1. Map the unlabeled arguments to solid2d selections
+  const sketches = getSketchSelectionsFromOperation(
+    operation,
+    kclManager.artifactGraph
+  )
+  if (err(sketches)) {
+    return { reason: "Couldn't retrieve sketches" }
+  }
+
+  // 2.
+  // vDegree argument from a string to a KCL expression
+  let vDegree: KclCommandValue | undefined
+  if ('vDegree' in operation.labeledArgs && operation.labeledArgs.vDegree) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.vDegree.sourceRange[0],
+        operation.labeledArgs.vDegree.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve vDegree argument" }
+    }
+
+    vDegree = result
+  }
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Loft'] = {
+    sketches,
+    vDegree,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
  * Gather up the argument values for the Chamfer or Fillet command
  * to be used in the command bar edit flow.
  */
@@ -1046,6 +1099,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   loft: {
     label: 'Loft',
     icon: 'loft',
+    prepareToEdit: prepareToEditLoft,
     supportsAppearance: true,
     supportsTransform: true,
   },
