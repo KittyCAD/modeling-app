@@ -255,7 +255,11 @@ export function addLoft({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const sketchesExprList = getSketchExprsFromSelection(sketches, modifiedAst)
+  const sketchesExprList = getSketchExprsFromSelection(
+    sketches,
+    modifiedAst,
+    nodeToEdit
+  )
   if (err(sketchesExprList)) {
     return sketchesExprList
   }

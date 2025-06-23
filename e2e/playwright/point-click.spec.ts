@@ -1610,6 +1610,8 @@ sketch002 = startSketchOn(plane001)
         testPoint.y + 80
       )
       const loftDeclaration = 'loft001 = loft([sketch001, sketch002])'
+      const editedLoftDeclaration =
+        'loft001 = loft([sketch001, sketch002], vDegree = 3)'
 
       await test.step(`Look for the white of the sketch001 shape`, async () => {
         await scene.expectPixelColor([254, 254, 254], testPoint, 15)
@@ -1681,6 +1683,39 @@ sketch002 = startSketchOn(plane001)
         await scene.expectPixelColor([89, 89, 89], testPoint, 15)
       })
 
+      await test.step('Go through the edit flow via feature tree', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('Sweep', 0)
+        await op.dblclick()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {},
+          commandName: 'Loft',
+        })
+        await cmdBar.clickOptionalArgument('relativeTo')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'vDegree',
+          currentArgValue: '',
+          headerArguments: {
+            VDegree: '',
+          },
+          highlightedHeaderArg: 'vDegree',
+          commandName: 'Loft',
+        })
+        await page.keyboard.insertText('3')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            VDegree: '3',
+          },
+          commandName: 'Loft',
+        })
+        await cmdBar.submit()
+        await editor.expectEditor.toContain(editedLoftDeclaration)
+      })
+
       await test.step('Delete loft via feature tree selection', async () => {
         await editor.closePane()
         const operationButton = await toolbar.getFeatureTreeOperation('Loft', 0)
@@ -1688,72 +1723,6 @@ sketch002 = startSketchOn(plane001)
         await page.keyboard.press('Delete')
         await scene.expectPixelColor([254, 254, 254], testPoint, 15)
       })
-    })
-  })
-
-  // TODO: merge with above test. Right now we're not able to delete a loft
-  // right after creation via selection for some reason, so we go with a new instance
-  test('Loft and offset plane deletion via selection', async ({
-    context,
-    page,
-    homePage,
-    scene,
-    cmdBar,
-  }) => {
-    const initialCode = `sketch001 = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = 30)
-  plane001 = offsetPlane(XZ, offset = 50)
-  sketch002 = startSketchOn(plane001)
-  |> circle(center = [0, 0], radius = 20)
-loft001 = loft([sketch001, sketch002])
-`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-
-    // One dumb hardcoded screen pixel value
-    const testPoint = { x: 575, y: 200 }
-    const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    const [clickOnSketch2] = scene.makeMouseHelpers(
-      testPoint.x,
-      testPoint.y + 80
-    )
-
-    await test.step(`Delete loft`, async () => {
-      // Check for loft
-      await scene.expectPixelColor([89, 89, 89], testPoint, 15)
-      await clickOnSketch1()
-      await expect(page.locator('.cm-activeLine')).toHaveText(`
-      |> circle(center = [0, 0], radius = 30)
-    `)
-      await page.keyboard.press('Delete')
-      // Check for sketch 1
-      await scene.expectPixelColor([254, 254, 254], testPoint, 15)
-    })
-
-    await test.step('Delete sketch002', async () => {
-      await page.waitForTimeout(1000)
-      await clickOnSketch2()
-      await expect(page.locator('.cm-activeLine')).toHaveText(`
-      |> circle(center = [0, 0], radius = 20)
-    `)
-      await page.keyboard.press('Delete')
-      // Check for plane001
-      await scene.expectPixelColor([228, 228, 228], testPoint, 15)
-    })
-
-    await test.step('Delete plane001', async () => {
-      await page.waitForTimeout(1000)
-      await clickOnSketch2()
-      await expect(page.locator('.cm-activeLine')).toHaveText(`
-      plane001 = offsetPlane(XZ, offset = 50)
-    `)
-      await page.keyboard.press('Delete')
-      // Check for sketch 1
-      await scene.expectPixelColor([254, 254, 254], testPoint, 15)
     })
   })
 
