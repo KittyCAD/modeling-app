@@ -66,7 +66,7 @@ pub struct Settings {
 /// Application wide settings.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
-#[serde(rename_all = "snake_case", deny_unknown_fields)]
+#[serde(rename_all = "snake_case")]
 pub struct AppSettings {
     /// The settings for the appearance of the app.
     #[serde(default, skip_serializing_if = "is_default")]
