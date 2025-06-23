@@ -210,7 +210,7 @@ export function createSettings() {
       }),
       fixedSizeGrid: new Setting<boolean>({
         defaultValue: true,
-        hideOnLevel:'project',
+        hideOnLevel: 'project',
         description: 'dog',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
