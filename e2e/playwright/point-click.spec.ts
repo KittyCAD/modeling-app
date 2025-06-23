@@ -1954,6 +1954,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
 sketch001 = startSketchOn(XZ)
 profile001 = ${circleCode}`
     const sweepDeclaration = 'sweep001 = sweep(profile001, path = helix001)'
+    const editedSweepDeclaration = `sweep001 = sweep(profile001, path = helix001, relativeTo = 'sketchPlane')`
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -2015,11 +2016,43 @@ profile001 = ${circleCode}`
       await editor.expectEditor.toContain(sweepDeclaration)
     })
 
+    await test.step('Go through the edit flow via feature tree', async () => {
+      await toolbar.openPane('feature-tree')
+      const op = await toolbar.getFeatureTreeOperation('Sweep', 0)
+      await op.dblclick()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {},
+        commandName: 'Sweep',
+      })
+      await cmdBar.clickOptionalArgument('relativeTo')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'relativeTo',
+        currentArgValue: '',
+        headerArguments: {
+          RelativeTo: '',
+        },
+        highlightedHeaderArg: 'relativeTo',
+        commandName: 'Sweep',
+      })
+      await cmdBar.selectOption({ name: 'sketchPlane' }).click()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          RelativeTo: 'sketchPlane',
+        },
+        commandName: 'Sweep',
+      })
+      await cmdBar.submit()
+      await editor.expectEditor.toContain(editedSweepDeclaration)
+    })
+
     await test.step('Delete sweep via feature tree selection', async () => {
       const sweep = await toolbar.getFeatureTreeOperation('Sweep', 0)
       await sweep.click()
       await page.keyboard.press('Delete')
-      await editor.expectEditor.not.toContain(sweepDeclaration)
+      await editor.expectEditor.not.toContain(editedSweepDeclaration)
     })
   })
 
@@ -4921,6 +4954,156 @@ extrude001 = extrude(profile001 length = 1)`
     await test.step(`Helix is disabled`, async () => {
       await expect(toolbar.helixButton).not.toBeEnabled()
       await editor.expectEditor.toContain(badCode, { shouldNormalise: true })
+    })
+  })
+
+  test('Point-and-click extrude with optional args', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const squareProfileCode = `length001 = 100
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = length001)
+  |> xLine(length = length001)
+  |> yLine(length = -length001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+    `
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, squareProfileCode)
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await test.step('Select through code', async () => {
+      await editor.selectText('startProfile(sketch001, at = [0, 0])')
+    })
+
+    await test.step('Go through command bar flow', async () => {
+      await toolbar.extrudeButton.click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'sketches',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '',
+          Length: '',
+        },
+        highlightedHeaderArg: 'Profiles',
+        commandName: 'Extrude',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'length',
+        currentArgValue: '5',
+        headerArguments: {
+          Profiles: '1 profile',
+          Length: '',
+        },
+        highlightedHeaderArg: 'length',
+        commandName: 'Extrude',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Profiles: '1 profile',
+          Length: '5',
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.clickOptionalArgument('bidirectionalLength')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'bidirectionalLength',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '1 profile',
+          Length: '5',
+          BidirectionalLength: '',
+        },
+        highlightedHeaderArg: 'bidirectionalLength',
+        commandName: 'Extrude',
+      })
+      await page.keyboard.insertText('10')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Profiles: '1 profile',
+          Length: '5',
+          BidirectionalLength: '10',
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.submit()
+    })
+
+    await test.step('Check that the code has changed', async () => {
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain(
+        `extrude001 = extrude(profile001, length = 5, bidirectionalLength = 10)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Go through the edit flow via feature tree', async () => {
+      await toolbar.openPane('feature-tree')
+      const op = await toolbar.getFeatureTreeOperation('Extrude', 0)
+      await op.dblclick()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'length',
+        currentArgValue: '5',
+        headerArguments: {
+          Length: '5',
+          BidirectionalLength: '10',
+        },
+        highlightedHeaderArg: 'length',
+        commandName: 'Extrude',
+      })
+      await page.keyboard.insertText('10')
+      await cmdBar.progressCmdBar()
+      await page.getByRole('button', { name: 'BidirectionalLength' }).click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'bidirectionalLength',
+        currentArgValue: '10',
+        headerArguments: {
+          Length: '10',
+          BidirectionalLength: '10',
+        },
+        highlightedHeaderArg: 'bidirectionalLength',
+        commandName: 'Extrude',
+      })
+      await page.keyboard.insertText('20')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Length: '10',
+          BidirectionalLength: '20',
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.submit()
+    })
+
+    await test.step('Check that the code has changed again', async () => {
+      await scene.settled(cmdBar)
+      await toolbar.closePane('feature-tree')
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(
+        `extrude001 = extrude(profile001, length = 10, bidirectionalLength = 20)`,
+        { shouldNormalise: true }
+      )
     })
   })
 })

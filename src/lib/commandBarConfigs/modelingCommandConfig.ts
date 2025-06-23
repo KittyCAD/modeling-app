@@ -75,6 +75,9 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     sketches: Selections
     length: KclCommandValue
+    symmetric?: boolean
+    bidirectionalLength?: KclCommandValue
+    twistAngle?: KclCommandValue
   }
   Sweep: {
     // Enables editing workflow
@@ -83,6 +86,7 @@ export type ModelingCommandSchema = {
     sketches: Selections
     path: Selections
     sectional?: boolean
+    relativeTo?: string
   }
   Loft: {
     sketches: Selections
@@ -408,6 +412,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
       },
+      symmetric: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
+      },
+      bidirectionalLength: {
+        inputType: 'kcl',
+        required: false,
+      },
+      twistAngle: {
+        inputType: 'kcl',
+        required: false,
+      },
     },
   },
   Sweep: {
@@ -436,13 +456,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       sectional: {
         inputType: 'options',
-        skip: true,
         required: false,
         options: [
           { name: 'False', value: false },
           { name: 'True', value: true },
         ],
-        // No validation possible here until we have rollback
+      },
+      relativeTo: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'sketchPlane', value: 'sketchPlane' },
+          { name: 'trajectoryCurve', value: 'trajectoryCurve' },
+        ],
       },
     },
   },

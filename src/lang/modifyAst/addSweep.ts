@@ -37,11 +37,17 @@ export function addExtrude({
   ast,
   sketches,
   length,
+  symmetric,
+  bidirectionalLength,
+  twistAngle,
   nodeToEdit,
 }: {
   ast: Node<Program>
   sketches: Selections
   length: KclCommandValue
+  symmetric?: boolean
+  bidirectionalLength?: KclCommandValue
+  twistAngle?: KclCommandValue
   nodeToEdit?: PathToNode
 }):
   | {
@@ -63,14 +69,47 @@ export function addExtrude({
     return sketchesExprList
   }
 
+  // Extra labeled args expressions
+  const symmetricExpr = symmetric
+    ? [createLabeledArg('symmetric', createLiteral(symmetric))]
+    : []
+  const bidirectionalLengthExpr = bidirectionalLength
+    ? [
+        createLabeledArg(
+          'bidirectionalLength',
+          valueOrVariable(bidirectionalLength)
+        ),
+      ]
+    : []
+  const twistAngleExpr = twistAngle
+    ? [createLabeledArg('twistAngle', valueOrVariable(twistAngle))]
+    : []
+
   const sketchesExpr = createSketchExpression(sketchesExprList)
   const call = createCallExpressionStdLibKw('extrude', sketchesExpr, [
     createLabeledArg('length', valueOrVariable(length)),
+    ...symmetricExpr,
+    ...bidirectionalLengthExpr,
+    ...twistAngleExpr,
   ])
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in length && length.variableName) {
     insertVariableAndOffsetPathToNode(length, modifiedAst, nodeToEdit)
+  }
+  if (
+    bidirectionalLength &&
+    'variableName' in bidirectionalLength &&
+    bidirectionalLength.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(
+      bidirectionalLength,
+      modifiedAst,
+      nodeToEdit
+    )
+  }
+  if (twistAngle && 'variableName' in twistAngle && twistAngle.variableName) {
+    insertVariableAndOffsetPathToNode(twistAngle, modifiedAst, nodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -109,12 +148,14 @@ export function addSweep({
   sketches,
   path,
   sectional,
+  relativeTo,
   nodeToEdit,
 }: {
   ast: Node<Program>
   sketches: Selections
   path: Selections
   sectional?: boolean
+  relativeTo?: string
   nodeToEdit?: PathToNode
 }):
   | {
@@ -151,11 +192,15 @@ export function addSweep({
   const sectionalExpr = sectional
     ? [createLabeledArg('sectional', createLiteral(sectional))]
     : []
+  const relativeToExpr = relativeTo
+    ? [createLabeledArg('relativeTo', createLiteral(relativeTo))]
+    : []
 
   const sketchesExpr = createSketchExpression(sketchesExprList)
   const call = createCallExpressionStdLibKw('sweep', sketchesExpr, [
     createLabeledArg('path', pathExpr),
     ...sectionalExpr,
+    ...relativeToExpr,
   ])
 
   // 3. If edit, we assign the new function call declaration to the existing node,

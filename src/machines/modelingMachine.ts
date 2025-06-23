@@ -799,19 +799,25 @@ export const modelingMachine = setup({
   actions: {
     toastError: ({ event }) => {
       if ('output' in event && event.output instanceof Error) {
+        console.error(event.output)
         toast.error(event.output.message)
       } else if ('data' in event && event.data instanceof Error) {
+        console.error(event.data)
         toast.error(event.data.message)
       } else if ('error' in event && event.error instanceof Error) {
+        console.error(event.error)
         toast.error(event.error.message)
       }
     },
     toastErrorAndExitSketch: ({ event }) => {
       if ('output' in event && event.output instanceof Error) {
+        console.error(event.output)
         toast.error(event.output.message)
       } else if ('data' in event && event.data instanceof Error) {
+        console.error(event.data)
         toast.error(event.data.message)
       } else if ('error' in event && event.error instanceof Error) {
+        console.error(event.error)
         toast.error(event.error.message)
       }
 
@@ -2429,12 +2435,22 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { nodeToEdit, sketches, length } = input
+        const {
+          nodeToEdit,
+          sketches,
+          length,
+          symmetric,
+          bidirectionalLength,
+          twistAngle,
+        } = input
         const { ast } = kclManager
         const astResult = addExtrude({
           ast,
           sketches,
           length,
+          symmetric,
+          bidirectionalLength,
+          twistAngle,
           nodeToEdit,
         })
         if (err(astResult)) {
@@ -2466,14 +2482,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { nodeToEdit, sketches, path, sectional } = input
         const { ast } = kclManager
         const astResult = addSweep({
+          ...input,
           ast,
-          sketches,
-          path,
-          sectional,
-          nodeToEdit,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
