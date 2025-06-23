@@ -84,6 +84,31 @@ export async function executeAst({
   }
 }
 
+export async function executeAdditional({
+  ast,
+  rustContext,
+  path,
+}: {
+  ast: Node<Program>
+  rustContext: RustContext
+  path?: string
+}): Promise<ExecutionResult> {
+  try {
+    const settings = await jsAppSettings()
+    const execState = await rustContext.executeAdditional(ast, settings, path)
+
+    await rustContext.waitForAllEngineCommands()
+    return {
+      logs: [],
+      errors: [],
+      execState,
+      isInterrupted: false,
+    }
+  } catch (e: any) {
+    return handleExecuteError(e)
+  }
+}
+
 export async function executeAstMock({
   ast,
   rustContext,

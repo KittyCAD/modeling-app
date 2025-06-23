@@ -17,7 +17,12 @@ import {
   compilationErrorsToDiagnostics,
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
-import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
+import {
+  executeAdditional,
+  executeAst,
+  executeAstMock,
+  lintAst,
+} from '@src/lang/langHelpers'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
@@ -106,6 +111,7 @@ export class KclManager extends EventTarget {
     preComments: [],
     commentStart: 0,
   }
+  private _animateState = { step: 0 }
   private _execState: ExecState = emptyExecState()
   private _variables: VariableMap = {}
   lastSuccessfulVariables: VariableMap = {}
@@ -450,6 +456,7 @@ export class KclManager extends EventTarget {
     const ast = args.ast || this.ast
     markOnce('code/startExecuteAst')
 
+    this._animateState.step = 0
     const currentExecutionId = args.executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
@@ -539,6 +546,39 @@ export class KclManager extends EventTarget {
       data: null,
     })
     markOnce('code/endExecuteAst')
+  }
+
+  async executeAnimate(): Promise<void> {
+    if (this.isExecuting) {
+      return
+    }
+
+    const code = `animate(step = ${this._animateState.step})`
+    const result = parse(code)
+    if (err(result)) {
+      console.error(result)
+      return
+    }
+    const program = result.program
+    if (!program) {
+      console.error('No program returned from parse')
+      return
+    }
+
+    const { errors } = await executeAdditional({
+      ast: program,
+      path: this.singletons.codeManager.currentFilePath || undefined,
+      rustContext: this.singletons.rustContext,
+    })
+    if (errors.length > 0) {
+      console.error('Errors executing animate:', errors)
+      return
+    }
+
+    this._animateState.step += 1
+    if (this._animateState.step === Number.MAX_SAFE_INTEGER) {
+      this._animateState.step = 0
+    }
   }
 
   // DO NOT CALL THIS from codemirror ever.

@@ -805,6 +805,43 @@ impl ExecutorContext {
         Ok(outcome)
     }
 
+    pub async fn run_additional(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        assert!(!self.is_mock());
+
+        let (program, exec_state, result) = match cache::read_old_ast().await {
+            Some(cached_state) => {
+                let mut exec_state = cached_state.reconstitute_exec_state();
+                exec_state.mut_stack().restore_env(cached_state.main.result_env);
+
+                let result = self.run_concurrent(&program, &mut exec_state, None, true).await;
+
+                (program, exec_state, result)
+            }
+            None => {
+                let mut exec_state = ExecState::new(self);
+
+                let result = self.run_concurrent(&program, &mut exec_state, None, false).await;
+
+                (program, exec_state, result)
+            }
+        };
+
+        // Throw the error.
+        let result = result?;
+
+        // Save this as the last successful execution to the cache.
+        cache::write_old_ast(GlobalState::new(
+            exec_state.clone(),
+            self.settings.clone(),
+            program.ast,
+            result.0,
+        ))
+        .await;
+
+        let outcome = exec_state.into_exec_outcome(result.0, self).await;
+        Ok(outcome)
+    }
+
     /// Perform the execution of a program.
     ///
     /// To access non-fatal errors and warnings, extract them from the `ExecState`.

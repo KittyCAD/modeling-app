@@ -7,6 +7,8 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 
 import styles from './ModelingPane.module.css'
+import { reportRejection } from '@src/lib/trap'
+import { kclManager } from '@src/lib/singletons'
 
 export interface ModelingPaneProps {
   id: string
@@ -17,6 +19,28 @@ export interface ModelingPaneProps {
   Menu?: React.ReactNode | React.FC
   detailsTestId?: string
   onClose: () => void
+}
+
+const ANIMATE_INTERVAL = 16 // milliseconds
+let animateTimeout: NodeJS.Timeout | null = null
+
+function doAnimate() {
+  ;(async () => {
+    await kclManager.executeAnimate()
+    if (animateTimeout !== null) {
+      animateTimeout = setTimeout(doAnimate, ANIMATE_INTERVAL)
+    }
+  })().catch(reportRejection)
+}
+
+function onPlay() {
+  console.log('Play button clicked')
+  if (animateTimeout) {
+    clearTimeout(animateTimeout)
+    animateTimeout = null
+  } else {
+    animateTimeout = setTimeout(doAnimate, ANIMATE_INTERVAL)
+  }
 }
 
 export const ModelingPaneHeader = ({
@@ -40,6 +64,20 @@ export const ModelingPaneHeader = ({
         )}
         <span data-testid={id + '-header'}>{title}</span>
       </div>
+      {id === 'code' && (
+        <ActionButton
+          Element="button"
+          iconStart={{
+            icon: 'play',
+            iconClassName: '!text-current',
+            bgClassName: 'bg-transparent dark:bg-transparent',
+          }}
+          className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none"
+          onClick={() => onPlay()}
+        >
+          <Tooltip position="bottom-right">Play</Tooltip>
+        </ActionButton>
+      )}
       {Menu instanceof Function ? <Menu /> : Menu}
       <ActionButton
         Element="button"

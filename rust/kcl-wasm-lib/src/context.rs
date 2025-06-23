@@ -111,6 +111,48 @@ impl Context {
         ctx.run_with_caching(program).await
     }
 
+    /// Execute an additional program using the cache.
+    #[wasm_bindgen(js_name = executeAdditional)]
+    pub async fn execute_additional(
+        &self,
+        program_ast_json: &str,
+        path: Option<String>,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        self.execute_additional_typed(program_ast_json, path, settings)
+            .await
+            .and_then(|outcome| {
+                JsValue::from_serde(&outcome).map_err(|e| {
+                    // The serde-wasm-bindgen does not work here because of weird HashMap issues.
+                    // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
+                    KclErrorWithOutputs::no_outputs(KclError::internal(format!(
+                        "Could not serialize successful KCL result. {TRUE_BUG} Details: {e}"
+                    )))
+                })
+            })
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())
+    }
+
+    async fn execute_additional_typed(
+        &self,
+        program_ast_json: &str,
+        path: Option<String>,
+        settings: &str,
+    ) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        let program: Program = serde_json::from_str(program_ast_json).map_err(|e| {
+            let err = KclError::internal(format!("Could not deserialize KCL AST. {TRUE_BUG} Details: {e}"));
+            KclErrorWithOutputs::no_outputs(err)
+        })?;
+        let ctx = self.create_executor_ctx(settings, path, false).map_err(|e| {
+            KclErrorWithOutputs::no_outputs(KclError::internal(format!(
+                "Could not create KCL executor context. {TRUE_BUG} Details: {e}"
+            )))
+        })?;
+        ctx.run_additional(program).await
+    }
+
     /// Reset the scene and bust the cache.
     /// ONLY use this if you absolutely need to reset the scene and bust the cache.
     #[wasm_bindgen(js_name = bustCacheAndResetScene)]
