@@ -20,7 +20,6 @@ import {
   type Program,
   pathToNodeFromRustNodePath,
   type VariableDeclaration,
-  type ParseResult,
 } from '@src/lang/wasm'
 import type {
   HelixModes,
