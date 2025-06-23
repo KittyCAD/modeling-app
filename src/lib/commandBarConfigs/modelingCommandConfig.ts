@@ -89,7 +89,11 @@ export type ModelingCommandSchema = {
     relativeTo?: string
   }
   Loft: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
     sketches: Selections
+    vDegree?: KclCommandValue
   }
   Revolve: {
     // Enables editing workflow
@@ -477,12 +481,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'loft',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
         selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
+      },
+      vDegree: {
+        inputType: 'kcl',
+        required: false,
       },
     },
   },
