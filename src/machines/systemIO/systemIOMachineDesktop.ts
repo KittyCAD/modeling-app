@@ -488,7 +488,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         // no-op
         if (oldPath === newPath) {
           return {
-            message: `Old is the same as new.`,
+            message: `Old file is the same as new.`,
             fileNameWithExtension,
             requestedFileNameWithExtension,
           }
@@ -508,7 +508,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         window.electron.rename(oldPath, newPath)
 
         return {
-          message: `Successfully renamed "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
+          message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
           fileNameWithExtension,
           requestedFileNameWithExtension,
         }
