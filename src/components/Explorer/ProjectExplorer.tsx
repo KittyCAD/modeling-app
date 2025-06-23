@@ -376,7 +376,7 @@ export const ProjectExplorer = ({
                 applicationProjectDirectory
               )
 
-              // create a file if it is fake
+              // create a file if it is fake and navigate to that file!
               if (row.isFake) {
                 systemIOActor.send({
                   type: SystemIOMachineEvents.importFileFromURL,
@@ -387,9 +387,14 @@ export const ProjectExplorer = ({
                   },
                 })
               } else {
-                // rename the file otherwisejk
+                const requestedAbsoluteFilePathWithExtension = joinOSPaths(getParentAbsolutePath(
+                      row.path
+                    ), name)
+                // If your router loader is within the file you are renaming then reroute to the new path on disk
+                // If you are renaming a file you are not loaded into, do not reload!
+                const shouldWeNavigate = requestedAbsoluteFilePathWithExtension === file?.path
                 systemIOActor.send({
-                  type: SystemIOMachineEvents.renameFileAndNavigateToFile,
+                  type: shouldWeNavigate ? SystemIOMachineEvents.renameFileAndNavigateToFile : SystemIOMachineEvents.renameFile,
                   data: {
                     requestedFileNameWithExtension:
                       fileNameForcedWithOriginalExt,
