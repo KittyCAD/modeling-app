@@ -154,6 +154,16 @@ export function defaultSourceRange(): SourceRange {
   return [0, 0, 0]
 }
 
+/**
+ * Returns true if the first range is equal to or contains the second range.
+ */
+export function sourceRangeContains(
+  outer: SourceRange,
+  inner: SourceRange
+): boolean {
+  return outer[0] <= inner[0] && outer[1] >= inner[1] && outer[2] === inner[2]
+}
+
 function bestSourceRange(error: RustKclError): SourceRange {
   if (error.details.sourceRanges.length === 0) {
     return defaultSourceRange()
