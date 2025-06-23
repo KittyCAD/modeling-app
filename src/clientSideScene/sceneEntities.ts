@@ -144,14 +144,13 @@ import type { SegmentInputs } from '@src/lang/std/stdTypes'
 import { crossProduct, topLevelRange } from '@src/lang/util'
 import type { PathToNode, VariableMap } from '@src/lang/wasm'
 import {
-  defaultSourceRange,
   getTangentialArcToInfo,
   parse,
   recast,
   resultIsOk,
   sketchFromKclValue,
-  sourceRangeFromRust,
 } from '@src/lang/wasm'
+import { defaultSourceRange, sourceRangeFromRust } from '@src/lang/sourceRange'
 import { EXECUTION_TYPE_MOCK } from '@src/lib/constants'
 import {
   getRectangleCallExpressions,

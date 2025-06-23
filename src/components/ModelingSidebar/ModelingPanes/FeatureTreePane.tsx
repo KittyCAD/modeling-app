@@ -16,7 +16,7 @@ import {
   codeRefFromRange,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
-import { sourceRangeFromRust } from '@src/lang/wasm'
+import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   filterOperations,
   getOperationIcon,

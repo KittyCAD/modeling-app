@@ -16,8 +16,9 @@ import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
-import { sourceRangeContains, type ArtifactGraph } from '@src/lang/wasm'
+import { type ArtifactGraph } from '@src/lang/wasm'
 import type { BacktraceItem } from '@rust/kcl-lib/bindings/BacktraceItem'
+import { sourceRangeContains } from '@src/lang/sourceRange'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {
