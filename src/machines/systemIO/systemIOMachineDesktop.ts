@@ -24,7 +24,11 @@ import {
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 import type { AppMachineContext } from '@src/lib/types'
-import { getProjectDirectoryFromKCLFilePath, getStringAfterLastSeparator, parentPathRelativeToProject } from '@src/lib/paths'
+import {
+  getProjectDirectoryFromKCLFilePath,
+  getStringAfterLastSeparator,
+  parentPathRelativeToProject,
+} from '@src/lib/paths'
 
 const sharedBulkCreateWorkflow = async ({
   input,
@@ -509,13 +513,18 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         window.electron.rename(oldPath, newPath)
 
         const projectDirectoryPath = input.context.projectDirectoryPath
-        const projectName = getProjectDirectoryFromKCLFilePath(newPath, projectDirectoryPath)
-        const filePathWithExtensionRelativeToProject = parentPathRelativeToProject(newPath, projectDirectoryPath)
+        const projectName = getProjectDirectoryFromKCLFilePath(
+          newPath,
+          projectDirectoryPath
+        )
+        const filePathWithExtensionRelativeToProject =
+          parentPathRelativeToProject(newPath, projectDirectoryPath)
 
         return {
           message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
           projectName: projectName,
-          filePathWithExtensionRelativeToProject: filePathWithExtensionRelativeToProject,
+          filePathWithExtensionRelativeToProject:
+            filePathWithExtensionRelativeToProject,
         }
       }
     ),

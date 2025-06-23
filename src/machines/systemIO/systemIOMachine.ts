@@ -419,7 +419,7 @@ export const systemIOMachine = setup({
         input: {
           context: SystemIOContext
           rootContext: AppMachineContext
-        requestedFolderName: string
+          requestedFolderName: string
           folderName: string
           absolutePathToParentDirectory: string
         }
@@ -588,8 +588,8 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.creatingBlankFolder,
         },
         [SystemIOMachineEvents.renameFileAndNavigateToFile]: {
-          target: SystemIOMachineStates.renamingFileAndNavigateToFile
-        }
+          target: SystemIOMachineStates.renamingFileAndNavigateToFile,
+        },
       },
     },
     [SystemIOMachineStates.readingFolders]: {
@@ -1042,24 +1042,31 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
-          actions: [assign({
+          actions: [
+            assign({
               requestedFileName: ({ event }) => {
                 assertEvent(
                   event,
                   SystemIOMachineEvents.done_renameFileAndNavigateToFile
                 )
                 // Gotcha: file could have an ending of .kcl...
-                const file = event.output.filePathWithExtensionRelativeToProject.endsWith('.kcl')
-                  ? event.output.filePathWithExtensionRelativeToProject
-                  : event.output.filePathWithExtensionRelativeToProject + '.kcl'
+                const file =
+                  event.output.filePathWithExtensionRelativeToProject.endsWith(
+                    '.kcl'
+                  )
+                    ? event.output.filePathWithExtensionRelativeToProject
+                    : event.output.filePathWithExtensionRelativeToProject +
+                      '.kcl'
                 console.log(file, event.output.projectName)
 
-                  return {
+                return {
                   project: event.output.projectName,
                   file,
                 }
               },
-            }),SystemIOMachineActions.toastSuccess],
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,
