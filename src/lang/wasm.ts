@@ -67,6 +67,7 @@ import {
 } from '@src/lang/queryAstConstants'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import { isTopLevelModule } from '@src/lang/util'
+import { defaultSourceRange, sourceRangeFromRust } from '@src/lang/sourceRange'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -136,23 +137,6 @@ export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 export type { Path } from '@rust/kcl-lib/bindings/Path'
 export type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 export type { Solid } from '@rust/kcl-lib/bindings/Solid'
-
-/**
- * Convert a SourceRange as used inside the KCL interpreter into the above one for use in the
- * frontend (essentially we're eagerly checking whether the frontend should care about the SourceRange
- * so as not to expose details of the interpreter's current representation of module ids throughout
- * the frontend).
- */
-export function sourceRangeFromRust(s: SourceRange): SourceRange {
-  return [s[0], s[1], s[2]]
-}
-
-/**
- * Create a default SourceRange for testing or as a placeholder.
- */
-export function defaultSourceRange(): SourceRange {
-  return [0, 0, 0]
-}
 
 function bestSourceRange(error: RustKclError): SourceRange {
   if (error.details.sourceRanges.length === 0) {
@@ -314,14 +298,7 @@ export function emptyExecState(): ExecState {
 }
 
 export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
-  const artifactGraph = rustArtifactGraphToMap(execOutcome.artifactGraph)
-  // Translate NodePath to PathToNode.
-  for (const [_id, artifact] of artifactGraph) {
-    if (!artifact) continue
-    if (!('codeRef' in artifact)) continue
-    const pathToNode = pathToNodeFromRustNodePath(artifact.codeRef.nodePath)
-    artifact.codeRef.pathToNode = pathToNode
-  }
+  const artifactGraph = artifactGraphFromRust(execOutcome.artifactGraph)
 
   return {
     variables: execOutcome.variables,
@@ -333,29 +310,26 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   }
 }
 
-export function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
-  return {
-    variables: execOutcome.variables,
-    operations: execOutcome.operations,
-    artifactGraph: new Map<ArtifactId, Artifact>(),
-    errors: execOutcome.errors,
-    filenames: execOutcome.filenames,
-    defaultPlanes: execOutcome.defaultPlanes,
-  }
-}
-
 export type ArtifactGraph = Map<ArtifactId, Artifact>
 
-function rustArtifactGraphToMap(
+function artifactGraphFromRust(
   rustArtifactGraph: RustArtifactGraph
 ): ArtifactGraph {
-  const map = new Map<ArtifactId, Artifact>()
+  const artifactGraph = new Map<ArtifactId, Artifact>()
+  // Convert to a Map.
   for (const [id, artifact] of Object.entries(rustArtifactGraph.map)) {
     if (!artifact) continue
-    map.set(id, artifact)
+    artifactGraph.set(id, artifact)
   }
 
-  return map
+  // Translate NodePath to PathToNode.
+  for (const [_id, artifact] of artifactGraph) {
+    if (!artifact) continue
+    if (!('codeRef' in artifact)) continue
+    const pathToNode = pathToNodeFromRustNodePath(artifact.codeRef.nodePath)
+    artifact.codeRef.pathToNode = pathToNode
+  }
+  return artifactGraph
 }
 
 export function sketchFromKclValueOptional(
@@ -407,7 +381,7 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
     parsed.error.details.backtrace,
     parsed.nonFatal,
     parsed.operations,
-    rustArtifactGraphToMap(parsed.artifactGraph),
+    artifactGraphFromRust(parsed.artifactGraph),
     parsed.filenames,
     parsed.defaultPlanes
   )

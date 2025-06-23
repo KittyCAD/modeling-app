@@ -16,8 +16,9 @@ import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
-import type { ArtifactGraph } from '@src/lang/wasm'
+import { type ArtifactGraph } from '@src/lang/wasm'
 import type { BacktraceItem } from '@rust/kcl-lib/bindings/BacktraceItem'
+import { sourceRangeContains } from '@src/lang/sourceRange'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {
@@ -377,13 +378,13 @@ export function kclErrorsToDiagnostics(
       let message = err.msg
       if (err.kclBacktrace.length > 0) {
         // Show the backtrace in the error message.
+        const backtraceLines: Array<string> = []
         for (let i = 0; i < err.kclBacktrace.length; i++) {
           const item = err.kclBacktrace[i]
           if (
             i > 0 &&
             isTopLevelModule(item.sourceRange) &&
-            item.sourceRange[0] !== err.sourceRange[0] &&
-            item.sourceRange[1] !== err.sourceRange[1]
+            !sourceRangeContains(item.sourceRange, err.sourceRange)
           ) {
             diagnostics.push({
               from: toUtf16(item.sourceRange[0], sourceCode),
@@ -397,7 +398,11 @@ export function kclErrorsToDiagnostics(
             break
           }
           const name = item.fnName ? `${item.fnName}()` : '(anonymous)'
-          message += `\n${name}`
+          backtraceLines.push(name)
+        }
+        // If the backtrace is only one line, it's not helpful to show.
+        if (backtraceLines.length > 1) {
+          message += `\n\nBacktrace:\n${backtraceLines.join('\n')}`
         }
       }
       if (err.nonFatal.length > 0) {
