@@ -24,6 +24,7 @@ import {
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 import type { AppMachineContext } from '@src/lib/types'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
 
 const sharedBulkCreateWorkflow = async ({
   input,
@@ -541,11 +542,12 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedAbsolutePath: string
         }
       }) => {
+        const fileNameWithExtension = getStringAfterLastSeparator(input.requestedAbsolutePath)
         try {
           const result = await window.electron.stat(input.requestedAbsolutePath)
           if (result) {
             return Promise.reject(
-              new Error(`File ${input.requestedAbsolutePath} already exists`)
+              new Error(`File ${fileNameWithExtension} already exists`)
             )
           }
         } catch (e) {
@@ -553,7 +555,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
         await window.electron.writeFile(input.requestedAbsolutePath, '')
         return {
-          message: `File ${input.requestedAbsolutePath} written successfully`,
+          message: `File ${fileNameWithExtension} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,
         }
       }
