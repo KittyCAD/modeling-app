@@ -101,6 +101,8 @@ export type ModelingCommandSchema = {
     angle: KclCommandValue
     axis: string | undefined
     edge: Selections | undefined
+    symmetric?: boolean
+    bidirectionalAngle?: KclCommandValue
   }
   Shell: {
     // Enables editing workflow
@@ -539,6 +541,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
+      },
+      symmetric: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
+      },
+      bidirectionalAngle: {
+        inputType: 'kcl',
+        required: false,
       },
     },
   },

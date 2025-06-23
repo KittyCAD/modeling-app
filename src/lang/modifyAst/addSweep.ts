@@ -280,6 +280,8 @@ export function addRevolve({
   axisOrEdge,
   axis,
   edge,
+  symmetric,
+  bidirectionalAngle,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -288,6 +290,8 @@ export function addRevolve({
   axisOrEdge: 'Axis' | 'Edge'
   axis: string | undefined
   edge: Selections | undefined
+  symmetric?: boolean
+  bidirectionalAngle?: KclCommandValue
   nodeToEdit?: PathToNode
 }):
   | {
@@ -320,15 +324,42 @@ export function addRevolve({
     return new Error('Generated axis selection is missing.')
   }
 
+  // Extra labeled args expressions
+  const symmetricExpr = symmetric
+    ? [createLabeledArg('symmetric', createLiteral(symmetric))]
+    : []
+  const bidirectionalAngleExpr = bidirectionalAngle
+    ? [
+        createLabeledArg(
+          'bidirectionalAngle',
+          valueOrVariable(bidirectionalAngle)
+        ),
+      ]
+    : []
+
   const sketchesExpr = createSketchExpression(sketchesExprList)
   const call = createCallExpressionStdLibKw('revolve', sketchesExpr, [
     createLabeledArg('angle', valueOrVariable(angle)),
     createLabeledArg('axis', getAxisResult.generatedAxis),
+    ...symmetricExpr,
+    ...bidirectionalAngleExpr,
   ])
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in angle && angle.variableName) {
     insertVariableAndOffsetPathToNode(angle, modifiedAst, nodeToEdit)
+  }
+
+  if (
+    bidirectionalAngle &&
+    'variableName' in bidirectionalAngle &&
+    bidirectionalAngle.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(
+      bidirectionalAngle,
+      modifiedAst,
+      nodeToEdit
+    )
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
