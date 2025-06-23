@@ -45,4 +45,3 @@ We recommend downloading the latest application binary from our [website](https:
 ## Developing
 
 Finally, if you'd like to run a development build or contribute to the project, please visit our [contributor guide](CONTRIBUTING.md) to get started. To contribute to the KittyCAD Language, see the dedicated [readme](rust/kcl-lib/README.md) for KCL.
-# react-shared
