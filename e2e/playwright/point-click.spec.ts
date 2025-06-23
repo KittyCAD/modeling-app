@@ -1685,14 +1685,14 @@ sketch002 = startSketchOn(plane001)
 
       await test.step('Go through the edit flow via feature tree', async () => {
         await toolbar.openPane('feature-tree')
-        const op = await toolbar.getFeatureTreeOperation('Sweep', 0)
+        const op = await toolbar.getFeatureTreeOperation('Loft', 0)
         await op.dblclick()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {},
           commandName: 'Loft',
         })
-        await cmdBar.clickOptionalArgument('relativeTo')
+        await cmdBar.clickOptionalArgument('vDegree')
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'vDegree',
