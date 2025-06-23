@@ -518,32 +518,45 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
 
   // 2. Prepare labeled arguments
   // Same roundabout but twice for 'path' aka trajectory: sketch -> path -> segment
-  if (operation.labeledArgs.path?.value.type !== 'Sketch') {
-    return { reason: "Couldn't retrieve trajectory argument" }
+  if (
+    operation.labeledArgs.path?.value.type !== 'Sketch' &&
+    operation.labeledArgs.path?.value.type !== 'Helix'
+  ) {
+    return { reason: "Couldn't retrieve path argument" }
   }
 
   const trajectoryPathArtifact = getArtifactOfTypes(
     {
       key: operation.labeledArgs.path.value.value.artifactId,
-      types: ['path'],
+      types: ['path', 'helix'],
     },
     kclManager.artifactGraph
   )
 
-  if (err(trajectoryPathArtifact) || trajectoryPathArtifact.type !== 'path') {
+  if (
+    err(trajectoryPathArtifact) ||
+    (trajectoryPathArtifact.type !== 'path' &&
+      trajectoryPathArtifact.type !== 'helix')
+  ) {
     return { reason: "Couldn't retrieve trajectory path artifact" }
   }
 
-  const trajectoryArtifact = getArtifactOfTypes(
-    {
-      key: trajectoryPathArtifact.segIds[0],
-      types: ['segment'],
-    },
-    kclManager.artifactGraph
-  )
+  const trajectoryArtifact =
+    trajectoryPathArtifact.type === 'path'
+      ? getArtifactOfTypes(
+          {
+            key: trajectoryPathArtifact.segIds[0],
+            types: ['segment'],
+          },
+          kclManager.artifactGraph
+        )
+      : trajectoryPathArtifact
 
-  if (err(trajectoryArtifact) || trajectoryArtifact.type !== 'segment') {
-    console.log(trajectoryArtifact)
+  if (
+    err(trajectoryArtifact) ||
+    (trajectoryArtifact.type !== 'segment' &&
+      trajectoryArtifact.type !== 'helix')
+  ) {
     return { reason: "Couldn't retrieve trajectory artifact" }
   }
 
@@ -557,7 +570,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     otherSelections: [],
   }
 
-  // sectional argument from a string to a KCL expression
+  // optional arguments
   let sectional: boolean | undefined
   if ('sectional' in operation.labeledArgs && operation.labeledArgs.sectional) {
     sectional =
@@ -567,6 +580,17 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
       ) === 'true'
   }
 
+  let relativeTo: string | undefined
+  if (
+    'relativeTo' in operation.labeledArgs &&
+    operation.labeledArgs.relativeTo
+  ) {
+    relativeTo = codeManager.code.slice(
+      operation.labeledArgs.relativeTo.sourceRange[0],
+      operation.labeledArgs.relativeTo.sourceRange[1]
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -574,6 +598,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     sketches,
     path,
     sectional,
+    relativeTo,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
