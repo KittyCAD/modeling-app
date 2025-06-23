@@ -70,6 +70,7 @@ export async function executeAst({
 }): Promise<ExecutionResult> {
   try {
     const settings = await jsAppSettings()
+    console.log("ADAM LOOK HERE!", JSON.stringify(settings, null, 4))
     const execState = await rustContext.execute(ast, settings, path)
 
     await rustContext.waitForAllEngineCommands()
