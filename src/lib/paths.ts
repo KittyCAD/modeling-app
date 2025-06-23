@@ -51,6 +51,8 @@ export async function getProjectMetaByRouteId(
       : readLocalStorageAppSettingsFile()
   }
 
+  console.log('TEST SETTINGS UTILS', JSON.stringify(configuration, null, 4))
+
   if (err(configuration)) return Promise.reject(configuration)
 
   // Should not be possible but I guess logically it could be

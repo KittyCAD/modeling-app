@@ -98,6 +98,7 @@ export const settingsMachine = setup({
       input.rootContext.codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       const { currentProject, ...settings } = input.context
 
+      console.log('huh', settings)
       const val = await saveSettings(settings, currentProject?.path)
 
       if (input.toastCallback) {

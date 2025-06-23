@@ -69,7 +69,10 @@ export async function executeAst({
   path?: string
 }): Promise<ExecutionResult> {
   try {
+    console.log('YOLO')
     const settings = await jsAppSettings()
+
+    console.log('LANG HELPERS', JSON.stringify(settings, null, 4))
     const execState = await rustContext.execute(ast, settings, path)
 
     await rustContext.waitForAllEngineCommands()

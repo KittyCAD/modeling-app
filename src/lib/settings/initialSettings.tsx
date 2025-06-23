@@ -257,6 +257,18 @@ export function createSettings() {
         description: 'Toggle free camera while in sketch mode',
         validate: (v) => typeof v === 'boolean',
       }),
+      /**
+       * Fixed size grid
+       */
+      fixedSizeGrid: new Setting<boolean>({
+        defaultValue: true,
+        hideOnLevel:'project',
+        description: 'If true, grid will be a 10x10 grid where each cell is the size of your default length unit. If false, the grid will get bigger as you zoom out and smaller as you zoom in.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
       onboardingStatus: new Setting<OnboardingStatus>({
         defaultValue: '',
         // TODO: this could be better but we don't have a TS side real enum

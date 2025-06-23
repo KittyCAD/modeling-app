@@ -626,6 +626,7 @@ export const readAppSettingsFile = async () => {
     const configToml = await window.electron.readFile(settingsPath, {
       encoding: 'utf-8',
     })
+    console.log('config toml', JSON.stringify(configToml, null, 4))
     const parsedAppConfig = parseAppSettings(configToml)
     if (err(parsedAppConfig)) {
       return Promise.reject(parsedAppConfig)
@@ -635,6 +636,7 @@ export const readAppSettingsFile = async () => {
       parsedAppConfig.settings?.project?.directory
 
     if (hasProjectDirectorySetting) {
+      console.log('parsed app config', JSON.stringify(parsedAppConfig, null, 4))
       return parsedAppConfig
     } else {
       // inject the default project directory setting
@@ -671,6 +673,7 @@ export const readAppSettingsFile = async () => {
       ),
     },
   }
+  console.log('MERGED', JSON.stringify(mergedDefaultConfig, null, 4))
   return mergedDefaultConfig
 }
 

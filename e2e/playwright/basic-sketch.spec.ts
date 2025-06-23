@@ -9,6 +9,7 @@ import {
   TEST_COLORS,
   commonPoints,
   getUtils,
+  enableConsoleLogEverything,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -178,7 +179,19 @@ test.describe('Basic sketch', () => {
     cmdBar,
     scene,
     editor,
+    tronApp,
   }) => {
+    // await tronApp.cleanProjectDir({
+    //   app: {
+    //     appearance: {
+    //       theme: 'light',
+    //     },
+    //   },
+    // })
+    enableConsoleLogEverything({
+      page,
+      tronApp,
+    })
     await doBasicSketch(page, ['code'], { cmdBar, scene, homePage, editor })
   })
 
@@ -188,6 +201,7 @@ test.describe('Basic sketch', () => {
     cmdBar,
     scene,
     editor,
+    tronApp,
   }) => {
     // Load the app with the code panes
     await page.addInitScript(async (persistModelingContext) => {

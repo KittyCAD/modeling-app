@@ -51,6 +51,7 @@ const toUndefinedIfNull = (a: any): OmitNull<any> =>
 export function configurationToSettingsPayload(
   configuration: DeepPartial<Configuration>
 ): DeepPartial<SaveSettingsPayload> {
+  console.log('configuration', configuration)
   return {
     app: {
       theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
@@ -66,6 +67,7 @@ export function configurationToSettingsPayload(
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       projectDirectory: configuration?.settings?.project?.directory,
       showDebugPanel: configuration?.settings?.app?.show_debug_panel,
+      fixedSizeGrid: configuration.settings?.app?.fixed_size_grid
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
@@ -109,6 +111,7 @@ export function settingsPayloadToConfiguration(
         stream_idle_mode: configuration?.app?.streamIdleMode,
         allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
         show_debug_panel: configuration?.app?.showDebugPanel,
+        fixed_size_grid: configuration?.app?.fixedSizeGrid
       },
       modeling: {
         base_unit: configuration?.modeling?.defaultUnit,
@@ -327,11 +330,13 @@ export async function loadAndValidateSettings(
     settingsNext.app.projectDirectory.default = await getInitialDefaultDir()
   }
 
+  console.log("FUCK", appSettingsPayload)
   settingsNext = setSettingsAtLevel(
     settingsNext,
     'user',
     configurationToSettingsPayload(appSettingsPayload)
   )
+  console.log("FUCK2", settingsNext)
 
   // Load the project settings if they exist
   if (projectPath) {
@@ -365,10 +370,14 @@ export async function saveSettings(
   await initPromise
   const onDesktop = isDesktop()
 
+  console.log('all settings', allSettings)
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
+  const DOG = settingsPayloadToConfiguration(jsAppSettings)
+  console.log('CAT',jsAppSettings)
+  console.log("DOG", DOG)
   const appTomlString = serializeConfiguration(
-    settingsPayloadToConfiguration(jsAppSettings)
+    DOG
   )
   if (err(appTomlString)) return
 
@@ -542,15 +551,26 @@ export function getSettingInputType(setting: Setting) {
 }
 
 export const jsAppSettings = async (): Promise<DeepPartial<Configuration>> => {
+  console.log("HERE!!!")
   let jsAppSettings = default_app_settings()
+  console.log('old', JSON.stringify(jsAppSettings, null, 4))
+  console.log("NOT HERE!!!")
   if (!TEST) {
     // TODO: https://github.com/KittyCAD/modeling-app/issues/6445
     const settings = await import('@src/lib/singletons').then((module) =>
       module.getSettings()
-    )
+                                                             )
+    console.log('here1', settings)
     if (settings) {
+      console.log('here2', settings)
       jsAppSettings = getAllCurrentSettings(settings)
+      console.log('here3')
+
+      console.log('JS APP SETTINGS', jsAppSettings)
+      console.log('JS APP SETTINGS', settings)
     }
+
   }
+  console.log('here4')
   return settingsPayloadToConfiguration(jsAppSettings)
 }

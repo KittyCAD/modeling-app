@@ -8,10 +8,14 @@ export const TEST_SETTINGS_KEY = '/settings.toml'
 export const TEST_SETTINGS: DeepPartial<Settings> = {
   app: {
     appearance: {
-      theme: Themes.Dark,
+      theme: Themes.Light,
     },
     onboarding_status: 'dismissed',
     show_debug_panel: true,
+    // Tests were written before this setting existed.
+    // It's true by default because it's a good user experience, but
+    // these tests require it to be false.
+    fixed_size_grid: false,
   },
   modeling: {
     enable_ssao: false,
