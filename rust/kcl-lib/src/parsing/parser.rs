@@ -3334,7 +3334,7 @@ mod tests {
     use super::*;
     use crate::{
         parsing::ast::types::{BodyItem, Expr, VariableKind},
-        KclError, ModuleId,
+        ModuleId,
     };
 
     fn assert_reserved(word: &str) {
@@ -4398,14 +4398,10 @@ secondExtrude = startSketchOn(XY)
     #[test]
     fn test_parse_parens_unicode() {
         let result = crate::parsing::top_level_parse("(ޜ");
-        let KclError::Lexical { details } = result.0.unwrap_err() else {
-            panic!();
-        };
-        // TODO: Better errors when program cannot tokenize.
+        let details = result.0.unwrap().1.pop().unwrap();
+        // TODO: Highlight where the unmatched open parenthesis is.
         // https://github.com/KittyCAD/modeling-app/issues/696
-        assert_eq!(details.message, "found unknown token 'ޜ'");
-        assert_eq!(details.source_ranges[0].start(), 1);
-        assert_eq!(details.source_ranges[0].end(), 2);
+        assert_eq!(details.message, "Unexpected end of file. The compiler expected )");
     }
 
     #[test]

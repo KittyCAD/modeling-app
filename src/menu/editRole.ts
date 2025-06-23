@@ -149,8 +149,24 @@ export const modelingEditRole = (
         },
       },
       { type: 'separator' },
-      { role: 'undo' },
-      { role: 'redo' },
+      {
+        label: 'Undo',
+        accelerator: 'CmdOrCtrl+Z',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'Edit.Undo',
+          })
+        },
+      },
+      {
+        label: 'Redo',
+        accelerator: 'Shift+CmdOrCtrl+Z',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'Edit.Redo',
+          })
+        },
+      },
       { type: 'separator' },
       { role: 'cut' },
       { role: 'copy' },

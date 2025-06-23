@@ -1,10 +1,22 @@
-import { redo, undo } from '@codemirror/commands'
+import {
+  defaultKeymap,
+  history,
+  historyKeymap,
+  redo,
+  undo,
+} from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
-import { Annotation, EditorSelection, Transaction } from '@codemirror/state'
+import {
+  Annotation,
+  EditorSelection,
+  EditorState,
+  Transaction,
+  type TransactionSpec,
+} from '@codemirror/state'
 import type { ViewUpdate } from '@codemirror/view'
-import { EditorView } from '@codemirror/view'
+import { EditorView, keymap } from '@codemirror/view'
 import type { StateFrom } from 'xstate'
 
 import {
@@ -22,6 +34,8 @@ import type {
   ModelingMachineEvent,
   modelingMachine,
 } from '@src/machines/modelingMachine'
+import { historyCompartment } from '@src/editor/compartments'
+import type CodeManager from '@src/lang/codeManager'
 
 declare global {
   interface Window {
@@ -65,11 +79,28 @@ export default class EditorManager {
 
   private _highlightRange: Array<[number, number]> = [[0, 0]]
 
-  public _editorView: EditorView | null = null
+  private _editorState: EditorState
+  private _editorView: EditorView | null = null
   public kclManager?: KclManager
+  public codeManager?: CodeManager
 
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
+
+    this._editorState = EditorState.create({
+      doc: '',
+      extensions: [
+        historyCompartment.of(history()),
+        keymap.of([...defaultKeymap, ...historyKeymap]),
+      ],
+    })
+  }
+
+  get editorState(): EditorState {
+    return this._editorView?.state || this._editorState
+  }
+  get state() {
+    return this.editorState
   }
 
   setCopilotEnabled(enabled: boolean) {
@@ -80,10 +111,23 @@ export default class EditorManager {
     return this._copilotEnabled
   }
 
-  setEditorView(editorView: EditorView) {
+  // Invoked when editorView is created and each time when it is updated (eg. user is sketching)..
+  setEditorView(editorView: EditorView | null) {
+    // Update editorState to the latest editorView state.
+    // This is needed because if kcl pane is closed, editorView will become null but we still want to use the last state.
+    this._editorState = editorView?.state || this._editorState
+
     this._editorView = editorView
-    kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
+
+    kclEditorActor.send({
+      type: 'setKclEditorMounted',
+      data: Boolean(editorView),
+    })
     this.overrideTreeHighlighterUpdateForPerformanceTracking()
+  }
+
+  getEditorView(): EditorView | null {
+    return this._editorView
   }
 
   overrideTreeHighlighterUpdateForPerformanceTracking() {
@@ -130,10 +174,6 @@ export default class EditorManager {
 
   get isAllTextSelected() {
     return this._isAllTextSelected
-  }
-
-  get editorView(): EditorView | null {
-    return this._editorView
   }
 
   get isShiftDown(): boolean {
@@ -287,12 +327,39 @@ export default class EditorManager {
   undo() {
     if (this._editorView) {
       undo(this._editorView)
+    } else if (this._editorState) {
+      const undoPerformed = undo(this) // invokes dispatch which updates this._editorState
+      if (undoPerformed) {
+        const newState = this._editorState
+        // Update the code, this is similar to kcl/index.ts / update, updateDoc,
+        // needed to update the code, so sketch segments can update themselves.
+        // In the editorView case this happens within the kcl plugin's update method being called during updates.
+        this.codeManager!.code = newState.doc.toString()
+        void this.kclManager!.executeCode()
+      }
     }
   }
 
   redo() {
     if (this._editorView) {
       redo(this._editorView)
+    } else if (this._editorState) {
+      const redoPerformed = redo(this)
+      if (redoPerformed) {
+        const newState = this._editorState
+        this.codeManager!.code = newState.doc.toString()
+        void this.kclManager!.executeCode()
+      }
+    }
+  }
+
+  // Invoked by codeMirror during undo/redo.
+  // Call with incorrect "this" so it needs to be an arrow function.
+  dispatch = (spec: TransactionSpec) => {
+    if (this._editorView) {
+      this._editorView.dispatch(spec)
+    } else if (this._editorState) {
+      this._editorState = this._editorState.update(spec).state
     }
   }
 

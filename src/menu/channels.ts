@@ -7,6 +7,8 @@ export type MenuLabels =
   | 'Help.Command Palette...'
   | 'Help.Report a bug'
   | 'Help.Replay onboarding tutorial'
+  | 'Edit.Undo'
+  | 'Edit.Redo'
   | 'Edit.Rename project'
   | 'Edit.Delete project'
   | 'Edit.Change project directory'

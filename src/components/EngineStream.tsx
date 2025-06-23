@@ -610,7 +610,7 @@ export const EngineStream = (props: {
           dataTestId="loading-engine"
           className="fixed inset-0 h-screen"
         >
-          Connecting and setting up scene
+          Connecting and setting up scene...
         </Loading>
       )}
     </div>

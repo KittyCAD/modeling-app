@@ -403,7 +403,7 @@ const Home = () => {
       </div>
       <StatusBar
         globalItems={[
-          networkMachineStatus,
+          ...(isDesktop() ? [networkMachineStatus] : []),
           ...defaultGlobalStatusBarItems({ location, filePath: undefined }),
         ]}
         localItems={defaultLocalStatusBarItems}

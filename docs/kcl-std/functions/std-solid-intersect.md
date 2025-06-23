@@ -24,7 +24,7 @@ verifying fit, and analyzing overlapping geometries in assemblies.
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `solids` | `[Solid; 2+]` | The solids to intersect. | Yes |
-| `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The tolerance to use for the intersection operation. | No |
+| `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 
 ### Returns
 

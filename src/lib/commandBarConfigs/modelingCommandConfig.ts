@@ -13,6 +13,7 @@ import type {
 } from '@src/lang/wasm'
 import { isPathToNode } from '@src/lang/wasm'
 import type {
+  CommandArgumentConfig,
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
@@ -27,7 +28,11 @@ import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import type { SketchTool, modelingMachine } from '@src/machines/modelingMachine'
+import type {
+  ModelingMachineContext,
+  SketchTool,
+  modelingMachine,
+} from '@src/machines/modelingMachine'
 
 type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
@@ -44,6 +49,16 @@ export const EXTRUSION_RESULTS = [
 export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
 
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
+
+// For all nodeToEdit-like arguments needed for edit flows
+const nodeToEditDescription =
+  'Path to the node in the AST to edit. Never shown to the user.'
+const nodeToEditProps = {
+  description: nodeToEditDescription,
+  inputType: 'text',
+  required: false,
+  hidden: true,
+} as CommandArgumentConfig<PathToNode | undefined, ModelingMachineContext>
 
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
@@ -276,6 +291,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ['gltf', 'stl', 'ply'].includes(
             commandContext.argumentsToSubmit.type as string
           ),
+        hidden: (commandContext) =>
+          !['gltf', 'stl', 'ply'].includes(
+            commandContext.argumentsToSubmit.type as string
+          ),
         options: (commandContext) => {
           const type = commandContext.argumentsToSubmit.type as
             | OutputTypeKey
@@ -375,12 +394,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       sketches: {
         inputType: 'selection',
@@ -404,12 +418,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       sketches: {
         inputType: 'selection',
@@ -429,9 +438,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sectional: {
         inputType: 'options',
         skip: true,
-        defaultValue: false,
-        hidden: false,
-        required: true,
+        required: false,
         options: [
           { name: 'False', value: false },
           { name: 'True', value: true },
@@ -460,11 +467,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
+        ...nodeToEditProps,
       },
       sketches: {
         inputType: 'selection',
@@ -485,27 +488,27 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       axis: {
-        required: (commandContext) =>
-          ['Axis'].includes(
-            commandContext.argumentsToSubmit.axisOrEdge as string
-          ),
+        required: (context) =>
+          ['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
         inputType: 'options',
         displayName: 'Sketch Axis',
         options: [
           { name: 'X Axis', isCurrent: true, value: 'X' },
           { name: 'Y Axis', isCurrent: false, value: 'Y' },
         ],
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: (context) =>
+          Boolean(context.argumentsToSubmit.nodeToEdit) ||
+          !['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
       },
       edge: {
-        required: (commandContext) =>
-          ['Edge'].includes(
-            commandContext.argumentsToSubmit.axisOrEdge as string
-          ),
+        required: (context) =>
+          ['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: (context) =>
+          Boolean(context.argumentsToSubmit.nodeToEdit) ||
+          !['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
       },
       angle: {
         inputType: 'kcl',
@@ -520,11 +523,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
+        ...nodeToEditProps,
       },
       selection: {
         inputType: 'selection',
@@ -603,12 +602,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'plane',
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       plane: {
         inputType: 'selection',
@@ -630,12 +624,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       mode: {
         inputType: 'options',
@@ -729,11 +718,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       selection: {
         inputType: 'selection',
@@ -756,11 +741,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       selection: {
         inputType: 'selection',
@@ -804,7 +785,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         valueSummary: (nodeToEdit: PathToNode) => {
           const node = getNodeFromPath<VariableDeclarator>(
             kclManager.ast,
-            nodeToEdit
+            nodeToEdit,
+            'VariableDeclarator',
+            true
           )
           if (err(node) || node.node.type !== 'VariableDeclarator')
             return 'Error'
@@ -907,11 +890,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'make-variable',
     args: {
       currentValue: {
-        description:
-          'Path to the node in the AST to constrain. This is never shown to the user.',
+        description: nodeToEditDescription,
         inputType: 'text',
         required: false,
         skip: true,
+        hidden: true,
       },
       namedValue: {
         inputType: 'kcl',
@@ -983,27 +966,52 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       color: {
         inputType: 'options',
         required: true,
         options: [
-          { name: 'Red', value: '#FF0000' },
-          { name: 'Green', value: '#00FF00' },
-          { name: 'Blue', value: '#0000FF' },
-          { name: 'Turquoise', value: '#00FFFF' },
-          { name: 'Purple', value: '#FF00FF' },
-          { name: 'Yellow', value: '#FFFF00' },
-          { name: 'Black', value: '#000000' },
-          { name: 'Dark Grey', value: '#080808' },
-          { name: 'Light Grey', value: '#D3D3D3' },
-          { name: 'White', value: '#FFFFFF' },
+          {
+            name: 'Red',
+            value: '#FF0000',
+          },
+          {
+            name: 'Green',
+            value: '#00FF00',
+          },
+          {
+            name: 'Blue',
+            value: '#0000FF',
+          },
+          {
+            name: 'Turquoise',
+            value: '#00FFFF',
+          },
+          {
+            name: 'Purple',
+            value: '#FF00FF',
+          },
+          {
+            name: 'Yellow',
+            value: '#FFFF00',
+          },
+          {
+            name: 'Black',
+            value: '#000000',
+          },
+          {
+            name: 'Dark Grey',
+            value: '#080808',
+          },
+          {
+            name: 'Light Grey',
+            value: '#D3D3D3',
+          },
+          {
+            name: 'White',
+            value: '#FFFFFF',
+          },
           {
             name: 'Default (clear appearance)',
             value: COMMAND_APPEARANCE_COLOR_DEFAULT,
@@ -1019,12 +1027,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       selection: {
         // selectionMixed allows for feature tree selection of module imports
@@ -1059,12 +1062,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       selection: {
         // selectionMixed allows for feature tree selection of module imports
@@ -1099,12 +1097,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-        hidden: true,
+        ...nodeToEditProps,
       },
       selection: {
         // selectionMixed allows for feature tree selection of module imports
@@ -1125,7 +1118,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
           )
         },
-        validation: async ({ data }: { data: string }) => {
+        validation: async ({
+          data,
+        }: {
+          data: string
+        }) => {
           // Be conservative and error out if there is an item or module with the same name.
           const variableExists =
             kclManager.variables[data] || kclManager.variables['__mod_' + data]
