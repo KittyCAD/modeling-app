@@ -288,7 +288,10 @@ export const commandBarMachine = setup({
           argConfig.skip ||
           (typeof argConfig.hidden === 'function'
             ? argConfig.hidden(context)
-            : argConfig.hidden)
+            : argConfig.hidden) ||
+          (typeof argConfig.required === 'function'
+            ? !argConfig.required(context)
+            : !argConfig.required)
       )
     },
     'Has selected command': ({ context }) => !!context.selectedCommand,

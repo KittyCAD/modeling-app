@@ -2021,6 +2021,12 @@ profile001 = ${circleCode}`
       const op = await toolbar.getFeatureTreeOperation('Sweep', 0)
       await op.dblclick()
       await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {},
+        commandName: 'Sweep',
+      })
+      await cmdBar.clickOptionalArgument('relativeTo')
+      await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'relativeTo',
         currentArgValue: '',
