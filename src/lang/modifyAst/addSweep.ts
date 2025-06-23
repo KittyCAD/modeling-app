@@ -298,7 +298,8 @@ export function addLoft({
     const name = findUniqueName(modifiedAst, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
     const declaration = createVariableDeclaration(name, call)
     modifiedAst.body.push(declaration)
-    pathToNode = createPathToNode(modifiedAst)
+    const toFirstKwarg = !!vDegree
+    pathToNode = createPathToNode(modifiedAst, toFirstKwarg)
   }
 
   return {
