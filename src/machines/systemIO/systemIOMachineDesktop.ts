@@ -429,10 +429,10 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedFolderName
         )
 
-        // no-op
+        // ignore the rename if the resulting paths are the same
         if (oldPath === newPath) {
           return {
-            message: `Old is the same as new.`,
+            message: `Old folder is the same as new.`,
             folderName,
             requestedFolderName,
           }
@@ -445,14 +445,14 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
 
         for (let entry of entries) {
           if (entry === requestedFolderName) {
-            return Promise.reject(new Error('Filename already exists.'))
+            return Promise.reject(new Error('Folder name already exists.'))
           }
         }
 
         window.electron.rename(oldPath, newPath)
 
         return {
-          message: `Successfully renamed "${folderName}" to "${requestedFolderName}"`,
+          message: `Successfully renamed folder "${folderName}" to "${requestedFolderName}"`,
           folderName,
           requestedFolderName,
         }
