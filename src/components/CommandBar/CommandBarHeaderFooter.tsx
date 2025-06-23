@@ -109,10 +109,9 @@ function CommandBarHeaderFooter({
             {Object.entries(nonHiddenArgs || {}).flatMap(
               ([argName, arg], i) => {
                 const argValue =
-                  typeof argumentsToSubmit[argName] === 'function'
-                    ? argumentsToSubmit[argName](commandBarState.context) !==
-                      undefined
-                    : argumentsToSubmit[argName] !== undefined
+                  (typeof argumentsToSubmit[argName] === 'function'
+                    ? argumentsToSubmit[argName](commandBarState.context)
+                    : argumentsToSubmit[argName]) || ''
                 const isCurrentArg = argName === currentArgument?.name
                 const isSkipFalse = arg.skip === false
                 const isRequired =
