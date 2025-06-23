@@ -31,6 +31,8 @@ import { roundOff } from '@src/lib/utils'
 import { varMentions } from '@src/lib/varCompletionExtension'
 import { useSettings } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { doesProfileHaveAnyConstrainedDimension } from '@src/lang/queryAst'
+import type { PathToNode } from '@src/lang/wasm'
 
 import styles from './CommandBarKclInput.module.css'
 
@@ -50,6 +52,7 @@ function CommandBarKclInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
+  // console.log('arg', arg)
   const commandBarState = useCommandBarState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
@@ -109,6 +112,32 @@ function CommandBarKclInput({
       arg.createVariable === 'force' ||
       false
   )
+
+  // Check if this is the "Constrain with named value" command
+  const isConstrainWithNamedValueCommand =
+    commandBarState.context.selectedCommand?.name ===
+    'Constrain with named value'
+  const sketchDetails = argMachineContext?.sketchDetails
+
+  // Checkbox should be enabled (clickable) when it's the right command
+  const shouldEnableScaleCheckbox = isConstrainWithNamedValueCommand
+
+  // Checkbox should be checked by default when ALL profiles have no constrained dimensions
+  const shouldCheckScaleByDefault = useMemo(() => {
+    if (!isConstrainWithNamedValueCommand || !sketchDetails?.sketchNodePaths) {
+      return false
+    }
+    // Check if ALL profiles have no constrained dimensions (meaning we can safely scale)
+    return sketchDetails.sketchNodePaths.every((pathToProfile: PathToNode) => {
+      const hasConstrainedDimension = doesProfileHaveAnyConstrainedDimension(
+        pathToProfile,
+        kclManager.ast
+      )
+      return !hasConstrainedDimension // We want profiles with NO constrained dimensions
+    })
+  }, [isConstrainWithNamedValueCommand, sketchDetails, kclManager.ast])
+
+  const [scaleSketch, setScaleSketch] = useState(shouldCheckScaleByDefault)
   const [canSubmit, setCanSubmit] = useState(true)
   useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
   const editorRef = useRef<HTMLDivElement>(null)
@@ -213,6 +242,23 @@ function CommandBarKclInput({
     )
   }, [calcResult, createNewVariable, isNewVariableNameUnique, isExecuting])
 
+  // Update scale checkbox when the condition changes
+  useEffect(() => {
+    setScaleSketch(shouldCheckScaleByDefault)
+  }, [shouldCheckScaleByDefault])
+
+  // Store scaleSketch value in command bar context for "Constrain with named value" command
+  useEffect(() => {
+    if (isConstrainWithNamedValueCommand) {
+      commandBarActor.send({
+        type: 'Set additional data',
+        data: {
+          scaleSketch,
+        },
+      })
+    }
+  }, [scaleSketch, isConstrainWithNamedValueCommand])
+
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault()
     if (!canSubmit || valueNode === null) {
@@ -225,26 +271,26 @@ function CommandBarKclInput({
       return
     }
 
-    onSubmit(
-      createNewVariable
-        ? ({
-            valueAst: valueNode,
-            valueText: value,
-            valueCalculated: calcResult,
-            variableName: newVariableName,
-            insertIndex: newVariableInsertIndex,
-            variableIdentifierAst: createLocalName(newVariableName),
-            variableDeclarationAst: createVariableDeclaration(
-              newVariableName,
-              valueNode
-            ),
-          } satisfies KclCommandValue)
-        : ({
-            valueAst: valueNode,
-            valueText: value,
-            valueCalculated: calcResult,
-          } satisfies KclCommandValue)
-    )
+    const commandValue = createNewVariable
+      ? ({
+          valueAst: valueNode,
+          valueText: value,
+          valueCalculated: calcResult,
+          variableName: newVariableName,
+          insertIndex: newVariableInsertIndex,
+          variableIdentifierAst: createLocalName(newVariableName),
+          variableDeclarationAst: createVariableDeclaration(
+            newVariableName,
+            valueNode
+          ),
+        } satisfies KclCommandValue)
+      : ({
+          valueAst: valueNode,
+          valueText: value,
+          valueCalculated: calcResult,
+        } satisfies KclCommandValue)
+
+    onSubmit(commandValue)
   }
 
   return (
@@ -345,6 +391,34 @@ function CommandBarKclInput({
           </>
         )}
       </div>
+      {isConstrainWithNamedValueCommand && (
+        <div className="flex items-baseline gap-4 mx-4">
+          <input
+            type="checkbox"
+            id="scale-sketch-checkbox"
+            data-testid="scale-sketch-checkbox"
+            checked={scaleSketch}
+            disabled={!shouldEnableScaleCheckbox}
+            onChange={(e) => {
+              setScaleSketch(e.target.checked)
+            }}
+            className="bg-chalkboard-10 dark:bg-chalkboard-80"
+          />
+          <label
+            htmlFor="scale-sketch-checkbox"
+            className={`text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1 ${
+              !shouldEnableScaleCheckbox ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            Scale sketch
+          </label>
+          {!shouldEnableScaleCheckbox && (
+            <span className="text-sm text-chalkboard-60 dark:text-chalkboard-50">
+              (disabled - sketch has constrained dimensions)
+            </span>
+          )}
+        </div>
+      )}
     </form>
   )
 }

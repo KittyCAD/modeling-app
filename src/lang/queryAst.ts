@@ -1313,7 +1313,11 @@ export function doesProfileHaveAnyConstrainedDimension(
   ast: Node<Program>
 ): boolean {
   // Get the profile node from the path
-  const profileNodeResult = getNodeFromPath(ast, profilePath)
+  const profileNodeResult = getNodeFromPath<Node<VariableDeclaration>>(
+    ast,
+    profilePath,
+    'VariableDeclaration'
+  )
   if (err(profileNodeResult)) return false
 
   const profileNode = profileNodeResult.node
@@ -1344,7 +1348,7 @@ export function doesProfileHaveAnyConstrainedDimension(
   let hasConstrainedDimension = false
 
   // Traverse the profile node to find all call expressions and their arguments
-  traverse(profileNode as any, {
+  traverse(profileNode, {
     enter: (node: any) => {
       if (node.type === 'CallExpressionKw' && node.arguments) {
         for (const arg of node.arguments) {

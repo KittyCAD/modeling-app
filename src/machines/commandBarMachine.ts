@@ -15,6 +15,7 @@ export type CommandBarContext = {
   currentArgument?: CommandArgument<unknown> & { name: string }
   argumentsToSubmit: { [x: string]: unknown }
   machineManager: MachineManager
+  additionalData: { [x: string]: unknown } // For storing extra parameters like scaleSketch
 }
 
 export type CommandBarMachineEvent =
@@ -77,6 +78,7 @@ export type CommandBarMachineEvent =
       data: { [x: string]: CommandArgumentWithName<unknown> }
     }
   | { type: 'Set machine manager'; data: MachineManager }
+  | { type: 'Set additional data'; data: { [x: string]: unknown } }
 
 export const commandBarMachine = setup({
   types: {
@@ -117,6 +119,12 @@ export const commandBarMachine = setup({
           resolvedArgs[argName] =
             typeof argValue === 'function' ? argValue(context) : argValue
         }
+
+        // Special handling for "Constrain with named value" command to include scaleSketch
+        if (selectedCommand.name === 'Constrain with named value') {
+          resolvedArgs.scaleSketch = context.additionalData.scaleSketch
+        }
+
         selectedCommand?.onSubmit(resolvedArgs)
       } else {
         selectedCommand?.onSubmit({ context, event })
@@ -213,6 +221,16 @@ export const commandBarMachine = setup({
       selectedCommand: undefined,
       currentArgument: undefined,
       argumentsToSubmit: {},
+      additionalData: {},
+    }),
+    'Set additional data': assign({
+      additionalData: ({ context, event }) => {
+        if (event.type !== 'Set additional data') return context.additionalData
+        return {
+          ...context.additionalData,
+          ...event.data,
+        }
+      },
     }),
     'Set selected command': assign({
       selectedCommand: ({ context, event }) =>
@@ -454,6 +472,7 @@ export const commandBarMachine = setup({
       codeBasedSelections: [],
     },
     argumentsToSubmit: {},
+    additionalData: {},
     machineManager: {
       machines: [],
       machineApiIp: null,
@@ -610,6 +629,11 @@ export const commandBarMachine = setup({
     'Set machine manager': {
       reenter: false,
       actions: 'Set machine manager',
+    },
+
+    'Set additional data': {
+      reenter: false,
+      actions: 'Set additional data',
     },
 
     Close: {

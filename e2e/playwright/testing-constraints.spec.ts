@@ -1116,6 +1116,270 @@ part002 = startSketchOn(XZ)
     // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
     await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
   })
+
+  test.describe('Sketch scaling on first constraint', () => {
+    test('Should scale entire sketch when constraining first dimension with scale checkbox enabled', async ({
+      page,
+      homePage,
+      scene,
+      cmdBar,
+    }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [100, 100])
+|> line(end = [200, 0])
+|> line(end = [0, 200])
+|> line(end = [-200, 0])
+|> close()
+profile002 = startProfile(sketch001, at = [400, 400])
+|> circle(center = [0, 0], radius = 50)`
+        )
+      })
+
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      // Click on the first line segment to select it
+      await page.getByText('line(end = [200, 0])').click()
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+      // Wait for overlays to populate
+      await page.waitForTimeout(1000)
+
+      // Click on the first line segment in the sketch
+      const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="1"]`)
+      await page.mouse.click(line1.x, line1.y)
+      await page.waitForTimeout(100)
+
+      // Open constraints menu and click length constraint
+      await page
+        .getByRole('button', {
+          name: 'constraints: open menu',
+        })
+        .click()
+      await page.getByTestId('constraint-length').click()
+
+      // Verify the scale sketch checkbox is present and enabled
+      const scaleCheckbox = page.getByTestId('scale-sketch-checkbox')
+      await expect(scaleCheckbox).toBeVisible()
+      await expect(scaleCheckbox).toBeEnabled()
+      await expect(scaleCheckbox).toBeChecked() // Should be checked by default since no constraints exist
+
+      // Enter new value (100, which is half of original 200)
+      await page
+        .getByTestId('cmd-bar-arg-value')
+        .getByRole('textbox')
+        .fill('100')
+
+      // Ensure scale checkbox is still checked
+      await expect(scaleCheckbox).toBeChecked()
+
+      // Submit the constraint
+      await page
+        .getByRole('button', {
+          name: 'arrow right Continue',
+        })
+        .click()
+
+      // Wait for the changes to be applied
+      await page.waitForTimeout(1000)
+
+      // Verify the constraint was applied with a variable
+      await expect(page.locator('.cm-content')).toContainText('length001 = 100')
+      await expect(page.locator('.cm-content')).toContainText(
+        'line(end = [length001, 0])'
+      )
+
+      // Verify scaling occurred - all dimensions should be scaled by 0.5 (100/200)
+      // Original: line(end = [0, 200]) -> Scaled: line(end = [0, 100])
+      await expect(page.locator('.cm-content')).toContainText(
+        'line(end = [0, 100])'
+      )
+      // Original: line(end = [-200, 0]) -> Scaled: line(end = [-100, 0])
+      await expect(page.locator('.cm-content')).toContainText(
+        'line(end = [-100, 0])'
+      )
+
+      // Original: startProfile(at = [100, 100]) -> Scaled: startProfile(at = [50, 50])
+      await expect(page.locator('.cm-content')).toContainText(
+        'startProfile(sketch001, at = [50, 50])'
+      )
+      // Original: startProfile(at = [400, 400]) -> Scaled: startProfile(at = [200, 200])
+      await expect(page.locator('.cm-content')).toContainText(
+        'startProfile(sketch001, at = [200, 200])'
+      )
+
+      // Original: radius = 50 -> Scaled: radius = 25
+      await expect(page.locator('.cm-content')).toContainText('radius = 25')
+    })
+
+    test('Should not scale sketch when constraining with scale checkbox disabled', async ({
+      page,
+      homePage,
+      scene,
+      cmdBar,
+    }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [100, 100])
+|> line(end = [200, 0])
+|> line(end = [0, 200])
+|> close()`
+        )
+      })
+
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      // Click on the first line segment to select it
+      await page.getByText('line(end = [200, 0])').click()
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+      // Wait for overlays to populate
+      await page.waitForTimeout(1000)
+
+      // Click on the first line segment in the sketch
+      const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="1"]`)
+      await page.mouse.click(line1.x, line1.y)
+      await page.waitForTimeout(100)
+
+      // Open constraints menu and click length constraint
+      await page
+        .getByRole('button', {
+          name: 'constraints: open menu',
+        })
+        .click()
+      await page.getByTestId('constraint-length').click()
+
+      // Verify the scale sketch checkbox is present and enabled
+      const scaleCheckbox = page.getByTestId('scale-sketch-checkbox')
+      await expect(scaleCheckbox).toBeVisible()
+      await expect(scaleCheckbox).toBeEnabled()
+      await expect(scaleCheckbox).toBeChecked()
+
+      // Uncheck the scale checkbox
+      await scaleCheckbox.click()
+      await expect(scaleCheckbox).not.toBeChecked()
+
+      // Enter new value (100, which is half of original 200)
+      await page
+        .getByTestId('cmd-bar-arg-value')
+        .getByRole('textbox')
+        .fill('100')
+
+      // Submit the constraint
+      await page
+        .getByRole('button', {
+          name: 'arrow right Continue',
+        })
+        .click()
+
+      // Wait for the changes to be applied
+      await page.waitForTimeout(1000)
+
+      // Verify the constraint was applied with a variable
+      await expect(page.locator('.cm-content')).toContainText('length001 = 100')
+      await expect(page.locator('.cm-content')).toContainText(
+        'line(end = [length001, 0])'
+      )
+
+      // Verify NO scaling occurred - other dimensions should remain unchanged
+      await expect(page.locator('.cm-content')).toContainText(
+        'line(end = [0, 200])'
+      ) // Should remain 200, not 100
+      await expect(page.locator('.cm-content')).toContainText(
+        'startProfile(sketch001, at = [100, 100])'
+      ) // Should remain [100, 100]
+    })
+
+    test('Should disable scale checkbox when sketch already has constraints', async ({
+      page,
+      homePage,
+      scene,
+      cmdBar,
+    }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `length_var = 150
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [100, 100])
+|> line(end = [length_var, 0])
+|> line(end = [0, 200])
+|> close()`
+        )
+      })
+
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      // Click on the second line segment (the one without constraints)
+      await page.getByText('line(end = [0, 200])').click()
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+      // Wait for overlays to populate
+      await page.waitForTimeout(1000)
+
+      // Click on the second line segment in the sketch
+      const line2 = await u.getSegmentBodyCoords(`[data-overlay-index="2"]`)
+      await page.mouse.click(line2.x, line2.y)
+      await page.waitForTimeout(100)
+
+      // Open constraints menu and click length constraint
+      await page
+        .getByRole('button', {
+          name: 'constraints: open menu',
+        })
+        .click()
+      await page.getByTestId('constraint-length').click()
+
+      // Verify the scale sketch checkbox is present but disabled/unchecked
+      // because the sketch already has constraints (length_var)
+      const scaleCheckbox = page.getByTestId('scale-sketch-checkbox')
+      await expect(scaleCheckbox).toBeVisible()
+      await expect(scaleCheckbox).not.toBeChecked() // Should be unchecked because constraints exist
+
+      // Enter new value
+      await page
+        .getByTestId('cmd-bar-arg-value')
+        .getByRole('textbox')
+        .fill('100')
+
+      // Submit the constraint
+      await page
+        .getByRole('button', {
+          name: 'arrow right Continue',
+        })
+        .click()
+
+      // Wait for the changes to be applied
+      await page.waitForTimeout(1000)
+
+      // Verify the constraint was applied
+      await expect(page.locator('.cm-content')).toContainText('length002 = 100')
+
+      // Verify existing constraint and values remain unchanged
+      await expect(page.locator('.cm-content')).toContainText(
+        'length_var = 150'
+      )
+      await expect(page.locator('.cm-content')).toContainText(
+        'line(end = [length_var, 0])'
+      )
+    })
+  })
 })
 test.describe('Electron constraint tests', () => {
   test(
