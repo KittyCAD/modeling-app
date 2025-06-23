@@ -18,7 +18,10 @@ import type {
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { useState, useRef, useEffect } from 'react'
 import { systemIOActor, useSettings } from '@src/lib/singletons'
-import { SystemIOMachineEvents, RequestedKCLFile } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  RequestedKCLFile,
+} from '@src/machines/systemIO/utils'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import {
   alwaysEndFileWithEXT,
@@ -365,21 +368,28 @@ export const ProjectExplorer = ({
                 return
               }
 
-              const pathRelativeToParent = parentPathRelativeToProject(joinOSPaths(getParentAbsolutePath(row.path), fileNameForcedWithOriginalExt), applicationProjectDirectory)
+              const pathRelativeToParent = parentPathRelativeToProject(
+                joinOSPaths(
+                  getParentAbsolutePath(row.path),
+                  fileNameForcedWithOriginalExt
+                ),
+                applicationProjectDirectory
+              )
 
               // create a file if it is fake
               if (row.isFake) {
                 systemIOActor.send({
-                  type: SystemIOMachineEvents.importFileFromURL, data:{
+                  type: SystemIOMachineEvents.importFileFromURL,
+                  data: {
                     requestedCode: '',
                     requestedProjectName: project.name,
-                    requestedFileNameWithExtension: pathRelativeToParent
-                  }
+                    requestedFileNameWithExtension: pathRelativeToParent,
+                  },
                 })
               } else {
-                // rename the file otherwise
+                // rename the file otherwisejk
                 systemIOActor.send({
-                  type: SystemIOMachineEvents.renameFile,
+                  type: SystemIOMachineEvents.renameFileAndNavigateToFile,
                   data: {
                     requestedFileNameWithExtension:
                       fileNameForcedWithOriginalExt,

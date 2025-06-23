@@ -21,6 +21,7 @@ export enum SystemIOMachineActors {
   deleteFileOrFolder = 'deleteFileOrFolder',
   createBlankFile = 'create blank file',
   createBlankFolder = 'create blank folder',
+  renameFileAndNavigateToFile = 'rename file and navigate to file'
 }
 
 export enum SystemIOMachineStates {
@@ -43,6 +44,7 @@ export enum SystemIOMachineStates {
   deletingFileOrFolder = 'deletingFileOrFolder',
   creatingBlankFile = 'creatingBlankFile',
   creatingBlankFolder = 'creatingBlankFolder',
+  renamingFileAndNavigateToFile = 'renamingFileAndNavigateToFile'
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -76,6 +78,8 @@ export enum SystemIOMachineEvents {
   deleteFileOrFolder = 'delete file or folder',
   createBlankFile = 'create blank file',
   createBlankFolder = 'create blank folder',
+  renameFileAndNavigateToFile = 'rename file and navigate to file',
+  done_renameFileAndNavigateToFile = donePrefix +  'rename file and navigate to file'
 }
 
 export enum SystemIOMachineActions {

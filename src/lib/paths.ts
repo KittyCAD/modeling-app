@@ -198,7 +198,7 @@ export function parentPathRelativeToProject(
   applicationProjectDirectory: string
 ): string {
   const replacedPath = absoluteFilePath.replace(applicationProjectDirectory, '')
-  const [iAmABlankString, projectDirectory, ...rest] =
+  const [iAmABlankString, _projectDirectory, ...rest] =
     desktopSafePathSplit(replacedPath)
   if (iAmABlankString === '') {
     return desktopSafePathJoin(rest)
