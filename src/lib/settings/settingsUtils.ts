@@ -66,6 +66,7 @@ export function configurationToSettingsPayload(
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       projectDirectory: configuration?.settings?.project?.directory,
       showDebugPanel: configuration?.settings?.app?.show_debug_panel,
+      fixedSizeGrid: configuration?.settings?.app?.fixed_size_grid
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
@@ -109,6 +110,7 @@ export function settingsPayloadToConfiguration(
         stream_idle_mode: configuration?.app?.streamIdleMode,
         allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
         show_debug_panel: configuration?.app?.showDebugPanel,
+        fixed_size_grid: configuration?.app?.fixedSizeGrid
       },
       modeling: {
         base_unit: configuration?.modeling?.defaultUnit,

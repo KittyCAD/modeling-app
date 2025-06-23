@@ -12,6 +12,7 @@ export const TEST_SETTINGS: DeepPartial<Settings> = {
     },
     onboarding_status: 'dismissed',
     show_debug_panel: true,
+    fixed_size_grid: false
   },
   modeling: {
     enable_ssao: false,

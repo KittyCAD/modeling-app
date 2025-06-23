@@ -208,6 +208,15 @@ export function createSettings() {
           inputType: 'boolean',
         },
       }),
+      fixedSizeGrid: new Setting<boolean>({
+        defaultValue: true,
+        hideOnLevel:'project',
+        description: 'dog',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
       /**
        * Stream resource saving behavior toggle
        */
