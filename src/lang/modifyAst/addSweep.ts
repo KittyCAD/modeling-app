@@ -148,12 +148,14 @@ export function addSweep({
   sketches,
   path,
   sectional,
+  relativeTo,
   nodeToEdit,
 }: {
   ast: Node<Program>
   sketches: Selections
   path: Selections
   sectional?: boolean
+  relativeTo?: string
   nodeToEdit?: PathToNode
 }):
   | {
@@ -190,11 +192,15 @@ export function addSweep({
   const sectionalExpr = sectional
     ? [createLabeledArg('sectional', createLiteral(sectional))]
     : []
+  const relativeToExpr = relativeTo
+    ? [createLabeledArg('relativeTo', createLiteral(relativeTo))]
+    : []
 
   const sketchesExpr = createSketchExpression(sketchesExprList)
   const call = createCallExpressionStdLibKw('sweep', sketchesExpr, [
     createLabeledArg('path', pathExpr),
     ...sectionalExpr,
+    ...relativeToExpr,
   ])
 
   // 3. If edit, we assign the new function call declaration to the existing node,

@@ -2482,14 +2482,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { nodeToEdit, sketches, path, sectional } = input
         const { ast } = kclManager
         const astResult = addSweep({
+          ...input,
           ast,
-          sketches,
-          path,
-          sectional,
-          nodeToEdit,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
