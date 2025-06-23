@@ -154,6 +154,10 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
       titleBarStyle: 'hiddenInset',
       backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
     })
+    // This is only needed on windows, but it doesn't do any harm on other platforms.
+    // On windows the initial width, height supplied above cannot be larger than screen resolution which causes
+    // some weird border to appear when the last window size was close to full screen.
+    newWindow.setBounds({x, y, width: windowWidth, height: windowHeight})
   }
 
   newWindow.on('close', () => {
