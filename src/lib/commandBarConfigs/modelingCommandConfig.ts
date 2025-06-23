@@ -86,6 +86,7 @@ export type ModelingCommandSchema = {
     sketches: Selections
     path: Selections
     sectional?: boolean
+    relativeTo?: string
   }
   Loft: {
     sketches: Selections
@@ -455,13 +456,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       sectional: {
         inputType: 'options',
-        skip: true,
         required: false,
         options: [
           { name: 'False', value: false },
           { name: 'True', value: true },
         ],
-        // No validation possible here until we have rollback
+      },
+      relativeTo: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'sketchPlane', value: 'sketchPlane' },
+          { name: 'trajectoryCurve', value: 'trajectoryCurve' },
+        ],
       },
     },
   },

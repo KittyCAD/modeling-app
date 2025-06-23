@@ -3,8 +3,8 @@
 use anyhow::Result;
 use kcmc::{each_cmd as mcmd, ModelingCmd};
 use kittycad_modeling_cmds::{
-    self as kcmc, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, output::EntityGetAllChildUuids,
-    shared::Point3d, websocket::OkWebSocketResponseData,
+    self as kcmc, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Point3d,
+    websocket::OkWebSocketResponseData,
 };
 
 use crate::{
@@ -41,19 +41,14 @@ async fn inner_mirror_2d(
 ) -> Result<Vec<Sketch>, KclError> {
     let mut starting_sketches = sketches.clone();
 
-    // Update all to have a mirror.
-    starting_sketches.iter_mut().for_each(|sketch| {
-        sketch.mirror = Some(exec_state.next_uuid());
-    });
-
     if args.ctx.no_engine_commands().await {
         return Ok(starting_sketches);
     }
 
     match axis {
         Axis2dOrEdgeReference::Axis { direction, origin } => {
-            exec_state
-                .batch_modeling_cmd(
+            let resp = exec_state
+                .send_modeling_cmd(
                     (&args).into(),
                     ModelingCmd::from(mcmd::EntityMirror {
                         ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
@@ -70,12 +65,42 @@ async fn inner_mirror_2d(
                     }),
                 )
                 .await?;
+
+            if let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::EntityMirror(mirror_info),
+            } = &resp
+            {
+                let face_edge_info = &mirror_info.entity_face_edge_ids;
+
+                starting_sketches
+                    .iter_mut()
+                    .zip(face_edge_info.iter())
+                    .try_for_each(|(sketch, info)| {
+                        sketch.id = info.object_id;
+                        let first_edge = info.edges.first().copied();
+                        match first_edge {
+                            Some(edge) => sketch.mirror = Some(edge),
+                            None => {
+                                return Err(KclError::new_engine(KclErrorDetails::new(
+                                    "No edges found in mirror info".to_string(),
+                                    vec![args.source_range],
+                                )))
+                            }
+                        }
+                        Ok(())
+                    })?;
+            } else {
+                return Err(KclError::new_engine(KclErrorDetails::new(
+                    format!("EntityMirror response was not as expected: {:?}", resp),
+                    vec![args.source_range],
+                )));
+            };
         }
         Axis2dOrEdgeReference::Edge(edge) => {
             let edge_id = edge.get_engine_id(exec_state, &args)?;
 
-            exec_state
-                .batch_modeling_cmd(
+            let resp = exec_state
+                .send_modeling_cmd(
                     (&args).into(),
                     ModelingCmd::from(mcmd::EntityMirrorAcrossEdge {
                         ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
@@ -83,41 +108,36 @@ async fn inner_mirror_2d(
                     }),
                 )
                 .await?;
-        }
-    };
 
-    // After the mirror, get the first child uuid for the path.
-    // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
-    // But if you mirror2d a sketch these IDs might change so we need to get the children versus
-    // using the IDs we already have.
-    // We only do this with mirrors because otherwise it is a waste of a websocket call.
-    for sketch in &mut starting_sketches {
-        let response = exec_state
-            .send_modeling_cmd(
-                (&args).into(),
-                ModelingCmd::from(mcmd::EntityGetAllChildUuids { entity_id: sketch.id }),
-            )
-            .await?;
-        let OkWebSocketResponseData::Modeling {
-            modeling_response:
-                OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids { entity_ids: child_ids }),
-        } = response
-        else {
-            return Err(KclError::new_internal(KclErrorDetails::new(
-                "Expected a successful response from EntityGetAllChildUuids".to_string(),
-                vec![args.source_range],
-            )));
-        };
+            if let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::EntityMirrorAcrossEdge(mirror_info),
+            } = &resp
+            {
+                let face_edge_info = &mirror_info.entity_face_edge_ids;
 
-        if child_ids.len() >= 2 {
-            // The first child is the original sketch, the second is the mirrored sketch.
-            let child_id = child_ids[1];
-            sketch.mirror = Some(child_id);
-        } else {
-            return Err(KclError::new_type(KclErrorDetails::new(
-                "Expected child uuids to be >= 2".to_string(),
-                vec![args.source_range],
-            )));
+                starting_sketches
+                    .iter_mut()
+                    .zip(face_edge_info.iter())
+                    .try_for_each(|(sketch, info)| {
+                        sketch.id = info.object_id;
+                        let first_edge = info.edges.first().copied();
+                        match first_edge {
+                            Some(edge) => sketch.mirror = Some(edge),
+                            None => {
+                                return Err(KclError::new_engine(KclErrorDetails::new(
+                                    "No edges found in mirror info".to_string(),
+                                    vec![args.source_range],
+                                )))
+                            }
+                        }
+                        Ok(())
+                    })?;
+            } else {
+                return Err(KclError::new_engine(KclErrorDetails::new(
+                    format!("EntityMirrorAcrossEdge response was not as expected: {:?}", resp),
+                    vec![args.source_range],
+                )));
+            };
         }
     }
 

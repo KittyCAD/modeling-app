@@ -1954,6 +1954,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
 sketch001 = startSketchOn(XZ)
 profile001 = ${circleCode}`
     const sweepDeclaration = 'sweep001 = sweep(profile001, path = helix001)'
+    const editedSweepDeclaration = `sweep001 = sweep(profile001, path = helix001, relativeTo = 'sketchPlane')`
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -2015,11 +2016,43 @@ profile001 = ${circleCode}`
       await editor.expectEditor.toContain(sweepDeclaration)
     })
 
+    await test.step('Go through the edit flow via feature tree', async () => {
+      await toolbar.openPane('feature-tree')
+      const op = await toolbar.getFeatureTreeOperation('Sweep', 0)
+      await op.dblclick()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {},
+        commandName: 'Sweep',
+      })
+      await cmdBar.clickOptionalArgument('relativeTo')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'relativeTo',
+        currentArgValue: '',
+        headerArguments: {
+          RelativeTo: '',
+        },
+        highlightedHeaderArg: 'relativeTo',
+        commandName: 'Sweep',
+      })
+      await cmdBar.selectOption({ name: 'sketchPlane' }).click()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          RelativeTo: 'sketchPlane',
+        },
+        commandName: 'Sweep',
+      })
+      await cmdBar.submit()
+      await editor.expectEditor.toContain(editedSweepDeclaration)
+    })
+
     await test.step('Delete sweep via feature tree selection', async () => {
       const sweep = await toolbar.getFeatureTreeOperation('Sweep', 0)
       await sweep.click()
       await page.keyboard.press('Delete')
-      await editor.expectEditor.not.toContain(sweepDeclaration)
+      await editor.expectEditor.not.toContain(editedSweepDeclaration)
     })
   })
 

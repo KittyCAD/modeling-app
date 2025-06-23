@@ -331,14 +331,6 @@ description: Artifact commands cold-plate.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "close_path",
         "path_id": "[uuid]"
       }
