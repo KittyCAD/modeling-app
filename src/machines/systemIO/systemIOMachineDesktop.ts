@@ -542,7 +542,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedAbsolutePath: string
         }
       }) => {
-        const fileNameWithExtension = getStringAfterLastSeparator(input.requestedAbsolutePath)
+        const fileNameWithExtension = getStringAfterLastSeparator(
+          input.requestedAbsolutePath
+        )
         try {
           const result = await window.electron.stat(input.requestedAbsolutePath)
           if (result) {
@@ -570,11 +572,12 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedAbsolutePath: string
         }
       }) => {
+        const folderName = getStringAfterLastSeparator(input.requestedAbsolutePath)
         try {
           const result = await window.electron.stat(input.requestedAbsolutePath)
           if (result) {
             return Promise.reject(
-              new Error(`Folder ${input.requestedAbsolutePath} already exists`)
+              new Error(`Folder ${folderName} already exists`)
             )
           }
         } catch (e) {
@@ -584,7 +587,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           recursive: true,
         })
         return {
-          message: `File ${input.requestedAbsolutePath} written successfully`,
+          message: `Folder ${folderName} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,
         }
       }
