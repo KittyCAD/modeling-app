@@ -139,7 +139,7 @@ async fn inner_mirror_2d(
                 )));
             };
         }
-    };
+    }
 
     Ok(starting_sketches)
 }
