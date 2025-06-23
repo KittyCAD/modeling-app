@@ -66,7 +66,7 @@ pub struct Settings {
 /// Application wide settings.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "snake_case", deny_unknown_fields)]
 pub struct AppSettings {
     /// The settings for the appearance of the app.
     #[serde(default, skip_serializing_if = "is_default")]
@@ -96,7 +96,7 @@ pub struct AppSettings {
     pub show_debug_panel: bool,
     /// If true, the grid cells will be fixed-size, where the width is the user's default length unit.
     /// If false, the grid's size will scale as the user zooms in and out.
-    #[serde(default = "make_it_so", skip_serializing_if = "is_default")]
+    #[serde(default = "make_it_so")]
     pub fixed_size_grid: bool,
 }
 
