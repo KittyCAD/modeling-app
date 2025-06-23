@@ -75,6 +75,9 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     sketches: Selections
     length: KclCommandValue
+    symmetric?: boolean
+    bidirectionalLength?: KclCommandValue
+    twistAngle?: KclCommandValue
   }
   Sweep: {
     // Enables editing workflow
@@ -407,6 +410,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+      },
+      symmetric: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
+      },
+      bidirectionalLength: {
+        inputType: 'kcl',
+        required: false,
+      },
+      twistAngle: {
+        inputType: 'kcl',
+        required: false,
       },
     },
   },
