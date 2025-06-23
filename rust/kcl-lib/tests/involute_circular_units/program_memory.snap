@@ -140,6 +140,7 @@ description: Variables in memory after executing involute_circular_units.kcl
           "tag": {
             "commentStart": 505,
             "end": 511,
+            "moduleId": 0,
             "start": 505,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -160,6 +161,7 @@ description: Variables in memory after executing involute_circular_units.kcl
           "tag": {
             "commentStart": 708,
             "end": 714,
+            "moduleId": 0,
             "start": 708,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -204,6 +206,7 @@ description: Variables in memory after executing involute_circular_units.kcl
             "tag": {
               "commentStart": 505,
               "end": 511,
+              "moduleId": 0,
               "start": 505,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -254,6 +257,7 @@ description: Variables in memory after executing involute_circular_units.kcl
             "tag": {
               "commentStart": 708,
               "end": 714,
+              "moduleId": 0,
               "start": 708,
               "type": "TagDeclarator",
               "value": "seg02"

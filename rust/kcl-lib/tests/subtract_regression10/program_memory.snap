@@ -5273,6 +5273,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           "tag": {
             "commentStart": 2986,
             "end": 2992,
+            "moduleId": 0,
             "start": 2986,
             "type": "TagDeclarator",
             "value": "seg04"
@@ -5302,6 +5303,7 @@ description: Variables in memory after executing subtract_regression10.kcl
             "tag": {
               "commentStart": 2986,
               "end": 2992,
+              "moduleId": 0,
               "start": 2986,
               "type": "TagDeclarator",
               "value": "seg04"

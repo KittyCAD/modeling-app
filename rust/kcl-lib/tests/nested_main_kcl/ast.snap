@@ -8,6 +8,7 @@ description: Result of parsing nested_main_kcl.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "nested/foo/bar/main.kcl"
@@ -17,6 +18,7 @@ description: Result of parsing nested_main_kcl.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "bar",
             "start": 0,
             "type": "Identifier"
@@ -33,9 +35,11 @@ description: Result of parsing nested_main_kcl.kcl
           "abs_path": false,
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "bar",
             "start": 0,
             "type": "Identifier"
@@ -45,6 +49,7 @@ description: Result of parsing nested_main_kcl.kcl
           "type": "Name",
           "type": "Name"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -52,12 +57,14 @@ description: Result of parsing nested_main_kcl.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

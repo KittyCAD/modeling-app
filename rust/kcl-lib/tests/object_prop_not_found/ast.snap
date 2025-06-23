@@ -13,6 +13,7 @@ description: Result of parsing object_prop_not_found.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "obj",
             "start": 0,
             "type": "Identifier"
@@ -20,16 +21,19 @@ description: Result of parsing object_prop_not_found.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "properties": [],
             "start": 0,
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -42,6 +46,7 @@ description: Result of parsing object_prop_not_found.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "k",
             "start": 0,
             "type": "Identifier"
@@ -50,13 +55,16 @@ description: Result of parsing object_prop_not_found.kcl
             "commentStart": 0,
             "computed": false,
             "end": 0,
+            "moduleId": 0,
             "object": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "obj",
                 "start": 0,
                 "type": "Identifier"
@@ -69,6 +77,7 @@ description: Result of parsing object_prop_not_found.kcl
             "property": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "\"age\"",
               "start": 0,
               "type": "Literal",
@@ -79,11 +88,13 @@ description: Result of parsing object_prop_not_found.kcl
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -91,6 +102,7 @@ description: Result of parsing object_prop_not_found.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }
