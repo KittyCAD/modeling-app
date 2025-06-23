@@ -67,6 +67,7 @@ import {
 } from '@src/lang/queryAstConstants'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import { isTopLevelModule } from '@src/lang/util'
+import { defaultSourceRange, sourceRangeFromRust } from '@src/lang/sourceRange'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -136,23 +137,6 @@ export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 export type { Path } from '@rust/kcl-lib/bindings/Path'
 export type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 export type { Solid } from '@rust/kcl-lib/bindings/Solid'
-
-/**
- * Convert a SourceRange as used inside the KCL interpreter into the above one for use in the
- * frontend (essentially we're eagerly checking whether the frontend should care about the SourceRange
- * so as not to expose details of the interpreter's current representation of module ids throughout
- * the frontend).
- */
-export function sourceRangeFromRust(s: SourceRange): SourceRange {
-  return [s[0], s[1], s[2]]
-}
-
-/**
- * Create a default SourceRange for testing or as a placeholder.
- */
-export function defaultSourceRange(): SourceRange {
-  return [0, 0, 0]
-}
 
 function bestSourceRange(error: RustKclError): SourceRange {
   if (error.details.sourceRanges.length === 0) {
