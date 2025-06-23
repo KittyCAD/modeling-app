@@ -186,19 +186,17 @@ export function findAllChildrenAndOrderByPlaceInCode(
 
   const pushToSomething = (
     resultId: string,
-    childrenIdOrIds: null | string | string[]
+    childrenIdOrIds: string | string[] | null | undefined
   ) => {
     if (isArray(childrenIdOrIds)) {
       if (childrenIdOrIds.length) {
         stack.push(...childrenIdOrIds)
         result.push(resultId)
-      } else {
       }
     } else {
       if (childrenIdOrIds) {
         stack.push(childrenIdOrIds)
         result.push(resultId)
-      } else {
       }
     }
   }
