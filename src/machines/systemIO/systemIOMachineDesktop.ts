@@ -572,7 +572,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedAbsolutePath: string
         }
       }) => {
-        const folderName = getStringAfterLastSeparator(input.requestedAbsolutePath)
+        const folderName = getStringAfterLastSeparator(
+          input.requestedAbsolutePath
+        )
         try {
           const result = await window.electron.stat(input.requestedAbsolutePath)
           if (result) {
