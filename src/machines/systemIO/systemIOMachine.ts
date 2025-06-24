@@ -783,6 +783,7 @@ export const systemIOMachine = setup({
               },
             }),
             assign({ clearURLParams: { value: true } }),
+            SystemIOMachineActions.toastSuccess
           ],
         },
         onError: {
