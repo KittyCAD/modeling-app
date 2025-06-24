@@ -61,7 +61,7 @@ export const ProjectExplorer = ({
   refreshExplorerPressed,
   collapsePressed,
   onRowClicked,
-  onRowEnter
+  onRowEnter,
 }: {
   project: Project
   file: FileEntry | undefined
