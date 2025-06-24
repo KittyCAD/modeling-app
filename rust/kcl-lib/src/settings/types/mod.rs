@@ -695,7 +695,6 @@ text_wrapping = true"#;
             serialized,
             r#"[settings.app]
 onboarding_status = "dismissed"
-fixed_size_grid = true
 
 [settings.app.appearance]
 theme = "dark"
