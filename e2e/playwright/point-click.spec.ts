@@ -3881,6 +3881,8 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
 
       // Edit flow
       const newAngle = '270'
+      const newAngle2 = '5'
+      const editedCodeToFind = `revolve001 = revolve(sketch003, angle = ${newAngle}, axis = seg01, bidirectionalAngle = ${newAngle2}, )`
       await toolbar.openPane('feature-tree')
       const operationButton = await toolbar.getFeatureTreeOperation(
         'Revolve',
@@ -3906,11 +3908,33 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         },
         commandName: 'Revolve',
       })
+      await cmdBar.clickOptionalArgument('bidirectionalAngle')
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'bidirectionalAngle',
+        currentArgValue: '',
+        headerArguments: {
+          Angle: newAngle,
+          BidirectionalAngle: '',
+        },
+        highlightedHeaderArg: 'bidirectionalAngle',
+        stage: 'arguments',
+      })
+      await page.keyboard.insertText(newAngle2)
       await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Angle: newAngle,
+          BidirectionalAngle: newAngle2,
+        },
+        commandName: 'Revolve',
+      })
+      await cmdBar.submit()
       await toolbar.closePane('feature-tree')
-      await editor.expectEditor.toContain(
-        newCodeToFind.replace('angle = 360', 'angle = ' + newAngle)
-      )
+      await editor.expectEditor.toContain(editedCodeToFind, {
+        shouldNormalise: true,
+      })
     })
   })
 
