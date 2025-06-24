@@ -24,8 +24,6 @@ export async function resetCameraPosition() {
   // We need a padding of 0.1 for zoom_to_fit for all E2E tests since they were originally
   // written with zoom_to_fit with padding 0.1
   const padding = 0.1
-  await engineStreamZoomToFit({ engineCommandManager, padding })
-  return
   if (isPlaywright()) {
     await engineStreamZoomToFit({ engineCommandManager, padding })
   } else {
