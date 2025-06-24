@@ -96,13 +96,17 @@ pub struct AppSettings {
     pub show_debug_panel: bool,
     /// If true, the grid cells will be fixed-size, where the width is the user's default length unit.
     /// If false, the grid's size will scale as the user zooms in and out.
-    #[serde(default = "make_it_so")]
+    #[serde(default = "make_it_so", skip_serializing_if = "is_true")]
     pub fixed_size_grid: bool,
 }
 
 /// Default to true.
 fn make_it_so() -> bool {
     true
+}
+
+fn is_true(b: &bool) -> bool {
+    *b
 }
 
 impl Default for AppSettings {
