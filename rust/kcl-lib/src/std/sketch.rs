@@ -11,7 +11,10 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::shapes::get_radius;
+use super::{
+    shapes::get_radius,
+    utils::{untype_array, untype_point},
+};
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use crate::{
@@ -31,9 +34,6 @@ use crate::{
         },
     },
 };
-
-use super::utils::untype_array;
-use super::utils::untype_point;
 
 /// A tag for a face.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1882,20 +1882,21 @@ pub(crate) async fn inner_elliptic(
         center_u[1] + minor_radius.to_length_units(from.units) * end_angle.to_radians().sin(),
     ];
 
-    exec_state.batch_modeling_cmd(
-        ModelingCmdMeta::from_args_id(&args, id),
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Ellipse {
-                center: KPoint2d::from(untyped_point_to_mm(center_u, from.units)).map(LengthUnit),
-                major_radius: LengthUnit(from.units.adjust_to(major_radius.to_mm(), UnitLen::Mm).0),
-                minor_radius: LengthUnit(from.units.adjust_to(minor_radius.to_mm(), UnitLen::Mm).0),
-                start_angle,
-                end_angle,
-            },
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Ellipse {
+                    center: KPoint2d::from(untyped_point_to_mm(center_u, from.units)).map(LengthUnit),
+                    major_radius: LengthUnit(from.units.adjust_to(major_radius.to_mm(), UnitLen::Mm).0),
+                    minor_radius: LengthUnit(from.units.adjust_to(minor_radius.to_mm(), UnitLen::Mm).0),
+                    start_angle,
+                    end_angle,
+                },
+            }),
+        )
+        .await?;
 
     let current_path = Path::Ellipse {
         ccw: start_angle < end_angle,
@@ -2048,20 +2049,21 @@ pub(crate) async fn inner_hyperbolic(
     let start_tangent = hyperbolic_tangent(from, semi_major_u, semi_minor_u);
     let end_tangent = hyperbolic_tangent(end_point, semi_major_u, semi_minor_u);
 
-    exec_state.batch_modeling_cmd(
-        ModelingCmdMeta::from_args_id(&args, id),
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::ConicTo {
-                start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
-                end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
-                end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
-                interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
-                relative,
-            },
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::ConicTo {
+                    start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
+                    end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
+                    end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
+                    interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
+                    relative,
+                },
+            }),
+        )
+        .await?;
 
     let current_path = Path::Conic {
         base: BasePath {
@@ -2251,20 +2253,21 @@ pub(crate) async fn inner_parabolic(
     let start_tangent = parabolic_tangent(from, a, b);
     let end_tangent = parabolic_tangent(end_point, a, b);
 
-    exec_state.batch_modeling_cmd(
-        ModelingCmdMeta::from_args_id(&args, id),
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::ConicTo {
-                start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
-                end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
-                end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
-                interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
-                relative,
-            },
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::ConicTo {
+                    start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
+                    end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
+                    end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
+                    interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
+                    relative,
+                },
+            }),
+        )
+        .await?;
 
     let current_path = Path::Conic {
         base: BasePath {
@@ -2393,20 +2396,21 @@ pub(crate) async fn inner_conic(
         (start, end_tan)
     };
 
-    exec_state.batch_modeling_cmd(
-        ModelingCmdMeta::from_args_id(&args, id),
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::ConicTo {
-                start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
-                end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
-                end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
-                interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
-                relative,
-            },
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::ConicTo {
+                    start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
+                    end_tangent: KPoint2d::from(untyped_point_to_mm(end_tangent, from.units)).map(LengthUnit),
+                    end: KPoint2d::from(untyped_point_to_mm(end, from.units)).map(LengthUnit),
+                    interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
+                    relative,
+                },
+            }),
+        )
+        .await?;
 
     let current_path = Path::Conic {
         base: BasePath {

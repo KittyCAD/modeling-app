@@ -462,20 +462,21 @@ async fn inner_ellipse(
 
     let id = exec_state.next_uuid();
 
-    exec_state.batch_modeling_cmd(
-        ModelingCmdMeta::from_args_id(&args, id),
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Ellipse {
-                center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
-                major_radius: LengthUnit(major_radius.to_mm()),
-                minor_radius: LengthUnit(minor_radius.to_mm()),
-                start_angle: Angle::from_degrees(angle_start.to_degrees()),
-                end_angle: Angle::from_degrees(angle_end.to_degrees()),
-            },
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Ellipse {
+                    center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
+                    major_radius: LengthUnit(major_radius.to_mm()),
+                    minor_radius: LengthUnit(minor_radius.to_mm()),
+                    start_angle: Angle::from_degrees(angle_start.to_degrees()),
+                    end_angle: Angle::from_degrees(angle_end.to_degrees()),
+                },
+            }),
+        )
+        .await?;
 
     let current_path = Path::Ellipse {
         base: BasePath {
@@ -501,7 +502,11 @@ async fn inner_ellipse(
 
     new_sketch.paths.push(current_path);
 
-    exec_state.batch_modeling_cmd(ModelingCmdMeta::from_args_id(&args, id), ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }))
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
+        )
         .await?;
 
     Ok(new_sketch)
