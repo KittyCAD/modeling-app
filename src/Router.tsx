@@ -175,7 +175,7 @@ function CoreDump() {
       ),
     []
   )
-  useHotkeyWrapper(['mod + shift + .'], () => {
+  useHotkeyWrapper(['mod + shift + period'], () => {
     toast
       .promise(
         coreDump(coreDumpManager, true),

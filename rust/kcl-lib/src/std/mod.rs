@@ -260,10 +260,6 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::extrude::extrude(e, a)),
             StdFnProps::default("std::sketch::extrude").include_in_feature_tree(),
         ),
-        ("sketch", "extrudeTwist") => (
-            |e, a| Box::pin(crate::std::extrude::extrude_twist(e, a)),
-            StdFnProps::default("std::sketch::extrudeTwist").include_in_feature_tree(),
-        ),
         ("sketch", "patternTransform2d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
             StdFnProps::default("std::sketch::patternTransform2d"),
@@ -446,5 +442,5 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
     }
 }
 
-/// The default tolerance for modeling commands in [`kittycad_modeling_cmds::length_unit::LengthUnit`].
-const DEFAULT_TOLERANCE: f64 = 0.0000001;
+/// The default tolerance for modeling commands in millimeters.
+const DEFAULT_TOLERANCE_MM: f64 = 0.0000001;

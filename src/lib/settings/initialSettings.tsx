@@ -208,6 +208,16 @@ export function createSettings() {
           inputType: 'boolean',
         },
       }),
+      fixedSizeGrid: new Setting<boolean>({
+        defaultValue: true,
+        hideOnLevel: 'project',
+        description:
+          'When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
       /**
        * Stream resource saving behavior toggle
        */

@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing non_english_identifiers.kcl
+---
+comprimentoTotal = 100
+亞當 = 100
+comprimentoRosca = 亞當 * 0.8 // 80% do comprimento total é roscado
+comprimentoCabeça = comprimentoTotal - comprimentoRosca
+assert(comprimentoCabeça, isEqualTo = 20)

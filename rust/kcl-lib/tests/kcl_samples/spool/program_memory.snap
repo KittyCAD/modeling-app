@@ -93,7 +93,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000002167624834490815,
                   -0.0
                 ],
                 "from": [
@@ -103,8 +103,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 35.4,
                 "tag": null,
                 "to": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "type": "Arc",
                 "units": {
@@ -117,13 +117,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "tag": null,
                 "to": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -141,13 +141,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "type": "Arc",
@@ -161,7 +161,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "tag": null,
@@ -570,7 +570,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000002167624834490815,
                   -0.0
                 ],
                 "from": [
@@ -580,8 +580,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 35.4,
                 "tag": null,
                 "to": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "type": "Arc",
                 "units": {
@@ -594,13 +594,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "tag": null,
                 "to": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -618,13 +618,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "type": "Arc",
@@ -638,7 +638,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "tag": null,
@@ -1047,7 +1047,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000002167624834490815,
                   -0.0
                 ],
                 "from": [
@@ -1057,8 +1057,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 35.4,
                 "tag": null,
                 "to": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "type": "Arc",
                 "units": {
@@ -1071,13 +1071,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "tag": null,
                 "to": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1095,13 +1095,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "type": "Arc",
@@ -1115,7 +1115,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "tag": null,
@@ -1524,7 +1524,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000002167624834490815,
                   -0.0
                 ],
                 "from": [
@@ -1534,8 +1534,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 35.4,
                 "tag": null,
                 "to": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "type": "Arc",
                 "units": {
@@ -1548,13 +1548,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "tag": null,
                 "to": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1572,13 +1572,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "type": "Arc",
@@ -1592,7 +1592,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "tag": null,
@@ -2001,7 +2001,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000002167624834490815,
                   -0.0
                 ],
                 "from": [
@@ -2011,8 +2011,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 35.4,
                 "tag": null,
                 "to": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "type": "Arc",
                 "units": {
@@ -2025,13 +2025,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "tag": null,
                 "to": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2049,13 +2049,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "type": "Arc",
@@ -2069,7 +2069,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "tag": null,
@@ -2478,7 +2478,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000002167624834490815,
                   -0.0
                 ],
                 "from": [
@@ -2488,8 +2488,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 35.4,
                 "tag": null,
                 "to": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "type": "Arc",
                 "units": {
@@ -2502,13 +2502,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "tag": null,
                 "to": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2526,13 +2526,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "type": "Arc",
@@ -2546,7 +2546,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "tag": null,
@@ -2955,7 +2955,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000002167624834490815,
                   -0.0
                 ],
                 "from": [
@@ -2965,8 +2965,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 35.4,
                 "tag": null,
                 "to": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "type": "Arc",
                 "units": {
@@ -2979,13 +2979,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "tag": null,
                 "to": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -3003,13 +3003,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "type": "Arc",
@@ -3023,7 +3023,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "tag": null,
@@ -3432,7 +3432,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000002167624834490815,
                   -0.0
                 ],
                 "from": [
@@ -3442,8 +3442,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 35.4,
                 "tag": null,
                 "to": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "type": "Arc",
                 "units": {
@@ -3456,13 +3456,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  20.305,
-                  28.998
+                  20.304605846827027,
+                  28.997982367830307
                 ],
                 "tag": null,
                 "to": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -3480,13 +3480,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  37.282,
-                  53.245
+                  37.282468362817994,
+                  53.244882878784466
                 ],
                 "radius": 65.0,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "type": "Arc",
@@ -3500,7 +3500,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000003980102097228898,
                   65.0
                 ],
                 "tag": null,
@@ -3914,7 +3914,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -3924,8 +3924,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -3938,13 +3938,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -3962,13 +3962,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -3982,7 +3982,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -4391,7 +4391,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -4401,8 +4401,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -4415,13 +4415,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -4439,13 +4439,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -4459,7 +4459,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -4868,7 +4868,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -4878,8 +4878,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -4892,13 +4892,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -4916,13 +4916,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -4936,7 +4936,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -5345,7 +5345,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -5355,8 +5355,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -5369,13 +5369,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -5393,13 +5393,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -5413,7 +5413,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -5822,7 +5822,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -5832,8 +5832,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -5846,13 +5846,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -5870,13 +5870,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -5890,7 +5890,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -6299,7 +6299,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -6309,8 +6309,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -6323,13 +6323,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -6347,13 +6347,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -6367,7 +6367,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -6776,7 +6776,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -6786,8 +6786,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -6800,13 +6800,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -6824,13 +6824,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -6844,7 +6844,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -7253,7 +7253,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -7263,8 +7263,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -7277,13 +7277,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -7301,13 +7301,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -7321,7 +7321,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -7730,7 +7730,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -7740,8 +7740,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -7754,13 +7754,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -7778,13 +7778,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -7798,7 +7798,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -8207,7 +8207,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -8217,8 +8217,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -8231,13 +8231,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -8255,13 +8255,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -8275,7 +8275,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -8684,7 +8684,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -8694,8 +8694,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -8708,13 +8708,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -8732,13 +8732,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -8752,7 +8752,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -9161,7 +9161,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -9171,8 +9171,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -9185,13 +9185,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -9209,13 +9209,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -9229,7 +9229,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -9638,7 +9638,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -9648,8 +9648,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -9662,13 +9662,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -9686,13 +9686,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -9706,7 +9706,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -10115,7 +10115,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -10125,8 +10125,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -10139,13 +10139,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -10163,13 +10163,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -10183,7 +10183,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -10592,7 +10592,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -10602,8 +10602,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -10616,13 +10616,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -10640,13 +10640,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -10660,7 +10660,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,
@@ -11069,7 +11069,7 @@ description: Variables in memory after executing spool.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
+                  -0.000000000000004592425496802574,
                   -0.0
                 ],
                 "from": [
@@ -11079,8 +11079,8 @@ description: Variables in memory after executing spool.kcl
                 "radius": 75.0,
                 "tag": null,
                 "to": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "type": "Arc",
                 "units": {
@@ -11093,13 +11093,13 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.018,
-                  61.436
+                  43.01823272632845,
+                  61.43640332167438
                 ],
                 "tag": null,
                 "to": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -11117,13 +11117,13 @@ description: Variables in memory after executing spool.kcl
                   -0.0
                 ],
                 "from": [
-                  70.263,
-                  100.346
+                  70.26311345300314,
+                  100.3461254254015
                 ],
                 "radius": 122.5,
                 "tag": null,
                 "to": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "type": "Arc",
@@ -11137,7 +11137,7 @@ description: Variables in memory after executing spool.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0,
+                  0.000000000000007500961644777539,
                   122.5
                 ],
                 "tag": null,

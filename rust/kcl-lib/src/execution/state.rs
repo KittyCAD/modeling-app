@@ -2,10 +2,6 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
-#[cfg(feature = "artifact-graph")]
-use kcmc::websocket::WebSocketResponse;
-#[cfg(feature = "artifact-graph")]
-use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -50,31 +46,20 @@ pub(super) struct GlobalState {
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
     pub errors: Vec<CompilationError>,
-    #[cfg_attr(not(feature = "artifact-graph"), allow(dead_code))]
+    /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
-    #[cfg_attr(not(all(test, feature = "artifact-graph")), expect(dead_code))]
+    /// Artifacts for only the root module.
     pub root_module_artifacts: ModuleArtifactState,
 }
 
 #[cfg(feature = "artifact-graph")]
 #[derive(Debug, Clone, Default)]
 pub(super) struct ArtifactState {
-    /// Output map of UUIDs to artifacts.
+    /// Internal map of UUIDs to exec artifacts.  This needs to persist across
+    /// executions to allow the graph building to refer to cached artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
-    /// Output commands to allow building the artifact graph by the caller.
-    /// These are accumulated in the [`ExecutorContext`] but moved here for
-    /// convenience of the execution cache.
-    pub commands: Vec<ArtifactCommand>,
-    /// Responses from the engine for `artifact_commands`.  We need to cache
-    /// this so that we can build the artifact graph.  These are accumulated in
-    /// the [`ExecutorContext`] but moved here for convenience of the execution
-    /// cache.
-    pub responses: IndexMap<Uuid, WebSocketResponse>,
     /// Output artifact graph.
     pub graph: ArtifactGraph,
-    /// Operations that have been performed in execution order, for display in
-    /// the Feature Tree.
-    pub operations: Vec<Operation>,
 }
 
 #[cfg(not(feature = "artifact-graph"))]
@@ -82,16 +67,23 @@ pub(super) struct ArtifactState {
 pub(super) struct ArtifactState {}
 
 /// Artifact state for a single module.
-#[cfg(all(test, feature = "artifact-graph"))]
+#[cfg(feature = "artifact-graph")]
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct ModuleArtifactState {
+    /// Internal map of UUIDs to exec artifacts.
+    pub artifacts: IndexMap<ArtifactId, Artifact>,
+    /// Outgoing engine commands that have not yet been processed and integrated
+    /// into the artifact graph.
+    #[serde(skip)]
+    pub unprocessed_commands: Vec<ArtifactCommand>,
     /// Outgoing engine commands.
     pub commands: Vec<ArtifactCommand>,
-    /// Operations that have been performed in execution order.
+    /// Operations that have been performed in execution order, for display in
+    /// the Feature Tree.
     pub operations: Vec<Operation>,
 }
 
-#[cfg(not(all(test, feature = "artifact-graph")))]
+#[cfg(not(feature = "artifact-graph"))]
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct ModuleArtifactState {}
 
@@ -114,6 +106,7 @@ pub(super) struct ModuleState {
     pub settings: MetaSettings,
     pub(super) explicit_length_units: bool,
     pub(super) path: ModulePath,
+    /// Artifacts for only this module.
     pub artifacts: ModuleArtifactState,
 }
 
@@ -170,7 +163,7 @@ impl ExecState {
             variables: self.mod_local.variables(main_ref),
             filenames: self.global.filenames(),
             #[cfg(feature = "artifact-graph")]
-            operations: self.global.artifacts.operations,
+            operations: self.global.root_module_artifacts.operations,
             #[cfg(feature = "artifact-graph")]
             artifact_graph: self.global.artifacts.graph,
             errors: self.global.errors,
@@ -184,7 +177,7 @@ impl ExecState {
             #[cfg(feature = "artifact-graph")]
             operations: Default::default(),
             #[cfg(feature = "artifact-graph")]
-            artifact_graph: Default::default(),
+            artifact_graph: self.global.artifacts.graph,
             errors: self.global.errors,
             filenames: Default::default(),
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
@@ -210,23 +203,20 @@ impl ExecState {
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
-        self.global.artifacts.artifacts.insert(id, artifact);
+        self.mod_local.artifacts.artifacts.insert(id, artifact);
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
-        #[cfg(all(test, feature = "artifact-graph"))]
-        self.mod_local.artifacts.operations.push(op.clone());
         #[cfg(feature = "artifact-graph")]
-        self.global.artifacts.operations.push(op);
+        self.mod_local.artifacts.operations.push(op.clone());
         #[cfg(not(feature = "artifact-graph"))]
         drop(op);
     }
 
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn push_command(&mut self, command: ArtifactCommand) {
-        #[cfg(all(test, feature = "artifact-graph"))]
-        self.mod_local.artifacts.commands.push(command);
-        #[cfg(not(all(test, feature = "artifact-graph")))]
+        self.mod_local.artifacts.unprocessed_commands.push(command);
+        #[cfg(not(feature = "artifact-graph"))]
         drop(command);
     }
 
@@ -280,11 +270,6 @@ impl ExecState {
     #[cfg(all(test, feature = "artifact-graph"))]
     pub(crate) fn modules(&self) -> &ModuleInfoMap {
         &self.global.module_infos
-    }
-
-    #[cfg(all(test, feature = "artifact-graph"))]
-    pub(crate) fn operations(&self) -> &[Operation] {
-        &self.global.artifacts.operations
     }
 
     #[cfg(all(test, feature = "artifact-graph"))]
@@ -344,9 +329,9 @@ impl ExecState {
             error,
             self.errors().to_vec(),
             #[cfg(feature = "artifact-graph")]
-            self.global.artifacts.operations.clone(),
+            self.global.root_module_artifacts.operations.clone(),
             #[cfg(feature = "artifact-graph")]
-            self.global.artifacts.commands.clone(),
+            Default::default(),
             #[cfg(feature = "artifact-graph")]
             self.global.artifacts.graph.clone(),
             module_id_to_module_path,
@@ -361,8 +346,30 @@ impl ExecState {
         engine: &Arc<Box<dyn EngineManager>>,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
     ) -> Result<(), KclError> {
-        let new_commands = engine.take_artifact_commands().await;
+        let mut new_commands = Vec::new();
+        let mut new_exec_artifacts = IndexMap::new();
+        for module in self.global.module_infos.values_mut() {
+            match &mut module.repr {
+                ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts)))
+                | ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
+                    new_commands.extend(module_artifacts.process_commands());
+                    new_exec_artifacts.extend(module_artifacts.artifacts.clone());
+                }
+                ModuleRepr::Root | ModuleRepr::Kcl(_, None) | ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
+            }
+        }
+        // Take from the module artifacts so that we don't try to process them
+        // again next time due to execution caching.
+        new_commands.extend(self.global.root_module_artifacts.process_commands());
+        // Note: These will get re-processed, but since we're just adding them
+        // to a map, it's fine.
+        new_exec_artifacts.extend(self.global.root_module_artifacts.artifacts.clone());
         let new_responses = engine.take_responses().await;
+
+        // Move the artifacts into ExecState global to simplify cache
+        // management.
+        self.global.artifacts.artifacts.extend(new_exec_artifacts);
+
         let initial_graph = self.global.artifacts.graph.clone();
 
         // Build the artifact graph.
@@ -373,10 +380,6 @@ impl ExecState {
             &mut self.global.artifacts.artifacts,
             initial_graph,
         );
-        // Move the artifact commands and responses into ExecState to
-        // simplify cache management and error creation.
-        self.global.artifacts.commands.extend(new_commands);
-        self.global.artifacts.responses.extend(new_responses);
 
         let artifact_graph = graph_result?;
         self.global.artifacts.graph = artifact_graph;
@@ -433,19 +436,53 @@ impl GlobalState {
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 impl ArtifactState {
+    #[cfg(feature = "artifact-graph")]
     pub fn cached_body_items(&self) -> usize {
         self.graph.item_count
+    }
+
+    pub(crate) fn clear(&mut self) {
+        #[cfg(feature = "artifact-graph")]
+        {
+            self.artifacts.clear();
+            self.graph.clear();
+        }
     }
 }
 
 impl ModuleArtifactState {
+    pub(crate) fn clear(&mut self) {
+        #[cfg(feature = "artifact-graph")]
+        {
+            self.artifacts.clear();
+            self.unprocessed_commands.clear();
+            self.commands.clear();
+            self.operations.clear();
+        }
+    }
+
+    #[cfg(not(feature = "artifact-graph"))]
+    pub(crate) fn extend(&mut self, _other: ModuleArtifactState) {}
+
     /// When self is a cached state, extend it with new state.
-    #[cfg(all(test, feature = "artifact-graph"))]
+    #[cfg(feature = "artifact-graph")]
     pub(crate) fn extend(&mut self, other: ModuleArtifactState) {
+        self.artifacts.extend(other.artifacts);
+        self.unprocessed_commands.extend(other.unprocessed_commands);
         self.commands.extend(other.commands);
         self.operations.extend(other.operations);
+    }
+
+    // Move unprocessed artifact commands so that we don't try to process them
+    // again next time due to execution caching.  Returns a clone of the
+    // commands that were moved.
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn process_commands(&mut self) -> Vec<ArtifactCommand> {
+        let unprocessed = std::mem::take(&mut self.unprocessed_commands);
+        let new_module_commands = unprocessed.clone();
+        self.commands.extend(unprocessed);
+        new_module_commands
     }
 }
 

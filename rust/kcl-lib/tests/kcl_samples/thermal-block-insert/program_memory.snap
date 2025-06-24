@@ -16,12 +16,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
           },
           "from": [
             -200.0,
-            -48.529
+            -48.529411764705884
           ],
           "tag": null,
           "to": [
-            -152.941,
-            -48.529
+            -152.94117647058823,
+            -48.529411764705884
           ],
           "type": "ToPoint",
           "units": {
@@ -34,12 +34,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -152.941,
-            -48.529
+            -152.94117647058823,
+            -48.529411764705884
           ],
           "tag": null,
           "to": [
-            -164.706,
+            -164.70588235294116,
             -25.0
           ],
           "type": "ToPoint",
@@ -53,12 +53,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -164.706,
+            -164.70588235294116,
             -25.0
           ],
           "tag": null,
           "to": [
-            -117.647,
+            -117.64705882352939,
             -25.0
           ],
           "type": "ToPoint",
@@ -72,13 +72,13 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -117.647,
+            -117.64705882352939,
             -25.0
           ],
           "tag": null,
           "to": [
-            -129.412,
-            -48.529
+            -129.41176470588232,
+            -48.529411764705884
           ],
           "type": "ToPoint",
           "units": {
@@ -91,13 +91,13 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -129.412,
-            -48.529
+            -129.41176470588232,
+            -48.529411764705884
           ],
           "tag": null,
           "to": [
-            -82.353,
-            -48.529
+            -82.35294117647055,
+            -48.529411764705884
           ],
           "type": "ToPoint",
           "units": {
@@ -110,12 +110,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -82.353,
-            -48.529
+            -82.35294117647055,
+            -48.529411764705884
           ],
           "tag": null,
           "to": [
-            -82.353,
+            -82.35294117647055,
             0.0
           ],
           "type": "ToPoint",
@@ -129,12 +129,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -82.353,
+            -82.35294117647055,
             0.0
           ],
           "tag": null,
           "to": [
-            -482.353,
+            -482.35294117647055,
             0.0
           ],
           "type": "ToPoint",
@@ -148,13 +148,13 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -482.353,
+            -482.35294117647055,
             0.0
           ],
           "tag": null,
           "to": [
             -200.0,
-            -48.529
+            -48.529411764705884
           ],
           "type": "ToPoint",
           "units": {
@@ -195,11 +195,11 @@ description: Variables in memory after executing thermal-block-insert.kcl
       "start": {
         "from": [
           -200.0,
-          -48.529
+          -48.529411764705884
         ],
         "to": [
           -200.0,
-          -48.529
+          -48.529411764705884
         ],
         "units": {
           "type": "Mm"
@@ -325,7 +325,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                 ],
                 "tag": null,
                 "to": [
-                  -152.941,
+                  -152.94117647058823,
                   25.0
                 ],
                 "type": "ToPoint",
@@ -339,13 +339,13 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -152.941,
+                  -152.94117647058823,
                   25.0
                 ],
                 "tag": null,
                 "to": [
-                  -164.706,
-                  48.529
+                  -164.70588235294116,
+                  48.529411764705884
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -358,13 +358,13 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -164.706,
-                  48.529
+                  -164.70588235294116,
+                  48.529411764705884
                 ],
                 "tag": null,
                 "to": [
-                  -117.647,
-                  48.529
+                  -117.64705882352939,
+                  48.529411764705884
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -377,31 +377,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -117.647,
-                  48.529
+                  -117.64705882352939,
+                  48.529411764705884
                 ],
                 "tag": null,
                 "to": [
-                  -129.412,
-                  25.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -129.412,
-                  25.0
-                ],
-                "tag": null,
-                "to": [
-                  -82.353,
+                  -129.41176470588232,
                   25.0
                 ],
                 "type": "ToPoint",
@@ -415,12 +396,31 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -82.353,
+                  -129.41176470588232,
                   25.0
                 ],
                 "tag": null,
                 "to": [
-                  -82.353,
+                  -82.35294117647055,
+                  25.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -82.35294117647055,
+                  25.0
+                ],
+                "tag": null,
+                "to": [
+                  -82.35294117647055,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -434,12 +434,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -82.353,
+                  -82.35294117647055,
                   0.0
                 ],
                 "tag": null,
                 "to": [
-                  -482.353,
+                  -482.35294117647055,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -453,7 +453,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -482.353,
+                  -482.35294117647055,
                   0.0
                 ],
                 "tag": null,
@@ -605,12 +605,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
                 },
                 "from": [
                   -200.0,
-                  -48.529
+                  -48.529411764705884
                 ],
                 "tag": null,
                 "to": [
-                  -152.941,
-                  -48.529
+                  -152.94117647058823,
+                  -48.529411764705884
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -623,12 +623,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -152.941,
-                  -48.529
+                  -152.94117647058823,
+                  -48.529411764705884
                 ],
                 "tag": null,
                 "to": [
-                  -164.706,
+                  -164.70588235294116,
                   -25.0
                 ],
                 "type": "ToPoint",
@@ -642,12 +642,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -164.706,
+                  -164.70588235294116,
                   -25.0
                 ],
                 "tag": null,
                 "to": [
-                  -117.647,
+                  -117.64705882352939,
                   -25.0
                 ],
                 "type": "ToPoint",
@@ -661,13 +661,13 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -117.647,
+                  -117.64705882352939,
                   -25.0
                 ],
                 "tag": null,
                 "to": [
-                  -129.412,
-                  -48.529
+                  -129.41176470588232,
+                  -48.529411764705884
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -680,13 +680,13 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -129.412,
-                  -48.529
+                  -129.41176470588232,
+                  -48.529411764705884
                 ],
                 "tag": null,
                 "to": [
-                  -82.353,
-                  -48.529
+                  -82.35294117647055,
+                  -48.529411764705884
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -699,12 +699,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -82.353,
-                  -48.529
+                  -82.35294117647055,
+                  -48.529411764705884
                 ],
                 "tag": null,
                 "to": [
-                  -82.353,
+                  -82.35294117647055,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -718,12 +718,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -82.353,
+                  -82.35294117647055,
                   0.0
                 ],
                 "tag": null,
                 "to": [
-                  -482.353,
+                  -482.35294117647055,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -737,13 +737,13 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -482.353,
+                  -482.35294117647055,
                   0.0
                 ],
                 "tag": null,
                 "to": [
                   -200.0,
-                  -48.529
+                  -48.529411764705884
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -784,11 +784,11 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "start": {
               "from": [
                 -200.0,
-                -48.529
+                -48.529411764705884
               ],
               "to": [
                 -200.0,
-                -48.529
+                -48.529411764705884
               ],
               "units": {
                 "type": "Mm"
@@ -861,7 +861,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
   },
   "tongueDepth": {
     "type": "Number",
-    "value": 23.529,
+    "value": 23.529411764705884,
     "ty": {
       "type": "Default",
       "len": {
@@ -874,7 +874,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
   },
   "tongueGap": {
     "type": "Number",
-    "value": 23.529,
+    "value": 23.529411764705884,
     "ty": {
       "type": "Default",
       "len": {
@@ -887,7 +887,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
   },
   "tongueLength": {
     "type": "Number",
-    "value": 47.059,
+    "value": 47.05882352941177,
     "ty": {
       "type": "Default",
       "len": {
@@ -900,7 +900,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
   },
   "tongueSetback": {
     "type": "Number",
-    "value": 11.765,
+    "value": 11.764705882352942,
     "ty": {
       "type": "Default",
       "len": {
@@ -928,7 +928,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
           ],
           "tag": null,
           "to": [
-            -152.941,
+            -152.94117647058823,
             25.0
           ],
           "type": "ToPoint",
@@ -942,13 +942,13 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -152.941,
+            -152.94117647058823,
             25.0
           ],
           "tag": null,
           "to": [
-            -164.706,
-            48.529
+            -164.70588235294116,
+            48.529411764705884
           ],
           "type": "ToPoint",
           "units": {
@@ -961,13 +961,13 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -164.706,
-            48.529
+            -164.70588235294116,
+            48.529411764705884
           ],
           "tag": null,
           "to": [
-            -117.647,
-            48.529
+            -117.64705882352939,
+            48.529411764705884
           ],
           "type": "ToPoint",
           "units": {
@@ -980,31 +980,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -117.647,
-            48.529
+            -117.64705882352939,
+            48.529411764705884
           ],
           "tag": null,
           "to": [
-            -129.412,
-            25.0
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -129.412,
-            25.0
-          ],
-          "tag": null,
-          "to": [
-            -82.353,
+            -129.41176470588232,
             25.0
           ],
           "type": "ToPoint",
@@ -1018,12 +999,31 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -82.353,
+            -129.41176470588232,
             25.0
           ],
           "tag": null,
           "to": [
-            -82.353,
+            -82.35294117647055,
+            25.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -82.35294117647055,
+            25.0
+          ],
+          "tag": null,
+          "to": [
+            -82.35294117647055,
             0.0
           ],
           "type": "ToPoint",
@@ -1037,12 +1037,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -82.353,
+            -82.35294117647055,
             0.0
           ],
           "tag": null,
           "to": [
-            -482.353,
+            -482.35294117647055,
             0.0
           ],
           "type": "ToPoint",
@@ -1056,7 +1056,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -482.353,
+            -482.35294117647055,
             0.0
           ],
           "tag": null,
@@ -1127,7 +1127,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
   },
   "tongueStep": {
     "type": "Number",
-    "value": 70.588,
+    "value": 70.58823529411765,
     "ty": {
       "type": "Default",
       "len": {

@@ -54,7 +54,7 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
             ],
             "tag": null,
             "to": [
-              26.14,
+              26.139999999999997,
               12.2
             ],
             "type": "ToPoint",
@@ -68,12 +68,12 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
               "sourceRange": []
             },
             "from": [
-              26.14,
+              26.139999999999997,
               12.2
             ],
             "tag": null,
             "to": [
-              26.14,
+              26.139999999999997,
               -10.48
             ],
             "type": "ToPoint",
@@ -87,12 +87,12 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
               "sourceRange": []
             },
             "from": [
-              26.14,
+              26.139999999999997,
               -10.48
             ],
             "tag": null,
             "to": [
-              1.94,
+              1.9399999999999977,
               -10.48
             ],
             "type": "ToPoint",
@@ -106,7 +106,7 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
               "sourceRange": []
             },
             "from": [
-              1.94,
+              1.9399999999999977,
               -10.48
             ],
             "tag": null,
@@ -872,7 +872,7 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
           ],
           "tag": null,
           "to": [
-            26.14,
+            26.139999999999997,
             12.2
           ],
           "type": "ToPoint",
@@ -886,12 +886,12 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
             "sourceRange": []
           },
           "from": [
-            26.14,
+            26.139999999999997,
             12.2
           ],
           "tag": null,
           "to": [
-            26.14,
+            26.139999999999997,
             -10.48
           ],
           "type": "ToPoint",
@@ -905,12 +905,12 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
             "sourceRange": []
           },
           "from": [
-            26.14,
+            26.139999999999997,
             -10.48
           ],
           "tag": null,
           "to": [
-            1.94,
+            1.9399999999999977,
             -10.48
           ],
           "type": "ToPoint",
@@ -924,7 +924,7 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
             "sourceRange": []
           },
           "from": [
-            1.94,
+            1.9399999999999977,
             -10.48
           ],
           "tag": null,
@@ -1150,7 +1150,7 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
             ],
             "tag": null,
             "to": [
-              26.14,
+              26.139999999999997,
               12.2
             ],
             "type": "ToPoint",
@@ -1164,12 +1164,12 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
               "sourceRange": []
             },
             "from": [
-              26.14,
+              26.139999999999997,
               12.2
             ],
             "tag": null,
             "to": [
-              26.14,
+              26.139999999999997,
               -10.48
             ],
             "type": "ToPoint",
@@ -1183,12 +1183,12 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
               "sourceRange": []
             },
             "from": [
-              26.14,
+              26.139999999999997,
               -10.48
             ],
             "tag": null,
             "to": [
-              1.94,
+              1.9399999999999977,
               -10.48
             ],
             "type": "ToPoint",
@@ -1202,7 +1202,7 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
               "sourceRange": []
             },
             "from": [
-              1.94,
+              1.9399999999999977,
               -10.48
             ],
             "tag": null,

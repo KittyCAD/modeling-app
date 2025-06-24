@@ -138,7 +138,7 @@ description: Artifact commands gridfinity-bins.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.15,
+            "x": 2.149999999999999,
             "y": -2.15,
             "z": 0.0
           },
@@ -172,7 +172,7 @@ description: Artifact commands gridfinity-bins.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.8,
+            "x": 0.7999999999999997,
             "y": -0.8,
             "z": 0.0
           },
@@ -403,7 +403,7 @@ description: Artifact commands gridfinity-bins.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.15,
+            "x": 2.149999999999999,
             "y": -2.15,
             "z": 0.0
           },
@@ -437,7 +437,7 @@ description: Artifact commands gridfinity-bins.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.8,
+            "x": 0.7999999999999997,
             "y": -0.8,
             "z": 0.0
           },
@@ -637,7 +637,7 @@ description: Artifact commands gridfinity-bins.kcl
           "type": "line",
           "end": {
             "x": 3.2,
-            "y": 38.8,
+            "y": 38.800000000000004,
             "z": 0.0
           },
           "relative": false

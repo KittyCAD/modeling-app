@@ -515,7 +515,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 9.921,
+        "value": 9.921147013144779,
         "ty": {
           "type": "Default",
           "len": {
@@ -561,7 +561,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 1.253,
+        "value": 1.2533323356430426,
         "ty": {
           "type": "Default",
           "len": {
@@ -767,7 +767,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 9.686,
+        "value": 9.68583161128631,
         "ty": {
           "type": "Default",
           "len": {
@@ -813,7 +813,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 2.487,
+        "value": 2.486898871648548,
         "ty": {
           "type": "Default",
           "len": {
@@ -1019,7 +1019,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 9.298,
+        "value": 9.297764858882514,
         "ty": {
           "type": "Default",
           "len": {
@@ -1065,7 +1065,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 3.681,
+        "value": 3.6812455268467796,
         "ty": {
           "type": "Default",
           "len": {
@@ -1271,7 +1271,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 8.763,
+        "value": 8.763066800438637,
         "ty": {
           "type": "Default",
           "len": {
@@ -1317,7 +1317,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 4.818,
+        "value": 4.817536741017153,
         "ty": {
           "type": "Default",
           "len": {
@@ -1523,7 +1523,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 8.09,
+        "value": 8.090169943749475,
         "ty": {
           "type": "Default",
           "len": {
@@ -1569,7 +1569,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 5.878,
+        "value": 5.877852522924732,
         "ty": {
           "type": "Default",
           "len": {
@@ -1775,7 +1775,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 7.29,
+        "value": 7.289686274214116,
         "ty": {
           "type": "Default",
           "len": {
@@ -1821,7 +1821,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 6.845,
+        "value": 6.845471059286887,
         "ty": {
           "type": "Default",
           "len": {
@@ -2027,7 +2027,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 6.374,
+        "value": 6.374239897486898,
         "ty": {
           "type": "Default",
           "len": {
@@ -2073,7 +2073,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 7.705,
+        "value": 7.705132427757891,
         "ty": {
           "type": "Default",
           "len": {
@@ -2279,7 +2279,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 5.358,
+        "value": 5.3582679497899655,
         "ty": {
           "type": "Default",
           "len": {
@@ -2325,7 +2325,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 8.443,
+        "value": 8.443279255020151,
         "ty": {
           "type": "Default",
           "len": {
@@ -2531,7 +2531,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 4.258,
+        "value": 4.257792915650727,
         "ty": {
           "type": "Default",
           "len": {
@@ -2577,7 +2577,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 9.048,
+        "value": 9.048270524660197,
         "ty": {
           "type": "Default",
           "len": {
@@ -2783,7 +2783,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 3.09,
+        "value": 3.0901699437494745,
         "ty": {
           "type": "Default",
           "len": {
@@ -2829,7 +2829,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 9.511,
+        "value": 9.510565162951535,
         "ty": {
           "type": "Default",
           "len": {
@@ -3035,7 +3035,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 1.874,
+        "value": 1.8738131458572473,
         "ty": {
           "type": "Default",
           "len": {
@@ -3081,7 +3081,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 9.823,
+        "value": 9.822872507286887,
         "ty": {
           "type": "Default",
           "len": {
@@ -3287,7 +3287,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 0.628,
+        "value": 0.627905195293133,
         "ty": {
           "type": "Default",
           "len": {
@@ -3333,7 +3333,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 9.98,
+        "value": 9.980267284282716,
         "ty": {
           "type": "Default",
           "len": {
@@ -3493,7 +3493,7 @@ description: Operations executed loop_tag.kcl
       "name": "angle",
       "value": {
         "type": "Number",
-        "value": 93.6,
+        "value": 93.60000000000001,
         "ty": {
           "type": "Default",
           "len": {
@@ -3539,7 +3539,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -0.628,
+        "value": -0.627905195293134,
         "ty": {
           "type": "Default",
           "len": {
@@ -3585,7 +3585,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 9.98,
+        "value": 9.980267284282716,
         "ty": {
           "type": "Default",
           "len": {
@@ -3791,7 +3791,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -1.874,
+        "value": -1.8738131458572438,
         "ty": {
           "type": "Default",
           "len": {
@@ -3837,7 +3837,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 9.823,
+        "value": 9.822872507286887,
         "ty": {
           "type": "Default",
           "len": {
@@ -4043,7 +4043,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -3.09,
+        "value": -3.0901699437494736,
         "ty": {
           "type": "Default",
           "len": {
@@ -4089,7 +4089,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 9.511,
+        "value": 9.510565162951536,
         "ty": {
           "type": "Default",
           "len": {
@@ -4295,7 +4295,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -4.258,
+        "value": -4.257792915650727,
         "ty": {
           "type": "Default",
           "len": {
@@ -4341,7 +4341,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 9.048,
+        "value": 9.048270524660195,
         "ty": {
           "type": "Default",
           "len": {
@@ -4547,7 +4547,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -5.358,
+        "value": -5.358267949789969,
         "ty": {
           "type": "Default",
           "len": {
@@ -4593,7 +4593,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 8.443,
+        "value": 8.44327925502015,
         "ty": {
           "type": "Default",
           "len": {
@@ -4799,7 +4799,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -6.374,
+        "value": -6.3742398974868975,
         "ty": {
           "type": "Default",
           "len": {
@@ -4845,7 +4845,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 7.705,
+        "value": 7.705132427757892,
         "ty": {
           "type": "Default",
           "len": {
@@ -5051,7 +5051,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -7.29,
+        "value": -7.289686274214113,
         "ty": {
           "type": "Default",
           "len": {
@@ -5097,7 +5097,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 6.845,
+        "value": 6.845471059286888,
         "ty": {
           "type": "Default",
           "len": {
@@ -5303,7 +5303,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -8.09,
+        "value": -8.090169943749473,
         "ty": {
           "type": "Default",
           "len": {
@@ -5349,7 +5349,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 5.878,
+        "value": 5.877852522924733,
         "ty": {
           "type": "Default",
           "len": {
@@ -5509,7 +5509,7 @@ description: Operations executed loop_tag.kcl
       "name": "angle",
       "value": {
         "type": "Number",
-        "value": 151.2,
+        "value": 151.20000000000002,
         "ty": {
           "type": "Default",
           "len": {
@@ -5555,7 +5555,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -8.763,
+        "value": -8.763066800438637,
         "ty": {
           "type": "Default",
           "len": {
@@ -5601,7 +5601,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 4.818,
+        "value": 4.817536741017152,
         "ty": {
           "type": "Default",
           "len": {
@@ -5807,7 +5807,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -9.298,
+        "value": -9.297764858882513,
         "ty": {
           "type": "Default",
           "len": {
@@ -5853,7 +5853,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 3.681,
+        "value": 3.6812455268467814,
         "ty": {
           "type": "Default",
           "len": {
@@ -6059,7 +6059,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -9.686,
+        "value": -9.685831611286309,
         "ty": {
           "type": "Default",
           "len": {
@@ -6105,7 +6105,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 2.487,
+        "value": 2.4868988716485525,
         "ty": {
           "type": "Default",
           "len": {
@@ -6311,7 +6311,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -9.921,
+        "value": -9.921147013144779,
         "ty": {
           "type": "Default",
           "len": {
@@ -6357,7 +6357,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 1.253,
+        "value": 1.2533323356430408,
         "ty": {
           "type": "Default",
           "len": {
@@ -6609,7 +6609,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 0.0,
+        "value": 0.0000000000000012246467991473533,
         "ty": {
           "type": "Default",
           "len": {
@@ -6769,7 +6769,7 @@ description: Operations executed loop_tag.kcl
       "name": "angle",
       "value": {
         "type": "Number",
-        "value": 187.2,
+        "value": 187.20000000000002,
         "ty": {
           "type": "Default",
           "len": {
@@ -6815,7 +6815,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -9.921,
+        "value": -9.921147013144779,
         "ty": {
           "type": "Default",
           "len": {
@@ -6861,7 +6861,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -1.253,
+        "value": -1.2533323356430428,
         "ty": {
           "type": "Default",
           "len": {
@@ -7067,7 +7067,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -9.686,
+        "value": -9.68583161128631,
         "ty": {
           "type": "Default",
           "len": {
@@ -7113,7 +7113,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -2.487,
+        "value": -2.4868988716485503,
         "ty": {
           "type": "Default",
           "len": {
@@ -7319,7 +7319,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -9.298,
+        "value": -9.297764858882516,
         "ty": {
           "type": "Default",
           "len": {
@@ -7365,7 +7365,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -3.681,
+        "value": -3.6812455268467748,
         "ty": {
           "type": "Default",
           "len": {
@@ -7571,7 +7571,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -8.763,
+        "value": -8.763066800438637,
         "ty": {
           "type": "Default",
           "len": {
@@ -7617,7 +7617,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -4.818,
+        "value": -4.817536741017154,
         "ty": {
           "type": "Default",
           "len": {
@@ -7823,7 +7823,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -8.09,
+        "value": -8.090169943749475,
         "ty": {
           "type": "Default",
           "len": {
@@ -7869,7 +7869,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -5.878,
+        "value": -5.87785252292473,
         "ty": {
           "type": "Default",
           "len": {
@@ -8029,7 +8029,7 @@ description: Operations executed loop_tag.kcl
       "name": "angle",
       "value": {
         "type": "Number",
-        "value": 223.2,
+        "value": 223.20000000000002,
         "ty": {
           "type": "Default",
           "len": {
@@ -8075,7 +8075,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -7.29,
+        "value": -7.289686274214116,
         "ty": {
           "type": "Default",
           "len": {
@@ -8121,7 +8121,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -6.845,
+        "value": -6.845471059286887,
         "ty": {
           "type": "Default",
           "len": {
@@ -8327,7 +8327,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -6.374,
+        "value": -6.374239897486895,
         "ty": {
           "type": "Default",
           "len": {
@@ -8373,7 +8373,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -7.705,
+        "value": -7.705132427757894,
         "ty": {
           "type": "Default",
           "len": {
@@ -8579,7 +8579,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -5.358,
+        "value": -5.358267949789964,
         "ty": {
           "type": "Default",
           "len": {
@@ -8625,7 +8625,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -8.443,
+        "value": -8.443279255020153,
         "ty": {
           "type": "Default",
           "len": {
@@ -8831,7 +8831,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -4.258,
+        "value": -4.257792915650722,
         "ty": {
           "type": "Default",
           "len": {
@@ -8877,7 +8877,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -9.048,
+        "value": -9.048270524660198,
         "ty": {
           "type": "Default",
           "len": {
@@ -9083,7 +9083,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -3.09,
+        "value": -3.0901699437494754,
         "ty": {
           "type": "Default",
           "len": {
@@ -9129,7 +9129,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -9.511,
+        "value": -9.510565162951535,
         "ty": {
           "type": "Default",
           "len": {
@@ -9335,7 +9335,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -1.874,
+        "value": -1.8738131458572462,
         "ty": {
           "type": "Default",
           "len": {
@@ -9381,7 +9381,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -9.823,
+        "value": -9.822872507286887,
         "ty": {
           "type": "Default",
           "len": {
@@ -9541,7 +9541,7 @@ description: Operations executed loop_tag.kcl
       "name": "angle",
       "value": {
         "type": "Number",
-        "value": 266.4,
+        "value": 266.40000000000003,
         "ty": {
           "type": "Default",
           "len": {
@@ -9587,7 +9587,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -0.628,
+        "value": -0.627905195293132,
         "ty": {
           "type": "Default",
           "len": {
@@ -9633,7 +9633,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -9.98,
+        "value": -9.980267284282716,
         "ty": {
           "type": "Default",
           "len": {
@@ -9839,7 +9839,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 0.628,
+        "value": 0.6279051952931283,
         "ty": {
           "type": "Default",
           "len": {
@@ -9885,7 +9885,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -9.98,
+        "value": -9.980267284282716,
         "ty": {
           "type": "Default",
           "len": {
@@ -10091,7 +10091,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 1.874,
+        "value": 1.8738131458572427,
         "ty": {
           "type": "Default",
           "len": {
@@ -10137,7 +10137,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -9.823,
+        "value": -9.822872507286887,
         "ty": {
           "type": "Default",
           "len": {
@@ -10343,7 +10343,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 3.09,
+        "value": 3.0901699437494723,
         "ty": {
           "type": "Default",
           "len": {
@@ -10389,7 +10389,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -9.511,
+        "value": -9.510565162951536,
         "ty": {
           "type": "Default",
           "len": {
@@ -10595,7 +10595,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 4.258,
+        "value": 4.257792915650718,
         "ty": {
           "type": "Default",
           "len": {
@@ -10641,7 +10641,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -9.048,
+        "value": -9.048270524660198,
         "ty": {
           "type": "Default",
           "len": {
@@ -10801,7 +10801,7 @@ description: Operations executed loop_tag.kcl
       "name": "angle",
       "value": {
         "type": "Number",
-        "value": 302.4,
+        "value": 302.40000000000003,
         "ty": {
           "type": "Default",
           "len": {
@@ -10847,7 +10847,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 5.358,
+        "value": 5.358267949789967,
         "ty": {
           "type": "Default",
           "len": {
@@ -10893,7 +10893,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -8.443,
+        "value": -8.44327925502015,
         "ty": {
           "type": "Default",
           "len": {
@@ -11099,7 +11099,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 6.374,
+        "value": 6.3742398974869,
         "ty": {
           "type": "Default",
           "len": {
@@ -11145,7 +11145,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -7.705,
+        "value": -7.70513242775789,
         "ty": {
           "type": "Default",
           "len": {
@@ -11351,7 +11351,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 7.29,
+        "value": 7.289686274214112,
         "ty": {
           "type": "Default",
           "len": {
@@ -11397,7 +11397,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -6.845,
+        "value": -6.84547105928689,
         "ty": {
           "type": "Default",
           "len": {
@@ -11603,7 +11603,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 8.09,
+        "value": 8.090169943749473,
         "ty": {
           "type": "Default",
           "len": {
@@ -11649,7 +11649,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -5.878,
+        "value": -5.877852522924734,
         "ty": {
           "type": "Default",
           "len": {
@@ -11855,7 +11855,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 8.763,
+        "value": 8.763066800438631,
         "ty": {
           "type": "Default",
           "len": {
@@ -11901,7 +11901,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -4.818,
+        "value": -4.817536741017161,
         "ty": {
           "type": "Default",
           "len": {
@@ -12061,7 +12061,7 @@ description: Operations executed loop_tag.kcl
       "name": "angle",
       "value": {
         "type": "Number",
-        "value": 338.4,
+        "value": 338.40000000000003,
         "ty": {
           "type": "Default",
           "len": {
@@ -12107,7 +12107,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 9.298,
+        "value": 9.297764858882514,
         "ty": {
           "type": "Default",
           "len": {
@@ -12153,7 +12153,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -3.681,
+        "value": -3.6812455268467787,
         "ty": {
           "type": "Default",
           "len": {
@@ -12359,7 +12359,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 9.686,
+        "value": 9.685831611286313,
         "ty": {
           "type": "Default",
           "len": {
@@ -12405,7 +12405,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -2.487,
+        "value": -2.486898871648545,
         "ty": {
           "type": "Default",
           "len": {
@@ -12611,7 +12611,7 @@ description: Operations executed loop_tag.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 9.921,
+        "value": 9.921147013144777,
         "ty": {
           "type": "Default",
           "len": {
@@ -12657,7 +12657,7 @@ description: Operations executed loop_tag.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": -1.253,
+        "value": -1.2533323356430466,
         "ty": {
           "type": "Default",
           "len": {
@@ -12759,7 +12759,7 @@ description: Operations executed loop_tag.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -12775,7 +12775,7 @@ description: Operations executed loop_tag.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -12792,7 +12792,7 @@ description: Operations executed loop_tag.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

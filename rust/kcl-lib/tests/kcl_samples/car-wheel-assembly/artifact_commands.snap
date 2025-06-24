@@ -114,7 +114,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -34.544,
+            "x": -34.544000000000004,
             "y": 0.0,
             "z": 0.0
           },
@@ -148,7 +148,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 3.81,
+            "y": 3.8100000000000005,
             "z": 0.0
           },
           "relative": true
@@ -214,7 +214,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -27.94,
+            "y": -27.939999999999994,
             "z": 0.0
           },
           "relative": true
@@ -280,7 +280,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 3.81,
+            "y": 3.8100000000000005,
             "z": 0.0
           },
           "relative": true
@@ -312,7 +312,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 34.544,
+            "x": 34.544000000000004,
             "y": 0.0,
             "z": 0.0
           },
@@ -469,7 +469,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 152.4,
+          "x": 152.39999999999998,
           "y": 0.0,
           "z": 0.0
         }
@@ -618,7 +618,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 76.2,
+          "x": 76.19999999999999,
           "y": 0.0,
           "z": 0.0
         }
@@ -1332,7 +1332,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 152.4,
+          "x": 152.39999999999998,
           "y": 0.0,
           "z": 0.0
         }
@@ -1833,7 +1833,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 146.05,
+          "x": 146.04999999999998,
           "y": 0.0,
           "z": 0.0
         }
@@ -2822,7 +2822,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 55.118,
+          "x": 55.117999999999995,
           "y": 65.024,
           "z": 0.0
         }
@@ -2844,7 +2844,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.048,
+            "x": 3.0479999999999996,
             "y": 0.0,
             "z": 0.0
           },
@@ -2878,7 +2878,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.048,
+            "x": -3.0479999999999996,
             "y": 0.0,
             "z": 0.0
           },
@@ -2895,7 +2895,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 55.118,
+            "x": 55.117999999999995,
             "y": 65.024,
             "z": 0.0
           },
@@ -3238,7 +3238,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -55.118,
+          "x": -55.117999999999995,
           "y": 65.024,
           "z": 0.0
         }
@@ -3260,7 +3260,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.048,
+            "x": -3.0479999999999996,
             "y": 0.0,
             "z": 0.0
           },
@@ -3294,7 +3294,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.048,
+            "x": 3.0479999999999996,
             "y": 0.0,
             "z": 0.0
           },
@@ -3311,7 +3311,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -55.118,
+            "x": -55.117999999999995,
             "y": 65.024,
             "z": 0.0
           },
@@ -3770,8 +3770,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 241.3,
-          "y": 139.954,
+          "x": 241.29999999999998,
+          "y": 139.95399999999998,
           "z": 0.0
         }
       }
@@ -3792,8 +3792,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 264.16,
-            "y": 139.954,
+            "x": 264.15999999999997,
+            "y": 139.95399999999998,
             "z": 0.0
           },
           "relative": false
@@ -3825,8 +3825,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 304.8,
-            "y": 59.944,
+            "x": 304.79999999999995,
+            "y": 59.943999999999996,
             "z": 0.0
           },
           "relative": false
@@ -3893,8 +3893,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 304.8,
-            "y": -50.038,
+            "x": 304.79999999999995,
+            "y": -50.03799999999999,
             "z": 0.0
           },
           "relative": false
@@ -3961,7 +3961,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 304.8,
+            "x": 304.79999999999995,
             "y": -99.314,
             "z": 0.0
           },
@@ -3994,8 +3994,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 241.3,
-            "y": -139.954,
+            "x": 241.29999999999998,
+            "y": -139.95399999999998,
             "z": 0.0
           },
           "relative": false
@@ -4135,7 +4135,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 76.2,
+          "x": 76.19999999999999,
           "y": 0.0,
           "z": 0.0
         }
@@ -4361,7 +4361,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 76.2,
+          "x": 76.19999999999999,
           "y": 0.0,
           "z": 0.0
         }
@@ -5462,7 +5462,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -36.195,
+            "y": -36.19499999999999,
             "z": 0.0
           },
           "relative": true
@@ -5478,18 +5478,18 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "bezier",
           "control1": {
-            "x": -7.62,
+            "x": -7.619999999999999,
             "y": 0.0,
             "z": 0.0
           },
           "control2": {
             "x": 0.0,
-            "y": 7.62,
+            "y": 7.619999999999999,
             "z": 0.0
           },
           "end": {
             "x": -10.16,
-            "y": 7.62,
+            "y": 7.619999999999999,
             "z": 0.0
           },
           "relative": true
@@ -5661,7 +5661,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 76.2,
+          "x": 76.19999999999999,
           "y": 0.0,
           "z": 0.0
         }
@@ -5684,7 +5684,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -36.195,
+            "y": -36.19499999999999,
             "z": 0.0
           },
           "relative": true
@@ -5700,13 +5700,13 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "bezier",
           "control1": {
-            "x": 7.62,
+            "x": 7.619999999999999,
             "y": 0.0,
             "z": 0.0
           },
           "control2": {
             "x": 5.08,
-            "y": -7.62,
+            "y": -7.619999999999999,
             "z": 0.0
           },
           "end": {
@@ -5727,7 +5727,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 86.36,
+            "x": 86.35999999999999,
             "y": -12.065,
             "z": 0.0
           },
@@ -5744,7 +5744,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 76.2,
+            "x": 76.19999999999999,
             "y": 0.0,
             "z": 0.0
           },
@@ -5839,9 +5839,9 @@ description: Artifact commands car-wheel-assembly.kcl
           "z": 2.54
         },
         "x_axis": {
-          "x": 1.0,
+          "x": 0.9998000599800071,
           "y": 0.0,
-          "z": 0.02
+          "z": 0.01999600119960014
         },
         "y_axis": {
           "x": 0.0,
@@ -5872,9 +5872,9 @@ description: Artifact commands car-wheel-assembly.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": -0.02,
+          "x": -0.01999600119960014,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.9998000599800071
         }
       }
     },
@@ -5893,7 +5893,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "path": "[uuid]",
         "to": {
           "x": 82.55,
-          "y": -17.78,
+          "y": -17.779999999999998,
           "z": 0.0
         }
       }
@@ -5914,13 +5914,13 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "bezier",
           "control1": {
-            "x": 84.183,
+            "x": 84.18285714285715,
             "y": -5.0,
             "z": 0.0
           },
           "control2": {
             "x": 73.66,
-            "y": -23.333,
+            "y": -23.333333333333332,
             "z": 0.0
           },
           "end": {
@@ -5942,7 +5942,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -16.087,
+            "y": -16.086666666666666,
             "z": 0.0
           },
           "relative": true
@@ -5964,7 +5964,7 @@ description: Artifact commands car-wheel-assembly.kcl
           },
           "control2": {
             "x": -58.928,
-            "y": 23.333,
+            "y": 23.333333333333332,
             "z": 0.0
           },
           "end": {
@@ -5986,7 +5986,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 82.55,
-            "y": -17.78,
+            "y": -17.779999999999998,
             "z": 0.0
           },
           "relative": false
@@ -6011,9 +6011,9 @@ description: Artifact commands car-wheel-assembly.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": -0.02,
+          "x": -0.01999600119960014,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.9998000599800071
         }
       }
     },
@@ -6195,9 +6195,9 @@ description: Artifact commands car-wheel-assembly.kcl
           "z": -2.54
         },
         "x_axis": {
-          "x": 1.0,
+          "x": 0.9998000599800071,
           "y": 0.0,
-          "z": -0.02
+          "z": -0.01999600119960014
         },
         "y_axis": {
           "x": 0.0,
@@ -6228,9 +6228,9 @@ description: Artifact commands car-wheel-assembly.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.02,
+          "x": 0.01999600119960014,
           "y": -0.0,
-          "z": 1.0
+          "z": 0.9998000599800071
         }
       }
     },
@@ -6249,7 +6249,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "path": "[uuid]",
         "to": {
           "x": 82.55,
-          "y": -17.78,
+          "y": -17.779999999999998,
           "z": 0.0
         }
       }
@@ -6270,13 +6270,13 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "bezier",
           "control1": {
-            "x": 84.183,
+            "x": 84.18285714285715,
             "y": -5.0,
             "z": 0.0
           },
           "control2": {
             "x": 73.66,
-            "y": -23.333,
+            "y": -23.333333333333332,
             "z": 0.0
           },
           "end": {
@@ -6298,7 +6298,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -16.087,
+            "y": -16.086666666666666,
             "z": 0.0
           },
           "relative": true
@@ -6320,7 +6320,7 @@ description: Artifact commands car-wheel-assembly.kcl
           },
           "control2": {
             "x": -58.928,
-            "y": 23.333,
+            "y": 23.333333333333332,
             "z": 0.0
           },
           "end": {
@@ -6342,7 +6342,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 82.55,
-            "y": -17.78,
+            "y": -17.779999999999998,
             "z": 0.0
           },
           "relative": false
@@ -6367,9 +6367,9 @@ description: Artifact commands car-wheel-assembly.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.02,
+          "x": 0.01999600119960014,
           "y": -0.0,
-          "z": 1.0
+          "z": 0.9998000599800071
         }
       }
     },
@@ -6595,7 +6595,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 241.3,
+          "x": 241.29999999999998,
           "y": -114.248,
           "z": 0.0
         }
@@ -6618,7 +6618,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 60.325,
+            "y": 60.324999999999996,
             "z": 0.0
           },
           "relative": true
@@ -6652,7 +6652,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 60.325,
+            "y": 60.324999999999996,
             "z": 0.0
           },
           "relative": true
@@ -6685,8 +6685,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 241.3,
-            "y": 127.052,
+            "x": 241.29999999999998,
+            "y": 127.05199999999999,
             "z": 0.0
           },
           "relative": false
@@ -6736,7 +6736,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -7.239,
+            "x": -7.238999999999999,
             "y": 0.0,
             "z": 0.0
           },
@@ -6788,7 +6788,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -113.436,
+            "y": -113.43639999999998,
             "z": 0.0
           },
           "relative": true
@@ -6821,7 +6821,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 229.235,
+            "x": 229.23499999999999,
             "y": -40.08,
             "z": 0.0
           },
@@ -6838,7 +6838,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.478,
+            "x": -14.477999999999998,
             "y": -4.826,
             "z": 0.0
           },
@@ -6872,7 +6872,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14.478,
+            "x": 14.477999999999998,
             "y": -24.13,
             "z": 0.0
           },
@@ -6923,7 +6923,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 234.061,
+            "x": 234.06099999999998,
             "y": -121.36,
             "z": 0.0
           },
@@ -6974,7 +6974,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.239,
+            "x": 7.238999999999999,
             "y": 0.0,
             "z": 0.0
           },
@@ -7163,7 +7163,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.368,
+            "x": 4.367642811194429,
             "y": 12.0,
             "z": 0.0
           },
@@ -7230,7 +7230,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.025,
+            "x": 0.0254,
             "y": 33.0,
             "z": 0.0
           },
@@ -7247,7 +7247,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.025,
+            "x": 0.0254,
             "y": 17.3,
             "z": 0.0
           },

@@ -207,7 +207,7 @@ description: Operations executed thermal-block-insert.kcl
       "name": "tongueLength",
       "value": {
         "type": "Number",
-        "value": 47.059,
+        "value": 47.05882352941177,
         "ty": {
           "type": "Default",
           "len": {
@@ -240,7 +240,7 @@ description: Operations executed thermal-block-insert.kcl
       "name": "tongueGap",
       "value": {
         "type": "Number",
-        "value": 23.529,
+        "value": 23.529411764705884,
         "ty": {
           "type": "Default",
           "len": {
@@ -273,7 +273,7 @@ description: Operations executed thermal-block-insert.kcl
       "name": "tongueStep",
       "value": {
         "type": "Number",
-        "value": 70.588,
+        "value": 70.58823529411765,
         "ty": {
           "type": "Default",
           "len": {
@@ -306,7 +306,7 @@ description: Operations executed thermal-block-insert.kcl
       "name": "tongueDepth",
       "value": {
         "type": "Number",
-        "value": 23.529,
+        "value": 23.529411764705884,
         "ty": {
           "type": "Default",
           "len": {
@@ -339,7 +339,7 @@ description: Operations executed thermal-block-insert.kcl
       "name": "tongueSetback",
       "value": {
         "type": "Number",
-        "value": 11.765,
+        "value": 11.764705882352942,
         "ty": {
           "type": "Default",
           "len": {
@@ -559,7 +559,7 @@ description: Operations executed thermal-block-insert.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -575,7 +575,7 @@ description: Operations executed thermal-block-insert.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -592,7 +592,7 @@ description: Operations executed thermal-block-insert.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

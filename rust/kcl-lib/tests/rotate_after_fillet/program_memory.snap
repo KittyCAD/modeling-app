@@ -61,7 +61,7 @@ description: Variables in memory after executing rotate_after_fillet.kcl
   },
   "boltHexFlatLength": {
     "type": "Number",
-    "value": 0.289,
+    "value": 0.28867513459481287,
     "ty": {
       "type": "Default",
       "len": {

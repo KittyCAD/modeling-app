@@ -273,7 +273,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       "name": "thickness",
       "value": {
         "type": "Number",
-        "value": 0.321,
+        "value": 0.32071349029490925,
         "ty": {
           "type": "Default",
           "len": {
@@ -493,7 +493,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "radius": {
           "value": {
             "type": "Number",
-            "value": 0.571,
+            "value": 0.5707134902949093,
             "ty": {
               "type": "Default",
               "len": {
@@ -640,7 +640,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -656,7 +656,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -673,7 +673,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

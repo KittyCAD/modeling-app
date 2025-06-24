@@ -399,7 +399,11 @@ export const EngineStream = (props: {
           engineStreamState.value === EngineStreamState.Playing
         ) {
           timeoutStart.current = null
-          console.log('PAUSING')
+          console.log('Pausing')
+          console.log(
+            engineStreamActor.getSnapshot().value,
+            engineStreamState.value
+          )
           engineStreamActor.send({ type: EngineStreamTransition.Pause })
         }
       }
@@ -558,7 +562,7 @@ export const EngineStream = (props: {
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       ref={videoWrapperRef}
-      className="absolute inset-0 z-0"
+      className="fixed inset-0 z-0"
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}
@@ -606,7 +610,7 @@ export const EngineStream = (props: {
           dataTestId="loading-engine"
           className="fixed inset-0 h-screen"
         >
-          Connecting and setting up scene
+          Connecting and setting up scene...
         </Loading>
       )}
     </div>

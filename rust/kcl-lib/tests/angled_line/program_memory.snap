@@ -75,7 +75,7 @@ description: Variables in memory after executing angled_line.kcl
             "tag": null,
             "to": [
               19.93,
-              15.04
+              15.040000000000001
             ],
             "type": "ToPoint",
             "units": {
@@ -89,7 +89,7 @@ description: Variables in memory after executing angled_line.kcl
             },
             "from": [
               19.93,
-              15.04
+              15.040000000000001
             ],
             "tag": {
               "commentStart": 133,
@@ -100,7 +100,7 @@ description: Variables in memory after executing angled_line.kcl
             },
             "to": [
               23.08,
-              5.19
+              5.190000000000001
             ],
             "type": "ToPoint",
             "units": {
@@ -114,12 +114,12 @@ description: Variables in memory after executing angled_line.kcl
             },
             "from": [
               23.08,
-              5.19
+              5.190000000000001
             ],
             "tag": null,
             "to": [
-              7.91,
-              1.09
+              7.909999999999998,
+              1.0900000000000016
             ],
             "type": "ToPoint",
             "units": {
@@ -132,13 +132,13 @@ description: Variables in memory after executing angled_line.kcl
               "sourceRange": []
             },
             "from": [
-              7.91,
-              1.09
+              7.909999999999998,
+              1.0900000000000016
             ],
             "tag": null,
             "to": [
-              11.672,
-              -10.673
+              11.671813572028025,
+              -10.673131328405107
             ],
             "type": "ToPoint",
             "units": {
@@ -151,13 +151,13 @@ description: Variables in memory after executing angled_line.kcl
               "sourceRange": []
             },
             "from": [
-              11.672,
-              -10.673
+              11.671813572028025,
+              -10.673131328405107
             ],
             "tag": null,
             "to": [
-              -1.348,
-              -0.643
+              -1.3481864279719744,
+              -0.6431313284051079
             ],
             "type": "ToPoint",
             "units": {
@@ -170,8 +170,8 @@ description: Variables in memory after executing angled_line.kcl
               "sourceRange": []
             },
             "from": [
-              -1.348,
-              -0.643
+              -1.3481864279719744,
+              -0.6431313284051079
             ],
             "tag": null,
             "to": [

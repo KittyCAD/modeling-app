@@ -103,13 +103,9 @@ if (!singleInstanceLock && !IS_PLAYWRIGHT) {
   registerStartupListeners()
 }
 
-const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
+const createWindow = (pathToOpen?: string): BrowserWindow => {
   let newWindow: BrowserWindow | null = null
 
-  if (reuse) {
-    newWindow = mainWindow
-    Menu.setApplicationMenu(null)
-  }
   if (!newWindow) {
     const primaryDisplay = screen.getPrimaryDisplay()
     const { width, height } = primaryDisplay.workAreaSize
@@ -155,6 +151,10 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
       titleBarStyle: 'hiddenInset',
       backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
     })
+    // This is only needed on windows, but it doesn't do any harm on other platforms.
+    // On windows the initial width, height supplied above cannot be larger than screen resolution which causes
+    // some weird border to appear when the last window size was close to full screen.
+    newWindow.setBounds({ x, y, width: windowWidth, height: windowHeight })
   }
 
   newWindow.on('close', () => {
@@ -240,9 +240,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
-  if (!reuse) {
-    if (!process.env.HEADLESS) newWindow.show()
-  }
+  if (!process.env.HEADLESS) newWindow.show()
 
   return newWindow
 }

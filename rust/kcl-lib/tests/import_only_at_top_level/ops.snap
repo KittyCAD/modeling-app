@@ -37,6 +37,31 @@ description: Operations executed import_only_at_top_level.kcl
     },
     {
       "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "main",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {}
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     }
   ],
   "std::appearance": [],
@@ -47,7 +72,7 @@ description: Operations executed import_only_at_top_level.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -63,7 +88,7 @@ description: Operations executed import_only_at_top_level.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -80,7 +105,7 @@ description: Operations executed import_only_at_top_level.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"

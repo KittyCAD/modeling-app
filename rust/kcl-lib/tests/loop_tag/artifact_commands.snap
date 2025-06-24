@@ -81,8 +81,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 9.921,
-            "y": 1.253,
+            "x": 9.921147013144779,
+            "y": 1.2533323356430426,
             "z": 0.0
           },
           "relative": true
@@ -98,8 +98,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 9.686,
-            "y": 2.487,
+            "x": 9.68583161128631,
+            "y": 2.486898871648548,
             "z": 0.0
           },
           "relative": true
@@ -115,8 +115,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 9.298,
-            "y": 3.681,
+            "x": 9.297764858882514,
+            "y": 3.6812455268467796,
             "z": 0.0
           },
           "relative": true
@@ -132,8 +132,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.763,
-            "y": 4.818,
+            "x": 8.763066800438637,
+            "y": 4.817536741017153,
             "z": 0.0
           },
           "relative": true
@@ -149,8 +149,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.09,
-            "y": 5.878,
+            "x": 8.090169943749475,
+            "y": 5.877852522924732,
             "z": 0.0
           },
           "relative": true
@@ -166,8 +166,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.29,
-            "y": 6.845,
+            "x": 7.289686274214116,
+            "y": 6.845471059286887,
             "z": 0.0
           },
           "relative": true
@@ -183,8 +183,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.374,
-            "y": 7.705,
+            "x": 6.374239897486898,
+            "y": 7.705132427757891,
             "z": 0.0
           },
           "relative": true
@@ -200,8 +200,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 5.358,
-            "y": 8.443,
+            "x": 5.3582679497899655,
+            "y": 8.443279255020151,
             "z": 0.0
           },
           "relative": true
@@ -217,8 +217,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.258,
-            "y": 9.048,
+            "x": 4.257792915650727,
+            "y": 9.048270524660197,
             "z": 0.0
           },
           "relative": true
@@ -234,8 +234,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.09,
-            "y": 9.511,
+            "x": 3.0901699437494745,
+            "y": 9.510565162951535,
             "z": 0.0
           },
           "relative": true
@@ -251,8 +251,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.874,
-            "y": 9.823,
+            "x": 1.8738131458572473,
+            "y": 9.822872507286887,
             "z": 0.0
           },
           "relative": true
@@ -268,8 +268,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.628,
-            "y": 9.98,
+            "x": 0.627905195293133,
+            "y": 9.980267284282716,
             "z": 0.0
           },
           "relative": true
@@ -285,8 +285,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.628,
-            "y": 9.98,
+            "x": -0.627905195293134,
+            "y": 9.980267284282716,
             "z": 0.0
           },
           "relative": true
@@ -302,8 +302,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.874,
-            "y": 9.823,
+            "x": -1.8738131458572438,
+            "y": 9.822872507286887,
             "z": 0.0
           },
           "relative": true
@@ -319,8 +319,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.09,
-            "y": 9.511,
+            "x": -3.0901699437494736,
+            "y": 9.510565162951536,
             "z": 0.0
           },
           "relative": true
@@ -336,8 +336,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.258,
-            "y": 9.048,
+            "x": -4.257792915650727,
+            "y": 9.048270524660195,
             "z": 0.0
           },
           "relative": true
@@ -353,8 +353,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.358,
-            "y": 8.443,
+            "x": -5.358267949789969,
+            "y": 8.44327925502015,
             "z": 0.0
           },
           "relative": true
@@ -370,8 +370,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.374,
-            "y": 7.705,
+            "x": -6.3742398974868975,
+            "y": 7.705132427757892,
             "z": 0.0
           },
           "relative": true
@@ -387,8 +387,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -7.29,
-            "y": 6.845,
+            "x": -7.289686274214113,
+            "y": 6.845471059286888,
             "z": 0.0
           },
           "relative": true
@@ -404,8 +404,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -8.09,
-            "y": 5.878,
+            "x": -8.090169943749473,
+            "y": 5.877852522924733,
             "z": 0.0
           },
           "relative": true
@@ -421,8 +421,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -8.763,
-            "y": 4.818,
+            "x": -8.763066800438637,
+            "y": 4.817536741017152,
             "z": 0.0
           },
           "relative": true
@@ -438,8 +438,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -9.298,
-            "y": 3.681,
+            "x": -9.297764858882513,
+            "y": 3.6812455268467814,
             "z": 0.0
           },
           "relative": true
@@ -455,8 +455,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -9.686,
-            "y": 2.487,
+            "x": -9.685831611286309,
+            "y": 2.4868988716485525,
             "z": 0.0
           },
           "relative": true
@@ -472,8 +472,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -9.921,
-            "y": 1.253,
+            "x": -9.921147013144779,
+            "y": 1.2533323356430408,
             "z": 0.0
           },
           "relative": true
@@ -490,7 +490,7 @@ description: Artifact commands loop_tag.kcl
           "type": "line",
           "end": {
             "x": -10.0,
-            "y": 0.0,
+            "y": 0.0000000000000012246467991473533,
             "z": 0.0
           },
           "relative": true
@@ -506,8 +506,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -9.921,
-            "y": -1.253,
+            "x": -9.921147013144779,
+            "y": -1.2533323356430428,
             "z": 0.0
           },
           "relative": true
@@ -523,8 +523,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -9.686,
-            "y": -2.487,
+            "x": -9.68583161128631,
+            "y": -2.4868988716485503,
             "z": 0.0
           },
           "relative": true
@@ -540,8 +540,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -9.298,
-            "y": -3.681,
+            "x": -9.297764858882516,
+            "y": -3.6812455268467748,
             "z": 0.0
           },
           "relative": true
@@ -557,8 +557,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -8.763,
-            "y": -4.818,
+            "x": -8.763066800438637,
+            "y": -4.817536741017154,
             "z": 0.0
           },
           "relative": true
@@ -574,8 +574,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -8.09,
-            "y": -5.878,
+            "x": -8.090169943749475,
+            "y": -5.87785252292473,
             "z": 0.0
           },
           "relative": true
@@ -591,8 +591,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -7.29,
-            "y": -6.845,
+            "x": -7.289686274214116,
+            "y": -6.845471059286887,
             "z": 0.0
           },
           "relative": true
@@ -608,8 +608,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.374,
-            "y": -7.705,
+            "x": -6.374239897486895,
+            "y": -7.705132427757894,
             "z": 0.0
           },
           "relative": true
@@ -625,8 +625,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.358,
-            "y": -8.443,
+            "x": -5.358267949789964,
+            "y": -8.443279255020153,
             "z": 0.0
           },
           "relative": true
@@ -642,8 +642,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.258,
-            "y": -9.048,
+            "x": -4.257792915650722,
+            "y": -9.048270524660198,
             "z": 0.0
           },
           "relative": true
@@ -659,8 +659,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.09,
-            "y": -9.511,
+            "x": -3.0901699437494754,
+            "y": -9.510565162951535,
             "z": 0.0
           },
           "relative": true
@@ -676,8 +676,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.874,
-            "y": -9.823,
+            "x": -1.8738131458572462,
+            "y": -9.822872507286887,
             "z": 0.0
           },
           "relative": true
@@ -693,8 +693,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.628,
-            "y": -9.98,
+            "x": -0.627905195293132,
+            "y": -9.980267284282716,
             "z": 0.0
           },
           "relative": true
@@ -710,8 +710,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.628,
-            "y": -9.98,
+            "x": 0.6279051952931283,
+            "y": -9.980267284282716,
             "z": 0.0
           },
           "relative": true
@@ -727,8 +727,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.874,
-            "y": -9.823,
+            "x": 1.8738131458572427,
+            "y": -9.822872507286887,
             "z": 0.0
           },
           "relative": true
@@ -744,8 +744,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.09,
-            "y": -9.511,
+            "x": 3.0901699437494723,
+            "y": -9.510565162951536,
             "z": 0.0
           },
           "relative": true
@@ -761,8 +761,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.258,
-            "y": -9.048,
+            "x": 4.257792915650718,
+            "y": -9.048270524660198,
             "z": 0.0
           },
           "relative": true
@@ -778,8 +778,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 5.358,
-            "y": -8.443,
+            "x": 5.358267949789967,
+            "y": -8.44327925502015,
             "z": 0.0
           },
           "relative": true
@@ -795,8 +795,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.374,
-            "y": -7.705,
+            "x": 6.3742398974869,
+            "y": -7.70513242775789,
             "z": 0.0
           },
           "relative": true
@@ -812,8 +812,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.29,
-            "y": -6.845,
+            "x": 7.289686274214112,
+            "y": -6.84547105928689,
             "z": 0.0
           },
           "relative": true
@@ -829,8 +829,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.09,
-            "y": -5.878,
+            "x": 8.090169943749473,
+            "y": -5.877852522924734,
             "z": 0.0
           },
           "relative": true
@@ -846,8 +846,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.763,
-            "y": -4.818,
+            "x": 8.763066800438631,
+            "y": -4.817536741017161,
             "z": 0.0
           },
           "relative": true
@@ -863,8 +863,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 9.298,
-            "y": -3.681,
+            "x": 9.297764858882514,
+            "y": -3.6812455268467787,
             "z": 0.0
           },
           "relative": true
@@ -880,8 +880,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 9.686,
-            "y": -2.487,
+            "x": 9.685831611286313,
+            "y": -2.486898871648545,
             "z": 0.0
           },
           "relative": true
@@ -897,8 +897,8 @@ description: Artifact commands loop_tag.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 9.921,
-            "y": -1.253,
+            "x": 9.921147013144777,
+            "y": -1.2533323356430466,
             "z": 0.0
           },
           "relative": true

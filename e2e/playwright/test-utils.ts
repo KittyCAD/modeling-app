@@ -22,6 +22,7 @@ export const token = process.env.token || ''
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
@@ -37,7 +38,7 @@ export const headerMasks = (page: Page) => [
 ]
 
 export const lowerRightMasks = (page: Page) => [
-  page.getByTestId('network-toggle'),
+  page.getByTestId(/network-toggle/),
   page.getByTestId('billing-remaining-bar'),
 ]
 
@@ -158,10 +159,10 @@ async function openKclCodePanel(page: Page) {
   await page.evaluate(() => {
     // editorManager is available on the window object.
     //@ts-ignore this is in an entirely different context that tsc can't see.
-    editorManager._editorView.dispatch({
+    editorManager.getEditorView().dispatch({
       selection: {
         //@ts-ignore this is in an entirely different context that tsc can't see.
-        anchor: editorManager._editorView.docView.length,
+        anchor: editorManager.getEditorView().docView.length,
       },
       scrollIntoView: true,
     })
@@ -737,6 +738,7 @@ export const doExport = async (
   output: Models['OutputFormat3d_type'],
   rootDir: string,
   page: Page,
+  cmdBar: CmdBarFixture,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
   if (exportFrom === 'dropdown') {
@@ -780,9 +782,7 @@ export const doExport = async (
       .click()
     await page.locator('#arg-form').waitFor({ state: 'detached' })
   }
-  await expect(page.getByText('Confirm Export')).toBeVisible()
-
-  await page.getByRole('button', { name: 'Submit command' }).click()
+  await cmdBar.submit()
 
   await expect(page.getByText('Exported successfully')).toBeVisible()
 
@@ -880,6 +880,10 @@ export async function setup(
             },
             ...TEST_SETTINGS.project,
             onboarding_status: 'dismissed',
+            // Tests were written before this setting existed.
+            // It's true by default because it's a good user experience, but
+            // these tests require it to be false.
+            fixed_size_grid: false,
           },
           project: {
             ...TEST_SETTINGS.project,

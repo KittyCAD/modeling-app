@@ -116,7 +116,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -0.321,
+            "y": -0.32071349029490925,
             "z": 0.0
           },
           "relative": true
@@ -132,7 +132,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.679,
+            "x": 7.679286509705091,
             "y": 0.0,
             "z": 0.0
           },
@@ -150,7 +150,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -5.679,
+            "y": -5.679286509705091,
             "z": 0.0
           },
           "relative": true

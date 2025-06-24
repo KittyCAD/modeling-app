@@ -60,7 +60,7 @@ description: Artifact commands hammer.kcl
         "path": "[uuid]",
         "to": {
           "x": 8.382,
-          "y": 286.004,
+          "y": 286.00399999999996,
           "z": 0.0
         }
       }
@@ -98,8 +98,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 15.748,
-            "y": 14.224,
+            "x": 15.747999999999996,
+            "y": 14.224000000000013,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -115,8 +115,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 44.958,
-            "y": -16.764,
+            "x": 44.958000000000006,
+            "y": -16.764000000000003,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -132,8 +132,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.919,
-            "y": 4.157,
+            "x": 2.9193884830374817,
+            "y": 4.157351426702836,
             "z": 0.0
           },
           "relative": true
@@ -149,8 +149,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -8.968,
-            "y": 8.992,
+            "x": -8.968113567580087,
+            "y": 8.992382278294553,
             "z": 0.0
           },
           "relative": true
@@ -166,8 +166,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -86.153,
-            "y": 25.458,
+            "x": -86.1532749154574,
+            "y": 25.4582662950026,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -183,8 +183,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -19.304,
-            "y": 1.778,
+            "x": -19.303999999999995,
+            "y": 1.7780000000000071,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -283,8 +283,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.338,
-            "y": 0.992,
+            "x": 2.3380823277691984,
+            "y": 0.9924570663627554,
             "z": 0.0
           },
           "relative": true
@@ -300,8 +300,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 31.698,
-            "y": -10.263,
+            "x": 31.697917672230798,
+            "y": -10.2634570663627,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -318,7 +318,7 @@ description: Artifact commands hammer.kcl
           "type": "line",
           "end": {
             "x": 8.382,
-            "y": 286.004,
+            "y": 286.00399999999996,
             "z": 0.0
           },
           "relative": false
@@ -494,7 +494,7 @@ description: Artifact commands hammer.kcl
           "type": "line",
           "end": {
             "x": -50.038,
-            "y": -14.288,
+            "y": -14.2875,
             "z": 0.0
           },
           "relative": false
@@ -510,8 +510,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -48.768,
-            "y": -14.288
+            "x": -48.767999999999994,
+            "y": -14.2875
           },
           "radius": 1.27,
           "start": {
@@ -536,7 +536,7 @@ description: Artifact commands hammer.kcl
           "type": "line",
           "end": {
             "x": -42.418,
-            "y": -15.558,
+            "y": -15.557500000000001,
             "z": 0.0
           },
           "relative": false
@@ -553,12 +553,12 @@ description: Artifact commands hammer.kcl
           "type": "arc_to",
           "interior": {
             "x": -25.654,
-            "y": -14.795,
+            "y": -14.795499999999999,
             "z": 0.0
           },
           "end": {
             "x": -23.114,
-            "y": -15.558,
+            "y": -15.557500000000001,
             "z": 0.0
           },
           "relative": false
@@ -574,8 +574,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 109.22,
-            "y": -13.652,
+            "x": 109.21999999999998,
+            "y": -13.652499999999996,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -745,8 +745,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.537,
-            "y": 0.133,
+            "x": -2.5365190182766173,
+            "y": 0.13293332885707726,
             "z": 0.0
           },
           "relative": true
@@ -762,8 +762,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -36.325,
-            "y": 4.693,
+            "x": -36.32548098172337,
+            "y": 4.693066671142924,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -797,7 +797,7 @@ description: Artifact commands hammer.kcl
           "type": "tangential_arc_to",
           "to": {
             "x": 38.862,
-            "y": 4.826,
+            "y": 4.826000000000001,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -951,7 +951,7 @@ description: Artifact commands hammer.kcl
           "type": "line",
           "end": {
             "x": -50.038,
-            "y": 14.288,
+            "y": 14.2875,
             "z": 0.0
           },
           "relative": false
@@ -967,8 +967,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -48.768,
-            "y": 14.288
+            "x": -48.767999999999994,
+            "y": 14.2875
           },
           "radius": 1.27,
           "start": {
@@ -993,7 +993,7 @@ description: Artifact commands hammer.kcl
           "type": "line",
           "end": {
             "x": -42.418,
-            "y": 15.558,
+            "y": 15.557500000000001,
             "z": 0.0
           },
           "relative": false
@@ -1010,12 +1010,12 @@ description: Artifact commands hammer.kcl
           "type": "arc_to",
           "interior": {
             "x": -25.654,
-            "y": 14.795,
+            "y": 14.795499999999999,
             "z": 0.0
           },
           "end": {
             "x": -23.114,
-            "y": 15.558,
+            "y": 15.557500000000001,
             "z": 0.0
           },
           "relative": false
@@ -1031,8 +1031,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": 109.22,
-            "y": 13.652,
+            "x": 109.21999999999998,
+            "y": 13.652499999999996,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1256,8 +1256,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 5.754,
-            "y": 4.18,
+            "x": 5.753728863994627,
+            "y": 4.1803287143040695,
             "z": 0.0
           },
           "relative": false
@@ -1273,8 +1273,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.198,
-            "y": 6.764,
+            "x": 2.197728863994626,
+            "y": 6.763913943891132,
             "z": 0.0
           },
           "relative": false
@@ -1290,8 +1290,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.198,
-            "y": 6.764,
+            "x": -2.1977288639946257,
+            "y": 6.763913943891133,
             "z": 0.0
           },
           "relative": false
@@ -1307,8 +1307,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.754,
-            "y": 4.18,
+            "x": -5.753728863994626,
+            "y": 4.18032871430407,
             "z": 0.0
           },
           "relative": false
@@ -1325,7 +1325,7 @@ description: Artifact commands hammer.kcl
           "type": "line",
           "end": {
             "x": -7.112,
-            "y": 0.0,
+            "y": 0.0000000000000008709688035535976,
             "z": 0.0
           },
           "relative": false
@@ -1341,8 +1341,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.754,
-            "y": -4.18,
+            "x": -5.753728863994627,
+            "y": -4.180328714304069,
             "z": 0.0
           },
           "relative": false
@@ -1358,8 +1358,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.198,
-            "y": -6.764,
+            "x": -2.1977288639946275,
+            "y": -6.763913943891132,
             "z": 0.0
           },
           "relative": false
@@ -1375,8 +1375,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.198,
-            "y": -6.764,
+            "x": 2.197728863994625,
+            "y": -6.763913943891133,
             "z": 0.0
           },
           "relative": false
@@ -1392,8 +1392,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 5.754,
-            "y": -4.18,
+            "x": 5.753728863994626,
+            "y": -4.18032871430407,
             "z": 0.0
           },
           "relative": false
@@ -1493,7 +1493,7 @@ description: Artifact commands hammer.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 292.1
+          "z": 292.09999999999997
         },
         "x_axis": {
           "x": 1.0,
@@ -1801,7 +1801,7 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14.288,
+            "x": 14.2875,
             "y": 0.0,
             "z": 0.0
           },
@@ -1834,8 +1834,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -6.16,
-            "y": 200.417,
+            "x": -6.159500000000001,
+            "y": 200.41734491315137,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -1851,8 +1851,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -2.54,
-            "y": 123.433,
+            "x": -2.539999999999999,
+            "y": 123.43265508684864,
             "z": 0.0
           },
           "angle_snap_increment": null

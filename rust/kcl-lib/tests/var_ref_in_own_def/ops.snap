@@ -3,7 +3,39 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed var_ref_in_own_def.kcl
 ---
 {
-  "rust/kcl-lib/tests/var_ref_in_own_def/input.kcl": [],
+  "rust/kcl-lib/tests/var_ref_in_own_def/input.kcl": [
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
   "std::appearance": [],
   "std::array": [],
   "std::math": [
@@ -12,7 +44,7 @@ description: Operations executed var_ref_in_own_def.kcl
       "name": "PI",
       "value": {
         "type": "Number",
-        "value": 3.142,
+        "value": 3.141592653589793,
         "ty": {
           "type": "Unknown"
         }
@@ -28,7 +60,7 @@ description: Operations executed var_ref_in_own_def.kcl
       "name": "E",
       "value": {
         "type": "Number",
-        "value": 2.718,
+        "value": 2.718281828459045,
         "ty": {
           "type": "Known",
           "type": "Count"
@@ -45,7 +77,7 @@ description: Operations executed var_ref_in_own_def.kcl
       "name": "TAU",
       "value": {
         "type": "Number",
-        "value": 6.283,
+        "value": 6.283185307179586,
         "ty": {
           "type": "Known",
           "type": "Count"
