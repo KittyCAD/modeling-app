@@ -2193,7 +2193,7 @@ pub(crate) async fn inner_parabolic(
         }
         (Some(coefficients), _, Some(end), _, _) => {
             let (end, _) = untype_point(end);
-            let interior = 
+            let interior =
             inner_parabolic_point(
                 Some(TyF64::count(0.5 * (from.x + end[0]))),
                 None,
@@ -2205,7 +2205,7 @@ pub(crate) async fn inner_parabolic(
         }
         (Some(coefficients), _, _, _, Some(end)) => {
             let (end, _) = untype_point(end);
-            let interior = 
+            let interior =
             inner_parabolic_point(
                 Some(TyF64::count(0.5 * (from.x + end[0]))),
                 None,
@@ -2215,7 +2215,7 @@ pub(crate) async fn inner_parabolic(
             .await?;
             (interior, end, false)
         }
-        _ => return 
+        _ => return
             Err(KclError::Type{details: KclErrorDetails::new(
                 "Invalid combination of arguments. Either provide (end, interior) or (endAbsolute, interiorAbsolute) if coefficients are not provided."
                     .to_owned(),
