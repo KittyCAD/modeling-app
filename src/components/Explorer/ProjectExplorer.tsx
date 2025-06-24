@@ -628,7 +628,7 @@ export const ProjectExplorer = ({
       ref={projectExplorerRef}
     >
       <div
-        className={`absolute w-full ${activeIndex === -1 ? 'border-sky-500' : ''}`}
+        className={`absolute w-full h-full ${activeIndex === -1 ? 'border-sky-500' : ''}`}
         tabIndex={0}
         role="tree"
         aria-label="Files Explorer"

@@ -194,7 +194,6 @@ export const sidebarPanes: SidebarPane[] = [
           entry.children == null &&
           entry.path.endsWith(FILE_EXT)
         ) {
-
           systemIOActor.send({
             type: SystemIOMachineEvents.navigateToFile,
             data: {
