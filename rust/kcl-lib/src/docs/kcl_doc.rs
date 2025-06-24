@@ -359,6 +359,7 @@ impl ConstData {
                     crate::parsing::ast::types::LiteralValue::Bool { .. } => "boolean".to_owned(),
                 }),
             ),
+            crate::parsing::ast::types::Expr::AscribedExpression(e) => (None, Some(e.ty.to_string())),
             _ => (None, None),
         };
 
@@ -831,7 +832,7 @@ impl ArgData {
             Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
             Some("Plane") | Some("Solid | Plane") => Some((index, format!(r#"{label}${{{}:XY}}"#, index))),
-            Some("[tag; 2]") => Some((
+            Some("[TaggedFace; 2]") => Some((
                 index + 1,
                 format!(r#"{label}[${{{}:tag}}, ${{{}:tag}}]"#, index, index + 1),
             )),
@@ -1098,7 +1099,7 @@ trait ApplyMeta {
                                 self.impl_kind(annotations::Impl::from_str(s).unwrap());
                             }
                         }
-                        "deprecated" => {
+                        annotations::DEPRECATED => {
                             if let Some(b) = p.value.literal_bool() {
                                 self.deprecated(b);
                             }

@@ -129,6 +129,462 @@ description: Operations executed import_async.kcl
       "sourceRange": []
     },
     {
+      "type": "VariableDeclaration",
+      "name": "pitchDiameter",
+      "value": {
+        "type": "Number",
+        "value": 42.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "addendum",
+      "value": {
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "deddendum",
+      "value": {
+        "type": "Number",
+        "value": 2.5,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "baseDiameter",
+      "value": {
+        "type": "Number",
+        "value": 39.46709007300815,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "tipDiameter",
+      "value": {
+        "type": "Number",
+        "value": 46.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "keywayWidth",
+      "value": {
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "keywayDepth",
+      "value": {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "holeDiam",
+      "value": {
+        "type": "Number",
+        "value": 7.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "holeRadius",
+      "value": {
+        "type": "Number",
+        "value": 3.5,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "startAngle",
+      "value": {
+        "type": "Number",
+        "value": 0.28975170143604745,
+        "ty": {
+          "type": "Known",
+          "type": "Angle",
+          "type": "Radians"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -216,6 +672,61 @@ description: Operations executed import_async.kcl
           {
             "type": "FunctionExpressionBodyItem",
             "index": 12
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "helixCalc",
+      "value": {
+        "type": "Number",
+        "value": 1.5707963267948966,
+        "ty": {
+          "type": "Known",
+          "type": "Angle",
+          "type": "Radians"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -372,7 +883,7 @@ description: Operations executed import_async.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.571,
+              "value": 1.5707963267948966,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -384,7 +895,7 @@ description: Operations executed import_async.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 19.734,
+              "value": 19.733545036504076,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -450,6 +961,50 @@ description: Operations executed import_async.kcl
       "sourceRange": []
     },
     {
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": 0.0000000000000012083311382392428,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": 19.733545036504076,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     },
     {
@@ -463,7 +1018,7 @@ description: Operations executed import_async.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.704,
+              "value": 1.7037737936135122,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -541,6 +1096,50 @@ description: Operations executed import_async.kcl
       "sourceRange": []
     },
     {
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": -3.0494758442486236,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": 22.796944906617295,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     },
     {
@@ -554,7 +1153,7 @@ description: Operations executed import_async.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.87,
+              "value": 1.8699956271367815,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -566,7 +1165,7 @@ description: Operations executed import_async.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 19.734,
+              "value": 19.733545036504076,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -628,6 +1227,50 @@ description: Operations executed import_async.kcl
             "index": 0
           }
         ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": -5.816564508980187,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": 18.856838998639372,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
       },
       "sourceRange": []
     },
@@ -750,6 +1393,61 @@ description: Operations executed import_async.kcl
           {
             "type": "FunctionExpressionBodyItem",
             "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "helixCalc",
+      "value": {
+        "type": "Number",
+        "value": 1.4640403411278755,
+        "ty": {
+          "type": "Known",
+          "type": "Angle",
+          "type": "Radians"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -906,7 +1604,7 @@ description: Operations executed import_async.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.464,
+              "value": 1.4640403411278755,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -918,7 +1616,7 @@ description: Operations executed import_async.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 19.734,
+              "value": 19.733545036504076,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -984,6 +1682,50 @@ description: Operations executed import_async.kcl
       "sourceRange": []
     },
     {
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": 2.1026747593723187,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": 19.62120176146286,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     },
     {
@@ -997,7 +1739,7 @@ description: Operations executed import_async.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.597,
+              "value": 1.5970178079464912,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1075,6 +1817,50 @@ description: Operations executed import_async.kcl
       "sourceRange": []
     },
     {
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": -0.603024957692658,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": 22.992093443190416,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     },
     {
@@ -1088,7 +1874,7 @@ description: Operations executed import_async.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.763,
+              "value": 1.7632396414697604,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1100,7 +1886,7 @@ description: Operations executed import_async.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 19.734,
+              "value": 19.733545036504076,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -1162,6 +1948,50 @@ description: Operations executed import_async.kcl
             "index": 0
           }
         ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": -3.7741919278824176,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": 19.369261085525228,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
       },
       "sourceRange": []
     },
@@ -1284,6 +2114,61 @@ description: Operations executed import_async.kcl
           {
             "type": "FunctionExpressionBodyItem",
             "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "helixCalc",
+      "value": {
+        "type": "Number",
+        "value": 1.3560427808151838,
+        "ty": {
+          "type": "Known",
+          "type": "Angle",
+          "type": "Radians"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1440,7 +2325,7 @@ description: Operations executed import_async.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.356,
+              "value": 1.3560427808151838,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1452,7 +2337,7 @@ description: Operations executed import_async.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 19.734,
+              "value": 19.733545036504076,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -1518,6 +2403,50 @@ description: Operations executed import_async.kcl
       "sourceRange": []
     },
     {
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": 4.20534951874464,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": 19.280244685504613,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     },
     {
@@ -1531,7 +2460,7 @@ description: Operations executed import_async.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.489,
+              "value": 1.4890202476337995,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1609,6 +2538,50 @@ description: Operations executed import_async.kcl
       "sourceRange": []
     },
     {
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": 1.8787542118590292,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": 22.923138585530168,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     },
     {
@@ -1622,7 +2595,7 @@ description: Operations executed import_async.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.655,
+              "value": 1.655242081157069,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1634,7 +2607,7 @@ description: Operations executed import_async.kcl
           "length": {
             "value": {
               "type": "Number",
-              "value": 19.734,
+              "value": 19.733545036504076,
               "ty": {
                 "type": "Default",
                 "len": {
@@ -1696,6 +2669,50 @@ description: Operations executed import_async.kcl
             "index": 0
           }
         ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": -1.6644342460226098,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": 19.66322604122736,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
       },
       "sourceRange": []
     },
@@ -1884,8 +2901,86 @@ description: Operations executed import_async.kcl
   ],
   "std::appearance": [],
   "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
+  "std::math": [
+    {
+      "type": "VariableDeclaration",
+      "name": "PI",
+      "value": {
+        "type": "Number",
+        "value": 3.141592653589793,
+        "ty": {
+          "type": "Unknown"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "E",
+      "value": {
+        "type": "Number",
+        "value": 2.718281828459045,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "TAU",
+      "value": {
+        "type": "Number",
+        "value": 6.283185307179586,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::prelude": [
+    {
+      "type": "VariableDeclaration",
+      "name": "START",
+      "value": {
+        "type": "String",
+        "value": "start"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "END",
+      "value": {
+        "type": "String",
+        "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
   "std::sketch": [],
   "std::solid": [],
   "std::sweep": [],

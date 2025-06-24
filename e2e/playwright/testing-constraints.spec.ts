@@ -10,7 +10,7 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing constraints', () => {
-  test('Can constrain line length', async ({ page, homePage }) => {
+  test('Can constrain line length', async ({ page, homePage, cmdBar }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -50,11 +50,7 @@ test.describe('Testing constraints', () => {
     await page.waitForTimeout(100)
     await page.getByTestId('constraint-length').click()
     await page.getByTestId('cmd-bar-arg-value').getByRole('textbox').fill('20')
-    await page
-      .getByRole('button', {
-        name: 'arrow right Continue',
-      })
-      .click()
+    await cmdBar.continue()
 
     await expect(page.locator('.cm-content')).toHaveText(
       `length001 = 20sketch001 = startSketchOn(XY)  |> startProfile(at = [-10, -10])  |> line(end = [20, 0])  |> angledLine(angle = 90, length = length001)  |> xLine(length = -20)`
@@ -681,9 +677,6 @@ test.describe('Testing constraints', () => {
           .getByRole('textbox')
         const cmdBarKclVariableNameInput =
           page.getByPlaceholder('Variable name')
-        const cmdBarSubmitButton = page.getByRole('button', {
-          name: 'arrow right Continue',
-        })
 
         await page.addInitScript(async () => {
           localStorage.setItem(
@@ -736,7 +729,7 @@ part002 = startSketchOn(XZ)
         await page.waitForTimeout(500)
         const [ang, len] = value.split(', ')
         const changedCode = `|> angledLine(angle = ${ang}, length = ${len})`
-        await cmdBarSubmitButton.click()
+        await cmdBar.continue()
         await expect(page.locator('.cm-content')).toContainText(changedCode)
 
         // checking active assures the cursor is where it should be
@@ -1101,11 +1094,7 @@ part002 = startSketchOn(XZ)
     await page.waitForTimeout(500)
 
     await page.getByTestId('cmd-bar-arg-value').getByRole('textbox').fill('10')
-    await page
-      .getByRole('button', {
-        name: 'arrow right Continue',
-      })
-      .click()
+    await cmdBar.continue()
 
     await pollEditorLinesSelectedLength(page, 1)
     activeLinesContent = await page.locator('.cm-activeLine').all()

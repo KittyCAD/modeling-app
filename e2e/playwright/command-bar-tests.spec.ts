@@ -4,7 +4,6 @@ import * as fsp from 'fs/promises'
 
 import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { expectPixelColor } from '@e2e/playwright/fixtures/sceneFixture'
 
 test.describe('Command bar tests', () => {
   test('Extrude from command bar selects extrude line after', async ({
@@ -302,13 +301,13 @@ test.describe('Command bar tests', () => {
 
     // Assert that the an alternative variable name is chosen,
     // since the default variable name is already in use (distance)
-    await page.getByRole('button', { name: 'Create new variable' }).click()
+    await cmdBar.variableCheckbox.click()
     await expect(page.getByPlaceholder('Variable name')).toHaveValue(
       'length001'
     )
 
     const continueButton = page.getByRole('button', { name: 'Continue' })
-    const submitButton = page.getByRole('button', { name: 'Submit command' })
+    const submitButton = page.getByTestId('command-bar-submit')
     await continueButton.click()
 
     // Review step and argument hotkeys
@@ -514,47 +513,6 @@ test.describe('Command bar tests', () => {
       await toolbar.expectFileTreeState(['main-1.kcl', 'main.kcl'])
     })
   })
-
-  test(
-    `Zoom to fit to shared model on web`,
-    { tag: ['@web'] },
-    async ({ page, scene }) => {
-      if (process.env.TARGET !== 'web') {
-        // This test is web-only
-        // TODO: re-enable on CI as part of a new @web test suite
-        return
-      }
-      await test.step(`Prepare and navigate to home page with query params`, async () => {
-        // a quad in the top left corner of the XZ plane (which is out of the current view)
-        const code = `sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [-484.34, 484.95])
-  |> yLine(length = -69.1)
-  |> xLine(length = 66.84)
-  |> yLine(length = 71.37)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-`
-        const targetURL = `?create-file=true&name=test&units=mm&code=${encodeURIComponent(btoa(code))}&ask-open-desktop=true`
-        await page.goto(page.url() + targetURL)
-        expect(page.url()).toContain(targetURL)
-      })
-
-      await test.step(`Submit the command`, async () => {
-        await page.getByTestId('continue-to-web-app-button').click()
-
-        await scene.connectionEstablished()
-
-        // This makes SystemIOMachineActors.createKCLFile run after EngineStream/firstPlay
-        await page.waitForTimeout(3000)
-
-        await page.getByTestId('command-bar-submit').click()
-      })
-
-      await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
-        await expectPixelColor(page, [252, 252, 252], { x: 600, y: 260 }, 8)
-      })
-    }
-  )
 
   test(`Can add and edit a named parameter or constant`, async ({
     page,

@@ -24,7 +24,7 @@ import type {
   Program,
   SourceRange,
 } from '@src/lang/wasm'
-import { defaultSourceRange } from '@src/lang/wasm'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
@@ -778,4 +778,28 @@ export function updateSelections(
         : pathToNodeBasedSelections,
     otherSelections: prevSelectionRanges.otherSelections,
   }
+}
+
+const semanticEntityNames: {
+  [key: string]: Array<Artifact['type'] | 'defaultPlane'>
+} = {
+  face: ['wall', 'cap'],
+  profile: ['solid2d'],
+  edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
+  point: [],
+  plane: ['defaultPlane'],
+}
+
+/** Convert selections to a human-readable format */
+export function getSemanticSelectionType(selectionType: Artifact['type'][]) {
+  const semanticSelectionType = new Set()
+  for (const type of selectionType) {
+    for (const [entity, entityTypes] of Object.entries(semanticEntityNames)) {
+      if (entityTypes.includes(type)) {
+        semanticSelectionType.add(entity)
+      }
+    }
+  }
+
+  return Array.from(semanticSelectionType)
 }

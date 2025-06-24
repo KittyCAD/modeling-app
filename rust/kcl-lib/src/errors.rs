@@ -783,6 +783,7 @@ impl Severity {
 pub enum Tag {
     Deprecated,
     Unnecessary,
+    UnknownNumericUnits,
     None,
 }
 

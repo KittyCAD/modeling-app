@@ -436,9 +436,11 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
         ("types", "Edge") => (PrimitiveType::Edge, StdFnProps::default("std::types::Edge")),
         ("types", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::types::Axis2d")),
         ("types", "Axis3d") => (PrimitiveType::Axis3d, StdFnProps::default("std::types::Axis3d")),
+        ("types", "TaggedEdge") => (PrimitiveType::TaggedEdge, StdFnProps::default("std::types::TaggedEdge")),
+        ("types", "TaggedFace") => (PrimitiveType::TaggedFace, StdFnProps::default("std::types::TaggedFace")),
         _ => unreachable!(),
     }
 }
 
-/// The default tolerance for modeling commands in [`kittycad_modeling_cmds::length_unit::LengthUnit`].
-const DEFAULT_TOLERANCE: f64 = 0.0000001;
+/// The default tolerance for modeling commands in millimeters.
+const DEFAULT_TOLERANCE_MM: f64 = 0.0000001;

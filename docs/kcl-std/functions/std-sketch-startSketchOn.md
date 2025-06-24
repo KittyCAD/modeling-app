@@ -10,7 +10,7 @@ Start a new 2-dimensional sketch on a specific plane or face.
 ```kcl
 startSketchOn(
   @planeOrSolid: Solid | Plane,
-  face?: tag,
+  face?: TaggedFace,
 ): Plane | Face
 ```
 
@@ -36,7 +36,7 @@ face, since it will include all the parent faces and Solids.
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `planeOrSolid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`Plane`](/docs/kcl-std/types/std-types-Plane) | Profile whose start is being used. | Yes |
-| `face` | [`tag`](/docs/kcl-std/types/std-types-tag) | Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`). | No |
+| `face` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) | Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`). | No |
 
 ### Returns
 
@@ -156,7 +156,7 @@ exampleSketch = startSketchOn(XY)
   |> line(end = [-2, 0])
   |> close()
 
-example = revolve(exampleSketch, axis = Y, angle = 180)
+example = revolve(exampleSketch, axis = Y, angle = 180deg)
 
 exampleSketch002 = startSketchOn(example, face = END)
   |> startProfile(at = [4.5, -5])
@@ -189,7 +189,7 @@ exampleSketch = startSketchOn(XY)
 example = revolve(
   exampleSketch,
   axis = Y,
-  angle = 180,
+  angle = 180deg,
   tagEnd = $end01,
 )
 

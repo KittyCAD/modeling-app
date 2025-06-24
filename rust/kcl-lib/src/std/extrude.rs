@@ -12,10 +12,13 @@ use kcmc::{
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
     ModelingCmd,
 };
-use kittycad_modeling_cmds::{self as kcmc};
+use kittycad_modeling_cmds::{
+    self as kcmc,
+    shared::{Angle, Point2d},
+};
 use uuid::Uuid;
 
-use super::args::TyF64;
+use super::{args::TyF64, utils::point_to_mm, DEFAULT_TOLERANCE_MM};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -35,6 +38,10 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         args.get_kw_arg_opt("bidirectionalLength", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
+    let twist_angle: Option<TyF64> = args.get_kw_arg_opt("twistAngle", &RuntimeType::degrees(), exec_state)?;
+    let twist_angle_step: Option<TyF64> = args.get_kw_arg_opt("twistAngleStep", &RuntimeType::degrees(), exec_state)?;
+    let twist_center: Option<[TyF64; 2]> = args.get_kw_arg_opt("twistCenter", &RuntimeType::point2d(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
 
     let result = inner_extrude(
         sketches,
@@ -43,6 +50,10 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         bidirectional_length,
         tag_start,
         tag_end,
+        twist_angle,
+        twist_angle_step,
+        twist_center,
+        tolerance,
         exec_state,
         args,
     )
@@ -59,11 +70,16 @@ async fn inner_extrude(
     bidirectional_length: Option<TyF64>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
+    twist_angle: Option<TyF64>,
+    twist_angle_step: Option<TyF64>,
+    twist_center: Option<[TyF64; 2]>,
+    tolerance: Option<TyF64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     // Extrude the element(s).
     let mut solids = Vec::new();
+    let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
 
     if symmetric.unwrap_or(false) && bidirectional_length.is_some() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -85,18 +101,29 @@ async fn inner_extrude(
 
     for sketch in &sketches {
         let id = exec_state.next_uuid();
-        let cmds = sketch.build_sketch_mode_cmds(
-            exec_state,
-            ModelingCmdReq {
-                cmd_id: id.into(),
-                cmd: ModelingCmd::from(mcmd::Extrude {
+        let cmd = match (&twist_angle, &twist_angle_step, &twist_center) {
+            (Some(angle), angle_step, center) => {
+                let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
+                let total_rotation_angle = Angle::from_degrees(angle.to_degrees());
+                let angle_step_size = Angle::from_degrees(angle_step.clone().map(|a| a.to_degrees()).unwrap_or(15.0));
+                ModelingCmd::from(mcmd::TwistExtrude {
                     target: sketch.id.into(),
                     distance: LengthUnit(length.to_mm()),
                     faces: Default::default(),
-                    opposite: opposite.clone(),
-                }),
-            },
-        );
+                    center_2d: center,
+                    total_rotation_angle,
+                    angle_step_size,
+                    tolerance,
+                })
+            }
+            (None, _, _) => ModelingCmd::from(mcmd::Extrude {
+                target: sketch.id.into(),
+                distance: LengthUnit(length.to_mm()),
+                faces: Default::default(),
+                opposite: opposite.clone(),
+            }),
+        };
+        let cmds = sketch.build_sketch_mode_cmds(exec_state, ModelingCmdReq { cmd_id: id.into(), cmd });
         exec_state
             .batch_modeling_cmds(ModelingCmdMeta::from_args_id(&args, id), &cmds)
             .await?;
@@ -148,10 +175,10 @@ pub(crate) async fn do_post_extrude<'a>(
         )
         .await?;
 
-    let any_edge_id = if let Some(id) = edge_id {
-        id
-    } else if let Some(edge_id) = sketch.mirror {
+    let any_edge_id = if let Some(edge_id) = sketch.mirror {
         edge_id
+    } else if let Some(id) = edge_id {
+        id
     } else {
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
         // So, let's just use the first one.

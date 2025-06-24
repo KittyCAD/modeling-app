@@ -16,7 +16,7 @@ arc(
   diameter?: number(Length),
   interiorAbsolute?: Point2d,
   endAbsolute?: Point2d,
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -40,7 +40,7 @@ for to construct your shape, you're likely looking for tangentialArc.
 | `diameter` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | How large should the circle be? Incompatible with `radius`. | No |
 | `interiorAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd`. | No |
 | `endAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd`. | No |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this arc. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this arc. | No |
 
 ### Returns
 
@@ -53,7 +53,7 @@ for to construct your shape, you're likely looking for tangentialArc.
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
-  |> arc(angleStart = 0, angleEnd = 280, radius = 16)
+  |> arc(angleStart = 0, angleEnd = 280deg, radius = 16)
   |> close()
 example = extrude(exampleSketch, length = 10)
 

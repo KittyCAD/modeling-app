@@ -32,7 +32,7 @@ test('Units menu', async ({ page, homePage }) => {
 test(
   'Successful export shows a success toast',
   { tag: '@skipLocalEngine' },
-  async ({ page, homePage, tronApp }) => {
+  async ({ page, homePage, cmdBar, tronApp }) => {
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
@@ -94,7 +94,8 @@ part001 = startSketchOn(-XZ)
         presentation: 'pretty',
       },
       tronApp?.projectDirName,
-      page
+      page,
+      cmdBar
     )
   }
 )
@@ -254,6 +255,7 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
 test('Basic default modeling and sketch hotkeys work', async ({
   page,
   homePage,
+  cmdBar,
 }) => {
   const u = await getUtils(page)
   await test.step(`Set up test`, async () => {
@@ -397,11 +399,8 @@ test('Basic default modeling and sketch hotkeys work', async ({
     await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible({
       timeout: 20_000,
     })
-    await page.getByRole('button', { name: 'Continue' }).click()
-    await expect(
-      page.getByRole('button', { name: 'Submit command' })
-    ).toBeVisible()
-    await page.getByRole('button', { name: 'Submit command' }).click()
+    await cmdBar.continue()
+    await cmdBar.submit()
     await expect(page.locator('.cm-content')).toContainText('extrude(')
   })
 
@@ -575,8 +574,7 @@ profile001 = startProfile(sketch002, at = [-12.34, 12.34])
 
   await cmdBar.progressCmdBar()
   await cmdBar.progressCmdBar()
-  await expect(page.getByText('Confirm Extrude')).toBeVisible()
-  await cmdBar.progressCmdBar()
+  await cmdBar.submit()
 
   const result2 = result.genNext`
 const sketch002 = extrude(sketch002, length = ${[5, 5]} + 7)`

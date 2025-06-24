@@ -108,9 +108,9 @@ export fn mirror2d(
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -164,7 +164,7 @@ export fn mirror2d(
 /// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
 ///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
-///         angle = segAng(rectangleSegmentA001) - 90,
+///         angle = segAng(rectangleSegmentA001) - 90deg,
 ///         length = 50.61,
 ///     )
 ///     |> angledLine(
@@ -179,7 +179,7 @@ export fn mirror2d(
 /// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc(radius = 80, angle = -90)
+///     |> tangentialArc(radius = 80, angle = -90deg)
 ///     |> xLine(length = 384.93)
 ///
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
@@ -233,7 +233,7 @@ export fn mirror2d(
 ///
 /// profile002 = square()
 ///     |> translate(z = 20)
-///     |> rotate(axis = [0, 0, 1.0], angle = 45)
+///     |> rotate(axis = [0, 0, 1.0], angle = 45deg)
 ///
 /// loft([profile001, profile002])
 /// ```
@@ -290,9 +290,9 @@ export fn translate(
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -323,9 +323,9 @@ export fn translate(
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -354,9 +354,9 @@ export fn translate(
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -375,7 +375,7 @@ export fn translate(
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
 ///     axis =  Z,
-///     angle = 90,
+///     angle = 90deg,
 ///     )
 /// ```
 ///
@@ -387,7 +387,7 @@ export fn translate(
 /// cube
 ///     |> rotate(
 ///     axis =  [0, 0, 1.0],
-///     angle = 9,
+///     angle = 9deg,
 ///     )
 /// ```
 ///
@@ -398,9 +398,9 @@ export fn translate(
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -419,7 +419,7 @@ export fn translate(
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
 ///     axis =  [0, 0, 1.0],
-///     angle = 90,
+///     angle = 90deg,
 ///     )
 /// ```
 ///
@@ -445,13 +445,13 @@ export fn translate(
 /// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc(radius = 80, angle = -90)
+///     |> tangentialArc(radius = 80, angle = -90deg)
 ///     |> xLine(length = 384.93)
 ///
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
 ///
 /// // Rotate the sweeps.
-/// rotate(parts, axis =  [0, 0, 1.0], angle = 90)
+/// rotate(parts, axis =  [0, 0, 1.0], angle = 90deg)
 /// ```
 ///
 /// ```kcl
@@ -471,7 +471,7 @@ export fn translate(
 ///
 /// profile002 = square()
 ///     |> translate(x = 0, y = 0, z = 20)
-///     |> rotate(axis = [0, 0, 1.0], angle = 45)
+///     |> rotate(axis = [0, 0, 1.0], angle = 45deg)
 ///
 /// loft([profile001, profile002])
 /// ```
@@ -518,9 +518,9 @@ export fn rotate(
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90, radius = 5)
+///     |> tangentialArc(angle = 90deg, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90, radius = 5)
+///     |> tangentialArc(angle = -90deg, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -560,7 +560,7 @@ export fn rotate(
 /// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
 ///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
-///         angle = segAng(rectangleSegmentA001) - 90,
+///         angle = segAng(rectangleSegmentA001) - 90deg,
 ///         length = 50.61,
 ///     )
 ///     |> angledLine(
@@ -575,7 +575,7 @@ export fn rotate(
 /// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc(radius = 80, angle = -90)
+///     |> tangentialArc(radius = 80, angle = -90deg)
 ///     |> xLine(length = 384.93)
 ///
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)

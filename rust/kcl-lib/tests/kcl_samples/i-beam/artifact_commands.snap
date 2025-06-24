@@ -81,7 +81,7 @@ description: Artifact commands i-beam.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.82,
+            "x": 33.8201,
             "y": 0.0,
             "z": 0.0
           },
@@ -99,7 +99,7 @@ description: Artifact commands i-beam.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -7.442,
+            "y": -7.442199999999999,
             "z": 0.0
           },
           "relative": true
@@ -115,8 +115,8 @@ description: Artifact commands i-beam.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14.059,
-            "y": 43.358,
+            "x": 14.0589,
+            "y": 43.3578,
             "z": 0.0
           },
           "relative": false
@@ -148,7 +148,7 @@ description: Artifact commands i-beam.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.451,
+            "x": 2.4510999999999994,
             "y": 0.0,
             "z": 0.0
           },
@@ -180,14 +180,6 @@ description: Artifact commands i-beam.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "entity_mirror",
         "ids": [
           "[uuid]"
@@ -202,14 +194,6 @@ description: Artifact commands i-beam.kcl
           "y": 0.0,
           "z": 0.0
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
       }
     },
     {

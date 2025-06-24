@@ -13,7 +13,7 @@ fillet(
   radius: number(Length),
   tags: [Edge; 1+],
   tolerance?: number(Length),
-  tag?: tag,
+  tag?: TagDecl,
 ): Solid
 ```
 
@@ -28,8 +28,8 @@ will smoothly blend the transition.
 | `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose edges should be filletted | Yes |
 | `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The radius of the fillet | Yes |
 | `tags` | [`[Edge; 1+]`](/docs/kcl-std/types/std-types-Edge) | The paths you want to fillet | Yes |
-| `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The tolerance for this fillet | No |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this fillet | No |
+| `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this fillet | No |
 
 ### Returns
 

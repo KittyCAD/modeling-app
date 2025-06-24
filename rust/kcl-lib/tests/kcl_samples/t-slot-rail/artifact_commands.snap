@@ -60,7 +60,7 @@ description: Artifact commands t-slot-rail.kcl
         "path": "[uuid]",
         "to": {
           "x": 12.7,
-          "y": 8.179,
+          "y": 8.178799999999999,
           "z": 0.0
         }
       }
@@ -114,8 +114,8 @@ description: Artifact commands t-slot-rail.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.413,
-            "y": 2.87,
+            "x": 4.4125077964151025,
+            "y": 2.8702,
             "z": 0.0
           },
           "relative": false
@@ -147,8 +147,8 @@ description: Artifact commands t-slot-rail.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.382,
-            "y": 2.437,
+            "x": 8.381999999999998,
+            "y": 2.436594877578617,
             "z": 0.0
           },
           "relative": false
@@ -213,7 +213,7 @@ description: Artifact commands t-slot-rail.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.762,
+            "x": -0.7619999999999999,
             "y": 0.0,
             "z": 0.0
           },
@@ -230,7 +230,7 @@ description: Artifact commands t-slot-rail.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 7.163,
+            "x": 7.162799999999997,
             "y": -0.0
           },
           "radius": 0.45719999999999994,
@@ -272,8 +272,8 @@ description: Artifact commands t-slot-rail.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 3.708,
-            "y": 0.0
+            "x": 3.7083999999999975,
+            "y": 0.00000000000000005599085165701698
           },
           "radius": 0.45719999999999994,
           "start": {
@@ -297,7 +297,7 @@ description: Artifact commands t-slot-rail.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.762,
+            "x": -0.7619999999999999,
             "y": 0.0,
             "z": 0.0
           },
@@ -314,8 +314,8 @@ description: Artifact commands t-slot-rail.kcl
         "segment": {
           "type": "tangential_arc_to",
           "to": {
-            "x": -1.791,
-            "y": 0.698,
+            "x": -1.790699999999998,
+            "y": 0.6984999999999999,
             "z": 0.0
           },
           "angle_snap_increment": null
@@ -346,14 +346,6 @@ description: Artifact commands t-slot-rail.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "entity_mirror",
         "ids": [
           "[uuid]"
@@ -374,14 +366,6 @@ description: Artifact commands t-slot-rail.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "entity_mirror",
         "ids": [
           "[uuid]"
@@ -396,14 +380,6 @@ description: Artifact commands t-slot-rail.kcl
           "y": 0.0,
           "z": 0.0
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
       }
     },
     {
@@ -444,8 +420,8 @@ description: Artifact commands t-slot-rail.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 22.377,
-          "y": 19.05,
+          "x": 22.377399999999998,
+          "y": 19.049999999999997,
           "z": 0.0
         }
       }
@@ -466,8 +442,8 @@ description: Artifact commands t-slot-rail.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 19.05,
-            "y": 19.05
+            "x": 19.049999999999997,
+            "y": 19.049999999999997
           },
           "radius": 3.3274,
           "start": {

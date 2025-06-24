@@ -159,7 +159,7 @@ description: Variables in memory after executing brake-rotor.kcl
             ],
             "tag": null,
             "to": [
-              -88.5,
+              -88.50045345896304,
               70.0
             ],
             "type": "ToPoint",
@@ -173,7 +173,7 @@ description: Variables in memory after executing brake-rotor.kcl
               "sourceRange": []
             },
             "from": [
-              -88.5,
+              -88.50045345896304,
               70.0
             ],
             "tag": {
@@ -222,7 +222,7 @@ description: Variables in memory after executing brake-rotor.kcl
             ],
             "tag": null,
             "to": [
-              -83.938,
+              -83.93789677659265,
               65.0
             ],
             "type": "ToPoint",
@@ -236,7 +236,7 @@ description: Variables in memory after executing brake-rotor.kcl
               "sourceRange": []
             },
             "from": [
-              -83.938,
+              -83.93789677659265,
               65.0
             ],
             "tag": null,
@@ -719,7 +719,7 @@ description: Variables in memory after executing brake-rotor.kcl
   },
   "lDraftExterior": {
     "type": "Number",
-    "value": 3.5,
+    "value": 3.4995465410369673,
     "ty": {
       "type": "Default",
       "len": {
@@ -732,7 +732,7 @@ description: Variables in memory after executing brake-rotor.kcl
   },
   "lDraftInterior": {
     "type": "Number",
-    "value": 3.062,
+    "value": 3.0621032234073464,
     "ty": {
       "type": "Default",
       "len": {
@@ -927,7 +927,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       ],
                       "tag": null,
                       "to": [
-                        -88.5,
+                        -88.50045345896304,
                         70.0
                       ],
                       "type": "ToPoint",
@@ -941,7 +941,7 @@ description: Variables in memory after executing brake-rotor.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -88.5,
+                        -88.50045345896304,
                         70.0
                       ],
                       "tag": {
@@ -990,7 +990,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       ],
                       "tag": null,
                       "to": [
-                        -83.938,
+                        -83.93789677659265,
                         65.0
                       ],
                       "type": "ToPoint",
@@ -1004,7 +1004,7 @@ description: Variables in memory after executing brake-rotor.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -83.938,
+                        -83.93789677659265,
                         65.0
                       ],
                       "tag": null,
@@ -1361,7 +1361,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       ],
                       "tag": null,
                       "to": [
-                        -88.5,
+                        -88.50045345896304,
                         70.0
                       ],
                       "type": "ToPoint",
@@ -1375,7 +1375,7 @@ description: Variables in memory after executing brake-rotor.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -88.5,
+                        -88.50045345896304,
                         70.0
                       ],
                       "tag": {
@@ -1424,7 +1424,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       ],
                       "tag": null,
                       "to": [
-                        -83.938,
+                        -83.93789677659265,
                         65.0
                       ],
                       "type": "ToPoint",
@@ -1438,7 +1438,7 @@ description: Variables in memory after executing brake-rotor.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -83.938,
+                        -83.93789677659265,
                         65.0
                       ],
                       "tag": null,
@@ -1795,7 +1795,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       ],
                       "tag": null,
                       "to": [
-                        -88.5,
+                        -88.50045345896304,
                         70.0
                       ],
                       "type": "ToPoint",
@@ -1809,7 +1809,7 @@ description: Variables in memory after executing brake-rotor.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -88.5,
+                        -88.50045345896304,
                         70.0
                       ],
                       "tag": {
@@ -1858,7 +1858,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       ],
                       "tag": null,
                       "to": [
-                        -83.938,
+                        -83.93789677659265,
                         65.0
                       ],
                       "type": "ToPoint",
@@ -1872,7 +1872,7 @@ description: Variables in memory after executing brake-rotor.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -83.938,
+                        -83.93789677659265,
                         65.0
                       ],
                       "tag": null,
@@ -2229,7 +2229,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       ],
                       "tag": null,
                       "to": [
-                        -88.5,
+                        -88.50045345896304,
                         70.0
                       ],
                       "type": "ToPoint",
@@ -2243,7 +2243,7 @@ description: Variables in memory after executing brake-rotor.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -88.5,
+                        -88.50045345896304,
                         70.0
                       ],
                       "tag": {
@@ -2292,7 +2292,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       ],
                       "tag": null,
                       "to": [
-                        -83.938,
+                        -83.93789677659265,
                         65.0
                       ],
                       "type": "ToPoint",
@@ -2306,7 +2306,7 @@ description: Variables in memory after executing brake-rotor.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -83.938,
+                        -83.93789677659265,
                         65.0
                       ],
                       "tag": null,
@@ -2663,7 +2663,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       ],
                       "tag": null,
                       "to": [
-                        -88.5,
+                        -88.50045345896304,
                         70.0
                       ],
                       "type": "ToPoint",
@@ -2677,7 +2677,7 @@ description: Variables in memory after executing brake-rotor.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -88.5,
+                        -88.50045345896304,
                         70.0
                       ],
                       "tag": {
@@ -2726,7 +2726,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       ],
                       "tag": null,
                       "to": [
-                        -83.938,
+                        -83.93789677659265,
                         65.0
                       ],
                       "type": "ToPoint",
@@ -2740,7 +2740,7 @@ description: Variables in memory after executing brake-rotor.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -83.938,
+                        -83.93789677659265,
                         65.0
                       ],
                       "tag": null,
@@ -3192,7 +3192,7 @@ description: Variables in memory after executing brake-rotor.kcl
                     ],
                     "tag": null,
                     "to": [
-                      -88.5,
+                      -88.50045345896304,
                       70.0
                     ],
                     "type": "ToPoint",
@@ -3206,7 +3206,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       "sourceRange": []
                     },
                     "from": [
-                      -88.5,
+                      -88.50045345896304,
                       70.0
                     ],
                     "tag": {
@@ -3255,7 +3255,7 @@ description: Variables in memory after executing brake-rotor.kcl
                     ],
                     "tag": null,
                     "to": [
-                      -83.938,
+                      -83.93789677659265,
                       65.0
                     ],
                     "type": "ToPoint",
@@ -3269,7 +3269,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       "sourceRange": []
                     },
                     "from": [
-                      -83.938,
+                      -83.93789677659265,
                       65.0
                     ],
                     "tag": null,
@@ -3605,7 +3605,7 @@ description: Variables in memory after executing brake-rotor.kcl
                     ],
                     "tag": null,
                     "to": [
-                      -88.5,
+                      -88.50045345896304,
                       70.0
                     ],
                     "type": "ToPoint",
@@ -3619,7 +3619,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       "sourceRange": []
                     },
                     "from": [
-                      -88.5,
+                      -88.50045345896304,
                       70.0
                     ],
                     "tag": {
@@ -3668,7 +3668,7 @@ description: Variables in memory after executing brake-rotor.kcl
                     ],
                     "tag": null,
                     "to": [
-                      -83.938,
+                      -83.93789677659265,
                       65.0
                     ],
                     "type": "ToPoint",
@@ -3682,7 +3682,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       "sourceRange": []
                     },
                     "from": [
-                      -83.938,
+                      -83.93789677659265,
                       65.0
                     ],
                     "tag": null,
@@ -4018,7 +4018,7 @@ description: Variables in memory after executing brake-rotor.kcl
                     ],
                     "tag": null,
                     "to": [
-                      -88.5,
+                      -88.50045345896304,
                       70.0
                     ],
                     "type": "ToPoint",
@@ -4032,7 +4032,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       "sourceRange": []
                     },
                     "from": [
-                      -88.5,
+                      -88.50045345896304,
                       70.0
                     ],
                     "tag": {
@@ -4081,7 +4081,7 @@ description: Variables in memory after executing brake-rotor.kcl
                     ],
                     "tag": null,
                     "to": [
-                      -83.938,
+                      -83.93789677659265,
                       65.0
                     ],
                     "type": "ToPoint",
@@ -4095,7 +4095,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       "sourceRange": []
                     },
                     "from": [
-                      -83.938,
+                      -83.93789677659265,
                       65.0
                     ],
                     "tag": null,
@@ -4431,7 +4431,7 @@ description: Variables in memory after executing brake-rotor.kcl
                     ],
                     "tag": null,
                     "to": [
-                      -88.5,
+                      -88.50045345896304,
                       70.0
                     ],
                     "type": "ToPoint",
@@ -4445,7 +4445,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       "sourceRange": []
                     },
                     "from": [
-                      -88.5,
+                      -88.50045345896304,
                       70.0
                     ],
                     "tag": {
@@ -4494,7 +4494,7 @@ description: Variables in memory after executing brake-rotor.kcl
                     ],
                     "tag": null,
                     "to": [
-                      -83.938,
+                      -83.93789677659265,
                       65.0
                     ],
                     "type": "ToPoint",
@@ -4508,7 +4508,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       "sourceRange": []
                     },
                     "from": [
-                      -83.938,
+                      -83.93789677659265,
                       65.0
                     ],
                     "tag": null,
@@ -4844,7 +4844,7 @@ description: Variables in memory after executing brake-rotor.kcl
                     ],
                     "tag": null,
                     "to": [
-                      -88.5,
+                      -88.50045345896304,
                       70.0
                     ],
                     "type": "ToPoint",
@@ -4858,7 +4858,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       "sourceRange": []
                     },
                     "from": [
-                      -88.5,
+                      -88.50045345896304,
                       70.0
                     ],
                     "tag": {
@@ -4907,7 +4907,7 @@ description: Variables in memory after executing brake-rotor.kcl
                     ],
                     "tag": null,
                     "to": [
-                      -83.938,
+                      -83.93789677659265,
                       65.0
                     ],
                     "type": "ToPoint",
@@ -4921,7 +4921,7 @@ description: Variables in memory after executing brake-rotor.kcl
                       "sourceRange": []
                     },
                     "from": [
-                      -83.938,
+                      -83.93789677659265,
                       65.0
                     ],
                     "tag": null,
@@ -5139,7 +5139,7 @@ description: Variables in memory after executing brake-rotor.kcl
             "value": "seg02"
           },
           "to": [
-            0.0,
+            0.00000000000000367394039744206,
             100.0
           ],
           "type": "ToPoint",
@@ -5153,7 +5153,7 @@ description: Variables in memory after executing brake-rotor.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
+            0.00000000000000367394039744206,
             100.0
           ],
           "tag": {
@@ -5164,7 +5164,7 @@ description: Variables in memory after executing brake-rotor.kcl
             "value": "seg03"
           },
           "to": [
-            -6.0,
+            -5.9999999999999964,
             100.0
           ],
           "type": "ToPoint",
@@ -5178,7 +5178,7 @@ description: Variables in memory after executing brake-rotor.kcl
             "sourceRange": []
           },
           "from": [
-            -6.0,
+            -5.9999999999999964,
             100.0
           ],
           "tag": {
@@ -5318,7 +5318,7 @@ description: Variables in memory after executing brake-rotor.kcl
   },
   "rInner": {
     "type": "Number",
-    "value": 51.938,
+    "value": 51.93789677659266,
     "ty": {
       "type": "Default",
       "len": {
@@ -5331,7 +5331,7 @@ description: Variables in memory after executing brake-rotor.kcl
   },
   "rOuter": {
     "type": "Number",
-    "value": 56.5,
+    "value": 56.50045345896304,
     "ty": {
       "type": "Default",
       "len": {
@@ -5549,7 +5549,7 @@ description: Variables in memory after executing brake-rotor.kcl
               ],
               "tag": null,
               "to": [
-                -88.5,
+                -88.50045345896304,
                 70.0
               ],
               "type": "ToPoint",
@@ -5563,7 +5563,7 @@ description: Variables in memory after executing brake-rotor.kcl
                 "sourceRange": []
               },
               "from": [
-                -88.5,
+                -88.50045345896304,
                 70.0
               ],
               "tag": {
@@ -5612,7 +5612,7 @@ description: Variables in memory after executing brake-rotor.kcl
               ],
               "tag": null,
               "to": [
-                -83.938,
+                -83.93789677659265,
                 65.0
               ],
               "type": "ToPoint",
@@ -5626,7 +5626,7 @@ description: Variables in memory after executing brake-rotor.kcl
                 "sourceRange": []
               },
               "from": [
-                -83.938,
+                -83.93789677659265,
                 65.0
               ],
               "tag": null,
@@ -5947,7 +5947,7 @@ description: Variables in memory after executing brake-rotor.kcl
               "value": "seg02"
             },
             "to": [
-              0.0,
+              0.00000000000000367394039744206,
               100.0
             ],
             "type": "ToPoint",
@@ -5961,7 +5961,7 @@ description: Variables in memory after executing brake-rotor.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
+              0.00000000000000367394039744206,
               100.0
             ],
             "tag": {
@@ -5972,7 +5972,7 @@ description: Variables in memory after executing brake-rotor.kcl
               "value": "seg03"
             },
             "to": [
-              -6.0,
+              -5.9999999999999964,
               100.0
             ],
             "type": "ToPoint",
@@ -5986,7 +5986,7 @@ description: Variables in memory after executing brake-rotor.kcl
               "sourceRange": []
             },
             "from": [
-              -6.0,
+              -5.9999999999999964,
               100.0
             ],
             "tag": {
@@ -6289,7 +6289,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -6303,7 +6303,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -6314,7 +6314,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -6328,7 +6328,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -6628,7 +6628,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -6642,7 +6642,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -6653,7 +6653,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -6667,7 +6667,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -6967,7 +6967,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -6981,7 +6981,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -6992,7 +6992,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -7006,7 +7006,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -7306,7 +7306,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -7320,7 +7320,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -7331,7 +7331,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -7345,7 +7345,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -7645,7 +7645,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -7659,7 +7659,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -7670,7 +7670,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -7684,7 +7684,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -7984,7 +7984,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -7998,7 +7998,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -8009,7 +8009,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -8023,7 +8023,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -8323,7 +8323,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -8337,7 +8337,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -8348,7 +8348,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -8362,7 +8362,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -8662,7 +8662,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -8676,7 +8676,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -8687,7 +8687,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -8701,7 +8701,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -9001,7 +9001,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -9015,7 +9015,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -9026,7 +9026,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -9040,7 +9040,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -9340,7 +9340,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -9354,7 +9354,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -9365,7 +9365,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -9379,7 +9379,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -9679,7 +9679,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -9693,7 +9693,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -9704,7 +9704,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -9718,7 +9718,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -10018,7 +10018,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -10032,7 +10032,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -10043,7 +10043,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -10057,7 +10057,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -10357,7 +10357,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -10371,7 +10371,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -10382,7 +10382,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -10396,7 +10396,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -10696,7 +10696,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -10710,7 +10710,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -10721,7 +10721,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -10735,7 +10735,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -11035,7 +11035,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -11049,7 +11049,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -11060,7 +11060,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -11074,7 +11074,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -11374,7 +11374,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -11388,7 +11388,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -11399,7 +11399,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -11413,7 +11413,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -11713,7 +11713,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -11727,7 +11727,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -11738,7 +11738,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -11752,7 +11752,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -12052,7 +12052,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -12066,7 +12066,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -12077,7 +12077,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -12091,7 +12091,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -12391,7 +12391,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -12405,7 +12405,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -12416,7 +12416,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -12430,7 +12430,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -12730,7 +12730,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -12744,7 +12744,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -12755,7 +12755,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -12769,7 +12769,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -13069,7 +13069,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -13083,7 +13083,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -13094,7 +13094,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -13108,7 +13108,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -13408,7 +13408,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -13422,7 +13422,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -13433,7 +13433,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -13447,7 +13447,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -13747,7 +13747,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -13761,7 +13761,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -13772,7 +13772,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -13786,7 +13786,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -14086,7 +14086,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -14100,7 +14100,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -14111,7 +14111,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -14125,7 +14125,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -14425,7 +14425,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -14439,7 +14439,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -14450,7 +14450,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -14464,7 +14464,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -14764,7 +14764,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -14778,7 +14778,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -14789,7 +14789,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -14803,7 +14803,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -15103,7 +15103,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -15117,7 +15117,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -15128,7 +15128,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -15142,7 +15142,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -15442,7 +15442,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -15456,7 +15456,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -15467,7 +15467,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -15481,7 +15481,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -15781,7 +15781,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -15795,7 +15795,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -15806,7 +15806,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -15820,7 +15820,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -16120,7 +16120,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -16134,7 +16134,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -16145,7 +16145,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -16159,7 +16159,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -16459,7 +16459,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -16473,7 +16473,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -16484,7 +16484,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -16498,7 +16498,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -16798,7 +16798,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -16812,7 +16812,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -16823,7 +16823,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -16837,7 +16837,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -17137,7 +17137,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -17151,7 +17151,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -17162,7 +17162,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -17176,7 +17176,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -17476,7 +17476,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -17490,7 +17490,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -17501,7 +17501,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -17515,7 +17515,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -17815,7 +17815,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -17829,7 +17829,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -17840,7 +17840,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -17854,7 +17854,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {
@@ -18154,7 +18154,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -18168,7 +18168,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0,
+                  0.00000000000000367394039744206,
                   100.0
                 ],
                 "tag": {
@@ -18179,7 +18179,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "type": "ToPoint",
@@ -18193,7 +18193,7 @@ description: Variables in memory after executing brake-rotor.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
+                  -5.9999999999999964,
                   100.0
                 ],
                 "tag": {

@@ -449,6 +449,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "mug/main.kcl",
+    "multipleFiles": false,
+    "title": "Mug",
+    "description": "A cup with straight sides and a handle, typically used for hot drinks",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "multi-axis-robot/main.kcl",
     "multipleFiles": true,
     "title": "Robot Arm",
@@ -614,6 +624,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "spool/main.kcl",
+    "multipleFiles": false,
+    "title": "Spool",
+    "description": "A spool is a winding device for storing large batches of filament, wire, tape, etc",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "spur-gear/main.kcl",
     "multipleFiles": false,
     "title": "Spur Gear",
@@ -648,6 +668,16 @@
     "multipleFiles": false,
     "title": "T-Slotted Framing Rail",
     "description": "A T-slotted framing rail, or T-slot extrusion, is a rectangular or square aluminum profile with a \"T\" shaped slot along one or more sides. These slots allow for easy attachment of various hardware components like brackets, connectors, and fasteners, making it a versatile and customizable framing system.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "teapot/main.kcl",
+    "multipleFiles": false,
+    "title": "Teapot",
+    "description": "A vessel with a spout and a handle used for serving tea and boiling water on a stovetop",
     "files": [
       "main.kcl"
     ]

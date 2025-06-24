@@ -5,6 +5,522 @@ description: Operations executed ball-joint-rod-end.kcl
 {
   "public/kcl-samples/ball-joint-rod-end/main.kcl": [
     {
+      "type": "VariableDeclaration",
+      "name": "ballBoltLength",
+      "value": {
+        "type": "Number",
+        "value": 6.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "ballRadius",
+      "value": {
+        "type": "Number",
+        "value": 8.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "sketchStartAngle",
+      "value": {
+        "type": "Number",
+        "value": 0.848062078981481,
+        "ty": {
+          "type": "Known",
+          "type": "Angle",
+          "type": "Radians"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "housingThicknessHalf",
+      "value": {
+        "type": "Number",
+        "value": 4.5,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "housingR1",
+      "value": {
+        "type": "Number",
+        "value": 11.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "housingR2",
+      "value": {
+        "type": "Number",
+        "value": 8.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "tolerance",
+      "value": {
+        "type": "Number",
+        "value": 0.1,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "shaftR",
+      "value": {
+        "type": "Number",
+        "value": 8.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "distanceBetweenEyeAndShaftEnd",
+      "value": {
+        "type": "Number",
+        "value": 36.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "radiusToFlat",
+      "value": {
+        "type": "Number",
+        "value": 12.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "flatsWidth",
+      "value": {
+        "type": "Number",
+        "value": 14.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "tapperInAng",
+      "value": {
+        "type": "Number",
+        "value": 45.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "holeDForM8Tap",
+      "value": {
+        "type": "Number",
+        "value": 6.8,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 12
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "holdDepth",
+      "value": {
+        "type": "Number",
+        "value": 18.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "retainingLoopSketchAngle1",
+      "value": {
+        "type": "Number",
+        "value": 0.42145756846730115,
+        "ty": {
+          "type": "Known",
+          "type": "Angle",
+          "type": "Radians"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "retainingLoopSketchAngle2",
+      "value": {
+        "type": "Number",
+        "value": 0.5974064166453502,
+        "ty": {
+          "type": "Known",
+          "type": "Angle",
+          "type": "Radians"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 15
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -15,7 +531,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 2.168,
+              "value": 2.1682027434402467,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -59,7 +575,117 @@ description: Operations executed ball-joint-rod-end.kcl
       "sourceRange": []
     },
     {
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": -4.556249999999999,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": 6.697058006132245,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "polarY",
+      "value": {
+        "type": "Number",
+        "value": 6.697058006132245,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 17
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "intersectPoint",
+      "value": {
+        "type": "Number",
+        "value": 7.54983443527075,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 18
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     },
     {
       "type": "StdLibCall",
@@ -99,7 +725,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 2.419,
+              "value": 2.4188584057763776,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -147,6 +773,50 @@ description: Operations executed ball-joint-rod-end.kcl
             "index": 0
           }
         ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": -6.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": 5.291502622129181,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
       },
       "sourceRange": []
     },
@@ -311,7 +981,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.992,
+              "value": 1.9922538952621978,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -359,6 +1029,50 @@ description: Operations executed ball-joint-rod-end.kcl
             "index": 0
           }
         ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": -4.5,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": 10.037429949942366,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
       },
       "sourceRange": []
     },
@@ -492,7 +1206,7 @@ description: Operations executed ball-joint-rod-end.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": -0.087,
+              "value": -0.08726646259971647,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -532,6 +1246,50 @@ description: Operations executed ball-joint-rod-end.kcl
             "type": "VariableDeclarationInit"
           }
         ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": 10.878446103161862,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": -0.9517407108044271,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
       },
       "sourceRange": []
     },
@@ -1421,8 +2179,86 @@ description: Operations executed ball-joint-rod-end.kcl
   ],
   "std::appearance": [],
   "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
+  "std::math": [
+    {
+      "type": "VariableDeclaration",
+      "name": "PI",
+      "value": {
+        "type": "Number",
+        "value": 3.141592653589793,
+        "ty": {
+          "type": "Unknown"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "E",
+      "value": {
+        "type": "Number",
+        "value": 2.718281828459045,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "TAU",
+      "value": {
+        "type": "Number",
+        "value": 6.283185307179586,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::prelude": [
+    {
+      "type": "VariableDeclaration",
+      "name": "START",
+      "value": {
+        "type": "String",
+        "value": "start"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "END",
+      "value": {
+        "type": "String",
+        "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
   "std::sketch": [],
   "std::solid": [],
   "std::sweep": [],

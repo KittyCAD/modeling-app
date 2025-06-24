@@ -18,7 +18,7 @@ pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let n: TyF64 = args.get_unlabeled_kw_arg("number to divide", &RuntimeType::num_any(), exec_state)?;
     let d: TyF64 = args.get_kw_arg("divisor", &RuntimeType::num_any(), exec_state)?;
 
-    let (n, d, ty) = NumericType::combine_div(n, d);
+    let (n, d, ty) = NumericType::combine_mod(n, d);
     if ty == NumericType::Unknown {
         exec_state.err(CompilationError::err(
             args.source_range,
@@ -34,21 +34,21 @@ pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 pub async fn cos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::angle(), exec_state)?;
     let num = num.to_radians();
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(num.cos(), exec_state.current_default_units())))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(libm::cos(num), exec_state.current_default_units())))
 }
 
 /// Compute the sine of a number (in radians).
 pub async fn sin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::angle(), exec_state)?;
     let num = num.to_radians();
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(num.sin(), exec_state.current_default_units())))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(libm::sin(num), exec_state.current_default_units())))
 }
 
 /// Compute the tangent of a number (in radians).
 pub async fn tan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::angle(), exec_state)?;
     let num = num.to_radians();
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(num.tan(), exec_state.current_default_units())))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(libm::tan(num), exec_state.current_default_units())))
 }
 
 /// Compute the square root of a number.
@@ -164,7 +164,7 @@ pub async fn pow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// Compute the arccosine of a number (in radians).
 pub async fn acos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::count(), exec_state)?;
-    let result = input.n.acos();
+    let result = libm::acos(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
 }
@@ -172,7 +172,7 @@ pub async fn acos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Compute the arcsine of a number (in radians).
 pub async fn asin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::count(), exec_state)?;
-    let result = input.n.asin();
+    let result = libm::asin(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
 }
@@ -180,7 +180,7 @@ pub async fn asin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Compute the arctangent of a number (in radians).
 pub async fn atan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::count(), exec_state)?;
-    let result = input.n.atan();
+    let result = libm::atan(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
 }
@@ -190,7 +190,7 @@ pub async fn atan2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let y = args.get_kw_arg("y", &RuntimeType::length(), exec_state)?;
     let x = args.get_kw_arg("x", &RuntimeType::length(), exec_state)?;
     let (y, x, _) = NumericType::combine_eq_coerce(y, x);
-    let result = y.atan2(x);
+    let result = libm::atan2(y, x);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
 }
@@ -246,7 +246,7 @@ pub async fn leg_angle_x(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let hypotenuse: TyF64 = args.get_kw_arg("hypotenuse", &RuntimeType::length(), exec_state)?;
     let leg: TyF64 = args.get_kw_arg("leg", &RuntimeType::length(), exec_state)?;
     let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
-    let result = (leg.min(hypotenuse) / hypotenuse).acos().to_degrees();
+    let result = libm::acos(leg.min(hypotenuse) / hypotenuse).to_degrees();
     Ok(KclValue::from_number_with_type(
         result,
         NumericType::degrees(),
@@ -259,7 +259,7 @@ pub async fn leg_angle_y(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let hypotenuse: TyF64 = args.get_kw_arg("hypotenuse", &RuntimeType::length(), exec_state)?;
     let leg: TyF64 = args.get_kw_arg("leg", &RuntimeType::length(), exec_state)?;
     let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
-    let result = (leg.min(hypotenuse) / hypotenuse).asin().to_degrees();
+    let result = libm::asin(leg.min(hypotenuse) / hypotenuse).to_degrees();
     Ok(KclValue::from_number_with_type(
         result,
         NumericType::degrees(),

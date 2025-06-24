@@ -6,7 +6,7 @@ use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, ModelingC
 use kittycad_modeling_cmds as kcmc;
 use serde::{Deserialize, Serialize};
 
-use super::{args::TyF64, DEFAULT_TOLERANCE};
+use super::{args::TyF64, DEFAULT_TOLERANCE_MM};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -122,7 +122,7 @@ async fn inner_fillet(
                 strategy: Default::default(),
                 object_id: solid.id,
                 radius: LengthUnit(radius.to_mm()),
-                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
+                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
                 cut_type: CutType::Fillet,
             }),
         )

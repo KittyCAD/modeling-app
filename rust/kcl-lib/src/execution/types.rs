@@ -84,16 +84,16 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Face)
     }
 
-    pub fn tag() -> Self {
-        RuntimeType::Primitive(PrimitiveType::Tag)
-    }
-
     pub fn tag_decl() -> Self {
         RuntimeType::Primitive(PrimitiveType::TagDecl)
     }
 
-    pub fn tag_identifier() -> Self {
-        RuntimeType::Primitive(PrimitiveType::TagId)
+    pub fn tagged_face() -> Self {
+        RuntimeType::Primitive(PrimitiveType::TaggedFace)
+    }
+
+    pub fn tagged_edge() -> Self {
+        RuntimeType::Primitive(PrimitiveType::TaggedEdge)
     }
 
     pub fn bool() -> Self {
@@ -196,7 +196,7 @@ impl RuntimeType {
                 RuntimeType::Primitive(PrimitiveType::Number(ty))
             }
             AstPrimitiveType::Named { id } => Self::from_alias(&id.name, exec_state, source_range)?,
-            AstPrimitiveType::Tag => RuntimeType::Primitive(PrimitiveType::Tag),
+            AstPrimitiveType::TagDecl => RuntimeType::Primitive(PrimitiveType::TagDecl),
             AstPrimitiveType::ImportedGeometry => RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
             AstPrimitiveType::Function(_) => RuntimeType::Primitive(PrimitiveType::Function),
         })
@@ -383,8 +383,8 @@ pub enum PrimitiveType {
     Number(NumericType),
     String,
     Boolean,
-    Tag,
-    TagId,
+    TaggedEdge,
+    TaggedFace,
     TagDecl,
     Sketch,
     Solid,
@@ -416,9 +416,9 @@ impl PrimitiveType {
             PrimitiveType::Axis3d => "3d axes".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
             PrimitiveType::Function => "functions".to_owned(),
-            PrimitiveType::Tag => "tags".to_owned(),
             PrimitiveType::TagDecl => "tag declarators".to_owned(),
-            PrimitiveType::TagId => "tag identifiers".to_owned(),
+            PrimitiveType::TaggedEdge => "tagged edges".to_owned(),
+            PrimitiveType::TaggedFace => "tagged faces".to_owned(),
         }
     }
 
@@ -426,7 +426,8 @@ impl PrimitiveType {
         match (self, other) {
             (_, PrimitiveType::Any) => true,
             (PrimitiveType::Number(n1), PrimitiveType::Number(n2)) => n1.subtype(n2),
-            (PrimitiveType::TagId, PrimitiveType::Tag) | (PrimitiveType::TagDecl, PrimitiveType::Tag) => true,
+            (PrimitiveType::TaggedEdge, PrimitiveType::TaggedFace)
+            | (PrimitiveType::TaggedEdge, PrimitiveType::Edge) => true,
             (t1, t2) => t1 == t2,
         }
     }
@@ -438,13 +439,13 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Any => write!(f, "any"),
             PrimitiveType::Number(NumericType::Known(unit)) => write!(f, "number({unit})"),
             PrimitiveType::Number(NumericType::Unknown) => write!(f, "number(unknown units)"),
-            PrimitiveType::Number(NumericType::Default { .. }) => write!(f, "number(default units)"),
+            PrimitiveType::Number(NumericType::Default { .. }) => write!(f, "number"),
             PrimitiveType::Number(NumericType::Any) => write!(f, "number(any units)"),
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
-            PrimitiveType::Tag => write!(f, "tag"),
             PrimitiveType::TagDecl => write!(f, "tag declarator"),
-            PrimitiveType::TagId => write!(f, "tag identifier"),
+            PrimitiveType::TaggedEdge => write!(f, "tagged edge"),
+            PrimitiveType::TaggedFace => write!(f, "tagged face"),
             PrimitiveType::Sketch => write!(f, "Sketch"),
             PrimitiveType::Solid => write!(f, "Solid"),
             PrimitiveType::Plane => write!(f, "Plane"),
@@ -453,8 +454,8 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Axis2d => write!(f, "Axis2d"),
             PrimitiveType::Axis3d => write!(f, "Axis3d"),
             PrimitiveType::Helix => write!(f, "Helix"),
-            PrimitiveType::ImportedGeometry => write!(f, "imported geometry"),
-            PrimitiveType::Function => write!(f, "function"),
+            PrimitiveType::ImportedGeometry => write!(f, "ImportedGeometry"),
+            PrimitiveType::Function => write!(f, "fn"),
         }
     }
 }
@@ -499,20 +500,6 @@ impl NumericType {
         NumericType::Known(UnitType::Angle(UnitAngle::Degrees))
     }
 
-    pub fn expect_default_length(&self) -> Self {
-        match self {
-            NumericType::Default { len, .. } => NumericType::Known(UnitType::Length(*len)),
-            _ => unreachable!(),
-        }
-    }
-
-    pub fn expect_default_angle(&self) -> Self {
-        match self {
-            NumericType::Default { angle, .. } => NumericType::Known(UnitType::Angle(*angle)),
-            _ => unreachable!(),
-        }
-    }
-
     /// Combine two types when we expect them to be equal, erring on the side of less coercion. To be
     /// precise, only adjusting one number or the other when they are of known types.
     ///
@@ -554,14 +541,9 @@ impl NumericType {
             (at, Any) => (a.n, b.n, at),
             (Any, bt) => (a.n, b.n, bt),
 
-            (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => (a.n, b.n, Unknown),
-
             // Known types and compatible, but needs adjustment.
             (t @ Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => (a.n, l2.adjust_to(b.n, l1).0, t),
             (t @ Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => (a.n, a2.adjust_to(b.n, a1).0, t),
-
-            // Known but incompatible.
-            (Known(_), Known(_)) => (a.n, b.n, Unknown),
 
             // Known and unknown => we assume the known one, possibly with adjustment
             (Known(UnitType::Count), Default { .. }) | (Default { .. }, Known(UnitType::Count)) => {
@@ -570,9 +552,12 @@ impl NumericType {
 
             (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) => (a.n, l2.adjust_to(b.n, l1).0, t),
             (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) => (l1.adjust_to(a.n, l2).0, b.n, t),
-
             (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) => (a.n, a2.adjust_to(b.n, a1).0, t),
             (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) => (a1.adjust_to(a.n, a2).0, b.n, t),
+
+            (Known(_), Known(_)) | (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => {
+                (a.n, b.n, Unknown)
+            }
         }
     }
 
@@ -639,6 +624,20 @@ impl NumericType {
         match (a.ty, b.ty) {
             (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
             (at, bt) if at == bt => (a.n, b.n, Known(UnitType::Count)),
+            (Default { .. }, Default { .. }) => (a.n, b.n, Unknown),
+            (at, Known(UnitType::Count) | Any) => (a.n, b.n, at),
+            (at @ Known(_), Default { .. }) => (a.n, b.n, at),
+            (Known(UnitType::Count), _) => (a.n, b.n, Known(UnitType::Count)),
+            _ => (a.n, b.n, Unknown),
+        }
+    }
+
+    /// Combine two types for modulo-like operations.
+    pub fn combine_mod(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+        use NumericType::*;
+        match (a.ty, b.ty) {
+            (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
+            (at, bt) if at == bt => (a.n, b.n, at),
             (Default { .. }, Default { .. }) => (a.n, b.n, Unknown),
             (at, Known(UnitType::Count) | Any) => (a.n, b.n, at),
             (at @ Known(_), Default { .. }) => (a.n, b.n, at),
@@ -851,7 +850,7 @@ impl std::fmt::Display for UnitType {
     }
 }
 
-// TODO called UnitLen so as not to clash with UnitLength in settings)
+// TODO called UnitLen so as not to clash with UnitLength in settings.
 /// A unit of length.
 #[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
@@ -1209,6 +1208,17 @@ impl KclValue {
                 KclValue::TagIdentifier { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::TaggedEdge => match self {
+                KclValue::TagIdentifier { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
+            PrimitiveType::TaggedFace => match self {
+                KclValue::TagIdentifier { .. } => Ok(self.clone()),
+                s @ KclValue::String { value, .. } if ["start", "end", "START", "END"].contains(&&**value) => {
+                    Ok(s.clone())
+                }
+                _ => Err(self.into()),
+            },
             PrimitiveType::Axis2d => match self {
                 KclValue::Object { value: values, meta } => {
                     if values
@@ -1297,21 +1307,8 @@ impl KclValue {
                 KclValue::Function { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            PrimitiveType::TagId => match self {
-                KclValue::TagIdentifier { .. } => Ok(self.clone()),
-                _ => Err(self.into()),
-            },
             PrimitiveType::TagDecl => match self {
                 KclValue::TagDeclarator { .. } => Ok(self.clone()),
-                _ => Err(self.into()),
-            },
-            PrimitiveType::Tag => match self {
-                KclValue::TagDeclarator { .. } | KclValue::TagIdentifier { .. } | KclValue::Uuid { .. } => {
-                    Ok(self.clone())
-                }
-                s @ KclValue::String { value, .. } if ["start", "end", "START", "END"].contains(&&**value) => {
-                    Ok(s.clone())
-                }
                 _ => Err(self.into()),
             },
         }
@@ -1503,12 +1500,29 @@ impl KclValue {
             KclValue::HomArray { ty, value, .. } => {
                 Some(RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(value.len())))
             }
-            KclValue::TagIdentifier(_) => Some(RuntimeType::Primitive(PrimitiveType::TagId)),
+            KclValue::TagIdentifier(_) => Some(RuntimeType::Primitive(PrimitiveType::TaggedEdge)),
             KclValue::TagDeclarator(_) => Some(RuntimeType::Primitive(PrimitiveType::TagDecl)),
-            KclValue::Uuid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Tag)),
+            KclValue::Uuid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Edge)),
             KclValue::Function { .. } => Some(RuntimeType::Primitive(PrimitiveType::Function)),
             KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => None,
         }
+    }
+
+    pub fn principal_type_string(&self) -> String {
+        if let Some(ty) = self.principal_type() {
+            return format!("`{ty}`");
+        }
+
+        match self {
+            KclValue::Module { .. } => "module",
+            KclValue::KclNone { .. } => "none",
+            KclValue::Type { .. } => "type",
+            _ => {
+                debug_assert!(false);
+                "<unexpected type>"
+            }
+        }
+        .to_owned()
     }
 }
 

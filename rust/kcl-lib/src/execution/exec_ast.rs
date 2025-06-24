@@ -6,13 +6,14 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations,
+        cad_op::OpKclValue,
         fn_call::Args,
         kcl_value::{FunctionSource, TypeDef},
         memory,
         state::ModuleState,
         types::{NumericType, PrimitiveType, RuntimeType},
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta, ModuleArtifactState,
-        PlaneType, StatementKind, TagIdentifier,
+        Operation, PlaneType, StatementKind, TagIdentifier,
     },
     fmt,
     modules::{ModuleId, ModulePath, ModuleRepr},
@@ -24,7 +25,7 @@ use crate::{
     },
     source_range::SourceRange,
     std::args::TyF64,
-    CompilationError,
+    CompilationError, NodePath,
 };
 
 impl<'a> StatementKind<'a> {
@@ -83,7 +84,10 @@ impl ExecutorContext {
         preserve_mem: bool,
         module_id: ModuleId,
         path: &ModulePath,
-    ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState), KclError> {
+    ) -> Result<
+        (Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState),
+        (KclError, Option<ModuleArtifactState>),
+    > {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
         let mut local_state = ModuleState::new(path.clone(), exec_state.stack().memory.clone(), Some(module_id));
@@ -93,7 +97,8 @@ impl ExecutorContext {
 
         let no_prelude = self
             .handle_annotations(program.inner_attrs.iter(), crate::execution::BodyType::Root, exec_state)
-            .await?;
+            .await
+            .map_err(|err| (err, None))?;
 
         if !preserve_mem {
             exec_state.mut_stack().push_new_root_env(!no_prelude);
@@ -112,12 +117,14 @@ impl ExecutorContext {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
             local_state.artifacts
         } else {
-            Default::default()
+            std::mem::take(&mut exec_state.mod_local.artifacts)
         };
 
         crate::log::log(format!("leave {path}"));
 
-        result.map(|result| (result, env_ref, local_state.module_exports, module_artifacts))
+        result
+            .map_err(|err| (err, Some(module_artifacts.clone())))
+            .map(|result| (result, env_ref, local_state.module_exports, module_artifacts))
     }
 
     /// Execute an AST's program.
@@ -328,6 +335,16 @@ impl ExecutorContext {
                     exec_state
                         .mut_stack()
                         .add(var_name.clone(), rhs.clone(), source_range)?;
+
+                    if rhs.show_variable_in_feature_tree() {
+                        exec_state.push_op(Operation::VariableDeclaration {
+                            name: var_name.clone(),
+                            value: OpKclValue::from(&rhs),
+                            visibility: variable_declaration.visibility,
+                            node_path: NodePath::placeholder(),
+                            source_range,
+                        });
+                    }
 
                     // Track exports.
                     if let ItemVisibility::Export = variable_declaration.visibility {
@@ -619,7 +636,9 @@ impl ExecutorContext {
             .await;
         exec_state.global.mod_loader.leave_module(path);
 
-        result.map_err(|err| {
+        // TODO: ModuleArtifactState is getting dropped here when there's an
+        // error.  Should we propagate it for non-root modules?
+        result.map_err(|(err, _)| {
             if let KclError::ImportCycle { .. } = err {
                 // It was an import cycle.  Keep the original message.
                 err.override_source_ranges(vec![source_range])
@@ -801,6 +820,10 @@ fn apply_ascription(
     let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
         .map_err(|e| KclError::new_semantic(e.into()))?;
 
+    if matches!(&ty, &RuntimeType::Primitive(PrimitiveType::Number(..))) {
+        exec_state.clear_units_warnings(&source_range);
+    }
+
     value.coerce(&ty, false, exec_state).map_err(|_| {
         let suggestion = if ty == RuntimeType::length() {
             ", you might try coercing to a fully specified numeric type such as `number(mm)`"
@@ -809,9 +832,14 @@ fn apply_ascription(
         } else {
             ""
         };
+        let ty_str = if let Some(ty) = value.principal_type() {
+            format!("(with type `{ty}`) ")
+        } else {
+            String::new()
+        };
         KclError::new_semantic(KclErrorDetails::new(
             format!(
-                "could not coerce value of type {} to type {ty}{suggestion}",
+                "could not coerce {} {ty_str}to type `{ty}`{suggestion}",
                 value.human_friendly_type()
             ),
             vec![source_range],
@@ -1021,14 +1049,13 @@ impl Node<MemberExpression> {
                     .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
                     .collect(),
             }),
-            (being_indexed, _, _) => {
-                let t = being_indexed.human_friendly_type();
-                let article = article_for(&t);
-                Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!("Only arrays can be indexed, but you're trying to index {article} {t}"),
-                    vec![self.clone().into()],
-                )))
-            }
+            (being_indexed, _, _) => Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Only arrays can be indexed, but you're trying to index {}",
+                    being_indexed.human_friendly_type()
+                ),
+                vec![self.clone().into()],
+            ))),
         }
     }
 }
@@ -1156,7 +1183,7 @@ impl Node<BinaryExpression> {
                 KclValue::Number { value: l / r, meta, ty }
             }
             BinaryOperator::Mod => {
-                let (l, r, ty) = NumericType::combine_div(left, right);
+                let (l, r, ty) = NumericType::combine_mod(left, right);
                 self.warn_on_unknown(&ty, "Modulo of", exec_state);
                 KclValue::Number { value: l % r, meta, ty }
             }
@@ -1203,11 +1230,14 @@ impl Node<BinaryExpression> {
 
     fn warn_on_unknown(&self, ty: &NumericType, verb: &str, exec_state: &mut ExecState) {
         if ty == &NumericType::Unknown {
-            // TODO suggest how to fix this
-            exec_state.warn(CompilationError::err(
-                self.as_source_range(),
-                format!("{} numbers which have unknown or incompatible units.", verb),
-            ));
+            let sr = self.as_source_range();
+            exec_state.clear_units_warnings(&sr);
+            let mut err = CompilationError::err(
+                sr,
+                format!("{} numbers which have unknown or incompatible units.\nYou can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`.", verb),
+            );
+            err.tag = crate::errors::Tag::UnknownNumericUnits;
+            exec_state.warn(err);
         }
     }
 }
@@ -1756,7 +1786,7 @@ a = 42: string
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce value of type number(default units) to type string"),
+                .contains("could not coerce a number (with type `number`) to type `string`"),
             "Expected error but found {err:?}"
         );
 
@@ -1767,7 +1797,7 @@ a = 42: Plane
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce value of type number(default units) to type Plane"),
+                .contains("could not coerce a number (with type `number`) to type `Plane`"),
             "Expected error but found {err:?}"
         );
 
@@ -1778,7 +1808,7 @@ arr = [0]: [string]
         let err = result.unwrap_err();
         assert!(
             err.to_string().contains(
-                "could not coerce value of type array of number(default units) with 1 value to type [string]"
+                "could not coerce an array of `number` with 1 value (with type `[any; 1]`) to type `[string]`"
             ),
             "Expected error but found {err:?}"
         );
@@ -1789,8 +1819,9 @@ mixedArr = [0, "a"]: [number(mm)]
         let result = parse_execute(program).await;
         let err = result.unwrap_err();
         assert!(
-            err.to_string()
-                .contains("could not coerce value of type array of number(default units), string with 2 values to type [number(mm)]"),
+            err.to_string().contains(
+                "could not coerce an array of `number`, `string` (with type `[any; 2]`) to type `[number(mm)]`"
+            ),
             "Expected error but found {err:?}"
         );
     }
@@ -2094,5 +2125,20 @@ y = x: number(Length)"#;
             .unwrap();
         assert_eq!(num.n, 2.0);
         assert_eq!(num.ty, NumericType::mm());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn one_warning_unknown() {
+        let ast = r#"
+// Should warn once
+a = PI * 2
+// Should warn once
+b = (PI * 2) / 3
+// Should not warn
+c = ((PI * 2) / 3): number(deg)
+"#;
+
+        let result = parse_execute(ast).await.unwrap();
+        assert_eq!(result.exec_state.errors().len(), 2);
     }
 }

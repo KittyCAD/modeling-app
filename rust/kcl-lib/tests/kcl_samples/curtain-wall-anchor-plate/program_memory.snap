@@ -488,8 +488,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 ],
                 "tag": null,
                 "to": [
-                  -6.0,
-                  10.392
+                  -5.999999999999998,
+                  10.392304845413264
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -502,13 +502,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
-                  10.392
+                  -5.999999999999998,
+                  10.392304845413264
                 ],
                 "tag": null,
                 "to": [
-                  6.0,
-                  10.392
+                  6.000000000000002,
+                  10.392304845413264
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -521,12 +521,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  6.0,
-                  10.392
+                  6.000000000000002,
+                  10.392304845413264
                 ],
                 "tag": null,
                 "to": [
-                  12.0,
+                  12.000000000000004,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -540,13 +540,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  12.0,
+                  12.000000000000004,
                   0.0
                 ],
                 "tag": null,
                 "to": [
-                  6.0,
-                  -10.392
+                  6.000000000000006,
+                  -10.392304845413264
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -559,13 +559,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  6.0,
-                  -10.392
+                  6.000000000000006,
+                  -10.392304845413264
                 ],
                 "tag": null,
                 "to": [
-                  -6.0,
-                  -10.392
+                  -5.999999999999994,
+                  -10.392304845413264
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -578,8 +578,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
-                  -10.392
+                  -5.999999999999994,
+                  -10.392304845413264
                 ],
                 "tag": null,
                 "to": [
@@ -930,8 +930,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 ],
                 "tag": null,
                 "to": [
-                  -6.0,
-                  10.392
+                  -5.999999999999998,
+                  10.392304845413264
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -944,13 +944,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
-                  10.392
+                  -5.999999999999998,
+                  10.392304845413264
                 ],
                 "tag": null,
                 "to": [
-                  6.0,
-                  10.392
+                  6.000000000000002,
+                  10.392304845413264
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -963,12 +963,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  6.0,
-                  10.392
+                  6.000000000000002,
+                  10.392304845413264
                 ],
                 "tag": null,
                 "to": [
-                  12.0,
+                  12.000000000000004,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -982,13 +982,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  12.0,
+                  12.000000000000004,
                   0.0
                 ],
                 "tag": null,
                 "to": [
-                  6.0,
-                  -10.392
+                  6.000000000000006,
+                  -10.392304845413264
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1001,13 +1001,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  6.0,
-                  -10.392
+                  6.000000000000006,
+                  -10.392304845413264
                 ],
                 "tag": null,
                 "to": [
-                  -6.0,
-                  -10.392
+                  -5.999999999999994,
+                  -10.392304845413264
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1020,8 +1020,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -6.0,
-                  -10.392
+                  -5.999999999999994,
+                  -10.392304845413264
                 ],
                 "tag": null,
                 "to": [

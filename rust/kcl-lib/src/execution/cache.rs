@@ -20,7 +20,7 @@ use crate::{
 lazy_static::lazy_static! {
     /// A static mutable lock for updating the last successful execution state for the cache.
     static ref OLD_AST: Arc<RwLock<Option<GlobalState>>> = Default::default();
-    // The last successful run's memory. Not cleared after an unssuccessful run.
+    // The last successful run's memory. Not cleared after an unsuccessful run.
     static ref PREV_MEMORY: Arc<RwLock<Option<(Stack, ModuleInfoMap)>>> = Default::default();
 }
 
@@ -109,7 +109,7 @@ impl GlobalState {
             variables: self.main.exec_state.variables(self.main.result_env),
             filenames: self.exec_state.filenames(),
             #[cfg(feature = "artifact-graph")]
-            operations: self.exec_state.artifacts.operations,
+            operations: self.exec_state.root_module_artifacts.operations,
             #[cfg(feature = "artifact-graph")]
             artifact_graph: self.exec_state.artifacts.graph,
             errors: self.exec_state.errors,

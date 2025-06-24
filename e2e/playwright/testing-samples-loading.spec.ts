@@ -21,7 +21,7 @@ test.describe('Testing loading external models', () => {
   // We have no more web tests
   test.fail(
     'Web: should overwrite current code, cannot create new file',
-    async ({ editor, context, page, homePage }) => {
+    async ({ editor, context, page, homePage, cmdBar }) => {
       const u = await getUtils(page)
       await test.step(`Test setup`, async () => {
         await context.addInitScript((code) => {
@@ -52,9 +52,6 @@ test.describe('Testing loading external models', () => {
           name,
         })
       const warningText = page.getByText('Overwrite current file with sample?')
-      const confirmButton = page.getByRole('button', {
-        name: 'Submit command',
-      })
 
       await test.step(`Precondition: check the initial code`, async () => {
         await u.openKclCodePanel()
@@ -70,7 +67,7 @@ test.describe('Testing loading external models', () => {
         await expect(commandMethodOption('Create new file')).not.toBeVisible()
         await commandMethodOption('Overwrite').click()
         await expect(warningText).toBeVisible()
-        await confirmButton.click()
+        await cmdBar.submit()
 
         await editor.expectEditor.toContain('// ' + newSample.title)
       })

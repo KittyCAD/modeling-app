@@ -5,6 +5,200 @@ description: Operations executed helium-tank.kcl
 {
   "public/kcl-samples/helium-tank/main.kcl": [
     {
+      "type": "VariableDeclaration",
+      "name": "tankHeight",
+      "value": {
+        "type": "Number",
+        "value": 2.5,
+        "ty": {
+          "type": "Known",
+          "type": "Length",
+          "type": "Feet"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "tankDiameter",
+      "value": {
+        "type": "Number",
+        "value": 9.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "wallThickness",
+      "value": {
+        "type": "Number",
+        "value": 0.125,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "portDiameter",
+      "value": {
+        "type": "Number",
+        "value": 1.25,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "bracketThickness",
+      "value": {
+        "type": "Number",
+        "value": 0.09,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "boltSize",
+      "value": {
+        "type": "Number",
+        "value": 0.25,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -165,7 +359,7 @@ description: Operations executed helium-tank.kcl
         "offset": {
           "value": {
             "type": "Number",
-            "value": 2.458,
+            "value": 2.4583333333333335,
             "ty": {
               "type": "Known",
               "type": "Length",
@@ -1221,7 +1415,7 @@ description: Operations executed helium-tank.kcl
         "offset": {
           "value": {
             "type": "Number",
-            "value": -4.737,
+            "value": -4.736842105263158,
             "ty": {
               "type": "Default",
               "len": {
@@ -1802,7 +1996,7 @@ description: Operations executed helium-tank.kcl
         "distance": {
           "value": {
             "type": "Number",
-            "value": 0.825,
+            "value": 0.8250000000000001,
             "ty": {
               "type": "Known",
               "type": "Length",
@@ -1843,8 +2037,86 @@ description: Operations executed helium-tank.kcl
   ],
   "std::appearance": [],
   "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
+  "std::math": [
+    {
+      "type": "VariableDeclaration",
+      "name": "PI",
+      "value": {
+        "type": "Number",
+        "value": 3.141592653589793,
+        "ty": {
+          "type": "Unknown"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "E",
+      "value": {
+        "type": "Number",
+        "value": 2.718281828459045,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "TAU",
+      "value": {
+        "type": "Number",
+        "value": 6.283185307179586,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::prelude": [
+    {
+      "type": "VariableDeclaration",
+      "name": "START",
+      "value": {
+        "type": "String",
+        "value": "start"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "END",
+      "value": {
+        "type": "String",
+        "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
   "std::sketch": [],
   "std::solid": [],
   "std::sweep": [],

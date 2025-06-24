@@ -305,7 +305,7 @@ async fn inner_polygon(
         radius.n
     } else {
         // circumscribed
-        radius.n / half_angle.cos()
+        radius.n / libm::cos(half_angle)
     };
 
     let angle_step = std::f64::consts::TAU / num_sides as f64;
@@ -316,8 +316,8 @@ async fn inner_polygon(
         .map(|i| {
             let angle = angle_step * i as f64;
             [
-                center_u[0] + radius_to_vertices * angle.cos(),
-                center_u[1] + radius_to_vertices * angle.sin(),
+                center_u[0] + radius_to_vertices * libm::cos(angle),
+                center_u[1] + radius_to_vertices * libm::sin(angle),
             ]
         })
         .collect();
@@ -416,15 +416,25 @@ pub(crate) fn get_radius(
     diameter: Option<TyF64>,
     source_range: SourceRange,
 ) -> Result<TyF64, KclError> {
+    get_radius_labelled(radius, diameter, source_range, "radius", "diameter")
+}
+
+pub(crate) fn get_radius_labelled(
+    radius: Option<TyF64>,
+    diameter: Option<TyF64>,
+    source_range: SourceRange,
+    label_radius: &'static str,
+    label_diameter: &'static str,
+) -> Result<TyF64, KclError> {
     match (radius, diameter) {
         (Some(radius), None) => Ok(radius),
         (None, Some(diameter)) => Ok(TyF64::new(diameter.n / 2.0, diameter.ty)),
         (None, None) => Err(KclError::new_type(KclErrorDetails::new(
-            "This function needs either `diameter` or `radius`".to_string(),
+            format!("This function needs either `{label_diameter}` or `{label_radius}`"),
             vec![source_range],
         ))),
         (Some(_), Some(_)) => Err(KclError::new_type(KclErrorDetails::new(
-            "You cannot specify both `diameter` and `radius`, please remove one".to_string(),
+            format!("You cannot specify both `{label_diameter}` and `{label_radius}`, please remove one"),
             vec![source_range],
         ))),
     }

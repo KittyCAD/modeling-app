@@ -64,7 +64,7 @@ pub struct Settings {
 }
 
 /// Application wide settings.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct AppSettings {
@@ -94,6 +94,29 @@ pub struct AppSettings {
     /// of the app to aid in development.
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
+    /// If true, the grid cells will be fixed-size, where the width is the user's default length unit.
+    /// If false, the grid's size will scale as the user zooms in and out.
+    #[serde(default = "make_it_so")]
+    pub fixed_size_grid: bool,
+}
+
+/// Default to true.
+fn make_it_so() -> bool {
+    true
+}
+
+impl Default for AppSettings {
+    fn default() -> Self {
+        Self {
+            appearance: Default::default(),
+            onboarding_status: Default::default(),
+            dismiss_web_banner: Default::default(),
+            stream_idle_mode: Default::default(),
+            allow_orbit_in_sketch_mode: Default::default(),
+            show_debug_panel: Default::default(),
+            fixed_size_grid: make_it_so(),
+        }
+    }
 }
 
 fn deserialize_stream_idle_mode<'de, D>(deserializer: D) -> Result<Option<u32>, D::Error>
@@ -660,7 +683,7 @@ text_wrapping = true"#;
             },
         };
         let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
-        assert_eq!(parsed, expected,);
+        assert_eq!(parsed, expected);
 
         // Write the file back out.
         let serialized = toml::to_string(&parsed).unwrap();
@@ -668,6 +691,7 @@ text_wrapping = true"#;
             serialized,
             r#"[settings.app]
 onboarding_status = "dismissed"
+fixed_size_grid = true
 
 [settings.app.appearance]
 theme = "dark"

@@ -229,11 +229,12 @@ test.describe('Feature Tree pane', () => {
     const initialCode = `sketch001 = startSketchOn(XZ)
       |> circle(center = [0, 0], radius = 5)
       renamedExtrude = extrude(sketch001, length = ${initialInput})`
-    const newConstantName = 'length001'
-    const expectedCode = `${newConstantName} = 23
+    const newParameterName = 'length001'
+    const expectedCode = `${newParameterName} = 23
     sketch001 = startSketchOn(XZ)
       |> circle(center = [0, 0], radius = 5)
-            renamedExtrude = extrude(sketch001, length = ${newConstantName})`
+            renamedExtrude = extrude(sketch001, length = ${newParameterName})`
+    const editedParameterValue = '23 * 2'
 
     await context.folderSetupFn(async (dir) => {
       const testDir = join(dir, 'test-sample')
@@ -279,12 +280,9 @@ test.describe('Feature Tree pane', () => {
       })
     })
 
-    await test.step('Add a named constant for distance argument and submit', async () => {
+    await test.step('Add a parameter for distance argument and submit', async () => {
       await expect(cmdBar.currentArgumentInput).toBeVisible()
-      const addVariableButton = page.getByRole('button', {
-        name: 'Create new variable',
-      })
-      await addVariableButton.click()
+      await cmdBar.variableCheckbox.click()
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
@@ -299,12 +297,42 @@ test.describe('Feature Tree pane', () => {
         highlightedCode: '',
         diagnostics: [],
         activeLines: [
-          `renamedExtrude = extrude(sketch001, length = ${newConstantName})`,
+          `renamedExtrude = extrude(sketch001, length = ${newParameterName})`,
         ],
       })
       await editor.expectEditor.toContain(expectedCode, {
         shouldNormalise: true,
       })
+    })
+
+    await test.step('Edit the parameter via the feature tree', async () => {
+      const parameter = await toolbar.getFeatureTreeOperation('Parameter', 0)
+      await parameter.dblclick()
+      await cmdBar.expectState({
+        commandName: 'Edit parameter',
+        currentArgKey: 'value',
+        currentArgValue: '23',
+        headerArguments: {
+          Name: newParameterName,
+          Value: '23',
+        },
+        stage: 'arguments',
+        highlightedHeaderArg: 'value',
+      })
+      await cmdBar.argumentInput
+        .locator('[contenteditable]')
+        .fill(editedParameterValue)
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Edit parameter',
+        headerArguments: {
+          Name: newParameterName,
+          Value: '46', // Shows calculated result
+        },
+      })
+      await cmdBar.progressCmdBar()
+      await editor.expectEditor.toContain(editedParameterValue)
     })
   })
   test(`User can edit an offset plane operation from the feature tree`, async ({

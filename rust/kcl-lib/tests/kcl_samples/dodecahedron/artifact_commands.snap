@@ -529,8 +529,8 @@ description: Artifact commands dodecahedron.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -25405.08,
-          "y": -25405.08,
+          "x": -25405.079999999998,
+          "y": -25405.079999999998,
           "z": 0.0
         }
       }
@@ -551,8 +551,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25405.08,
-            "y": -25405.08,
+            "x": 25405.079999999998,
+            "y": -25405.079999999998,
             "z": 0.0
           },
           "relative": false
@@ -568,8 +568,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25405.08,
-            "y": 25405.08,
+            "x": 25405.079999999998,
+            "y": 25405.079999999998,
             "z": 0.0
           },
           "relative": false
@@ -585,8 +585,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -25405.08,
-            "y": 25405.08,
+            "x": -25405.079999999998,
+            "y": 25405.079999999998,
             "z": 0.0
           },
           "relative": false
@@ -673,7 +673,7 @@ description: Artifact commands dodecahedron.kcl
               "property": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": -6609.08
+                "z": -6609.079999999999
               },
               "set": false,
               "is_local": true
@@ -999,8 +999,8 @@ description: Artifact commands dodecahedron.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -25410.16,
-          "y": -25410.16,
+          "x": -25410.159999999996,
+          "y": -25410.159999999996,
           "z": 0.0
         }
       }
@@ -1021,8 +1021,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25410.16,
-            "y": -25410.16,
+            "x": 25410.159999999996,
+            "y": -25410.159999999996,
             "z": 0.0
           },
           "relative": false
@@ -1038,8 +1038,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25410.16,
-            "y": 25410.16,
+            "x": 25410.159999999996,
+            "y": 25410.159999999996,
             "z": 0.0
           },
           "relative": false
@@ -1055,8 +1055,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -25410.16,
-            "y": 25410.16,
+            "x": -25410.159999999996,
+            "y": 25410.159999999996,
             "z": 0.0
           },
           "relative": false
@@ -1143,7 +1143,7 @@ description: Artifact commands dodecahedron.kcl
               "property": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": -6614.16
+                "z": -6614.159999999999
               },
               "set": false,
               "is_local": true
@@ -1234,8 +1234,8 @@ description: Artifact commands dodecahedron.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -25412.7,
-          "y": -25412.7,
+          "x": -25412.699999999997,
+          "y": -25412.699999999997,
           "z": 0.0
         }
       }
@@ -1256,8 +1256,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25412.7,
-            "y": -25412.7,
+            "x": 25412.699999999997,
+            "y": -25412.699999999997,
             "z": 0.0
           },
           "relative": false
@@ -1273,8 +1273,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25412.7,
-            "y": 25412.7,
+            "x": 25412.699999999997,
+            "y": 25412.699999999997,
             "z": 0.0
           },
           "relative": false
@@ -1290,8 +1290,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -25412.7,
-            "y": 25412.7,
+            "x": -25412.699999999997,
+            "y": 25412.699999999997,
             "z": 0.0
           },
           "relative": false
@@ -1469,8 +1469,8 @@ description: Artifact commands dodecahedron.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -25415.24,
-          "y": -25415.24,
+          "x": -25415.239999999998,
+          "y": -25415.239999999998,
           "z": 0.0
         }
       }
@@ -1491,8 +1491,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25415.24,
-            "y": -25415.24,
+            "x": 25415.239999999998,
+            "y": -25415.239999999998,
             "z": 0.0
           },
           "relative": false
@@ -1508,8 +1508,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25415.24,
-            "y": 25415.24,
+            "x": 25415.239999999998,
+            "y": 25415.239999999998,
             "z": 0.0
           },
           "relative": false
@@ -1525,8 +1525,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -25415.24,
-            "y": 25415.24,
+            "x": -25415.239999999998,
+            "y": 25415.239999999998,
             "z": 0.0
           },
           "relative": false
@@ -1939,8 +1939,8 @@ description: Artifact commands dodecahedron.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -25420.32,
-          "y": -25420.32,
+          "x": -25420.319999999996,
+          "y": -25420.319999999996,
           "z": 0.0
         }
       }
@@ -1961,8 +1961,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25420.32,
-            "y": -25420.32,
+            "x": 25420.319999999996,
+            "y": -25420.319999999996,
             "z": 0.0
           },
           "relative": false
@@ -1978,8 +1978,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25420.32,
-            "y": 25420.32,
+            "x": 25420.319999999996,
+            "y": 25420.319999999996,
             "z": 0.0
           },
           "relative": false
@@ -1995,8 +1995,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -25420.32,
-            "y": 25420.32,
+            "x": -25420.319999999996,
+            "y": 25420.319999999996,
             "z": 0.0
           },
           "relative": false
@@ -2174,8 +2174,8 @@ description: Artifact commands dodecahedron.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -25422.86,
-          "y": -25422.86,
+          "x": -25422.859999999997,
+          "y": -25422.859999999997,
           "z": 0.0
         }
       }
@@ -2196,8 +2196,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25422.86,
-            "y": -25422.86,
+            "x": 25422.859999999997,
+            "y": -25422.859999999997,
             "z": 0.0
           },
           "relative": false
@@ -2213,8 +2213,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25422.86,
-            "y": 25422.86,
+            "x": 25422.859999999997,
+            "y": 25422.859999999997,
             "z": 0.0
           },
           "relative": false
@@ -2230,8 +2230,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -25422.86,
-            "y": 25422.86,
+            "x": -25422.859999999997,
+            "y": 25422.859999999997,
             "z": 0.0
           },
           "relative": false
@@ -2318,7 +2318,7 @@ description: Artifact commands dodecahedron.kcl
               "property": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": -6626.86
+                "z": -6626.859999999999
               },
               "set": false,
               "is_local": true
@@ -2409,8 +2409,8 @@ description: Artifact commands dodecahedron.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -25402.794,
-          "y": -25402.794,
+          "x": -25402.793999999998,
+          "y": -25402.793999999998,
           "z": 0.0
         }
       }
@@ -2431,8 +2431,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25402.794,
-            "y": -25402.794,
+            "x": 25402.793999999998,
+            "y": -25402.793999999998,
             "z": 0.0
           },
           "relative": false
@@ -2448,8 +2448,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25402.794,
-            "y": 25402.794,
+            "x": 25402.793999999998,
+            "y": 25402.793999999998,
             "z": 0.0
           },
           "relative": false
@@ -2465,8 +2465,8 @@ description: Artifact commands dodecahedron.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -25402.794,
-            "y": 25402.794,
+            "x": -25402.793999999998,
+            "y": 25402.793999999998,
             "z": 0.0
           },
           "relative": false

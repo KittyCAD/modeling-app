@@ -19,8 +19,6 @@ use std::{
 
 pub use async_tasks::AsyncTasks;
 use indexmap::IndexMap;
-#[cfg(feature = "artifact-graph")]
-use kcmc::id::ModelingCmdId;
 use kcmc::{
     each_cmd as mcmd,
     length_unit::LengthUnit,
@@ -38,9 +36,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
 use uuid::Uuid;
+use web_time::Instant;
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::ArtifactCommand;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{types::UnitLen, DefaultPlanes, IdGenerator, PlaneInfo, Point3d},
@@ -113,10 +110,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the command responses from the engine.
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>;
 
-    /// Get the artifact commands that have accumulated so far.
-    #[cfg(feature = "artifact-graph")]
-    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
-
     /// Get the ids of the async commands we are waiting for.
     fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>>;
 
@@ -131,18 +124,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Take the batch of end commands that have accumulated so far and clear them.
     async fn take_batch_end(&self) -> IndexMap<Uuid, (WebSocketRequest, SourceRange)> {
         std::mem::take(&mut *self.batch_end().write().await)
-    }
-
-    /// Clear all artifact commands that have accumulated so far.
-    #[cfg(feature = "artifact-graph")]
-    async fn clear_artifact_commands(&self) {
-        self.artifact_commands().write().await.clear();
-    }
-
-    /// Take the artifact commands that have accumulated so far and clear them.
-    #[cfg(feature = "artifact-graph")]
-    async fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
-        std::mem::take(&mut *self.artifact_commands().write().await)
     }
 
     /// Take the ids of async commands that have accumulated so far and clear them.
@@ -237,11 +218,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Otherwise the hooks below won't work.
         self.flush_batch(false, source_range).await?;
 
-        // Ensure artifact commands are cleared so that we don't accumulate them
-        // across runs.
-        #[cfg(feature = "artifact-graph")]
-        self.clear_artifact_commands().await;
-
         // Do the after clear scene hook.
         self.clear_scene_post_hook(id_generator, source_range).await?;
 
@@ -266,7 +242,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 .unwrap_or_default()
         };
 
-        let current_time = instant::Instant::now();
+        let current_time = Instant::now();
         while current_time.elapsed().as_secs() < 60 {
             let responses = self.responses().read().await.clone();
             let Some(resp) = responses.get(&id) else {
@@ -274,7 +250,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 // No seriously WE DO NOT WANT TO PAUSE THE WHOLE APP ON THE JS SIDE.
                 #[cfg(target_arch = "wasm32")]
                 {
-                    let duration = instant::Duration::from_millis(1);
+                    let duration = web_time::Duration::from_millis(1);
                     wasm_timer::Delay::new(duration).await.map_err(|err| {
                         KclError::new_internal(KclErrorDetails::new(
                             format!("Failed to sleep: {:?}", err),
@@ -341,41 +317,21 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         Ok(())
     }
 
-    #[cfg(feature = "artifact-graph")]
-    async fn handle_artifact_command(
-        &self,
-        cmd: &ModelingCmd,
-        cmd_id: ModelingCmdId,
-        id_to_source_range: &HashMap<Uuid, SourceRange>,
-    ) -> Result<(), KclError> {
-        let cmd_id = *cmd_id.as_ref();
-        let range = id_to_source_range
-            .get(&cmd_id)
-            .copied()
-            .ok_or_else(|| KclError::internal(format!("Failed to get source range for command ID: {:?}", cmd_id)))?;
-
-        // Add artifact command.
-        self.artifact_commands().write().await.push(ArtifactCommand {
-            cmd_id,
-            range,
-            command: cmd.clone(),
-        });
-        Ok(())
-    }
-
     /// Re-run the command to apply the settings.
     async fn reapply_settings(
         &self,
         settings: &crate::ExecutorSettings,
         source_range: SourceRange,
         id_generator: &mut IdGenerator,
+        grid_scale_unit: GridScaleBehavior,
     ) -> Result<(), crate::errors::KclError> {
         // Set the edge visibility.
         self.set_edge_visibility(settings.highlight_edges, source_range, id_generator)
             .await?;
 
         // Send the command to show the grid.
-        self.modify_grid(!settings.show_grid, source_range, id_generator)
+
+        self.modify_grid(!settings.show_grid, grid_scale_unit, source_range, id_generator)
             .await?;
 
         // We do not have commands for changing ssao on the fly.
@@ -481,11 +437,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Add the command ID to the list of async commands.
         self.ids_of_async_commands().write().await.insert(id, source_range);
 
-        // Add to artifact commands.
-        #[cfg(feature = "artifact-graph")]
-        self.handle_artifact_command(cmd, id.into(), &HashMap::from([(id, source_range)]))
-            .await?;
-
         // Fire off the command now, but don't wait for the response, we don't care about it.
         self.inner_fire_modeling_cmd(
             id,
@@ -552,24 +503,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                         vec![*range],
                     )));
                 }
-            }
-        }
-
-        // Do the artifact commands.
-        #[cfg(feature = "artifact-graph")]
-        for (req, _) in orig_requests.iter() {
-            match &req {
-                WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
-                    for request in requests {
-                        self.handle_artifact_command(&request.cmd, request.cmd_id, &id_to_source_range)
-                            .await?;
-                    }
-                }
-                WebSocketRequest::ModelingCmdReq(request) => {
-                    self.handle_artifact_command(&request.cmd, request.cmd_id, &id_to_source_range)
-                        .await?;
-                }
-                _ => {}
             }
         }
 
@@ -829,6 +762,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn modify_grid(
         &self,
         hidden: bool,
+        grid_scale_behavior: GridScaleBehavior,
         source_range: SourceRange,
         id_generator: &mut IdGenerator,
     ) -> Result<(), KclError> {
@@ -840,6 +774,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 hidden,
                 object_id: *GRID_OBJECT_ID,
             }),
+        )
+        .await?;
+
+        self.batch_modeling_cmd(
+            id_generator.next_uuid(),
+            source_range,
+            &grid_scale_behavior.into_modeling_cmd(),
         )
         .await?;
 
@@ -954,4 +895,23 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
     }
 
     Ok(client)
+}
+
+#[derive(Copy, Clone, Debug)]
+pub enum GridScaleBehavior {
+    ScaleWithZoom,
+    Fixed(Option<kcmc::units::UnitLength>),
+}
+
+impl GridScaleBehavior {
+    fn into_modeling_cmd(self) -> ModelingCmd {
+        const NUMBER_OF_GRID_COLUMNS: f32 = 10.0;
+        match self {
+            GridScaleBehavior::ScaleWithZoom => ModelingCmd::from(mcmd::SetGridAutoScale {}),
+            GridScaleBehavior::Fixed(unit_length) => ModelingCmd::from(mcmd::SetGridScale {
+                value: NUMBER_OF_GRID_COLUMNS,
+                units: unit_length.unwrap_or(kcmc::units::UnitLength::Millimeters),
+            }),
+        }
+    }
 }

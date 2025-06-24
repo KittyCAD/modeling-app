@@ -8,7 +8,7 @@ layout: manual
 Get the next adjacent edge to the edge given.
 
 ```kcl
-getNextAdjacentEdge(@edge: tag): Edge
+getNextAdjacentEdge(@edge: TaggedEdge): Edge
 ```
 
 
@@ -17,7 +17,7 @@ getNextAdjacentEdge(@edge: tag): Edge
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `edge` | [`tag`](/docs/kcl-std/types/std-types-tag) | The tag of the edge you want to find the next adjacent edge of. | Yes |
+| `edge` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The tag of the edge you want to find the next adjacent edge of. | Yes |
 
 ### Returns
 
@@ -30,10 +30,10 @@ getNextAdjacentEdge(@edge: tag): Edge
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
-  |> angledLine(angle = 60, length = 10)
-  |> angledLine(angle = 120, length = 10)
+  |> angledLine(angle = 60deg, length = 10)
+  |> angledLine(angle = 120deg, length = 10)
   |> line(end = [-10, 0])
-  |> angledLine(angle = 240, length = 10, tag = $referenceEdge)
+  |> angledLine(angle = 240deg, length = 10, tag = $referenceEdge)
   |> close()
 
 example = extrude(exampleSketch, length = 5)
