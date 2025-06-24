@@ -1878,8 +1878,8 @@ pub(crate) async fn inner_elliptic(
     let start_angle = Angle::from_degrees(angle_start.to_degrees());
     let end_angle = Angle::from_degrees(angle_end.to_degrees());
     let to = [
-        center_u[0] + major_radius.to_length_units(from.units) * end_angle.to_radians().cos(),
-        center_u[1] + minor_radius.to_length_units(from.units) * end_angle.to_radians().sin(),
+        center_u[0] + major_radius.to_length_units(from.units) * libm::cos(end_angle.to_radians()),
+        center_u[1] + minor_radius.to_length_units(from.units) * libm::sin(end_angle.to_radians()),
     ];
 
     exec_state
@@ -2157,6 +2157,7 @@ fn parabolic_tangent(point: Point2d, a: f64, b: f64) -> [f64; 2] {
     (1.0, 2.0 * a * point.x + b).into()
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) async fn inner_parabolic(
     sketch: Sketch,
     coefficients: Option<[TyF64; 3]>,
