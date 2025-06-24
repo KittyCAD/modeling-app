@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 3,
+          "moduleId": 0,
           "name": "obj",
           "start": 0,
           "type": "Identifier"
@@ -19,6 +20,7 @@ expression: actual
         "init": {
           "commentStart": 6,
           "end": 36,
+          "moduleId": 0,
           "properties": [
             {
               "commentStart": 7,
@@ -26,10 +28,12 @@ expression: actual
               "key": {
                 "commentStart": 7,
                 "end": 13,
+                "moduleId": 0,
                 "name": "center",
                 "start": 7,
                 "type": "Identifier"
               },
+              "moduleId": 0,
               "start": 7,
               "type": "ObjectProperty",
               "value": {
@@ -38,6 +42,7 @@ expression: actual
                   {
                     "commentStart": 17,
                     "end": 19,
+                    "moduleId": 0,
                     "raw": "10",
                     "start": 17,
                     "type": "Literal",
@@ -50,6 +55,7 @@ expression: actual
                   {
                     "commentStart": 21,
                     "end": 23,
+                    "moduleId": 0,
                     "raw": "10",
                     "start": 21,
                     "type": "Literal",
@@ -61,6 +67,7 @@ expression: actual
                   }
                 ],
                 "end": 24,
+                "moduleId": 0,
                 "start": 16,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
@@ -72,15 +79,18 @@ expression: actual
               "key": {
                 "commentStart": 26,
                 "end": 32,
+                "moduleId": 0,
                 "name": "radius",
                 "start": 26,
                 "type": "Identifier"
               },
+              "moduleId": 0,
               "start": 26,
               "type": "ObjectProperty",
               "value": {
                 "commentStart": 34,
                 "end": 35,
+                "moduleId": 0,
                 "raw": "5",
                 "start": 34,
                 "type": "Literal",
@@ -96,11 +106,13 @@ expression: actual
           "type": "ObjectExpression",
           "type": "ObjectExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 36,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -108,5 +120,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 36,
+  "moduleId": 0,
   "start": 0
 }

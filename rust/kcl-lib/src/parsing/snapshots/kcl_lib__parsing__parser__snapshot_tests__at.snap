@@ -8,13 +8,16 @@ expression: actual
       "commentStart": 0,
       "end": 12,
       "expression": {
+        "arguments": [],
         "callee": {
           "abs_path": false,
           "commentStart": 0,
           "end": 4,
+          "moduleId": 0,
           "name": {
             "commentStart": 0,
             "end": 4,
+            "moduleId": 0,
             "name": "line",
             "start": 0,
             "type": "Identifier"
@@ -25,6 +28,7 @@ expression: actual
         },
         "commentStart": 0,
         "end": 12,
+        "moduleId": 0,
         "start": 0,
         "type": "CallExpressionKw",
         "type": "CallExpressionKw",
@@ -34,6 +38,7 @@ expression: actual
             {
               "commentStart": 6,
               "end": 7,
+              "moduleId": 0,
               "raw": "0",
               "start": 6,
               "type": "Literal",
@@ -47,9 +52,11 @@ expression: actual
               "abs_path": false,
               "commentStart": 9,
               "end": 10,
+              "moduleId": 0,
               "name": {
                 "commentStart": 9,
                 "end": 10,
+                "moduleId": 0,
                 "name": "l",
                 "start": 9,
                 "type": "Identifier"
@@ -61,11 +68,13 @@ expression: actual
             }
           ],
           "end": 11,
+          "moduleId": 0,
           "start": 5,
           "type": "ArrayExpression",
           "type": "ArrayExpression"
         }
       },
+      "moduleId": 0,
       "start": 0,
       "type": "ExpressionStatement",
       "type": "ExpressionStatement"
@@ -73,5 +82,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 12,
+  "moduleId": 0,
   "start": 0
 }

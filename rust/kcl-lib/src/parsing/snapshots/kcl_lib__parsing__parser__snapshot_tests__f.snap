@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 1,
+          "moduleId": 0,
           "name": "x",
           "start": 0,
           "type": "Identifier"
@@ -19,6 +20,7 @@ expression: actual
         "init": {
           "commentStart": 4,
           "end": 5,
+          "moduleId": 0,
           "raw": "1",
           "start": 4,
           "type": "Literal",
@@ -28,11 +30,13 @@ expression: actual
             "suffix": "None"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 5,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -40,12 +44,14 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 34,
+  "moduleId": 0,
   "nonCodeMeta": {
     "nonCodeNodes": {
       "0": [
         {
           "commentStart": 5,
           "end": 34,
+          "moduleId": 0,
           "start": 5,
           "type": "NonCodeNode",
           "value": {

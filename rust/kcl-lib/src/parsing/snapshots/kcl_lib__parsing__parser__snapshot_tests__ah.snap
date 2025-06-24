@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 5,
+          "moduleId": 0,
           "name": "myBox",
           "start": 0,
           "type": "Identifier"
@@ -19,13 +20,16 @@ expression: actual
         "init": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 8,
                 "end": 21,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 8,
                   "end": 21,
+                  "moduleId": 0,
                   "name": "startSketchOn",
                   "start": 8,
                   "type": "Identifier"
@@ -36,6 +40,7 @@ expression: actual
               },
               "commentStart": 8,
               "end": 25,
+              "moduleId": 0,
               "start": 8,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -43,9 +48,11 @@ expression: actual
                 "abs_path": false,
                 "commentStart": 22,
                 "end": 24,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 22,
                   "end": 24,
+                  "moduleId": 0,
                   "name": "XY",
                   "start": 22,
                   "type": "Identifier"
@@ -63,6 +70,7 @@ expression: actual
                   "label": {
                     "commentStart": 42,
                     "end": 44,
+                    "moduleId": 0,
                     "name": "at",
                     "start": 42,
                     "type": "Identifier"
@@ -71,9 +79,11 @@ expression: actual
                     "abs_path": false,
                     "commentStart": 47,
                     "end": 48,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 47,
                       "end": 48,
+                      "moduleId": 0,
                       "name": "p",
                       "start": 47,
                       "type": "Identifier"
@@ -89,9 +99,11 @@ expression: actual
                 "abs_path": false,
                 "commentStart": 29,
                 "end": 41,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 29,
                   "end": 41,
+                  "moduleId": 0,
                   "name": "startProfile",
                   "start": 29,
                   "type": "Identifier"
@@ -102,6 +114,7 @@ expression: actual
               },
               "commentStart": 29,
               "end": 49,
+              "moduleId": 0,
               "start": 29,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -110,15 +123,18 @@ expression: actual
           ],
           "commentStart": 8,
           "end": 49,
+          "moduleId": 0,
           "start": 8,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 49,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -126,5 +142,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 49,
+  "moduleId": 0,
   "start": 0
 }
