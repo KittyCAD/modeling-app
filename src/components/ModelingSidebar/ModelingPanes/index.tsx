@@ -233,6 +233,7 @@ export const sidebarPanes: SidebarPane[] = [
               refreshExplorerPressed={refreshExplorerPressed}
               collapsePressed={collapsePressed}
               onRowClicked={onRowClicked}
+              onRowEnter={onRowClicked}
             ></ProjectExplorer>
           ) : (
             <div></div>

@@ -61,6 +61,7 @@ export const ProjectExplorer = ({
   refreshExplorerPressed,
   collapsePressed,
   onRowClicked,
+  onRowEnter
 }: {
   project: Project
   file: FileEntry | undefined
@@ -69,6 +70,7 @@ export const ProjectExplorer = ({
   refreshExplorerPressed: number
   collapsePressed: number
   onRowClicked: (row: FileExplorerEntry, domIndex: number) => void
+  onRowEnter: (row: FileExplorerEntry, domIndex: number) => void
 }) => {
   const { errors } = useKclContext()
   const settings = useSettings()
@@ -592,6 +594,7 @@ export const ProjectExplorer = ({
             const value = openedRowsRef.current[key]
             newOpenedRows[key] = !value
             setOpenedRows(newOpenedRows)
+            onRowEnter(focusedEntry, activeIndexRef.current)
           }
           break
       }
