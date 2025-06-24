@@ -62,8 +62,10 @@ else
 endif
 
 public/kcl-samples/manifest.json: $(KCL_SOURCES)
+ifndef WINDOWS
 	cd rust/kcl-lib && EXPECTORATE=overwrite cargo test generate_manifest
 	@ touch $@
+endif
 
 .vite/build/main.js: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
 	npm run tronb:vite:dev
