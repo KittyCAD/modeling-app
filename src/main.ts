@@ -39,6 +39,7 @@ import {
   enableMenu,
 } from '@src/menu'
 import fs from 'fs'
+import { OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/desktop'
 
 // If we're on Windows, pull the local system TLS CAs in
 require('win-ca')
@@ -404,7 +405,7 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
     // We can hardcode the client ID.
     // This value is safe to be embedded in version control.
     // This is the client ID of the KittyCAD app.
-    client_id: '2af127fb-e14e-400a-9c57-a9ed08d1a5b7',
+    client_id: OAUTH2_DEVICE_CLIENT_ID,
     token_endpoint_auth_method: 'none',
   })
 

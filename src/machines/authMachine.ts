@@ -10,6 +10,7 @@ import { assign, fromPromise, setup } from 'xstate'
 import { COOKIE_NAME } from '@src/lib/constants'
 import {
   getUser as getUserDesktop,
+  OAUTH2_DEVICE_CLIENT_ID,
   readTokenFile,
   writeTokenFile,
 } from '@src/lib/desktop'
@@ -264,7 +265,7 @@ async function logout() {
         },
         body: new URLSearchParams({
           token: token,
-          client_id: '2af127fb-e14e-400a-9c57-a9ed08d1a5b7',
+          client_id: OAUTH2_DEVICE_CLIENT_ID,
         }).toString(),
       })
     }
