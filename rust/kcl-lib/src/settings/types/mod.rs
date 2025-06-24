@@ -94,8 +94,8 @@ pub struct AppSettings {
     /// of the app to aid in development.
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
-    /// If true, the grid cells will be fixed-size, where the width is the user's default length unit.
-    /// If false, the grid's size will scale as the user zooms in and out.
+    /// If true, the grid cells will be fixed-size, where the width is your default length unit.
+    /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
     #[serde(default = "make_it_so")]
     pub fixed_size_grid: bool,
 }
