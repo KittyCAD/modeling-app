@@ -5,8 +5,7 @@ import {
   type FileExplorerRow,
   type FileExplorerRender,
   type FileExplorerRowContextMenuProps,
-  FILE_PLACEHOLDER_NAME,
-  FOLDER_PLACEHOLDER_NAME,
+  isRowFake,
 } from '@src/components/Explorer/utils'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { useRef } from 'react'
@@ -16,11 +15,14 @@ export const StatusDot = () => {
 }
 
 /**
- * Implement a dynamic spacer with rem to offset the row
- * in the tree based on the level within the tree
- * level 0 to level N
+ * A dynamic spacer that will add spaces based on the level it is in the tree
+ * @param level supported be from 0 to N
+ * @returns
  */
 const Spacer = (level: number) => {
+  if (level < 0) {
+    return <div>Do not pass a number less than 0.</div>
+  }
   const containerRemSpacing = `${level}rem`
   return level === 0 ? (
     <div></div>
@@ -50,10 +52,7 @@ const Spacer = (level: number) => {
  * Render all the rows of the file explorer in linear layout in the DOM.
  * each row is rendered one after another in the same parent DOM element
  * rows will have aria support to understand the linear div soup layout
- *
-
- * what is opened and selected outside of this logic level.
- *
+ * Pure functional renderer, state is stored outside this component.
  */
 export const FileExplorer = ({
   rowsToRender,
@@ -66,8 +65,6 @@ export const FileExplorer = ({
   contextMenuRow: FileExplorerRow | null
   isRenaming: boolean
 }) => {
-  // Local state for selection and what is opened
-  // diff this against new Project value that comes in
   return (
     <div role="presentation" className="relative">
       {rowsToRender.map((row, index, original) => {
@@ -91,11 +88,17 @@ export const FileExplorer = ({
   )
 }
 
+/**
+ * TODO Support more context menu callback functions
+ * cut
+ * paste
+ * copy
+ *
+ */
 function FileExplorerRowContextMenu({
   itemRef,
   onRename,
   onDelete,
-  onClone,
   onOpenInNewWindow,
   callback,
 }: FileExplorerRowContextMenuProps) {
@@ -134,10 +137,6 @@ function RenameForm({
     if (e.key !== 'Enter') {
       return
     }
-
-    // TODO: Do the renaming
-    // newName: inputRef.current?.value || fileOrDir.name || '',
-
     // To get out of the renaming state, without this the current file is still in renaming mode
     onSubmit(e)
   }
@@ -158,12 +157,7 @@ function RenameForm({
       e.stopPropagation()
     }
   }
-
-  const hidePlaceHolderIfFakeRow =
-    row.name === FOLDER_PLACEHOLDER_NAME || row.name === FILE_PLACEHOLDER_NAME
-      ? ''
-      : row.name
-
+  const formattedPlaceHolder = isRowFake(row) ? '' : row.name
   return (
     <form onKeyUp={handleRenameSubmit}>
       <label>
@@ -175,7 +169,7 @@ function RenameForm({
           autoFocus
           autoCapitalize="off"
           autoCorrect="off"
-          placeholder={hidePlaceHolderIfFakeRow}
+          placeholder={formattedPlaceHolder}
           className="p-1 overflow-hidden whitespace-nowrap text-ellipsis py-1 bg-transparent outline outline-primary -outline-offset-4 text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:ring-0"
           onKeyDown={handleKeyDown}
           onBlur={onSubmit}
@@ -203,11 +197,10 @@ export const FileExplorerRowElement = ({
   contextMenuRow: FileExplorerEntry | null
   isRenaming: boolean
 }) => {
+  const rowElementRef = useRef(null)
   const isSelected =
     row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
   const isIndexActive = row.domIndex === row.activeIndex
-
-  const rowElementRef = useRef(null)
   const isContextMenuRow = contextMenuRow?.key === row.key
   const isMyRowRenaming = isContextMenuRow && isRenaming
 
@@ -236,17 +229,18 @@ export const FileExplorerRowElement = ({
       }}
       draggable="true"
       onDragOver={(event) => {
-        if (!row.isOpen && row.isFolder) {
-          // on drag over, open!
-          row.onOpen()
-        }
-        event.preventDefault()
+        // TODO
+        // if (!row.isOpen && row.isFolder) {
+        //   // on drag over, open!
+        //   row.onOpen()
+        // }
+        // event.preventDefault()
       }}
       onDragStart={(event) => {
-        // console.log(event.target.innerText, 'onDragStart')
+        // TODO console.log(event.target.innerText, 'onDragStart')
       }}
       onDrop={(event) => {
-        // console.log(event.target.innerText, 'onDrop')
+        // TODO console.log(event.target.innerText, 'onDrop')
       }}
     >
       <div style={{ width: '0.5rem' }}></div>
@@ -277,7 +271,6 @@ export const FileExplorerRowElement = ({
         onDelete={() => {
           row.onDelete()
         }}
-        onClone={() => {}}
         onOpenInNewWindow={() => {
           row.onOpenInNewWindow()
         }}

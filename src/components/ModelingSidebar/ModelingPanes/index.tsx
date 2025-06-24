@@ -4,6 +4,7 @@ import {
   useEffect,
   type MouseEventHandler,
   type ReactNode,
+  useRef,
 } from 'react'
 import type { ContextFrom } from 'xstate'
 
@@ -145,10 +146,13 @@ export const sidebarPanes: SidebarPane[] = [
     Content: (props: { id: SidebarType; onClose: () => void }) => {
       const projects = useFolders()
       const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+      const projectNameRef = useRef(loaderData.project?.name)
       const [theProject, setTheProject] = useState<Project | null>(null)
       const { project, file } = loaderData
       const settings = useSettings()
       useEffect(() => {
+        projectNameRef.current = loaderData?.project?.name
+
         // Have no idea why the project loader data doesn't have the children from the ls on disk
         // That means it is a different object or cached incorrectly?
         if (!project || !file) {
@@ -186,14 +190,15 @@ export const sidebarPanes: SidebarPane[] = [
 
         // Only open the file if it is a kcl file.
         if (
-          loaderData?.project?.name &&
+          projectNameRef.current &&
           entry.children == null &&
           entry.path.endsWith(FILE_EXT)
         ) {
+
           systemIOActor.send({
             type: SystemIOMachineEvents.navigateToFile,
             data: {
-              requestedProjectName: loaderData?.project?.name,
+              requestedProjectName: projectNameRef.current,
               requestedFileName: requestedFileName,
             },
           })

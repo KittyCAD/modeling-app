@@ -4,6 +4,10 @@ import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import type { FileEntry } from '@src/lib/project'
 import { desktopSafePathJoin, joinOSPaths } from '@src/lib/paths'
 
+/**
+ * Remap FileEntry data into another data structure for the Project Explorer
+ * This will be transformed into a DOM one called FileExplorerRow
+ */
 export interface FileExplorerEntry extends FileEntry {
   parentPath: string
   level: number
@@ -11,6 +15,9 @@ export interface FileExplorerEntry extends FileEntry {
   key: string
 }
 
+/**
+ * Pass this to the FileExplorer to render
+ */
 export interface FileExplorerRow extends FileExplorerEntry {
   icon: CustomIconName
   name: string
@@ -36,6 +43,9 @@ export interface FileExplorerRow extends FileExplorerEntry {
   onRenameEnd: (e: React.KeyboardEvent<HTMLElement> | null) => void
 }
 
+/**
+ * Last conversion for linear rendering of DOM elements, we need the index.
+ */
 export interface FileExplorerRender extends FileExplorerRow {
   domIndex: number
   domLength: number
@@ -45,11 +55,14 @@ export interface FileExplorerRowContextMenuProps {
   itemRef: React.RefObject<HTMLElement>
   onRename: () => void
   onDelete: () => void
-  onClone: () => void
   onOpenInNewWindow: () => void
   callback: () => void
 }
 
+/**
+ * Create a key that can be used for a hash table for opened rows
+ * this is also used for key={} in React.
+ */
 export const constructPath = ({
   parentPath,
   name,
@@ -160,6 +173,14 @@ export const addPlaceHoldersForNewFileAndFolder = (
     children: null,
   }
   children.push(placeHolderFileEntry)
+}
+
+export const isRowFake = (
+  row: FileExplorerRender | FileExplorerRow | FileExplorerEntry
+): boolean => {
+  return (
+    row.name === FOLDER_PLACEHOLDER_NAME || row.name === FILE_PLACEHOLDER_NAME
+  )
 }
 
 // Used for focused which is different from the selection when you mouse click.
