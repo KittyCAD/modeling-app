@@ -218,8 +218,8 @@ export const FileExplorerRowElement = ({
       data-index={row.domIndex}
       data-last-element={row.domIndex === row.domLength - 1}
       data-parity={row.domIndex % 2 === 0}
-      aria-setsize={row.domLength}
-      aria-posinset={row.domIndex + 1}
+      aria-setsize={row.setSize}
+      aria-posinset={row.positionInSet}
       aria-label={row.name}
       aria-selected={isSelected}
       aria-level={row.level + 1}

@@ -13,6 +13,8 @@ export interface FileExplorerEntry extends FileEntry {
   level: number
   index: number
   key: string
+  setSize: number
+  positionInSet?: number
 }
 
 /**
@@ -81,9 +83,13 @@ const flattenProjectHelper = (
   f: FileEntry,
   list: FileExplorerEntry[], // accumulator list that is built up through recursion
   parentPath: string, // the parentPath for the given f:FileEntry passed in
-  level: number // the level within the tree for the given f:FileEntry, level starts at 0 goes to positive N
+  level: number, // the level within the tree for the given f:FileEntry, level starts at 0 goes to positive N
+  numberOfSibilings: number,
+  iterationIndex: number
 ) => {
   const index = list.length
+  const setSize = numberOfSibilings - 2 // for fake folder and file!
+  const positionInSet = iterationIndex - 2
   // mark the parent and level of the FileEntry
   const content: FileExplorerEntry = {
     ...f,
@@ -94,6 +100,8 @@ const flattenProjectHelper = (
       parentPath,
       name: f.name,
     }),
+    setSize,
+    positionInSet
   }
   // keep track of the file once within the recursive list that will be built up
   list.push(content)
@@ -110,7 +118,9 @@ const flattenProjectHelper = (
       sortedChildren[i],
       list,
       constructPath({ parentPath: parentPath, name: f.name }),
-      level + 1
+      level + 1,
+      f.children.length,
+      i+1
     )
   }
 }
@@ -133,7 +143,9 @@ export const flattenProject = (
       projectChildren[index],
       flattenTreeInOrder,
       projectName, // first parent
-      0
+      0,
+      projectChildren.length,
+      index+1
     )
   }
   return flattenTreeInOrder
