@@ -45,7 +45,7 @@ const isFileExplorerEntryOpened = (
  * the selection logic of the tree since add file will be based on your
  * selection within the tree.
  *
- * pass a Project type which is compatiable with the data stored in
+ * pass a Project type which is compatible with the data stored in
  * the systemIOMachine
  *
  */
