@@ -175,7 +175,7 @@ export const sidebarPanes: SidebarPane[] = [
       const [refreshExplorerPressed, setRefresFolderPressed] =
         useState<number>(0)
       const [collapsePressed, setCollapsedPressed] = useState<number>(0)
-      
+
       const onRowClicked = (entry: FileExplorerEntry, domIndex: number) => {
         const applicationProjectDirectory =
           settings.app.projectDirectory.current

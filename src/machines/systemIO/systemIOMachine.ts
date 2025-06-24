@@ -199,7 +199,7 @@ export const systemIOMachine = setup({
             requestedPath: string
             requestedProjectName: string
           }
-        }
+        },
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -485,7 +485,7 @@ export const systemIOMachine = setup({
         return {
           message: '',
           requestedPath: '',
-          requestedProjectName: ''
+          requestedProjectName: '',
         }
       }
     ),
@@ -1160,7 +1160,10 @@ export const systemIOMachine = setup({
         id: SystemIOMachineActors.deleteFileOrFolderAndNavigate,
         src: SystemIOMachineActors.deleteFileOrFolder,
         input: ({ context, event, self }) => {
-          assertEvent(event, SystemIOMachineEvents.deleteFileOrFolderAndNavigate)
+          assertEvent(
+            event,
+            SystemIOMachineEvents.deleteFileOrFolderAndNavigate
+          )
           return {
             context,
             requestedPath: event.data.requestedPath,
@@ -1182,7 +1185,8 @@ export const systemIOMachine = setup({
                 }
               },
             }),
-            SystemIOMachineActions.toastSuccess],
+            SystemIOMachineActions.toastSuccess,
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,

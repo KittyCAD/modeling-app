@@ -547,7 +547,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         let response = {
           message: 'File deleted successfully',
           requestedPath: input.requestedPath,
-          requestedProjectName: input.requestedProjectName
+          requestedProjectName: input.requestedProjectName,
         }
         return response
       }

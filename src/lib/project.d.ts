@@ -57,7 +57,7 @@ export type Project = {
   /**
    * Absolute path
    */
-  path: string 
+  path: string
   /**
    * Folder name of the project
    */

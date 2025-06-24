@@ -290,12 +290,11 @@ export const ProjectExplorer = ({
             const shouldWeNavigate = file?.path?.startsWith(child.path)
 
             if (shouldWeNavigate && file && file.path) {
-
-                            systemIOActor.send({
+              systemIOActor.send({
                 type: SystemIOMachineEvents.deleteFileOrFolderAndNavigate,
                 data: {
                   requestedPath: child.path,
-                  requestedProjectName: project.name
+                  requestedProjectName: project.name,
                 },
               })
             } else {
