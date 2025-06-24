@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 1,
+          "moduleId": 0,
           "name": "x",
           "start": 0,
           "type": "Identifier"
@@ -19,6 +20,7 @@ expression: actual
         "init": {
           "commentStart": 4,
           "end": 5,
+          "moduleId": 0,
           "raw": "3",
           "start": 4,
           "type": "Literal",
@@ -28,11 +30,13 @@ expression: actual
             "suffix": "None"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 5,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -45,6 +49,7 @@ expression: actual
         "id": {
           "commentStart": 14,
           "end": 17,
+          "moduleId": 0,
           "name": "obj",
           "start": 14,
           "type": "Identifier"
@@ -52,6 +57,7 @@ expression: actual
         "init": {
           "commentStart": 20,
           "end": 31,
+          "moduleId": 0,
           "properties": [
             {
               "commentStart": 22,
@@ -59,19 +65,23 @@ expression: actual
               "key": {
                 "commentStart": 22,
                 "end": 23,
+                "moduleId": 0,
                 "name": "x",
                 "start": 22,
                 "type": "Identifier"
               },
+              "moduleId": 0,
               "start": 22,
               "type": "ObjectProperty",
               "value": {
                 "abs_path": false,
                 "commentStart": 22,
                 "end": 23,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 22,
                   "end": 23,
+                  "moduleId": 0,
                   "name": "x",
                   "start": 22,
                   "type": "Identifier"
@@ -88,15 +98,18 @@ expression: actual
               "key": {
                 "commentStart": 25,
                 "end": 26,
+                "moduleId": 0,
                 "name": "y",
                 "start": 25,
                 "type": "Identifier"
               },
+              "moduleId": 0,
               "start": 25,
               "type": "ObjectProperty",
               "value": {
                 "commentStart": 29,
                 "end": 30,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 29,
                 "type": "Literal",
@@ -112,11 +125,13 @@ expression: actual
           "type": "ObjectExpression",
           "type": "ObjectExpression"
         },
+        "moduleId": 0,
         "start": 14,
         "type": "VariableDeclarator"
       },
       "end": 31,
       "kind": "const",
+      "moduleId": 0,
       "start": 14,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -124,5 +139,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 31,
+  "moduleId": 0,
   "start": 0
 }

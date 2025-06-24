@@ -739,6 +739,7 @@ description: Variables in memory after executing teapot.kcl
           "tag": {
             "commentStart": 1780,
             "end": 1786,
+            "moduleId": 0,
             "start": 1780,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -1127,6 +1128,7 @@ description: Variables in memory after executing teapot.kcl
           "tag": {
             "commentStart": 482,
             "end": 488,
+            "moduleId": 0,
             "start": 482,
             "type": "TagDeclarator",
             "value": "seg01"

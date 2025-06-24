@@ -13,6 +13,7 @@ description: Result of parsing pipe_as_arg.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cube",
             "start": 0,
             "type": "Identifier"
@@ -25,9 +26,11 @@ description: Result of parsing pipe_as_arg.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -39,6 +42,7 @@ description: Result of parsing pipe_as_arg.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -46,16 +50,19 @@ description: Result of parsing pipe_as_arg.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
@@ -66,6 +73,7 @@ description: Result of parsing pipe_as_arg.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
@@ -76,11 +84,13 @@ description: Result of parsing pipe_as_arg.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -93,6 +103,7 @@ description: Result of parsing pipe_as_arg.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "double",
             "start": 0,
             "type": "Identifier"
@@ -108,9 +119,11 @@ description: Result of parsing pipe_as_arg.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "x",
                         "start": 0,
                         "type": "Identifier"
@@ -120,10 +133,12 @@ description: Result of parsing pipe_as_arg.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "*",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -139,6 +154,7 @@ description: Result of parsing pipe_as_arg.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -146,16 +162,19 @@ description: Result of parsing pipe_as_arg.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "x",
                   "start": 0,
                   "type": "Identifier"
@@ -167,11 +186,13 @@ description: Result of parsing pipe_as_arg.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -184,6 +205,7 @@ description: Result of parsing pipe_as_arg.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "width",
             "start": 0,
             "type": "Identifier"
@@ -195,6 +217,7 @@ description: Result of parsing pipe_as_arg.kcl
                   "argument": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "200",
                     "start": 0,
                     "type": "Literal",
@@ -206,6 +229,7 @@ description: Result of parsing pipe_as_arg.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -213,20 +237,24 @@ description: Result of parsing pipe_as_arg.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [],
             "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -239,6 +267,7 @@ description: Result of parsing pipe_as_arg.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "myCube",
             "start": 0,
             "type": "Identifier"
@@ -250,6 +279,7 @@ description: Result of parsing pipe_as_arg.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
@@ -259,6 +289,7 @@ description: Result of parsing pipe_as_arg.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "200",
                       "start": 0,
                       "type": "Literal",
@@ -269,13 +300,16 @@ description: Result of parsing pipe_as_arg.kcl
                       }
                     },
                     {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "double",
                           "start": 0,
                           "type": "Identifier"
@@ -286,12 +320,14 @@ description: Result of parsing pipe_as_arg.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
@@ -300,6 +336,7 @@ description: Result of parsing pipe_as_arg.kcl
                   ],
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeExpression",
                   "type": "PipeExpression"
@@ -310,6 +347,7 @@ description: Result of parsing pipe_as_arg.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
@@ -320,6 +358,7 @@ description: Result of parsing pipe_as_arg.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -332,6 +371,7 @@ description: Result of parsing pipe_as_arg.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -343,6 +383,7 @@ description: Result of parsing pipe_as_arg.kcl
                     }
                   ],
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -353,9 +394,11 @@ description: Result of parsing pipe_as_arg.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cube",
                 "start": 0,
                 "type": "Identifier"
@@ -366,16 +409,19 @@ description: Result of parsing pipe_as_arg.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": null
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -383,12 +429,14 @@ description: Result of parsing pipe_as_arg.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -400,6 +448,7 @@ description: Result of parsing pipe_as_arg.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

@@ -13,6 +13,7 @@ description: Result of parsing cube_with_error.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cube",
             "start": 0,
             "type": "Identifier"
@@ -28,6 +29,7 @@ description: Result of parsing cube_with_error.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "l",
                       "start": 0,
                       "type": "Identifier"
@@ -39,9 +41,11 @@ description: Result of parsing cube_with_error.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "length",
                           "start": 0,
                           "type": "Identifier"
@@ -51,10 +55,12 @@ description: Result of parsing cube_with_error.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "/",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -68,11 +74,13 @@ description: Result of parsing cube_with_error.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -85,6 +93,7 @@ description: Result of parsing cube_with_error.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
@@ -93,13 +102,16 @@ description: Result of parsing cube_with_error.kcl
                       "commentStart": 0,
                       "computed": false,
                       "end": 0,
+                      "moduleId": 0,
                       "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
@@ -112,6 +124,7 @@ description: Result of parsing cube_with_error.kcl
                       "property": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -125,11 +138,13 @@ description: Result of parsing cube_with_error.kcl
                       "type": "MemberExpression",
                       "type": "MemberExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -142,6 +157,7 @@ description: Result of parsing cube_with_error.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "y",
                       "start": 0,
                       "type": "Identifier"
@@ -150,13 +166,16 @@ description: Result of parsing cube_with_error.kcl
                       "commentStart": 0,
                       "computed": false,
                       "end": 0,
+                      "moduleId": 0,
                       "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
@@ -169,6 +188,7 @@ description: Result of parsing cube_with_error.kcl
                       "property": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "1",
                         "start": 0,
                         "type": "Literal",
@@ -182,11 +202,13 @@ description: Result of parsing cube_with_error.kcl
                       "type": "MemberExpression",
                       "type": "MemberExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -199,6 +221,7 @@ description: Result of parsing cube_with_error.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "p0",
                       "start": 0,
                       "type": "Identifier"
@@ -214,9 +237,11 @@ description: Result of parsing cube_with_error.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "l",
                                 "start": 0,
                                 "type": "Identifier"
@@ -228,19 +253,23 @@ description: Result of parsing cube_with_error.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "x",
                               "start": 0,
                               "type": "Identifier"
@@ -262,9 +291,11 @@ description: Result of parsing cube_with_error.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "l",
                                 "start": 0,
                                 "type": "Identifier"
@@ -276,19 +307,23 @@ description: Result of parsing cube_with_error.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "y",
                               "start": 0,
                               "type": "Identifier"
@@ -304,15 +339,18 @@ description: Result of parsing cube_with_error.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -325,6 +363,7 @@ description: Result of parsing cube_with_error.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "p1",
                       "start": 0,
                       "type": "Identifier"
@@ -340,9 +379,11 @@ description: Result of parsing cube_with_error.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "l",
                                 "start": 0,
                                 "type": "Identifier"
@@ -354,19 +395,23 @@ description: Result of parsing cube_with_error.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "x",
                               "start": 0,
                               "type": "Identifier"
@@ -387,9 +432,11 @@ description: Result of parsing cube_with_error.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "l",
                               "start": 0,
                               "type": "Identifier"
@@ -399,14 +446,17 @@ description: Result of parsing cube_with_error.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "y",
                               "start": 0,
                               "type": "Identifier"
@@ -422,15 +472,18 @@ description: Result of parsing cube_with_error.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -443,6 +496,7 @@ description: Result of parsing cube_with_error.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "p2",
                       "start": 0,
                       "type": "Identifier"
@@ -457,9 +511,11 @@ description: Result of parsing cube_with_error.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "l",
                               "start": 0,
                               "type": "Identifier"
@@ -469,14 +525,17 @@ description: Result of parsing cube_with_error.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "x",
                               "start": 0,
                               "type": "Identifier"
@@ -497,9 +556,11 @@ description: Result of parsing cube_with_error.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "l",
                               "start": 0,
                               "type": "Identifier"
@@ -509,14 +570,17 @@ description: Result of parsing cube_with_error.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "y",
                               "start": 0,
                               "type": "Identifier"
@@ -532,15 +596,18 @@ description: Result of parsing cube_with_error.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -553,6 +620,7 @@ description: Result of parsing cube_with_error.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "p3",
                       "start": 0,
                       "type": "Identifier"
@@ -567,9 +635,11 @@ description: Result of parsing cube_with_error.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "l",
                               "start": 0,
                               "type": "Identifier"
@@ -579,14 +649,17 @@ description: Result of parsing cube_with_error.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "x",
                               "start": 0,
                               "type": "Identifier"
@@ -608,9 +681,11 @@ description: Result of parsing cube_with_error.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "l",
                                 "start": 0,
                                 "type": "Identifier"
@@ -622,19 +697,23 @@ description: Result of parsing cube_with_error.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "y",
                               "start": 0,
                               "type": "Identifier"
@@ -650,15 +729,18 @@ description: Result of parsing cube_with_error.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -667,13 +749,16 @@ description: Result of parsing cube_with_error.kcl
                   "argument": {
                     "body": [
                       {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "startSketchOn",
                             "start": 0,
                             "type": "Identifier"
@@ -684,6 +769,7 @@ description: Result of parsing cube_with_error.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -691,9 +777,11 @@ description: Result of parsing cube_with_error.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "XY",
                             "start": 0,
                             "type": "Identifier"
@@ -711,6 +799,7 @@ description: Result of parsing cube_with_error.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "at",
                               "start": 0,
                               "type": "Identifier"
@@ -719,9 +808,11 @@ description: Result of parsing cube_with_error.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "p0",
                                 "start": 0,
                                 "type": "Identifier"
@@ -737,9 +828,11 @@ description: Result of parsing cube_with_error.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "startProfile",
                             "start": 0,
                             "type": "Identifier"
@@ -750,6 +843,7 @@ description: Result of parsing cube_with_error.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -762,6 +856,7 @@ description: Result of parsing cube_with_error.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
@@ -770,9 +865,11 @@ description: Result of parsing cube_with_error.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "p1",
                                 "start": 0,
                                 "type": "Identifier"
@@ -788,9 +885,11 @@ description: Result of parsing cube_with_error.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "line",
                             "start": 0,
                             "type": "Identifier"
@@ -801,6 +900,7 @@ description: Result of parsing cube_with_error.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -813,6 +913,7 @@ description: Result of parsing cube_with_error.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
@@ -821,9 +922,11 @@ description: Result of parsing cube_with_error.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "p2",
                                 "start": 0,
                                 "type": "Identifier"
@@ -839,9 +942,11 @@ description: Result of parsing cube_with_error.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "line",
                             "start": 0,
                             "type": "Identifier"
@@ -852,6 +957,7 @@ description: Result of parsing cube_with_error.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -864,6 +970,7 @@ description: Result of parsing cube_with_error.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
@@ -872,9 +979,11 @@ description: Result of parsing cube_with_error.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "p3",
                                 "start": 0,
                                 "type": "Identifier"
@@ -890,9 +999,11 @@ description: Result of parsing cube_with_error.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "line",
                             "start": 0,
                             "type": "Identifier"
@@ -903,6 +1014,7 @@ description: Result of parsing cube_with_error.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -915,6 +1027,7 @@ description: Result of parsing cube_with_error.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
@@ -923,9 +1036,11 @@ description: Result of parsing cube_with_error.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "p0",
                                 "start": 0,
                                 "type": "Identifier"
@@ -941,9 +1056,11 @@ description: Result of parsing cube_with_error.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "line",
                             "start": 0,
                             "type": "Identifier"
@@ -954,19 +1071,23 @@ description: Result of parsing cube_with_error.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
                       },
                       {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "close",
                             "start": 0,
                             "type": "Identifier"
@@ -977,6 +1098,7 @@ description: Result of parsing cube_with_error.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -989,6 +1111,7 @@ description: Result of parsing cube_with_error.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "length",
                               "start": 0,
                               "type": "Identifier"
@@ -997,9 +1120,11 @@ description: Result of parsing cube_with_error.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1015,9 +1140,11 @@ description: Result of parsing cube_with_error.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "extrude",
                             "start": 0,
                             "type": "Identifier"
@@ -1028,6 +1155,7 @@ description: Result of parsing cube_with_error.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -1036,12 +1164,14 @@ description: Result of parsing cube_with_error.kcl
                     ],
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -1049,12 +1179,14 @@ description: Result of parsing cube_with_error.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "6": [
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "NonCodeNode",
                       "value": {
@@ -1069,12 +1201,14 @@ description: Result of parsing cube_with_error.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
@@ -1085,6 +1219,7 @@ description: Result of parsing cube_with_error.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
@@ -1095,11 +1230,13 @@ description: Result of parsing cube_with_error.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1112,6 +1249,7 @@ description: Result of parsing cube_with_error.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "myCube",
             "start": 0,
             "type": "Identifier"
@@ -1123,6 +1261,7 @@ description: Result of parsing cube_with_error.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
@@ -1130,6 +1269,7 @@ description: Result of parsing cube_with_error.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "40",
                   "start": 0,
                   "type": "Literal",
@@ -1145,6 +1285,7 @@ description: Result of parsing cube_with_error.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
@@ -1155,6 +1296,7 @@ description: Result of parsing cube_with_error.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -1167,6 +1309,7 @@ description: Result of parsing cube_with_error.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -1178,6 +1321,7 @@ description: Result of parsing cube_with_error.kcl
                     }
                   ],
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -1188,9 +1332,11 @@ description: Result of parsing cube_with_error.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cube",
                 "start": 0,
                 "type": "Identifier"
@@ -1201,16 +1347,19 @@ description: Result of parsing cube_with_error.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": null
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1222,9 +1371,11 @@ description: Result of parsing cube_with_error.kcl
           "abs_path": false,
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "foo",
             "start": 0,
             "type": "Identifier"
@@ -1234,6 +1385,7 @@ description: Result of parsing cube_with_error.kcl
           "type": "Name",
           "type": "Name"
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1246,12 +1398,14 @@ description: Result of parsing cube_with_error.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

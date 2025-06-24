@@ -11,9 +11,11 @@ expression: actual
         "abs_path": false,
         "commentStart": 0,
         "end": 5,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 5,
+          "moduleId": 0,
           "name": "truee",
           "start": 0,
           "type": "Identifier"
@@ -23,6 +25,7 @@ expression: actual
         "type": "Name",
         "type": "Name"
       },
+      "moduleId": 0,
       "start": 0,
       "type": "ExpressionStatement",
       "type": "ExpressionStatement"
@@ -30,5 +33,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 5,
+  "moduleId": 0,
   "start": 0
 }

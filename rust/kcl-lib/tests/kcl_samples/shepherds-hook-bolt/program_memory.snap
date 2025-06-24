@@ -704,6 +704,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "tag": {
             "commentStart": 1558,
             "end": 1563,
+            "moduleId": 0,
             "start": 1558,
             "type": "TagDeclarator",
             "value": "hook"
@@ -1056,6 +1057,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "tag": {
             "commentStart": 2148,
             "end": 2154,
+            "moduleId": 0,
             "start": 2148,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -1069,6 +1071,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "tag": {
             "commentStart": 2246,
             "end": 2255,
+            "moduleId": 0,
             "start": 2246,
             "type": "TagDeclarator",
             "value": "startTag"
@@ -1082,6 +1085,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "tag": {
             "commentStart": 2273,
             "end": 2283,
+            "moduleId": 0,
             "start": 2273,
             "type": "TagDeclarator",
             "value": "capEnd001"
@@ -1111,6 +1115,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             "tag": {
               "commentStart": 2148,
               "end": 2154,
+              "moduleId": 0,
               "start": 2148,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -1478,6 +1483,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "tag": {
             "commentStart": 2148,
             "end": 2154,
+            "moduleId": 0,
             "start": 2148,
             "type": "TagDeclarator",
             "value": "seg01"

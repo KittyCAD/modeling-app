@@ -7,6 +7,7 @@ function identifier(name: string, start: number, end: number) {
     type: 'Name',
     start,
     end,
+    moduleId: 0,
     commentStart: start,
 
     abs_path: false,
@@ -14,6 +15,7 @@ function identifier(name: string, start: number, end: number) {
     name: {
       start,
       end,
+      moduleId: 0,
       commentStart: start,
       type: 'Identifier',
       name,
