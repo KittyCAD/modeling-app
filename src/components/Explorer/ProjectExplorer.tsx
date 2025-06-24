@@ -287,12 +287,25 @@ export const ProjectExplorer = ({
           isFake: false,
           activeIndex: activeIndex,
           onDelete: () => {
-            systemIOActor.send({
-              type: SystemIOMachineEvents.deleteFileOrFolder,
-              data: {
-                requestedPath: child.path,
-              },
-            })
+            const shouldWeNavigate = file?.path?.startsWith(child.path)
+
+            if (shouldWeNavigate && file && file.path) {
+
+                            systemIOActor.send({
+                type: SystemIOMachineEvents.deleteFileOrFolderAndNavigate,
+                data: {
+                  requestedPath: child.path,
+                  requestedProjectName: project.name
+                },
+              })
+            } else {
+              systemIOActor.send({
+                type: SystemIOMachineEvents.deleteFileOrFolder,
+                data: {
+                  requestedPath: child.path,
+                },
+              })
+            }
           },
           onOpenInNewWindow: () => {
             window.electron.openInNewWindow(row.path)

@@ -126,6 +126,12 @@ export const flattenProject = (
   return flattenTreeInOrder
 }
 
+/**
+ * In memory add fake placeholders for folder and files.
+ * @param children 
+ * @param parentPath absolute path
+ * @returns 
+ */
 export const addPlaceHoldersForNewFileAndFolder = (
   children: FileEntry[] | null,
   parentPath: string

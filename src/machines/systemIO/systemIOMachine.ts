@@ -192,7 +192,14 @@ export const systemIOMachine = setup({
             requestedProjectName: string
             requestedFileNameWithExtension: string
           }
-        },
+        }
+      | {
+          type: SystemIOMachineEvents.deleteFileOrFolderAndNavigate
+          data: {
+            requestedPath: string
+            requestedProjectName: string
+          }
+        }
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -472,11 +479,13 @@ export const systemIOMachine = setup({
           context: SystemIOContext
           rootContext: AppMachineContext
           requestedPath: string
+          requestedProjectName?: string | undefined
         }
       }) => {
         return {
           message: '',
           requestedPath: '',
+          requestedProjectName: ''
         }
       }
     ),
@@ -610,6 +619,9 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.renameFolderAndNavigateToFile]: {
           target: SystemIOMachineStates.renamingFolderAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.deleteFileOrFolderAndNavigate]: {
+          target: SystemIOMachineStates.deletingFileOrFolderAndNavigate,
         },
       },
     },
@@ -1136,6 +1148,41 @@ export const systemIOMachine = setup({
             }),
             SystemIOMachineActions.toastSuccess,
           ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.deletingFileOrFolderAndNavigate]: {
+      invoke: {
+        id: SystemIOMachineActors.deleteFileOrFolderAndNavigate,
+        src: SystemIOMachineActors.deleteFileOrFolder,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.deleteFileOrFolderAndNavigate)
+          return {
+            context,
+            requestedPath: event.data.requestedPath,
+            requestedProjectName: event.data.requestedProjectName,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              requestedProjectName: ({ event }) => {
+                assertEvent(
+                  event,
+                  SystemIOMachineEvents.done_deleteFileOrFolderAndNavigate
+                )
+                return {
+                  name: event.output.requestedProjectName,
+                }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess],
         },
         onError: {
           target: SystemIOMachineStates.idle,

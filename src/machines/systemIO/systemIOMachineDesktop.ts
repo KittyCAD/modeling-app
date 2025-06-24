@@ -540,13 +540,16 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           context: SystemIOContext
           rootContext: AppMachineContext
           requestedPath: string
+          requestedProjectName?: string | undefined
         }
       }) => {
         await window.electron.rm(input.requestedPath, { recursive: true })
-        return {
+        let response = {
           message: 'File deleted successfully',
           requestedPath: input.requestedPath,
+          requestedProjectName: input.requestedProjectName
         }
+        return response
       }
     ),
     [SystemIOMachineActors.createBlankFile]: fromPromise(
