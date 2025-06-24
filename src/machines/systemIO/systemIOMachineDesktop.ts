@@ -436,12 +436,18 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedFolderName
         )
 
+        const requestedProjectName = input.requestedProjectName || ''
+        const requestedFileNameWithExtension =
+          input.requestedFileNameWithExtension || ''
+
         // ignore the rename if the resulting paths are the same
         if (oldPath === newPath) {
           return {
             message: `Old folder is the same as new.`,
             folderName,
             requestedFolderName,
+            requestedProjectName,
+            requestedFileNameWithExtension,
           }
         }
 
@@ -462,8 +468,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           message: `Successfully renamed folder "${folderName}" to "${requestedFolderName}"`,
           folderName,
           requestedFolderName,
-          requestedProjectName: input.requestedProjectName,
-          requestedFileNameWithExtension: input.requestedFileNameWithExtension,
+          requestedProjectName,
+          requestedFileNameWithExtension,
         }
       }
     ),
@@ -494,12 +500,20 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedFileNameWithExtension
         )
 
+        const projectDirectoryPath = input.context.projectDirectoryPath
+        const projectName = getProjectDirectoryFromKCLFilePath(
+          newPath,
+          projectDirectoryPath
+        )
+        const filePathWithExtensionRelativeToProject =
+          parentPathRelativeToProject(newPath, projectDirectoryPath)
+
         // no-op
         if (oldPath === newPath) {
           return {
             message: `Old file is the same as new.`,
-            fileNameWithExtension,
-            requestedFileNameWithExtension,
+            projectName: projectName,
+            filePathWithExtensionRelativeToProject,
           }
         }
 
@@ -516,19 +530,10 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
 
         window.electron.rename(oldPath, newPath)
 
-        const projectDirectoryPath = input.context.projectDirectoryPath
-        const projectName = getProjectDirectoryFromKCLFilePath(
-          newPath,
-          projectDirectoryPath
-        )
-        const filePathWithExtensionRelativeToProject =
-          parentPathRelativeToProject(newPath, projectDirectoryPath)
-
         return {
           message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
           projectName: projectName,
-          filePathWithExtensionRelativeToProject:
-            filePathWithExtensionRelativeToProject,
+          filePathWithExtensionRelativeToProject,
         }
       }
     ),
