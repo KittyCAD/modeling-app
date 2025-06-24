@@ -418,6 +418,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedFolderName: string
           folderName: string
           absolutePathToParentDirectory: string
+          requestedProjectName?: string
+          requestedFileNameWithExtension?: string
         }
       }) => {
         const {
@@ -454,12 +456,14 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           }
         }
 
-        window.electron.rename(oldPath, newPath)
+        window.electron.rename(oldPath, newPath)        
 
         return {
           message: `Successfully renamed folder "${folderName}" to "${requestedFolderName}"`,
           folderName,
           requestedFolderName,
+          requestedProjectName: input.requestedProjectName,
+          requestedFileNameWithExtension: input.requestedFileNameWithExtension
         }
       }
     ),

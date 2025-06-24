@@ -182,7 +182,17 @@ export const systemIOMachine = setup({
           data: {
             requestedAbsolutePath: string
           }
-        },
+        }
+      | {
+          type: SystemIOMachineEvents.renameFolderAndNavigateToFile
+          data: {
+            requestedFolderName: string
+            folderName: string
+            absolutePathToParentDirectory: string
+            requestedProjectName: string
+            requestedFileNameWithExtension: string
+          }
+        }
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -422,9 +432,11 @@ export const systemIOMachine = setup({
           requestedFolderName: string
           folderName: string
           absolutePathToParentDirectory: string
+          requestedProjectName?: string
+          requestedFileNameWithExtension?: string
         }
       }) => {
-        return { message: '', folderName: '', requestedFolderName: '' }
+        return { message: '', folderName: '', requestedFolderName: '', requestedProjectName: '', requestedFileNameWithExtension:''}
       }
     ),
     [SystemIOMachineActors.renameFile]: fromPromise(
@@ -589,6 +601,9 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.renameFileAndNavigateToFile]: {
           target: SystemIOMachineStates.renamingFileAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.renameFolderAndNavigateToFile]: {
+          target: SystemIOMachineStates.renamingFolderAndNavigateToFile,
         },
       },
     },
@@ -1057,8 +1072,6 @@ export const systemIOMachine = setup({
                     ? event.output.filePathWithExtensionRelativeToProject
                     : event.output.filePathWithExtensionRelativeToProject +
                       '.kcl'
-                console.log(file, event.output.projectName)
-
                 return {
                   project: event.output.projectName,
                   file,
@@ -1067,6 +1080,54 @@ export const systemIOMachine = setup({
             }),
             SystemIOMachineActions.toastSuccess,
           ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.renamingFolderAndNavigateToFile]: {
+      invoke: {
+        id: SystemIOMachineActors.renameFolderAndNavigateToFile,
+        src: SystemIOMachineActors.renameFolder,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.renameFolderAndNavigateToFile)
+          return {
+            context,
+            requestedFolderName: event.data.requestedFolderName,
+            folderName: event.data.folderName,
+            absolutePathToParentDirectory:
+              event.data.absolutePathToParentDirectory,
+            rootContext: self.system.get('root').getSnapshot().context,
+            requestedProjectName: event.data.requestedProjectName,
+            requestedFileNameWithExtension: event.data.requestedFileNameWithExtension
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+              assign({
+              requestedFileName: ({ event }) => {
+                assertEvent(
+                  event,
+                  SystemIOMachineEvents.done_renameFolderAndNavigateToFile
+                )
+                // Gotcha: file could have an ending of .kcl...
+                const file =
+                  event.output.requestedFileNameWithExtension.endsWith(
+                    '.kcl'
+                  )
+                    ? event.output.requestedFileNameWithExtension
+                    : event.output.requestedFileNameWithExtension +
+                      '.kcl'
+                return {
+                  project: event.output.requestedProjectName,
+                  file,
+                }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess],
         },
         onError: {
           target: SystemIOMachineStates.idle,

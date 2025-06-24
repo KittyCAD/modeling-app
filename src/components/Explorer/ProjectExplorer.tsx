@@ -332,17 +332,42 @@ export const ProjectExplorer = ({
                     },
                   })
                 } else {
-                  // rename
-                  systemIOActor.send({
-                    type: SystemIOMachineEvents.renameFolder,
-                    data: {
-                      requestedFolderName: requestedName,
-                      folderName: name,
-                      absolutePathToParentDirectory: getParentAbsolutePath(
+                  const absolutePathToParentDirectory = getParentAbsolutePath(
                         row.path
-                      ),
-                    },
-                  })
+                  )
+                  const oldPath = window.electron.path.join(
+                    absolutePathToParentDirectory,
+                    name
+                  )
+                  const newPath = window.electron.path.join(
+                    absolutePathToParentDirectory,
+                    requestedName
+                  )
+                  const shouldWeNavigate = file?.path?.startsWith(oldPath)
+
+                  if (shouldWeNavigate && file && file.path) {
+                    const requestedFileNameWithExtension = parentPathRelativeToProject(file?.path?.replace(oldPath, newPath), applicationProjectDirectory)
+                    systemIOActor.send({
+                      type: SystemIOMachineEvents.renameFolderAndNavigateToFile,
+                      data: {
+                        requestedFolderName: requestedName,
+                        folderName: name,
+                        absolutePathToParentDirectory,
+                        requestedProjectName: project.name,
+                        requestedFileNameWithExtension
+                      },
+                    })
+                  } else {
+                    systemIOActor.send({
+                      type: SystemIOMachineEvents.renameFolder,
+                      data: {
+                        requestedFolderName: requestedName,
+                        folderName: name,
+                        absolutePathToParentDirectory,
+                      },
+                    })
+                  }
+
                   // TODO: Gotcha... Set new string open even if it fails?
                   if (openedRowsRef.current[child.key]) {
                     // If the file tree had the folder opened make the new one open.
@@ -387,14 +412,18 @@ export const ProjectExplorer = ({
                   },
                 })
               } else {
-                const requestedAbsoluteFilePathWithExtension = joinOSPaths(getParentAbsolutePath(
-                      row.path
-                    ), name)
+                const requestedAbsoluteFilePathWithExtension = joinOSPaths(
+                  getParentAbsolutePath(row.path),
+                  name
+                )
                 // If your router loader is within the file you are renaming then reroute to the new path on disk
                 // If you are renaming a file you are not loaded into, do not reload!
-                const shouldWeNavigate = requestedAbsoluteFilePathWithExtension === file?.path
+                const shouldWeNavigate =
+                  requestedAbsoluteFilePathWithExtension === file?.path
                 systemIOActor.send({
-                  type: shouldWeNavigate ? SystemIOMachineEvents.renameFileAndNavigateToFile : SystemIOMachineEvents.renameFile,
+                  type: shouldWeNavigate
+                    ? SystemIOMachineEvents.renameFileAndNavigateToFile
+                    : SystemIOMachineEvents.renameFile,
                   data: {
                     requestedFileNameWithExtension:
                       fileNameForcedWithOriginalExt,
