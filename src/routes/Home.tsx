@@ -61,7 +61,6 @@ import {
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
-import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
 
 type ReadWriteProjectState = {
@@ -418,17 +417,6 @@ const Home = () => {
             </li>
           </ul>
         </aside>
-
-        <section
-          data-testid="file-explorer-section"
-          className="flex flex-row justify-between"
-          style={{ width: '850px' }}
-        >
-          <ProjectExplorer project={duplicated}></ProjectExplorer>
-          <ProjectExplorer project={duplicated}></ProjectExplorer>
-          <ProjectExplorer project={duplicated1}></ProjectExplorer>
-          <ProjectExplorer project={duplicated1}></ProjectExplorer>
-        </section>
         <ProjectGrid
           searchResults={searchResults}
           projects={projects}

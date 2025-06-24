@@ -15,13 +15,9 @@ import type {
   FileExplorerEntry,
   FileExplorerRow,
 } from '@src/components/Explorer/utils'
-import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { useState, useRef, useEffect } from 'react'
 import { systemIOActor, useSettings } from '@src/lib/singletons'
-import {
-  SystemIOMachineEvents,
-  RequestedKCLFile,
-} from '@src/machines/systemIO/utils'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import {
   alwaysEndFileWithEXT,

@@ -1,5 +1,10 @@
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { useState, type MouseEventHandler, type ReactNode } from 'react'
+import {
+  useState,
+  useEffect,
+  type MouseEventHandler,
+  type ReactNode,
+} from 'react'
 import type { ContextFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -20,20 +25,15 @@ import { editorManager, systemIOActor, useSettings } from '@src/lib/singletons'
 import type { settingsMachine } from '@src/machines/settingsMachine'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
-
 import { parentPathRelativeToProject, PATHS } from '@src/lib/paths'
 import type { IndexLoaderData } from '@src/lib/types'
 import { useRouteLoaderData } from 'react-router-dom'
-import {
-  addPlaceHoldersForNewFileAndFolder,
-  FileExplorerEntry,
-} from '@src/components/Explorer/utils'
-import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
+import type { FileExplorerEntry } from '@src/components/Explorer/utils'
+import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
 import { useFolders } from '@src/machines/systemIO/hooks'
-import { useState, useEffect } from 'react'
 import type { Project } from '@src/lib/project'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { FILE_EXT, ONBOARDING_PROJECT_NAME } from '@src/lib/constants'
+import { FILE_EXT } from '@src/lib/constants'
 
 export type SidebarType =
   | 'code'
