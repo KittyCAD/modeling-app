@@ -229,16 +229,20 @@ export const sidebarPanes: SidebarPane[] = [
             onClose={props.onClose}
           />
           {theProject && file ? (
-            <ProjectExplorer
-              project={theProject}
-              file={file}
-              createFilePressed={createFilePressed}
-              createFolderPressed={createFolderPressed}
-              refreshExplorerPressed={refreshExplorerPressed}
-              collapsePressed={collapsePressed}
-              onRowClicked={onRowClicked}
-              onRowEnter={onRowClicked}
-            ></ProjectExplorer>
+            <div className={'w-full h-full flex flex-col'}>
+              <ProjectExplorer
+                project={theProject}
+                file={file}
+                createFilePressed={createFilePressed}
+                createFolderPressed={createFolderPressed}
+                refreshExplorerPressed={refreshExplorerPressed}
+                collapsePressed={collapsePressed}
+                onRowClicked={onRowClicked}
+                onRowEnter={onRowClicked}
+                canNavigate={true}
+                readOnly={false}
+              ></ProjectExplorer>
+            </div>
           ) : (
             <div></div>
           )}

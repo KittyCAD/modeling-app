@@ -58,6 +58,8 @@ export const ProjectExplorer = ({
   collapsePressed,
   onRowClicked,
   onRowEnter,
+  readOnly,
+  canNavigate,
 }: {
   project: Project
   file: FileEntry | undefined
@@ -67,6 +69,8 @@ export const ProjectExplorer = ({
   collapsePressed: number
   onRowClicked: (row: FileExplorerEntry, domIndex: number) => void
   onRowEnter: (row: FileExplorerEntry, domIndex: number) => void
+  readOnly: boolean
+  canNavigate: boolean
 }) => {
   const { errors } = useKclContext()
   const settings = useSettings()
@@ -121,7 +125,7 @@ export const ProjectExplorer = ({
    * If code wants to externall trigger creating a file pass in a new timestamp.
    */
   useEffect(() => {
-    if (createFilePressed <= 0) {
+    if (createFilePressed <= 0 || readOnly) {
       return
     }
 
@@ -136,7 +140,7 @@ export const ProjectExplorer = ({
   }, [createFilePressed])
 
   useEffect(() => {
-    if (createFolderPressed <= 0) {
+    if (createFolderPressed <= 0 || readOnly) {
       return
     }
     const row = rowsToRenderRef.current[activeIndexRef.current] || null
@@ -285,7 +289,12 @@ export const ProjectExplorer = ({
           isFake: false,
           activeIndex: activeIndex,
           onDelete: () => {
-            const shouldWeNavigate = file?.path?.startsWith(child.path)
+            if (readOnly) {
+              return
+            }
+
+            const shouldWeNavigate =
+              file?.path?.startsWith(child.path) && canNavigate
 
             if (shouldWeNavigate && file && file.path) {
               systemIOActor.send({
@@ -308,6 +317,10 @@ export const ProjectExplorer = ({
             window.electron.openInNewWindow(row.path)
           },
           onRenameStart: () => {
+            if (readOnly) {
+              return
+            }
+
             setIsRenaming(true)
             isRenamingRef.current = true
           },
@@ -353,7 +366,8 @@ export const ProjectExplorer = ({
                     absolutePathToParentDirectory,
                     requestedName
                   )
-                  const shouldWeNavigate = file?.path?.startsWith(oldPath)
+                  const shouldWeNavigate =
+                    file?.path?.startsWith(oldPath) && canNavigate
 
                   if (shouldWeNavigate && file && file.path) {
                     const requestedFileNameWithExtension =
@@ -415,16 +429,28 @@ export const ProjectExplorer = ({
                 applicationProjectDirectory
               )
 
-              // create a file if it is fake and navigate to that file!
               if (row.isFake) {
-                systemIOActor.send({
-                  type: SystemIOMachineEvents.importFileFromURL,
-                  data: {
-                    requestedCode: '',
-                    requestedProjectName: project.name,
-                    requestedFileNameWithExtension: pathRelativeToParent,
-                  },
-                })
+                // create a file if it is fake and navigate to that file!
+                if (file && canNavigate) {
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.importFileFromURL,
+                    data: {
+                      requestedCode: '',
+                      requestedProjectName: project.name,
+                      requestedFileNameWithExtension: pathRelativeToParent,
+                    },
+                  })
+                } else {
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.createBlankFile,
+                    data: {
+                      requestedAbsolutePath: joinOSPaths(
+                        getParentAbsolutePath(row.path),
+                        fileNameForcedWithOriginalExt
+                      ),
+                    },
+                  })
+                }
               } else {
                 const requestedAbsoluteFilePathWithExtension = joinOSPaths(
                   getParentAbsolutePath(row.path),
@@ -433,7 +459,8 @@ export const ProjectExplorer = ({
                 // If your router loader is within the file you are renaming then reroute to the new path on disk
                 // If you are renaming a file you are not loaded into, do not reload!
                 const shouldWeNavigate =
-                  requestedAbsoluteFilePathWithExtension === file?.path
+                  requestedAbsoluteFilePathWithExtension === file?.path &&
+                  canNavigate
                 systemIOActor.send({
                   type: shouldWeNavigate
                     ? SystemIOMachineEvents.renameFileAndNavigateToFile
