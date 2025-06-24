@@ -333,7 +333,7 @@ export const ProjectExplorer = ({
                   })
                 } else {
                   const absolutePathToParentDirectory = getParentAbsolutePath(
-                        row.path
+                    row.path
                   )
                   const oldPath = window.electron.path.join(
                     absolutePathToParentDirectory,
@@ -346,7 +346,11 @@ export const ProjectExplorer = ({
                   const shouldWeNavigate = file?.path?.startsWith(oldPath)
 
                   if (shouldWeNavigate && file && file.path) {
-                    const requestedFileNameWithExtension = parentPathRelativeToProject(file?.path?.replace(oldPath, newPath), applicationProjectDirectory)
+                    const requestedFileNameWithExtension =
+                      parentPathRelativeToProject(
+                        file?.path?.replace(oldPath, newPath),
+                        applicationProjectDirectory
+                      )
                     systemIOActor.send({
                       type: SystemIOMachineEvents.renameFolderAndNavigateToFile,
                       data: {
@@ -354,7 +358,7 @@ export const ProjectExplorer = ({
                         folderName: name,
                         absolutePathToParentDirectory,
                         requestedProjectName: project.name,
-                        requestedFileNameWithExtension
+                        requestedFileNameWithExtension,
                       },
                     })
                   } else {

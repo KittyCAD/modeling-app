@@ -20,8 +20,8 @@ import type { AppMachineContext } from '@src/lib/types'
  * report               = fileNameWithoutExtension
  * report.csv           = fileNameWithExtension
  * /some/dir/report.csv = absolutePathToFileNameWithExtension
- * /some/dir/report     = absolutePathTOFileNameWithoutExtension
- * /some/dir/dreport    = absolutePathToDirectory
+ * /some/dir/report     = absolutePathToFileNameWithoutExtension
+ * /some/dir/report    = absolutePathToDirectory
  * some/dir/report      = relativePathToDirectory
  * some/dir/report      = relativePathFileWithoutExtension
  */
@@ -192,7 +192,7 @@ export const systemIOMachine = setup({
             requestedProjectName: string
             requestedFileNameWithExtension: string
           }
-        }
+        },
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -436,7 +436,13 @@ export const systemIOMachine = setup({
           requestedFileNameWithExtension?: string
         }
       }) => {
-        return { message: '', folderName: '', requestedFolderName: '', requestedProjectName: '', requestedFileNameWithExtension:''}
+        return {
+          message: '',
+          folderName: '',
+          requestedFolderName: '',
+          requestedProjectName: '',
+          requestedFileNameWithExtension: '',
+        }
       }
     ),
     [SystemIOMachineActors.renameFile]: fromPromise(
@@ -1092,7 +1098,10 @@ export const systemIOMachine = setup({
         id: SystemIOMachineActors.renameFolderAndNavigateToFile,
         src: SystemIOMachineActors.renameFolder,
         input: ({ context, event, self }) => {
-          assertEvent(event, SystemIOMachineEvents.renameFolderAndNavigateToFile)
+          assertEvent(
+            event,
+            SystemIOMachineEvents.renameFolderAndNavigateToFile
+          )
           return {
             context,
             requestedFolderName: event.data.requestedFolderName,
@@ -1101,13 +1110,14 @@ export const systemIOMachine = setup({
               event.data.absolutePathToParentDirectory,
             rootContext: self.system.get('root').getSnapshot().context,
             requestedProjectName: event.data.requestedProjectName,
-            requestedFileNameWithExtension: event.data.requestedFileNameWithExtension
+            requestedFileNameWithExtension:
+              event.data.requestedFileNameWithExtension,
           }
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
           actions: [
-              assign({
+            assign({
               requestedFileName: ({ event }) => {
                 assertEvent(
                   event,
@@ -1115,19 +1125,17 @@ export const systemIOMachine = setup({
                 )
                 // Gotcha: file could have an ending of .kcl...
                 const file =
-                  event.output.requestedFileNameWithExtension.endsWith(
-                    '.kcl'
-                  )
+                  event.output.requestedFileNameWithExtension.endsWith('.kcl')
                     ? event.output.requestedFileNameWithExtension
-                    : event.output.requestedFileNameWithExtension +
-                      '.kcl'
+                    : event.output.requestedFileNameWithExtension + '.kcl'
                 return {
                   project: event.output.requestedProjectName,
                   file,
                 }
               },
             }),
-            SystemIOMachineActions.toastSuccess],
+            SystemIOMachineActions.toastSuccess,
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,
