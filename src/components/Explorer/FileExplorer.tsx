@@ -62,7 +62,7 @@ export const FileExplorer = ({
 }: {
   rowsToRender: FileExplorerRow[]
   selectedRow: FileExplorerEntry | null
-  contextMenuRow: FileExplorerRow | null
+  contextMenuRow: FileExplorerEntry | null
   isRenaming: boolean
 }) => {
   return (

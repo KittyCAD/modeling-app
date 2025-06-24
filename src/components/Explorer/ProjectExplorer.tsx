@@ -600,9 +600,10 @@ export const ProjectExplorer = ({
       setActiveIndex(CONTAINER_IS_SELECTED)
     }
 
-    const handleBlur = (event) => {
+    const handleBlur = (event: FocusEvent) => {
       const path = event.composedPath ? event.composedPath() : []
       if (
+        projectExplorerRef.current instanceof HTMLDivElement &&
         fileExplorerContainer.current &&
         !path.includes(projectExplorerRef.current)
       ) {
