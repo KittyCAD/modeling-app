@@ -2007,8 +2007,7 @@ export fn conic(
 ///   |> startProfile(at = [0,0])
 ///   |> parabolic(
 ///         end = [10,0],
-///         coefficient = 2,
-///         interior = [0,0]
+///         coefficients = [2, 0, 0],
 ///   )
 ///   |>close()
 ///```
@@ -2033,8 +2032,8 @@ export fn parabolic(
 /// Calculate the point (x, y) on a parabola given x or y and the coefficients [a, b, c] of the parabola.
 ///
 /// ```kcl
-/// point001 = parabolicPoint(x = 5, a = 0.1, b = 0, c = 0)
-/// point002 = parabolicPoint(y = 2.5, a = 0.1, b = 0, c = 0)
+/// point001 = parabolicPoint(x = 5, coefficients = [0.1, 0, 0])
+/// point002 = parabolicPoint(y = 2.5, coefficients = [0.1, 0, 0])
 /// assert(point001[0], isEqualTo = point002[0])
 /// assert(point001[1], isEqualTo = point002[1])
 ///```
@@ -2101,13 +2100,14 @@ export fn hyperbolicPoint(
 /// Add a parabolic section to an existing sketch.
 ///
 /// ```kcl
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [0, 0])
-///   |> elliptic(
-///         endAbsolute = [10,0],
-///         interiorAbsolute = [5,5]
-///      )
-///   |> close()
+/// majorRadius = 2
+/// minorRadius = 1
+/// ellip = ellipticPoint(majorRadius, minorRadius, x = 2)
+///
+/// exampleSketch = startSketchOn(XY)
+///    |> startProfile(at = ellip, tag = $start)
+///    |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160, majorRadius, minorRadius)
+///    |> close()
 /// example = extrude(exampleSketch, length = 10)
 /// ```
 @(impl = std_rust)
