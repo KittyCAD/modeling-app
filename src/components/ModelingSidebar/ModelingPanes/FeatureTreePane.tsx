@@ -257,6 +257,7 @@ const OperationItemWrapper = ({
   customSuffix,
   className,
   selectable = true,
+  greyedOut = false,
   ...props
 }: React.HTMLAttributes<HTMLButtonElement> & {
   icon: CustomIconName
@@ -268,13 +269,14 @@ const OperationItemWrapper = ({
   menuItems?: ComponentProps<typeof ContextMenu>['items']
   errors?: Diagnostic[]
   selectable?: boolean
+  greyedOut?: boolean
 }) => {
   const menuRef = useRef<HTMLDivElement>(null)
 
   return (
     <div
       ref={menuRef}
-      className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/10 hover:bg-primary/5' : ''}`}
+      className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/10 hover:bg-primary/5' : ''} ${greyedOut ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
       <button
         {...props}
@@ -584,6 +586,7 @@ const OperationItem = (props: {
       onClick={selectOperation}
       onDoubleClick={props.sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
       errors={errors}
+      greyedOut={!enabled}
     />
   )
 }
