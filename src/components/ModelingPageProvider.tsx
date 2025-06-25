@@ -16,7 +16,13 @@ import { useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 
-export const FileMachineProvider = ({
+/**
+ * FileMachineProvider moved to ModelingPageProvider. 
+ * This is a root provider for the modeling page to initialize any react code required for the run
+ * time of the modeling page.
+ */
+
+export const ModelingPageProvider = ({
   children,
 }: {
   children: React.ReactNode
@@ -63,7 +69,7 @@ export const FileMachineProvider = ({
     markOnce('code/didLoadFile')
   }, [])
 
-  // Due to the route provider, i've moved this to the FileMachineProvider instead of CommandBarProvider
+  // Due to the route provider, i've moved this to the ModelingPageProvider instead of CommandBarProvider
   // This will register the commands to route to Telemetry, Home, and Settings.
   useEffect(() => {
     const filePath =
@@ -97,16 +103,6 @@ export const FileMachineProvider = ({
         },
       })
     }
-
-    // TODO: KEVIN DELETE
-    // // GOTCHA: If we call navigate() while in the /file route the fileMachineProvider
-    // // has a context.project of the original one that was loaded. It does not update
-    // // Watch when the navigation changes, if it changes set a new Project within the fileMachine
-    // // to load the latest state of the project you are in.
-    // if (project) {
-    //   // TODO: Clean this up with global application state when fileMachine gets merged into SystemIOMachine
-    //   send({ type: 'Refresh with new project', data: { project } })
-    // }
   }, [location])
 
   const cb = modelingMenuCallbackMostActions(
@@ -176,4 +172,4 @@ export const FileMachineProvider = ({
   return <div>{children}</div>
 }
 
-export default FileMachineProvider
+export default ModelingPageProvider
