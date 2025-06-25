@@ -289,6 +289,13 @@ export class SceneFixture {
       'true'
     )
   }
+
+  /**
+   * Returns the row within the explorer that is clickable
+   */
+  getFileRowFromExplorer(name: string) {
+    return this.page.getByRole('treeitem', { name })
+  }
 }
 
 function isColourArray(

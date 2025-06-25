@@ -246,7 +246,7 @@ test(
 test(
   'open a file in a project works and renders, open empty file, it should clear the scene',
   { tag: '@desktop' },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, scene }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -289,8 +289,8 @@ test(
       // open the file pane.
       await page.getByTestId('files-pane-button').click()
 
-      // OPen the other file.
-      const file = page.getByRole('button', { name: 'empty.kcl' })
+      // Open the other file.
+      const file = scene.getFileRowFromExplorer('empty.kcl')
       await expect(file).toBeVisible()
 
       await file.click()
@@ -358,7 +358,7 @@ test(
       await page.getByTestId('files-pane-button').click()
 
       // Open the other file.
-      const file = page.getByRole('button', { name: 'broken-code-test.kcl' })
+      const file = scene.getFileRowFromExplorer('broken-code-test.kcl')
       await expect(file).toBeVisible()
 
       await file.click()
