@@ -1762,17 +1762,6 @@ pub async fn elliptic_point(exec_state: &mut ExecState, args: Args) -> Result<Kc
     args.make_kcl_val_from_point(elliptic_point, exec_state.length_unit().into())
 }
 
-// #[stdlib {
-//     name = "ellipticPoint",
-//     unlabeled_first = false,
-//     args = {
-//         major_radius = { docs = "The major radius a of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1." },
-//         minor_radius = { docs = "The minor radius b of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1." },
-//         x = { docs = "The x value of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Will calculate the point y that satisfies the equation and returns (x, y). Incompatible with `y`."},
-//         y = { docs = "The y value of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Will calculate the point x that satisfies the equation and returns (x, y). Incompatible with `x`."},
-//     },
-//     tags = ["sketch"]
-// }]
 async fn inner_elliptic_point(
     x: Option<TyF64>,
     y: Option<TyF64>,
