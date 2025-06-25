@@ -280,7 +280,7 @@ export fn circle(
 @(impl = std_rust)
 export fn ellipse(
   /// Sketch to extend, or plane or surface to sketch on.
-  @sketch_or_surface: Sketch | Plane | Face,
+  @sketchOrSurface: Sketch | Plane | Face,
   /// The center of the ellipse.
   @(snippetArray = ["0", "0"])
   center: Point2d,
