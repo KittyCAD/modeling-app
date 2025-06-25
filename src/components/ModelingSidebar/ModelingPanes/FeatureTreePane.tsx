@@ -569,7 +569,8 @@ const OperationItem = (props: {
     [props.item, props.send]
   )
 
-  const isOffsetPlane = props.item.type === 'StdLibCall' && props.item.name === 'offsetPlane'
+  const isOffsetPlane =
+    props.item.type === 'StdLibCall' && props.item.name === 'offsetPlane'
   const enabled = !props.sketchNoFace || isOffsetPlane
 
   return (
