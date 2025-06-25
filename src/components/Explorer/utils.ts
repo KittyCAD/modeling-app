@@ -101,7 +101,7 @@ const flattenProjectHelper = (
       name: f.name,
     }),
     setSize,
-    positionInSet
+    positionInSet,
   }
   // keep track of the file once within the recursive list that will be built up
   list.push(content)
@@ -120,7 +120,7 @@ const flattenProjectHelper = (
       constructPath({ parentPath: parentPath, name: f.name }),
       level + 1,
       f.children.length,
-      i+1
+      i + 1
     )
   }
 }
@@ -145,7 +145,7 @@ export const flattenProject = (
       projectName, // first parent
       0,
       projectChildren.length,
-      index+1
+      index + 1
     )
   }
   return flattenTreeInOrder
