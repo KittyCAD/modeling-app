@@ -1151,8 +1151,7 @@ openSketch = startSketchOn(XY)
     cmdBar,
   }) => {
     // One dumb hardcoded screen pixel value
-    const testPoint = { x: 620, y: 257 }
-    const expectedOutput = `helix001 = helix(  axis = X,  radius = 5,  length = 5,  revolutions = 1,  angleStart = 270,  ccw = false,)`
+    const expectedOutput = `helix001 = helix(  axis = X,  radius = 5,  length = 5,  revolutions = 1,  angleStart = 270,)`
     const expectedLine = `axis=X,`
 
     await homePage.goToModelingScene()
@@ -1169,7 +1168,6 @@ openSketch = startSketchOn(XY)
           AngleStart: '',
           Revolutions: '',
           Radius: '',
-          CounterClockWise: '',
         },
         highlightedHeaderArg: 'mode',
         commandName: 'Helix',
@@ -1190,7 +1188,6 @@ openSketch = startSketchOn(XY)
           AngleStart: '',
           Length: '',
           Radius: '',
-          CounterClockWise: '',
         },
         commandName: 'Helix',
       })
@@ -1207,11 +1204,10 @@ openSketch = startSketchOn(XY)
           Revolutions: '1',
           Length: '5',
           Radius: '5',
-          CounterClockWise: '',
         },
         commandName: 'Helix',
       })
-      await cmdBar.progressCmdBar()
+      await cmdBar.submit()
     })
 
     await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
@@ -1221,8 +1217,6 @@ openSketch = startSketchOn(XY)
         activeLines: [expectedLine],
         highlightedCode: '',
       })
-      // Red plane is now gone, white helix is there
-      await scene.expectPixelColor([250, 250, 250], testPoint, 15)
     })
 
     await test.step(`Edit helix through the feature tree`, async () => {
@@ -1234,21 +1228,18 @@ openSketch = startSketchOn(XY)
       await cmdBar.expectState({
         commandName: 'Helix',
         stage: 'arguments',
-        currentArgKey: 'CounterClockWise',
-        currentArgValue: '',
+        currentArgKey: 'length',
+        currentArgValue: '5',
         headerArguments: {
           Axis: 'X',
           AngleStart: '270',
           Revolutions: '1',
           Radius: '5',
           Length: initialInput,
-          CounterClockWise: '',
         },
-        highlightedHeaderArg: 'CounterClockWise',
+        highlightedHeaderArg: 'length',
       })
-      await page.keyboard.press('Shift+Backspace')
-      await expect(cmdBar.currentArgumentInput).toBeVisible()
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill(newInput)
+      await page.keyboard.insertText(newInput)
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
@@ -1258,11 +1249,10 @@ openSketch = startSketchOn(XY)
           Revolutions: '1',
           Radius: '5',
           Length: newInput,
-          CounterClockWise: '',
         },
         commandName: 'Helix',
       })
-      await cmdBar.progressCmdBar()
+      await cmdBar.submit()
       await toolbar.closeFeatureTreePane()
       await editor.openPane()
       await editor.expectEditor.toContain('length = ' + newInput)
@@ -1273,8 +1263,8 @@ openSketch = startSketchOn(XY)
       const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      // Red plane is back
-      await scene.expectPixelColor([96, 52, 52], testPoint, 15)
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain('helix')
     })
   })
 

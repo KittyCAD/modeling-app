@@ -590,7 +590,7 @@ export function addHelix({
   angleStart: Expr
   radius?: Expr
   length?: Expr
-  ccw: boolean
+  ccw?: boolean
   insertIndex?: number
   variableName?: string
 }): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
@@ -610,6 +610,9 @@ export function addHelix({
     )
   }
 
+  // Extra labeled args expressions
+  const ccwExpr = ccw ? [createLabeledArg('ccw', createLiteral(ccw))] : []
+
   const variable = createVariableDeclaration(
     name,
     createCallExpressionStdLibKw(
@@ -619,7 +622,7 @@ export function addHelix({
         ...modeArgs,
         createLabeledArg('revolutions', revolutions),
         createLabeledArg('angleStart', angleStart),
-        createLabeledArg('ccw', createLiteral(ccw)),
+        ...ccwExpr,
       ]
     )
   )
