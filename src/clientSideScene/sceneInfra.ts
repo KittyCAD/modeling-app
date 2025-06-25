@@ -732,7 +732,7 @@ export class SceneInfra {
         defaultPlanes.negYz,
       ].includes(defaultPlaneId)
     ) {
-      console.warn('Supplied defaultPlaneId is not valid:', defaultPlaneId)
+      // Supplied defaultPlaneId is not a valid default plane id
       return false
     }
 
@@ -826,8 +826,11 @@ export class SceneInfra {
           })
           resolve(true)
         })
+      } else {
+        // selectOffsetSketchPlane called with an invalid artifact type',
+
+        resolve(false)
       }
-      resolve(false)
     })
   }
 }
