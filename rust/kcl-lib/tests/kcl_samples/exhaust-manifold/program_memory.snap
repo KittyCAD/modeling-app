@@ -30,6 +30,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": {
             "commentStart": 2009,
             "end": 2015,
+            "moduleId": 0,
             "start": 2009,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -64,6 +65,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": {
             "commentStart": 2183,
             "end": 2189,
+            "moduleId": 0,
             "start": 2183,
             "type": "TagDeclarator",
             "value": "seg03"
@@ -77,6 +79,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": {
             "commentStart": 2232,
             "end": 2238,
+            "moduleId": 0,
             "start": 2232,
             "type": "TagDeclarator",
             "value": "seg04"
@@ -90,6 +93,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": {
             "commentStart": 2271,
             "end": 2277,
+            "moduleId": 0,
             "start": 2271,
             "type": "TagDeclarator",
             "value": "seg05"
@@ -124,6 +128,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": {
             "commentStart": 2455,
             "end": 2461,
+            "moduleId": 0,
             "start": 2455,
             "type": "TagDeclarator",
             "value": "seg07"
@@ -137,6 +142,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": {
             "commentStart": 2512,
             "end": 2518,
+            "moduleId": 0,
             "start": 2512,
             "type": "TagDeclarator",
             "value": "seg08"
@@ -150,6 +156,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": {
             "commentStart": 2562,
             "end": 2568,
+            "moduleId": 0,
             "start": 2562,
             "type": "TagDeclarator",
             "value": "seg09"
@@ -194,6 +201,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "tag": {
               "commentStart": 2009,
               "end": 2015,
+              "moduleId": 0,
               "start": 2009,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -291,6 +299,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "tag": {
               "commentStart": 2183,
               "end": 2189,
+              "moduleId": 0,
               "start": 2183,
               "type": "TagDeclarator",
               "value": "seg03"
@@ -316,6 +325,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "tag": {
               "commentStart": 2232,
               "end": 2238,
+              "moduleId": 0,
               "start": 2232,
               "type": "TagDeclarator",
               "value": "seg04"
@@ -341,6 +351,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "tag": {
               "commentStart": 2271,
               "end": 2277,
+              "moduleId": 0,
               "start": 2271,
               "type": "TagDeclarator",
               "value": "seg05"
@@ -438,6 +449,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "tag": {
               "commentStart": 2455,
               "end": 2461,
+              "moduleId": 0,
               "start": 2455,
               "type": "TagDeclarator",
               "value": "seg07"
@@ -463,6 +475,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "tag": {
               "commentStart": 2512,
               "end": 2518,
+              "moduleId": 0,
               "start": 2512,
               "type": "TagDeclarator",
               "value": "seg08"
@@ -488,6 +501,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "tag": {
               "commentStart": 2562,
               "end": 2568,
+              "moduleId": 0,
               "start": 2562,
               "type": "TagDeclarator",
               "value": "seg09"

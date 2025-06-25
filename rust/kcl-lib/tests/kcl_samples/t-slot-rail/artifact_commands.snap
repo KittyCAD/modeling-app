@@ -346,14 +346,6 @@ description: Artifact commands t-slot-rail.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "entity_mirror",
         "ids": [
           "[uuid]"
@@ -374,14 +366,6 @@ description: Artifact commands t-slot-rail.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "entity_mirror",
         "ids": [
           "[uuid]"
@@ -396,14 +380,6 @@ description: Artifact commands t-slot-rail.kcl
           "y": 0.0,
           "z": 0.0
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
       }
     },
     {

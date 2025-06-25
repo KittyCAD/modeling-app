@@ -14,6 +14,7 @@ function tagDeclaratorWithIndex(
       value,
       start,
       end,
+      moduleId: 0,
       commentStart: start,
     },
     bodyIndex,

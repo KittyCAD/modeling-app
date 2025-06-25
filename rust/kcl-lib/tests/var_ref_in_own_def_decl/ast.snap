@@ -13,6 +13,7 @@ description: Result of parsing var_ref_in_own_def_decl.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "declare",
             "start": 0,
             "type": "Identifier"
@@ -28,6 +29,7 @@ description: Result of parsing var_ref_in_own_def_decl.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
@@ -35,6 +37,7 @@ description: Result of parsing var_ref_in_own_def_decl.kcl
                     "init": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -44,11 +47,13 @@ description: Result of parsing var_ref_in_own_def_decl.kcl
                         "suffix": "None"
                       }
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -58,9 +63,11 @@ description: Result of parsing var_ref_in_own_def_decl.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
@@ -72,6 +79,7 @@ description: Result of parsing var_ref_in_own_def_decl.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -79,20 +87,24 @@ description: Result of parsing var_ref_in_own_def_decl.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [],
             "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -105,6 +117,7 @@ description: Result of parsing var_ref_in_own_def_decl.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "x",
             "start": 0,
             "type": "Identifier"
@@ -116,9 +129,11 @@ description: Result of parsing var_ref_in_own_def_decl.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "x",
                 "start": 0,
                 "type": "Identifier"
@@ -128,15 +143,19 @@ description: Result of parsing var_ref_in_own_def_decl.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "+",
             "right": {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "declare",
                   "start": 0,
                   "type": "Identifier"
@@ -147,6 +166,7 @@ description: Result of parsing var_ref_in_own_def_decl.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -156,11 +176,13 @@ description: Result of parsing var_ref_in_own_def_decl.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -168,12 +190,14 @@ description: Result of parsing var_ref_in_own_def_decl.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

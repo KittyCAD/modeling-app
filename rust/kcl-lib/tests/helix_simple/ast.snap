@@ -13,6 +13,7 @@ description: Result of parsing helix_simple.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "helper001",
             "start": 0,
             "type": "Identifier"
@@ -20,13 +21,16 @@ description: Result of parsing helix_simple.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -37,6 +41,7 @@ description: Result of parsing helix_simple.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -44,9 +49,11 @@ description: Result of parsing helix_simple.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XZ",
                     "start": 0,
                     "type": "Identifier"
@@ -64,6 +71,7 @@ description: Result of parsing helix_simple.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -74,6 +82,7 @@ description: Result of parsing helix_simple.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -86,6 +95,7 @@ description: Result of parsing helix_simple.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -97,6 +107,7 @@ description: Result of parsing helix_simple.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -107,9 +118,11 @@ description: Result of parsing helix_simple.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -120,6 +133,7 @@ description: Result of parsing helix_simple.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -132,6 +146,7 @@ description: Result of parsing helix_simple.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -142,6 +157,7 @@ description: Result of parsing helix_simple.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -154,6 +170,7 @@ description: Result of parsing helix_simple.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "10",
                           "start": 0,
                           "type": "Literal",
@@ -165,6 +182,7 @@ description: Result of parsing helix_simple.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -175,6 +193,7 @@ description: Result of parsing helix_simple.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -182,6 +201,7 @@ description: Result of parsing helix_simple.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -193,9 +213,11 @@ description: Result of parsing helix_simple.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -206,6 +228,7 @@ description: Result of parsing helix_simple.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -214,15 +237,18 @@ description: Result of parsing helix_simple.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "// Create a helix around an edge."
         ],
@@ -238,6 +264,7 @@ description: Result of parsing helix_simple.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "helixPath",
             "start": 0,
             "type": "Identifier"
@@ -249,6 +276,7 @@ description: Result of parsing helix_simple.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "angleStart",
                   "start": 0,
                   "type": "Identifier"
@@ -256,6 +284,7 @@ description: Result of parsing helix_simple.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "0",
                   "start": 0,
                   "type": "Literal",
@@ -271,6 +300,7 @@ description: Result of parsing helix_simple.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "ccw",
                   "start": 0,
                   "type": "Identifier"
@@ -278,6 +308,7 @@ description: Result of parsing helix_simple.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "true",
                   "start": 0,
                   "type": "Literal",
@@ -290,6 +321,7 @@ description: Result of parsing helix_simple.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "revolutions",
                   "start": 0,
                   "type": "Identifier"
@@ -297,6 +329,7 @@ description: Result of parsing helix_simple.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "5",
                   "start": 0,
                   "type": "Literal",
@@ -312,6 +345,7 @@ description: Result of parsing helix_simple.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
@@ -319,6 +353,7 @@ description: Result of parsing helix_simple.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "10",
                   "start": 0,
                   "type": "Literal",
@@ -334,6 +369,7 @@ description: Result of parsing helix_simple.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "radius",
                   "start": 0,
                   "type": "Identifier"
@@ -341,6 +377,7 @@ description: Result of parsing helix_simple.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "5",
                   "start": 0,
                   "type": "Literal",
@@ -356,6 +393,7 @@ description: Result of parsing helix_simple.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
@@ -364,9 +402,11 @@ description: Result of parsing helix_simple.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "edge001",
                     "start": 0,
                     "type": "Identifier"
@@ -382,9 +422,11 @@ description: Result of parsing helix_simple.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "helix",
                 "start": 0,
                 "type": "Identifier"
@@ -395,16 +437,19 @@ description: Result of parsing helix_simple.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": null
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -412,12 +457,14 @@ description: Result of parsing helix_simple.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

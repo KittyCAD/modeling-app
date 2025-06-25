@@ -13,7 +13,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
 import type { CallExpressionKw, PathToNode } from '@src/lang/wasm'
-import { defaultSourceRange } from '@src/lang/wasm'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { getEventForSelectWithPoint } from '@src/lib/selections'
 import {

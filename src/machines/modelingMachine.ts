@@ -2435,12 +2435,22 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { nodeToEdit, sketches, length } = input
+        const {
+          nodeToEdit,
+          sketches,
+          length,
+          symmetric,
+          bidirectionalLength,
+          twistAngle,
+        } = input
         const { ast } = kclManager
         const astResult = addExtrude({
           ast,
           sketches,
           length,
+          symmetric,
+          bidirectionalLength,
+          twistAngle,
           nodeToEdit,
         })
         if (err(astResult)) {
@@ -2472,14 +2482,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { nodeToEdit, sketches, path, sectional } = input
         const { ast } = kclManager
         const astResult = addSweep({
+          ...input,
           ast,
-          sketches,
-          path,
-          sectional,
-          nodeToEdit,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2510,9 +2516,8 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { sketches } = input
         const { ast } = kclManager
-        const astResult = addLoft({ ast, sketches })
+        const astResult = addLoft({ ast, ...input })
         if (err(astResult)) {
           return Promise.reject(astResult)
         }
@@ -2542,16 +2547,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { nodeToEdit, sketches, angle, axis, edge, axisOrEdge } = input
         const { ast } = kclManager
         const astResult = addRevolve({
           ast,
-          sketches,
-          angle,
-          axisOrEdge,
-          axis,
-          edge,
-          nodeToEdit,
+          ...input,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)

@@ -56,7 +56,6 @@ pub struct Node<T> {
     pub inner: T,
     pub start: usize,
     pub end: usize,
-    #[serde(default, skip_serializing_if = "ModuleId::is_top_level")]
     pub module_id: ModuleId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub outer_attrs: NodeList<Annotation>,
@@ -1885,7 +1884,6 @@ pub struct ExpressionStatement {
 pub struct CallExpressionKw {
     pub callee: Node<Name>,
     pub unlabeled: Option<Expr>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub arguments: Vec<LabeledArg>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]

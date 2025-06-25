@@ -22,6 +22,7 @@ description: Variables in memory after executing sketch_on_face.kcl
           "tag": {
             "commentStart": 106,
             "end": 111,
+            "moduleId": 0,
             "start": 106,
             "type": "TagDeclarator",
             "value": "here"
@@ -66,6 +67,7 @@ description: Variables in memory after executing sketch_on_face.kcl
             "tag": {
               "commentStart": 106,
               "end": 111,
+              "moduleId": 0,
               "start": 106,
               "type": "TagDeclarator",
               "value": "here"
@@ -356,6 +358,7 @@ description: Variables in memory after executing sketch_on_face.kcl
                 "tag": {
                   "commentStart": 106,
                   "end": 111,
+                  "moduleId": 0,
                   "start": 106,
                   "type": "TagDeclarator",
                   "value": "here"
@@ -400,6 +403,7 @@ description: Variables in memory after executing sketch_on_face.kcl
                   "tag": {
                     "commentStart": 106,
                     "end": 111,
+                    "moduleId": 0,
                     "start": 106,
                     "type": "TagDeclarator",
                     "value": "here"

@@ -25,7 +25,7 @@ import type {
   HelixModes,
   ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import type { KclExpression } from '@src/lib/commandTypes'
+import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import {
   stringToKclExpression,
   retrieveArgFromPipedCallExpression,
@@ -134,12 +134,116 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     return { reason: "Couldn't retrieve length argument" }
   }
 
+  // symmetric argument from a string to boolean
+  let symmetric: boolean | undefined
+  if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
+    symmetric =
+      codeManager.code.slice(
+        operation.labeledArgs.symmetric.sourceRange[0],
+        operation.labeledArgs.symmetric.sourceRange[1]
+      ) === 'true'
+  }
+
+  // bidirectionalLength argument from a string to a KCL expression
+  let bidirectionalLength: KclCommandValue | undefined
+  if (
+    'bidirectionalLength' in operation.labeledArgs &&
+    operation.labeledArgs.bidirectionalLength
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.bidirectionalLength.sourceRange[0],
+        operation.labeledArgs.bidirectionalLength.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve bidirectionalLength argument" }
+    }
+
+    bidirectionalLength = result
+  }
+
+  // twistAngle argument from a string to a KCL expression
+  let twistAngle: KclCommandValue | undefined
+  if (
+    'twistAngle' in operation.labeledArgs &&
+    operation.labeledArgs.twistAngle
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.twistAngle.sourceRange[0],
+        operation.labeledArgs.twistAngle.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve twistAngle argument" }
+    }
+
+    twistAngle = result
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Extrude'] = {
     sketches,
     length,
+    symmetric,
+    bidirectionalLength,
+    twistAngle,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
+ * Gather up the argument values for the Loft command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'Loft',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  // 1. Map the unlabeled arguments to solid2d selections
+  const sketches = getSketchSelectionsFromOperation(
+    operation,
+    kclManager.artifactGraph
+  )
+  if (err(sketches)) {
+    return { reason: "Couldn't retrieve sketches" }
+  }
+
+  // 2.
+  // vDegree argument from a string to a KCL expression
+  let vDegree: KclCommandValue | undefined
+  if ('vDegree' in operation.labeledArgs && operation.labeledArgs.vDegree) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.vDegree.sourceRange[0],
+        operation.labeledArgs.vDegree.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve vDegree argument" }
+    }
+
+    vDegree = result
+  }
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Loft'] = {
+    sketches,
+    vDegree,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -467,32 +571,45 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
 
   // 2. Prepare labeled arguments
   // Same roundabout but twice for 'path' aka trajectory: sketch -> path -> segment
-  if (operation.labeledArgs.path?.value.type !== 'Sketch') {
-    return { reason: "Couldn't retrieve trajectory argument" }
+  if (
+    operation.labeledArgs.path?.value.type !== 'Sketch' &&
+    operation.labeledArgs.path?.value.type !== 'Helix'
+  ) {
+    return { reason: "Couldn't retrieve path argument" }
   }
 
   const trajectoryPathArtifact = getArtifactOfTypes(
     {
       key: operation.labeledArgs.path.value.value.artifactId,
-      types: ['path'],
+      types: ['path', 'helix'],
     },
     kclManager.artifactGraph
   )
 
-  if (err(trajectoryPathArtifact) || trajectoryPathArtifact.type !== 'path') {
+  if (
+    err(trajectoryPathArtifact) ||
+    (trajectoryPathArtifact.type !== 'path' &&
+      trajectoryPathArtifact.type !== 'helix')
+  ) {
     return { reason: "Couldn't retrieve trajectory path artifact" }
   }
 
-  const trajectoryArtifact = getArtifactOfTypes(
-    {
-      key: trajectoryPathArtifact.segIds[0],
-      types: ['segment'],
-    },
-    kclManager.artifactGraph
-  )
+  const trajectoryArtifact =
+    trajectoryPathArtifact.type === 'path'
+      ? getArtifactOfTypes(
+          {
+            key: trajectoryPathArtifact.segIds[0],
+            types: ['segment'],
+          },
+          kclManager.artifactGraph
+        )
+      : trajectoryPathArtifact
 
-  if (err(trajectoryArtifact) || trajectoryArtifact.type !== 'segment') {
-    console.log(trajectoryArtifact)
+  if (
+    err(trajectoryArtifact) ||
+    (trajectoryArtifact.type !== 'segment' &&
+      trajectoryArtifact.type !== 'helix')
+  ) {
     return { reason: "Couldn't retrieve trajectory artifact" }
   }
 
@@ -506,7 +623,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     otherSelections: [],
   }
 
-  // sectional argument from a string to a KCL expression
+  // optional arguments
   let sectional: boolean | undefined
   if ('sectional' in operation.labeledArgs && operation.labeledArgs.sectional) {
     sectional =
@@ -516,6 +633,17 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
       ) === 'true'
   }
 
+  let relativeTo: string | undefined
+  if (
+    'relativeTo' in operation.labeledArgs &&
+    operation.labeledArgs.relativeTo
+  ) {
+    relativeTo = codeManager.code.slice(
+      operation.labeledArgs.relativeTo.sourceRange[0],
+      operation.labeledArgs.relativeTo.sourceRange[1]
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -523,6 +651,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     sketches,
     path,
     sectional,
+    relativeTo,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -900,6 +1029,35 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     return { reason: 'Error in angle argument retrieval' }
   }
 
+  // symmetric argument from a string to boolean
+  let symmetric: boolean | undefined
+  if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
+    symmetric =
+      codeManager.code.slice(
+        operation.labeledArgs.symmetric.sourceRange[0],
+        operation.labeledArgs.symmetric.sourceRange[1]
+      ) === 'true'
+  }
+
+  // bidirectionalLength argument from a string to a KCL expression
+  let bidirectionalAngle: KclCommandValue | undefined
+  if (
+    'bidirectionalAngle' in operation.labeledArgs &&
+    operation.labeledArgs.bidirectionalAngle
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.bidirectionalAngle.sourceRange[0],
+        operation.labeledArgs.bidirectionalAngle.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve bidirectionalAngle argument" }
+    }
+
+    bidirectionalAngle = result
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -909,6 +1067,8 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     axis,
     edge,
     angle,
+    symmetric,
+    bidirectionalAngle,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -970,6 +1130,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   loft: {
     label: 'Loft',
     icon: 'loft',
+    prepareToEdit: prepareToEditLoft,
     supportsAppearance: true,
     supportsTransform: true,
   },

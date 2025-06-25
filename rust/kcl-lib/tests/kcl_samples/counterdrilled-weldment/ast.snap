@@ -13,6 +13,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "boltSpacingX",
             "start": 0,
             "type": "Identifier"
@@ -20,6 +21,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "5",
             "start": 0,
             "type": "Literal",
@@ -29,11 +31,13 @@ description: Result of parsing counterdrilled-weldment.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "// Define parameters"
         ],
@@ -49,6 +53,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "boltSpacingY",
             "start": 0,
             "type": "Identifier"
@@ -56,6 +61,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "3",
             "start": 0,
             "type": "Literal",
@@ -65,11 +71,13 @@ description: Result of parsing counterdrilled-weldment.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -82,6 +90,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "boltDiameter",
             "start": 0,
             "type": "Identifier"
@@ -92,6 +101,7 @@ description: Result of parsing counterdrilled-weldment.kcl
             "left": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1",
               "start": 0,
               "type": "Literal",
@@ -101,10 +111,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                 "suffix": "None"
               }
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "4",
               "start": 0,
               "type": "Literal",
@@ -118,11 +130,13 @@ description: Result of parsing counterdrilled-weldment.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -135,6 +149,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "counterdrillDiameter",
             "start": 0,
             "type": "Identifier"
@@ -145,6 +160,7 @@ description: Result of parsing counterdrilled-weldment.kcl
             "left": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "7",
               "start": 0,
               "type": "Literal",
@@ -154,10 +170,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                 "suffix": "None"
               }
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "16",
               "start": 0,
               "type": "Literal",
@@ -171,11 +189,13 @@ description: Result of parsing counterdrilled-weldment.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -188,6 +208,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "counterdrillDepth",
             "start": 0,
             "type": "Identifier"
@@ -198,6 +219,7 @@ description: Result of parsing counterdrilled-weldment.kcl
             "left": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "3",
               "start": 0,
               "type": "Literal",
@@ -207,10 +229,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                 "suffix": "None"
               }
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "16",
               "start": 0,
               "type": "Literal",
@@ -224,11 +248,13 @@ description: Result of parsing counterdrilled-weldment.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -241,6 +267,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tubeInnerDiameter",
             "start": 0,
             "type": "Identifier"
@@ -251,6 +278,7 @@ description: Result of parsing counterdrilled-weldment.kcl
             "left": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1",
               "start": 0,
               "type": "Literal",
@@ -260,6 +288,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 "suffix": "None"
               }
             },
+            "moduleId": 0,
             "operator": "+",
             "right": {
               "commentStart": 0,
@@ -267,6 +296,7 @@ description: Result of parsing counterdrilled-weldment.kcl
               "left": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "1",
                 "start": 0,
                 "type": "Literal",
@@ -276,10 +306,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "suffix": "None"
                 }
               },
+              "moduleId": 0,
               "operator": "/",
               "right": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 0,
                 "type": "Literal",
@@ -297,11 +329,13 @@ description: Result of parsing counterdrilled-weldment.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -314,6 +348,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tubeThickness",
             "start": 0,
             "type": "Identifier"
@@ -321,6 +356,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "0.115",
             "start": 0,
             "type": "Literal",
@@ -330,11 +366,13 @@ description: Result of parsing counterdrilled-weldment.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -347,6 +385,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tubeHeight",
             "start": 0,
             "type": "Identifier"
@@ -354,6 +393,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "2",
             "start": 0,
             "type": "Literal",
@@ -363,11 +403,13 @@ description: Result of parsing counterdrilled-weldment.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -380,6 +422,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "stockThickness",
             "start": 0,
             "type": "Identifier"
@@ -387,6 +430,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": ".5",
             "start": 0,
             "type": "Literal",
@@ -396,11 +440,13 @@ description: Result of parsing counterdrilled-weldment.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -413,6 +459,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "blockLength",
             "start": 0,
             "type": "Identifier"
@@ -424,9 +471,11 @@ description: Result of parsing counterdrilled-weldment.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "boltSpacingX",
                 "start": 0,
                 "type": "Identifier"
@@ -436,6 +485,7 @@ description: Result of parsing counterdrilled-weldment.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "+",
             "right": {
               "commentStart": 0,
@@ -444,9 +494,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "boltDiameter",
                   "start": 0,
                   "type": "Identifier"
@@ -456,10 +508,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                 "type": "Name",
                 "type": "Name"
               },
+              "moduleId": 0,
               "operator": "*",
               "right": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "6",
                 "start": 0,
                 "type": "Literal",
@@ -477,11 +531,13 @@ description: Result of parsing counterdrilled-weldment.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -499,6 +555,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "blockWidth",
             "start": 0,
             "type": "Identifier"
@@ -510,9 +567,11 @@ description: Result of parsing counterdrilled-weldment.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "boltSpacingY",
                 "start": 0,
                 "type": "Identifier"
@@ -522,6 +581,7 @@ description: Result of parsing counterdrilled-weldment.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "+",
             "right": {
               "commentStart": 0,
@@ -530,9 +590,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "boltDiameter",
                   "start": 0,
                   "type": "Identifier"
@@ -542,10 +604,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                 "type": "Name",
                 "type": "Name"
               },
+              "moduleId": 0,
               "operator": "*",
               "right": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "6",
                 "start": 0,
                 "type": "Literal",
@@ -563,11 +627,13 @@ description: Result of parsing counterdrilled-weldment.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -580,6 +646,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "plateSketch",
             "start": 0,
             "type": "Identifier"
@@ -587,13 +654,16 @@ description: Result of parsing counterdrilled-weldment.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -604,6 +674,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -611,9 +682,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XY",
                     "start": 0,
                     "type": "Identifier"
@@ -631,6 +704,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -646,9 +720,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "blockLength",
                                 "start": 0,
                                 "type": "Identifier"
@@ -660,15 +736,18 @@ description: Result of parsing counterdrilled-weldment.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -690,9 +769,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "blockWidth",
                                 "start": 0,
                                 "type": "Identifier"
@@ -704,15 +785,18 @@ description: Result of parsing counterdrilled-weldment.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -728,6 +812,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -738,9 +823,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -751,6 +838,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -763,6 +851,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -770,6 +859,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -785,6 +875,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -793,9 +884,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "blockLength",
                         "start": 0,
                         "type": "Identifier"
@@ -811,6 +904,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -818,6 +912,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -829,9 +924,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angledLine",
                     "start": 0,
                     "type": "Identifier"
@@ -842,6 +939,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -854,6 +952,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -862,13 +961,16 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "commentStart": 0,
                       "end": 0,
                       "left": {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "segAng",
                             "start": 0,
                             "type": "Identifier"
@@ -879,6 +981,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -886,9 +989,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "rectangleSegmentA001",
                             "start": 0,
                             "type": "Identifier"
@@ -899,10 +1004,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "type": "Name"
                         }
                       },
+                      "moduleId": 0,
                       "operator": "+",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "90",
                         "start": 0,
                         "type": "Literal",
@@ -922,6 +1029,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -930,9 +1038,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "blockWidth",
                         "start": 0,
                         "type": "Identifier"
@@ -948,6 +1058,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -955,6 +1066,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -966,9 +1078,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angledLine",
                     "start": 0,
                     "type": "Identifier"
@@ -979,6 +1093,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -991,18 +1106,22 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "segAng",
                           "start": 0,
                           "type": "Identifier"
@@ -1013,6 +1132,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -1020,9 +1140,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "rectangleSegmentA001",
                           "start": 0,
                           "type": "Identifier"
@@ -1039,19 +1161,23 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "segLen",
                             "start": 0,
                             "type": "Identifier"
@@ -1062,6 +1188,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -1069,9 +1196,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "rectangleSegmentA001",
                             "start": 0,
                             "type": "Identifier"
@@ -1084,6 +1213,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -1095,6 +1225,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -1102,6 +1233,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -1113,9 +1245,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angledLine",
                     "start": 0,
                     "type": "Identifier"
@@ -1126,6 +1260,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1138,6 +1273,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -1146,13 +1282,16 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "commentStart": 0,
                       "elements": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartX",
                               "start": 0,
                               "type": "Identifier"
@@ -1163,25 +1302,30 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartY",
                               "start": 0,
                               "type": "Identifier"
@@ -1192,12 +1336,14 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
@@ -1205,6 +1351,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1215,6 +1362,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -1222,6 +1370,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -1233,9 +1382,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -1246,19 +1397,23 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -1269,6 +1424,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1281,6 +1437,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tool",
                       "start": 0,
                       "type": "Identifier"
@@ -1292,6 +1449,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "center",
                             "start": 0,
                             "type": "Identifier"
@@ -1302,6 +1460,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -1314,6 +1473,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -1325,6 +1485,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               }
                             ],
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
@@ -1335,6 +1496,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "radius",
                             "start": 0,
                             "type": "Identifier"
@@ -1346,9 +1508,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "tubeInnerDiameter",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1358,10 +1522,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "type": "Name",
                               "type": "Name"
                             },
+                            "moduleId": 0,
                             "operator": "/",
                             "right": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "2",
                               "start": 0,
                               "type": "Literal",
@@ -1381,9 +1547,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "circle",
                           "start": 0,
                           "type": "Identifier"
@@ -1394,6 +1562,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -1405,9 +1574,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "subtract2d",
                     "start": 0,
                     "type": "Identifier"
@@ -1418,6 +1589,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1426,15 +1598,18 @@ description: Result of parsing counterdrilled-weldment.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1452,6 +1627,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "plateBody",
             "start": 0,
             "type": "Identifier"
@@ -1465,6 +1641,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1473,9 +1650,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "stockThickness",
                         "start": 0,
                         "type": "Identifier"
@@ -1491,9 +1670,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "extrude",
                     "start": 0,
                     "type": "Identifier"
@@ -1504,6 +1685,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1511,9 +1693,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "plateSketch",
                     "start": 0,
                     "type": "Identifier"
@@ -1531,6 +1715,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1542,9 +1727,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "boltDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -1554,10 +1741,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -1577,6 +1766,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
@@ -1585,13 +1775,16 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "commentStart": 0,
                       "elements": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
                               "type": "Identifier"
@@ -1602,6 +1795,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1609,9 +1803,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "rectangleSegmentB001",
                               "start": 0,
                               "type": "Identifier"
@@ -1623,13 +1819,16 @@ description: Result of parsing counterdrilled-weldment.kcl
                           }
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
                               "type": "Identifier"
@@ -1640,6 +1839,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1647,9 +1847,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "rectangleSegmentA001",
                               "start": 0,
                               "type": "Identifier"
@@ -1661,13 +1863,16 @@ description: Result of parsing counterdrilled-weldment.kcl
                           }
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
                               "type": "Identifier"
@@ -1678,6 +1883,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1685,9 +1891,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "rectangleSegmentC001",
                               "start": 0,
                               "type": "Identifier"
@@ -1699,13 +1907,16 @@ description: Result of parsing counterdrilled-weldment.kcl
                           }
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
                               "type": "Identifier"
@@ -1716,6 +1927,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1723,9 +1935,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "rectangleSegmentD001",
                               "start": 0,
                               "type": "Identifier"
@@ -1738,6 +1952,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1748,9 +1963,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "chamfer",
                     "start": 0,
                     "type": "Identifier"
@@ -1761,6 +1978,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1769,12 +1987,14 @@ description: Result of parsing counterdrilled-weldment.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -1791,11 +2011,13 @@ description: Result of parsing counterdrilled-weldment.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1808,6 +2030,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "holePositions",
             "start": 0,
             "type": "Identifier"
@@ -1826,9 +2049,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "boltSpacingX",
                           "start": 0,
                           "type": "Identifier"
@@ -1840,15 +2065,18 @@ description: Result of parsing counterdrilled-weldment.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     },
+                    "moduleId": 0,
                     "operator": "/",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -1870,9 +2098,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "boltSpacingY",
                           "start": 0,
                           "type": "Identifier"
@@ -1884,15 +2114,18 @@ description: Result of parsing counterdrilled-weldment.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     },
+                    "moduleId": 0,
                     "operator": "/",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -1908,6 +2141,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                   }
                 ],
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
@@ -1923,9 +2157,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "boltSpacingX",
                           "start": 0,
                           "type": "Identifier"
@@ -1937,15 +2173,18 @@ description: Result of parsing counterdrilled-weldment.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     },
+                    "moduleId": 0,
                     "operator": "/",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -1966,9 +2205,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "boltSpacingY",
                         "start": 0,
                         "type": "Identifier"
@@ -1978,10 +2219,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "/",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -1997,6 +2240,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                   }
                 ],
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
@@ -2011,9 +2255,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "boltSpacingX",
                         "start": 0,
                         "type": "Identifier"
@@ -2023,10 +2269,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "/",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -2048,9 +2296,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "boltSpacingY",
                           "start": 0,
                           "type": "Identifier"
@@ -2062,15 +2312,18 @@ description: Result of parsing counterdrilled-weldment.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     },
+                    "moduleId": 0,
                     "operator": "/",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -2086,6 +2339,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                   }
                 ],
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
@@ -2100,9 +2354,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "boltSpacingX",
                         "start": 0,
                         "type": "Identifier"
@@ -2112,10 +2368,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "/",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -2136,9 +2394,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "boltSpacingY",
                         "start": 0,
                         "type": "Identifier"
@@ -2148,10 +2408,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "/",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -2167,21 +2429,25 @@ description: Result of parsing counterdrilled-weldment.kcl
                   }
                 ],
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               }
             ],
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2194,6 +2460,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "counterdrill",
             "start": 0,
             "type": "Identifier"
@@ -2209,6 +2476,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "cbdrill",
                       "start": 0,
                       "type": "Identifier"
@@ -2222,6 +2490,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "face",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2230,9 +2499,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "END",
                                   "start": 0,
                                   "type": "Identifier"
@@ -2248,9 +2519,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "startSketchOn",
                               "start": 0,
                               "type": "Identifier"
@@ -2261,6 +2534,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -2268,9 +2542,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "plateBody",
                               "start": 0,
                               "type": "Identifier"
@@ -2288,6 +2564,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "center",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2296,9 +2573,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "holePosition",
                                   "start": 0,
                                   "type": "Identifier"
@@ -2314,6 +2593,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2325,9 +2605,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "counterdrillDiameter",
                                     "start": 0,
                                     "type": "Identifier"
@@ -2337,10 +2619,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "type": "Name",
                                   "type": "Name"
                                 },
+                                "moduleId": 0,
                                 "operator": "/",
                                 "right": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
                                   "type": "Literal",
@@ -2360,9 +2644,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "circle",
                               "start": 0,
                               "type": "Identifier"
@@ -2373,6 +2659,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -2385,6 +2672,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2394,9 +2682,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "counterdrillDepth",
                                     "start": 0,
                                     "type": "Identifier"
@@ -2408,6 +2698,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 },
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "operator": "-",
                                 "start": 0,
                                 "type": "UnaryExpression",
@@ -2419,9 +2710,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "extrude",
                               "start": 0,
                               "type": "Identifier"
@@ -2432,6 +2725,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -2440,15 +2734,18 @@ description: Result of parsing counterdrilled-weldment.kcl
                       ],
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -2461,6 +2758,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "cbBolt",
                       "start": 0,
                       "type": "Identifier"
@@ -2474,6 +2772,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "face",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2482,9 +2781,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "START",
                                   "start": 0,
                                   "type": "Identifier"
@@ -2500,9 +2801,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "startSketchOn",
                               "start": 0,
                               "type": "Identifier"
@@ -2513,6 +2816,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -2520,9 +2824,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "cbdrill",
                               "start": 0,
                               "type": "Identifier"
@@ -2540,6 +2846,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "center",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2548,9 +2855,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "holePosition",
                                   "start": 0,
                                   "type": "Identifier"
@@ -2566,6 +2875,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2577,9 +2887,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "boltDiameter",
                                     "start": 0,
                                     "type": "Identifier"
@@ -2589,10 +2901,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "type": "Name",
                                   "type": "Name"
                                 },
+                                "moduleId": 0,
                                 "operator": "/",
                                 "right": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
                                   "type": "Literal",
@@ -2612,6 +2926,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "tag",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2619,6 +2934,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "TagDeclarator",
                                 "type": "TagDeclarator",
@@ -2630,9 +2946,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "circle",
                               "start": 0,
                               "type": "Identifier"
@@ -2643,6 +2961,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -2655,6 +2974,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2667,9 +2987,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "stockThickness",
                                       "start": 0,
                                       "type": "Identifier"
@@ -2681,19 +3003,23 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   },
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "operator": "-",
                                   "start": 0,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 },
+                                "moduleId": 0,
                                 "operator": "+",
                                 "right": {
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "counterdrillDepth",
                                     "start": 0,
                                     "type": "Identifier"
@@ -2713,9 +3039,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "extrude",
                               "start": 0,
                               "type": "Identifier"
@@ -2726,6 +3054,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -2738,6 +3067,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2755,9 +3085,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "counterdrillDiameter",
                                         "start": 0,
                                         "type": "Identifier"
@@ -2767,14 +3099,17 @@ description: Result of parsing counterdrilled-weldment.kcl
                                       "type": "Name",
                                       "type": "Name"
                                     },
+                                    "moduleId": 0,
                                     "operator": "-",
                                     "right": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "boltDiameter",
                                         "start": 0,
                                         "type": "Identifier"
@@ -2788,10 +3123,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "/",
                                   "right": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "raw": "2",
                                     "start": 0,
                                     "type": "Literal",
@@ -2805,15 +3142,19 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
+                                "moduleId": 0,
                                 "operator": "*",
                                 "right": {
+                                  "arguments": [],
                                   "callee": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "sqrt",
                                       "start": 0,
                                       "type": "Identifier"
@@ -2824,12 +3165,14 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   },
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "start": 0,
                                   "type": "CallExpressionKw",
                                   "type": "CallExpressionKw",
                                   "unlabeled": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "raw": "2",
                                     "start": 0,
                                     "type": "Literal",
@@ -2850,6 +3193,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "tags",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2861,9 +3205,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "hole01",
                                       "start": 0,
                                       "type": "Identifier"
@@ -2875,6 +3221,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -2885,9 +3232,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "chamfer",
                               "start": 0,
                               "type": "Identifier"
@@ -2898,6 +3247,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -2906,12 +3256,14 @@ description: Result of parsing counterdrilled-weldment.kcl
                       ],
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "nonCodeMeta": {
                         "nonCodeNodes": {
                           "2": [
                             {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
@@ -2928,11 +3280,13 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -2941,6 +3295,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "argument": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "properties": [],
                     "start": 0,
                     "type": "ObjectExpression",
@@ -2948,6 +3303,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -2955,16 +3311,19 @@ description: Result of parsing counterdrilled-weldment.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "holePosition",
                   "start": 0,
                   "type": "Identifier"
@@ -2976,11 +3335,13 @@ description: Result of parsing counterdrilled-weldment.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -3000,6 +3361,7 @@ description: Result of parsing counterdrilled-weldment.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "f",
                 "start": 0,
                 "type": "Identifier"
@@ -3008,9 +3370,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "counterdrill",
                   "start": 0,
                   "type": "Identifier"
@@ -3026,9 +3390,11 @@ description: Result of parsing counterdrilled-weldment.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "map",
               "start": 0,
               "type": "Identifier"
@@ -3039,6 +3405,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -3046,9 +3413,11 @@ description: Result of parsing counterdrilled-weldment.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "holePositions",
               "start": 0,
               "type": "Identifier"
@@ -3059,6 +3428,7 @@ description: Result of parsing counterdrilled-weldment.kcl
             "type": "Name"
           }
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -3076,6 +3446,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "pinhole",
             "start": 0,
             "type": "Identifier"
@@ -3083,13 +3454,16 @@ description: Result of parsing counterdrilled-weldment.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -3100,6 +3474,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3107,9 +3482,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "YZ",
                     "start": 0,
                     "type": "Identifier"
@@ -3127,6 +3504,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
@@ -3137,6 +3515,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -3149,6 +3528,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "2.2",
                           "start": 0,
                           "type": "Literal",
@@ -3160,6 +3540,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -3170,6 +3551,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -3177,6 +3559,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0.125",
                       "start": 0,
                       "type": "Literal",
@@ -3192,9 +3575,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "circle",
                     "start": 0,
                     "type": "Identifier"
@@ -3205,6 +3590,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3217,6 +3603,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -3225,6 +3612,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "10",
                         "start": 0,
                         "type": "Literal",
@@ -3236,6 +3624,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -3247,9 +3636,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "extrude",
                     "start": 0,
                     "type": "Identifier"
@@ -3260,6 +3651,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3268,12 +3660,14 @@ description: Result of parsing counterdrilled-weldment.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "2": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -3290,11 +3684,13 @@ description: Result of parsing counterdrilled-weldment.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -3312,6 +3708,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "centralTube",
             "start": 0,
             "type": "Identifier"
@@ -3319,13 +3716,16 @@ description: Result of parsing counterdrilled-weldment.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -3336,6 +3736,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3346,6 +3747,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "label": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "offset",
                         "start": 0,
                         "type": "Identifier"
@@ -3354,9 +3756,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "stockThickness",
                           "start": 0,
                           "type": "Identifier"
@@ -3372,9 +3776,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "offsetPlane",
                       "start": 0,
                       "type": "Identifier"
@@ -3385,6 +3791,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "CallExpressionKw",
                   "type": "CallExpressionKw",
@@ -3392,9 +3799,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "XY",
                       "start": 0,
                       "type": "Identifier"
@@ -3413,6 +3822,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
@@ -3423,6 +3833,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -3435,6 +3846,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -3446,6 +3858,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -3456,6 +3869,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -3470,9 +3884,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "tubeInnerDiameter",
                             "start": 0,
                             "type": "Identifier"
@@ -3482,10 +3898,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "type": "Name",
                           "type": "Name"
                         },
+                        "moduleId": 0,
                         "operator": "/",
                         "right": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "2",
                           "start": 0,
                           "type": "Literal",
@@ -3499,14 +3917,17 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "moduleId": 0,
                       "operator": "+",
                       "right": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "tubeThickness",
                           "start": 0,
                           "type": "Identifier"
@@ -3526,9 +3947,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "circle",
                     "start": 0,
                     "type": "Identifier"
@@ -3539,6 +3962,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3551,6 +3975,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tool",
                       "start": 0,
                       "type": "Identifier"
@@ -3562,6 +3987,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "center",
                             "start": 0,
                             "type": "Identifier"
@@ -3572,6 +3998,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -3584,6 +4011,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -3595,6 +4023,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               }
                             ],
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
@@ -3605,6 +4034,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "radius",
                             "start": 0,
                             "type": "Identifier"
@@ -3616,9 +4046,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "tubeInnerDiameter",
                                 "start": 0,
                                 "type": "Identifier"
@@ -3628,10 +4060,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "type": "Name",
                               "type": "Name"
                             },
+                            "moduleId": 0,
                             "operator": "/",
                             "right": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "2",
                               "start": 0,
                               "type": "Literal",
@@ -3651,9 +4085,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "circle",
                           "start": 0,
                           "type": "Identifier"
@@ -3664,6 +4100,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -3675,9 +4112,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "subtract2d",
                     "start": 0,
                     "type": "Identifier"
@@ -3688,6 +4127,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3700,6 +4140,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -3708,9 +4149,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "tubeHeight",
                         "start": 0,
                         "type": "Identifier"
@@ -3726,9 +4169,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "extrude",
                     "start": 0,
                     "type": "Identifier"
@@ -3739,6 +4184,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3751,6 +4197,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tools",
                       "start": 0,
                       "type": "Identifier"
@@ -3762,9 +4209,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "pinhole",
                             "start": 0,
                             "type": "Identifier"
@@ -3776,6 +4225,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -3786,9 +4236,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "subtract",
                     "start": 0,
                     "type": "Identifier"
@@ -3799,6 +4251,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3807,12 +4260,14 @@ description: Result of parsing counterdrilled-weldment.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "4": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -3829,11 +4284,13 @@ description: Result of parsing counterdrilled-weldment.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3846,6 +4303,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "fin",
             "start": 0,
             "type": "Identifier"
@@ -3861,6 +4319,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "diagPlane",
                       "start": 0,
                       "type": "Identifier"
@@ -3868,6 +4327,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "init": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "properties": [
                         {
                           "commentStart": 0,
@@ -3875,10 +4335,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "key": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "origin",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "moduleId": 0,
                           "start": 0,
                           "type": "ObjectProperty",
                           "value": {
@@ -3887,6 +4349,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0.0",
                                 "start": 0,
                                 "type": "Literal",
@@ -3899,6 +4362,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0.0",
                                 "start": 0,
                                 "type": "Literal",
@@ -3911,6 +4375,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0.0",
                                 "start": 0,
                                 "type": "Literal",
@@ -3922,6 +4387,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               }
                             ],
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
@@ -3933,10 +4399,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "key": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "xAxis",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "moduleId": 0,
                           "start": 0,
                           "type": "ObjectProperty",
                           "value": {
@@ -3952,9 +4420,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "boltSpacingX",
                                       "start": 0,
                                       "type": "Identifier"
@@ -3964,10 +4434,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                     "type": "Name",
                                     "type": "Name"
                                   },
+                                  "moduleId": 0,
                                   "operator": "/",
                                   "right": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "raw": "2",
                                     "start": 0,
                                     "type": "Literal",
@@ -3981,14 +4453,17 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
+                                "moduleId": 0,
                                 "operator": "*",
                                 "right": {
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "i",
                                     "start": 0,
                                     "type": "Identifier"
@@ -4009,9 +4484,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "boltSpacingY",
                                     "start": 0,
                                     "type": "Identifier"
@@ -4021,10 +4498,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "type": "Name",
                                   "type": "Name"
                                 },
+                                "moduleId": 0,
                                 "operator": "/",
                                 "right": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
                                   "type": "Literal",
@@ -4041,6 +4520,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0.0",
                                 "start": 0,
                                 "type": "Literal",
@@ -4052,6 +4532,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               }
                             ],
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
@@ -4063,10 +4544,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "key": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "yAxis",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "moduleId": 0,
                           "start": 0,
                           "type": "ObjectProperty",
                           "value": {
@@ -4075,6 +4558,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0.0",
                                 "start": 0,
                                 "type": "Literal",
@@ -4087,6 +4571,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0.0",
                                 "start": 0,
                                 "type": "Literal",
@@ -4099,6 +4584,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "1.0",
                                 "start": 0,
                                 "type": "Literal",
@@ -4110,6 +4596,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               }
                             ],
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
@@ -4120,11 +4607,13 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "type": "ObjectExpression",
                       "type": "ObjectExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -4137,6 +4626,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "finSketch",
                       "start": 0,
                       "type": "Identifier"
@@ -4144,13 +4634,16 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "init": {
                       "body": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "startSketchOn",
                               "start": 0,
                               "type": "Identifier"
@@ -4161,6 +4654,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -4168,9 +4662,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "diagPlane",
                               "start": 0,
                               "type": "Identifier"
@@ -4188,6 +4684,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "at",
                                 "start": 0,
                                 "type": "Identifier"
@@ -4205,9 +4702,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "tubeInnerDiameter",
                                           "start": 0,
                                           "type": "Identifier"
@@ -4217,10 +4716,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                         "type": "Name",
                                         "type": "Name"
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "2",
                                         "start": 0,
                                         "type": "Literal",
@@ -4234,14 +4735,17 @@ description: Result of parsing counterdrilled-weldment.kcl
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
+                                    "moduleId": 0,
                                     "operator": "+",
                                     "right": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "tubeThickness",
                                         "start": 0,
                                         "type": "Identifier"
@@ -4259,9 +4763,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "stockThickness",
                                       "start": 0,
                                       "type": "Identifier"
@@ -4273,6 +4779,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -4283,9 +4790,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "startProfile",
                               "start": 0,
                               "type": "Identifier"
@@ -4296,6 +4805,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -4308,6 +4818,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "endAbsolute",
                                 "start": 0,
                                 "type": "Identifier"
@@ -4316,13 +4827,16 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "left": {
+                                  "arguments": [],
                                   "callee": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "sqrt",
                                       "start": 0,
                                       "type": "Identifier"
@@ -4333,6 +4847,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   },
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "start": 0,
                                   "type": "CallExpressionKw",
                                   "type": "CallExpressionKw",
@@ -4349,9 +4864,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                           "abs_path": false,
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "boltSpacingX",
                                             "start": 0,
                                             "type": "Identifier"
@@ -4361,10 +4878,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                           "type": "Name",
                                           "type": "Name"
                                         },
+                                        "moduleId": 0,
                                         "operator": "/",
                                         "right": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "raw": "2",
                                           "start": 0,
                                           "type": "Literal",
@@ -4378,10 +4897,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                         "type": "BinaryExpression",
                                         "type": "BinaryExpression"
                                       },
+                                      "moduleId": 0,
                                       "operator": "^",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "2",
                                         "start": 0,
                                         "type": "Literal",
@@ -4395,6 +4916,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
+                                    "moduleId": 0,
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
@@ -4406,9 +4928,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                           "abs_path": false,
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "boltSpacingY",
                                             "start": 0,
                                             "type": "Identifier"
@@ -4418,10 +4942,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                           "type": "Name",
                                           "type": "Name"
                                         },
+                                        "moduleId": 0,
                                         "operator": "/",
                                         "right": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "raw": "2",
                                           "start": 0,
                                           "type": "Literal",
@@ -4435,10 +4961,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                         "type": "BinaryExpression",
                                         "type": "BinaryExpression"
                                       },
+                                      "moduleId": 0,
                                       "operator": "^",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "2",
                                         "start": 0,
                                         "type": "Literal",
@@ -4457,14 +4985,17 @@ description: Result of parsing counterdrilled-weldment.kcl
                                     "type": "BinaryExpression"
                                   }
                                 },
+                                "moduleId": 0,
                                 "operator": "-",
                                 "right": {
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "counterdrillDiameter",
                                     "start": 0,
                                     "type": "Identifier"
@@ -4484,9 +5015,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "xLine",
                               "start": 0,
                               "type": "Identifier"
@@ -4497,6 +5030,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -4509,6 +5043,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -4516,6 +5051,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0.15",
                                 "start": 0,
                                 "type": "Literal",
@@ -4531,9 +5067,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "yLine",
                               "start": 0,
                               "type": "Identifier"
@@ -4544,6 +5082,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -4556,6 +5095,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "endAbsolute",
                                 "start": 0,
                                 "type": "Identifier"
@@ -4567,13 +5107,16 @@ description: Result of parsing counterdrilled-weldment.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "left": {
+                                      "arguments": [],
                                       "callee": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "profileStartX",
                                           "start": 0,
                                           "type": "Identifier"
@@ -4584,21 +5127,25 @@ description: Result of parsing counterdrilled-weldment.kcl
                                       },
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "start": 0,
                                       "type": "CallExpressionKw",
                                       "type": "CallExpressionKw",
                                       "unlabeled": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "start": 0,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     },
+                                    "moduleId": 0,
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "0.15",
                                       "start": 0,
                                       "type": "Literal",
@@ -4619,9 +5166,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "stockThickness",
                                         "start": 0,
                                         "type": "Identifier"
@@ -4631,6 +5180,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                                       "type": "Name",
                                       "type": "Name"
                                     },
+                                    "moduleId": 0,
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
@@ -4639,9 +5189,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "tubeHeight",
                                           "start": 0,
                                           "type": "Identifier"
@@ -4651,10 +5203,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                         "type": "Name",
                                         "type": "Name"
                                       },
+                                      "moduleId": 0,
                                       "operator": "*",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": ".8",
                                         "start": 0,
                                         "type": "Literal",
@@ -4674,6 +5228,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -4684,9 +5239,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "line",
                               "start": 0,
                               "type": "Identifier"
@@ -4697,6 +5254,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -4709,6 +5267,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -4717,6 +5276,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "argument": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "0.15",
                                   "start": 0,
                                   "type": "Literal",
@@ -4728,6 +5288,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 },
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "operator": "-",
                                 "start": 0,
                                 "type": "UnaryExpression",
@@ -4739,9 +5300,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "xLine",
                               "start": 0,
                               "type": "Identifier"
@@ -4752,6 +5315,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -4764,6 +5328,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "endAbsolute",
                                 "start": 0,
                                 "type": "Identifier"
@@ -4772,13 +5337,16 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "elements": [
                                   {
+                                    "arguments": [],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "profileStartX",
                                         "start": 0,
                                         "type": "Identifier"
@@ -4789,25 +5357,30 @@ description: Result of parsing counterdrilled-weldment.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
                                     "unlabeled": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "start": 0,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   },
                                   {
+                                    "arguments": [],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "profileStartY",
                                         "start": 0,
                                         "type": "Identifier"
@@ -4818,12 +5391,14 @@ description: Result of parsing counterdrilled-weldment.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
                                     "unlabeled": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "start": 0,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
@@ -4831,6 +5406,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -4841,9 +5417,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "line",
                               "start": 0,
                               "type": "Identifier"
@@ -4854,19 +5432,23 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "close",
                               "start": 0,
                               "type": "Identifier"
@@ -4877,6 +5459,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -4889,6 +5472,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -4897,9 +5481,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "tubeThickness",
                                   "start": 0,
                                   "type": "Identifier"
@@ -4915,6 +5501,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "symmetric",
                                 "start": 0,
                                 "type": "Identifier"
@@ -4922,6 +5509,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "true",
                                 "start": 0,
                                 "type": "Literal",
@@ -4934,9 +5522,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "extrude",
                               "start": 0,
                               "type": "Identifier"
@@ -4947,6 +5537,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -4955,12 +5546,14 @@ description: Result of parsing counterdrilled-weldment.kcl
                       ],
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "nonCodeMeta": {
                         "nonCodeNodes": {
                           "8": [
                             {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
@@ -4977,11 +5570,13 @@ description: Result of parsing counterdrilled-weldment.kcl
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -4994,6 +5589,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "otherFin",
                       "start": 0,
                       "type": "Identifier"
@@ -5005,6 +5601,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "instances",
                             "start": 0,
                             "type": "Identifier"
@@ -5012,6 +5609,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "arg": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -5027,6 +5625,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "axis",
                             "start": 0,
                             "type": "Identifier"
@@ -5037,6 +5636,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -5049,6 +5649,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -5061,6 +5662,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "1",
                                 "start": 0,
                                 "type": "Literal",
@@ -5072,6 +5674,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               }
                             ],
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
@@ -5082,6 +5685,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "center",
                             "start": 0,
                             "type": "Identifier"
@@ -5092,6 +5696,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -5104,6 +5709,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -5116,6 +5722,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -5127,6 +5734,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                               }
                             ],
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
@@ -5137,6 +5745,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "arcDegrees",
                             "start": 0,
                             "type": "Identifier"
@@ -5144,6 +5753,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "arg": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "360",
                             "start": 0,
                             "type": "Literal",
@@ -5159,6 +5769,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "rotateDuplicates",
                             "start": 0,
                             "type": "Identifier"
@@ -5166,6 +5777,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                           "arg": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "true",
                             "start": 0,
                             "type": "Literal",
@@ -5178,9 +5790,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "patternCircular3d",
                           "start": 0,
                           "type": "Identifier"
@@ -5191,6 +5805,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -5198,9 +5813,11 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "finSketch",
                           "start": 0,
                           "type": "Identifier"
@@ -5211,11 +5828,13 @@ description: Result of parsing counterdrilled-weldment.kcl
                         "type": "Name"
                       }
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -5224,6 +5843,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "argument": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "properties": [],
                     "start": 0,
                     "type": "ObjectExpression",
@@ -5231,6 +5851,7 @@ description: Result of parsing counterdrilled-weldment.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -5238,12 +5859,14 @@ description: Result of parsing counterdrilled-weldment.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "0": [
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "NonCodeNode",
                       "value": {
@@ -5258,12 +5881,14 @@ description: Result of parsing counterdrilled-weldment.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "i",
                   "start": 0,
                   "type": "Identifier"
@@ -5275,11 +5900,13 @@ description: Result of parsing counterdrilled-weldment.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -5288,13 +5915,16 @@ description: Result of parsing counterdrilled-weldment.kcl
         "commentStart": 0,
         "end": 0,
         "expression": {
+          "arguments": [],
           "callee": {
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "fin",
               "start": 0,
               "type": "Identifier"
@@ -5305,12 +5935,14 @@ description: Result of parsing counterdrilled-weldment.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "1",
             "start": 0,
             "type": "Literal",
@@ -5321,6 +5953,7 @@ description: Result of parsing counterdrilled-weldment.kcl
             }
           }
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -5334,13 +5967,16 @@ description: Result of parsing counterdrilled-weldment.kcl
         "commentStart": 0,
         "end": 0,
         "expression": {
+          "arguments": [],
           "callee": {
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "fin",
               "start": 0,
               "type": "Identifier"
@@ -5351,6 +5987,7 @@ description: Result of parsing counterdrilled-weldment.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -5358,6 +5995,7 @@ description: Result of parsing counterdrilled-weldment.kcl
             "argument": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1",
               "start": 0,
               "type": "Literal",
@@ -5369,12 +6007,14 @@ description: Result of parsing counterdrilled-weldment.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "operator": "-",
             "start": 0,
             "type": "UnaryExpression",
             "type": "UnaryExpression"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -5386,9 +6026,11 @@ description: Result of parsing counterdrilled-weldment.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -5407,19 +6049,23 @@ description: Result of parsing counterdrilled-weldment.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "in",
                 "start": 0,
                 "type": "Identifier"
@@ -5435,12 +6081,14 @@ description: Result of parsing counterdrilled-weldment.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {},
       "startNodes": [
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

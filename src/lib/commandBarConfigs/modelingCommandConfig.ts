@@ -75,6 +75,9 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     sketches: Selections
     length: KclCommandValue
+    symmetric?: boolean
+    bidirectionalLength?: KclCommandValue
+    twistAngle?: KclCommandValue
   }
   Sweep: {
     // Enables editing workflow
@@ -83,9 +86,14 @@ export type ModelingCommandSchema = {
     sketches: Selections
     path: Selections
     sectional?: boolean
+    relativeTo?: string
   }
   Loft: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
     sketches: Selections
+    vDegree?: KclCommandValue
   }
   Revolve: {
     // Enables editing workflow
@@ -97,6 +105,8 @@ export type ModelingCommandSchema = {
     angle: KclCommandValue
     axis: string | undefined
     edge: Selections | undefined
+    symmetric?: boolean
+    bidirectionalAngle?: KclCommandValue
   }
   Shell: {
     // Enables editing workflow
@@ -408,6 +418,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
       },
+      symmetric: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
+      },
+      bidirectionalLength: {
+        inputType: 'kcl',
+        required: false,
+      },
+      twistAngle: {
+        inputType: 'kcl',
+        required: false,
+      },
     },
   },
   Sweep: {
@@ -436,13 +462,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       sectional: {
         inputType: 'options',
-        skip: true,
         required: false,
         options: [
           { name: 'False', value: false },
           { name: 'True', value: true },
         ],
-        // No validation possible here until we have rollback
+      },
+      relativeTo: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'sketchPlane', value: 'sketchPlane' },
+          { name: 'trajectoryCurve', value: 'trajectoryCurve' },
+        ],
       },
     },
   },
@@ -451,12 +483,20 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'loft',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
         selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      vDegree: {
+        inputType: 'kcl',
+        required: false,
       },
     },
   },
@@ -513,6 +553,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
+      },
+      symmetric: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
+      },
+      bidirectionalAngle: {
+        inputType: 'kcl',
+        required: false,
       },
     },
   },

@@ -13,6 +13,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "sideLength",
             "start": 0,
             "type": "Identifier"
@@ -20,6 +21,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "50",
             "start": 0,
             "type": "Literal",
@@ -29,11 +31,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "// Define parameters"
         ],
@@ -49,6 +53,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size01",
             "start": 0,
             "type": "Identifier"
@@ -56,6 +61,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "15",
             "start": 0,
             "type": "Literal",
@@ -65,11 +71,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -82,6 +90,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size02",
             "start": 0,
             "type": "Identifier"
@@ -89,6 +98,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "10",
             "start": 0,
             "type": "Literal",
@@ -98,11 +108,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -115,6 +127,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size03",
             "start": 0,
             "type": "Identifier"
@@ -122,6 +135,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "6",
             "start": 0,
             "type": "Literal",
@@ -131,11 +145,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -148,6 +164,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size04",
             "start": 0,
             "type": "Identifier"
@@ -155,6 +172,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "0.375in",
             "start": 0,
             "type": "Literal",
@@ -164,11 +182,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "Inch"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -181,6 +201,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size05",
             "start": 0,
             "type": "Identifier"
@@ -188,6 +209,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "0.25in",
             "start": 0,
             "type": "Literal",
@@ -197,11 +219,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "Inch"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -214,6 +238,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size06",
             "start": 0,
             "type": "Identifier"
@@ -221,6 +246,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "0.5in",
             "start": 0,
             "type": "Literal",
@@ -230,11 +256,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "Inch"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -247,6 +275,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size07",
             "start": 0,
             "type": "Identifier"
@@ -254,6 +283,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "0.75in",
             "start": 0,
             "type": "Literal",
@@ -263,11 +293,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "Inch"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -280,6 +312,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size08",
             "start": 0,
             "type": "Identifier"
@@ -287,6 +320,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "5",
             "start": 0,
             "type": "Literal",
@@ -296,11 +330,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -313,6 +349,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size09",
             "start": 0,
             "type": "Identifier"
@@ -320,6 +357,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "4.5",
             "start": 0,
             "type": "Literal",
@@ -329,11 +367,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -346,6 +386,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size10",
             "start": 0,
             "type": "Identifier"
@@ -353,6 +394,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "4",
             "start": 0,
             "type": "Literal",
@@ -362,11 +404,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -379,6 +423,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size11",
             "start": 0,
             "type": "Identifier"
@@ -386,6 +431,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "3.5",
             "start": 0,
             "type": "Literal",
@@ -395,11 +441,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -412,6 +460,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size12",
             "start": 0,
             "type": "Identifier"
@@ -419,6 +468,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "3",
             "start": 0,
             "type": "Literal",
@@ -428,11 +478,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -445,6 +497,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size13",
             "start": 0,
             "type": "Identifier"
@@ -452,6 +505,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "2.5",
             "start": 0,
             "type": "Literal",
@@ -461,11 +515,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -478,6 +534,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size14",
             "start": 0,
             "type": "Identifier"
@@ -485,6 +542,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "2",
             "start": 0,
             "type": "Literal",
@@ -494,11 +552,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -511,6 +571,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "size15",
             "start": 0,
             "type": "Identifier"
@@ -518,6 +579,7 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "1",
             "start": 0,
             "type": "Literal",
@@ -527,11 +589,13 @@ description: Result of parsing tooling-nest-block.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -544,6 +608,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cubeSketch",
             "start": 0,
             "type": "Identifier"
@@ -551,13 +616,16 @@ description: Result of parsing tooling-nest-block.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -568,6 +636,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -575,9 +644,11 @@ description: Result of parsing tooling-nest-block.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XY",
                     "start": 0,
                     "type": "Identifier"
@@ -595,6 +666,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -605,6 +677,7 @@ description: Result of parsing tooling-nest-block.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -617,6 +690,7 @@ description: Result of parsing tooling-nest-block.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -628,6 +702,7 @@ description: Result of parsing tooling-nest-block.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -638,9 +713,11 @@ description: Result of parsing tooling-nest-block.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -651,6 +728,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -663,6 +741,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -670,6 +749,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -685,6 +765,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -693,9 +774,11 @@ description: Result of parsing tooling-nest-block.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "sideLength",
                         "start": 0,
                         "type": "Identifier"
@@ -711,6 +794,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -718,6 +802,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -729,9 +814,11 @@ description: Result of parsing tooling-nest-block.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angledLine",
                     "start": 0,
                     "type": "Identifier"
@@ -742,6 +829,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -754,6 +842,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -762,13 +851,16 @@ description: Result of parsing tooling-nest-block.kcl
                       "commentStart": 0,
                       "end": 0,
                       "left": {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "segAng",
                             "start": 0,
                             "type": "Identifier"
@@ -779,6 +871,7 @@ description: Result of parsing tooling-nest-block.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -786,9 +879,11 @@ description: Result of parsing tooling-nest-block.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "rectangleSegmentA001",
                             "start": 0,
                             "type": "Identifier"
@@ -799,10 +894,12 @@ description: Result of parsing tooling-nest-block.kcl
                           "type": "Name"
                         }
                       },
+                      "moduleId": 0,
                       "operator": "+",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "90",
                         "start": 0,
                         "type": "Literal",
@@ -822,6 +919,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -830,9 +928,11 @@ description: Result of parsing tooling-nest-block.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "sideLength",
                         "start": 0,
                         "type": "Identifier"
@@ -848,6 +948,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -855,6 +956,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -866,9 +968,11 @@ description: Result of parsing tooling-nest-block.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angledLine",
                     "start": 0,
                     "type": "Identifier"
@@ -879,6 +983,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -891,18 +996,22 @@ description: Result of parsing tooling-nest-block.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "segAng",
                           "start": 0,
                           "type": "Identifier"
@@ -913,6 +1022,7 @@ description: Result of parsing tooling-nest-block.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -920,9 +1030,11 @@ description: Result of parsing tooling-nest-block.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "rectangleSegmentA001",
                           "start": 0,
                           "type": "Identifier"
@@ -939,19 +1051,23 @@ description: Result of parsing tooling-nest-block.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "segLen",
                             "start": 0,
                             "type": "Identifier"
@@ -962,6 +1078,7 @@ description: Result of parsing tooling-nest-block.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -969,9 +1086,11 @@ description: Result of parsing tooling-nest-block.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "rectangleSegmentA001",
                             "start": 0,
                             "type": "Identifier"
@@ -984,6 +1103,7 @@ description: Result of parsing tooling-nest-block.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -995,6 +1115,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -1002,6 +1123,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -1013,9 +1135,11 @@ description: Result of parsing tooling-nest-block.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angledLine",
                     "start": 0,
                     "type": "Identifier"
@@ -1026,6 +1150,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1038,6 +1163,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -1046,13 +1172,16 @@ description: Result of parsing tooling-nest-block.kcl
                       "commentStart": 0,
                       "elements": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartX",
                               "start": 0,
                               "type": "Identifier"
@@ -1063,25 +1192,30 @@ description: Result of parsing tooling-nest-block.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartY",
                               "start": 0,
                               "type": "Identifier"
@@ -1092,12 +1226,14 @@ description: Result of parsing tooling-nest-block.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
@@ -1105,6 +1241,7 @@ description: Result of parsing tooling-nest-block.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1115,6 +1252,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -1122,6 +1260,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -1133,9 +1272,11 @@ description: Result of parsing tooling-nest-block.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -1146,19 +1287,23 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -1169,6 +1314,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1177,15 +1323,18 @@ description: Result of parsing tooling-nest-block.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1203,6 +1352,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cubeExtrude",
             "start": 0,
             "type": "Identifier"
@@ -1214,6 +1364,7 @@ description: Result of parsing tooling-nest-block.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
@@ -1222,9 +1373,11 @@ description: Result of parsing tooling-nest-block.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "sideLength",
                     "start": 0,
                     "type": "Identifier"
@@ -1240,9 +1393,11 @@ description: Result of parsing tooling-nest-block.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "extrude",
                 "start": 0,
                 "type": "Identifier"
@@ -1253,6 +1408,7 @@ description: Result of parsing tooling-nest-block.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -1260,9 +1416,11 @@ description: Result of parsing tooling-nest-block.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeSketch",
                 "start": 0,
                 "type": "Identifier"
@@ -1273,11 +1431,13 @@ description: Result of parsing tooling-nest-block.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1290,6 +1450,7 @@ description: Result of parsing tooling-nest-block.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "nest",
             "start": 0,
             "type": "Identifier"
@@ -1305,6 +1466,7 @@ description: Result of parsing tooling-nest-block.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "nestFn",
                       "start": 0,
                       "type": "Identifier"
@@ -1318,6 +1480,7 @@ description: Result of parsing tooling-nest-block.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "face",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1326,9 +1489,11 @@ description: Result of parsing tooling-nest-block.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "cubeFace",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1344,9 +1509,11 @@ description: Result of parsing tooling-nest-block.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "startSketchOn",
                               "start": 0,
                               "type": "Identifier"
@@ -1357,6 +1524,7 @@ description: Result of parsing tooling-nest-block.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1364,9 +1532,11 @@ description: Result of parsing tooling-nest-block.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "cubeExtrude",
                               "start": 0,
                               "type": "Identifier"
@@ -1384,6 +1554,7 @@ description: Result of parsing tooling-nest-block.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "center",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1398,9 +1569,11 @@ description: Result of parsing tooling-nest-block.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "xPos",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1410,14 +1583,17 @@ description: Result of parsing tooling-nest-block.kcl
                                       "type": "Name",
                                       "type": "Name"
                                     },
+                                    "moduleId": 0,
                                     "operator": "*",
                                     "right": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "sideLength",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1438,9 +1614,11 @@ description: Result of parsing tooling-nest-block.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "yPos",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1450,14 +1628,17 @@ description: Result of parsing tooling-nest-block.kcl
                                       "type": "Name",
                                       "type": "Name"
                                     },
+                                    "moduleId": 0,
                                     "operator": "*",
                                     "right": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "sideLength",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1473,6 +1654,7 @@ description: Result of parsing tooling-nest-block.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -1483,6 +1665,7 @@ description: Result of parsing tooling-nest-block.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1491,9 +1674,11 @@ description: Result of parsing tooling-nest-block.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "nestSize",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1509,6 +1694,7 @@ description: Result of parsing tooling-nest-block.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "tag",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1516,6 +1702,7 @@ description: Result of parsing tooling-nest-block.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "TagDeclarator",
                                 "type": "TagDeclarator",
@@ -1527,9 +1714,11 @@ description: Result of parsing tooling-nest-block.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "circle",
                               "start": 0,
                               "type": "Identifier"
@@ -1540,6 +1729,7 @@ description: Result of parsing tooling-nest-block.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1552,6 +1742,7 @@ description: Result of parsing tooling-nest-block.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1561,9 +1752,11 @@ description: Result of parsing tooling-nest-block.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "nestSize",
                                     "start": 0,
                                     "type": "Identifier"
@@ -1575,6 +1768,7 @@ description: Result of parsing tooling-nest-block.kcl
                                 },
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "operator": "-",
                                 "start": 0,
                                 "type": "UnaryExpression",
@@ -1586,6 +1780,7 @@ description: Result of parsing tooling-nest-block.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "tagStart",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1593,6 +1788,7 @@ description: Result of parsing tooling-nest-block.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "TagDeclarator",
                                 "type": "TagDeclarator",
@@ -1604,9 +1800,11 @@ description: Result of parsing tooling-nest-block.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "extrude",
                               "start": 0,
                               "type": "Identifier"
@@ -1617,6 +1815,7 @@ description: Result of parsing tooling-nest-block.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1629,6 +1828,7 @@ description: Result of parsing tooling-nest-block.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1640,9 +1840,11 @@ description: Result of parsing tooling-nest-block.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "nestSize",
                                     "start": 0,
                                     "type": "Identifier"
@@ -1652,10 +1854,12 @@ description: Result of parsing tooling-nest-block.kcl
                                   "type": "Name",
                                   "type": "Name"
                                 },
+                                "moduleId": 0,
                                 "operator": "*",
                                 "right": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": ".99",
                                   "start": 0,
                                   "type": "Literal",
@@ -1675,6 +1879,7 @@ description: Result of parsing tooling-nest-block.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "tags",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1689,6 +1894,7 @@ description: Result of parsing tooling-nest-block.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "faces",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1700,9 +1906,11 @@ description: Result of parsing tooling-nest-block.kcl
                                               "abs_path": false,
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": "seg01",
                                                 "start": 0,
                                                 "type": "Identifier"
@@ -1716,9 +1924,11 @@ description: Result of parsing tooling-nest-block.kcl
                                               "abs_path": false,
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": "capStart001",
                                                 "start": 0,
                                                 "type": "Identifier"
@@ -1730,6 +1940,7 @@ description: Result of parsing tooling-nest-block.kcl
                                             }
                                           ],
                                           "end": 0,
+                                          "moduleId": 0,
                                           "start": 0,
                                           "type": "ArrayExpression",
                                           "type": "ArrayExpression"
@@ -1740,9 +1951,11 @@ description: Result of parsing tooling-nest-block.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "getCommonEdge",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1753,6 +1966,7 @@ description: Result of parsing tooling-nest-block.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -1760,6 +1974,7 @@ description: Result of parsing tooling-nest-block.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -1770,9 +1985,11 @@ description: Result of parsing tooling-nest-block.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "fillet",
                               "start": 0,
                               "type": "Identifier"
@@ -1783,6 +2000,7 @@ description: Result of parsing tooling-nest-block.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1791,15 +2009,18 @@ description: Result of parsing tooling-nest-block.kcl
                       ],
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -1808,6 +2029,7 @@ description: Result of parsing tooling-nest-block.kcl
                   "argument": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "properties": [],
                     "start": 0,
                     "type": "ObjectExpression",
@@ -1815,6 +2037,7 @@ description: Result of parsing tooling-nest-block.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -1822,16 +2045,19 @@ description: Result of parsing tooling-nest-block.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "cubeFace",
                   "start": 0,
                   "type": "Identifier"
@@ -1842,6 +2068,7 @@ description: Result of parsing tooling-nest-block.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "xPos",
                   "start": 0,
                   "type": "Identifier"
@@ -1852,6 +2079,7 @@ description: Result of parsing tooling-nest-block.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "yPos",
                   "start": 0,
                   "type": "Identifier"
@@ -1862,6 +2090,7 @@ description: Result of parsing tooling-nest-block.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "nestSize",
                   "start": 0,
                   "type": "Identifier"
@@ -1872,11 +2101,13 @@ description: Result of parsing tooling-nest-block.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1896,6 +2127,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -1904,9 +2136,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "END",
                   "start": 0,
                   "type": "Identifier"
@@ -1922,6 +2156,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -1929,6 +2164,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.5",
                 "start": 0,
                 "type": "Literal",
@@ -1944,6 +2180,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -1951,6 +2188,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.5",
                 "start": 0,
                 "type": "Literal",
@@ -1966,6 +2204,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -1974,9 +2213,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size01",
                   "start": 0,
                   "type": "Identifier"
@@ -1992,9 +2233,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -2005,11 +2248,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -2029,6 +2274,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -2037,9 +2283,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentA001",
                   "start": 0,
                   "type": "Identifier"
@@ -2055,6 +2303,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2062,6 +2311,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.65",
                 "start": 0,
                 "type": "Literal",
@@ -2077,6 +2327,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2084,6 +2335,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.5",
                 "start": 0,
                 "type": "Literal",
@@ -2099,6 +2351,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -2107,9 +2360,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size02",
                   "start": 0,
                   "type": "Identifier"
@@ -2125,9 +2380,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -2138,11 +2395,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -2162,6 +2421,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -2170,9 +2430,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentA001",
                   "start": 0,
                   "type": "Identifier"
@@ -2188,6 +2450,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2195,6 +2458,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.25",
                 "start": 0,
                 "type": "Literal",
@@ -2210,6 +2474,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2217,6 +2482,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.25",
                 "start": 0,
                 "type": "Literal",
@@ -2232,6 +2498,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -2240,9 +2507,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size03",
                   "start": 0,
                   "type": "Identifier"
@@ -2258,9 +2527,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -2271,11 +2542,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -2290,6 +2563,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -2298,9 +2572,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentA001",
                   "start": 0,
                   "type": "Identifier"
@@ -2316,6 +2592,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2323,6 +2600,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.25",
                 "start": 0,
                 "type": "Literal",
@@ -2338,6 +2616,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2345,6 +2624,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.75",
                 "start": 0,
                 "type": "Literal",
@@ -2360,6 +2640,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -2368,9 +2649,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size03",
                   "start": 0,
                   "type": "Identifier"
@@ -2386,9 +2669,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -2399,11 +2684,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -2418,6 +2705,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -2426,9 +2714,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentB001",
                   "start": 0,
                   "type": "Identifier"
@@ -2444,6 +2734,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2451,6 +2742,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.7",
                 "start": 0,
                 "type": "Literal",
@@ -2466,6 +2758,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2473,6 +2766,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.3",
                 "start": 0,
                 "type": "Literal",
@@ -2488,6 +2782,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -2496,9 +2791,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size04",
                   "start": 0,
                   "type": "Identifier"
@@ -2514,9 +2811,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -2527,11 +2826,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -2551,6 +2852,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -2559,9 +2861,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentB001",
                   "start": 0,
                   "type": "Identifier"
@@ -2577,6 +2881,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2584,6 +2889,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.25",
                 "start": 0,
                 "type": "Literal",
@@ -2599,6 +2905,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2606,6 +2913,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.3",
                 "start": 0,
                 "type": "Literal",
@@ -2621,6 +2929,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -2629,9 +2938,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size05",
                   "start": 0,
                   "type": "Identifier"
@@ -2647,9 +2958,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -2660,11 +2973,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -2679,6 +2994,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -2687,9 +3003,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentB001",
                   "start": 0,
                   "type": "Identifier"
@@ -2705,6 +3023,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2712,6 +3031,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.25",
                 "start": 0,
                 "type": "Literal",
@@ -2727,6 +3047,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2734,6 +3055,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.7",
                 "start": 0,
                 "type": "Literal",
@@ -2749,6 +3071,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -2757,9 +3080,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size05",
                   "start": 0,
                   "type": "Identifier"
@@ -2775,9 +3100,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -2788,11 +3115,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -2807,6 +3136,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -2815,9 +3145,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentB001",
                   "start": 0,
                   "type": "Identifier"
@@ -2833,6 +3165,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2840,6 +3173,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.7",
                 "start": 0,
                 "type": "Literal",
@@ -2855,6 +3189,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2862,6 +3197,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.7",
                 "start": 0,
                 "type": "Literal",
@@ -2877,6 +3213,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -2885,9 +3222,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size05",
                   "start": 0,
                   "type": "Identifier"
@@ -2903,9 +3242,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -2916,11 +3257,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -2935,6 +3278,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -2943,9 +3287,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentC001",
                   "start": 0,
                   "type": "Identifier"
@@ -2961,6 +3307,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2969,6 +3316,7 @@ description: Result of parsing tooling-nest-block.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "0.5",
                   "start": 0,
                   "type": "Literal",
@@ -2980,6 +3328,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 0,
                 "type": "UnaryExpression",
@@ -2991,6 +3340,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -2998,6 +3348,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.5",
                 "start": 0,
                 "type": "Literal",
@@ -3013,6 +3364,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -3021,9 +3373,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size06",
                   "start": 0,
                   "type": "Identifier"
@@ -3039,9 +3393,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -3052,11 +3408,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -3076,6 +3434,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -3084,9 +3443,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentD001",
                   "start": 0,
                   "type": "Identifier"
@@ -3102,6 +3463,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -3110,6 +3472,7 @@ description: Result of parsing tooling-nest-block.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "0.2",
                   "start": 0,
                   "type": "Literal",
@@ -3121,6 +3484,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 0,
                 "type": "UnaryExpression",
@@ -3132,6 +3496,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -3139,6 +3504,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.2",
                 "start": 0,
                 "type": "Literal",
@@ -3154,6 +3520,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -3162,9 +3529,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size15",
                   "start": 0,
                   "type": "Identifier"
@@ -3180,9 +3549,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -3193,11 +3564,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -3217,6 +3590,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -3225,9 +3599,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentD001",
                   "start": 0,
                   "type": "Identifier"
@@ -3243,6 +3619,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -3251,6 +3628,7 @@ description: Result of parsing tooling-nest-block.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "0.2",
                   "start": 0,
                   "type": "Literal",
@@ -3262,6 +3640,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 0,
                 "type": "UnaryExpression",
@@ -3273,6 +3652,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -3280,6 +3660,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.5",
                 "start": 0,
                 "type": "Literal",
@@ -3295,6 +3676,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -3303,9 +3685,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size14",
                   "start": 0,
                   "type": "Identifier"
@@ -3321,9 +3705,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -3334,11 +3720,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -3353,6 +3741,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -3361,9 +3750,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentD001",
                   "start": 0,
                   "type": "Identifier"
@@ -3379,6 +3770,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -3387,6 +3779,7 @@ description: Result of parsing tooling-nest-block.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "0.2",
                   "start": 0,
                   "type": "Literal",
@@ -3398,6 +3791,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 0,
                 "type": "UnaryExpression",
@@ -3409,6 +3803,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -3416,6 +3811,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.8",
                 "start": 0,
                 "type": "Literal",
@@ -3431,6 +3827,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -3439,9 +3836,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size13",
                   "start": 0,
                   "type": "Identifier"
@@ -3457,9 +3856,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -3470,11 +3871,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -3489,6 +3892,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -3497,9 +3901,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentD001",
                   "start": 0,
                   "type": "Identifier"
@@ -3515,6 +3921,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -3523,6 +3930,7 @@ description: Result of parsing tooling-nest-block.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "0.8",
                   "start": 0,
                   "type": "Literal",
@@ -3534,6 +3942,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 0,
                 "type": "UnaryExpression",
@@ -3545,6 +3954,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -3552,6 +3962,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.2",
                 "start": 0,
                 "type": "Literal",
@@ -3567,6 +3978,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -3575,9 +3987,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size12",
                   "start": 0,
                   "type": "Identifier"
@@ -3593,9 +4007,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -3606,11 +4022,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -3625,6 +4043,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -3633,9 +4052,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentD001",
                   "start": 0,
                   "type": "Identifier"
@@ -3651,6 +4072,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -3659,6 +4081,7 @@ description: Result of parsing tooling-nest-block.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "0.8",
                   "start": 0,
                   "type": "Literal",
@@ -3670,6 +4093,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 0,
                 "type": "UnaryExpression",
@@ -3681,6 +4105,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -3688,6 +4113,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.5",
                 "start": 0,
                 "type": "Literal",
@@ -3703,6 +4129,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -3711,9 +4138,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size10",
                   "start": 0,
                   "type": "Identifier"
@@ -3729,9 +4158,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -3742,11 +4173,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -3761,6 +4194,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -3769,9 +4203,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentD001",
                   "start": 0,
                   "type": "Identifier"
@@ -3787,6 +4223,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -3795,6 +4232,7 @@ description: Result of parsing tooling-nest-block.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "0.8",
                   "start": 0,
                   "type": "Literal",
@@ -3806,6 +4244,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 0,
                 "type": "UnaryExpression",
@@ -3817,6 +4256,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -3824,6 +4264,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.8",
                 "start": 0,
                 "type": "Literal",
@@ -3839,6 +4280,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -3847,9 +4289,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size08",
                   "start": 0,
                   "type": "Identifier"
@@ -3865,9 +4309,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -3878,11 +4324,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -3897,6 +4345,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -3905,9 +4354,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentD001",
                   "start": 0,
                   "type": "Identifier"
@@ -3923,6 +4374,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -3931,6 +4383,7 @@ description: Result of parsing tooling-nest-block.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "0.5",
                   "start": 0,
                   "type": "Literal",
@@ -3942,6 +4395,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 0,
                 "type": "UnaryExpression",
@@ -3953,6 +4407,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -3960,6 +4415,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.33",
                 "start": 0,
                 "type": "Literal",
@@ -3975,6 +4431,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -3983,9 +4440,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size09",
                   "start": 0,
                   "type": "Identifier"
@@ -4001,9 +4460,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -4014,11 +4475,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -4033,6 +4496,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -4041,9 +4505,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rectangleSegmentD001",
                   "start": 0,
                   "type": "Identifier"
@@ -4059,6 +4525,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -4067,6 +4534,7 @@ description: Result of parsing tooling-nest-block.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "0.5",
                   "start": 0,
                   "type": "Literal",
@@ -4078,6 +4546,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 0,
                 "type": "UnaryExpression",
@@ -4089,6 +4558,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -4096,6 +4566,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.67",
                 "start": 0,
                 "type": "Literal",
@@ -4111,6 +4582,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -4119,9 +4591,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size11",
                   "start": 0,
                   "type": "Identifier"
@@ -4137,9 +4611,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -4150,11 +4626,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -4169,6 +4647,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cubeFace",
                 "start": 0,
                 "type": "Identifier"
@@ -4177,9 +4656,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "START",
                   "start": 0,
                   "type": "Identifier"
@@ -4195,6 +4676,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "xPos",
                 "start": 0,
                 "type": "Identifier"
@@ -4203,6 +4685,7 @@ description: Result of parsing tooling-nest-block.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "0.5",
                   "start": 0,
                   "type": "Literal",
@@ -4214,6 +4697,7 @@ description: Result of parsing tooling-nest-block.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 0,
                 "type": "UnaryExpression",
@@ -4225,6 +4709,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "yPos",
                 "start": 0,
                 "type": "Identifier"
@@ -4232,6 +4717,7 @@ description: Result of parsing tooling-nest-block.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.5",
                 "start": 0,
                 "type": "Literal",
@@ -4247,6 +4733,7 @@ description: Result of parsing tooling-nest-block.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nestSize",
                 "start": 0,
                 "type": "Identifier"
@@ -4255,9 +4742,11 @@ description: Result of parsing tooling-nest-block.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "size07",
                   "start": 0,
                   "type": "Identifier"
@@ -4273,9 +4762,11 @@ description: Result of parsing tooling-nest-block.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "nest",
               "start": 0,
               "type": "Identifier"
@@ -4286,11 +4777,13 @@ description: Result of parsing tooling-nest-block.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -4307,9 +4800,11 @@ description: Result of parsing tooling-nest-block.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -4328,19 +4823,23 @@ description: Result of parsing tooling-nest-block.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "mm",
                 "start": 0,
                 "type": "Identifier"
@@ -4356,12 +4855,14 @@ description: Result of parsing tooling-nest-block.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {},
       "startNodes": [
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

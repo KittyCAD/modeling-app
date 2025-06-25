@@ -177,7 +177,7 @@ impl ExecState {
             #[cfg(feature = "artifact-graph")]
             operations: Default::default(),
             #[cfg(feature = "artifact-graph")]
-            artifact_graph: Default::default(),
+            artifact_graph: self.global.artifacts.graph,
             errors: self.global.errors,
             filenames: Default::default(),
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
