@@ -700,22 +700,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: false, // for consistency here, we can actually edit here since it's not a selection
       },
       edge: {
-        required: (commandContext) =>
-          ['Edge'].includes(commandContext.argumentsToSubmit.mode as string),
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge'],
         multiple: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        required: (context) =>
+          ['Edge'].includes(context.argumentsToSubmit.mode as string),
+        hidden: (context) =>
+          Boolean(context.argumentsToSubmit.nodeToEdit) ||
+          !['Edge'].includes(context.argumentsToSubmit.mode as string),
       },
       cylinder: {
-        required: (commandContext) =>
-          ['Cylinder'].includes(
-            commandContext.argumentsToSubmit.mode as string
-          ),
         inputType: 'selection',
         selectionTypes: ['wall'],
         multiple: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        required: (context) =>
+          ['Cylinder'].includes(context.argumentsToSubmit.mode as string),
+        hidden: (context) =>
+          Boolean(context.argumentsToSubmit.nodeToEdit) ||
+          !['Cylinder'].includes(context.argumentsToSubmit.mode as string),
       },
       revolutions: {
         inputType: 'kcl',
