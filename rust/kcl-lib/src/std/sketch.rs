@@ -2413,7 +2413,13 @@ pub(crate) async fn inner_conic(
             [from[0] - previous_point[0], from[1] - previous_point[1]]
         };
 
-        let (end_tan, _) = untype_point(end_tangent.unwrap());
+        let Some(end_tangent) = end_tangent else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "You must either provide either `coefficients` or `endTangent`.".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        let (end_tan, _) = untype_point(end_tangent);
         (start, end_tan)
     };
 
