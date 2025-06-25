@@ -657,6 +657,7 @@ export const ProjectExplorer = ({
     >
       <div
         className={`absolute w-full h-full ${activeIndex === -1 ? 'border-sky-500' : ''}`}
+        data-testid="file-pane-scroll-container"
         tabIndex={0}
         role="tree"
         aria-label="Files Explorer"
