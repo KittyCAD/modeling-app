@@ -1293,11 +1293,12 @@ impl Path {
         (*p, ty)
     }
 
-    /// Length of this path segment, in cartesian plane.
-    pub fn length(&self) -> TyF64 {
+    /// Length of this path segment, in cartesian plane. Not all segment types
+    /// are supported.
+    pub fn length(&self) -> Option<TyF64> {
         let n = match self {
             Self::ToPoint { .. } | Self::Base { .. } | Self::Horizontal { .. } | Self::AngledLineTo { .. } => {
-                linear_distance(&self.get_base().from, &self.get_base().to)
+                Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
             Self::TangentialArc {
                 base: _,
@@ -1314,7 +1315,7 @@ impl Path {
                 let radius = linear_distance(&self.get_base().from, center);
                 debug_assert_eq!(radius, linear_distance(&self.get_base().to, center));
                 // TODO: Call engine utils to figure this out.
-                linear_distance(&self.get_base().from, &self.get_base().to)
+                Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
             Self::Circle { radius, .. } => 2.0 * std::f64::consts::PI * radius,
             Self::CircleThreePoint { .. } => {
@@ -1327,23 +1328,23 @@ impl Path {
                     &[circle_center.center[0], circle_center.center[1]],
                     &self.get_base().from,
                 );
-                2.0 * std::f64::consts::PI * radius
+                Some(2.0 * std::f64::consts::PI * radius)
             }
             Self::Arc { .. } => {
                 // TODO: Call engine utils to figure this out.
-                linear_distance(&self.get_base().from, &self.get_base().to)
+                Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
             Self::ArcThreePoint { .. } => {
                 // TODO: Call engine utils to figure this out.
-                linear_distance(&self.get_base().from, &self.get_base().to)
+                Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
             Self::Ellipse { .. } => {
-                //TODO: fix me
-                10.0
+                // Not supported.
+                None
             }
             Self::Conic { .. } => {
-                //TODO: fix me
-                10.0
+                // Not supported.
+                None
             }
         };
         TyF64::new(n, self.get_base().units.into())

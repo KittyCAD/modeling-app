@@ -200,7 +200,12 @@ fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: A
         ))
     })?;
 
-    Ok(path.length())
+    path.length().ok_or_else(|| {
+        KclError::new_semantic(KclErrorDetails::new(
+            "Computing the length of this segment type is unsupported".to_owned(),
+            vec![args.source_range],
+        ))
+    })
 }
 
 /// Returns the angle of the segment.
