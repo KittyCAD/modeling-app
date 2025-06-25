@@ -48,6 +48,8 @@ import type {
   SegmentOverlayPayload,
 } from '@src/machines/modelingMachine'
 import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
+import { rustContext, sceneInfra } from '@src/lib/singletons'
+import type { DefaultPlaneStr } from '@src/lib/planes'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -710,6 +712,65 @@ export class SceneInfra {
 
   resumeRendering() {
     this.isRenderingPaused = false
+  }
+
+  selectSketchPlane(planeId: string) {
+    if (!rustContext.defaultPlanes) {
+      console.warn('No default planes defined in rustContext')
+      return
+    }
+    const camVector = sceneInfra.camControls.camera.position
+      .clone()
+      .sub(sceneInfra.camControls.target)
+
+    // TODO can we get this information from rust land when it creates the default planes?
+    // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
+    let zAxis: [number, number, number] = [0, 0, 1]
+    let yAxis: [number, number, number] = [0, 1, 0]
+
+    if (rustContext.defaultPlanes?.xy === planeId) {
+      zAxis = [0, 0, 1]
+      yAxis = [0, 1, 0]
+      if (camVector.z < 0) {
+        zAxis = [0, 0, -1]
+        planeId = rustContext.defaultPlanes?.negXy || ''
+      }
+    } else if (rustContext.defaultPlanes?.yz === planeId) {
+      zAxis = [1, 0, 0]
+      yAxis = [0, 0, 1]
+      if (camVector.x < 0) {
+        zAxis = [-1, 0, 0]
+        planeId = rustContext.defaultPlanes?.negYz || ''
+      }
+    } else if (rustContext.defaultPlanes?.xz === planeId) {
+      zAxis = [0, 1, 0]
+      yAxis = [0, 0, 1]
+      planeId = rustContext.defaultPlanes?.negXz || ''
+      if (camVector.y < 0) {
+        zAxis = [0, -1, 0]
+        planeId = rustContext.defaultPlanes?.xz || ''
+      }
+    }
+
+    const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
+      [rustContext.defaultPlanes.xy]: 'XY',
+      [rustContext.defaultPlanes.xz]: 'XZ',
+      [rustContext.defaultPlanes.yz]: 'YZ',
+      [rustContext.defaultPlanes.negXy]: '-XY',
+      [rustContext.defaultPlanes.negXz]: '-XZ',
+      [rustContext.defaultPlanes.negYz]: '-YZ',
+    }
+
+    sceneInfra.modelingSend({
+      type: 'Select sketch plane',
+      data: {
+        type: 'defaultPlane',
+        planeId: planeId,
+        plane: defaultPlaneStrMap[planeId],
+        zAxis,
+        yAxis,
+      },
+    })
   }
 }
 

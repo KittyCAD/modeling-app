@@ -24,7 +24,12 @@ import {
   getOperationVariableName,
   stdLibMap,
 } from '@src/lib/operations'
-import { editorManager, kclManager, rustContext } from '@src/lib/singletons'
+import {
+  editorManager,
+  kclManager,
+  rustContext,
+  sceneInfra,
+} from '@src/lib/singletons'
 import {
   featureTreeMachine,
   featureTreeMachineDefaultContext,
@@ -338,6 +343,7 @@ const OperationItem = (props: {
   }, [kclContext.diagnostics.length])
 
   function selectOperation() {
+
     if (props.item.type === 'GroupEnd') {
       return
     }
@@ -562,6 +568,10 @@ const OperationItem = (props: {
 const DefaultPlanes = () => {
   const { state: modelingState, send } = useModelingContext()
 
+  const onClick = useCallback((planeId: string) => {
+    sceneInfra.selectSketchPlane(planeId)
+  }, [])
+
   const defaultPlanes = rustContext.defaultPlanes
   if (!defaultPlanes) return null
 
@@ -599,6 +609,7 @@ const DefaultPlanes = () => {
           icon={'plane'}
           name={plane.name}
           selectable={false}
+          onClick={() => onClick(plane.id)}
           visibilityToggle={{
             visible: modelingState.context.defaultPlaneVisibility[plane.key],
             onVisibilityChange: () => {
