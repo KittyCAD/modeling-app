@@ -828,7 +828,6 @@ export class SceneInfra {
         })
       } else {
         // selectOffsetSketchPlane called with an invalid artifact type',
-
         resolve(false)
       }
     })

@@ -451,7 +451,14 @@ const OperationItem = (props: {
     if (isOffsetPlane(props.item)) {
       const artifact = findOperationArtifact(props.item)
       if (artifact?.id) {
-        // start sketch on plane with artifact?.id
+        // TODO make sure there is no selection, otherwise existing sketch will be
+
+        sceneInfra.modelingSend({
+          type: 'Enter sketch',
+          data: { forceNewSketch: true },
+        })
+
+        void sceneInfra.selectOffsetSketchPlane(artifact)
       }
     }
   }
@@ -671,7 +678,7 @@ const isOffsetPlane = (item: Operation): item is StdLibCallOp => {
 const findOperationArtifact = (item: StdLibCallOp) => {
   const nodePath = JSON.stringify(item.nodePath)
   const artifact = [...kclManager.artifactGraph.values()].find(
-      (a) => JSON.stringify((a as Plane).codeRef?.nodePath) === nodePath
+    (a) => JSON.stringify((a as Plane).codeRef?.nodePath) === nodePath
   )
   return artifact
 }
