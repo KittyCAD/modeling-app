@@ -1265,6 +1265,9 @@ openSketch = startSketchOn(XY)
       await page.keyboard.press('Delete')
       await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain('helix')
+      await expect(
+        await toolbar.getFeatureTreeOperation('Helix', 0)
+      ).not.toBeVisible()
     })
   })
 
@@ -1272,14 +1275,14 @@ openSketch = startSketchOn(XY)
     {
       selectionType: 'segment',
       testPoint: { x: 513, y: 221 },
-      expectedOutput: `helix001 = helix(  axis = seg01,  radius = 1,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
-      expectedEditedOutput: `helix001 = helix(  axis = seg01,  radius = 5,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
+      expectedOutput: `helix001 = helix(  axis = seg01,  radius = 1,  revolutions = 20,  angleStart = 0,)`,
+      expectedEditedOutput: `helix001 = helix(  axis = seg01,  radius = 5,  revolutions = 20,  angleStart = 0,)`,
     },
     {
       selectionType: 'sweepEdge',
       testPoint: { x: 564, y: 364 },
-      expectedOutput: `helix001 = helix(  axis =   getOppositeEdge(seg01),  radius = 1,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
-      expectedEditedOutput: `helix001 = helix(  axis =   getOppositeEdge(seg01),  radius = 5,  revolutions = 20,  angleStart = 0,  ccw = false,)`,
+      expectedOutput: `helix001 = helix(  axis =   getOppositeEdge(seg01),  radius = 1,  revolutions = 20,  angleStart = 0,)`,
+      expectedEditedOutput: `helix001 = helix(  axis =   getOppositeEdge(seg01),  radius = 5,  revolutions = 20,  angleStart = 0,)`,
     },
   ]
   helixCases.map(
@@ -1322,7 +1325,6 @@ openSketch = startSketchOn(XY)
             headerArguments: {
               AngleStart: '',
               Mode: '',
-              CounterClockWise: '',
               Radius: '',
               Revolutions: '',
             },
@@ -1334,11 +1336,8 @@ openSketch = startSketchOn(XY)
             .poll(() => page.getByText('Please select one').count())
             .toBe(1)
           await clickOnEdge()
-          await page.waitForTimeout(1000)
           await cmdBar.progressCmdBar()
-          await page.waitForTimeout(1000)
           await cmdBar.argumentInput.focus()
-          await page.waitForTimeout(1000)
           await page.keyboard.insertText('20')
           await cmdBar.progressCmdBar()
           await page.keyboard.insertText('0')
@@ -1354,12 +1353,11 @@ openSketch = startSketchOn(XY)
               AngleStart: '0',
               Revolutions: '20',
               Radius: '1',
-              CounterClockWise: '',
             },
             commandName: 'Helix',
           })
-          await cmdBar.progressCmdBar()
-          await page.waitForTimeout(1000)
+          await cmdBar.submit()
+          await scene.settled(cmdBar)
         })
 
         await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
@@ -1380,23 +1378,16 @@ openSketch = startSketchOn(XY)
           await cmdBar.expectState({
             commandName: 'Helix',
             stage: 'arguments',
-            currentArgKey: 'CounterClockWise',
-            currentArgValue: '',
+            currentArgKey: 'radius',
+            currentArgValue: initialInput,
             headerArguments: {
               AngleStart: '0',
               Revolutions: '20',
               Radius: initialInput,
-              CounterClockWise: '',
             },
-            highlightedHeaderArg: 'CounterClockWise',
+            highlightedHeaderArg: 'radius',
           })
-          await page
-            .getByRole('button', { name: 'radius', exact: false })
-            .click()
-          await expect(cmdBar.currentArgumentInput).toBeVisible()
-          await cmdBar.currentArgumentInput
-            .locator('.cm-content')
-            .fill(newInput)
+          await page.keyboard.insertText(newInput)
           await cmdBar.progressCmdBar()
           await cmdBar.expectState({
             stage: 'review',
@@ -1404,11 +1395,10 @@ openSketch = startSketchOn(XY)
               AngleStart: '0',
               Revolutions: '20',
               Radius: newInput,
-              CounterClockWise: '',
             },
             commandName: 'Helix',
           })
-          await cmdBar.progressCmdBar()
+          await cmdBar.submit()
           await toolbar.closePane('feature-tree')
           await toolbar.openPane('code')
           await editor.expectEditor.toContain(expectedEditedOutput)
