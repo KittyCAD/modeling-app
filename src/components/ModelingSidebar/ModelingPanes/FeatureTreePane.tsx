@@ -28,6 +28,7 @@ import {
   editorManager,
   kclManager,
   rustContext,
+  sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
 import {
@@ -39,11 +40,15 @@ import {
   kclEditorActor,
   selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
+import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
   const { send: modelingSend, state: modelingState } = useModelingContext()
+
+  const sketchNoFace = modelingState.matches('Sketch no face')
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_featureTreeState, featureTreeSend] = useMachine(
     featureTreeMachine.provide({
@@ -200,6 +205,7 @@ export const FeatureTreePane = () => {
                   key={key}
                   item={operation}
                   send={featureTreeSend}
+                  sketchNoFace={sketchNoFace}
                 />
               )
             })}
@@ -311,6 +317,7 @@ const OperationItemWrapper = ({
 const OperationItem = (props: {
   item: Operation
   send: Prop<Actor<typeof featureTreeMachine>, 'send'>
+  sketchNoFace: boolean
 }) => {
   const kclContext = useKclContext()
   const name = getOperationLabel(props.item)
@@ -343,16 +350,63 @@ const OperationItem = (props: {
   }, [kclContext.diagnostics.length])
 
   function selectOperation() {
+    if (props.sketchNoFace) {
+      console.log('item', props.item)
+      if (
+        props.item.type === 'StdLibCall' &&
+        props.item.name === 'offsetPlane'
+      ) {
+        const nodePath = JSON.stringify(props.item.nodePath)
+        const artifact = [...kclManager.artifactGraph.values()].find(
+          (a) => JSON.stringify((a as Plane).codeRef?.nodePath) === nodePath
+        )
 
-    if (props.item.type === 'GroupEnd') {
-      return
+        if (artifact?.type === 'plane') {
+          const planeId = artifact.id
+          void sceneEntitiesManager
+            .getFaceDetails(planeId)
+            .then((planeInfo) => {
+              sceneInfra.modelingSend({
+                type: 'Select sketch plane',
+                data: {
+                  type: 'offsetPlane',
+                  zAxis: [
+                    planeInfo.z_axis.x,
+                    planeInfo.z_axis.y,
+                    planeInfo.z_axis.z,
+                  ],
+                  yAxis: [
+                    planeInfo.y_axis.x,
+                    planeInfo.y_axis.y,
+                    planeInfo.y_axis.z,
+                  ],
+                  position: [
+                    planeInfo.origin.x,
+                    planeInfo.origin.y,
+                    planeInfo.origin.z,
+                  ].map((num) => num / sceneInfra._baseUnitMultiplier) as [
+                    number,
+                    number,
+                    number,
+                  ],
+                  planeId,
+                  pathToNode: artifact.codeRef.pathToNode,
+                },
+              })
+            })
+        }
+      }
+    } else {
+      if (props.item.type === 'GroupEnd') {
+        return
+      }
+      props.send({
+        type: 'selectOperation',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+        },
+      })
     }
-    props.send({
-      type: 'selectOperation',
-      data: {
-        targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-      },
-    })
   }
 
   /**
@@ -568,7 +622,7 @@ const OperationItem = (props: {
 const DefaultPlanes = () => {
   const { state: modelingState, send } = useModelingContext()
 
-  const onClick = useCallback((planeId: string) => {
+  const onClickPlane = useCallback((planeId: string) => {
     sceneInfra.selectSketchPlane(planeId)
   }, [])
 
@@ -609,7 +663,7 @@ const DefaultPlanes = () => {
           icon={'plane'}
           name={plane.name}
           selectable={false}
-          onClick={() => onClick(plane.id)}
+          onClick={() => onClickPlane(plane.id)}
           visibilityToggle={{
             visible: modelingState.context.defaultPlaneVisibility[plane.key],
             onVisibilityChange: () => {
