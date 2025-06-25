@@ -179,6 +179,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-sketch-parabolicPoint-0",
     "std-sketch-hyperbolic-0",
     "std-sketch-hyperbolicPoint-0",
+    "std-sketch-ellipse-0",
     "std-sketch-elliptic-0",
     "std-sketch-ellipticPoint-0",
     "std-sketch-tangentialArc-0",
