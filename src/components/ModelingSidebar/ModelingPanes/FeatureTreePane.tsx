@@ -623,7 +623,7 @@ const DefaultPlanes = () => {
   const { state: modelingState, send } = useModelingContext()
 
   const onClickPlane = useCallback((planeId: string) => {
-    sceneInfra.selectSketchPlane(planeId)
+    sceneInfra.selectDefaultSketchPlane(planeId)
   }, [])
 
   const defaultPlanes = rustContext.defaultPlanes

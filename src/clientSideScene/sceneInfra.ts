@@ -714,11 +714,26 @@ export class SceneInfra {
     this.isRenderingPaused = false
   }
 
-  selectSketchPlane(planeId: string) {
+  selectDefaultSketchPlane(defaultPlaneId: string) {
     if (!rustContext.defaultPlanes) {
       console.warn('No default planes defined in rustContext')
-      return
+      return false
     }
+
+    if (
+      ![
+        rustContext.defaultPlanes.xy,
+        rustContext.defaultPlanes.xz,
+        rustContext.defaultPlanes.yz,
+        rustContext.defaultPlanes.negXy,
+        rustContext.defaultPlanes.negXz,
+        rustContext.defaultPlanes.negYz,
+      ].includes(defaultPlaneId)
+    ) {
+      console.warn('Supplied defaultPlaneId is not valid:', defaultPlaneId)
+      return false
+    }
+
     const camVector = sceneInfra.camControls.camera.position
       .clone()
       .sub(sceneInfra.camControls.target)
@@ -728,27 +743,27 @@ export class SceneInfra {
     let zAxis: [number, number, number] = [0, 0, 1]
     let yAxis: [number, number, number] = [0, 1, 0]
 
-    if (rustContext.defaultPlanes?.xy === planeId) {
+    if (rustContext.defaultPlanes?.xy === defaultPlaneId) {
       zAxis = [0, 0, 1]
       yAxis = [0, 1, 0]
       if (camVector.z < 0) {
         zAxis = [0, 0, -1]
-        planeId = rustContext.defaultPlanes?.negXy || ''
+        defaultPlaneId = rustContext.defaultPlanes?.negXy || ''
       }
-    } else if (rustContext.defaultPlanes?.yz === planeId) {
+    } else if (rustContext.defaultPlanes?.yz === defaultPlaneId) {
       zAxis = [1, 0, 0]
       yAxis = [0, 0, 1]
       if (camVector.x < 0) {
         zAxis = [-1, 0, 0]
-        planeId = rustContext.defaultPlanes?.negYz || ''
+        defaultPlaneId = rustContext.defaultPlanes?.negYz || ''
       }
-    } else if (rustContext.defaultPlanes?.xz === planeId) {
+    } else if (rustContext.defaultPlanes?.xz === defaultPlaneId) {
       zAxis = [0, 1, 0]
       yAxis = [0, 0, 1]
-      planeId = rustContext.defaultPlanes?.negXz || ''
+      defaultPlaneId = rustContext.defaultPlanes?.negXz || ''
       if (camVector.y < 0) {
         zAxis = [0, -1, 0]
-        planeId = rustContext.defaultPlanes?.xz || ''
+        defaultPlaneId = rustContext.defaultPlanes?.xz || ''
       }
     }
 
@@ -765,12 +780,14 @@ export class SceneInfra {
       type: 'Select sketch plane',
       data: {
         type: 'defaultPlane',
-        planeId: planeId,
-        plane: defaultPlaneStrMap[planeId],
+        planeId: defaultPlaneId,
+        plane: defaultPlaneStrMap[defaultPlaneId],
         zAxis,
         yAxis,
       },
     })
+
+    return true
   }
 }
 
