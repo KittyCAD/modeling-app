@@ -1,4 +1,7 @@
-import { addPlaceHoldersForNewFileAndFolder, isRowFake } from '@src/components/Explorer/utils'
+import {
+  addPlaceHoldersForNewFileAndFolder,
+  isRowFake,
+} from '@src/components/Explorer/utils'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import type { FileEntry } from '@src/lib/project'
 
@@ -98,15 +101,15 @@ describe('Explorer utils.ts', () => {
           {
             path: `/${parentPath}/.zoo-placeholder-folder`,
             name: '.zoo-placeholder-folder',
-            children : []
+            children: [],
           },
           {
             path: `/${parentPath}/.zoo-placeholder-file.kcl`,
             name: '.zoo-placeholder-file.kcl',
-            children : null
+            children: null,
           },
         ]
-        const children : FileEntry[] = []
+        const children: FileEntry[] = []
         const actual = addPlaceHoldersForNewFileAndFolder(children, parentPath)
         expect(actual).toBe(expectedResult)
         expect(children).toStrictEqual(expectedList)
@@ -120,45 +123,45 @@ describe('Explorer utils.ts', () => {
           {
             path: `/${parentPath}/.zoo-placeholder-folder`,
             name: '.zoo-placeholder-folder',
-            children : []
+            children: [],
           },
           {
             path: `/${parentPath}/part001`,
             name: 'part001',
-            children : [
+            children: [
               {
                 path: `/${parentPath}/part001/.zoo-placeholder-folder`,
                 name: '.zoo-placeholder-folder',
-                children : []
+                children: [],
               },
               {
                 path: `/${parentPath}/part001/.zoo-placeholder-file.kcl`,
                 name: '.zoo-placeholder-file.kcl',
-                children : null
+                children: null,
               },
-            ]
+            ],
           },
           {
             path: `/${parentPath}/main.kcl`,
             name: 'main.kcl',
-            children : null
+            children: null,
           },
           {
             path: `/${parentPath}/.zoo-placeholder-file.kcl`,
             name: '.zoo-placeholder-file.kcl',
-            children : null
+            children: null,
           },
         ]
-        const children : FileEntry[] = [
+        const children: FileEntry[] = [
           {
             path: `/${parentPath}/part001`,
             name: 'part001',
-            children : []
+            children: [],
           },
           {
             path: `/${parentPath}/main.kcl`,
             name: 'main.kcl',
-            children : null
+            children: null,
           },
         ]
         const actual = addPlaceHoldersForNewFileAndFolder(children, parentPath)

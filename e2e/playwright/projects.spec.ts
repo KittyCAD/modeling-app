@@ -1092,7 +1092,7 @@ test(`Create a few projects using the default project name`, async ({
 test(
   'File in the file pane should open with a single click',
   { tag: '@desktop' },
-  async ({ context, homePage, page }, testInfo) => {
+  async ({ context, homePage, page, scene }, testInfo) => {
     const projectName = 'router-template-slate'
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
@@ -1120,7 +1120,7 @@ test(
 
     await page.getByRole('button', { name: 'Project Files' }).click()
 
-    const file = page.getByRole('button', { name: 'otherThingToClickOn.kcl' })
+    const file = scene.getFileRowFromExplorer('otherThingToClickOn.kcl')
     await expect(file).toBeVisible()
 
     await file.click()

@@ -95,7 +95,7 @@ test(
       await u.openFilePanel()
 
       // Click on the other file
-      const otherKclButton = page.getByRole('button', { name: 'other.kcl' })
+      const otherKclButton = scene.getFileRowFromExplorer('other.kcl')
       await otherKclButton.click()
 
       // Close the file pane
