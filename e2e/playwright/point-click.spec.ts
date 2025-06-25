@@ -1275,18 +1275,26 @@ openSketch = startSketchOn(XY)
     {
       selectionType: 'segment',
       testPoint: { x: 513, y: 221 },
+      counterClockWise: false,
       expectedOutput: `helix001 = helix(  axis = seg01,  radius = 1,  revolutions = 20,  angleStart = 0,)`,
       expectedEditedOutput: `helix001 = helix(  axis = seg01,  radius = 5,  revolutions = 20,  angleStart = 0,)`,
     },
     {
       selectionType: 'sweepEdge',
       testPoint: { x: 564, y: 364 },
+      editCounterClockWise: true,
       expectedOutput: `helix001 = helix(  axis =   getOppositeEdge(seg01),  radius = 1,  revolutions = 20,  angleStart = 0,)`,
-      expectedEditedOutput: `helix001 = helix(  axis =   getOppositeEdge(seg01),  radius = 5,  revolutions = 20,  angleStart = 0,)`,
+      expectedEditedOutput: `helix001 = helix(  axis =   getOppositeEdge(seg01),  radius = 5,  revolutions = 20,  angleStart = 0,  ccw = true,)`,
     },
   ]
   helixCases.map(
-    ({ selectionType, testPoint, expectedOutput, expectedEditedOutput }) => {
+    ({
+      selectionType,
+      testPoint,
+      editCounterClockWise,
+      expectedOutput,
+      expectedEditedOutput,
+    }) => {
       test(`Helix point-and-click around ${selectionType}`, async ({
         context,
         page,
@@ -1398,6 +1406,33 @@ openSketch = startSketchOn(XY)
             },
             commandName: 'Helix',
           })
+          if (editCounterClockWise) {
+            await cmdBar.clickOptionalArgument('ccw')
+            await cmdBar.expectState({
+              commandName: 'Helix',
+              stage: 'arguments',
+              currentArgKey: 'CounterClockWise',
+              currentArgValue: '',
+              headerArguments: {
+                AngleStart: '0',
+                Revolutions: '20',
+                Radius: newInput,
+                CounterClockWise: '',
+              },
+              highlightedHeaderArg: 'CounterClockWise',
+            })
+            await cmdBar.selectOption({ name: 'True' }).click()
+            await cmdBar.expectState({
+              stage: 'review',
+              headerArguments: {
+                AngleStart: '0',
+                Revolutions: '20',
+                Radius: newInput,
+                CounterClockWise: '',
+              },
+              commandName: 'Helix',
+            })
+          }
           await cmdBar.submit()
           await toolbar.closePane('feature-tree')
           await toolbar.openPane('code')
