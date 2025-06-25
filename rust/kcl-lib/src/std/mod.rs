@@ -262,31 +262,31 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "conic") => (
             |e, a| Box::pin(crate::std::sketch::conic(e, a)),
-            StdFnProps::default("std::sketch::conic").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::conic"),
         ),
         ("sketch", "parabolic") => (
             |e, a| Box::pin(crate::std::sketch::parabolic(e, a)),
-            StdFnProps::default("std::sketch::parabolic").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::parabolic"),
         ),
         ("sketch", "parabolicPoint") => (
             |e, a| Box::pin(crate::std::sketch::parabolic_point(e, a)),
-            StdFnProps::default("std::sketch::parabolicPoint").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::parabolicPoint"),
         ),
         ("sketch", "hyperbolic") => (
             |e, a| Box::pin(crate::std::sketch::hyperbolic(e, a)),
-            StdFnProps::default("std::sketch::hyperbolic").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::hyperbolic"),
         ),
         ("sketch", "hyperbolicPoint") => (
             |e, a| Box::pin(crate::std::sketch::hyperbolic_point(e, a)),
-            StdFnProps::default("std::sketch::hyperbolicPoint").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::hyperbolicPoint"),
         ),
         ("sketch", "elliptic") => (
             |e, a| Box::pin(crate::std::sketch::elliptic(e, a)),
-            StdFnProps::default("std::sketch::elliptic").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::elliptic"),
         ),
         ("sketch", "ellipticPoint") => (
             |e, a| Box::pin(crate::std::sketch::elliptic_point(e, a)),
-            StdFnProps::default("std::sketch::ellipticPoint").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::ellipticPoint"),
         ),
         ("sketch", "extrude") => (
             |e, a| Box::pin(crate::std::extrude::extrude(e, a)),
