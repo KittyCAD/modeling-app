@@ -569,15 +569,19 @@ const OperationItem = (props: {
     [props.item, props.send]
   )
 
+  const isOffsetPlane = props.item.type === 'StdLibCall' && props.item.name === 'offsetPlane'
+  const enabled = !props.sketchNoFace || isOffsetPlane
+
   return (
     <OperationItemWrapper
+      selectable={enabled}
       icon={getOperationIcon(props.item)}
       name={name}
       variableName={variableName}
       valueDetail={valueDetail}
       menuItems={menuItems}
       onClick={selectOperation}
-      onDoubleClick={enterEditFlow}
+      onDoubleClick={props.sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
       errors={errors}
     />
   )
@@ -585,6 +589,7 @@ const OperationItem = (props: {
 
 const DefaultPlanes = () => {
   const { state: modelingState, send } = useModelingContext()
+  const sketchNoFace = modelingState.matches('Sketch no face')
 
   const onClickPlane = useCallback((planeId: string) => {
     sceneInfra.selectDefaultSketchPlane(planeId)
@@ -626,8 +631,8 @@ const DefaultPlanes = () => {
           customSuffix={plane.customSuffix}
           icon={'plane'}
           name={plane.name}
-          selectable={false}
-          onClick={() => onClickPlane(plane.id)}
+          selectable={sketchNoFace}
+          onClick={sketchNoFace ? () => onClickPlane(plane.id) : undefined}
           visibilityToggle={{
             visible: modelingState.context.defaultPlaneVisibility[plane.key],
             onVisibilityChange: () => {
