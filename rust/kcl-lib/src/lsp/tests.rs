@@ -2359,7 +2359,7 @@ async fn test_kcl_lsp_diagnostic_has_lints() {
             assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
             assert_eq!(
                 diagnostics.full_document_diagnostic_report.items[0].message,
-                "Identifiers must be lowerCamelCase"
+                "Identifiers should be lowerCamelCase"
             );
         } else {
             panic!("Expected full diagnostics");
