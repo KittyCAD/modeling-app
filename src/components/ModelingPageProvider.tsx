@@ -17,7 +17,7 @@ import { commandBarActor } from '@src/lib/singletons'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 
 /**
- * FileMachineProvider moved to ModelingPageProvider. 
+ * FileMachineProvider moved to ModelingPageProvider.
  * This is a root provider for the modeling page to initialize any react code required for the run
  * time of the modeling page.
  */
