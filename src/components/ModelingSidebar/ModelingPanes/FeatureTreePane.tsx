@@ -28,7 +28,6 @@ import {
   editorManager,
   kclManager,
   rustContext,
-  sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
 import {
@@ -351,7 +350,6 @@ const OperationItem = (props: {
 
   function selectOperation() {
     if (props.sketchNoFace) {
-      console.log('item', props.item)
       if (
         props.item.type === 'StdLibCall' &&
         props.item.name === 'offsetPlane'
@@ -360,41 +358,7 @@ const OperationItem = (props: {
         const artifact = [...kclManager.artifactGraph.values()].find(
           (a) => JSON.stringify((a as Plane).codeRef?.nodePath) === nodePath
         )
-
-        if (artifact?.type === 'plane') {
-          const planeId = artifact.id
-          void sceneEntitiesManager
-            .getFaceDetails(planeId)
-            .then((planeInfo) => {
-              sceneInfra.modelingSend({
-                type: 'Select sketch plane',
-                data: {
-                  type: 'offsetPlane',
-                  zAxis: [
-                    planeInfo.z_axis.x,
-                    planeInfo.z_axis.y,
-                    planeInfo.z_axis.z,
-                  ],
-                  yAxis: [
-                    planeInfo.y_axis.x,
-                    planeInfo.y_axis.y,
-                    planeInfo.y_axis.z,
-                  ],
-                  position: [
-                    planeInfo.origin.x,
-                    planeInfo.origin.y,
-                    planeInfo.origin.z,
-                  ].map((num) => num / sceneInfra._baseUnitMultiplier) as [
-                    number,
-                    number,
-                    number,
-                  ],
-                  planeId,
-                  pathToNode: artifact.codeRef.pathToNode,
-                },
-              })
-            })
-        }
+        void sceneInfra.selectOffsetSketchPlane(artifact)
       }
     } else {
       if (props.item.type === 'GroupEnd') {
