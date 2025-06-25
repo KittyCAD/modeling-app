@@ -24,6 +24,7 @@ description: Variables in memory after executing angled_line.kcl
           "tag": {
             "commentStart": 133,
             "end": 139,
+            "moduleId": 0,
             "start": 133,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -94,6 +95,7 @@ description: Variables in memory after executing angled_line.kcl
             "tag": {
               "commentStart": 133,
               "end": 139,
+              "moduleId": 0,
               "start": 133,
               "type": "TagDeclarator",
               "value": "seg01"

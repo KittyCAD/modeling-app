@@ -13,6 +13,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "triangleSide",
             "start": 0,
             "type": "Identifier"
@@ -20,6 +21,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "140",
             "start": 0,
             "type": "Literal",
@@ -29,11 +31,13 @@ description: Result of parsing user_reported_union_2_bug.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "// Define dimensions"
         ],
@@ -49,6 +53,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "triangleHeight",
             "start": 0,
             "type": "Identifier"
@@ -56,6 +61,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "60",
             "start": 0,
             "type": "Literal",
@@ -65,11 +71,13 @@ description: Result of parsing user_reported_union_2_bug.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -82,6 +90,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "triangleFilletRadius",
             "start": 0,
             "type": "Identifier"
@@ -89,6 +98,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "3",
             "start": 0,
             "type": "Literal",
@@ -98,11 +108,13 @@ description: Result of parsing user_reported_union_2_bug.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -115,6 +127,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "delta",
             "start": 0,
             "type": "Identifier"
@@ -122,6 +135,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "1",
             "start": 0,
             "type": "Literal",
@@ -131,11 +145,13 @@ description: Result of parsing user_reported_union_2_bug.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -148,6 +164,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cubeSize",
             "start": 0,
             "type": "Identifier"
@@ -155,6 +172,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "5",
             "start": 0,
             "type": "Literal",
@@ -164,11 +182,13 @@ description: Result of parsing user_reported_union_2_bug.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -181,6 +201,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cubeLength",
             "start": 0,
             "type": "Identifier"
@@ -188,6 +209,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "45",
             "start": 0,
             "type": "Literal",
@@ -197,11 +219,13 @@ description: Result of parsing user_reported_union_2_bug.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -214,6 +238,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cubeSpacing",
             "start": 0,
             "type": "Identifier"
@@ -221,6 +246,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "30",
             "start": 0,
             "type": "Literal",
@@ -230,11 +256,13 @@ description: Result of parsing user_reported_union_2_bug.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -247,6 +275,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "createCube",
             "start": 0,
             "type": "Identifier"
@@ -262,6 +291,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "cubeSketch",
                       "start": 0,
                       "type": "Identifier"
@@ -269,13 +299,16 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "init": {
                       "body": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "startSketchOn",
                               "start": 0,
                               "type": "Identifier"
@@ -286,6 +319,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -293,9 +327,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "XY",
                               "start": 0,
                               "type": "Identifier"
@@ -313,6 +349,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "at",
                                 "start": 0,
                                 "type": "Identifier"
@@ -327,13 +364,16 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "commentStart": 0,
                                       "computed": false,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "object": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "center",
                                           "start": 0,
                                           "type": "Identifier"
@@ -346,6 +386,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "property": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "0",
                                         "start": 0,
                                         "type": "Literal",
@@ -359,6 +400,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
+                                    "moduleId": 0,
                                     "operator": "-",
                                     "right": {
                                       "commentStart": 0,
@@ -367,9 +409,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "cubeSize",
                                           "start": 0,
                                           "type": "Identifier"
@@ -379,10 +423,12 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "type": "Name",
                                         "type": "Name"
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "2",
                                         "start": 0,
                                         "type": "Literal",
@@ -407,13 +453,16 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "commentStart": 0,
                                       "computed": false,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "object": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "center",
                                           "start": 0,
                                           "type": "Identifier"
@@ -426,6 +475,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "property": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "1",
                                         "start": 0,
                                         "type": "Literal",
@@ -439,6 +489,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
+                                    "moduleId": 0,
                                     "operator": "-",
                                     "right": {
                                       "commentStart": 0,
@@ -447,9 +498,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "cubeLength",
                                           "start": 0,
                                           "type": "Identifier"
@@ -459,10 +512,12 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "type": "Name",
                                         "type": "Name"
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "2",
                                         "start": 0,
                                         "type": "Literal",
@@ -482,6 +537,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -492,9 +548,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "startProfile",
                               "start": 0,
                               "type": "Identifier"
@@ -505,6 +563,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -517,6 +576,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "endAbsolute",
                                 "start": 0,
                                 "type": "Identifier"
@@ -531,13 +591,16 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "commentStart": 0,
                                       "computed": false,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "object": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "center",
                                           "start": 0,
                                           "type": "Identifier"
@@ -550,6 +613,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "property": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "0",
                                         "start": 0,
                                         "type": "Literal",
@@ -563,6 +627,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
+                                    "moduleId": 0,
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
@@ -571,9 +636,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "cubeSize",
                                           "start": 0,
                                           "type": "Identifier"
@@ -583,10 +650,12 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "type": "Name",
                                         "type": "Name"
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "2",
                                         "start": 0,
                                         "type": "Literal",
@@ -611,13 +680,16 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "commentStart": 0,
                                       "computed": false,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "object": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "center",
                                           "start": 0,
                                           "type": "Identifier"
@@ -630,6 +702,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "property": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "1",
                                         "start": 0,
                                         "type": "Literal",
@@ -643,6 +716,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
+                                    "moduleId": 0,
                                     "operator": "-",
                                     "right": {
                                       "commentStart": 0,
@@ -651,9 +725,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "cubeLength",
                                           "start": 0,
                                           "type": "Identifier"
@@ -663,10 +739,12 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "type": "Name",
                                         "type": "Name"
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "2",
                                         "start": 0,
                                         "type": "Literal",
@@ -686,6 +764,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -696,9 +775,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "line",
                               "start": 0,
                               "type": "Identifier"
@@ -709,6 +790,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -721,6 +803,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "endAbsolute",
                                 "start": 0,
                                 "type": "Identifier"
@@ -735,13 +818,16 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "commentStart": 0,
                                       "computed": false,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "object": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "center",
                                           "start": 0,
                                           "type": "Identifier"
@@ -754,6 +840,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "property": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "0",
                                         "start": 0,
                                         "type": "Literal",
@@ -767,6 +854,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
+                                    "moduleId": 0,
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
@@ -775,9 +863,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "cubeSize",
                                           "start": 0,
                                           "type": "Identifier"
@@ -787,10 +877,12 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "type": "Name",
                                         "type": "Name"
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "2",
                                         "start": 0,
                                         "type": "Literal",
@@ -815,13 +907,16 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "commentStart": 0,
                                       "computed": false,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "object": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "center",
                                           "start": 0,
                                           "type": "Identifier"
@@ -834,6 +929,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "property": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "1",
                                         "start": 0,
                                         "type": "Literal",
@@ -847,6 +943,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
+                                    "moduleId": 0,
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
@@ -855,9 +952,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "cubeLength",
                                           "start": 0,
                                           "type": "Identifier"
@@ -867,10 +966,12 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "type": "Name",
                                         "type": "Name"
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "2",
                                         "start": 0,
                                         "type": "Literal",
@@ -890,6 +991,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -900,9 +1002,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "line",
                               "start": 0,
                               "type": "Identifier"
@@ -913,6 +1017,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -925,6 +1030,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "endAbsolute",
                                 "start": 0,
                                 "type": "Identifier"
@@ -939,13 +1045,16 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "commentStart": 0,
                                       "computed": false,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "object": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "center",
                                           "start": 0,
                                           "type": "Identifier"
@@ -958,6 +1067,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "property": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "0",
                                         "start": 0,
                                         "type": "Literal",
@@ -971,6 +1081,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
+                                    "moduleId": 0,
                                     "operator": "-",
                                     "right": {
                                       "commentStart": 0,
@@ -979,9 +1090,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "cubeSize",
                                           "start": 0,
                                           "type": "Identifier"
@@ -991,10 +1104,12 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "type": "Name",
                                         "type": "Name"
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "2",
                                         "start": 0,
                                         "type": "Literal",
@@ -1019,13 +1134,16 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "commentStart": 0,
                                       "computed": false,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "object": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "center",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1038,6 +1156,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "property": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "1",
                                         "start": 0,
                                         "type": "Literal",
@@ -1051,6 +1170,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
+                                    "moduleId": 0,
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
@@ -1059,9 +1179,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "cubeLength",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1071,10 +1193,12 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                         "type": "Name",
                                         "type": "Name"
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "2",
                                         "start": 0,
                                         "type": "Literal",
@@ -1094,6 +1218,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -1104,9 +1229,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "line",
                               "start": 0,
                               "type": "Identifier"
@@ -1117,19 +1244,23 @@ description: Result of parsing user_reported_union_2_bug.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "close",
                               "start": 0,
                               "type": "Identifier"
@@ -1140,6 +1271,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1152,6 +1284,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "x",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1159,6 +1292,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -1174,6 +1308,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "y",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1186,9 +1321,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "cubeLength",
                                       "start": 0,
                                       "type": "Identifier"
@@ -1200,15 +1337,18 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                   },
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "operator": "-",
                                   "start": 0,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 },
+                                "moduleId": 0,
                                 "operator": "/",
                                 "right": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
                                   "type": "Literal",
@@ -1228,6 +1368,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "z",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1235,6 +1376,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -1250,9 +1392,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "translate",
                               "start": 0,
                               "type": "Identifier"
@@ -1263,6 +1407,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1271,15 +1416,18 @@ description: Result of parsing user_reported_union_2_bug.kcl
                       ],
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -1292,6 +1440,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                         "label": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "length",
                           "start": 0,
                           "type": "Identifier"
@@ -1300,9 +1449,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "cubeSize",
                             "start": 0,
                             "type": "Identifier"
@@ -1318,9 +1469,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "extrude",
                         "start": 0,
                         "type": "Identifier"
@@ -1331,6 +1484,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     },
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
@@ -1338,9 +1492,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "cubeSketch",
                         "start": 0,
                         "type": "Identifier"
@@ -1353,6 +1509,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -1360,16 +1517,19 @@ description: Result of parsing user_reported_union_2_bug.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
@@ -1380,11 +1540,13 @@ description: Result of parsing user_reported_union_2_bug.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1402,6 +1564,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cube1",
             "start": 0,
             "type": "Identifier"
@@ -1413,6 +1576,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
@@ -1427,9 +1591,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "cubeSpacing",
                           "start": 0,
                           "type": "Identifier"
@@ -1439,10 +1605,12 @@ description: Result of parsing user_reported_union_2_bug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "/",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -1460,9 +1628,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "delta",
                         "start": 0,
                         "type": "Identifier"
@@ -1474,6 +1644,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     }
                   ],
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -1484,9 +1655,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "createCube",
                 "start": 0,
                 "type": "Identifier"
@@ -1497,16 +1670,19 @@ description: Result of parsing user_reported_union_2_bug.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": null
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1524,6 +1700,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "triangleSketch",
             "start": 0,
             "type": "Identifier"
@@ -1531,13 +1708,16 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -1548,6 +1728,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1555,9 +1736,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XY",
                     "start": 0,
                     "type": "Identifier"
@@ -1575,6 +1758,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -1590,9 +1774,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "triangleSide",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1604,15 +1790,18 @@ description: Result of parsing user_reported_union_2_bug.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "4",
                             "start": 0,
                             "type": "Literal",
@@ -1629,6 +1818,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -1640,6 +1830,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1650,9 +1841,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -1663,6 +1856,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1675,6 +1869,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -1689,9 +1884,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "triangleSide",
                               "start": 0,
                               "type": "Identifier"
@@ -1701,10 +1898,12 @@ description: Result of parsing user_reported_union_2_bug.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -1721,6 +1920,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -1732,6 +1932,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1742,6 +1943,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -1749,6 +1951,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -1760,9 +1963,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -1773,6 +1978,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1785,6 +1991,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -1800,9 +2007,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "triangleSide",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1814,15 +2023,18 @@ description: Result of parsing user_reported_union_2_bug.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "4",
                             "start": 0,
                             "type": "Literal",
@@ -1840,9 +2052,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "triangleHeight",
                             "start": 0,
                             "type": "Identifier"
@@ -1854,6 +2068,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1864,6 +2079,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -1871,6 +2087,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -1882,9 +2099,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -1895,6 +2114,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1907,6 +2127,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -1914,6 +2135,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -1925,9 +2147,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -1938,6 +2162,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1946,15 +2171,18 @@ description: Result of parsing user_reported_union_2_bug.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1972,6 +2200,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "roundedTriangle",
             "start": 0,
             "type": "Identifier"
@@ -1985,6 +2214,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1992,6 +2222,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "5",
                       "start": 0,
                       "type": "Literal",
@@ -2007,9 +2238,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "extrude",
                     "start": 0,
                     "type": "Identifier"
@@ -2020,6 +2253,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2027,9 +2261,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "triangleSketch",
                     "start": 0,
                     "type": "Identifier"
@@ -2047,6 +2283,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "roll",
                       "start": 0,
                       "type": "Identifier"
@@ -2054,6 +2291,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "3",
                       "start": 0,
                       "type": "Literal",
@@ -2069,6 +2307,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "pitch",
                       "start": 0,
                       "type": "Identifier"
@@ -2076,6 +2315,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -2091,6 +2331,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "yaw",
                       "start": 0,
                       "type": "Identifier"
@@ -2098,6 +2339,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -2113,9 +2355,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "rotate",
                     "start": 0,
                     "type": "Identifier"
@@ -2126,6 +2370,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2134,15 +2379,18 @@ description: Result of parsing user_reported_union_2_bug.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2155,18 +2403,22 @@ description: Result of parsing user_reported_union_2_bug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "intermediateUnion1",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "union",
                 "start": 0,
                 "type": "Identifier"
@@ -2177,6 +2429,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -2187,9 +2440,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "roundedTriangle",
                     "start": 0,
                     "type": "Identifier"
@@ -2203,9 +2458,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "cube1",
                     "start": 0,
                     "type": "Identifier"
@@ -2217,16 +2474,19 @@ description: Result of parsing user_reported_union_2_bug.kcl
                 }
               ],
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "ArrayExpression",
               "type": "ArrayExpression"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2238,9 +2498,11 @@ description: Result of parsing user_reported_union_2_bug.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -2252,19 +2514,23 @@ description: Result of parsing user_reported_union_2_bug.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "mm",
                 "start": 0,
                 "type": "Identifier"
@@ -2280,12 +2546,14 @@ description: Result of parsing user_reported_union_2_bug.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "3": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -2297,6 +2565,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -2308,6 +2577,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -2320,6 +2590,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -2331,6 +2602,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -2342,6 +2614,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -2353,6 +2626,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -2362,6 +2636,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

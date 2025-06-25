@@ -13,6 +13,7 @@ description: Result of parsing angled_line.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "part001",
             "start": 0,
             "type": "Identifier"
@@ -20,13 +21,16 @@ description: Result of parsing angled_line.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -37,6 +41,7 @@ description: Result of parsing angled_line.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -44,9 +49,11 @@ description: Result of parsing angled_line.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XY",
                     "start": 0,
                     "type": "Identifier"
@@ -64,6 +71,7 @@ description: Result of parsing angled_line.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -74,6 +82,7 @@ description: Result of parsing angled_line.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "4.83",
                           "start": 0,
                           "type": "Literal",
@@ -86,6 +95,7 @@ description: Result of parsing angled_line.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "12.56",
                           "start": 0,
                           "type": "Literal",
@@ -97,6 +107,7 @@ description: Result of parsing angled_line.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -107,9 +118,11 @@ description: Result of parsing angled_line.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -120,6 +133,7 @@ description: Result of parsing angled_line.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -132,6 +146,7 @@ description: Result of parsing angled_line.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -142,6 +157,7 @@ description: Result of parsing angled_line.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "15.1",
                           "start": 0,
                           "type": "Literal",
@@ -154,6 +170,7 @@ description: Result of parsing angled_line.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "2.48",
                           "start": 0,
                           "type": "Literal",
@@ -165,6 +182,7 @@ description: Result of parsing angled_line.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -175,9 +193,11 @@ description: Result of parsing angled_line.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -188,6 +208,7 @@ description: Result of parsing angled_line.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -200,6 +221,7 @@ description: Result of parsing angled_line.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -210,6 +232,7 @@ description: Result of parsing angled_line.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "3.15",
                           "start": 0,
                           "type": "Literal",
@@ -223,6 +246,7 @@ description: Result of parsing angled_line.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "9.85",
                             "start": 0,
                             "type": "Literal",
@@ -234,6 +258,7 @@ description: Result of parsing angled_line.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -241,6 +266,7 @@ description: Result of parsing angled_line.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -251,6 +277,7 @@ description: Result of parsing angled_line.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -258,6 +285,7 @@ description: Result of parsing angled_line.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -269,9 +297,11 @@ description: Result of parsing angled_line.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -282,6 +312,7 @@ description: Result of parsing angled_line.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -294,6 +325,7 @@ description: Result of parsing angled_line.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -305,6 +337,7 @@ description: Result of parsing angled_line.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "15.17",
                             "start": 0,
                             "type": "Literal",
@@ -316,6 +349,7 @@ description: Result of parsing angled_line.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -325,6 +359,7 @@ description: Result of parsing angled_line.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "4.1",
                             "start": 0,
                             "type": "Literal",
@@ -336,6 +371,7 @@ description: Result of parsing angled_line.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -343,6 +379,7 @@ description: Result of parsing angled_line.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -353,9 +390,11 @@ description: Result of parsing angled_line.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -366,6 +405,7 @@ description: Result of parsing angled_line.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -378,18 +418,22 @@ description: Result of parsing angled_line.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "segAng",
                           "start": 0,
                           "type": "Identifier"
@@ -400,6 +444,7 @@ description: Result of parsing angled_line.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -407,9 +452,11 @@ description: Result of parsing angled_line.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "seg01",
                           "start": 0,
                           "type": "Identifier"
@@ -426,6 +473,7 @@ description: Result of parsing angled_line.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -433,6 +481,7 @@ description: Result of parsing angled_line.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "12.35",
                       "start": 0,
                       "type": "Literal",
@@ -448,9 +497,11 @@ description: Result of parsing angled_line.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angledLine",
                     "start": 0,
                     "type": "Identifier"
@@ -461,6 +512,7 @@ description: Result of parsing angled_line.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -473,6 +525,7 @@ description: Result of parsing angled_line.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -484,6 +537,7 @@ description: Result of parsing angled_line.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "13.02",
                             "start": 0,
                             "type": "Literal",
@@ -495,6 +549,7 @@ description: Result of parsing angled_line.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -503,6 +558,7 @@ description: Result of parsing angled_line.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "10.03",
                           "start": 0,
                           "type": "Literal",
@@ -514,6 +570,7 @@ description: Result of parsing angled_line.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -524,9 +581,11 @@ description: Result of parsing angled_line.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -537,19 +596,23 @@ description: Result of parsing angled_line.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -560,6 +623,7 @@ description: Result of parsing angled_line.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -572,6 +636,7 @@ description: Result of parsing angled_line.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -579,6 +644,7 @@ description: Result of parsing angled_line.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "4",
                       "start": 0,
                       "type": "Literal",
@@ -594,9 +660,11 @@ description: Result of parsing angled_line.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "extrude",
                     "start": 0,
                     "type": "Identifier"
@@ -607,6 +675,7 @@ description: Result of parsing angled_line.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -615,15 +684,18 @@ description: Result of parsing angled_line.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -631,6 +703,7 @@ description: Result of parsing angled_line.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

@@ -66,6 +66,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
           "tag": {
             "commentStart": 942,
             "end": 948,
+            "moduleId": 0,
             "start": 942,
             "type": "TagDeclarator",
             "value": "seg03"
@@ -91,6 +92,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
           "tag": {
             "commentStart": 1008,
             "end": 1014,
+            "moduleId": 0,
             "start": 1008,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -140,6 +142,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
           "tag": {
             "commentStart": 1107,
             "end": 1113,
+            "moduleId": 0,
             "start": 1107,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -510,6 +513,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
           "tag": {
             "commentStart": 942,
             "end": 948,
+            "moduleId": 0,
             "start": 942,
             "type": "TagDeclarator",
             "value": "seg03"
@@ -523,6 +527,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
           "tag": {
             "commentStart": 1008,
             "end": 1014,
+            "moduleId": 0,
             "start": 1008,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -543,6 +548,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
           "tag": {
             "commentStart": 1107,
             "end": 1113,
+            "moduleId": 0,
             "start": 1107,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -676,6 +682,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "tag": {
               "commentStart": 942,
               "end": 948,
+              "moduleId": 0,
               "start": 942,
               "type": "TagDeclarator",
               "value": "seg03"
@@ -701,6 +708,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "tag": {
               "commentStart": 1008,
               "end": 1014,
+              "moduleId": 0,
               "start": 1008,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -750,6 +758,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "tag": {
               "commentStart": 1107,
               "end": 1113,
+              "moduleId": 0,
               "start": 1107,
               "type": "TagDeclarator",
               "value": "seg02"

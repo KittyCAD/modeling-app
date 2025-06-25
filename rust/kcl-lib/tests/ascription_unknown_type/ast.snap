@@ -13,6 +13,7 @@ description: Result of parsing ascription_unknown_type.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "z",
             "start": 0,
             "type": "Identifier"
@@ -23,6 +24,7 @@ description: Result of parsing ascription_unknown_type.kcl
             "expr": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "10",
               "start": 0,
               "type": "Literal",
@@ -32,6 +34,7 @@ description: Result of parsing ascription_unknown_type.kcl
                 "suffix": "None"
               }
             },
+            "moduleId": 0,
             "start": 0,
             "ty": {
               "commentStart": 0,
@@ -39,10 +42,12 @@ description: Result of parsing ascription_unknown_type.kcl
               "id": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "NotARealType",
                 "start": 0,
                 "type": "Identifier"
               },
+              "moduleId": 0,
               "p_type": "Named",
               "start": 0,
               "type": "Primitive"
@@ -50,11 +55,13 @@ description: Result of parsing ascription_unknown_type.kcl
             "type": "AscribedExpression",
             "type": "AscribedExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -62,6 +69,7 @@ description: Result of parsing ascription_unknown_type.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

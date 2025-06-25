@@ -8,6 +8,7 @@ description: Result of parsing import_glob.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "export_constant.kcl"
@@ -15,6 +16,7 @@ description: Result of parsing import_glob.kcl
         "selector": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "Glob"
         },
@@ -25,6 +27,7 @@ description: Result of parsing import_glob.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

@@ -13,6 +13,7 @@ description: Result of parsing kw_fn_too_few_args.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "add",
             "start": 0,
             "type": "Identifier"
@@ -28,9 +29,11 @@ description: Result of parsing kw_fn_too_few_args.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "x",
                         "start": 0,
                         "type": "Identifier"
@@ -40,14 +43,17 @@ description: Result of parsing kw_fn_too_few_args.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "+",
                     "right": {
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "y",
                         "start": 0,
                         "type": "Identifier"
@@ -63,6 +69,7 @@ description: Result of parsing kw_fn_too_few_args.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -70,16 +77,19 @@ description: Result of parsing kw_fn_too_few_args.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "x",
                   "start": 0,
                   "type": "Identifier"
@@ -90,6 +100,7 @@ description: Result of parsing kw_fn_too_few_args.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "y",
                   "start": 0,
                   "type": "Identifier"
@@ -100,11 +111,13 @@ description: Result of parsing kw_fn_too_few_args.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -117,6 +130,7 @@ description: Result of parsing kw_fn_too_few_args.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "three",
             "start": 0,
             "type": "Identifier"
@@ -128,6 +142,7 @@ description: Result of parsing kw_fn_too_few_args.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "x",
                   "start": 0,
                   "type": "Identifier"
@@ -135,6 +150,7 @@ description: Result of parsing kw_fn_too_few_args.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "1",
                   "start": 0,
                   "type": "Literal",
@@ -150,9 +166,11 @@ description: Result of parsing kw_fn_too_few_args.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "add",
                 "start": 0,
                 "type": "Identifier"
@@ -163,16 +181,19 @@ description: Result of parsing kw_fn_too_few_args.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": null
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -180,12 +201,14 @@ description: Result of parsing kw_fn_too_few_args.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

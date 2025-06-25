@@ -13,6 +13,7 @@ description: Result of parsing mug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "mugDiameter",
             "start": 0,
             "type": "Identifier"
@@ -20,6 +21,7 @@ description: Result of parsing mug.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "80",
             "start": 0,
             "type": "Literal",
@@ -29,11 +31,13 @@ description: Result of parsing mug.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "// Define parameters"
         ],
@@ -49,6 +53,7 @@ description: Result of parsing mug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "mugHeight",
             "start": 0,
             "type": "Identifier"
@@ -56,6 +61,7 @@ description: Result of parsing mug.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "95",
             "start": 0,
             "type": "Literal",
@@ -65,11 +71,13 @@ description: Result of parsing mug.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -82,6 +90,7 @@ description: Result of parsing mug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "wallThickness",
             "start": 0,
             "type": "Identifier"
@@ -89,6 +98,7 @@ description: Result of parsing mug.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "6",
             "start": 0,
             "type": "Literal",
@@ -98,11 +108,13 @@ description: Result of parsing mug.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -115,6 +127,7 @@ description: Result of parsing mug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "handleWidth",
             "start": 0,
             "type": "Identifier"
@@ -122,6 +135,7 @@ description: Result of parsing mug.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "18",
             "start": 0,
             "type": "Literal",
@@ -131,11 +145,13 @@ description: Result of parsing mug.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -148,6 +164,7 @@ description: Result of parsing mug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "handleThickness",
             "start": 0,
             "type": "Identifier"
@@ -155,6 +172,7 @@ description: Result of parsing mug.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "5",
             "start": 0,
             "type": "Literal",
@@ -164,11 +182,13 @@ description: Result of parsing mug.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -181,6 +201,7 @@ description: Result of parsing mug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tools",
             "start": 0,
             "type": "Identifier"
@@ -188,13 +209,16 @@ description: Result of parsing mug.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -205,6 +229,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -212,9 +237,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XZ",
                     "start": 0,
                     "type": "Identifier"
@@ -232,6 +259,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -242,6 +270,7 @@ description: Result of parsing mug.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -258,9 +287,11 @@ description: Result of parsing mug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "mugDiameter",
                               "start": 0,
                               "type": "Identifier"
@@ -270,10 +301,12 @@ description: Result of parsing mug.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "*",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "0.04",
                             "start": 0,
                             "type": "Literal",
@@ -289,6 +322,7 @@ description: Result of parsing mug.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -299,9 +333,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -312,6 +348,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -324,6 +361,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -335,9 +373,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -347,10 +387,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.1",
                         "start": 0,
                         "type": "Literal",
@@ -370,9 +412,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -383,6 +427,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -395,6 +440,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -409,9 +455,11 @@ description: Result of parsing mug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "mugDiameter",
                               "start": 0,
                               "type": "Identifier"
@@ -421,10 +469,12 @@ description: Result of parsing mug.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "*",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "0.3",
                             "start": 0,
                             "type": "Literal",
@@ -445,9 +495,11 @@ description: Result of parsing mug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "mugDiameter",
                               "start": 0,
                               "type": "Identifier"
@@ -457,10 +509,12 @@ description: Result of parsing mug.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "*",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "0.01",
                             "start": 0,
                             "type": "Literal",
@@ -476,6 +530,7 @@ description: Result of parsing mug.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -486,9 +541,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -499,6 +556,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -511,6 +569,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleStart",
                       "start": 0,
                       "type": "Identifier"
@@ -519,6 +578,7 @@ description: Result of parsing mug.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "180",
                         "start": 0,
                         "type": "Literal",
@@ -530,6 +590,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -541,6 +602,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleEnd",
                       "start": 0,
                       "type": "Identifier"
@@ -549,6 +611,7 @@ description: Result of parsing mug.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "90",
                         "start": 0,
                         "type": "Literal",
@@ -560,6 +623,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -571,6 +635,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -582,9 +647,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -594,10 +661,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.01",
                         "start": 0,
                         "type": "Literal",
@@ -617,9 +686,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arc",
                     "start": 0,
                     "type": "Identifier"
@@ -630,6 +701,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -642,6 +714,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -653,9 +726,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -665,10 +740,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.025",
                         "start": 0,
                         "type": "Literal",
@@ -688,9 +765,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -701,6 +780,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -713,6 +793,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleStart",
                       "start": 0,
                       "type": "Identifier"
@@ -721,6 +802,7 @@ description: Result of parsing mug.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "90",
                         "start": 0,
                         "type": "Literal",
@@ -732,6 +814,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -743,6 +826,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleEnd",
                       "start": 0,
                       "type": "Identifier"
@@ -750,6 +834,7 @@ description: Result of parsing mug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -765,6 +850,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -776,9 +862,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -788,10 +876,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.01",
                         "start": 0,
                         "type": "Literal",
@@ -811,9 +901,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arc",
                     "start": 0,
                     "type": "Identifier"
@@ -824,6 +916,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -836,6 +929,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -847,9 +941,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -859,10 +955,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.35",
                         "start": 0,
                         "type": "Literal",
@@ -882,9 +980,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -895,6 +995,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -907,6 +1008,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -914,6 +1016,7 @@ description: Result of parsing mug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "90",
                       "start": 0,
                       "type": "Literal",
@@ -929,6 +1032,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -940,9 +1044,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -952,10 +1058,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.15",
                         "start": 0,
                         "type": "Literal",
@@ -975,9 +1083,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -988,6 +1098,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1000,6 +1111,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -1011,9 +1123,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugHeight",
                           "start": 0,
                           "type": "Identifier"
@@ -1023,6 +1137,7 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "-",
                       "right": {
                         "commentStart": 0,
@@ -1031,9 +1146,11 @@ description: Result of parsing mug.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "wallThickness",
                             "start": 0,
                             "type": "Identifier"
@@ -1043,10 +1160,12 @@ description: Result of parsing mug.kcl
                           "type": "Name",
                           "type": "Name"
                         },
+                        "moduleId": 0,
                         "operator": "/",
                         "right": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "2",
                           "start": 0,
                           "type": "Literal",
@@ -1070,9 +1189,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yLine",
                     "start": 0,
                     "type": "Identifier"
@@ -1083,6 +1204,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1095,6 +1217,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -1102,6 +1225,7 @@ description: Result of parsing mug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "90",
                       "start": 0,
                       "type": "Literal",
@@ -1117,6 +1241,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "diameter",
                       "start": 0,
                       "type": "Identifier"
@@ -1125,9 +1250,11 @@ description: Result of parsing mug.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "wallThickness",
                         "start": 0,
                         "type": "Identifier"
@@ -1143,9 +1270,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -1156,6 +1285,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1168,18 +1298,22 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "profileStartX",
                           "start": 0,
                           "type": "Identifier"
@@ -1190,6 +1324,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -1201,9 +1336,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -1214,6 +1351,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1226,18 +1364,22 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "profileStartY",
                           "start": 0,
                           "type": "Identifier"
@@ -1248,6 +1390,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -1259,9 +1402,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yLine",
                     "start": 0,
                     "type": "Identifier"
@@ -1272,19 +1417,23 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -1295,6 +1444,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1307,6 +1457,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
@@ -1315,9 +1466,11 @@ description: Result of parsing mug.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "Y",
                         "start": 0,
                         "type": "Identifier"
@@ -1333,9 +1486,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "revolve",
                     "start": 0,
                     "type": "Identifier"
@@ -1346,6 +1501,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1354,12 +1510,14 @@ description: Result of parsing mug.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "14": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -1376,11 +1534,13 @@ description: Result of parsing mug.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1398,6 +1558,7 @@ description: Result of parsing mug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "handlePath",
             "start": 0,
             "type": "Identifier"
@@ -1405,13 +1566,16 @@ description: Result of parsing mug.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -1422,6 +1586,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1429,9 +1594,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XZ",
                     "start": 0,
                     "type": "Identifier"
@@ -1449,6 +1616,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -1463,9 +1631,11 @@ description: Result of parsing mug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "mugDiameter",
                               "start": 0,
                               "type": "Identifier"
@@ -1475,10 +1645,12 @@ description: Result of parsing mug.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "3",
                             "start": 0,
                             "type": "Literal",
@@ -1499,9 +1671,11 @@ description: Result of parsing mug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "mugHeight",
                               "start": 0,
                               "type": "Identifier"
@@ -1511,10 +1685,12 @@ description: Result of parsing mug.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "*",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "0.25",
                             "start": 0,
                             "type": "Literal",
@@ -1530,6 +1706,7 @@ description: Result of parsing mug.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1540,9 +1717,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -1553,6 +1732,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1565,6 +1745,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -1573,6 +1754,7 @@ description: Result of parsing mug.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "5",
                         "start": 0,
                         "type": "Literal",
@@ -1584,6 +1766,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -1595,6 +1778,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1606,9 +1790,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -1618,10 +1804,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "/",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "3",
                         "start": 0,
                         "type": "Literal",
@@ -1641,9 +1829,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angledLine",
                     "start": 0,
                     "type": "Identifier"
@@ -1654,6 +1844,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1666,6 +1857,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -1673,6 +1865,7 @@ description: Result of parsing mug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "90",
                       "start": 0,
                       "type": "Literal",
@@ -1688,6 +1881,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -1699,9 +1893,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugHeight",
                           "start": 0,
                           "type": "Identifier"
@@ -1711,10 +1907,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.15",
                         "start": 0,
                         "type": "Literal",
@@ -1734,9 +1932,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -1747,6 +1947,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1759,6 +1960,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -1769,6 +1971,7 @@ description: Result of parsing mug.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -1785,9 +1988,11 @@ description: Result of parsing mug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "mugHeight",
                               "start": 0,
                               "type": "Identifier"
@@ -1797,10 +2002,12 @@ description: Result of parsing mug.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "*",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "0.425",
                             "start": 0,
                             "type": "Literal",
@@ -1816,6 +2023,7 @@ description: Result of parsing mug.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1826,9 +2034,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -1839,6 +2049,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1851,6 +2062,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -1858,6 +2070,7 @@ description: Result of parsing mug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "90",
                       "start": 0,
                       "type": "Literal",
@@ -1873,6 +2086,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -1884,9 +2098,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugHeight",
                           "start": 0,
                           "type": "Identifier"
@@ -1896,10 +2112,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.15",
                         "start": 0,
                         "type": "Literal",
@@ -1919,6 +2137,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -1926,6 +2145,7 @@ description: Result of parsing mug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -1937,9 +2157,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -1950,6 +2172,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1962,18 +2185,22 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "tangentToEnd",
                           "start": 0,
                           "type": "Identifier"
@@ -1984,6 +2211,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -1991,9 +2219,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "seg02",
                           "start": 0,
                           "type": "Identifier"
@@ -2010,18 +2240,22 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsoluteX",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "profileStartX",
                           "start": 0,
                           "type": "Identifier"
@@ -2032,6 +2266,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -2043,9 +2278,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angledLine",
                     "start": 0,
                     "type": "Identifier"
@@ -2056,6 +2293,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2064,12 +2302,14 @@ description: Result of parsing mug.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "6": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -2086,11 +2326,13 @@ description: Result of parsing mug.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2103,6 +2345,7 @@ description: Result of parsing mug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "handle",
             "start": 0,
             "type": "Identifier"
@@ -2110,13 +2353,16 @@ description: Result of parsing mug.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -2127,6 +2373,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2137,6 +2384,7 @@ description: Result of parsing mug.kcl
                       "label": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "offset",
                         "start": 0,
                         "type": "Identifier"
@@ -2148,9 +2396,11 @@ description: Result of parsing mug.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "mugDiameter",
                             "start": 0,
                             "type": "Identifier"
@@ -2160,10 +2410,12 @@ description: Result of parsing mug.kcl
                           "type": "Name",
                           "type": "Name"
                         },
+                        "moduleId": 0,
                         "operator": "/",
                         "right": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "3",
                           "start": 0,
                           "type": "Literal",
@@ -2183,9 +2435,11 @@ description: Result of parsing mug.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "offsetPlane",
                       "start": 0,
                       "type": "Identifier"
@@ -2196,6 +2450,7 @@ description: Result of parsing mug.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "CallExpressionKw",
                   "type": "CallExpressionKw",
@@ -2203,9 +2458,11 @@ description: Result of parsing mug.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "YZ",
                       "start": 0,
                       "type": "Identifier"
@@ -2224,6 +2481,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -2239,9 +2497,11 @@ description: Result of parsing mug.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "handleWidth",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2253,15 +2513,18 @@ description: Result of parsing mug.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -2285,9 +2548,11 @@ description: Result of parsing mug.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "mugHeight",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2297,10 +2562,12 @@ description: Result of parsing mug.kcl
                               "type": "Name",
                               "type": "Name"
                             },
+                            "moduleId": 0,
                             "operator": "*",
                             "right": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "0.25",
                               "start": 0,
                               "type": "Literal",
@@ -2314,6 +2581,7 @@ description: Result of parsing mug.kcl
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "commentStart": 0,
@@ -2322,9 +2590,11 @@ description: Result of parsing mug.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "handleThickness",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2334,10 +2604,12 @@ description: Result of parsing mug.kcl
                               "type": "Name",
                               "type": "Name"
                             },
+                            "moduleId": 0,
                             "operator": "/",
                             "right": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "2",
                               "start": 0,
                               "type": "Literal",
@@ -2357,6 +2629,7 @@ description: Result of parsing mug.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -2367,9 +2640,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -2380,6 +2655,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2392,6 +2668,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "interiorAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -2402,6 +2679,7 @@ description: Result of parsing mug.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -2415,13 +2693,16 @@ description: Result of parsing mug.kcl
                           "commentStart": 0,
                           "end": 0,
                           "left": {
+                            "arguments": [],
                             "callee": {
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "profileStartY",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2432,11 +2713,13 @@ description: Result of parsing mug.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "CallExpressionKw",
                             "type": "CallExpressionKw",
                             "unlabeled": null
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "commentStart": 0,
@@ -2445,9 +2728,11 @@ description: Result of parsing mug.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "handleThickness",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2457,10 +2742,12 @@ description: Result of parsing mug.kcl
                               "type": "Name",
                               "type": "Name"
                             },
+                            "moduleId": 0,
                             "operator": "/",
                             "right": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "4",
                               "start": 0,
                               "type": "Literal",
@@ -2480,6 +2767,7 @@ description: Result of parsing mug.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -2490,6 +2778,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -2504,9 +2793,11 @@ description: Result of parsing mug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "handleWidth",
                               "start": 0,
                               "type": "Identifier"
@@ -2516,10 +2807,12 @@ description: Result of parsing mug.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -2534,13 +2827,16 @@ description: Result of parsing mug.kcl
                           "type": "BinaryExpression"
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartY",
                               "start": 0,
                               "type": "Identifier"
@@ -2551,6 +2847,7 @@ description: Result of parsing mug.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -2558,6 +2855,7 @@ description: Result of parsing mug.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -2568,9 +2866,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arc",
                     "start": 0,
                     "type": "Identifier"
@@ -2581,6 +2881,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2593,6 +2894,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -2603,6 +2905,7 @@ description: Result of parsing mug.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -2617,9 +2920,11 @@ description: Result of parsing mug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "handleThickness",
                               "start": 0,
                               "type": "Identifier"
@@ -2631,6 +2936,7 @@ description: Result of parsing mug.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -2638,6 +2944,7 @@ description: Result of parsing mug.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -2648,9 +2955,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -2661,6 +2970,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2673,6 +2983,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -2685,9 +2996,11 @@ description: Result of parsing mug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "handleWidth",
                               "start": 0,
                               "type": "Identifier"
@@ -2699,6 +3012,7 @@ description: Result of parsing mug.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -2707,6 +3021,7 @@ description: Result of parsing mug.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -2718,6 +3033,7 @@ description: Result of parsing mug.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -2728,9 +3044,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -2741,6 +3059,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2753,18 +3072,22 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "profileStart",
                           "start": 0,
                           "type": "Identifier"
@@ -2775,6 +3098,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -2786,9 +3110,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -2799,19 +3125,23 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -2822,6 +3152,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2834,6 +3165,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "path",
                       "start": 0,
                       "type": "Identifier"
@@ -2842,9 +3174,11 @@ description: Result of parsing mug.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "handlePath",
                         "start": 0,
                         "type": "Identifier"
@@ -2860,9 +3194,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "sweep",
                     "start": 0,
                     "type": "Identifier"
@@ -2873,19 +3209,23 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "subtract",
                     "start": 0,
                     "type": "Identifier"
@@ -2896,6 +3236,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2903,9 +3244,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tools",
                     "start": 0,
                     "type": "Identifier"
@@ -2919,12 +3262,14 @@ description: Result of parsing mug.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "8": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -2941,11 +3286,13 @@ description: Result of parsing mug.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2958,6 +3305,7 @@ description: Result of parsing mug.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "mug",
             "start": 0,
             "type": "Identifier"
@@ -2965,13 +3313,16 @@ description: Result of parsing mug.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -2982,6 +3333,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2989,9 +3341,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XZ",
                     "start": 0,
                     "type": "Identifier"
@@ -3009,6 +3363,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -3019,6 +3374,7 @@ description: Result of parsing mug.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -3035,9 +3391,11 @@ description: Result of parsing mug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "mugDiameter",
                               "start": 0,
                               "type": "Identifier"
@@ -3047,10 +3405,12 @@ description: Result of parsing mug.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "*",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "0.04",
                             "start": 0,
                             "type": "Literal",
@@ -3066,6 +3426,7 @@ description: Result of parsing mug.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -3076,9 +3437,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -3089,6 +3452,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3101,6 +3465,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -3112,9 +3477,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -3124,10 +3491,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.1",
                         "start": 0,
                         "type": "Literal",
@@ -3147,9 +3516,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -3160,6 +3531,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3172,6 +3544,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -3186,9 +3559,11 @@ description: Result of parsing mug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "mugDiameter",
                               "start": 0,
                               "type": "Identifier"
@@ -3198,10 +3573,12 @@ description: Result of parsing mug.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "*",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "0.3",
                             "start": 0,
                             "type": "Literal",
@@ -3222,9 +3599,11 @@ description: Result of parsing mug.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "mugDiameter",
                               "start": 0,
                               "type": "Identifier"
@@ -3234,10 +3613,12 @@ description: Result of parsing mug.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "*",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "0.01",
                             "start": 0,
                             "type": "Literal",
@@ -3253,6 +3634,7 @@ description: Result of parsing mug.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -3263,9 +3645,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -3276,6 +3660,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3288,6 +3673,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleStart",
                       "start": 0,
                       "type": "Identifier"
@@ -3296,6 +3682,7 @@ description: Result of parsing mug.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "180",
                         "start": 0,
                         "type": "Literal",
@@ -3307,6 +3694,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -3318,6 +3706,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleEnd",
                       "start": 0,
                       "type": "Identifier"
@@ -3326,6 +3715,7 @@ description: Result of parsing mug.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "90",
                         "start": 0,
                         "type": "Literal",
@@ -3337,6 +3727,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -3348,6 +3739,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -3359,9 +3751,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -3371,10 +3765,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.01",
                         "start": 0,
                         "type": "Literal",
@@ -3394,9 +3790,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arc",
                     "start": 0,
                     "type": "Identifier"
@@ -3407,6 +3805,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3419,6 +3818,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -3430,9 +3830,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -3442,10 +3844,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.025",
                         "start": 0,
                         "type": "Literal",
@@ -3465,9 +3869,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -3478,6 +3884,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3490,6 +3897,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleStart",
                       "start": 0,
                       "type": "Identifier"
@@ -3498,6 +3906,7 @@ description: Result of parsing mug.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "90",
                         "start": 0,
                         "type": "Literal",
@@ -3509,6 +3918,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -3520,6 +3930,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleEnd",
                       "start": 0,
                       "type": "Identifier"
@@ -3527,6 +3938,7 @@ description: Result of parsing mug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -3542,6 +3954,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -3553,9 +3966,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -3565,10 +3980,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.01",
                         "start": 0,
                         "type": "Literal",
@@ -3588,9 +4005,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arc",
                     "start": 0,
                     "type": "Identifier"
@@ -3601,6 +4020,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3613,6 +4033,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -3624,9 +4045,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -3636,10 +4059,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.35",
                         "start": 0,
                         "type": "Literal",
@@ -3659,9 +4084,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -3672,6 +4099,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3684,6 +4112,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -3691,6 +4120,7 @@ description: Result of parsing mug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "90",
                       "start": 0,
                       "type": "Literal",
@@ -3706,6 +4136,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -3717,9 +4148,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -3729,10 +4162,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.15",
                         "start": 0,
                         "type": "Literal",
@@ -3752,9 +4187,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -3765,6 +4202,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3777,6 +4215,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -3788,9 +4227,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugHeight",
                           "start": 0,
                           "type": "Identifier"
@@ -3800,6 +4241,7 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "-",
                       "right": {
                         "commentStart": 0,
@@ -3808,9 +4250,11 @@ description: Result of parsing mug.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "wallThickness",
                             "start": 0,
                             "type": "Identifier"
@@ -3820,10 +4264,12 @@ description: Result of parsing mug.kcl
                           "type": "Name",
                           "type": "Name"
                         },
+                        "moduleId": 0,
                         "operator": "/",
                         "right": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "2",
                           "start": 0,
                           "type": "Literal",
@@ -3847,9 +4293,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yLine",
                     "start": 0,
                     "type": "Identifier"
@@ -3860,6 +4308,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3872,6 +4321,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -3879,6 +4329,7 @@ description: Result of parsing mug.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "180",
                       "start": 0,
                       "type": "Literal",
@@ -3894,6 +4345,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "diameter",
                       "start": 0,
                       "type": "Identifier"
@@ -3902,9 +4354,11 @@ description: Result of parsing mug.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "wallThickness",
                         "start": 0,
                         "type": "Identifier"
@@ -3920,9 +4374,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -3933,6 +4389,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3945,6 +4402,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -3956,9 +4414,11 @@ description: Result of parsing mug.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "mugDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -3968,10 +4428,12 @@ description: Result of parsing mug.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.15",
                         "start": 0,
                         "type": "Literal",
@@ -3991,9 +4453,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yLine",
                     "start": 0,
                     "type": "Identifier"
@@ -4004,6 +4468,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -4016,6 +4481,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -4024,6 +4490,7 @@ description: Result of parsing mug.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "90",
                         "start": 0,
                         "type": "Literal",
@@ -4035,6 +4502,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -4046,6 +4514,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -4054,13 +4523,16 @@ description: Result of parsing mug.kcl
                       "commentStart": 0,
                       "end": 0,
                       "left": {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "lastSegX",
                             "start": 0,
                             "type": "Identifier"
@@ -4071,15 +4543,18 @@ description: Result of parsing mug.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.2",
                         "start": 0,
                         "type": "Literal",
@@ -4099,9 +4574,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -4112,6 +4589,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -4124,18 +4602,22 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "profileStartX",
                           "start": 0,
                           "type": "Identifier"
@@ -4146,6 +4628,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -4157,9 +4640,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -4170,6 +4655,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -4182,18 +4668,22 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "profileStartY",
                           "start": 0,
                           "type": "Identifier"
@@ -4204,6 +4694,7 @@ description: Result of parsing mug.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -4215,9 +4706,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yLine",
                     "start": 0,
                     "type": "Identifier"
@@ -4228,19 +4721,23 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -4251,6 +4748,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -4263,6 +4761,7 @@ description: Result of parsing mug.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
@@ -4271,9 +4770,11 @@ description: Result of parsing mug.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "Y",
                         "start": 0,
                         "type": "Identifier"
@@ -4289,9 +4790,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "revolve",
                     "start": 0,
                     "type": "Identifier"
@@ -4302,6 +4805,7 @@ description: Result of parsing mug.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -4310,12 +4814,14 @@ description: Result of parsing mug.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "16": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -4332,11 +4838,13 @@ description: Result of parsing mug.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -4353,9 +4861,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "handle",
                     "start": 0,
                     "type": "Identifier"
@@ -4369,9 +4879,11 @@ description: Result of parsing mug.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "mug",
                     "start": 0,
                     "type": "Identifier"
@@ -4383,6 +4895,7 @@ description: Result of parsing mug.kcl
                 }
               ],
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "ArrayExpression",
               "type": "ArrayExpression"
@@ -4394,6 +4907,7 @@ description: Result of parsing mug.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "color",
                     "start": 0,
                     "type": "Identifier"
@@ -4401,6 +4915,7 @@ description: Result of parsing mug.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "\"#9b1212\"",
                     "start": 0,
                     "type": "Literal",
@@ -4413,6 +4928,7 @@ description: Result of parsing mug.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "metalness",
                     "start": 0,
                     "type": "Identifier"
@@ -4420,6 +4936,7 @@ description: Result of parsing mug.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "40",
                     "start": 0,
                     "type": "Literal",
@@ -4435,6 +4952,7 @@ description: Result of parsing mug.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "roughness",
                     "start": 0,
                     "type": "Identifier"
@@ -4442,6 +4960,7 @@ description: Result of parsing mug.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "30",
                     "start": 0,
                     "type": "Literal",
@@ -4457,9 +4976,11 @@ description: Result of parsing mug.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "appearance",
                   "start": 0,
                   "type": "Identifier"
@@ -4470,6 +4991,7 @@ description: Result of parsing mug.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -4478,10 +5000,12 @@ description: Result of parsing mug.kcl
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -4493,9 +5017,11 @@ description: Result of parsing mug.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -4514,19 +5040,23 @@ description: Result of parsing mug.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "mm",
                 "start": 0,
                 "type": "Identifier"
@@ -4542,12 +5072,14 @@ description: Result of parsing mug.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {},
       "startNodes": [
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

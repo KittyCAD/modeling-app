@@ -94,6 +94,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "tag": {
                   "commentStart": 2124,
                   "end": 2130,
+                  "moduleId": 0,
                   "start": 2124,
                   "type": "TagDeclarator",
                   "value": "seg10"
@@ -107,6 +108,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "tag": {
                   "commentStart": 2174,
                   "end": 2184,
+                  "moduleId": 0,
                   "start": 2174,
                   "type": "TagDeclarator",
                   "value": "capEnd004"
@@ -136,6 +138,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "tag": {
                     "commentStart": 2124,
                     "end": 2130,
+                    "moduleId": 0,
                     "start": 2124,
                     "type": "TagDeclarator",
                     "value": "seg10"
@@ -457,6 +460,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "tag": {
                   "commentStart": 3480,
                   "end": 3486,
+                  "moduleId": 0,
                   "start": 3480,
                   "type": "TagDeclarator",
                   "value": "seg09"
@@ -470,6 +474,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "tag": {
                   "commentStart": 3530,
                   "end": 3540,
+                  "moduleId": 0,
                   "start": 3530,
                   "type": "TagDeclarator",
                   "value": "capEnd003"
@@ -499,6 +504,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "tag": {
                     "commentStart": 3480,
                     "end": 3486,
+                    "moduleId": 0,
                     "start": 3480,
                     "type": "TagDeclarator",
                     "value": "seg09"
@@ -1227,6 +1233,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 584,
             "end": 590,
+            "moduleId": 0,
             "start": 584,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -1240,6 +1247,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 634,
             "end": 640,
+            "moduleId": 0,
             "start": 634,
             "type": "TagDeclarator",
             "value": "seg06"
@@ -1253,6 +1261,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 684,
             "end": 690,
+            "moduleId": 0,
             "start": 684,
             "type": "TagDeclarator",
             "value": "seg04"
@@ -1266,6 +1275,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 751,
             "end": 757,
+            "moduleId": 0,
             "start": 751,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -1279,6 +1289,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 837,
             "end": 843,
+            "moduleId": 0,
             "start": 837,
             "type": "TagDeclarator",
             "value": "seg03"
@@ -1292,6 +1303,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 926,
             "end": 932,
+            "moduleId": 0,
             "start": 926,
             "type": "TagDeclarator",
             "value": "seg05"
@@ -1305,6 +1317,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 1009,
             "end": 1015,
+            "moduleId": 0,
             "start": 1009,
             "type": "TagDeclarator",
             "value": "seg07"
@@ -1325,6 +1338,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 1215,
             "end": 1227,
+            "moduleId": 0,
             "start": 1215,
             "type": "TagDeclarator",
             "value": "capStart001"
@@ -1338,6 +1352,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 1185,
             "end": 1195,
+            "moduleId": 0,
             "start": 1185,
             "type": "TagDeclarator",
             "value": "capEnd001"
@@ -1361,6 +1376,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 584,
               "end": 590,
+              "moduleId": 0,
               "start": 584,
               "type": "TagDeclarator",
               "value": "seg02"
@@ -1386,6 +1402,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 634,
               "end": 640,
+              "moduleId": 0,
               "start": 634,
               "type": "TagDeclarator",
               "value": "seg06"
@@ -1411,6 +1428,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 684,
               "end": 690,
+              "moduleId": 0,
               "start": 684,
               "type": "TagDeclarator",
               "value": "seg04"
@@ -1441,6 +1459,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 751,
               "end": 757,
+              "moduleId": 0,
               "start": 751,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -1466,6 +1485,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 837,
               "end": 843,
+              "moduleId": 0,
               "start": 837,
               "type": "TagDeclarator",
               "value": "seg03"
@@ -1491,6 +1511,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 926,
               "end": 932,
+              "moduleId": 0,
               "start": 926,
               "type": "TagDeclarator",
               "value": "seg05"
@@ -1516,6 +1537,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 1009,
               "end": 1015,
+              "moduleId": 0,
               "start": 1009,
               "type": "TagDeclarator",
               "value": "seg07"
@@ -1728,6 +1750,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 2743,
             "end": 2749,
+            "moduleId": 0,
             "start": 2743,
             "type": "TagDeclarator",
             "value": "seg11"
@@ -1741,6 +1764,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 2896,
             "end": 2908,
+            "moduleId": 0,
             "start": 2896,
             "type": "TagDeclarator",
             "value": "capStart003"
@@ -1754,6 +1778,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 2873,
             "end": 2883,
+            "moduleId": 0,
             "start": 2873,
             "type": "TagDeclarator",
             "value": "capEnd005"
@@ -1783,6 +1808,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 2743,
               "end": 2749,
+              "moduleId": 0,
               "start": 2743,
               "type": "TagDeclarator",
               "value": "seg11"
@@ -1926,6 +1952,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 4073,
             "end": 4079,
+            "moduleId": 0,
             "start": 4073,
             "type": "TagDeclarator",
             "value": "seg08"
@@ -1939,6 +1966,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 4200,
             "end": 4212,
+            "moduleId": 0,
             "start": 4200,
             "type": "TagDeclarator",
             "value": "capStart002"
@@ -1952,6 +1980,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 4223,
             "end": 4233,
+            "moduleId": 0,
             "start": 4223,
             "type": "TagDeclarator",
             "value": "capEnd002"
@@ -1981,6 +2010,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 4073,
               "end": 4079,
+              "moduleId": 0,
               "start": 4073,
               "type": "TagDeclarator",
               "value": "seg08"
@@ -2124,6 +2154,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 584,
             "end": 590,
+            "moduleId": 0,
             "start": 584,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -2137,6 +2168,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 634,
             "end": 640,
+            "moduleId": 0,
             "start": 634,
             "type": "TagDeclarator",
             "value": "seg06"
@@ -2150,6 +2182,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 684,
             "end": 690,
+            "moduleId": 0,
             "start": 684,
             "type": "TagDeclarator",
             "value": "seg04"
@@ -2163,6 +2196,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 751,
             "end": 757,
+            "moduleId": 0,
             "start": 751,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -2176,6 +2210,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 837,
             "end": 843,
+            "moduleId": 0,
             "start": 837,
             "type": "TagDeclarator",
             "value": "seg03"
@@ -2189,6 +2224,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 926,
             "end": 932,
+            "moduleId": 0,
             "start": 926,
             "type": "TagDeclarator",
             "value": "seg05"
@@ -2202,6 +2238,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 1009,
             "end": 1015,
+            "moduleId": 0,
             "start": 1009,
             "type": "TagDeclarator",
             "value": "seg07"
@@ -2222,6 +2259,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 1215,
             "end": 1227,
+            "moduleId": 0,
             "start": 1215,
             "type": "TagDeclarator",
             "value": "capStart001"
@@ -2235,6 +2273,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 1185,
             "end": 1195,
+            "moduleId": 0,
             "start": 1185,
             "type": "TagDeclarator",
             "value": "capEnd001"
@@ -2258,6 +2297,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 584,
               "end": 590,
+              "moduleId": 0,
               "start": 584,
               "type": "TagDeclarator",
               "value": "seg02"
@@ -2283,6 +2323,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 634,
               "end": 640,
+              "moduleId": 0,
               "start": 634,
               "type": "TagDeclarator",
               "value": "seg06"
@@ -2308,6 +2349,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 684,
               "end": 690,
+              "moduleId": 0,
               "start": 684,
               "type": "TagDeclarator",
               "value": "seg04"
@@ -2338,6 +2380,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 751,
               "end": 757,
+              "moduleId": 0,
               "start": 751,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -2363,6 +2406,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 837,
               "end": 843,
+              "moduleId": 0,
               "start": 837,
               "type": "TagDeclarator",
               "value": "seg03"
@@ -2388,6 +2432,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 926,
               "end": 932,
+              "moduleId": 0,
               "start": 926,
               "type": "TagDeclarator",
               "value": "seg05"
@@ -2413,6 +2458,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 1009,
               "end": 1015,
+              "moduleId": 0,
               "start": 1009,
               "type": "TagDeclarator",
               "value": "seg07"
@@ -2666,6 +2712,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 2124,
             "end": 2130,
+            "moduleId": 0,
             "start": 2124,
             "type": "TagDeclarator",
             "value": "seg10"
@@ -2679,6 +2726,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 2174,
             "end": 2184,
+            "moduleId": 0,
             "start": 2174,
             "type": "TagDeclarator",
             "value": "capEnd004"
@@ -2708,6 +2756,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 2124,
               "end": 2130,
+              "moduleId": 0,
               "start": 2124,
               "type": "TagDeclarator",
               "value": "seg10"
@@ -2929,6 +2978,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 3480,
             "end": 3486,
+            "moduleId": 0,
             "start": 3480,
             "type": "TagDeclarator",
             "value": "seg09"
@@ -2942,6 +2992,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "tag": {
             "commentStart": 3530,
             "end": 3540,
+            "moduleId": 0,
             "start": 3530,
             "type": "TagDeclarator",
             "value": "capEnd003"
@@ -2971,6 +3022,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "tag": {
               "commentStart": 3480,
               "end": 3486,
+              "moduleId": 0,
               "start": 3480,
               "type": "TagDeclarator",
               "value": "seg09"

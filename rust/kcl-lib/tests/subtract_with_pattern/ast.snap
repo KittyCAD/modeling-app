@@ -13,18 +13,22 @@ description: Result of parsing subtract_with_pattern.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "sketch001",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "startSketchOn",
                 "start": 0,
                 "type": "Identifier"
@@ -35,6 +39,7 @@ description: Result of parsing subtract_with_pattern.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -42,9 +47,11 @@ description: Result of parsing subtract_with_pattern.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "XY",
                 "start": 0,
                 "type": "Identifier"
@@ -55,11 +62,13 @@ description: Result of parsing subtract_with_pattern.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -72,6 +81,7 @@ description: Result of parsing subtract_with_pattern.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "profile001",
             "start": 0,
             "type": "Identifier"
@@ -85,6 +95,7 @@ description: Result of parsing subtract_with_pattern.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -95,6 +106,7 @@ description: Result of parsing subtract_with_pattern.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "2.65",
                           "start": 0,
                           "type": "Literal",
@@ -107,6 +119,7 @@ description: Result of parsing subtract_with_pattern.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "12.2",
                           "start": 0,
                           "type": "Literal",
@@ -118,6 +131,7 @@ description: Result of parsing subtract_with_pattern.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -128,9 +142,11 @@ description: Result of parsing subtract_with_pattern.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -141,6 +157,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -148,9 +165,11 @@ description: Result of parsing subtract_with_pattern.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "sketch001",
                     "start": 0,
                     "type": "Identifier"
@@ -168,6 +187,7 @@ description: Result of parsing subtract_with_pattern.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -175,6 +195,7 @@ description: Result of parsing subtract_with_pattern.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "23.49",
                       "start": 0,
                       "type": "Literal",
@@ -190,9 +211,11 @@ description: Result of parsing subtract_with_pattern.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -203,6 +226,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -215,6 +239,7 @@ description: Result of parsing subtract_with_pattern.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -223,6 +248,7 @@ description: Result of parsing subtract_with_pattern.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "22.68",
                         "start": 0,
                         "type": "Literal",
@@ -234,6 +260,7 @@ description: Result of parsing subtract_with_pattern.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -245,9 +272,11 @@ description: Result of parsing subtract_with_pattern.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yLine",
                     "start": 0,
                     "type": "Identifier"
@@ -258,6 +287,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -270,6 +300,7 @@ description: Result of parsing subtract_with_pattern.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -278,6 +309,7 @@ description: Result of parsing subtract_with_pattern.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "24.2",
                         "start": 0,
                         "type": "Literal",
@@ -289,6 +321,7 @@ description: Result of parsing subtract_with_pattern.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -300,9 +333,11 @@ description: Result of parsing subtract_with_pattern.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -313,6 +348,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -325,6 +361,7 @@ description: Result of parsing subtract_with_pattern.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -333,13 +370,16 @@ description: Result of parsing subtract_with_pattern.kcl
                       "commentStart": 0,
                       "elements": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartX",
                               "start": 0,
                               "type": "Identifier"
@@ -350,25 +390,30 @@ description: Result of parsing subtract_with_pattern.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartY",
                               "start": 0,
                               "type": "Identifier"
@@ -379,12 +424,14 @@ description: Result of parsing subtract_with_pattern.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
@@ -392,6 +439,7 @@ description: Result of parsing subtract_with_pattern.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -402,9 +450,11 @@ description: Result of parsing subtract_with_pattern.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -415,19 +465,23 @@ description: Result of parsing subtract_with_pattern.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -438,6 +492,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -446,15 +501,18 @@ description: Result of parsing subtract_with_pattern.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -467,6 +525,7 @@ description: Result of parsing subtract_with_pattern.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "extrude001",
             "start": 0,
             "type": "Identifier"
@@ -478,6 +537,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
@@ -485,6 +545,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "500",
                   "start": 0,
                   "type": "Literal",
@@ -500,9 +561,11 @@ description: Result of parsing subtract_with_pattern.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "extrude",
                 "start": 0,
                 "type": "Identifier"
@@ -513,6 +576,7 @@ description: Result of parsing subtract_with_pattern.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -520,9 +584,11 @@ description: Result of parsing subtract_with_pattern.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "profile001",
                 "start": 0,
                 "type": "Identifier"
@@ -533,11 +599,13 @@ description: Result of parsing subtract_with_pattern.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -550,18 +618,22 @@ description: Result of parsing subtract_with_pattern.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "sketch002",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "startSketchOn",
                 "start": 0,
                 "type": "Identifier"
@@ -572,6 +644,7 @@ description: Result of parsing subtract_with_pattern.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -579,9 +652,11 @@ description: Result of parsing subtract_with_pattern.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "XZ",
                 "start": 0,
                 "type": "Identifier"
@@ -592,11 +667,13 @@ description: Result of parsing subtract_with_pattern.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -609,6 +686,7 @@ description: Result of parsing subtract_with_pattern.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "profile002",
             "start": 0,
             "type": "Identifier"
@@ -620,6 +698,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
@@ -630,6 +709,7 @@ description: Result of parsing subtract_with_pattern.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "17.5",
                       "start": 0,
                       "type": "Literal",
@@ -642,6 +722,7 @@ description: Result of parsing subtract_with_pattern.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "22.02",
                       "start": 0,
                       "type": "Literal",
@@ -653,6 +734,7 @@ description: Result of parsing subtract_with_pattern.kcl
                     }
                   ],
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -663,6 +745,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "radius",
                   "start": 0,
                   "type": "Identifier"
@@ -670,6 +753,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "10.16",
                   "start": 0,
                   "type": "Literal",
@@ -685,9 +769,11 @@ description: Result of parsing subtract_with_pattern.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "circle",
                 "start": 0,
                 "type": "Identifier"
@@ -698,6 +784,7 @@ description: Result of parsing subtract_with_pattern.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -705,9 +792,11 @@ description: Result of parsing subtract_with_pattern.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "sketch002",
                 "start": 0,
                 "type": "Identifier"
@@ -718,11 +807,13 @@ description: Result of parsing subtract_with_pattern.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -735,6 +826,7 @@ description: Result of parsing subtract_with_pattern.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "extrude002",
             "start": 0,
             "type": "Identifier"
@@ -746,6 +838,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
@@ -753,6 +846,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "50",
                   "start": 0,
                   "type": "Literal",
@@ -768,9 +862,11 @@ description: Result of parsing subtract_with_pattern.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "extrude",
                 "start": 0,
                 "type": "Identifier"
@@ -781,6 +877,7 @@ description: Result of parsing subtract_with_pattern.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -788,9 +885,11 @@ description: Result of parsing subtract_with_pattern.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "profile002",
                 "start": 0,
                 "type": "Identifier"
@@ -801,11 +900,13 @@ description: Result of parsing subtract_with_pattern.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -818,6 +919,7 @@ description: Result of parsing subtract_with_pattern.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "myPatterns",
             "start": 0,
             "type": "Identifier"
@@ -829,6 +931,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "instances",
                   "start": 0,
                   "type": "Identifier"
@@ -836,6 +939,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "10",
                   "start": 0,
                   "type": "Literal",
@@ -851,6 +955,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "distance",
                   "start": 0,
                   "type": "Identifier"
@@ -858,6 +963,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "30",
                   "start": 0,
                   "type": "Literal",
@@ -873,6 +979,7 @@ description: Result of parsing subtract_with_pattern.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
@@ -883,6 +990,7 @@ description: Result of parsing subtract_with_pattern.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -895,6 +1003,7 @@ description: Result of parsing subtract_with_pattern.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -907,6 +1016,7 @@ description: Result of parsing subtract_with_pattern.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "1",
                       "start": 0,
                       "type": "Literal",
@@ -918,6 +1028,7 @@ description: Result of parsing subtract_with_pattern.kcl
                     }
                   ],
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -928,9 +1039,11 @@ description: Result of parsing subtract_with_pattern.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "patternLinear3d",
                 "start": 0,
                 "type": "Identifier"
@@ -941,6 +1054,7 @@ description: Result of parsing subtract_with_pattern.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -948,9 +1062,11 @@ description: Result of parsing subtract_with_pattern.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "extrude002",
                 "start": 0,
                 "type": "Identifier"
@@ -961,11 +1077,13 @@ description: Result of parsing subtract_with_pattern.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -982,6 +1100,7 @@ description: Result of parsing subtract_with_pattern.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tools",
                     "start": 0,
                     "type": "Identifier"
@@ -993,9 +1112,11 @@ description: Result of parsing subtract_with_pattern.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "myPatterns",
                           "start": 0,
                           "type": "Identifier"
@@ -1007,6 +1128,7 @@ description: Result of parsing subtract_with_pattern.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -1017,9 +1139,11 @@ description: Result of parsing subtract_with_pattern.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "subtract",
                   "start": 0,
                   "type": "Identifier"
@@ -1030,6 +1154,7 @@ description: Result of parsing subtract_with_pattern.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -1040,9 +1165,11 @@ description: Result of parsing subtract_with_pattern.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "extrude001",
                       "start": 0,
                       "type": "Identifier"
@@ -1054,6 +1181,7 @@ description: Result of parsing subtract_with_pattern.kcl
                   }
                 ],
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
@@ -1066,6 +1194,7 @@ description: Result of parsing subtract_with_pattern.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angle",
                     "start": 0,
                     "type": "Identifier"
@@ -1073,6 +1202,7 @@ description: Result of parsing subtract_with_pattern.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "90",
                     "start": 0,
                     "type": "Literal",
@@ -1088,6 +1218,7 @@ description: Result of parsing subtract_with_pattern.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
@@ -1098,6 +1229,7 @@ description: Result of parsing subtract_with_pattern.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -1110,6 +1242,7 @@ description: Result of parsing subtract_with_pattern.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "1",
                         "start": 0,
                         "type": "Literal",
@@ -1122,6 +1255,7 @@ description: Result of parsing subtract_with_pattern.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -1133,6 +1267,7 @@ description: Result of parsing subtract_with_pattern.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -1143,9 +1278,11 @@ description: Result of parsing subtract_with_pattern.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rotate",
                   "start": 0,
                   "type": "Identifier"
@@ -1156,6 +1293,7 @@ description: Result of parsing subtract_with_pattern.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -1164,12 +1302,14 @@ description: Result of parsing subtract_with_pattern.kcl
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "1": [
                 {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "NonCodeNode",
                   "value": {
@@ -1186,6 +1326,7 @@ description: Result of parsing subtract_with_pattern.kcl
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -1193,12 +1334,14 @@ description: Result of parsing subtract_with_pattern.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1210,6 +1353,7 @@ description: Result of parsing subtract_with_pattern.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1221,6 +1365,7 @@ description: Result of parsing subtract_with_pattern.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1232,6 +1377,7 @@ description: Result of parsing subtract_with_pattern.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1243,6 +1389,7 @@ description: Result of parsing subtract_with_pattern.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

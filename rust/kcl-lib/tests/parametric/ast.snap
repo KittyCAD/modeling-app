@@ -13,6 +13,7 @@ description: Result of parsing parametric.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "sigmaAllow",
             "start": 0,
             "type": "Identifier"
@@ -20,6 +21,7 @@ description: Result of parsing parametric.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "35000",
             "start": 0,
             "type": "Literal",
@@ -29,11 +31,13 @@ description: Result of parsing parametric.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -46,6 +50,7 @@ description: Result of parsing parametric.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "width",
             "start": 0,
             "type": "Identifier"
@@ -53,6 +58,7 @@ description: Result of parsing parametric.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "9",
             "start": 0,
             "type": "Literal",
@@ -62,11 +68,13 @@ description: Result of parsing parametric.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -79,6 +87,7 @@ description: Result of parsing parametric.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "p",
             "start": 0,
             "type": "Identifier"
@@ -86,6 +95,7 @@ description: Result of parsing parametric.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "150",
             "start": 0,
             "type": "Literal",
@@ -95,11 +105,13 @@ description: Result of parsing parametric.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -112,6 +124,7 @@ description: Result of parsing parametric.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "distance",
             "start": 0,
             "type": "Identifier"
@@ -119,6 +132,7 @@ description: Result of parsing parametric.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "6",
             "start": 0,
             "type": "Literal",
@@ -128,11 +142,13 @@ description: Result of parsing parametric.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -145,6 +161,7 @@ description: Result of parsing parametric.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "FOS",
             "start": 0,
             "type": "Identifier"
@@ -152,6 +169,7 @@ description: Result of parsing parametric.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "2",
             "start": 0,
             "type": "Literal",
@@ -161,11 +179,13 @@ description: Result of parsing parametric.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -178,6 +198,7 @@ description: Result of parsing parametric.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "leg1",
             "start": 0,
             "type": "Identifier"
@@ -185,6 +206,7 @@ description: Result of parsing parametric.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "5",
             "start": 0,
             "type": "Literal",
@@ -194,11 +216,13 @@ description: Result of parsing parametric.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -211,6 +235,7 @@ description: Result of parsing parametric.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "leg2",
             "start": 0,
             "type": "Identifier"
@@ -218,6 +243,7 @@ description: Result of parsing parametric.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "8",
             "start": 0,
             "type": "Literal",
@@ -227,11 +253,13 @@ description: Result of parsing parametric.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -244,18 +272,22 @@ description: Result of parsing parametric.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "thickness",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "sqrt",
                 "start": 0,
                 "type": "Identifier"
@@ -266,6 +298,7 @@ description: Result of parsing parametric.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -288,9 +321,11 @@ description: Result of parsing parametric.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "distance",
                           "start": 0,
                           "type": "Identifier"
@@ -300,14 +335,17 @@ description: Result of parsing parametric.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "p",
                           "start": 0,
                           "type": "Identifier"
@@ -321,14 +359,17 @@ description: Result of parsing parametric.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "operator": "*",
                     "right": {
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "FOS",
                         "start": 0,
                         "type": "Identifier"
@@ -342,10 +383,12 @@ description: Result of parsing parametric.kcl
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
+                  "moduleId": 0,
                   "operator": "*",
                   "right": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "6",
                     "start": 0,
                     "type": "Literal",
@@ -359,14 +402,17 @@ description: Result of parsing parametric.kcl
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
+                "moduleId": 0,
                 "operator": "/",
                 "right": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "sigmaAllow",
                     "start": 0,
                     "type": "Identifier"
@@ -380,14 +426,17 @@ description: Result of parsing parametric.kcl
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
+              "moduleId": 0,
               "operator": "/",
               "right": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "width",
                   "start": 0,
                   "type": "Identifier"
@@ -402,11 +451,13 @@ description: Result of parsing parametric.kcl
               "type": "BinaryExpression"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -419,6 +470,7 @@ description: Result of parsing parametric.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "bracket",
             "start": 0,
             "type": "Identifier"
@@ -426,13 +478,16 @@ description: Result of parsing parametric.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -443,6 +498,7 @@ description: Result of parsing parametric.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -450,9 +506,11 @@ description: Result of parsing parametric.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XY",
                     "start": 0,
                     "type": "Identifier"
@@ -470,6 +528,7 @@ description: Result of parsing parametric.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -480,6 +539,7 @@ description: Result of parsing parametric.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -492,6 +552,7 @@ description: Result of parsing parametric.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -503,6 +564,7 @@ description: Result of parsing parametric.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -513,9 +575,11 @@ description: Result of parsing parametric.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -526,6 +590,7 @@ description: Result of parsing parametric.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -538,6 +603,7 @@ description: Result of parsing parametric.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -548,6 +614,7 @@ description: Result of parsing parametric.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -561,9 +628,11 @@ description: Result of parsing parametric.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "leg1",
                             "start": 0,
                             "type": "Identifier"
@@ -575,6 +644,7 @@ description: Result of parsing parametric.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -585,9 +655,11 @@ description: Result of parsing parametric.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -598,6 +670,7 @@ description: Result of parsing parametric.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -610,6 +683,7 @@ description: Result of parsing parametric.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -621,9 +695,11 @@ description: Result of parsing parametric.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "leg2",
                             "start": 0,
                             "type": "Identifier"
@@ -636,6 +712,7 @@ description: Result of parsing parametric.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -647,6 +724,7 @@ description: Result of parsing parametric.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -657,9 +735,11 @@ description: Result of parsing parametric.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -670,6 +750,7 @@ description: Result of parsing parametric.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -682,6 +763,7 @@ description: Result of parsing parametric.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -692,6 +774,7 @@ description: Result of parsing parametric.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -706,9 +789,11 @@ description: Result of parsing parametric.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "thickness",
                               "start": 0,
                               "type": "Identifier"
@@ -720,6 +805,7 @@ description: Result of parsing parametric.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -727,6 +813,7 @@ description: Result of parsing parametric.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -737,9 +824,11 @@ description: Result of parsing parametric.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -750,6 +839,7 @@ description: Result of parsing parametric.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -762,6 +852,7 @@ description: Result of parsing parametric.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -777,9 +868,11 @@ description: Result of parsing parametric.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "leg2",
                                 "start": 0,
                                 "type": "Identifier"
@@ -791,19 +884,23 @@ description: Result of parsing parametric.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "thickness",
                               "start": 0,
                               "type": "Identifier"
@@ -820,6 +917,7 @@ description: Result of parsing parametric.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -831,6 +929,7 @@ description: Result of parsing parametric.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -841,9 +940,11 @@ description: Result of parsing parametric.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -854,6 +955,7 @@ description: Result of parsing parametric.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -866,6 +968,7 @@ description: Result of parsing parametric.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -876,6 +979,7 @@ description: Result of parsing parametric.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -893,9 +997,11 @@ description: Result of parsing parametric.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "leg1",
                                 "start": 0,
                                 "type": "Identifier"
@@ -907,19 +1013,23 @@ description: Result of parsing parametric.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "thickness",
                               "start": 0,
                               "type": "Identifier"
@@ -935,6 +1045,7 @@ description: Result of parsing parametric.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -945,9 +1056,11 @@ description: Result of parsing parametric.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -958,19 +1071,23 @@ description: Result of parsing parametric.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -981,12 +1098,14 @@ description: Result of parsing parametric.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -999,6 +1118,7 @@ description: Result of parsing parametric.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1007,9 +1127,11 @@ description: Result of parsing parametric.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "width",
                         "start": 0,
                         "type": "Identifier"
@@ -1025,9 +1147,11 @@ description: Result of parsing parametric.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "extrude",
                     "start": 0,
                     "type": "Identifier"
@@ -1038,6 +1162,7 @@ description: Result of parsing parametric.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1046,15 +1171,18 @@ description: Result of parsing parametric.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1062,12 +1190,14 @@ description: Result of parsing parametric.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1081,6 +1211,7 @@ description: Result of parsing parametric.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1094,6 +1225,7 @@ description: Result of parsing parametric.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1107,6 +1239,7 @@ description: Result of parsing parametric.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1120,6 +1253,7 @@ description: Result of parsing parametric.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1131,6 +1265,7 @@ description: Result of parsing parametric.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1144,6 +1279,7 @@ description: Result of parsing parametric.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1157,6 +1293,7 @@ description: Result of parsing parametric.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
