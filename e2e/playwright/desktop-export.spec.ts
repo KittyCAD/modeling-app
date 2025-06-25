@@ -11,7 +11,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test(
   'export works on the first try',
   { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
-  async ({ page, context, scene, tronApp, cmdBar, toolbar}, testInfo) => {
+  async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
     if (!tronApp) {
       fail()
     }

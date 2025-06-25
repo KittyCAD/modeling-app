@@ -214,6 +214,7 @@ export const FileExplorerRowElement = ({
     <div
       ref={rowElementRef}
       role="treeitem"
+      data-testid="file-tree-item"
       className={`h-5 flex flex-row items-center text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:bg-gray-300/50 hover:bg-gray-300/50 ${isSelected ? 'bg-primary/10' : ''}`}
       data-index={row.domIndex}
       data-last-element={row.domIndex === row.domLength - 1}

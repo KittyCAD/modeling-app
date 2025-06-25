@@ -288,7 +288,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
 
         return {
-          message: 'File created successfully',
+          message: 'Successfully created file.',
           fileName: newFileName,
           projectName: newProjectName,
           subRoute: input.requestedSubRoute || '',

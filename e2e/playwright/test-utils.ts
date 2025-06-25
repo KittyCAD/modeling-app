@@ -522,7 +522,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     createNewFile: async (name: string) => {
       return test?.step(`Create a file named ${name}`, async () => {
         await page.getByTestId('create-file-button').click()
-        await page.getByTestId('tree-input-field').fill(name)
+        await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
       })
     },
@@ -530,7 +530,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     createNewFolder: async (name: string) => {
       return test?.step(`Create a folder named ${name}`, async () => {
         await page.getByTestId('create-folder-button').click()
-        await page.getByTestId('tree-input-field').fill(name)
+        await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
       })
     },
